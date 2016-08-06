@@ -7,7 +7,7 @@ def test_check_permission():
     work.
 
       >>> configure_zcml = '''
-      ... <configure 
+      ... <configure
       ...     xmlns="http://namespaces.zope.org/zope"
       ...     xmlns:browser="http://namespaces.zope.org/browser">
       ...   <securityPolicy
@@ -52,6 +52,7 @@ def test_check_permission():
       >>> tearDown()
 
     """
+
 
 def test_allowed_interface():
     """This test demonstrates that allowed_interface security declarations work
@@ -142,6 +143,7 @@ def test_allowed_interface():
 
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite

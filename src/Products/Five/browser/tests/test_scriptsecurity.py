@@ -18,7 +18,7 @@ def checkRestricted(folder, psbody):
     addPythonScript(folder, 'ps', body=psbody)
     try:
         folder.ps()
-    except Unauthorized, e:
+    except Unauthorized as e:
         raise AssertionError(e)
 
 
@@ -94,7 +94,7 @@ def test_resource_restricted_code():
 
       >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource.txt') is not None
       True
-  
+
       >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource_subdir/resource.txt') is not None
       True
 
@@ -103,6 +103,7 @@ def test_resource_restricted_code():
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_view_restricted_code():
     """
@@ -128,7 +129,7 @@ def test_view_restricted_code():
       >>> protected_view_names = [
       ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
       ...     'condor.html', 'permission_view']
-      >>> 
+
       >>> public_view_names = [
       ...     'public_attribute_page',
       ...     'public_template_page',
@@ -181,7 +182,7 @@ def test_view_restricted_code():
 def test_suite():
     suite = unittest.TestSuite()
     try:
-        import Products.PythonScripts
+        import Products.PythonScripts  # NOQA
     except ImportError:
         pass
     else:

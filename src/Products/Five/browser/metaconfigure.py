@@ -55,43 +55,42 @@ from Products.Five.browser.resource import PageTemplateResourceFactory
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+
 def _configure_z2security(_context, new_class, required):
     _context.action(
         discriminator=('five:protectClass', new_class),
         callable=protectClass,
         args=(new_class, required.pop(''))
-        )
+    )
     for attr, permission in required.iteritems():
         _context.action(
             discriminator=('five:protectName', new_class, attr),
             callable=protectName,
             args=(new_class, attr, permission)
-            )
+        )
     # Make everything else private
     private_attrs = [name for name in dir(new_class)
-                     if (not name.startswith('_')) and
-                        (name not in required) and
-                        ismethod(getattr(new_class, name))]
+                     if ((not name.startswith('_')) and
+                         (name not in required) and
+                         ismethod(getattr(new_class, name)))]
     for attr in private_attrs:
         _context.action(
             discriminator=('five:protectName', new_class, attr),
             callable=protectName,
             args=(new_class, attr, CheckerPrivateId, False)
-            )
+        )
     # Protect the class
     _context.action(
         discriminator=('five:initialize:class', new_class),
         callable=InitializeClass,
         args=(new_class,)
-        )
+    )
 
-# page
 
 def page(_context, name, permission, for_=Interface,
          layer=IDefaultBrowserLayer, template=None, class_=None,
          allowed_interface=None, allowed_attributes=None,
-         attribute='__call__', menu=None, title=None, 
-         ):
+         attribute='__call__', menu=None, title=None):
     name = str(name)  # De-unicode
     _handle_menu(_context, menu, title, [for_], name, permission, layer)
     required = {}
@@ -120,8 +119,8 @@ def page(_context, name, permission, for_=Interface,
         if attribute != '__call__':
             if not hasattr(class_, attribute):
                 raise ConfigurationError(
-                    "The provided class doesn't have the specified attribute "
-                    )
+                    "The provided class doesn't have the specified attribute."
+                )
         if template:
             # class and template
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
@@ -130,7 +129,7 @@ def page(_context, name, permission, for_=Interface,
                 cdict = {
                     'browserDefault':
                     lambda self, request: (getattr(self, attribute), ())
-                    }
+                }
             else:
                 cdict = {}
 
@@ -173,11 +172,11 @@ def page(_context, name, permission, for_=Interface,
     _configure_z2security(_context, new_class, required)
 
     _context.action(
-        discriminator = ('view', (for_, layer), name, IBrowserRequest),
-        callable = handler,
-        args = ('registerAdapter',
-                new_class, (for_, layer), Interface, name, _context.info),
-        )
+        discriminator=('view', (for_, layer), name, IBrowserRequest),
+        callable=handler,
+        args=('registerAdapter',
+              new_class, (for_, layer), Interface, name, _context.info),
+    )
 
 
 class pages(zope.browserpage.metaconfigure.pages):
@@ -191,7 +190,6 @@ class pages(zope.browserpage.metaconfigure.pages):
                     menu=menu, title=title,
                     **(self.opts))
 
-# view (named view with pages)
 
 class IFiveViewDirective(IViewDirective):
 
@@ -199,7 +197,7 @@ class IFiveViewDirective(IViewDirective):
         title=u"Permission",
         description=u"The permission needed to use the view.",
         required=False,
-        )
+    )
 
 
 class view(zope.browserpage.metaconfigure.view):
@@ -266,11 +264,11 @@ class view(zope.browserpage.metaconfigure.view):
                 cdict['browserDefault'] = (
                     lambda self, request, default=default:
                     (self, (default, ))
-                    )
+                )
             elif providesCallable(class_):
                 cdict['browserDefault'] = (
                     lambda self, request: (self, ())
-                    )
+                )
 
         if class_ is not None:
             cdict.update(getSecurityInfo(class_))
@@ -299,45 +297,46 @@ class view(zope.browserpage.metaconfigure.view):
 
         if self.provides is not None:
             _context.action(
-                discriminator = None,
-                callable = provideInterface,
-                args = ('', self.provides)
-                )
-
-        _context.action(
-            discriminator = ('view', (for_, layer), name, self.provides),
-            callable = handler,
-            args = ('registerAdapter',
-                    newclass, (for_, layer), self.provides, name,
-                    _context.info),
+                discriminator=None,
+                callable=provideInterface,
+                args=('', self.provides)
             )
 
+        _context.action(
+            discriminator=('view', (for_, layer), name, self.provides),
+            callable=handler,
+            args=('registerAdapter',
+                  newclass, (for_, layer), self.provides, name,
+                  _context.info),
+        )
 
-_factory_map = {'image':{'prefix':'ImageResource',
-                         'count':0,
-                         'factory':ImageResourceFactory},
-                'file':{'prefix':'FileResource',
-                        'count':0,
-                        'factory':FileResourceFactory},
-                'template':{'prefix':'PageTemplateResource',
-                            'count':0,
-                            'factory':PageTemplateResourceFactory}
+
+_factory_map = {'image': {'prefix': 'ImageResource',
+                          'count': 0,
+                          'factory': ImageResourceFactory},
+                'file': {'prefix': 'FileResource',
+                         'count': 0,
+                         'factory': FileResourceFactory},
+                'template': {'prefix': 'PageTemplateResource',
+                             'count': 0,
+                             'factory': PageTemplateResourceFactory}
                 }
 
-def resource(_context, name, layer=IDefaultBrowserLayer, permission='zope.Public',
-             file=None, image=None, template=None):
+
+def resource(_context, name, layer=IDefaultBrowserLayer,
+             permission='zope.Public', file=None, image=None, template=None):
 
     if ((file and image) or (file and template) or
-        (image and template) or not (file or image or template)):
+            (image and template) or not (file or image or template)):
         raise ConfigurationError(
             "Must use exactly one of file or image or template"
             "attributes for resource directives"
-            )
+        )
 
     res = file or image or template
     res_type = ((file and 'file') or
-                 (image and 'image') or
-                 (template and 'template'))
+                (image and 'image') or
+                (template and 'template'))
     factory_info = _factory_map.get(res_type)
     factory_info['count'] += 1
     res_factory = factory_info['factory']
@@ -346,39 +345,41 @@ def resource(_context, name, layer=IDefaultBrowserLayer, permission='zope.Public
     factory = res_factory(name, res, resource_factory=new_class)
 
     _context.action(
-        discriminator = ('resource', name, IBrowserRequest, layer),
-        callable = handler,
-        args = ('registerAdapter',
-                factory, (layer,), Interface, name, _context.info),
-        )
+        discriminator=('resource', name, IBrowserRequest, layer),
+        callable=handler,
+        args=('registerAdapter',
+              factory, (layer,), Interface, name, _context.info),
+    )
     _context.action(
-        discriminator = ('five:protectClass', new_class),
-        callable = protectClass,
-        args = (new_class, permission)
-        )
+        discriminator=('five:protectClass', new_class),
+        callable=protectClass,
+        args=(new_class, permission)
+    )
     _context.action(
-        discriminator = ('five:initialize:class', new_class),
-        callable = InitializeClass,
-        args = (new_class,)
-        )
+        discriminator=('five:initialize:class', new_class),
+        callable=InitializeClass,
+        args=(new_class,)
+    )
 
-_rd_map = {ImageResourceFactory:{'prefix':'DirContainedImageResource',
-                                 'count':0},
-           FileResourceFactory:{'prefix':'DirContainedFileResource',
-                                'count':0},
-           PageTemplateResourceFactory:{'prefix':'DirContainedPTResource',
-                                        'count':0},
-           DirectoryResourceFactory:{'prefix':'DirectoryResource',
-                                     'count':0}
-           }
+
+_rd_map = {
+    ImageResourceFactory: {'prefix': 'DirContainedImageResource',
+                           'count': 0},
+    FileResourceFactory: {'prefix': 'DirContainedFileResource',
+                          'count': 0},
+    PageTemplateResourceFactory: {'prefix': 'DirContainedPTResource',
+                                  'count': 0},
+    DirectoryResourceFactory: {'prefix': 'DirectoryResource',
+                               'count': 0}
+}
+
 
 def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
                       permission='zope.Public'):
 
     if not os.path.isdir(directory):
         raise ConfigurationError(
-            "Directory %s does not exist" % directory
-            )
+            "Directory %s does not exist" % directory)
 
     resource = DirectoryResourceFactory.resource
     f_cache = {}
@@ -399,8 +400,8 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
     default_factory = resource_factories['default']
     del resource_factories['default']
 
-    cdict = {'resource_factories':resource_factories,
-             'default_factory':default_factory}
+    cdict = {'resource_factories': resource_factories,
+             'default_factory': default_factory}
 
     factory_info = _rd_map.get(DirectoryResourceFactory)
     factory_info['count'] += 1
@@ -413,22 +414,22 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
                    ] + [f.resource for f in f_cache.values()]
 
     _context.action(
-        discriminator = ('resource', name, IBrowserRequest, layer),
-        callable = handler,
-        args = ('registerAdapter',
-                factory, (layer,), Interface, name, _context.info),
-        )
+        discriminator=('resource', name, IBrowserRequest, layer),
+        callable=handler,
+        args=('registerAdapter',
+              factory, (layer,), Interface, name, _context.info),
+    )
     for new_class in new_classes:
         _context.action(
-            discriminator = ('five:protectClass', new_class),
-            callable = protectClass,
-            args = (new_class, permission)
-            )
+            discriminator=('five:protectClass', new_class),
+            callable=protectClass,
+            args=(new_class, permission)
+        )
         _context.action(
-            discriminator = ('five:initialize:class', new_class),
-            callable = InitializeClass,
-            args = (new_class,)
-            )
+            discriminator=('five:initialize:class', new_class),
+            callable=InitializeClass,
+            args=(new_class,)
+        )
 
 
 class simple(zope.browserpage.metaconfigure.simple):

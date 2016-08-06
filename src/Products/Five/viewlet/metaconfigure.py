@@ -31,11 +31,12 @@ from AccessControl.security import protectName
 from Products.Five.viewlet import manager
 from Products.Five.viewlet import viewlet
 
+
 def viewletManagerDirective(
-    _context, name, permission,
-    for_=Interface, layer=IDefaultBrowserLayer, view=IBrowserView,
-    provides=interfaces.IViewletManager, class_=None, template=None,
-    allowed_interface=None, allowed_attributes=None):
+        _context, name, permission,
+        for_=Interface, layer=IDefaultBrowserLayer, view=IBrowserView,
+        provides=interfaces.IViewletManager, class_=None, template=None,
+        allowed_interface=None, allowed_attributes=None):
 
     # If class is not given we use the basic viewlet manager.
     if class_ is None:
@@ -69,36 +70,37 @@ def viewletManagerDirective(
 
     # register a viewlet manager
     _context.action(
-        discriminator = ('viewletManager', for_, layer, view, name),
-        callable = zcml.handler,
-        args = ('registerAdapter',
-                new_class, (for_, layer, view), provides, name,
-                _context.info),)
+        discriminator=('viewletManager', for_, layer, view, name),
+        callable=zcml.handler,
+        args=('registerAdapter',
+              new_class, (for_, layer, view), provides, name,
+              _context.info),
+    )
     _context.action(
-        discriminator = ('five:protectClass', new_class),
-        callable = protectClass,
-        args = (new_class, permission)
-        )
+        discriminator=('five:protectClass', new_class),
+        callable=protectClass,
+        args=(new_class, permission),
+    )
     if allowed_attributes:
         for attr in allowed_attributes:
             _context.action(
-                discriminator = ('five:protectName', new_class, attr),
-                callable = protectName,
-                args = (new_class, attr, permission)
-                )
+                discriminator=('five:protectName', new_class, attr),
+                callable=protectName,
+                args=(new_class, attr, permission),
+            )
     _context.action(
-        discriminator = ('five:initialize:class', new_class),
-        callable = InitializeClass,
-        args = (new_class,)
-        )
+        discriminator=('five:initialize:class', new_class),
+        callable=InitializeClass,
+        args=(new_class, ),
+    )
 
 
 def viewletDirective(
-    _context, name, permission,
-    for_=Interface, layer=IDefaultBrowserLayer, view=IBrowserView,
-    manager=interfaces.IViewletManager, class_=None, template=None,
-    attribute='render', allowed_interface=None, allowed_attributes=None,
-    **kwargs):
+        _context, name, permission,
+        for_=Interface, layer=IDefaultBrowserLayer, view=IBrowserView,
+        manager=interfaces.IViewletManager, class_=None, template=None,
+        attribute='render', allowed_interface=None,
+        allowed_attributes=None, **kwargs):
 
     # Either the class or template must be specified.
     if not (class_ or template):
@@ -135,8 +137,8 @@ def viewletDirective(
         if attribute != 'render':
             if not hasattr(class_, attribute):
                 raise ConfigurationError(
-                    "The provided class doesn't have the specified attribute "
-                    )
+                    "The provided class doesn't have the specified attribute."
+                )
         if template:
             # Create a new class for the viewlet template and class.
             new_class = viewlet.SimpleViewletClass(
@@ -165,26 +167,26 @@ def viewletDirective(
 
     # register viewlet
     _context.action(
-        discriminator = ('viewlet', for_, layer, view, manager, name),
-        callable = zcml.handler,
-        args = ('registerAdapter',
-                new_class, (for_, layer, view, manager),
-                interfaces.IViewlet, name, _context.info),)
-
+        discriminator=('viewlet', for_, layer, view, manager, name),
+        callable=zcml.handler,
+        args=('registerAdapter',
+              new_class, (for_, layer, view, manager),
+              interfaces.IViewlet, name, _context.info),
+    )
     _context.action(
-        discriminator = ('five:protectClass', new_class),
-        callable = protectClass,
-        args = (new_class, permission)
-        )
+        discriminator=('five:protectClass', new_class),
+        callable=protectClass,
+        args=(new_class, permission)
+    )
     if allowed_attributes:
         for attr in allowed_attributes:
             _context.action(
-                discriminator = ('five:protectName', new_class, attr),
-                callable = protectName,
-                args = (new_class, attr, permission)
-                )
+                discriminator=('five:protectName', new_class, attr),
+                callable=protectName,
+                args=(new_class, attr, permission)
+            )
     _context.action(
-        discriminator = ('five:initialize:class', new_class),
-        callable = InitializeClass,
-        args = (new_class,)
-        )
+        discriminator=('five:initialize:class', new_class),
+        callable=InitializeClass,
+        args=(new_class,)
+    )

@@ -26,6 +26,7 @@ from zope.contentprovider.interfaces import IContentProvider
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+
 class LegacyAttributes(BrowserView):
     """Make sure that those old aq_* attributes on Five BrowserViews
     still work, in particular aq_chain, even though BrowserView may
@@ -35,6 +36,7 @@ class LegacyAttributes(BrowserView):
     def __call__(self):
         return repr([obj for obj in self.aq_chain])
 
+
 class ExplicitLegacyAttributes(Acquisition.Explicit):
     """Make sure that those old aq_* attributes work on browser views
     that only inherit from Explicit as well."""
@@ -42,12 +44,14 @@ class ExplicitLegacyAttributes(Acquisition.Explicit):
     def __call__(self):
         return repr([obj for obj in self.aq_chain])
 
+
 class LegacyTemplate(BrowserView):
 
     template = ViewPageTemplateFile('falcon.pt')
 
     def __call__(self):
         return self.template()
+
 
 class LegacyTemplateTwo(BrowserView):
 
@@ -60,20 +64,25 @@ class LegacyTemplateTwo(BrowserView):
     def __call__(self):
         return self.template()
 
+
 class Explicit(Acquisition.Explicit):
 
     def render(self):
         return 'Explicit'
 
+
 class ExplicitWithTemplate(Acquisition.Explicit):
 
     template = ViewPageTemplateFile('falcon.pt')
 
+
 class Implicit(Acquisition.Implicit):
 
     index_html = None  # we don't want to acquire this!
+
     def render(self):
         return 'Implicit'
+
 
 class ImplicitWithTemplate(Acquisition.Implicit):
 
@@ -96,6 +105,7 @@ class ExplicitContentProvider(Acquisition.Explicit):
     def render(self):
         return 'Content provider inheriting from Explicit'
 
+
 class ExplicitViewlet(Acquisition.Explicit):
 
     def __init__(self, context, request, view, manager):
@@ -110,6 +120,7 @@ class ExplicitViewlet(Acquisition.Explicit):
 
     def render(self):
         return 'Viewlet inheriting from Explicit'
+
 
 class BrowserViewViewlet(BrowserView):
 
@@ -138,6 +149,7 @@ class LegacyNamespace(object):
 
     def traverse(self, name, ignored):
         return LegacyNamespaceObject(name)
+
 
 class LegacyNamespaceObject(OFS.SimpleItem.SimpleItem):
 

@@ -14,6 +14,7 @@
 """Unit tests for marker interface views.
 """
 
+
 def test_editview():
     """
     Set everything up:
@@ -83,6 +84,7 @@ def test_editview():
 
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

@@ -24,4 +24,4 @@ def test_suite():
         DocFileSuite('component.txt', package="Products.Five.component"),
         FunctionalDocFileSuite('makesite.txt',
                                package="Products.Five.component"),
-        ])
+    ])

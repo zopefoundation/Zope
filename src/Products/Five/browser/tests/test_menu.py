@@ -14,6 +14,7 @@
 """Test browser menus
 """
 
+
 def test_menu():
     """
     Test menus
@@ -39,7 +40,7 @@ def test_menu():
       >>> request = TestRequest()
       >>> menu = getMenu('testmenu', self.folder, request)
 
-    It should have 
+    It should have
 
       >>> len(menu)
       4
@@ -149,7 +150,7 @@ def test_menu():
        'description': u'This is a test menu item',
        'extra': None,
        'icon': None,
-       'selected': u'', 
+       'selected': u'',
        'submenu': None,
        'title': u'Test Menu Item 2'}
 
@@ -168,6 +169,7 @@ def test_menu():
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

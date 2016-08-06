@@ -16,6 +16,7 @@
 
 from zope.component.testing import setUp, tearDown
 
+
 def test_directive():
     """
     Test the i18n directive.  First, we need to register the ZCML

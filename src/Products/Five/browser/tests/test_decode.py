@@ -14,6 +14,7 @@
 """Unit tests for decode module.
 """
 
+
 def test_processInputs():
     """
     Testing processInputs
@@ -99,6 +100,7 @@ def test_processInputs():
       True
 
     """
+
 
 def test_suite():
     from doctest import DocTestSuite

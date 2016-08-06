@@ -15,12 +15,13 @@
 """
 import unittest
 
+
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
     return unittest.TestSuite((
-            ZopeDocFileSuite('resource.txt',
-                             package='Products.Five.browser.tests'),
-            FunctionalDocFileSuite('resource_ftest.txt',
-                                   package='Products.Five.browser.tests'),
-            ))
+        ZopeDocFileSuite('resource.txt',
+                         package='Products.Five.browser.tests'),
+        FunctionalDocFileSuite('resource_ftest.txt',
+                               package='Products.Five.browser.tests'),
+    ))

@@ -27,8 +27,11 @@ from Products.PageTemplates.Expressions import createTrustedZopeEngine
 from Products.Five.bbb import AcquisitionBBB
 
 _engine = createTrustedZopeEngine()
+
+
 def getEngine():
     return _engine
+
 
 class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
     """Page Template used as class variable of views defined as Python classes.
@@ -57,7 +60,7 @@ class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
             namespace,
             showtal=getattr(debug_flags, 'showTAL', 0),
             sourceAnnotations=getattr(debug_flags, 'sourceAnnotations', 0),
-            )
+        )
         response = instance.request.response
         if not response.getHeader("Content-Type"):
             response.setHeader("Content-Type", self.content_type)
@@ -87,8 +90,8 @@ class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
                          root=root,
                          modules=SecureModuleImporter,
                          traverse_subpath=[],  # BBB, never really worked
-                         user = getSecurityManager().getUser()
-                        )
+                         user=getSecurityManager().getUser(),
+                         )
         return namespace
 
     def __get__(self, instance, type):
@@ -104,9 +107,10 @@ class ViewMapper(object):
         return getMultiAdapter((self.ob, self.request), name=name)
 
 # When a view's template is accessed e.g. as template.view, a
-# BoundPageTemplate object is retured.  For BBB reasons, it needs to
+# BoundPageTemplate object is returned. For BBB reasons, it needs to
 # support the aq_* methods and attributes known from Acquisition.  For
-# that it also needs to be locatable thru __parent__.
+# that it also needs to be locatable through __parent__.
+
 
 class BoundPageTemplate(AcquisitionBBB):
     def __init__(self, pt, ob):

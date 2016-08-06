@@ -32,12 +32,14 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from zope.component.hooks import setHooks
 setHooks()
 
+
 def findSite(obj, iface=ISite):
     """Find a site by walking up the object hierarchy, supporting both
     the ``ILocation`` API and Zope 2 Acquisition."""
     while obj is not None and not iface.providedBy(obj):
         obj = aq_parent(aq_inner(obj))
     return obj
+
 
 @zope.component.adapter(zope.interface.Interface)
 @zope.interface.implementer(IComponentLookup)
@@ -51,12 +53,14 @@ def siteManagerAdapter(ob):
         return zope.component.getGlobalSiteManager()
     return site.getSiteManager()
 
+
 class LocalSiteHook(ExtensionClass.Base):
 
     def __call__(self, container, request):
         zope.event.notify(BeforeTraverseEvent(container, request))
 
 HOOK_NAME = '__local_site_hook__'
+
 
 def enableSite(obj, iface=ISite):
     """Install __before_traverse__ hook for Local Site
@@ -72,6 +76,7 @@ def enableSite(obj, iface=ISite):
         setattr(obj, HOOK_NAME, LocalSiteHook())
 
     zope.interface.alsoProvides(obj, iface)
+
 
 def disableSite(obj, iface=ISite):
     """Remove __before_traverse__ hook for Local Site

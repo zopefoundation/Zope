@@ -19,7 +19,7 @@ factory screen.
 (original: zope.app.container.browser.adding)
 """
 
-__docformat__ = 'restructuredtext'
+import operator
 
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
@@ -30,7 +30,7 @@ from zope.component import queryUtility
 from zope.component.interfaces import IFactory
 from zope.container.constraints import checkFactory
 from zope.container.constraints import checkObject
-from zope.container.i18n import ZopeMessageFactory as _
+from zope.container.i18n import ZopeMessageFactory as _  # NOQA
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
 from zope.event import notify
@@ -80,10 +80,10 @@ class Adding(BrowserView):
 
         content.id = name
         container._setObject(name, content)
-        self.contentName = name # Set the added object Name
+        self.contentName = name  # Set the added object Name
         return container._getOb(name)
 
-    contentName = None # usually set by Adding traverser
+    contentName = None  # usually set by Adding traverser
 
     def nextURL(self):
         """See zope.browser.interfaces.IAdding"""
@@ -133,7 +133,7 @@ class Adding(BrowserView):
             view_name = type_name
 
         if queryMultiAdapter((self, self.request),
-                                  name=view_name) is not None:
+                             name=view_name) is not None:
             url = "%s/%s=%s" % (
                 absoluteURL(self, self.request), type_name, id)
             self.request.response.redirect(url)
@@ -176,10 +176,10 @@ class Adding(BrowserView):
                         if not checkFactory(container, None, factory):
                             continue
                         elif item['extra']['factory'] != item['action']:
-                            item['has_custom_add_view']=True
+                            item['has_custom_add_view'] = True
                 result.append(item)
 
-        result.sort(lambda a, b: cmp(a['title'], b['title']))
+        result.sort(key=operator.itemgetter('title'))
         return result
 
     def isSingleMenuItem(self):
@@ -187,12 +187,12 @@ class Adding(BrowserView):
         return len(self.addingInfo()) == 1
 
     def hasCustomAddView(self):
-       "This should be called only if there is `singleMenuItem` else return 0"
-       if self.isSingleMenuItem():
-           menu_item = self.addingInfo()[0]
-           if 'has_custom_add_view' in menu_item:
-               return True
-       return False
+        "This should be called only if there is `singleMenuItem` else return 0"
+        if self.isSingleMenuItem():
+            menu_item = self.addingInfo()[0]
+            if 'has_custom_add_view' in menu_item:
+                return True
+        return False
 
 
 class ContentAdding(Adding, SimpleItem):
@@ -215,13 +215,13 @@ class ObjectManagerNameChooser:
         try:
             name = name.encode('ascii')
         except UnicodeDecodeError:
-            raise UserError, "Id must contain only ASCII characters."
+            raise UserError("Id must contain only ASCII characters.")
 
         try:
             self.context._checkId(name, allow_dup=False)
-        except BadRequest, e:
+        except BadRequest as e:
             msg = ' '.join(e.args) or "Id is in use or invalid"
-            raise UserError, msg
+            raise UserError(msg)
 
     def chooseName(self, name, object):
         if not name:
@@ -230,7 +230,7 @@ class ObjectManagerNameChooser:
             try:
                 name = name.encode('ascii')
             except UnicodeDecodeError:
-                raise UserError, "Id must contain only ASCII characters."
+                raise UserError("Id must contain only ASCII characters.")
 
         dot = name.rfind('.')
         if dot >= 0:

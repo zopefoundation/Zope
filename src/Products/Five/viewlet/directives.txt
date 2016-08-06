@@ -369,7 +369,7 @@ specified attribute:
   Traceback (most recent call last):
   ...
   ZopeXMLConfigurationError: File "<string>", line 3.2-9.8
-    ConfigurationError: The provided class doesn't have the specified attribute
+    ConfigurationError: The provided class doesn't have the specified attribute.
 
 ================================
 Viewlet Directive Security

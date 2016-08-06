@@ -21,14 +21,18 @@ from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.interface import Interface
 
+
 class ISimpleContent(Interface):
     pass
+
 
 class ICallableSimpleContent(ISimpleContent):
     pass
 
+
 class IIndexSimpleContent(ISimpleContent):
     pass
+
 
 class SimpleContent(SimpleItem):
     implements(ISimpleContent)
@@ -52,6 +56,7 @@ class SimpleContent(SimpleItem):
 
 InitializeClass(SimpleContent)
 
+
 class CallableSimpleContent(SimpleItem):
     """A Viewable piece of content"""
     implements(ICallableSimpleContent)
@@ -63,6 +68,7 @@ class CallableSimpleContent(SimpleItem):
         return "Default __call__ called"
 
 InitializeClass(CallableSimpleContent)
+
 
 class IndexSimpleContent(SimpleItem):
     """A Viewable piece of content"""
@@ -76,13 +82,16 @@ class IndexSimpleContent(SimpleItem):
 
 InitializeClass(IndexSimpleContent)
 
+
 def manage_addSimpleContent(self, id, title, REQUEST=None):
     """Add the simple content."""
     self._setObject(id, SimpleContent(id, title))
 
+
 def manage_addCallableSimpleContent(self, id, title, REQUEST=None):
     """Add the viewable simple content."""
     self._setObject(id, CallableSimpleContent(id, title))
+
 
 def manage_addIndexSimpleContent(self, id, title, REQUEST=None):
     """Add the viewable simple content."""

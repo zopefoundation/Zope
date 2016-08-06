@@ -14,6 +14,7 @@
 """Test default view recursion
 """
 
+
 def test_recursion():
     """
     Test recursion
@@ -58,6 +59,7 @@ def test_recursion():
       >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

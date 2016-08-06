@@ -14,6 +14,7 @@
 """Test AbsoluteURL
 """
 
+
 def test_absoluteurl():
     """This tests the absolute url view (IAbsoluteURL or @@absolute_url),
     in particular the breadcrumb functionality.
@@ -82,6 +83,7 @@ def test_absoluteurl():
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

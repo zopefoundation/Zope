@@ -37,8 +37,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
     def test_pt_getEngine(self):
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import NotExpr
-        from zope.tales.expressions import PathExpr
-        from zope.tales.expressions import Undefs
         from zope.tales.pythonexpr import PythonExpr
         from zope.contentprovider.tales import TALESProviderExpression
         from Products.PageTemplates.DeferExpr import LazyExpr
@@ -85,8 +83,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(namespace['user'].getId(), 'a_user')
 
     def test_pt_getContext_w_physicalRoot(self):
-        from Products.Five.browser.pagetemplatefile import ViewMapper
-        from Products.PageTemplates.Expressions import SecureModuleImporter
         from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
@@ -99,8 +95,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertTrue(namespace['root'] is root)
 
     def test_pt_getContext_w_ignored_kw(self):
-        from Products.Five.browser.pagetemplatefile import ViewMapper
-        from Products.PageTemplates.Expressions import SecureModuleImporter
         from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
@@ -112,8 +106,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertFalse('foo' in namespace['options'])
 
     def test_pt_getContext_w_args_kw(self):
-        from Products.Five.browser.pagetemplatefile import ViewMapper
-        from Products.PageTemplates.Expressions import SecureModuleImporter
         from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
@@ -124,8 +116,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(namespace['args'], ('bar', 'baz'))
 
     def test_pt_getContext_w_options_kw(self):
-        from Products.Five.browser.pagetemplatefile import ViewMapper
-        from Products.PageTemplates.Expressions import SecureModuleImporter
         from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
@@ -149,20 +139,22 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         context = DummyContext()
         request = DummyRequest()
         response = request.response = DummyResponse(
-                                        {'Content-Type': 'text/xhtml'})
+            {'Content-Type': 'text/xhtml'})
         view = self._makeView(context, request)
         vptf = self._makeOne('templates/dirpage1.pt')
-        body = vptf(view)
+        vptf(view)
         self.assertEqual(response._headers['Content-Type'], 'text/xhtml')
 
     def test___get___(self):
         from Products.Five.browser.pagetemplatefile import BoundPageTemplate
         template = self._makeOne('templates/dirpage1.pt')
-        class Foo:
+
+        class Foo(object):
             def __init__(self, context, request):
                 self.context = context
                 self.request = request
             bar = template
+
         context = DummyContext()
         request = DummyRequest()
         foo = Foo(context, request)
@@ -170,6 +162,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertTrue(isinstance(bound, BoundPageTemplate))
         self.assertTrue(bound.im_func is template)
         self.assertTrue(bound.im_self is foo)
+
 
 class ViewMapperTests(unittest.TestCase):
 
@@ -200,13 +193,16 @@ class ViewMapperTests(unittest.TestCase):
     def test___getitem___hit(self):
         from zope.interface import Interface
         from zope.component import provideAdapter
+
         def _adapt(context, request):
             return self
+
         provideAdapter(_adapt, (None, None), Interface, name='test')
         mapper = self._makeOne()
         self.assertTrue(mapper['test'] is self)
 
 _marker = object()
+
 
 class BoundPageTemplateTests(unittest.TestCase):
 
@@ -269,13 +265,16 @@ DIRPAGE1 = """\
 </html>
 """
 
-class DummyContext:
+
+class DummyContext(object):
     pass
 
-class DummyRequest:
+
+class DummyRequest(object):
     debug = object()
 
-class DummyResponse:
+
+class DummyResponse(object):
     def __init__(self, headers=None):
         if headers is None:
             headers = {}
@@ -287,30 +286,31 @@ class DummyResponse:
     def setHeader(self, name, value):
         self._headers[name] = value
 
-class DummyTemplate:
+
+class DummyTemplate(object):
     filename = 'dummy.pt'
+
     def __init__(self, macros=None):
         if macros is None:
             macros = {}
         self.macros = macros
+
     def __call__(self, im_self, *args, **kw):
         self._called_with = (im_self, args, kw)
         return '<h1>Dummy</h1>'
 
-class DummyView:
+
+class DummyView(object):
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
-class DummyUser:
+
+class DummyUser(object):
+
     def __init__(self, name):
         self._name = name
+
     def getId(self):
         return self._name
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(ViewPageTemplateFileTests),
-        unittest.makeSuite(ViewMapperTests),
-        unittest.makeSuite(BoundPageTemplateTests),
-    ))

@@ -22,8 +22,10 @@ from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.interface import Interface
 
+
 class IFancyContent(Interface):
     pass
+
 
 class FancyAttribute(Explicit):
     """Doc test fanatics"""
@@ -39,6 +41,7 @@ class FancyAttribute(Explicit):
         return self.name
 
 InitializeClass(FancyAttribute)
+
 
 class FancyContent(SimpleItem):
     """A class that already comes with its own __bobo_traverse__ handler.
@@ -65,13 +68,14 @@ class FancyContent(SimpleItem):
 
 InitializeClass(FancyContent)
 
-# A copy of the above class used to demonstrate some baseline behavior
+
 class NonTraversableFancyContent(SimpleItem):
     """A class that already comes with its own __bobo_traverse__ handler.
     Quite fancy indeed.
 
     It also comes with its own get_size method.
     """
+    # A copy of the above class used to demonstrate some baseline behavior.
     implements(IFancyContent)
 
     meta_type = "Fancy Content"
@@ -91,10 +95,12 @@ class NonTraversableFancyContent(SimpleItem):
 
 InitializeClass(NonTraversableFancyContent)
 
+
 def manage_addFancyContent(self, id, REQUEST=None):
     """Add the fancy fancy content."""
     id = self._setObject(id, FancyContent(id))
     return ''
+
 
 def manage_addNonTraversableFancyContent(self, id, REQUEST=None):
     """Add the fancy fancy content."""

@@ -17,16 +17,19 @@
 from zope.interface import Interface, implements
 from Products.Five import BrowserView
 
+
 class IOne(Interface):
     """This is an interface.
     """
+
 
 class One(object):
     'A class'
     implements(IOne)
 
+
 class ViewOne(BrowserView):
     'Yet another class'
 
     def my_method(self, arg1, arg2, kw1=None, kw2='D'):
-        print "CALLED %s %s %s %s" % (arg1, arg2, kw1, kw2)
+        print("CALLED %s %s %s %s" % (arg1, arg2, kw1, kw2))

@@ -14,6 +14,7 @@
 """Test standard macros
 """
 
+
 def test_standard_macros():
     """Test standard macros
 
@@ -27,7 +28,7 @@ def test_standard_macros():
       >>> import Products.Five.skin.tests
       >>> from Zope2.App import zcml
       >>> zcml.load_config('configure.zcml', package=Products.Five)
-      >>> zcml.load_config('configure.zcml', package=Products.Five.skin.tests)    
+      >>> zcml.load_config('configure.zcml', package=Products.Five.skin.tests)
 
     Test macro access through our flavour of StandardMacros.  First,
     when looking up a non-existing macro, we get a KeyError:
@@ -70,6 +71,7 @@ def test_standard_macros():
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

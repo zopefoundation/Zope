@@ -32,6 +32,7 @@ from Products.Five.browser import BrowserView
 
 _marker = object()
 
+
 class Resource(object):
     """A mixin that changes the URL-rendering of resources (__call__).
 
@@ -53,6 +54,7 @@ class Resource(object):
             name = '++resource++%s' % name
         return "%s/%s" % (url, name)
 
+
 class PageTemplateResource(Resource, BrowserView):
     implements(IBrowserPublisher)
 
@@ -69,6 +71,7 @@ class PageTemplateResource(Resource, BrowserView):
         self.request.response.setBase(None)
         pt = self.context
         return pt(self.request)
+
 
 class FileResource(Resource, zope.browserresource.file.FileResource):
     pass
@@ -89,6 +92,7 @@ class ResourceFactory(object):
         resource = self.resource(self.__rsrc, request)
         return resource
 
+
 def _PageTemplate(self, path, name):
     # PageTemplate doesn't take a name parameter,
     # which makes it different from FileResource.
@@ -97,17 +101,20 @@ def _PageTemplate(self, path, name):
     template.__name__ = name
     return template
 
+
 class PageTemplateResourceFactory(ResourceFactory):
     """A factory for Page Template resources"""
 
     factory = _PageTemplate
     resource = PageTemplateResource
 
+
 class FileResourceFactory(ResourceFactory):
     """A factory for File resources"""
 
     factory = File
     resource = FileResource
+
 
 class ImageResourceFactory(ResourceFactory):
     """A factory for Image resources"""
@@ -117,24 +124,25 @@ class ImageResourceFactory(ResourceFactory):
 
 
 # we only need this class a context for DirectoryResource
-class Directory:
+class Directory(object):
 
     def __init__(self, path, name):
         self.path = path
         self.__name__ = name
 
+
 class DirectoryResource(Resource,
                         zope.browserresource.directory.DirectoryResource):
 
     resource_factories = {
-        'gif':  ImageResourceFactory,
-        'png':  ImageResourceFactory,
-        'jpg':  ImageResourceFactory,
-        'pt':   PageTemplateResourceFactory,
-        'zpt':  PageTemplateResourceFactory,
+        'gif': ImageResourceFactory,
+        'png': ImageResourceFactory,
+        'jpg': ImageResourceFactory,
+        'pt': PageTemplateResourceFactory,
+        'zpt': PageTemplateResourceFactory,
         'html': PageTemplateResourceFactory,
-        'htm':  PageTemplateResourceFactory,
-        }
+        'htm': PageTemplateResourceFactory,
+    }
 
     default_factory = FileResourceFactory
 
@@ -164,13 +172,14 @@ class DirectoryResource(Resource,
         resource = factory(name, filename)(self.request)
         resource.__name__ = name
         resource.__parent__ = self
-        
+
         # We need to propagate security so that restrictedTraverse() will
         # work
         if hasattr(aq_base(self), '__roles__'):
             resource.__roles__ = self.__roles__
-        
+
         return resource
+
 
 class DirectoryResourceFactory(ResourceFactory):
 

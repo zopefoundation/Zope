@@ -1,5 +1,6 @@
 import unittest
 
+
 class ViewMixinForTemplatesTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -41,7 +42,7 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         index.macros = {}
         index.macros['aaa'] = aaa = object()
         self.assertTrue(view['aaa'] is aaa)
-    
+
     def test__getitem__gives_shortcut_to_index_macros(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
@@ -77,18 +78,15 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         self.assertEqual(index._called_with, (('abc',), {'foo': 'bar'}))
 
 
-class DummyContext:
+class DummyContext(object):
     pass
 
-class DummyRequest:
+
+class DummyRequest(object):
     pass
+
 
 class DummyTemplate:
     def __call__(self, *args, **kw):
         self._called_with = (args, kw)
         return self
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(ViewMixinForTemplatesTests),
-    ))

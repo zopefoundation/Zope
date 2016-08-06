@@ -27,9 +27,9 @@ class ObjectManagerSiteView(BrowserView):
 
     def update(self):
         form = self.request.form
-        if form.has_key('MAKESITE'):
+        if 'MAKESITE' in form:
             self.makeSite()
-        elif form.has_key('UNMAKESITE'):
+        elif 'UNMAKESITE' in form:
             self.unmakeSite()
 
     def isSite(self):
@@ -41,7 +41,7 @@ class ObjectManagerSiteView(BrowserView):
 
         enableSite(self.context, iface=IObjectManagerSite)
 
-        #TODO in the future we'll have to walk up to other site
+        # TODO in the future we'll have to walk up to other site
         # managers and put them in the bases
         components = PersistentComponents()
         components.__bases__ = (base,)

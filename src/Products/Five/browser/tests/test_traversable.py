@@ -14,6 +14,7 @@
 """Test Five-traversable classes
 """
 
+
 class SimpleClass(object):
     """Class with no __bobo_traverse__."""
 
@@ -48,7 +49,7 @@ def test_traversable():
       ...            xmlns:meta="http://namespaces.zope.org/meta"
       ...            xmlns:browser="http://namespaces.zope.org/browser"
       ...            xmlns:five="http://namespaces.zope.org/five">
-      ... 
+      ...
       ... <!-- make the zope2.Public permission work -->
       ... <meta:redefinePermission from="zope2.Public" to="zope.Public" />
       ...
@@ -129,7 +130,7 @@ def test_traversable():
 
     Five's traversable monkeypatches the __bobo_traverse__ method to do view
     lookup and then delegates back to the original __bobo_traverse__ or direct
-    attribute/item lookup to do normal lookup.  In the Zope 2 ZPublisher, an 
+    attribute/item lookup to do normal lookup.  In the Zope 2 ZPublisher, an
     object with a __bobo_traverse__ will not do attribute lookup unless the
     __bobo_traverse__ method itself does it (i.e. the __bobo_traverse__ is the
     only element used for traversal lookup).  Let's demonstrate:
@@ -178,6 +179,7 @@ def test_traversable():
       >>> hasattr(FancyContent, '__fallback_traverse__')
       False
     """
+
 
 def test_view_doesnt_shadow_attribute():
     """
@@ -265,7 +267,7 @@ def test_view_doesnt_shadow_attribute():
 
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
-    
+
       >>> manage_addIndexSimpleContent(self.folder, 'mouse', 'Mouse')
       >>> print http(r'''
       ... GET /test_folder_1_/ftf/mouse HTTP/1.1
@@ -273,12 +275,13 @@ def test_view_doesnt_shadow_attribute():
       HTTP/1.1 200 OK
       ...
       The mouse has been eaten by the eagle
-      
+
     Clean up:
 
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite

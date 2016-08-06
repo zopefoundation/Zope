@@ -17,8 +17,7 @@
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 
 
-class EditView:
-
+class EditView(object):
     """Marker interface edit view.
     """
 
@@ -36,8 +35,9 @@ class EditView:
         return self.index()
 
     def _getLinkToInterfaceDetailsView(self, interfaceName):
-        return (self.context_url +
-            '/views-details.html?iface=%s&type=zope.publisher.interfaces.browser.IBrowserRequest' % interfaceName)
+        return (self.context_url + (
+            '/views-details.html?iface=%s&type=zope.publisher.'
+            'interfaces.browser.IBrowserRequest' % interfaceName))
 
     def _getNameLinkDicts(self, interfaceNames):
         return [dict(name=name,

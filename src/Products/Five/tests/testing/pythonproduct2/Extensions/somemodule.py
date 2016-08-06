@@ -1,4 +1,4 @@
 
 
 def somemethod(self):
-    print "Executed somemethod"
+    print("Executed somemethod")

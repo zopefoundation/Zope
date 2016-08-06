@@ -1,4 +1,4 @@
 
 
 def initialize(context):
-    print "pythonproduct2 initialized"
+    print("pythonproduct2 initialized")

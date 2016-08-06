@@ -18,9 +18,8 @@ import zope.interface
 import zope.component
 from Products.Five.browser import BrowserView
 
-# this is a verbatim copy of zope.app.basicskin except that it doesn't
-# derive from ``object``
-class Macros:
+
+class Macros(object):
     zope.interface.implements(zope.interface.common.mapping.IItemMapping)
 
     macro_pages = ()
@@ -28,24 +27,27 @@ class Macros:
         'view': 'page',
         'dialog': 'page',
         'addingdialog': 'page'
-        }
+    }
 
     def __getitem__(self, key):
         key = self.aliases.get(key, key)
         context = self.context
         request = self.request
         for name in self.macro_pages:
-            page = zope.component.getMultiAdapter((context, request), name=name)
+            page = zope.component.getMultiAdapter(
+                (context, request), name=name)
             try:
                 v = page[key]
             except KeyError:
                 pass
             else:
                 return v
-        raise KeyError, key
+        raise KeyError(key)
 
 
 class StandardMacros(BrowserView, Macros):
-    macro_pages = ('five_template',
-                   'widget_macros',
-                   'form_macros',) 
+    macro_pages = (
+        'five_template',
+        'widget_macros',
+        'form_macros',
+    )

@@ -23,6 +23,7 @@ from zope.viewlet.manager import ViewletManagerBase as origManagerBase
 
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
+
 class ViewletManagerBase(origManagerBase):
     """A base class for Viewlet managers to work in Zope2"""
 
@@ -38,14 +39,14 @@ class ViewletManagerBase(origManagerBase):
         # If the viewlet was not found, then raise a lookup error
         if viewlet is None:
             raise zope.interface.interfaces.ComponentLookupError(
-                'No provider with name `%s` found.' %name)
+                'No provider with name `%s` found.' % name)
 
         # If the viewlet cannot be accessed, then raise an
         # unauthorized error
         if not guarded_hasattr(viewlet, 'render'):
             raise zope.security.interfaces.Unauthorized(
                 'You are not authorized to access the provider '
-                'called `%s`.' %name)
+                'called `%s`.' % name)
 
         # Return the viewlet.
         return viewlet
@@ -73,7 +74,12 @@ class ViewletManagerBase(origManagerBase):
         # By default, use the standard Python way of doing sorting. Unwrap the
         # objects first so that they are sorted as expected.  This is dumb
         # but it allows the tests to have deterministic results.
-        return sorted(viewlets, lambda x, y: cmp(aq_base(x[1]), aq_base(y[1])))
+
+        def _key(info):
+            return aq_base(info[1])
+
+        return sorted(viewlets, key=_key)
+
 
 def ViewletManager(name, interface, template=None, bases=()):
     attrDict = {'__name__': name}

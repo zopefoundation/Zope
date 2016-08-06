@@ -18,27 +18,28 @@ from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine
 
+
 class IParrotDirective(Interface):
     """State that a class implements something.
     """
     class_ = GlobalObject(
         title=u"Class",
-        required=True
-        )
+        required=True,
+    )
 
     name = TextLine(
         title=u"Name",
         description=u"The parrots name.",
-        required=True
-        )
-    
+        required=True,
+    )
+
+
 def parrot(_context, class_, name):
     parrot = class_()
     parrot.pineForFjords()
-    
-    
+
+
 class NorwegianBlue(object):
-    
+
     def pineForFjords(self):
         return "This parrot is no more!"
-        

@@ -14,6 +14,7 @@
 """Test Default View functionality
 """
 
+
 def test_default_view():
     """
     Test default view functionality
@@ -175,6 +176,7 @@ def test_default_method_args_marshalling():
       >>> from zope.testing.cleanup import cleanUp
       >>> cleanUp()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite

@@ -21,6 +21,7 @@ from Products.Five import fivemethod, isFiveMethod
 # holds classes that were monkeyed with; for clean up
 _monkied = []
 
+
 @fivemethod
 def get_size(self):
     size = ISized(self, None)
@@ -32,6 +33,7 @@ def get_size(self):
     if method is not None:
         return self.__five_original_get_size()
 
+
 def classSizable(class_):
     """Monkey the class to be sizable through Five"""
     # tuck away the original method if necessary
@@ -41,14 +43,15 @@ def classSizable(class_):
     # remember class for clean up
     _monkied.append(class_)
 
+
 def sizable(_context, class_):
     _context.action(
-        discriminator = ('five:sizable', class_),
-        callable = classSizable,
+        discriminator=('five:sizable', class_),
+        callable=classSizable,
         args=(class_,)
-        )
+    )
 
-# clean up code
+
 def killMonkey(class_, name, fallback, attr=None):
     """Die monkey, die!"""
     method = getattr(class_, name, None)
@@ -70,14 +73,17 @@ def killMonkey(class_, name, fallback, attr=None):
         except (AttributeError, KeyError):
             pass
 
+
 def unsizable(class_):
     """Restore class's initial state with respect to being sizable"""
     killMonkey(class_, 'get_size', '__five_original_get_size')
+
 
 def cleanUp():
     for class_ in _monkied:
         unsizable(class_)
 
-from zope.testing.cleanup import addCleanUp
+
+from zope.testing.cleanup import addCleanUp  # NOQA
 addCleanUp(cleanUp)
 del addCleanUp

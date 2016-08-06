@@ -17,6 +17,7 @@
 from zope.interface import implements
 from zope.size.interfaces import ISized
 
+
 class SimpleContentSize(object):
     """Size for ``SimpleContent`` objects."""
     implements(ISized)
@@ -30,6 +31,7 @@ class SimpleContentSize(object):
     def sizeForDisplay(self):
         return "What is the meaning of life?"
 
+
 class FancyContentSize(object):
     """Size for ``SimpleContent`` objects."""
     implements(ISized)
@@ -42,6 +44,7 @@ class FancyContentSize(object):
 
     def sizeForDisplay(self):
         return "That's not the meaning of life!"
+
 
 def test_size():
     """
@@ -93,6 +96,7 @@ def test_size():
 
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite

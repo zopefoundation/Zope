@@ -14,6 +14,7 @@
 """Test browser pages
 """
 
+
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     return FunctionalDocFileSuite('skin.txt',

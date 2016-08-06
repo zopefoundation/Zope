@@ -26,6 +26,7 @@ from zope.component.interface import searchInterface
 
 from interfaces import IMarkerInterfaces
 
+
 def interfaceStringCheck(f):
     def wrapper(ob, interface):
         if isinstance(interface, str):
@@ -33,11 +34,13 @@ def interfaceStringCheck(f):
         return f(ob, interface)
     return wrapper
 
+
 def mark(ob, interface):
     directlyProvides(ob, directlyProvidedBy(ob), interface)
 
+
 def erase(ob, interface):
-    directlyProvides(ob, directlyProvidedBy(ob)-interface)
+    directlyProvides(ob, directlyProvidedBy(ob) - interface)
 
 mark = interfaceStringCheck(mark)
 erase = interfaceStringCheck(erase)
@@ -74,8 +77,8 @@ class MarkerInterfacesAdapter(object):
                     todo.append(base)
             markers = self._getDirectMarkersOf(interface)
             for interface in markers:
-                if (interface not in results
-                    and not interface.providedBy(self.context)):
+                if (interface not in results and
+                        not interface.providedBy(self.context)):
                     results.append(interface)
             todo += markers
         return tuple(results)

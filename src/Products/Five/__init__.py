@@ -14,16 +14,14 @@
 """Initialize the Five product
 """
 
-# public API provided by Five
-# usage: from Products.Five import <something>
-from Products.Five.browser import BrowserView
-from Products.Five.skin.standardmacros import StandardMacros
+from Products.Five.browser import BrowserView  # NOQA
+from Products.Five.skin.standardmacros import StandardMacros  # NOQA
 
-# some convenience methods/decorators
 
 def fivemethod(func):
     func.__five_method__ = True
     return func
+
 
 def isFiveMethod(m):
     return hasattr(m, '__five_method__')

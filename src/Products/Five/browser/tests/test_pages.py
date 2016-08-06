@@ -15,6 +15,7 @@
 """
 import unittest
 
+
 def test_view_with_unwrapped_context():
     """
     It may be desirable when writing tests for views themselves to
@@ -63,6 +64,7 @@ def test_view_with_unwrapped_context():
     >>> tearDown()
     """
 
+
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
@@ -74,4 +76,4 @@ def test_suite():
                                package='Products.Five.browser.tests'),
         FunctionalDocFileSuite('aqlegacy_ftest.txt',
                                package='Products.Five.browser.tests'),
-        ))
+    ))

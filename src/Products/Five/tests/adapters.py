@@ -17,12 +17,14 @@
 from zope.interface import implements, Interface
 from zope.component import adapts
 
+
 class IAdaptable(Interface):
     """This is a Zope interface.
     """
     def method():
         """This method will be adapted
         """
+
 
 class IAdapted(Interface):
     """The interface we adapt to.
@@ -32,8 +34,10 @@ class IAdapted(Interface):
         """A method to adapt.
         """
 
+
 class IOrigin(Interface):
     """Something we'll adapt"""
+
 
 class IDestination(Interface):
     """The result of an adaption"""
@@ -41,13 +45,15 @@ class IDestination(Interface):
     def method():
         """Do something"""
 
-class Adaptable:
+
+class Adaptable(object):
     implements(IAdaptable)
 
     def method(self):
         return "The method"
 
-class Adapter:
+
+class Adapter(object):
     implements(IAdapted)
     adapts(IAdaptable)
 
@@ -57,10 +63,12 @@ class Adapter:
     def adaptedMethod(self):
         return "Adapted: %s" % self.context.method()
 
-class Origin:
+
+class Origin(object):
     implements(IOrigin)
 
-class OriginalAdapter:
+
+class OriginalAdapter(object):
     implements(IDestination)
 
     def __init__(self, context):
@@ -69,7 +77,8 @@ class OriginalAdapter:
     def method(self):
         return "Original"
 
-class OverrideAdapter:
+
+class OverrideAdapter(object):
     implements(IDestination)
 
     def __init__(self, context):

@@ -14,12 +14,13 @@
 """Unit tests for the i18n framework
 """
 
+
 def test_zpt_i18n():
     """
     Test i18n functionality in ZPTs
 
       >>> configure_zcml = '''
-      ... <configure 
+      ... <configure
       ...     xmlns="http://namespaces.zope.org/zope"
       ...     xmlns:browser="http://namespaces.zope.org/browser"
       ...     xmlns:i18n="http://namespaces.zope.org/i18n">
@@ -80,6 +81,7 @@ def test_zpt_i18n():
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
+
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite

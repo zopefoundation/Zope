@@ -16,8 +16,11 @@
 
 from Products.Five import StandardMacros as BaseMacros
 
+
 class StandardMacros(BaseMacros):
 
     macro_pages = ('bird_macros', 'dog_macros')
-    aliases = {'flying':'birdmacro',
-               'walking':'dogmacro'}
+    aliases = {
+        'flying': 'birdmacro',
+        'walking': 'dogmacro',
+    }

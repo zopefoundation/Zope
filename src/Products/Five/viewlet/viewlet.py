@@ -19,19 +19,22 @@ import zope.viewlet.viewlet
 from Products.Five.bbb import AcquisitionBBB
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+
 class ViewletBase(zope.viewlet.viewlet.ViewletBase, AcquisitionBBB):
     pass
+
 
 class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet,
                              AcquisitionBBB):
     pass
 
+
 class simple(zope.viewlet.viewlet.simple):
     # We need to ensure that the proper __init__ is called.
     __init__ = ViewletBase.__init__.im_func
 
-def SimpleViewletClass(template, bases=(), attributes=None,
-                       name=u''):
+
+def SimpleViewletClass(template, bases=(), attributes=None, name=u''):
     """A function that can be used to generate a viewlet from a set of
     information.
     """
@@ -39,8 +42,8 @@ def SimpleViewletClass(template, bases=(), attributes=None,
     # Create the base class hierarchy
     bases += (simple, ViewletBase)
 
-    attrs = {'index' : ViewPageTemplateFile(template),
-             '__name__' : name}
+    attrs = {'index': ViewPageTemplateFile(template),
+             '__name__': name}
     if attributes:
         attrs.update(attributes)
 
@@ -53,14 +56,14 @@ def SimpleViewletClass(template, bases=(), attributes=None,
 class ResourceViewletBase(zope.viewlet.viewlet.ResourceViewletBase):
     pass
 
+
 def JavaScriptViewlet(path):
     """Create a viewlet that can simply insert a javascript link."""
     src = os.path.join(os.path.dirname(__file__), 'javascript_viewlet.pt')
 
     klass = type('JavaScriptViewlet',
                  (ResourceViewletBase, ViewletBase),
-                  {'index': ViewPageTemplateFile(src),
-                   '_path': path})
+                 {'index': ViewPageTemplateFile(src), '_path': path})
 
     return klass
 
@@ -68,15 +71,16 @@ def JavaScriptViewlet(path):
 class CSSResourceViewletBase(zope.viewlet.viewlet.CSSResourceViewletBase):
     pass
 
+
 def CSSViewlet(path, media="all", rel="stylesheet"):
     """Create a viewlet that can simply insert a javascript link."""
     src = os.path.join(os.path.dirname(__file__), 'css_viewlet.pt')
 
     klass = type('CSSViewlet',
                  (CSSResourceViewletBase, ViewletBase),
-                  {'index': ViewPageTemplateFile(src),
-                   '_path': path,
-                   '_media':media,
-                   '_rel':rel})
+                 {'index': ViewPageTemplateFile(src),
+                  '_path': path,
+                  '_media': media,
+                  '_rel': rel})
 
     return klass

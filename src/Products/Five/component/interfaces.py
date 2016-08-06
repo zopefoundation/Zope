@@ -19,5 +19,4 @@ from OFS.interfaces import IObjectManager
 
 
 class IObjectManagerSite(IObjectManager, ISite):
-
     """Object manager that is also a site."""

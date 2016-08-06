@@ -16,15 +16,19 @@
 
 from zope.interface import Interface
 
+
 class One(object):
     'A class'
+
 
 class Two(object):
     'Another class'
 
+
 class IOne(Interface):
     """This is a Zope interface.
     """
+
 
 class ITwo(Interface):
     """This is another Zope interface.

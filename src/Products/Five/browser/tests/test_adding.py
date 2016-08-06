@@ -14,6 +14,7 @@
 """Test adding views
 """
 
+
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocFileSuite
     return ZopeDocFileSuite('adding.txt',
