@@ -28,6 +28,7 @@ from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from OFS.CopySupport import CopyError
+from OFS.interfaces import IWriteLock
 from OFS.SimpleItem import Item_w__name__
 from zExceptions import BadRequest
 from zExceptions import Forbidden
@@ -44,7 +45,6 @@ from webdav.common import tokenFinder
 from webdav.common import UnsupportedMediaType
 from webdav.davcmds import Lock
 from webdav.davcmds import Unlock
-from webdav.interfaces import IWriteLock
 from webdav.Resource import Resource
 
 from zope.contenttype import guess_content_type

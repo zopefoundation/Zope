@@ -34,6 +34,7 @@ from Acquisition import aq_parent
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
+from OFS.interfaces import IWriteLock
 from OFS.subscribers import compatibilityCall
 from zExceptions import BadRequest
 from zExceptions import Forbidden
@@ -63,7 +64,6 @@ from webdav.common import tokenFinder
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.interfaces import IDAVResource
-from webdav.interfaces import IWriteLock
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 

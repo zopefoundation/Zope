@@ -12,7 +12,7 @@ class DTMLMethodTests(unittest.TestCase):
 
     def test_class_conforms_to_IWriteLock(self):
         from zope.interface.verify import verifyClass
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_edit_taintedstring(self):

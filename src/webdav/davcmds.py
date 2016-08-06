@@ -22,7 +22,7 @@ from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from OFS.PropertySheets import DAVProperties
+from OFS.interfaces import IWriteLock
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 
@@ -33,8 +33,8 @@ from webdav.common import PreconditionFailed
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.common import urljoin
-from webdav.interfaces import IWriteLock
 from webdav.LockItem import LockItem
+from webdav.PropertySheets import DAVProperties
 from webdav.xmltools import XmlParser
 
 

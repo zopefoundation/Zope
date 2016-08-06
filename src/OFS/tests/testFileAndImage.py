@@ -313,7 +313,7 @@ class FileTests(unittest.TestCase):
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import File
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
         from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
         verifyClass(HTTPRangeInterface, File)
@@ -361,7 +361,7 @@ class ImageTests(FileTests):
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import Image
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
 
         verifyClass(IWriteLock, Image)
 

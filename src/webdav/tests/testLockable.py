@@ -17,7 +17,7 @@ class TestUtilFunctions(unittest.TestCase):
         lockable = LockableResource(locked=False)
         self.assertTrue(wl_isLockable(lockable))
 
-from webdav.interfaces import IWriteLock
+from OFS.interfaces import IWriteLock
 from zope.interface import implements
 
 class LockableResource:

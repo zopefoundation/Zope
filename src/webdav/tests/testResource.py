@@ -98,8 +98,8 @@ class TestResource(unittest.TestCase):
         setSecurityPolicy(self._oldPolicy)
 
     def test_interfaces(self):
+        from OFS.interfaces import IWriteLock
         from webdav.interfaces import IDAVResource
-        from webdav.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
 
         verifyClass(IDAVResource, self._getTargetClass())
@@ -149,8 +149,8 @@ class TestResource(unittest.TestCase):
         inst.restrictedTraverse = lambda *arg: app
         inst.getId = lambda *arg: '123'
         inst._dav_writelocks = {'a':DummyLock()}
+        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
-        from webdav.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.MOVE, request, response)
@@ -172,8 +172,8 @@ class TestResource(unittest.TestCase):
                                {'If':ifhdr})
         response = DummyResponse()
         inst = self._makeOne()
+        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
-        from webdav.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import PreconditionFailed
         self.assertRaises(PreconditionFailed, inst.dav__simpleifhandler,
@@ -198,8 +198,8 @@ class TestResource(unittest.TestCase):
         response = DummyResponse()
         inst = self._makeOne()
         inst._dav_writelocks = {'a':DummyLock()}
+        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
-        from webdav.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.dav__simpleifhandler, request, response)

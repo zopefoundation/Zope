@@ -66,13 +66,9 @@ from OFS.XMLExportImport import magic
 
 try:
     from webdav.Collection import Collection
-    from webdav.NullResource import NullResource
 except ImportError:
-    NullResource = None
-
     class Collection(object):
         pass
-
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -778,10 +774,14 @@ class ObjectManager(CopyContainer,
         request = getattr(self, 'REQUEST', None)
         if not isinstance(request, (str, NoneType)):
             method = request.get('REQUEST_METHOD', 'GET')
-            if (NullResource is not None and
-                    request.maybe_webdav_client and
+            if (request.maybe_webdav_client and
                     method not in ('GET', 'POST')):
-                return NullResource(self, key, request).__of__(self)
+                try:
+                    from webdav.NullResource import NullResource
+                except ImportError:
+                    pass
+                else:
+                    return NullResource(self, key, request).__of__(self)
         raise KeyError(key)
 
     def __setitem__(self, key, value):

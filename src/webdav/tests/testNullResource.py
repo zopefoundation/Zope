@@ -4,7 +4,7 @@ import unittest
 class TestLockNullResource(unittest.TestCase):
 
     def test_interfaces(self):
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
         from webdav.NullResource import LockNullResource
         from zope.interface.verify import verifyClass
 
@@ -21,7 +21,7 @@ class TestNullResource(unittest.TestCase):
         return self._getTargetClass()(parent, name, **kw)
 
     def test_interfaces(self):
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, self._getTargetClass())

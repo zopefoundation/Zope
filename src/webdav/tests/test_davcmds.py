@@ -15,7 +15,7 @@ class _DummySecurityPolicy(object):
 
 class _DummyContent(object):
 
-    from webdav.interfaces import IWriteLock
+    from OFS.interfaces import IWriteLock
     implements(IWriteLock)
 
     def __init__(self, token=None):

@@ -31,7 +31,6 @@ from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
-from webdav.interfaces import IWriteLock
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 from zExceptions import Redirect, ResourceLockedError
@@ -40,6 +39,7 @@ from zope.interface import implementedBy
 from zope.interface import implements
 
 from OFS.Cache import Cacheable
+from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__

@@ -18,11 +18,11 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import iso8601_date
 from App.Common import rfc1123_date
+from OFS.interfaces import IWriteLock
 from OFS.PropertySheets import Virtual, PropertySheet, View
 
 from webdav.common import isDavCollection
 from webdav.common import urlbase
-from webdav.interfaces import IWriteLock
 
 if sys.version_info >= (3, 0):
     basestring = str

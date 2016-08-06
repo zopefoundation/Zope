@@ -28,16 +28,6 @@ from App.interfaces import INavigation
 from App.interfaces import IUndoSupport
 from persistent.interfaces import IPersistent
 
-try:
-    from webdav.interfaces import IDAVCollection
-    from webdav.interfaces import IDAVResource
-except ImportError:
-    class IDAVCollection(Interface):
-        pass
-
-    class IDAVResource(Interface):
-        pass
-
 
 class IOrderedContainer(Interface):
 
@@ -331,10 +321,80 @@ class IManageable(Interface):
         """
 
 
+class IWriteLock(Interface):
+    """Basic protocol needed to support the write lock machinery.
+
+    It must be able to answer the questions:
+
+     o Is the object locked?
+
+     o Is the lock owned by the current user?
+
+     o What lock tokens are associated with the current object?
+
+     o What is their state (how long until they're supposed to time out?,
+       what is their depth?  what type are they?
+
+    And it must be able to do the following:
+
+     o Grant a write lock on the object to a specified user.
+
+       - *If lock depth is infinite, this must also grant locks on **all**
+         subobjects, or fail altogether*
+
+     o Revoke a lock on the object.
+
+       - *If lock depth is infinite, this must also revoke locks on all
+         subobjects*
+
+    **All methods in the WriteLock interface that deal with checking valid
+    locks MUST check the timeout values on the lockitem (ie, by calling
+    'lockitem.isValid()'), and DELETE the lock if it is no longer valid**
+    """
+
+    def wl_lockItems(killinvalids=0):
+        """ Returns (key, value) pairs of locktoken, lock.
+
+        if 'killinvalids' is true, invalid locks (locks whose timeout
+        has been exceeded) will be deleted"""
+
+    def wl_lockValues(killinvalids=0):
+        """ Returns a sequence of locks.  if 'killinvalids' is true,
+        invalid locks will be deleted"""
+
+    def wl_lockTokens(killinvalids=0):
+        """ Returns a sequence of lock tokens.  if 'killinvalids' is true,
+        invalid locks will be deleted"""
+
+    def wl_hasLock(token, killinvalids=0):
+        """ Returns true if the lock identified by the token is attached
+        to the object. """
+
+    def wl_isLocked():
+        """ Returns true if 'self' is locked at all.  If invalid locks
+        still exist, they should be deleted."""
+
+    def wl_setLock(locktoken, lock):
+        """ Store the LockItem, 'lock'.  The locktoken will be used to fetch
+        and delete the lock.  If the lock exists, this MUST
+        overwrite it if all of the values except for the 'timeout' on the
+        old and new lock are the same. """
+
+    def wl_getLock(locktoken):
+        """ Returns the locktoken identified by the locktokenuri """
+
+    def wl_delLock(locktoken):
+        """ Deletes the locktoken identified by the locktokenuri """
+
+    def wl_clearLocks():
+        """ Deletes ALL locks on the object - should only be called
+        by lock management machinery. """
+
+
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
 #      based on OFS.SimpleItem.Item
-class IItem(IZopeObject, IManageable, IFTPAccess, IDAVResource,
+class IItem(IZopeObject, IManageable, IFTPAccess,
             ICopySource, ITraversable, IOwned, IUndoSupport):
 
     __name__ = BytesLine(
@@ -477,7 +537,7 @@ class ICopyContainer(Interface):
 #      not synced with ZopeBook API Reference;
 #      based on OFS.ObjectManager.ObjectManager
 class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
-                     IAcquirer, IPersistent, IDAVCollection, ITraversable,
+                     IAcquirer, IPersistent, ITraversable,
                      IPossibleSite, IContainer):
     """Generic object manager
 
@@ -819,7 +879,7 @@ class IPropertyManager(Interface):
 
 # XXX: based on OFS.Folder.Folder
 class IFolder(IObjectManager, IPropertyManager, IRoleManager,
-              IDAVCollection, IItem, IFindSupport):
+              IItem, IFindSupport):
 
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement a

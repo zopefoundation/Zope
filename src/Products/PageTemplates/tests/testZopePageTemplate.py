@@ -241,7 +241,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def test_class_conforms_to_IWriteLock(self):
         from zope.interface.verify import verifyClass
-        from webdav.interfaces import IWriteLock
+        from OFS.interfaces import IWriteLock
         verifyClass(IWriteLock, ZopePageTemplate)
 
     def testPT_RenderWithAscii(self):
