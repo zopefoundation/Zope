@@ -160,6 +160,17 @@ class Batch(Batch):
 # "make_query(bstart=batch.previous.first)" to one and
 # "make_query(bstart=batch.end)" to the other.
 
+
+_DEFAULT_ENCODING = None
+def _default_encoding():  
+    # avoid doing this at module scope!
+    from App.config import getConfiguration
+    global _DEFAULT_ENCODING
+    if _DEFAULT_ENCODING is None:
+        config = getConfiguration()
+        _DEFAULT_ENCODING = config.zpublisher_default_encoding
+
+
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
 
@@ -214,7 +225,7 @@ def make_hidden_input(*args, **kwargs):
 
     return '\n'.join(qlist)
 
-def complex_marshal(pairs):
+def complex_marshal(pairs, enc=None):
     '''Add request marshalling information to a list of name-value pairs.
 
     Names must be strings.  Values may be strings,
@@ -225,6 +236,9 @@ def complex_marshal(pairs):
     becomes a (name, marshal, value) triple.  The middle value is the
     request marshalling string.  Integer, float, and DateTime values
     will have ":int", ":float", or ":date" as their marshal string.
+    Unicode values will have ":<encoding>:ustring" as their marshal
+    string, where '<encoding>' is the provided encoding, or default
+    encoding if not provided.
     Lists will be flattened, and the elements given ":list" in
     addition to their simple marshal string.  Dictionaries will be
     flattened and marshalled using ":record".
@@ -237,6 +251,9 @@ def complex_marshal(pairs):
         sublist = None
         if isinstance(v, str):
             pass
+        if isinstance(v, unicode):
+            m = simple_marshal(v, enc=enc)
+            v = v.encode('utf8')
         elif hasattr(v, 'items'):
             sublist = []
             for sk, sv in v.items():
@@ -244,7 +261,7 @@ def complex_marshal(pairs):
                     for ssv in sv:
                         sm = simple_marshal(ssv)
                         sublist.append(('%s.%s' % (k, sk), 
-                                            '%s:list:record' % sm, ssv))
+                                        '%s:list:record' % sm, ssv))
                 else:
                     sm = simple_marshal(sv)
                     sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
@@ -262,7 +279,7 @@ def complex_marshal(pairs):
 
     return pairs
 
-def simple_marshal(v):
+def simple_marshal(v, enc=None):
     if isinstance(v, str):
         return ''
     if isinstance(v, bool):
@@ -273,6 +290,10 @@ def simple_marshal(v):
         return ':float'
     if isinstance(v, DateTime):
         return ':date'
+    if isinstance(v, unicode):
+        if enc is None:
+            enc = _default_encoding()
+        return ':%s:ustring' % (enc,)
     return ''
 
 def url_query(request, req_name="URL", omit=None):
