@@ -1,6 +1,7 @@
 from zope.interface import Interface
 from zope.interface import implements
 
+
 class IUnboundStreamIterator(Interface):
     """
     An iterator with unknown length that can be published.
@@ -25,7 +26,8 @@ class IStreamIterator(IUnboundStreamIterator):
     is still closed, ZODB would raise an error. If the connection
     happens to be re-opened by another thread, ZODB might allow it,
     but it has a chance of going insane if it happens to be loading
-    or storing something in the other thread at the same time.                      """
+    or storing something in the other thread at the same time.
+    """
 
     def __len__():
         """
@@ -42,7 +44,7 @@ class filestream_iterator(file):
 
     implements(IStreamIterator)
 
-    def __init__(self, name, mode='r', bufsize=-1, streamsize=1<<16):
+    def __init__(self, name, mode='r', bufsize=-1, streamsize=1 << 16):
         file.__init__(self, name, mode, bufsize)
         self.streamsize = streamsize
 
@@ -57,5 +59,4 @@ class filestream_iterator(file):
         self.seek(0, 2)
         size = self.tell()
         self.seek(cur_pos, 0)
-    
         return size

@@ -10,6 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import HTTPResponse
-Response=HTTPResponse.HTTPResponse
-del HTTPResponse
+
+from zope.deferredimport import deprecated
+
+# BBB: Zope 5.0
+deprecated(
+    'Please import from ZPublisher.HTTPResponse',
+    Response='ZPublisher.HTTPResponse:HTTPResponse',
+)

@@ -1,6 +1,7 @@
 import unittest
 from DateTime import DateTime
 
+
 class FauxResponse:
 
     def __init__(self):
@@ -16,9 +17,11 @@ class FauxResponse:
     def setStatus(self, status):
         self._status = status
 
+
 class FauxInstance:
     def __init__(self, **kw):
         self.__dict__.update(kw)
+
 
 class XMLRPCResponseTests(unittest.TestCase):
 
@@ -87,7 +90,8 @@ class XMLRPCResponseTests(unittest.TestCase):
     def test_instanceattribute_recursive(self):
         # Instance "flattening" should work recursively, ad infinitum
         import xmlrpclib
-        body = FauxInstance(public=FauxInstance(public=FauxInstance(_secret='abc', public='def')))
+        body = FauxInstance(public=FauxInstance(public=FauxInstance(
+            _secret='abc', public='def')))
         faux = FauxResponse()
         response = self._makeOne(faux)
         response.setBody(body)
@@ -148,7 +152,8 @@ class XMLRPCResponseTests(unittest.TestCase):
     def test_zopedatetimeattribute_recursive(self):
         # DateTime encoding should work recursively
         import xmlrpclib
-        body = FauxInstance(public=FauxInstance(public=DateTime('2006-05-24 07:00:00 GMT+0')))
+        body = FauxInstance(public=FauxInstance(
+            public=DateTime('2006-05-24 07:00:00 GMT+0')))
         faux = FauxResponse()
         response = self._makeOne(faux)
         response.setBody(body)
@@ -185,7 +190,10 @@ class XMLRPCResponseTests(unittest.TestCase):
         # Cannot marshal functions or methods, obviously
         import sys
         import xmlrpclib
-        def foo(): pass
+
+        def foo():
+            pass
+
         body = FauxInstance(public=foo)
         faux = FauxResponse()
         response = self._makeOne(faux)
@@ -208,7 +216,3 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpclib.loads(faux._body)
         data = data[0]
         self.assertEqual(data, {'': True})
-
-
-def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(XMLRPCResponseTests),))

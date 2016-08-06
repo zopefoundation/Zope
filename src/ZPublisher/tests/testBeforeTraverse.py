@@ -1,19 +1,20 @@
-import sys
-import logging
+import doctest
 
 from Acquisition import Implicit
-from ZPublisher import BeforeTraverse
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
+
 def makeBaseRequest(root):
     response = HTTPResponse()
-    environment = { 'URL': '',
-                    'PARENTS': [root],
-                    'steps': [],
-                    '_hacked_path': 0,
-                    '_test_counter': 0,
-                    'response': response }
+    environment = {
+        'URL': '',
+        'PARENTS': [root],
+        'steps': [],
+        '_hacked_path': 0,
+        '_test_counter': 0,
+        'response': response,
+    }
     return BaseRequest(environment)
 
 
@@ -23,18 +24,23 @@ class DummyObjectBasic(Implicit):
     pass
 
 
-class BrokenHook:
-    
+class BrokenHook(object):
+
     def __call__(self, *args):
-        print self.__class__.__name__, 'called'
-        raise TypeError, self.__class__.__name__
+        print('%s called' % self.__class__.__name__)
+        raise TypeError(self.__class__.__name__)
+
 
 def testBeforeTraverse(self):
-    """ 
+    """
     Zope supports a 'before traverse' hook that is used for several
     features, including 'Site Access Rules'. It is implemented using a
     special API for registering hooks, and the hooks themselves are
     called during traversal by ZPublisher.
+
+    >>> import sys
+    >>> import logging
+    >>> from ZPublisher import BeforeTraverse
 
     >>> root = DummyObjectBasic()
     >>> request = makeBaseRequest(root)
@@ -58,7 +64,7 @@ def testBeforeTraverse(self):
     {(99, 'broken_hook'): <ZPublisher.tests.testBeforeTraverse.BrokenHook ...>}
 
     Setup logging so we can see the actual exception being logged:
-    
+
     >>> logger = logging.getLogger('ZPublisher')
     >>> level = logger.level
     >>> handlers = logger.handlers[:]
@@ -67,7 +73,7 @@ def testBeforeTraverse(self):
     >>> logger.setLevel(logging.ERROR)
 
     Now do the actual traversal:
-    
+
     >>> _ = request.traverse('container/obj')
     BrokenHook called
     '__before_publishing_traverse__' call ... failed.
@@ -93,9 +99,9 @@ def testBeforeTraverse(self):
     during traversal you can register a 'NameCaller' as the hook
     instead, and it will delegate to the callable by looking it up as
     an attribute of the container:
-    
+
     >>> container.broken_callable = BrokenHook()
-    >>> BeforeTraverse.registerBeforeTraverse(container, 
+    >>> BeforeTraverse.registerBeforeTraverse(container,
     ...         BeforeTraverse.NameCaller('broken_callable'),
     ...         'broken_callable')
 
@@ -103,7 +109,7 @@ def testBeforeTraverse(self):
     {(99, 'broken_callable'): <ZPublisher.BeforeTraverse.NameCaller ...>}
 
     Now do the actual traversal:
-    
+
     >>> _ = request.traverse('container/obj')
     BrokenHook called
     BeforeTraverse: Error while invoking hook: "broken_callable"
@@ -131,10 +137,7 @@ def testBeforeTraverse(self):
     >>> logger.handlers = handlers[:]
 
     """
-    pass
 
-
-import doctest
 
 def test_suite():
     return doctest.DocTestSuite(optionflags=doctest.ELLIPSIS)

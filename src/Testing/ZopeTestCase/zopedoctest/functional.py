@@ -90,11 +90,14 @@ class DocResponseWrapper(ResponseWrapper):
         return "%s\n" % (self.header_output)
 
 
+basicre = re.compile('Basic (.+)?:(.+)?$')
 headerre = re.compile('(\S+): (.+)$')
+
+
 def split_header(header):
     return headerre.match(header).group(1, 2)
 
-basicre = re.compile('Basic (.+)?:(.+)?$')
+
 def auth_header(header):
     match = basicre.match(header)
     if match:
@@ -111,6 +114,7 @@ def auth_header(header):
 def getRootFolder():
     return AppZapper().app()
 
+
 def sync():
     getRootFolder()._p_jar.sync()
 
@@ -124,7 +128,7 @@ def http(request_string, handle_errors=True):
     import urllib
     import rfc822
     from cStringIO import StringIO
-    from ZPublisher.Response import Response
+    from ZPublisher.HTTPResponse import HTTPResponse as Response
     from ZPublisher.Publish import publish_module
 
     # Commit work done by previous python code.
@@ -136,7 +140,7 @@ def http(request_string, handle_errors=True):
     # Split off and parse the command line
     l = request_string.find('\n')
     command_line = request_string[:l].rstrip()
-    request_string = request_string[l+1:]
+    request_string = request_string[l + 1:]
     method, path, protocol = command_line.split()
     path = urllib.unquote(path)
 
@@ -154,7 +158,7 @@ def http(request_string, handle_errors=True):
     elif len(p) == 2:
         [env['PATH_INFO'], env['QUERY_STRING']] = p
     else:
-        raise TypeError, ''
+        raise TypeError('')
 
     header_output = HTTPHeaderOutput(
         protocol, ('x-content-type-warning', 'x-powered-by',
@@ -173,7 +177,7 @@ def http(request_string, handle_errors=True):
             name = 'HTTP_' + name
         env[name] = value.rstrip()
 
-    if env.has_key('HTTP_AUTHORIZATION'):
+    if 'HTTP_AUTHORIZATION' in env:
         env['HTTP_AUTHORIZATION'] = auth_header(env['HTTP_AUTHORIZATION'])
 
     outstream = StringIO()
@@ -183,8 +187,8 @@ def http(request_string, handle_errors=True):
                    response=response,
                    stdin=instream,
                    environ=env,
-                   debug=not handle_errors,
-                  )
+                   debug=not handle_errors)
+
     header_output.setResponseStatus(response.getStatus(), response.errmsg)
     header_output.setResponseHeaders(response.headers)
     header_output.headersl.extend(response._cookie_list())
@@ -246,6 +250,7 @@ class ZopeSuiteFactory:
         test_instance = test_class()
 
         kwsetUp = self._kw.get('setUp')
+
         def setUp(test):
             test_instance.setUp()
             test.globs['test'] = test
@@ -264,6 +269,7 @@ class ZopeSuiteFactory:
         self._kw['setUp'] = setUp
 
         kwtearDown = self._kw.get('tearDown')
+
         def tearDown(test):
             if kwtearDown is not None:
                 kwtearDown(test_instance)
@@ -273,8 +279,8 @@ class ZopeSuiteFactory:
 
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
-            self._kw['optionflags'] = (doctest.ELLIPSIS
-                                       | doctest.NORMALIZE_WHITESPACE)
+            self._kw['optionflags'] = (
+                doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 
 class FunctionalSuiteFactory(ZopeSuiteFactory):
@@ -285,7 +291,8 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
         globs['http'] = http
         globs['getRootFolder'] = getRootFolder
         globs['sync'] = sync
-        globs['user_auth'] = base64.encodestring('%s:%s' % (user_name, user_password))
+        globs['user_auth'] = base64.encodestring(
+            '%s:%s' % (user_name, user_password))
 
     def setup_test_class(self):
         test_class = self._kw.get('test_class', FunctionalTestCase)
@@ -297,7 +304,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
             warnings.warn(("The test_class you are using doesn't "
                            "subclass from ZopeTestCase.Functional. "
                            "Please fix that."), UserWarning, 4)
-            if not 'Functional' in name:
+            if 'Functional' not in name:
                 name = 'Functional%s' % name
             test_class = type(name, (Functional, test_class), {})
 
@@ -306,23 +313,26 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
 
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
-            self._kw['optionflags'] = (doctest.ELLIPSIS
-                                       | doctest.REPORT_NDIFF
-                                       | doctest.NORMALIZE_WHITESPACE)
+            self._kw['optionflags'] = (
+                doctest.ELLIPSIS | doctest.REPORT_NDIFF |
+                doctest.NORMALIZE_WHITESPACE)
 
 
 def ZopeDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return ZopeSuiteFactory(module, **kw).doctestsuite()
 
+
 def ZopeDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
         kw['package'] = doctest._normalize_module(kw.get('package'))
     return ZopeSuiteFactory(*paths, **kw).docfilesuite()
 
+
 def FunctionalDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return FunctionalSuiteFactory(module, **kw).doctestsuite()
+
 
 def FunctionalDocFileSuite(*paths, **kw):
     if kw.get('module_relative', True):
@@ -335,5 +345,4 @@ __all__ = [
     'ZopeDocFileSuite',
     'FunctionalDocTestSuite',
     'FunctionalDocFileSuite',
-    ]
-
+]

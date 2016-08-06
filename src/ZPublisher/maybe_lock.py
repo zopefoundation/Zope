@@ -11,9 +11,4 @@
 #
 ##############################################################################
 
-# Waaaa, I wish I didn't have to work this hard.
-try: from thread import allocate_lock
-except:
-    class allocate_lock:
-        def acquire(*args): pass
-        def release(*args): pass
+from thread import allocate_lock  # NOQA

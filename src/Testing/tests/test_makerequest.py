@@ -19,6 +19,7 @@ from Acquisition import Implicit
 from Testing.makerequest import makerequest
 from OFS.SimpleItem import SimpleItem
 
+
 class MakerequestTests(unittest.TestCase):
 
     def test_makerequest(self):
@@ -29,7 +30,7 @@ class MakerequestTests(unittest.TestCase):
         self.assertFalse(hasattr(item, 'REQUEST'))
         item = makerequest(item)
         self.assertTrue(hasattr(item, 'REQUEST'))
-    
+
     def test_dont_break_getPhysicalPath(self):
         # see http://www.zope.org/Collectors/Zope/2057.  If you want
         # to call getPhysicalPath() on the wrapped object, be sure
@@ -57,8 +58,3 @@ class MakerequestTests(unittest.TestCase):
         environ = {'foofoo': 'barbar'}
         item = makerequest(SimpleItem(), environ=environ)
         self.assertEqual(item.REQUEST.environ['foofoo'], 'barbar')
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MakerequestTests))
-    return suite

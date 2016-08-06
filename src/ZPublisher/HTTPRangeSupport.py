@@ -19,10 +19,12 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-import re, sys
+import re
+import sys
 from zope.interface import Interface
 
 WHITESPACE = re.compile('\s*', re.MULTILINE)
+
 
 def parseRange(header):
     """RFC 2616 (HTTP 1.1) Range header parsing.
@@ -32,7 +34,6 @@ def parseRange(header):
     end offset to be inclusive, we return python convention indexes, where the
     end is exclusive. Syntactically incorrect headers are to be ignored, so if
     we encounter one we return None.
-
     """
 
     ranges = []
@@ -43,8 +44,11 @@ def parseRange(header):
     header = WHITESPACE.sub('', header)
 
     # A range header only can specify a byte range
-    try: spec, sets = header.split('=')
-    except ValueError: return None
+    try:
+        spec, sets = header.split('=')
+    except ValueError:
+        return None
+
     if spec != 'bytes':
         return None
 
@@ -57,8 +61,10 @@ def parseRange(header):
         return None
 
     for set in sets:
-        try: start, end = set.split('-')
-        except ValueError: return None
+        try:
+            start, end = set.split('-')
+        except ValueError:
+            return None
 
         # Catch empty sets
         if not start and not end:
@@ -67,10 +73,14 @@ def parseRange(header):
         # Convert to integers or None (which will raise errors if
         # non-integers were used (which is what we want)).
         try:
-            if start == '': start = None
-            else: start = int(start)
-            if end == '': end = None
-            else: end = int(end)
+            if start == '':
+                start = None
+            else:
+                start = int(start)
+            if end == '':
+                end = None
+            else:
+                end = int(end)
         except ValueError:
             return None
 
@@ -84,7 +94,7 @@ def parseRange(header):
             if not start:
                 start = sys.maxint
         elif end is not None:
-            end = end + 1 # Make the end of the range exclusive
+            end = end + 1  # Make the end of the range exclusive
 
         if end is not None and end <= start:
             return None
@@ -94,11 +104,11 @@ def parseRange(header):
 
     return ranges
 
+
 def expandRanges(ranges, size):
     """Expand Range sets, given those sets and the length of the resource.
 
     Expansion means relative start values and open ends
-
     """
 
     expanded = []
@@ -107,12 +117,14 @@ def expandRanges(ranges, size):
         if start < 0:
             start = size + start
         end = end or size
-        if end > size: end = size
+        if end > size:
+            end = size
         # Only use satisfiable ranges
         if start < size:
             add((start, end))
 
     return expanded
+
 
 class HTTPRangeInterface(Interface):
     """Objects implementing this Interface support the HTTP Range header.
@@ -124,5 +136,4 @@ class HTTPRangeInterface(Interface):
 
     This interface specifies no methods, as this functionality can either be
     implemented in the index_html or __call__ methods of a published object.
-
     """

@@ -33,6 +33,7 @@ from ZODB.POSException import ConflictError
 from DateTime.DateTime import DateTime
 WRAPPERS = xmlrpclib.WRAPPERS + (DateTime, )
 
+
 def dump_instance(self, value, write):
     # Check for special wrappers
     if value.__class__ in WRAPPERS:
@@ -95,6 +96,7 @@ def parse_input(data):
 ########################################################################
 # Possible implementation helpers:
 
+
 class Response:
     """Customized Response that handles XML-RPC-specific details.
 
@@ -108,23 +110,29 @@ class Response:
     It's probably possible to improve the 'exception' method quite a bit.
     The current implementation, however, should suffice for now.
     """
-    
-    _error_format = 'text/plain' # No html in error values
+
+    _error_format = 'text/plain'  # No html in error values
 
     # Because we can't predict what kind of thing we're customizing,
     # we have to use delegation, rather than inheritance to do the
     # customization.
 
-    def __init__(self, real): self.__dict__['_real']=real
+    def __init__(self, real):
+        self.__dict__['_real'] = real
 
-    def __getattr__(self, name): return getattr(self._real, name)
-    def __setattr__(self, name, v): return setattr(self._real, name, v)
-    def __delattr__(self, name): return delattr(self._real, name)
+    def __getattr__(self, name):
+        return getattr(self._real, name)
+
+    def __setattr__(self, name, v):
+        return setattr(self._real, name, v)
+
+    def __delattr__(self, name):
+        return delattr(self._real, name)
 
     def setBody(self, body, title='', is_error=0, bogus_str_search=None):
         if isinstance(body, xmlrpclib.Fault):
             # Convert Fault object to XML-RPC response.
-            body=xmlrpclib.dumps(body, methodresponse=1, allow_none=True)
+            body = xmlrpclib.dumps(body, methodresponse=1, allow_none=True)
         else:
             # Marshall our body as an XML-RPC response. Strings will be sent
             # strings, integers as integers, etc. We do *not* convert
@@ -161,8 +169,8 @@ class Response:
             return self._real.exception(fatal=fatal, info=info)
 
         # Create an appropriate Fault object. Containing error information
-        Fault=xmlrpclib.Fault
-        f=None
+        Fault = xmlrpclib.Fault
+        f = None
         try:
             # Strip HTML tags from the error value
             vstr = str(v)
@@ -175,15 +183,15 @@ class Response:
             else:
                 value = '%s - %s' % (t, vstr)
             if isinstance(v, Fault):
-                f=v
+                f = v
             elif isinstance(v, Exception):
-                f=Fault(-1, 'Unexpected Zope exception: %s' % value)
+                f = Fault(-1, 'Unexpected Zope exception: %s' % value)
             else:
-                f=Fault(-2, 'Unexpected Zope error value: %s' % value)
+                f = Fault(-2, 'Unexpected Zope error value: %s' % value)
         except ConflictError:
             raise
-        except:
-            f=Fault(-3, "Unknown Zope fault type")
+        except Exception:
+            f = Fault(-3, "Unknown Zope fault type")
 
         # Do the damage.
         self.setBody(f)
@@ -191,4 +199,4 @@ class Response:
 
         return tb
 
-response=Response
+response = Response

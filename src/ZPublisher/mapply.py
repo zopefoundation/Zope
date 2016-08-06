@@ -14,21 +14,25 @@
 """
 import zope.publisher.publish
 
+
 def default_call_object(object, args, context):
-    result=object(*args) # Type s<cr> to step into published object.
+    result = object(*args)  # Type s<cr> to step into published object.
     return result
 
+
 def default_missing_name(name, context):
-    raise TypeError, 'argument %s was ommitted' % name
+    raise TypeError('argument %s was ommitted' % name)
+
 
 def default_handle_class(klass, context):
-    if hasattr(klass,'__init__'):
-        f=klass.__init__.im_func
-        c=f.func_code
-        names=c.co_varnames[1:c.co_argcount]
+    if hasattr(klass, '__init__'):
+        f = klass.__init__.im_func
+        c = f.func_code
+        names = c.co_varnames[1:c.co_argcount]
         return klass, names, f.func_defaults
     else:
         return klass, (), ()
+
 
 def mapply(object, positional=(), keyword={},
            debug=None, maybe=None,
@@ -37,7 +41,7 @@ def mapply(object, positional=(), keyword={},
            context=None, bind=0,
            ):
 
-    if hasattr(object,'__bases__'):
+    if hasattr(object, '__bases__'):
         f, names, defaults = handle_class(object, context)
     else:
         try:
@@ -50,29 +54,34 @@ def mapply(object, positional=(), keyword={},
         defaults = f.func_defaults
         names = code.co_varnames[count:code.co_argcount]
 
-    nargs=len(names)
+    nargs = len(names)
     if positional:
-        positional=list(positional)
-        if bind and nargs and names[0]=='self':
+        positional = list(positional)
+        if bind and nargs and names[0] == 'self':
             positional.insert(0, missing_name('self', context))
-        if len(positional) > nargs: raise TypeError, 'too many arguments'
-        args=positional
+        if len(positional) > nargs:
+            raise TypeError('too many arguments')
+        args = positional
     else:
-        if bind and nargs and names[0]=='self':
-            args=[missing_name('self', context)]
+        if bind and nargs and names[0] == 'self':
+            args = [missing_name('self', context)]
         else:
-            args=[]
+            args = []
 
-    get=keyword.get
-    nrequired=len(names) - (len(defaults or ()))
+    get = keyword.get
+    nrequired = len(names) - (len(defaults or ()))
     for index in range(len(args), len(names)):
-        name=names[index]
-        v=get(name, args)
+        name = names[index]
+        v = get(name, args)
         if v is args:
-            if index < nrequired: v=missing_name(name, context)
-            else: v=defaults[index-nrequired]
+            if index < nrequired:
+                v = missing_name(name, context)
+            else:
+                v = defaults[index - nrequired]
         args.append(v)
 
-    args=tuple(args)
-    if debug is not None: return debug(object,args,context)
-    else: return object(*args)
+    args = tuple(args)
+    if debug is not None:
+        return debug(object, args, context)
+    else:
+        return object(*args)

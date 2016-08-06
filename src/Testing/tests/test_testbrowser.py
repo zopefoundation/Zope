@@ -18,12 +18,14 @@ import unittest
 from Testing.ZopeTestCase import FunctionalDocTestSuite
 from OFS.SimpleItem import Item
 
+
 class CookieStub(Item):
     """This is a cookie stub."""
 
     def __call__(self, REQUEST):
         REQUEST.RESPONSE.setCookie('evil', 'cookie')
         return 'Stub'
+
 
 def doctest_cookies():
     """
@@ -52,6 +54,7 @@ def doctest_cookies():
         True
     """
 
+
 def doctest_camel_case_headers():
     """Make sure that the headers come out in camel case.
 
@@ -76,5 +79,5 @@ def doctest_camel_case_headers():
 
 def test_suite():
     return unittest.TestSuite((
-            FunctionalDocTestSuite(),
-            ))
+        FunctionalDocTestSuite(),
+    ))

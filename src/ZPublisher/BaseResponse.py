@@ -15,10 +15,9 @@
 
 from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 
+
 class BaseResponse:
     """Base Response Class
-
-    What should be here?
     """
     debug_mode = None
     _auth = None
@@ -59,7 +58,7 @@ class BaseResponse:
         'Returns the current HTTP status code as an integer. '
         return self.status
 
-    def setCookie(self,name,value,**kw):
+    def setCookie(self, name, value, **kw):
         '''\
         Set an HTTP cookie on the browser
 
@@ -101,12 +100,12 @@ class BaseResponse:
         return str(self.body)
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, `self.body`)
+        return '%s(%r)' % (self.__class__.__name__, self.body)
 
     def flush(self):
         pass
 
-    def write(self,data):
+    def write(self, data):
         """\
         Return data as a stream
 
@@ -121,7 +120,7 @@ class BaseResponse:
         after beginning stream-oriented output.
 
         """
-        self.body = self.body+data
+        self.body = self.body + data
 
     def exception(self, fatal=0, info=None):
         """Handle an exception.
@@ -135,23 +134,23 @@ class BaseResponse:
     def notFoundError(self, v=''):
         """Generate an error indicating that an object was not found.
         """
-        raise NotFound, v
+        raise NotFound(v)
 
     def debugError(self, v=''):
         """Raise an error with debigging info and in debugging mode"""
-        raise NotFound, "Debugging notice: %s" % v
+        raise NotFound("Debugging notice: %s" % v)
 
     def badRequestError(self, v=''):
         """Raise an error indicating something wrong with the request"""
-        raise BadRequest, v
+        raise BadRequest(v)
 
     def forbiddenError(self, v=''):
         """Raise an error indicating that the request cannot be done"""
-        raise Forbidden, v
+        raise Forbidden(v)
 
     def unauthorized(self):
         """Raise an eror indicating that the user was not authizated
 
         Make sure to generate an appropriate challenge, as appropriate.
         """
-        raise Unauthorized
+        raise Unauthorized()

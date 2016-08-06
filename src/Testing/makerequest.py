@@ -15,24 +15,24 @@ Facilitates unit tests which requires an acquirable REQUEST from
 ZODB objects
 """
 
-import os
 from sys import stdin, stdout
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
+
 
 def makerequest(app, stdout=stdout, environ=None):
     """
     Adds an HTTPRequest at app.REQUEST, and returns
     app.__of__(app.REQUEST). Useful for tests that need to acquire
     REQUEST.
-    
+
     Usage:
       import makerequest
       app = makerequest.makerequest(app)
 
     You should only wrap the object used as 'root' in your tests.
-    
+
     app is commonly a Zope2.app(), but that's not strictly necessary
     and frequently may be overkill; you can wrap other objects as long
     as they support acquisition and provide enough of the features of
@@ -52,15 +52,14 @@ def makerequest(app, stdout=stdout, environ=None):
     resp = HTTPResponse(stdout=stdout)
     environ.setdefault('SERVER_NAME', 'foo')
     environ.setdefault('SERVER_PORT', '80')
-    environ.setdefault('REQUEST_METHOD',  'GET')
+    environ.setdefault('REQUEST_METHOD', 'GET')
     req = HTTPRequest(stdin, environ, resp)
     req._steps = ['noobject']  # Fake a published object.
-    req['ACTUAL_URL'] = req.get('URL') # Zope 2.7.4
-    
-    # set Zope3-style default skin so that the request is usable for
-    # Zope3-style view look-ups.
+    req['ACTUAL_URL'] = req.get('URL')  # Zope 2.7.4
+
+    # Set default skin so that the request is usable for view look-ups.
     from zope.publisher.browser import setDefaultSkin
     setDefaultSkin(req)
 
-    requestcontainer = RequestContainer(REQUEST = req)
+    requestcontainer = RequestContainer(REQUEST=req)
     return app.__of__(requestcontainer)

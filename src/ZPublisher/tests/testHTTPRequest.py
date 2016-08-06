@@ -1,5 +1,5 @@
 import unittest
-from ZPublisher.tests.testBaseRequest import TestRequestZope3ViewsBase
+from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 
 
 from zope.testing.cleanup import cleanUp
@@ -54,8 +54,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
         from urllib import quote_plus
-        # Have the inputs processed, and return a HTTPRequest object holding the
-        # result.
+        # Have the inputs processed, and return a HTTPRequest object
+        # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
         # encoding is required.
 
@@ -86,55 +86,66 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         retval = 0
 
         if isinstance(val, TaintedString):
-            self.assertFalse(not '<' in val,
-                        "%r is not dangerous, no taint required." % val)
+            self.assertFalse(
+                '<' not in val,
+                "%r is not dangerous, no taint required." % val)
             retval = 1
 
         elif isinstance(val, record):
             for attr, value in val.__dict__.items():
                 rval = self._valueIsOrHoldsTainted(attr)
-                if rval: retval = 1
+                if rval:
+                    retval = 1
                 rval = self._valueIsOrHoldsTainted(value)
-                if rval: retval = 1
+                if rval:
+                    retval = 1
 
         elif type(val) in (list, tuple):
             for entry in val:
                 rval = self._valueIsOrHoldsTainted(entry)
-                if rval: retval = 1
+                if rval:
+                    retval = 1
 
         elif type(val) in (str, unicode):
-            self.assertFalse('<' in val,
-                        "'%s' is dangerous and should have been tainted." % val)
+            self.assertFalse(
+                '<' in val,
+                "'%s' is dangerous and should have been tainted." % val)
 
         return retval
 
     def _noFormValuesInOther(self, req):
         for key in req.taintedform.keys():
-            self.assertFalse(req.other.has_key(key),
+            self.assertFalse(
+                key in req.other,
                 'REQUEST.other should not hold tainted values at first!')
 
         for key in req.form.keys():
-            self.assertFalse(req.other.has_key(key),
+            self.assertFalse(
+                key in req.other,
                 'REQUEST.other should not hold form values at first!')
 
     def _onlyTaintedformHoldsTaintedStrings(self, req):
         for key, val in req.taintedform.items():
-            self.assert_(self._valueIsOrHoldsTainted(key) or
-                         self._valueIsOrHoldsTainted(val),
-                         'Tainted form holds item %s that is not tainted' % key)
+            self.assert_(
+                self._valueIsOrHoldsTainted(key) or
+                self._valueIsOrHoldsTainted(val),
+                'Tainted form holds item %s that is not tainted' % key)
 
         for key, val in req.form.items():
-            if req.taintedform.has_key(key):
+            if key in req.taintedform:
                 continue
-            self.assertFalse(self._valueIsOrHoldsTainted(key) or
-                        self._valueIsOrHoldsTainted(val),
-                        'Normal form holds item %s that is tainted' % key)
+            self.assertFalse(
+                self._valueIsOrHoldsTainted(key) or
+                self._valueIsOrHoldsTainted(val),
+                'Normal form holds item %s that is tainted' % key)
 
     def _taintedKeysAlsoInForm(self, req):
         for key in req.taintedform.keys():
-            self.assert_(req.form.has_key(key),
+            self.assert_(
+                key in req.form,
                 "Found tainted %s not in form" % key)
-            self.assertEquals(req.form[key], req.taintedform[key],
+            self.assertEqual(
+                req.form[key], req.taintedform[key],
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
 
@@ -156,7 +167,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(environ=env)
         req.processInputs()
         self._noFormValuesInOther(req)
-        self.assertEquals(req.form, {})
+        self.assertEqual(req.form, {})
 
     def test_processInputs_wo_marshalling(self):
         inputs = (
@@ -168,12 +179,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['foo', 'key', 'multi', 'number',
-            'spacey key', 'spam'])
-        self.assertEquals(req['number'], '1')
-        self.assertEquals(req['multi'], ['1', '2'])
-        self.assertEquals(req['spacey key'], 'val')
-        self.assertEquals(req['key'], 'spacey val')
+        self.assertEqual(
+            formkeys,
+            ['foo', 'key', 'multi', 'number', 'spacey key', 'spam'])
+        self.assertEqual(req['number'], '1')
+        self.assertEqual(req['multi'], ['1', '2'])
+        self.assertEqual(req['spacey key'], 'val')
+        self.assertEqual(req['key'], 'spacey val')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -191,18 +203,20 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['2tokens', 'accountedfor', 'aday', 'bign',
-            'fract', 'morewords', 'multiline', 'num', 'words'])
+        self.assertEqual(
+            formkeys,
+            ['2tokens', 'accountedfor', 'aday', 'bign',
+             'fract', 'morewords', 'multiline', 'num', 'words'])
 
-        self.assertEquals(req['2tokens'], ['one', 'two'])
-        self.assertEquals(req['accountedfor'], 'yes')
-        self.assertEquals(req['aday'], DateTime('2002/07/23'))
-        self.assertEquals(req['bign'], 45L)
-        self.assertEquals(req['fract'], 4.2)
-        self.assertEquals(req['morewords'], 'one\ntwo\n')
-        self.assertEquals(req['multiline'], ['one', 'two'])
-        self.assertEquals(req['num'], 42)
-        self.assertEquals(req['words'], 'Some words')
+        self.assertEqual(req['2tokens'], ['one', 'two'])
+        self.assertEqual(req['accountedfor'], 'yes')
+        self.assertEqual(req['aday'], DateTime('2002/07/23'))
+        self.assertEqual(req['bign'], 45)
+        self.assertEqual(req['fract'], 4.2)
+        self.assertEqual(req['morewords'], 'one\ntwo\n')
+        self.assertEqual(req['multiline'], ['one', 'two'])
+        self.assertEqual(req['num'], 42)
+        self.assertEqual(req['words'], 'Some words')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -217,16 +231,17 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['nouconverter', 'ulines', 'ustring',
-            'utext', 'utokens'])
+        self.assertEqual(
+            formkeys,
+            ['nouconverter', 'ulines', 'ustring', 'utext', 'utokens'])
 
-        self.assertEquals(req['ustring'], u'test\u00AE')
-        self.assertEquals(req['utext'], u'test\u00AE\ntest\u00AE\n')
-        self.assertEquals(req['utokens'], [u'test\u00AE', u'test\u00AE'])
-        self.assertEquals(req['ulines'], [u'test\u00AE', u'test\u00AE'])
+        self.assertEqual(req['ustring'], u'test\u00AE')
+        self.assertEqual(req['utext'], u'test\u00AE\ntest\u00AE\n')
+        self.assertEqual(req['utokens'], [u'test\u00AE', u'test\u00AE'])
+        self.assertEqual(req['ulines'], [u'test\u00AE', u'test\u00AE'])
 
         # expect a utf-8 encoded version
-        self.assertEquals(req['nouconverter'], 'test\xc2\xae')
+        self.assertEqual(req['nouconverter'], 'test\xc2\xae')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -244,20 +259,21 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['alist', 'atuple', 'oneitem',
-            'oneitemtuple', 'onerec', 'setrec'])
+        self.assertEqual(
+            formkeys,
+            ['alist', 'atuple', 'oneitem', 'oneitemtuple', 'onerec', 'setrec'])
 
-        self.assertEquals(req['oneitem'], ['one'])
-        self.assertEquals(req['oneitemtuple'], ('one',))
-        self.assertEquals(req['alist'], ['one', 'two'])
-        self.assertEquals(req['atuple'], ('one', 'two'))
-        self.assertEquals(req['onerec'].foo, 'foo')
-        self.assertEquals(req['onerec'].bar, 'bar')
-        self.assertEquals(len(req['setrec']), 2)
-        self.assertEquals(req['setrec'][0].foo, 'foo')
-        self.assertEquals(req['setrec'][0].bar, 'bar')
-        self.assertEquals(req['setrec'][1].foo, 'spam')
-        self.assertEquals(req['setrec'][1].bar, 'eggs')
+        self.assertEqual(req['oneitem'], ['one'])
+        self.assertEqual(req['oneitemtuple'], ('one',))
+        self.assertEqual(req['alist'], ['one', 'two'])
+        self.assertEqual(req['atuple'], ('one', 'two'))
+        self.assertEqual(req['onerec'].foo, 'foo')
+        self.assertEqual(req['onerec'].bar, 'bar')
+        self.assertEqual(len(req['setrec']), 2)
+        self.assertEqual(req['setrec'][0].foo, 'foo')
+        self.assertEqual(req['setrec'][0].bar, 'bar')
+        self.assertEqual(req['setrec'][1].foo, 'spam')
+        self.assertEqual(req['setrec'][1].bar, 'eggs')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -273,11 +289,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['ftuple', 'ilist', 'tlist'])
+        self.assertEqual(formkeys, ['ftuple', 'ilist', 'tlist'])
 
-        self.assertEquals(req['ilist'], [1, 2, 3])
-        self.assertEquals(req['ftuple'], (1.0, 1.1, 1.2))
-        self.assertEquals(req['tlist'], [['one', 'two'], ['3', '4']])
+        self.assertEqual(req['ilist'], [1, 2, 3])
+        self.assertEqual(req['ftuple'], (1.0, 1.1, 1.2))
+        self.assertEqual(req['tlist'], [['one', 'two'], ['3', '4']])
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -303,20 +319,20 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['onerec', 'setrec'])
+        self.assertEqual(formkeys, ['onerec', 'setrec'])
 
-        self.assertEquals(req['onerec'].name, 'foo')
-        self.assertEquals(req['onerec'].tokens, ['one', 'two'])
+        self.assertEqual(req['onerec'].name, 'foo')
+        self.assertEqual(req['onerec'].tokens, ['one', 'two'])
         # Implicit sequences and records don't mix.
-        self.assertEquals(req['onerec'].ints, 2)
+        self.assertEqual(req['onerec'].ints, 2)
 
-        self.assertEquals(len(req['setrec']), 2)
-        self.assertEquals(req['setrec'][0].name, 'first')
-        self.assertEquals(req['setrec'][1].name, 'second')
+        self.assertEqual(len(req['setrec']), 2)
+        self.assertEqual(req['setrec'][0].name, 'first')
+        self.assertEqual(req['setrec'][1].name, 'second')
 
         for i in range(2):
-            self.assertEquals(req['setrec'][i].ilist, [1, 2])
-            self.assertEquals(req['setrec'][i].ituple, (1, 2))
+            self.assertEqual(req['setrec'][i].ilist, [1, 2])
+            self.assertEqual(req['setrec'][i].ituple, (1, 2))
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -345,26 +361,26 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('setrec.foo:records:default', 'foo'),
             ('setrec.foo:records', 'baz'),
             ('setrec.foo:records', 'ham'),
-            )
+        )
         req = self._processInputs(inputs)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['alist', 'bar', 'explicitlist', 'foo',
-            'setrec'])
+        self.assertEqual(
+            formkeys, ['alist', 'bar', 'explicitlist', 'foo', 'setrec'])
 
-        self.assertEquals(req['alist'], [1, 2, 3, 4, 5])
-        self.assertEquals(req['explicitlist'], [1, 2, 3, 4, 5])
+        self.assertEqual(req['alist'], [1, 2, 3, 4, 5])
+        self.assertEqual(req['explicitlist'], [1, 2, 3, 4, 5])
 
-        self.assertEquals(req['foo'], 5)
-        self.assertEquals(req['bar'].spam, 'eggs')
-        self.assertEquals(req['bar'].foo, 'baz')
+        self.assertEqual(req['foo'], 5)
+        self.assertEqual(req['bar'].spam, 'eggs')
+        self.assertEqual(req['bar'].foo, 'baz')
 
-        self.assertEquals(len(req['setrec']), 2)
-        self.assertEquals(req['setrec'][0].spam, 'eggs')
-        self.assertEquals(req['setrec'][0].foo, 'baz')
-        self.assertEquals(req['setrec'][1].spam, 'eggs')
-        self.assertEquals(req['setrec'][1].foo, 'ham')
+        self.assertEqual(len(req['setrec']), 2)
+        self.assertEqual(req['setrec'][0].spam, 'eggs')
+        self.assertEqual(req['setrec'][0].foo, 'baz')
+        self.assertEqual(req['setrec'][1].spam, 'eggs')
+        self.assertEqual(req['setrec'][1].foo, 'ham')
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -383,8 +399,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['<tainted key>', 'tainted',
-            'tallmulti', 'tdefermulti', 'tinitmulti'])
+        self.assertEqual(
+            taintedformkeys,
+            ['<tainted key>', 'tainted',
+             'tallmulti', 'tdefermulti', 'tinitmulti'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -393,7 +411,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         inputs = (
             ('<tnum>:int', '42'), ('<tfract>:float', '4.2'),
             ('<tbign>:long', '45'),
-            ('twords:string', 'Some <words>'), ('t2tokens:tokens', 'one <two>'),
+            ('twords:string', 'Some <words>'),
+            ('t2tokens:tokens', 'one <two>'),
             ('<taday>:date', '2002/07/23'),
             ('taccountedfor:required', '<yes>'),
             ('tmultiline:lines', '<one\ntwo>'),
@@ -402,31 +421,37 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['<taday>', '<tbign>', '<tfract>',
-            '<tnum>', 't2tokens', 'taccountedfor', 'tmorewords', 'tmultiline',
-            'twords'])
+        self.assertEqual(
+            taintedformkeys,
+            ['<taday>', '<tbign>', '<tfract>',
+             '<tnum>', 't2tokens', 'taccountedfor', 'tmorewords', 'tmultiline',
+             'twords'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def test_processInputs_w_unicode_w_taints(self):
-        inputs = (('tustring:ustring:utf8', '<test\xc2\xae>'),
-                  ('tutext:utext:utf8', '<test\xc2\xae>\n<test\xc2\xae\n>'),
+        inputs = (
+            ('tustring:ustring:utf8', '<test\xc2\xae>'),
+            ('tutext:utext:utf8', '<test\xc2\xae>\n<test\xc2\xae\n>'),
 
-                  ('tinitutokens:utokens:utf8', '<test\xc2\xae> test\xc2\xae'),
-                  ('tinitulines:ulines:utf8', '<test\xc2\xae>\ntest\xc2\xae'),
+            ('tinitutokens:utokens:utf8', '<test\xc2\xae> test\xc2\xae'),
+            ('tinitulines:ulines:utf8', '<test\xc2\xae>\ntest\xc2\xae'),
 
-                  ('tdeferutokens:utokens:utf8', 'test\xc2\xae <test\xc2\xae>'),
-                  ('tdeferulines:ulines:utf8', 'test\xc2\xae\n<test\xc2\xae>'),
+            ('tdeferutokens:utokens:utf8', 'test\xc2\xae <test\xc2\xae>'),
+            ('tdeferulines:ulines:utf8', 'test\xc2\xae\n<test\xc2\xae>'),
 
-                  ('tnouconverter:string:utf8', '<test\xc2\xae>'))
+            ('tnouconverter:string:utf8', '<test\xc2\xae>'),
+        )
         req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['tdeferulines', 'tdeferutokens',
-            'tinitulines', 'tinitutokens', 'tnouconverter', 'tustring',
-            'tutext'])
+        self.assertEqual(
+            taintedformkeys,
+            ['tdeferulines', 'tdeferutokens',
+             'tinitulines', 'tinitutokens', 'tnouconverter', 'tustring',
+             'tutext'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -470,10 +495,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['<tkeyoneitem>', 'tdeferalist',
-            'tdeferatuple', 'tdeferdefersetrec', 'tdeferinitsetrec',
-            'tdeferonerec', 'tinitalist', 'tinitatuple', 'tinitdefersetrec',
-            'tinitinitsetrec', 'tinitonerec', 'toneitem', 'toneitemtuple'])
+        self.assertEqual(
+            taintedformkeys,
+            ['<tkeyoneitem>', 'tdeferalist',
+             'tdeferatuple', 'tdeferdefersetrec', 'tdeferinitsetrec',
+             'tdeferonerec', 'tinitalist', 'tinitatuple', 'tinitdefersetrec',
+             'tinitinitsetrec', 'tinitonerec', 'toneitem', 'toneitemtuple'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -515,13 +542,15 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tdefersecondsetrec.ilist:list:records', '<2>'),
             ('tdefersecondsetrec.ituple:tuple:int:records', '1'),
             ('tdefersecondsetrec.ituple:tuple:int:records', '2'),
-            )
+        )
         req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['tdeferfirstsetrec', 'tdeferonerec',
-            'tdefersecondsetrec', 'tinitonerec', 'tinitsetrec'])
+        self.assertEqual(
+            taintedformkeys,
+            ['tdeferfirstsetrec', 'tdeferonerec',
+             'tdefersecondsetrec', 'tinitonerec', 'tinitsetrec'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -572,8 +601,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['tdeferbar', 'tdeferlist',
-            'tdefersetrec', 'tfoo', 'tinitbar', 'tinitlist', 'tinitsetrec'])
+        self.assertEqual(
+            taintedformkeys,
+            ['tdeferbar', 'tdeferlist',
+             'tdefersetrec', 'tfoo', 'tinitbar', 'tinitlist', 'tinitsetrec'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -592,10 +623,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             try:
                 convert('<html garbage>')
             except Exception as e:
-                self.assertFalse('<' in e.args,
+                self.assertFalse(
+                    '<' in e.args,
                     '%s converter does not quote unsafe value!' % type)
             except SyntaxError as e:
-                self.assertFalse('<' in e,
+                self.assertFalse(
+                    '<' in e,
                     '%s converter does not quote unsafe value!' % type)
 
     def test_processInputs_w_dotted_name_as_tuple(self):
@@ -606,9 +639,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['name.'])
+        self.assertEqual(formkeys, ['name.'])
 
-        self.assertEquals(req['name.'], ('name with dot as tuple',))
+        self.assertEqual(req['name.'], ('name with dot as tuple',))
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
@@ -618,20 +651,20 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         env['HTTP_COOKIE'] = 'foo=bar; baz=gee'
         req = self._makeOne(environ=env)
-        self.assertEquals(req.cookies['foo'], 'bar')
-        self.assertEquals(req.cookies['baz'], 'gee')
+        self.assertEqual(req.cookies['foo'], 'bar')
+        self.assertEqual(req.cookies['baz'], 'gee')
 
         env['HTTP_COOKIE'] = 'foo=bar; baz="gee, like, e=mc^2"'
         req = self._makeOne(environ=env)
-        self.assertEquals(req.cookies['foo'], 'bar')
-        self.assertEquals(req.cookies['baz'], 'gee, like, e=mc^2')
+        self.assertEqual(req.cookies['foo'], 'bar')
+        self.assertEqual(req.cookies['baz'], 'gee, like, e=mc^2')
 
         # Collector #1498: empty cookies
         env['HTTP_COOKIE'] = 'foo=bar; hmm; baz=gee'
         req = self._makeOne(environ=env)
-        self.assertEquals(req.cookies['foo'], 'bar')
-        self.assertEquals(req.cookies['hmm'], '')
-        self.assertEquals(req.cookies['baz'], 'gee')
+        self.assertEqual(req.cookies['foo'], 'bar')
+        self.assertEqual(req.cookies['hmm'], '')
+        self.assertEqual(req.cookies['baz'], 'gee')
 
         # Unquoted multi-space cookies
         env['HTTP_COOKIE'] = 'single=cookie data; ' \
@@ -639,13 +672,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                              'multi=cookie data with unquoted spaces; ' \
                              'multi2=cookie data with unquoted spaces'
         req = self._makeOne(environ=env)
-        self.assertEquals(req.cookies['single'], 'cookie data')
-        self.assertEquals(req.cookies['quoted'],
-                          'cookie data with unquoted spaces')
-        self.assertEquals(req.cookies['multi'],
-                          'cookie data with unquoted spaces')
-        self.assertEquals(req.cookies['multi2'],
-                          'cookie data with unquoted spaces')
+        self.assertEqual(req.cookies['single'], 'cookie data')
+        self.assertEqual(req.cookies['quoted'],
+                         'cookie data with unquoted spaces')
+        self.assertEqual(req.cookies['multi'],
+                         'cookie data with unquoted spaces')
+        self.assertEqual(req.cookies['multi2'],
+                         'cookie data with unquoted spaces')
 
     def test_postProcessInputs(self):
         from ZPublisher.HTTPRequest import default_encoding
@@ -707,43 +740,43 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
         req.processInputs()
-        f=req.form.get('file')
-        self.assertEqual(list(f),['test\n'])
+        f = req.form.get('file')
+        self.assertEqual(list(f), ['test\n'])
         f.seek(0)
-        self.assertEqual(f.next(),'test\n')
+        self.assertEqual(f.next(), 'test\n')
         f.seek(0)
-        self.assertEqual(f.xreadlines(),f)
+        self.assertEqual(f.xreadlines(), f)
 
-    def test__authUserPW_simple( self ):
+    def test__authUserPW_simple(self):
         import base64
         user_id = 'user'
         password = 'password'
-        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        encoded = base64.encodestring('%s:%s' % (user_id, password))
         auth_header = 'basic %s' % encoded
 
-        environ = { 'HTTP_AUTHORIZATION': auth_header }
-        request = self._makeOne( environ=environ )
+        environ = {'HTTP_AUTHORIZATION': auth_header}
+        request = self._makeOne(environ=environ)
 
         user_id_x, password_x = request._authUserPW()
 
-        self.assertEqual( user_id_x, user_id )
-        self.assertEqual( password_x, password )
+        self.assertEqual(user_id_x, user_id)
+        self.assertEqual(password_x, password)
 
-    def test__authUserPW_with_embedded_colon( self ):
+    def test__authUserPW_with_embedded_colon(self):
         # http://www.zope.org/Collectors/Zope/2039
         import base64
         user_id = 'user'
         password = 'embedded:colon'
-        encoded = base64.encodestring( '%s:%s' % ( user_id, password ) )
+        encoded = base64.encodestring('%s:%s' % (user_id, password))
         auth_header = 'basic %s' % encoded
 
-        environ = { 'HTTP_AUTHORIZATION': auth_header }
-        request = self._makeOne( environ=environ )
+        environ = {'HTTP_AUTHORIZATION': auth_header}
+        request = self._makeOne(environ=environ)
 
         user_id_x, password_x = request._authUserPW()
 
-        self.assertEqual( user_id_x, user_id )
-        self.assertEqual( password_x, password )
+        self.assertEqual(user_id_x, user_id)
+        self.assertEqual(password_x, password)
 
     def test_debug_not_in_qs_still_gets_attr(self):
         from zope.publisher.base import DebugFlags
@@ -773,14 +806,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(request.debug, '1')
         request['debug'] = '2'
         self.assertEqual(request.debug, '2')
-
-    def test_interfaces(self):
-        from zope.publisher.interfaces.browser import IBrowserRequest
-        from zope.interface.verify import verifyClass
-        klass = self._getTargetClass()
-
-        # TODO
-        # verifyClass(IBrowserRequest, klass)
 
     def test_locale_property_accessor(self):
         from zope.component import provideAdapter
@@ -920,7 +945,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_getClientAddr_one_trusted_proxy(self):
         from ZPublisher.HTTPRequest import trusted_proxies
         env = {'REMOTE_ADDR': '127.0.0.1',
-               'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100' }
+               'HTTP_X_FORWARDED_FOR': '10.1.20.30, 192.168.1.100'}
 
         orig = trusted_proxies[:]
         try:
@@ -1029,6 +1054,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_clone_preserves_direct_interfaces(self):
         from zope.interface import directlyProvides
         from zope.interface import Interface
+
         class IFoo(Interface):
             pass
         request = self._makeOne()
@@ -1047,7 +1073,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             request.resolve_url(request.script + '/')
         finally:
             zope.event.subscribers.remove(events.append)
-        self.assertFalse(len(events),
+        self.assertFalse(
+            len(events),
             "HTTPRequest.resolve_url should not emit events")
 
     def test_resolve_url_errorhandling(self):
@@ -1056,37 +1083,36 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         from zExceptions import NotFound
         request = self._makeOne()
         request['PARENTS'] = [object()]
-        self.assertRaises( NotFound
-                         , request.resolve_url
-                         , request.script + '/does_not_exist'
-                         )
+        self.assertRaises(
+            NotFound, request.resolve_url, request.script + '/does_not_exist')
 
     def test_parses_json_cookies(self):
         # https://bugs.launchpad.net/zope2/+bug/563229
         # reports cookies in the wild with embedded double quotes (e.g,
         # JSON-encoded data structures.
-        env = {'SERVER_NAME': 'testingharnas',
-               'SERVER_PORT': '80',
-               'HTTP_COOKIE': 'json={"intkey":123,"stringkey":"blah"}; '
-                              'anothercookie=boring; baz'
-              }
+        env = {
+            'SERVER_NAME': 'testingharnas',
+            'SERVER_PORT': '80',
+            'HTTP_COOKIE': 'json={"intkey":123,"stringkey":"blah"}; '
+                           'anothercookie=boring; baz'
+        }
         req = self._makeOne(environ=env)
-        self.assertEquals(req.cookies['json'],
-                          '{"intkey":123,"stringkey":"blah"}')
-        self.assertEquals(req.cookies['anothercookie'], 'boring')
+        self.assertEqual(req.cookies['json'],
+                         '{"intkey":123,"stringkey":"blah"}')
+        self.assertEqual(req.cookies['anothercookie'], 'boring')
 
     def test_getVirtualRoot(self):
         # https://bugs.launchpad.net/zope2/+bug/193122
         req = self._makeOne()
 
         req._script = []
-        self.assertEquals(req.getVirtualRoot(), '')
+        self.assertEqual(req.getVirtualRoot(), '')
 
         req._script = ['foo', 'bar']
-        self.assertEquals(req.getVirtualRoot(), '/foo/bar')
+        self.assertEqual(req.getVirtualRoot(), '/foo/bar')
 
 
-class TestHTTPRequestZope3Views(TestRequestZope3ViewsBase,):
+class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
     def _makeOne(self, root):
         from zope.interface import directlyProvides
@@ -1118,7 +1144,7 @@ TEST_ENVIRON = {
     'REQUEST_METHOD': 'POST',
     'SERVER_NAME': 'localhost',
     'SERVER_PORT': '80',
-    }
+}
 
 TEST_FILE_DATA = '''
 --12345
@@ -1138,11 +1164,3 @@ Content-Type: application/octet-stream
 test %s
 
 ''' % ('test' * 1000)
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(RecordTests))
-    suite.addTest(unittest.makeSuite(HTTPRequestTests))
-    suite.addTest(unittest.makeSuite(TestHTTPRequestZope3Views))
-    return suite

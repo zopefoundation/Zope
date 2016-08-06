@@ -64,27 +64,29 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 
-_gzip_header = ("\037\213" # magic
-                "\010" # compression method
-                "\000" # flags
-                "\000\000\000\000" # time
+_gzip_header = ("\037\213"  # magic
+                "\010"  # compression method
+                "\000"  # flags
+                "\000\000\000\000"  # time
                 "\002"
                 "\377")
 
-uncompressableMimeMajorTypes = ('image',)   # these mime major types should
-                                            # not be gzip content encoded
+# these mime major types should not be gzip content encoded
+uncompressableMimeMajorTypes = ('image',)
 
 # The environment variable DONT_GZIP_MAJOR_MIME_TYPES can be set to a list
 # of comma seperated mime major types which should also not be compressed
 
-otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES','').lower()
+otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES', '').lower()
 if otherTypes:
     uncompressableMimeMajorTypes += tuple(otherTypes.split(','))
 
 _CRLF = re.compile(r'[\r\n]')
 
+
 def _scrubHeader(name, value):
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
+
 
 class HTTPResponse(BaseResponse):
     """ An object representation of an HTTP response.
@@ -104,7 +106,7 @@ class HTTPResponse(BaseResponse):
 
     If stream oriented output is used, then the response object
     passed into the object must be used.
-    """ #'
+    """
 
     body = ''
     base = ''
@@ -124,8 +126,7 @@ class HTTPResponse(BaseResponse):
                  status=200,
                  headers=None,
                  stdout=sys.stdout,
-                 stderr=sys.stderr,
-                ):
+                 stderr=sys.stderr):
         """ Create a new response using the given values.
         """
         if headers is None:
@@ -166,8 +167,8 @@ class HTTPResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, (type, types.ClassType))
-         and issubclass(status, Exception)):
+        if (isinstance(status, (type, types.ClassType)) and
+                issubclass(status, Exception)):
             status = status.__name__
 
         if isinstance(status, str):
@@ -304,7 +305,7 @@ class HTTPResponse(BaseResponse):
             h = "%s%s%s" % (h, delimiter, value)
         else:
             h = value
-        self.setHeader(name,h, scrubbed=True)
+        self.setHeader(name, h, scrubbed=True)
 
     def addHeader(self, name, value):
         """ Set a new HTTP return header with the given value,
@@ -334,8 +335,7 @@ class HTTPResponse(BaseResponse):
         self.base = str(base)
 
     def insertBase(self,
-                   base_re_search=re.compile('(<base.*?>)',re.I).search
-                   ):
+                   base_re_search=re.compile('(<base.*?>)', re.I).search):
 
         # Only insert a base tag if content appears to be html.
         content_type = self.headers.get('content-type', '').split(';')[0]
@@ -351,8 +351,8 @@ class HTTPResponse(BaseResponse):
                     ibase = base_re_search(body)
                     if ibase is None:
                         self.body = ('%s\n<base href="%s" />\n%s' %
-                                   (body[:index], escape(self.base, 1),
-                                    body[index:]))
+                                     (body[:index], escape(self.base, 1),
+                                      body[index:]))
                         self.setHeader('content-length', len(self.body))
 
     def isHTML(self, s):
@@ -368,11 +368,10 @@ class HTTPResponse(BaseResponse):
     def setBody(self, body, title='', is_error=0,
                 bogus_str_search=re.compile(" [a-fA-F0-9]+>$").search,
                 latin1_alias_match=re.compile(
-                r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
-                r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
-                r'(iso[-_]8859[-_]1(:1987)?)))?$',re.I).match,
-                lock=None
-                ):
+                    r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
+                    r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
+                    r'(iso[-_]8859[-_]1(:1987)?)))?$', re.I).match,
+                lock=None):
         """ Set the body of the response
 
         Sets the return body equal to the (string) argument "body". Also
@@ -411,7 +410,7 @@ class HTTPResponse(BaseResponse):
             title, body = body
 
         if not isinstance(body, str):
-            if hasattr(body,'asHTML'):
+            if hasattr(body, 'asHTML'):
                 body = body.asHTML()
 
         if isinstance(body, unicode):
@@ -425,8 +424,8 @@ class HTTPResponse(BaseResponse):
                 body = self._encode_unicode(unicode(body))
 
         l = len(body)
-        if ((l < 200) and body[:1] == '<' and body.find('>') == l-1 and
-            bogus_str_search(body) is not None):
+        if ((l < 200) and body[:1] == '<' and body.find('>') == l - 1 and
+                bogus_str_search(body) is not None):
             self.notFoundError(body[1:-1])
         else:
             if title:
@@ -444,7 +443,7 @@ class HTTPResponse(BaseResponse):
         # special characters. These cannot be removed by html_quote,
         # because this is not the case for all encodings.
         if (content_type == 'text/html' or
-            content_type and latin1_alias_match(content_type) is not None):
+                content_type and latin1_alias_match(content_type) is not None):
             body = '&lt;'.join(body.split('\213'))
             body = '&gt;'.join(body.split('\233'))
             self.body = body
@@ -457,7 +456,7 @@ class HTTPResponse(BaseResponse):
             self.setHeader('content-type', content_type)
         else:
             if (content_type.startswith('text/') and
-                'charset=' not in content_type):
+                    'charset=' not in content_type):
                 content_type = '%s; charset=%s' % (content_type,
                                                    default_encoding)
                 self.setHeader('content-type', content_type)
@@ -466,25 +465,25 @@ class HTTPResponse(BaseResponse):
 
         self.insertBase()
 
-        if self.use_HTTP_content_compression and \
-            self.headers.get('content-encoding', 'gzip') == 'gzip':
+        if (self.use_HTTP_content_compression and
+                self.headers.get('content-encoding', 'gzip') == 'gzip'):
             # use HTTP content encoding to compress body contents unless
             # this response already has another type of content encoding
             if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
                 # only compress if not listed as uncompressable
                 body = self.body
                 startlen = len(body)
-                co = zlib.compressobj(6,zlib.DEFLATED,-zlib.MAX_WBITS,
-                                      zlib.DEF_MEM_LEVEL,0)
+                co = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS,
+                                      zlib.DEF_MEM_LEVEL, 0)
                 chunks = [_gzip_header, co.compress(body),
                           co.flush(),
-                          struct.pack("<ll",zlib.crc32(body),startlen)]
+                          struct.pack("<ll", zlib.crc32(body), startlen)]
                 z = "".join(chunks)
                 newlen = len(z)
                 if newlen < startlen:
                     self.body = z
                     self.setHeader('content-length', newlen)
-                    self.setHeader('content-encoding','gzip')
+                    self.setHeader('content-encoding', 'gzip')
                     if self.use_HTTP_content_compression == 1:
                         # use_HTTP_content_compression == 1 if force was
                         # NOT used in enableHTTPCompression().
@@ -542,7 +541,7 @@ class HTTPResponse(BaseResponse):
             self.use_HTTP_content_compression = 0
 
         elif (force or
-              (REQUEST.get('HTTP_ACCEPT_ENCODING','').find('gzip') != -1)):
+              (REQUEST.get('HTTP_ACCEPT_ENCODING', '').find('gzip') != -1)):
             if force:
                 self.use_HTTP_content_compression = 2
             else:
@@ -574,11 +573,11 @@ class HTTPResponse(BaseResponse):
         """
         return self._shutdown_flag is not None
 
-    def _encode_unicode(self,body,
+    def _encode_unicode(self, body,
                         charset_re=re.compile(
-                           r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
-                           r'charset=([-_0-9a-z]+' +
-                           r')(?:(?:\s*;)|\Z)', re.IGNORECASE)):
+                            r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
+                            r'charset=([-_0-9a-z]+' +
+                            r')(?:(?:\s*;)|\Z)', re.IGNORECASE)):
 
         def fix_xml_preamble(body, encoding):
             """ fixes the encoding in the XML preamble according
@@ -587,8 +586,8 @@ class HTTPResponse(BaseResponse):
 
             if body.startswith('<?xml'):
                 pos_right = body.find('?>')  # right end of the XML preamble
-                body = ('<?xml version="1.0" encoding="%s" ?>'
-                            % encoding) + body[pos_right+2:]
+                body = ('<?xml version="1.0" encoding="%s" ?>' %
+                        encoding) + body[pos_right + 2:]
             return body
 
         # Encode the Unicode data as requested
@@ -603,8 +602,8 @@ class HTTPResponse(BaseResponse):
                 return body
             else:
                 if ct.startswith('text/') or ct.startswith('application/'):
-                    self.headers['content-type'] = '%s; charset=%s' % (ct,
-                                                            default_encoding)
+                    self.headers['content-type'] = '%s; charset=%s' % (
+                        ct, default_encoding)
 
         # Use the default character encoding
         body = body.encode(default_encoding, 'replace')
@@ -619,12 +618,11 @@ class HTTPResponse(BaseResponse):
         tb = format_exception(t, v, tb, as_html=as_html)
         return '\n'.join(tb)
 
-
-    def _html(self,title,body):
+    def _html(self, title, body):
         return ("<html>\n"
                 "<head>\n<title>%s</title>\n</head>\n"
                 "<body>\n%s\n</body>\n"
-                "</html>\n" % (title,body))
+                "</html>\n" % (title, body))
 
     def _error_html(self, title, body):
         return ("""<html>
@@ -635,8 +633,7 @@ class HTTPResponse(BaseResponse):
   </p>
   <p><strong>%s</strong></p>
 
-  %s""" % (title, body) + \
-  """
+  %s""" % (title, body) + """
   <hr noshade="noshade"/>
 
   <p>Troubleshooting Suggestions</p>
@@ -652,7 +649,7 @@ class HTTPResponse(BaseResponse):
   Thank you for your patience.
   </p></body></html>""")
 
-    def notFoundError(self,entry='Unknown'):
+    def notFoundError(self, entry='Unknown'):
         self.setStatus(404)
         raise NotFound(self._error_html(
             "Resource not found",
@@ -660,18 +657,18 @@ class HTTPResponse(BaseResponse):
             "<p>Check the URL and try again.</p>" +
             "<p><b>Resource:</b> %s</p>" % escape(entry)))
 
-    forbiddenError = notFoundError  # If a resource is forbidden,
-                                    # why reveal that it exists?
+    # If a resource is forbidden, why reveal that it exists?
+    forbiddenError = notFoundError
 
-    def debugError(self,entry):
+    def debugError(self, entry):
         raise NotFound(self._error_html(
             "Debugging Notice",
             "Zope has encountered a problem publishing your object.<p>"
             "\n%s</p>" % entry))
 
-    def badRequestError(self,name):
+    def badRequestError(self, name):
         self.setStatus(400)
-        if re.match('^[A-Z_0-9]+$',name):
+        if re.match('^[A-Z_0-9]+$', name):
             raise InternalError(self._error_html(
                 "Internal Error",
                 "Sorry, an internal error occurred in this resource."))
@@ -682,7 +679,7 @@ class HTTPResponse(BaseResponse):
             "was omitted from the request.<p>" +
             "Make sure to specify all required parameters, " +
             "and try the request again.</p>"
-            ))
+        ))
 
     def _unauthorized(self):
         realm = self.realm
@@ -749,9 +746,9 @@ class HTTPResponse(BaseResponse):
                 if self.status == 300:
                     self.setStatus(302)
                 self.setHeader('location', v)
-                tb = None # just one path covered
+                tb = None  # just one path covered
                 return self
-            elif isinstance(v, Redirect): # death to string exceptions!
+            elif isinstance(v, Redirect):  # death to string exceptions!
                 if self.status == 300:
                     self.setStatus(302)
                 self.setHeader('location', v.args[0])
@@ -761,16 +758,15 @@ class HTTPResponse(BaseResponse):
             else:
                 try:
                     l, b = v
-                    if (isinstance(l, str)
-                        and absuri_match(l) is not None):
+                    if (isinstance(l, str) and absuri_match(l) is not None):
                         if self.status == 300:
                             self.setStatus(302)
                         self.setHeader('location', l)
                         self.setBody(b)
-                        tb = None # one more patch covered
+                        tb = None  # one more patch covered
                         return self
-                except:
-                    pass # tb is not cleared in this case
+                except Exception:
+                    pass  # tb is not cleared in this case
 
         b = v
         if isinstance(b, Exception):
@@ -785,8 +781,8 @@ class HTTPResponse(BaseResponse):
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
                 (str(t),
-                 'Zope has exited normally.<p>'
-                    + self._traceback(t, v, tb) + '</p>'),
+                 'Zope has exited normally.<p>' +
+                 self._traceback(t, v, tb) + '</p>'),
                 is_error=1)
         else:
             try:
@@ -796,9 +792,8 @@ class HTTPResponse(BaseResponse):
             if match is None:
                 body = self.setBody(
                     (str(t),
-                     'Sorry, a site error occurred.<p>'
-                     + self._traceback(t, v, tb)
-                     + '</p>'),
+                     'Sorry, a site error occurred.<p>' +
+                     self._traceback(t, v, tb) + '</p>'),
                     is_error=1)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
@@ -809,7 +804,7 @@ class HTTPResponse(BaseResponse):
                     body = self.setBody(b, is_error=1)
             else:
                 body = self.setBody(
-                    (str(t), b + self._traceback(t,'(see above)', tb, 0)),
+                    (str(t), b + self._traceback(t, '(see above)', tb, 0)),
                     is_error=1)
         del tb
         return body
@@ -831,15 +826,15 @@ class HTTPResponse(BaseResponse):
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':
-                    cookie = '%s; Expires=%s' % (cookie,v)
+                    cookie = '%s; Expires=%s' % (cookie, v)
                 elif name == 'domain':
-                    cookie = '%s; Domain=%s' % (cookie,v)
+                    cookie = '%s; Domain=%s' % (cookie, v)
                 elif name == 'path':
-                    cookie = '%s; Path=%s' % (cookie,v)
+                    cookie = '%s; Path=%s' % (cookie, v)
                 elif name == 'max_age':
-                    cookie = '%s; Max-Age=%s' % (cookie,v)
+                    cookie = '%s; Max-Age=%s' % (cookie, v)
                 elif name == 'comment':
-                    cookie = '%s; Comment=%s' % (cookie,v)
+                    cookie = '%s; Comment=%s' % (cookie, v)
                 elif name == 'secure' and v:
                     cookie = '%s; Secure' % cookie
                 # Some browsers recognize this cookie attribute
@@ -856,8 +851,8 @@ class HTTPResponse(BaseResponse):
         """ Set headers required by various parts of protocol.
         """
         body = self.body
-        if (not 'content-length' in self.headers and
-            not 'transfer-encoding' in self.headers):
+        if ('content-length' not in self.headers and
+                'transfer-encoding' not in self.headers):
             self.setHeader('content-length', len(body))
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
 
@@ -868,7 +863,7 @@ class HTTPResponse(BaseResponse):
         """
 
         result = [
-          ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
+            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
         ]
 
         for key, value in self.headers.items():
@@ -881,9 +876,7 @@ class HTTPResponse(BaseResponse):
         result.extend(self.accumulated_headers)
         return result
 
-    def __str__(self,
-                html_search=re.compile('<html>',re.I).search,
-                ):
+    def __str__(self, html_search=re.compile('<html>', re.I).search):
         if self._wrote:
             return ''       # Streaming output was used.
 
@@ -902,8 +895,8 @@ class HTTPResponse(BaseResponse):
         chunks.append(body)
         return '\r\n'.join(chunks)
 
-    def write(self,data):
-        """\
+    def write(self, data):
+        """
         Return data as a stream
 
         HTML data may be returned using a stream-oriented interface.
@@ -915,10 +908,8 @@ class HTTPResponse(BaseResponse):
 
         Note that published objects must not generate any errors
         after beginning stream-oriented output.
-
         """
         if not self._wrote:
-
             notify(PubBeforeStreaming(self))
 
             self.outputBody()

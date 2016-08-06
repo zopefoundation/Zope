@@ -13,6 +13,7 @@
 
 import unittest
 
+
 class ConvertersTests(unittest.TestCase):
 
     def test_field2string_with_string(self):
@@ -29,20 +30,11 @@ class ConvertersTests(unittest.TestCase):
     def test_field2string_with_filelike_object(self):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
+
         class Filelike:
             def read(self):
                 return to_convert
         self.assertEqual(field2string(Filelike()), to_convert)
-
-    #TODO def test_field2text....
-
-    #TODO def test_field2required....
-
-    #TODO def test_field2int....
-
-    #TODO def test_field2float....
-
-    #TODO def test_field2tokens....
 
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
@@ -68,19 +60,6 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc\ndef\nghi'
         self.assertEqual(field2lines(to_convert), to_convert.splitlines())
-        
-
-    #TODO def test_field2date....
-
-    #TODO def test_field2date_international....
-
-    #TODO def test_field2boolean....
-
-    #TODO def test_field2ustring....
-
-    #TODO def test_field2utokens....
-
-    #TODO def test_field2utext....
 
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines
@@ -108,7 +87,3 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2ulines
         to_convert = u'abc\ndef\nghi'
         self.assertEqual(field2ulines(to_convert), to_convert.splitlines())
-
-
-def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(ConvertersTests),))

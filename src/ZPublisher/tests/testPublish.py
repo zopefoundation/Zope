@@ -1,9 +1,12 @@
+import doctest
+
 from zope.interface import implements
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.skinnable import setDefaultSkin
 from ZPublisher import Retry
 from ZODB.POSException import ConflictError
+
 
 class Tracer:
     """Trace used to record pathway taken through the publisher
@@ -23,20 +26,20 @@ class Tracer:
 
     def showTracedPath(self):
         for arg in self.tracedPath:
-            print arg
+            print(arg)
 
     def possiblyRaiseException(self, context):
         exceptions = tracer.exceptions.get(context, None)
         if exceptions:
             exception = exceptions[0]
             exceptions.remove(exception)
-            exceptionShortName = exception.__name__ # KISS
+            exceptionShortName = exception.__name__  # KISS
             exceptionShortName = exceptionShortName.split("'")[0]
-	    self.append('raising %s from %s' % (exceptionShortName, context))
+            self.append('raising %s from %s' % (exceptionShortName, context))
             raise exception
 
-
 tracer = Tracer()
+
 
 class TransactionsManager:
     """Mock TransactionManager to replace
@@ -58,6 +61,7 @@ class TransactionsManager:
 
 zpublisher_transactions_manager = TransactionsManager()
 
+
 def zpublisher_exception_hook(published, request, t, v, traceback):
     """Mock zpublisher_exception_hook to replace
     Zope2.App.startup.zpublisher_exception_hook
@@ -71,6 +75,7 @@ def zpublisher_exception_hook(published, request, t, v, traceback):
     tracer.possiblyRaiseException('zpublisher_exception_hook')
     return 'zpublisher_exception_hook'
 
+
 class Object:
     """Mock object for traversing to.
     """
@@ -80,12 +85,14 @@ class Object:
         tracer.possiblyRaiseException('__call__')
         return '__call__'
 
+
 class Response:
     """Mock Response to replace ZPublisher.HTTPResponse.HTTPResponse.
     """
 
     def setBody(self, a):
         pass
+
 
 class Request:
     """Mock Request to replace ZPublisher.HTTPRequest.HTTPRequest.
@@ -124,6 +131,7 @@ class Request:
         r = self.__class__()
         r.retry_count = self.retry_count
         return r
+
 
 class RequestWithSkinCheck(Request):
     def traverse(self, path, validated_hook):
@@ -331,6 +339,7 @@ def testPublisher():
     """
     pass
 
+
 class ObjectNotFound:
     """Mock object for traversing to.
     """
@@ -356,6 +365,7 @@ class PathRequest(Request):
             return Object()
         else:
             return ObjectNotFound()
+
 
 def testPublishPath():
     """
@@ -388,10 +398,7 @@ def testPublishPath():
     commit
 
     """
-    pass
 
-
-import doctest
 
 def test_suite():
     return doctest.DocTestSuite()

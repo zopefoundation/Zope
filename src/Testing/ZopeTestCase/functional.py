@@ -15,7 +15,9 @@
 After Marius Gedminas' functional.py module for Zope3.
 """
 
-import sys, re, base64
+import base64
+import re
+import sys
 import transaction
 import sandbox
 import interfaces
@@ -58,8 +60,8 @@ class Functional(sandbox.Sandboxed):
         '''Publishes the object at 'path' returning a response object.'''
 
         from StringIO import StringIO
-        from ZPublisher.Request import Request
-        from ZPublisher.Response import Response
+        from ZPublisher.HTTPRequest import HTTPRequest as Request
+        from ZPublisher.HTTPResponse import HTTPResponse as Response
         from ZPublisher.Publish import publish_module
 
         # Commit the sandbox for good measure
@@ -82,7 +84,7 @@ class Functional(sandbox.Sandboxed):
         elif len(p) == 2:
             [env['PATH_INFO'], env['QUERY_STRING']] = p
         else:
-            raise TypeError, ''
+            raise TypeError('')
 
         if basic:
             env['HTTP_AUTHORIZATION'] = "Basic %s" % base64.encodestring(basic)
@@ -99,8 +101,7 @@ class Functional(sandbox.Sandboxed):
         publish_module('Zope2',
                        debug=not handle_errors,
                        request=request,
-                       response=response,
-                      )
+                       response=response)
 
         return ResponseWrapper(response, outstream, path)
 
@@ -140,4 +141,3 @@ class ResponseWrapper:
     def getCookie(self, name):
         '''Returns a response cookie.'''
         return self.cookies.get(name)
-

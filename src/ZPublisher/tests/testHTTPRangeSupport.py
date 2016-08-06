@@ -16,17 +16,19 @@ from ZPublisher.HTTPRangeSupport import parseRange, expandRanges
 
 import unittest
 
+
 class TestRangeHeaderParse(unittest.TestCase):
 
     # Utility methods
     def expectNone(self, header):
         result = parseRange(header)
-        self.assertTrue(result is None, 'Expected None, got %s' % `result`)
+        self.assertTrue(result is None, 'Expected None, got %r' % result)
 
     def expectSets(self, header, sets):
         result = parseRange(header)
-        self.assertTrue(result == sets,
-            'Expected %s, got %s' % (`sets`, `result`))
+        self.assertTrue(
+            result == sets,
+            'Expected %r, got %r' % (sets, result))
 
     # Syntactically incorrect headers
     def testGarbage(self):
@@ -67,7 +69,8 @@ class TestRangeHeaderParse(unittest.TestCase):
         self.expectSets('bytes=100-100', [(100, 101)])
 
     def testMultiple(self):
-        self.expectSets('bytes=-100,,1-2,20-',
+        self.expectSets(
+            'bytes=-100,,1-2,20-',
             [(-100, None), (1, 3), (20, None)])
 
     def testFirstByte(self):
@@ -81,8 +84,9 @@ class TestExpandRanges(unittest.TestCase):
 
     def expectSets(self, sets, size, expect):
         result = expandRanges(sets, size)
-        self.assertTrue(result == expect,
-            'Expected %s, got %s' % (`expect`, `result`))
+        self.assertTrue(
+            result == expect,
+            'Expected %r, got %r' % (expect, result))
 
     def testExpandOpenEnd(self):
         self.expectSets([(1, 2), (5, None)], 50, [(1, 2), (5, 50)])
@@ -91,23 +95,28 @@ class TestExpandRanges(unittest.TestCase):
         self.expectSets([(1, 2), (-5, None)], 50, [(1, 2), (45, 50)])
 
     def testNoOverlapInOrder(self):
-        self.expectSets([(1, 5), (1000, 2000), (3000, None)], 5000,
+        self.expectSets(
+            [(1, 5), (1000, 2000), (3000, None)], 5000,
             [(1, 5), (1000, 2000), (3000, 5000)])
 
     def testNoOverlapOutOfOrder(self):
-        self.expectSets([(1000, 2000), (3000, None), (1, 5)], 5000,
+        self.expectSets(
+            [(1000, 2000), (3000, None), (1, 5)], 5000,
             [(1000, 2000), (3000, 5000), (1, 5)])
 
     def testOverlapInOrder(self):
-        self.expectSets([(1, 10), (8, 20), (25, None)], 5000,
+        self.expectSets(
+            [(1, 10), (8, 20), (25, None)], 5000,
             [(1, 10), (8, 20), (25, 5000)])
 
     def testOverlapOutOfOrder(self):
-        self.expectSets([(25, 50), (8, None), (1, 10)], 5000,
+        self.expectSets(
+            [(25, 50), (8, None), (1, 10)], 5000,
             [(25, 50), (8, 5000), (1, 10)])
 
     def testAdjacentInOrder(self):
-        self.expectSets([(1, 10), (10, 20), (25, 50)], 5000,
+        self.expectSets(
+            [(1, 10), (10, 20), (25, 50)], 5000,
             [(1, 10), (10, 20), (25, 50)])
 
     def testAdjacentOutOfOrder(self):
@@ -119,20 +128,3 @@ class TestExpandRanges(unittest.TestCase):
 
     def testRemoveUnsatisfiable(self):
         self.expectSets([(sys.maxint, None), (10, 20)], 50, [(10, 20)])
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestRangeHeaderParse, 'test'))
-    suite.addTest(unittest.makeSuite(TestExpandRanges, 'test'))
-    return suite
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')

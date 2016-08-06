@@ -11,18 +11,6 @@
 #
 ##############################################################################
 
-# This allows ZPublisher to work with embedded interpreters
-# that for some reason have no sys.argv (required by cgi.py).
-import sys
-if not hasattr(sys, 'argv'):
-    sys.argv=[]
+from zExceptions import NotFound, BadRequest, InternalError, Forbidden  # NOQA
 
-from zExceptions import NotFound, BadRequest, InternalError, Forbidden
-
-from Publish import publish_module, Retry
-
-def test(*args, **kw):
-    global test
-    import Test
-    test=Test.publish
-    return apply(test, args, kw)
+from ZPublisher.Publish import publish_module, Retry  # NOQA

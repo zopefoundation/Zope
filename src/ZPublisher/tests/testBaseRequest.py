@@ -33,26 +33,24 @@ class BaseRequest_factory:
                 if base is None:
                     base = ''
                 elif not base.endswith('/'):
-                    base = base+'/'
+                    base = base + '/'
                 self.base = str(base)
 
             def notFoundError(self, name):
                 from zExceptions import NotFound
                 raise NotFound(name)
 
-            # Real responses raise NotFound, to avoid information disclosure
-            #def forbiddenError(self, name):
-            #    from zExceptions import Forbidden
-            #    raise Forbidden(name)
             forbiddenError = notFoundError
 
         response = DummyResponse()
-        environment = { 'URL': '',
-                        'PARENTS': [root],
-                        'steps': [],
-                        '_hacked_path': 0,
-                        '_test_counter': 0,
-                        'response': response }
+        environment = {
+            'URL': '',
+            'PARENTS': [root],
+            'steps': [],
+            '_hacked_path': 0,
+            '_test_counter': 0,
+            'response': response
+        }
         return self._getTargetClass()(environment)
 
     def _makeBasicObjectClass(self):
@@ -112,7 +110,7 @@ class BaseRequest_factory:
                 else:
                     raise RuntimeError('Infinite loop detected.')
                 REQUEST['TraversalRequestNameStack'] += self._path
-                REQUEST._hacked_path=1
+                REQUEST._hacked_path = 1
 
         return DummyObjectWithBPTH()
 
@@ -151,16 +149,18 @@ class BaseRequest_factory:
     def _makeObjectWithBDBBT(self):
         class DummyObjectWithBDBBT(self._makeBasicObjectClass()):
             """Dummy class with __browser_default__."""
+
             def __browser_default__(self, REQUEST):
                 if REQUEST['_test_counter'] < 100:
                     REQUEST['_test_counter'] += 1
                 else:
                     raise RuntimeError('Infinite loop detected.')
                 return self, self._default_path
+
             def __bobo_traverse__(self, REQUEST, name):
                 if name == self._default_path[0]:
                     return getattr(self, name)
-                raise AttributeError, name
+                raise AttributeError(name)
         return DummyObjectWithBDBBT()
 
     def _makeObjectWithEmptyDocstring(self):
@@ -292,14 +292,15 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         # that we get a NotFound
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
+
         def _faux___bobo_traverse__(REQUEST, name):
-            raise AttributeError, name
+            raise AttributeError(name)
         obj = self._makeBasicObject()
         obj.__bobo_traverse__ = _faux___bobo_traverse__
         folder._setObject('objWithBBT', obj)
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse,
-                              'folder/objWithBBT/bbt_foo')
+                          'folder/objWithBBT/bbt_foo')
 
     def test_traverse_UseTraversalDefault(self):
         root, folder = self._makeRootAndFolder()
@@ -309,7 +310,8 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertEqual(r.traverse('folder/objWithBBT/normal').tag, 'Normal')
         # test default usage
         r = self._makeOne(root)
-        self.assertEqual(r.traverse('folder/objWithBBT/default').tag, 'Default')
+        self.assertEqual(
+            r.traverse('folder/objWithBBT/default').tag, 'Default')
 
     def test_traverse_withBDBBT(self):
         # Test for an object which has a __browser_default__
@@ -371,7 +373,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_traverse_class_without_docstring(self):
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
-        folder._setObject('objWithoutDocstring', 
+        folder._setObject('objWithoutDocstring',
                           self._makeObjectWithEmptyDocstring())
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring')
@@ -379,20 +381,20 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_traverse_attribute_of_class_without_docstring(self):
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
-        folder._setObject('objWithoutDocstring', 
+        folder._setObject('objWithoutDocstring',
                           self._makeObjectWithEmptyDocstring())
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse,
-                              'folder/objWithoutDocstring/view')
+                          'folder/objWithoutDocstring/view')
 
     def test_traverse_attribute_and_class_without_docstring(self):
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
-        folder._setObject('objWithoutDocstring', 
+        folder._setObject('objWithoutDocstring',
                           self._makeObjectWithEmptyDocstring())
         self.assertRaises(NotFound, r.traverse,
-                              'folder/objWithoutDocstring/noview')
+                          'folder/objWithoutDocstring/noview')
 
     def test_traverse_simple_string(self):
         from ZPublisher import NotFound
@@ -444,6 +446,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         r = self._makeOne(root)
         r.other['foo'] = 'Foo'
         BEFORE = subscribers[:]
+
         def _broken(event):
             raise ValueError("I'm broken")
         subscribers.append(_broken)
@@ -481,7 +484,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertRaises(NotFound, r.traverse, 'not_found')
 
 
-class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
+class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
 
     _dummy_interface = None
 
@@ -492,7 +495,7 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
     def _makeOne(self, root):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-        request = super(TestRequestZope3ViewsBase, self)._makeOne(root)
+        request = super(TestRequestViewsBase, self)._makeOne(root)
         # The request needs to implement the proper interface
         directlyProvides(request, IDefaultBrowserLayer)
         return request
@@ -532,6 +535,7 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
 
         class DummyObjectZ3(self._makeBasicObjectClass()):
             implements(self._dummyInterface())
+
             def __init__(self, name):
                 self.name = name
 
@@ -542,12 +546,14 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
 
         class DummyObjectZ3WithAttr(self._makeBasicObjectClass()):
             implements(self._dummyInterface())
+
             def __init__(self, name):
                 self.name = name
 
             def meth(self):
                 """doc"""
                 return 'meth on %s' % self.name
+
             def methonly(self):
                 """doc"""
                 return 'methonly on %s' % self.name
@@ -577,11 +583,11 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
             def __init__(self, content, request):
                 self.content = content
                 self.request = request
+
             def __call__(self):
                 return 'view on %s' % (self.content.name)
 
         class DummyPage(BrowserPage):
-
             # BrowserPage is an IBrowserPublisher with a browserDefault that
             # returns self, () so that __call__ is invoked by the publisher.
 
@@ -594,7 +600,8 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
                 # intentionally return something that's not self
                 return DummyPage(self.context, request), ()
 
-            # __call__ remains unimplemented, baseclass raises NotImplementedError
+            # __call__ remains unimplemented,
+            # baseclass raises NotImplementedError
 
         class DummyPage3(BrowserPage):
 
@@ -605,7 +612,8 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
             def foo(self):
                 return 'Test page'
 
-            # __call__ remains unimplemented, baseclass raises NotImplementedError
+            # __call__ remains unimplemented,
+            # baseclass raises NotImplementedError
 
         class DummyPage4(Implicit, DummyPage):
             # a normal page that can implicitly acquire attributes
@@ -641,10 +649,10 @@ class TestRequestZope3ViewsBase(unittest.TestCase, BaseRequest_factory):
                             IDefaultViewName, '')
 
 
-class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
+class TestBaseRequestViews(TestRequestViewsBase):
 
     def test_traverse_view(self):
-        #simple view
+        # simple view
         root, folder = self._makeRootAndFolder()
         folder._setObject('obj', self._makeDummyObject('obj'))
         r = self._makeOne(root)
@@ -658,9 +666,10 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         self.assertEqual(ob(), 'view on obj')
 
     def test_traverse_view_attr_local(self):
-        #method on object used first
+        # method on object used first
         root, folder = self._makeRootAndFolder()
-        folder._setObject('withattr', self._makeDummyObjectWithAttr('withattr'))
+        folder._setObject(
+            'withattr', self._makeDummyObjectWithAttr('withattr'))
         r = self._makeOne(root)
         ob = r.traverse('folder/withattr/meth')
         self.assertEqual(ob(), 'meth on withattr')
@@ -672,13 +681,14 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         self.assertEqual(ob(), 'view on withattr')
 
     def test_traverse_view_attr_above(self):
-        #view takes precedence over acquired attribute
+        # view takes precedence over acquired attribute
         root, folder = self._makeRootAndFolder()
-        folder2 = root._setObject('folder2', self._makeDummyObjectWithAttr('folder2'))
+        folder2 = root._setObject(
+            'folder2', self._makeDummyObjectWithAttr('folder2'))
         folder2._setObject('obj2', self._makeDummyObject('obj2'))
         r = self._makeOne(root)
         ob = r.traverse('folder2/obj2/meth')
-        self.assertEqual(ob(), 'view on obj2') # used to be buggy (acquired)
+        self.assertEqual(ob(), 'view on obj2')  # used to be buggy (acquired)
         ob = r.traverse('folder2/obj2/@@meth')
         self.assertEqual(ob(), 'view on obj2')
         # using default view
@@ -687,10 +697,12 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         self.assertEqual(ob(), 'view on obj2')
 
     def test_traverse_view_attr_local2(self):
-        #method with other method above
+        # method with other method above
         root, folder = self._makeRootAndFolder()
-        folder2 = root._setObject('folder2', self._makeDummyObjectWithAttr('folder2'))
-        folder2._setObject('withattr2', self._makeDummyObjectWithAttr('withattr2'))
+        folder2 = root._setObject(
+            'folder2', self._makeDummyObjectWithAttr('folder2'))
+        folder2._setObject(
+            'withattr2', self._makeDummyObjectWithAttr('withattr2'))
         r = self._makeOne(root)
         ob = r.traverse('folder2/withattr2/meth')
         self.assertEqual(ob(), 'meth on withattr2')
@@ -702,10 +714,11 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         self.assertEqual(ob(), 'view on withattr2')
 
     def test_traverse_view_attr_acquired(self):
-        #normal acquired attribute without view
+        # normal acquired attribute without view
         from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
-        folder2 = root._setObject('folder2', self._makeDummyObjectWithAttr('folder2'))
+        folder2 = root._setObject(
+            'folder2', self._makeDummyObjectWithAttr('folder2'))
         folder2._setObject('obj2', self._makeDummyObject('obj2'))
         r = self._makeOne(root)
         ob = r.traverse('folder2/obj2/methonly')
@@ -714,17 +727,17 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         # using default view
         self._setDefaultViewName('methonly')
         self.assertRaises(NotFound, r.traverse, 'folder2/obj2')
-        
+
     def test_quoting_goggles(self):
-        #View goggles ('@@') should not be quoted
+        # View goggles ('@@') should not be quoted
         root, folder = self._makeRootAndFolder()
         folder._setObject('obj', self._makeDummyObject('obj'))
         r = self._makeOne(root)
         r.traverse('folder/obj/@@meth')
         self.assertEqual(r['URL'], '/folder/obj/@@meth')
-        
+
     def test_quoting_plusplus(self):
-        #View markers ('++ should not be quoted
+        # View markers ('++ should not be quoted
         root, folder = self._makeRootAndFolder()
         folder._setObject('obj', self._makeDummyObject('obj'))
         r = self._makeOne(root)
@@ -751,7 +764,7 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         r = self._makeOne(root)
         ob = r.traverse('folder/obj/page3')
         self.assertEqual(ob(), 'Test page')
-        
+
     def test_wrapping_implicit_acquirers(self):
         # when the default publish traverser finds via adaptation
         # an object providing IAcquirer, it should wrap it in the
@@ -764,10 +777,3 @@ class TestBaseRequestZope3Views(TestRequestZope3ViewsBase):
         self.assertEqual(ob(), 'Test page')
         # make sure we can acquire
         self.assertEqual(ob.ob2, ob2)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestBaseRequest),
-        unittest.makeSuite(TestBaseRequestZope3Views),
-        ))

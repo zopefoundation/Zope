@@ -15,9 +15,8 @@
 from Acquisition import aq_base
 from logging import getLogger
 
-# Interface
-
 LOG = getLogger('ZPublisher')
+
 
 def registerBeforeTraverse(container, object, app_handle, priority=99):
     """Register an object to be called before a container is traversed.
@@ -36,6 +35,7 @@ def registerBeforeTraverse(container, object, app_handle, priority=99):
     btr[(priority, app_handle)] = object
     rewriteBeforeTraverse(container, btr)
 
+
 def unregisterBeforeTraverse(container, app_handle):
     """Unregister a __before_traverse__ hook object, given its 'app_handle'.
 
@@ -50,6 +50,7 @@ def unregisterBeforeTraverse(container, app_handle):
         rewriteBeforeTraverse(container, btr)
     return objects
 
+
 def queryBeforeTraverse(container, app_handle):
     """Find __before_traverse__ hook objects, given an 'app_handle'.
 
@@ -61,7 +62,6 @@ def queryBeforeTraverse(container, app_handle):
             objects.append((k[0], btr[k]))
     return objects
 
-# Implementation tools
 
 def rewriteBeforeTraverse(container, btr):
     """Rewrite the list of __before_traverse__ hook objects"""
@@ -78,6 +78,7 @@ def rewriteBeforeTraverse(container, btr):
     keys.sort()
     for key in keys:
         bpth.add(btr[key])
+
 
 class MultiHook:
     """Class used to multiplex hook.
@@ -102,13 +103,12 @@ class MultiHook:
             try:
                 cob(container, request)
             except TypeError:
-                LOG.error('%s call %s failed.' % (
-                    `self._hookname`, `cob`), exc_info=True)
+                LOG.error('%r call %r failed.' % (
+                    self._hookname, cob), exc_info=True)
 
     def add(self, cob):
         self._list.append(cob)
 
-# Helper class
 
 class NameCaller:
     """Class used to proxy sibling objects by name.
@@ -134,10 +134,8 @@ class NameCaller:
         # This happens especially, if "meth" is a "CookieCrumber" instance,
         # i.e. in a CMF Portal, if a DTMLMethod (or a similar object
         # with a fake "func_code" is in the acquisition context
-        #args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
         args = getattr(getattr(aq_base(meth), 'func_code', None),
-                       'co_argcount',
-                       2)
+                       'co_argcount', 2)
 
         try:
             meth(*(container, request, None)[:args])
@@ -148,5 +146,5 @@ class NameCaller:
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.
-            LOG.error('BeforeTraverse: Error while invoking hook: "%s"' % self.name, 
-                      exc_info=True)
+            LOG.error('BeforeTraverse: Error while invoking hook: "%s"' %
+                      self.name, exc_info=True)

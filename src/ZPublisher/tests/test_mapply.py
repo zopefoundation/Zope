@@ -11,19 +11,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test mapply() function
-"""
+
 import unittest
 import ExtensionClass
 import Acquisition
 from ZPublisher.mapply import mapply
 
+
 class MapplyTests(unittest.TestCase):
 
     def testMethod(self):
-        def compute(a,b,c=4):
+
+        def compute(a, b, c=4):
             return '%d%d%d' % (a, b, c)
-        values = {'a':2, 'b':3, 'c':5}
+
+        values = {'a': 2, 'b': 3, 'c': 5}
         v = mapply(compute, (), values)
         self.assertEqual(v, '235')
 
@@ -31,12 +33,16 @@ class MapplyTests(unittest.TestCase):
         self.assertEqual(v, '735')
 
     def testClass(self):
-        values = {'a':2, 'b':3, 'c':5}
+        values = {'a': 2, 'b': 3, 'c': 5}
+
         class c(object):
             a = 3
+
             def __call__(self, b, c=4):
                 return '%d%d%d' % (self.a, b, c)
+
             compute = __call__
+
         cc = c()
         v = mapply(cc, (), values)
         self.assertEqual(v, '335')
@@ -47,7 +53,7 @@ class MapplyTests(unittest.TestCase):
 
         class c2:
             """Must be a classic class."""
-            
+
         c2inst = c2()
         c2inst.__call__ = cc
         v = mapply(c2inst, (), values)
@@ -91,8 +97,3 @@ class MapplyTests(unittest.TestCase):
 
         ob = NoCallButAcquisition().__of__(Root())
         self.assertRaises(TypeError, mapply, ob, (), {})
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MapplyTests))
-    return suite

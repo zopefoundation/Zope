@@ -40,8 +40,11 @@ class ExceptionRaiser3(SimpleItem):
 
 def test_suite():
     return unittest.TestSuite([
-        FunctionalDocFileSuite('exception_handling.txt',
-            globs={'ExceptionRaiser1': ExceptionRaiser1,
-                   'ExceptionRaiser2': ExceptionRaiser2,
-                   'ExceptionRaiser3': ExceptionRaiser3,}),
-        ])
+        FunctionalDocFileSuite(
+            'exception_handling.txt',
+            globs={
+                'ExceptionRaiser1': ExceptionRaiser1,
+                'ExceptionRaiser2': ExceptionRaiser2,
+                'ExceptionRaiser3': ExceptionRaiser3,
+            }),
+    ])
