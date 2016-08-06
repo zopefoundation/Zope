@@ -220,8 +220,11 @@ class Traversable:
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
                         try:
-                            next = namespaceLookup(
-                                ns, nm, obj, aq_acquire(self, 'REQUEST'))
+                            request = aq_acquire(self, 'REQUEST')
+                        except AttributeError:
+                            request = None
+                        try:
+                            next = namespaceLookup(ns, nm, obj, request)
                             if IAcquirer.providedBy(next):
                                 next = next.__of__(obj)
                             if restricted and not validate(
