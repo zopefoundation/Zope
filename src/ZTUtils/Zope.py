@@ -160,6 +160,20 @@ class Batch(Batch):
 # "make_query(bstart=batch.previous.first)" to one and
 # "make_query(bstart=batch.end)" to the other.
 
+
+_DEFAULT_ENCODING = None
+def _default_encoding():  
+    '''get default encoding from configuration
+       if zpublisher_default_encoding is not set, use utf8
+    '''
+    # avoid doing this at module scope!
+    from App.config import getConfiguration
+    global _DEFAULT_ENCODING
+    if _DEFAULT_ENCODING is None:
+        config = getConfiguration()
+        _DEFAULT_ENCODING = getattr(config, 'zpublisher_default_encoding', 'utf8')
+
+
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
 
@@ -214,10 +228,17 @@ def make_hidden_input(*args, **kwargs):
 
     return '\n'.join(qlist)
 
+def isPrimitive(obj):
+    if hasattr(obj, 'items'):
+        return False
+    if isinstance(obj, list):
+        return False
+    return True
+
 def complex_marshal(pairs):
     '''Add request marshalling information to a list of name-value pairs.
 
-    Names must be strings.  Values may be strings,
+    Names must be strings.  Values may be strings, unicode,
     integers, floats, or DateTimes, and they may also be lists or
     namespaces containing these types.
 
@@ -225,42 +246,39 @@ def complex_marshal(pairs):
     becomes a (name, marshal, value) triple.  The middle value is the
     request marshalling string.  Integer, float, and DateTime values
     will have ":int", ":float", or ":date" as their marshal string.
+    Unicode values will have ":<encoding>:ustring" as their marshal
+    string, where '<encoding>' is _default_encoding()
     Lists will be flattened, and the elements given ":list" in
     addition to their simple marshal string.  Dictionaries will be
     flattened and marshalled using ":record".
     '''
-    i = len(pairs)
-    while i > 0:
-        i = i - 1
-        k, v = pairs[i]
-        m = ''
-        sublist = None
-        if isinstance(v, str):
-            pass
-        elif hasattr(v, 'items'):
-            sublist = []
-            for sk, sv in v.items():
-                if isinstance(sv, list):
-                    for ssv in sv:
-                        sm = simple_marshal(ssv)
-                        sublist.append(('%s.%s' % (k, sk), 
-                                            '%s:list:record' % sm, ssv))
-                else:
-                    sm = simple_marshal(sv)
-                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
-        elif isinstance(v, list):
-            sublist = []
-            for sv in v:
-                sm = simple_marshal(sv)
-                sublist.append((k, '%s:list' % sm, sv))
-        else:
-            m = simple_marshal(v)
-        if sublist is None:
-            pairs[i] = (k, m, v)
-        else:
-            pairs[i:i + 1] = sublist
 
-    return pairs
+    triples = []
+
+    for (k,v) in pairs:
+        if isPrimitive(v):
+            m = simple_marshal(v)
+            if isinstance(v, unicode):
+                encoding = m.split(':')[1]
+                v = v.encode(encoding)
+            triples.append((k, m, v),)    
+
+        elif hasattr(v, 'items'):
+            for sk, sv in v.items():
+                sub_triples = complex_marshal([(sk, sv)])
+                for (sk,sm,sv) in sub_triples:
+                    sk = '%s.%s' % (k, sk)
+                    sm = '%s:record' % (sm,)
+                    triples.append((sk,sm,sv),)
+                    
+        elif isinstance(v, list):
+            for sv in v:
+                sub_triples = complex_marshal([(k,sv)])
+                for (sk,sm,sv) in sub_triples:
+                    sm = '%s:list' % (sm,)
+                    triples.append((sk,sm,sv),)
+
+    return triples
 
 def simple_marshal(v):
     if isinstance(v, str):
@@ -273,6 +291,8 @@ def simple_marshal(v):
         return ':float'
     if isinstance(v, DateTime):
         return ':date'
+    if isinstance(v, unicode):
+        return ':%s:ustring' % (_default_encoding(),)
     return ''
 
 def url_query(request, req_name="URL", omit=None):
