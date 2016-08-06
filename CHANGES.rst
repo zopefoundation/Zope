@@ -28,6 +28,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Split out Lifetime, webdav and ZServer packages into a ZServer project.
+
 - Move webdav's EtagSupport, Lockable and LockItem into OFS.
 
 - Split `Products.TemporaryFolder` and `Products.ZODBMountPoint` into
