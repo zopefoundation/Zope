@@ -1,13 +1,15 @@
+import base64
 import unittest
-import Zope2
-Zope2.startup()
+
+import transaction
 
 from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
 from Testing.makerequest import makerequest
-import transaction
-import base64
+import Zope2
 
 auth_info = 'Basic %s' % base64.encodestring('manager:secret').rstrip()
+
+Zope2.startup()
 
 
 class TestPUTFactory(unittest.TestCase):
@@ -46,25 +48,29 @@ class TestPUTFactory(unittest.TestCase):
 
     def testSimpleVirtualHosting(self):
         request = self.app.REQUEST
-        put = request.traverse('/VirtualHostBase/http/foo.com:80/VirtualHostRoot/folder/doc')
+        put = request.traverse('/VirtualHostBase/http/foo.com:80/'
+                               'VirtualHostRoot/folder/doc')
         put(request, request.RESPONSE)
         self.assertTrue('doc' in self.folder.objectIds())
 
     def testSubfolderVirtualHosting(self):
         request = self.app.REQUEST
-        put = request.traverse('/VirtualHostBase/http/foo.com:80/folder/VirtualHostRoot/doc')
+        put = request.traverse('/VirtualHostBase/http/foo.com:80/'
+                               'folder/VirtualHostRoot/doc')
         put(request, request.RESPONSE)
         self.assertTrue('doc' in self.folder.objectIds())
 
     def testInsideOutVirtualHosting(self):
         request = self.app.REQUEST
-        put = request.traverse('/VirtualHostBase/http/foo.com:80/VirtualHostRoot/_vh_foo/folder/doc')
+        put = request.traverse('/VirtualHostBase/http/foo.com:80/'
+                               'VirtualHostRoot/_vh_foo/folder/doc')
         put(request, request.RESPONSE)
         self.assertTrue('doc' in self.folder.objectIds())
 
     def testSubfolderInsideOutVirtualHosting(self):
         request = self.app.REQUEST
-        put = request.traverse('/VirtualHostBase/http/foo.com:80/folder/VirtualHostRoot/_vh_foo/doc')
+        put = request.traverse('/VirtualHostBase/http/foo.com:80/'
+                               'folder/VirtualHostRoot/_vh_foo/doc')
         put(request, request.RESPONSE)
         self.assertTrue('doc' in self.folder.objectIds())
 
@@ -79,13 +85,7 @@ class TestPUTFactory(unittest.TestCase):
         put = request.traverse('/A/B/a')
         put(request, request.RESPONSE)
         # PUT should no acquire A.a
-        self.assertEqual(str(self.app.A.a), 'I am file a', 'PUT factory should not acquire content')
+        self.assertEqual(str(self.app.A.a), 'I am file a',
+                         'PUT factory should not acquire content')
         # check for the newly created file
         self.assertEqual(str(self.app.A.B.a), 'bar')
-
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestPUTFactory),
-        ))

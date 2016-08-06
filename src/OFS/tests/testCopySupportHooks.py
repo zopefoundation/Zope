@@ -148,7 +148,7 @@ class TestCopySupport(HookTest):
         )
 
     def test_5_COPY(self):
-        # Test webdav COPY
+        # Test COPY
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
@@ -159,7 +159,7 @@ class TestCopySupport(HookTest):
         )
 
     def test_6_MOVE(self):
-        # Test webdav MOVE
+        # Test MOVE
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/mydoc' % self.folder.absolute_url()
@@ -170,7 +170,7 @@ class TestCopySupport(HookTest):
         )
 
     def test_7_DELETE(self):
-        # Test webdav DELETE
+        # Test DELETE
         req = self.app.REQUEST
         req['URL'] = '%s/mydoc' % self.folder.absolute_url()
         self.folder.mydoc.DELETE(req, req.RESPONSE)
@@ -243,7 +243,7 @@ class TestCopySupportSublocation(HookTest):
         )
 
     def test_5_COPY(self):
-        # Test webdav COPY
+        # Test COPY
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
@@ -256,7 +256,7 @@ class TestCopySupportSublocation(HookTest):
         )
 
     def test_6_MOVE(self):
-        # Test webdav MOVE
+        # Test MOVE
         req = self.app.REQUEST
         req.environ['HTTP_DEPTH'] = 'infinity'
         req.environ['HTTP_DESTINATION'] = '%s/subfolder/myfolder' % self.folder.absolute_url()
@@ -269,7 +269,7 @@ class TestCopySupportSublocation(HookTest):
         )
 
     def test_7_DELETE(self):
-        # Test webdav DELETE
+        # Test DELETE
         req = self.app.REQUEST
         req['URL'] = '%s/myfolder' % self.folder.absolute_url()
         self.folder.myfolder.DELETE(req, req.RESPONSE)

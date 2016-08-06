@@ -204,7 +204,7 @@ class Traversable:
 
                 if name[0] == '_':
                     # Never allowed in a URL.
-                    raise NotFound, name
+                    raise NotFound(name)
 
                 if name == '..':
                     next = aq_parent(obj)

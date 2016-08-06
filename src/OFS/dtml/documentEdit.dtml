@@ -42,7 +42,7 @@ the <em>browse</em> button to select a local file to upload.
   <td align="left" valign="top" colspan="2">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" name="SUBMIT" value="Save Changes">
   </dtml-if>
@@ -74,7 +74,7 @@ the <em>browse</em> button to select a local file to upload.
   <td align="left" valign="top">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" value="Upload File">
   </dtml-if>

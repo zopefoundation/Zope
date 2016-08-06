@@ -13,9 +13,3 @@ class TestOrderedFolder(unittest.TestCase):
         verifyClass(IOrderedContainer, OrderedFolder)
         verifyClass(IOrderedFolder, OrderedFolder)
         verifyClass(IWriteLock, OrderedFolder)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestOrderedFolder),
-        ))

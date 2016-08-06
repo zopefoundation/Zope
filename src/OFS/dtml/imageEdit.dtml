@@ -70,7 +70,7 @@ button and click <em>upload</em> to update the contents of the &dtml-kind;.
   <td align="left" valign="top">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" name="submit"
     value="Save Changes">
@@ -103,7 +103,7 @@ button and click <em>upload</em> to update the contents of the &dtml-kind;.
   <td align="left" valign="top">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" name="submit"
     value="Upload">

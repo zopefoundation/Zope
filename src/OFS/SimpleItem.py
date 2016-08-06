@@ -18,6 +18,7 @@ This module can also be used as a simple template for implementing new
 item types.
 """
 
+import logging
 import marshal
 import re
 import sys
@@ -59,8 +60,8 @@ from OFS.CopySupport import CopySource
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 
-import logging
 logger = logging.getLogger()
+
 
 class Item(Base,
            Resource,

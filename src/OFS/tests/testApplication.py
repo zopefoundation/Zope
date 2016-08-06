@@ -105,8 +105,3 @@ class ApplicationTests(unittest.TestCase):
 
 def _noWay(self, key, default=None):
     raise KeyError(key)
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(ApplicationTests),
-        ))

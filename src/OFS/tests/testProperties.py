@@ -17,7 +17,6 @@ import unittest
 
 
 class TestPropertyManager(unittest.TestCase):
-    """Property management tests."""
 
     def _getTargetClass(self):
         from OFS.PropertyManager import PropertyManager
@@ -33,24 +32,24 @@ class TestPropertyManager(unittest.TestCase):
 
         verifyClass(IPropertyManager, PropertyManager)
 
-    def testLinesPropertyIsTuple( self ):
+    def testLinesPropertyIsTuple(self):
         inst = self._makeOne()
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(type(inst.getProperty('prop')) == type(()))
-        self.assertTrue(type(inst.prop) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
+        self.assertTrue(isinstance(inst.prop, tuple))
 
         inst._setPropValue('prop', ['xxx', 'yyy'])
-        self.assertTrue(type(inst.getProperty('prop')) == type(()))
-        self.assertTrue(type(inst.prop) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
+        self.assertTrue(isinstance(inst.prop, tuple))
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.assertTrue(type(inst.getProperty('prop')) == type(()))
-        self.assertTrue(type(inst.prop) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
+        self.assertTrue(isinstance(inst.prop, tuple))
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(type(inst.getProperty('prop2')) == type(()))
-        self.assertTrue(type(inst.prop2) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop2'), tuple))
+        self.assertTrue(isinstance(inst.prop2, tuple))
 
     def test_propertyLabel_no_label_falls_back_to_id(self):
         class NoLabel(self._getTargetClass()):
@@ -88,23 +87,21 @@ class TestPropertyManager(unittest.TestCase):
 
 
 class TestPropertySheet(unittest.TestCase):
-    """Property management tests."""
 
     def _makeOne(self, *args, **kw):
         from OFS.PropertySheets import PropertySheet
-
         return PropertySheet(*args, **kw)
 
     def testPropertySheetLinesPropertyIsTuple(self):
         inst = self._makeOne('foo')
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(type(inst.getProperty('prop')) == type(()))
-        self.assertTrue(type(inst.prop) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
+        self.assertTrue(isinstance(inst.prop, tuple))
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.assertTrue(type(inst.getProperty('prop')) == type(()))
-        self.assertTrue(type(inst.prop) == type(()))
+        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
+        self.assertTrue(isinstance(inst.prop, tuple))
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
         self.assertTrue(type(inst.getProperty('prop2')) == type(()))

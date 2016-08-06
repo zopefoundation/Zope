@@ -773,7 +773,7 @@ class ObjectManager(CopyContainer,
             if (request.maybe_webdav_client and
                 method not in ('GET', 'POST')):
                 return NullResource(self, key, request).__of__(self)
-        raise KeyError, key
+        raise KeyError(key)
 
     def __setitem__(self, key, value):
         return self._setObject(key, value)

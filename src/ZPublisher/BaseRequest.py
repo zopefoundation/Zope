@@ -34,7 +34,8 @@ from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
-UNSPECIFIED_ROLES=''
+UNSPECIFIED_ROLES = ''
+
 
 def quote(text):
     # quote url path segments, but leave + and @ intact

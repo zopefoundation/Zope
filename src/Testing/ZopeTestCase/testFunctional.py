@@ -132,7 +132,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(self.folder.index_html(), 'foo')
 
     def testPUTNew(self):
-        # Create a new object via FTP or WebDAV
+        # Create a new object via PUT
         self.setPermissions([add_documents_images_and_files])
 
         put_data = StringIO('foo')

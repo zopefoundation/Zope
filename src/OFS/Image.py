@@ -17,19 +17,20 @@ from cgi import escape
 from cStringIO import StringIO
 from mimetools import choose_boundary
 import struct
+import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files
 from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import view as View
+from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
-from webdav.common import rfc1123_date
 from webdav.interfaces import IWriteLock
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
@@ -47,11 +48,13 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.lifecycleevent import ObjectCreatedEvent
 
-manage_addFileForm = DTMLFile('dtml/imageAdd',
-                              globals(),
-                              Kind='File',
-                              kind='file',
-                             )
+if sys.version_info >= (3, 0):
+    unicode = str
+
+manage_addFileForm = DTMLFile(
+    'dtml/imageAdd', globals(), Kind='File', kind='file')
+
+
 def manage_addFile(self, id, file='', title='', precondition='',
                    content_type='', REQUEST=None):
     """Add a new File object.
@@ -65,10 +68,10 @@ def manage_addFile(self, id, file='', title='', precondition='',
 
     id, title = cookId(id, title, file)
 
-    self=self.this()
+    self = self.this()
 
     # First, we create the file without data:
-    self._setObject(id, File(id,title,'',content_type, precondition))
+    self._setObject(id, File(id, title, '', content_type, precondition))
 
     newFile = self._getOb(id)
 
@@ -77,12 +80,12 @@ def manage_addFile(self, id, file='', title='', precondition='',
     if file:
         newFile.manage_upload(file)
     if content_type:
-        newFile.content_type=content_type
+        newFile.content_type = content_type
 
     notify(ObjectCreatedEvent(newFile))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
 
 
 class File(Persistent, Implicit, PropertyManager,
@@ -96,55 +99,56 @@ class File(Persistent, Implicit, PropertyManager,
                implementedBy(Item_w__name__),
                implementedBy(Cacheable),
                IWriteLock,
-               HTTPRangeSupport.HTTPRangeInterface,
-              )
-    meta_type='File'
+               HTTPRangeSupport.HTTPRangeInterface)
+
+    meta_type = 'File'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    precondition=''
-    size=None
+    precondition = ''
+    size = None
 
-    manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
-                               Kind='File',kind='file')
+    manage_editForm = DTMLFile('dtml/fileEdit', globals(),
+                               Kind='File', kind='file')
     manage_editForm._setName('manage_editForm')
 
     security.declareProtected(view_management_screens, 'manage')
     security.declareProtected(view_management_screens, 'manage_main')
-    manage=manage_main=manage_editForm
-    manage_uploadForm=manage_editForm
+    manage = manage_main = manage_editForm
+    manage_uploadForm = manage_editForm
 
-    manage_options=(
+    manage_options = (
         (
-        {'label': 'Edit', 'action': 'manage_main'},
-        {'label': 'View', 'action': ''},
-        )
-        + PropertyManager.manage_options
-        + RoleManager.manage_options
-        + Item_w__name__.manage_options
-        + Cacheable.manage_options
-        )
+            {'label': 'Edit', 'action': 'manage_main'},
+            {'label': 'View', 'action': ''},
+        ) +
+        PropertyManager.manage_options +
+        RoleManager.manage_options +
+        Item_w__name__.manage_options +
+        Cacheable.manage_options
+    )
 
-    _properties=({'id':'title', 'type': 'string'},
-                 {'id':'content_type', 'type':'string'},
-                 )
+    _properties = (
+        {'id': 'title', 'type': 'string'},
+        {'id': 'content_type', 'type': 'string'},
+    )
 
     def __init__(self, id, title, file, content_type='', precondition=''):
-        self.__name__=id
-        self.title=title
-        self.precondition=precondition
+        self.__name__ = id
+        self.title = title
+        self.precondition = precondition
 
         data, size = self._read_data(file)
-        content_type=self._get_content_type(file, data, id, content_type)
+        content_type = self._get_content_type(file, data, id, content_type)
         self.update_data(data, content_type, size)
 
     def _if_modified_since_request_handler(self, REQUEST, RESPONSE):
         # HTTP If-Modified-Since header handling: return True if
         # we can handle this request by returning a 304 response
-        header=REQUEST.get_header('If-Modified-Since', None)
+        header = REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
-            header=header.split( ';')[0]
+            header = header.split(';')[0]
             # Some proxies seem to send invalid date strings for this
             # header. If the date string is not valid, we ignore it
             # rather than raise an error to be generally consistent
@@ -153,13 +157,15 @@ class File(Persistent, Implicit, PropertyManager,
             # of the way they parse it).
             # This happens to be what RFC2616 tells us to do in the face of an
             # invalid date.
-            try:    mod_since=long(DateTime(header).timeTime())
-            except: mod_since=None
+            try:
+                mod_since = int(DateTime(header).timeTime())
+            except Exception:
+                mod_since = None
             if mod_since is not None:
                 if self._p_mtime:
-                    last_mod = long(self._p_mtime)
+                    last_mod = int(self._p_mtime)
                 else:
-                    last_mod = long(0)
+                    last_mod = 0
                 if last_mod > 0 and last_mod <= mod_since:
                     RESPONSE.setHeader('Last-Modified',
                                        rfc1123_date(self._p_mtime))
@@ -193,14 +199,16 @@ class File(Persistent, Implicit, PropertyManager,
                         ranges = None
                 else:
                     # Date
-                    date = if_range.split( ';')[0]
-                    try: mod_since=long(DateTime(date).timeTime())
-                    except: mod_since=None
+                    date = if_range.split(';')[0]
+                    try:
+                        mod_since = int(DateTime(date).timeTime())
+                    except Exception:
+                        mod_since = None
                     if mod_since is not None:
                         if self._p_mtime:
-                            last_mod = long(self._p_mtime)
+                            last_mod = int(self._p_mtime)
                         else:
-                            last_mod = long(0)
+                            last_mod = 0
                         if last_mod > mod_since:
                             # Modified, so send a normal response. We delete
                             # the ranges, which causes us to skip to the 200
@@ -216,11 +224,11 @@ class File(Persistent, Implicit, PropertyManager,
                         break
 
                 if not satisfiable:
-                    RESPONSE.setHeader('Content-Range',
-                        'bytes */%d' % self.size)
+                    RESPONSE.setHeader(
+                        'Content-Range', 'bytes */%d' % self.size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
-                    RESPONSE.setHeader('Last-Modified',
-                        rfc1123_date(self._p_mtime))
+                    RESPONSE.setHeader(
+                        'Last-Modified', rfc1123_date(self._p_mtime))
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setStatus(416)
@@ -233,14 +241,15 @@ class File(Persistent, Implicit, PropertyManager,
                     start, end = ranges[0]
                     size = end - start
 
-                    RESPONSE.setHeader('Last-Modified',
-                        rfc1123_date(self._p_mtime))
+                    RESPONSE.setHeader(
+                        'Last-Modified', rfc1123_date(self._p_mtime))
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
-                    RESPONSE.setHeader('Content-Range',
+                    RESPONSE.setHeader(
+                        'Content-Range',
                         'bytes %d-%d/%d' % (start, end - 1, self.size))
-                    RESPONSE.setStatus(206) # Partial content
+                    RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
                     if isinstance(data, str):
@@ -256,7 +265,8 @@ class File(Persistent, Implicit, PropertyManager,
                             # We are within the range
                             lstart = l - (pos - start)
 
-                            if lstart < 0: lstart = 0
+                            if lstart < 0:
+                                lstart = 0
 
                             # find the endpoint
                             if end <= pos:
@@ -277,15 +287,14 @@ class File(Persistent, Implicit, PropertyManager,
                     boundary = choose_boundary()
 
                     # Calculate the content length
-                    size = (8 + len(boundary) + # End marker length
-                        len(ranges) * (         # Constant lenght per set
+                    size = (8 + len(boundary) +  # End marker length
+                            len(ranges) * (  # Constant lenght per set
                             49 + len(boundary) + len(self.content_type) +
                             len('%d' % self.size)))
                     for start, end in ranges:
                         # Variable length per set
                         size = (size + len('%d%d' % (start, end - 1)) +
-                            end - start)
-
+                                end - start)
 
                     # Some clients implement an earlier draft of the spec, they
                     # will only accept x-byteranges.
@@ -293,12 +302,13 @@ class File(Persistent, Implicit, PropertyManager,
 
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
-                    RESPONSE.setHeader('Last-Modified',
-                        rfc1123_date(self._p_mtime))
-                    RESPONSE.setHeader('Content-Type',
+                    RESPONSE.setHeader(
+                        'Last-Modified', rfc1123_date(self._p_mtime))
+                    RESPONSE.setHeader(
+                        'Content-Type',
                         'multipart/%sbyteranges; boundary=%s' % (
                             draftprefix, boundary))
-                    RESPONSE.setStatus(206) # Partial content
+                    RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
                     # The Pdata map allows us to jump into the Pdata chain
@@ -308,8 +318,8 @@ class File(Persistent, Implicit, PropertyManager,
 
                     for start, end in ranges:
                         RESPONSE.write('\r\n--%s\r\n' % boundary)
-                        RESPONSE.write('Content-Type: %s\r\n' %
-                            self.content_type)
+                        RESPONSE.write(
+                            'Content-Type: %s\r\n' % self.content_type)
                         RESPONSE.write(
                             'Content-Range: bytes %d-%d/%d\r\n\r\n' % (
                                 start, end - 1, self.size))
@@ -339,7 +349,8 @@ class File(Persistent, Implicit, PropertyManager,
                                     # We are within the range
                                     lstart = l - (pos - start)
 
-                                    if lstart < 0: lstart = 0
+                                    if lstart < 0:
+                                        lstart = 0
 
                                     # find the endpoint
                                     if end <= pos:
@@ -349,12 +360,14 @@ class File(Persistent, Implicit, PropertyManager,
                                         RESPONSE.write(data[lstart:lend])
                                         break
 
-                                    # Not yet at the end, transmit what we have.
+                                    # Not yet at the end,
+                                    # transmit what we have.
                                     RESPONSE.write(data[lstart:])
 
                                 data = data.next
-                                # Store a reference to a Pdata chain link so we
-                                # don't have to deref during this request again.
+                                # Store a reference to a Pdata chain link
+                                # so we don't have to deref during
+                                # this request again.
                                 pdata_map[pos] = data
 
                     # Do not keep the link references around.
@@ -386,9 +399,9 @@ class File(Persistent, Implicit, PropertyManager,
             # Grab whatever precondition was defined and then
             # execute it.  The precondition will raise an exception
             # if something violates its terms.
-            c=getattr(self, str(self.precondition))
-            if hasattr(c,'isDocTemp') and c.isDocTemp:
-                c(REQUEST['PARENTS'][1],REQUEST)
+            c = getattr(self, str(self.precondition))
+            if hasattr(c, 'isDocTemp') and c.isDocTemp:
+                c(REQUEST['PARENTS'][1], REQUEST)
             else:
                 c()
 
@@ -412,14 +425,14 @@ class File(Persistent, Implicit, PropertyManager,
 
         self.ZCacheable_set(None)
 
-        data=self.data
+        data = self.data
         if isinstance(data, str):
             RESPONSE.setBase(None)
             return data
 
         while data is not None:
             RESPONSE.write(data.data)
-            data=data.next
+            data = data.next
 
         return ''
 
@@ -428,7 +441,7 @@ class File(Persistent, Implicit, PropertyManager,
         """
         The default view of the contents of the File or Image.
         """
-        raise Redirect, URL1
+        raise Redirect(URL1)
 
     security.declareProtected(View, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
@@ -443,10 +456,12 @@ class File(Persistent, Implicit, PropertyManager,
             raise TypeError('Data can only be str or file-like.  '
                             'Unicode objects are expressly forbidden.')
 
-        if content_type is not None: self.content_type=content_type
-        if size is None: size=len(data)
-        self.size=size
-        self.data=data
+        if content_type is not None:
+            self.content_type = content_type
+        if size is None:
+            size = len(data)
+        self.size = size
+        self.data = data
         self.ZCacheable_invalidate()
         self.ZCacheable_set(None)
         self.http__refreshEtag()
@@ -460,10 +475,12 @@ class File(Persistent, Implicit, PropertyManager,
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
-        self.title=str(title)
-        self.content_type=str(content_type)
-        if precondition: self.precondition=str(precondition)
-        elif self.precondition: del self.precondition
+        self.title = str(title)
+        self.content_type = str(content_type)
+        if precondition:
+            self.precondition = str(precondition)
+        elif self.precondition:
+            del self.precondition
         if filedata is not None:
             self.update_data(filedata, content_type, len(filedata))
         else:
@@ -472,11 +489,12 @@ class File(Persistent, Implicit, PropertyManager,
         notify(ObjectModifiedEvent(self))
 
         if REQUEST:
-            message="Saved changes."
-            return self.manage_main(self,REQUEST,manage_tabs_message=message)
+            message = "Saved changes."
+            return self.manage_main(
+                self, REQUEST, manage_tabs_message=message)
 
     security.declareProtected(change_images_and_files, 'manage_upload')
-    def manage_upload(self,file='',REQUEST=None):
+    def manage_upload(self, file='', REQUEST=None):
         """
         Replaces the current contents of the File or Image object with file.
 
@@ -486,53 +504,57 @@ class File(Persistent, Implicit, PropertyManager,
             raise ResourceLockedError("File is locked.")
 
         data, size = self._read_data(file)
-        content_type=self._get_content_type(file, data, self.__name__,
-                                            'application/octet-stream')
+        content_type = self._get_content_type(file, data, self.__name__,
+                                              'application/octet-stream')
         self.update_data(data, content_type, size)
 
         notify(ObjectModifiedEvent(self))
 
         if REQUEST:
-            message="Saved changes."
-            return self.manage_main(self,REQUEST,manage_tabs_message=message)
+            message = "Saved changes."
+            return self.manage_main(
+                self, REQUEST, manage_tabs_message=message)
 
     def _get_content_type(self, file, body, id, content_type=None):
-        headers=getattr(file, 'headers', None)
+        headers = getattr(file, 'headers', None)
         if headers and 'content-type' in headers:
-            content_type=headers['content-type']
+            content_type = headers['content-type']
         else:
-            if not isinstance(body, str): body=body.data
-            content_type, enc=guess_content_type(
-                getattr(file, 'filename',id), body, content_type)
+            if not isinstance(body, str):
+                body = body.data
+            content_type, enc = guess_content_type(
+                getattr(file, 'filename', id), body, content_type)
         return content_type
 
     def _read_data(self, file):
         import transaction
 
-        n=1 << 16
+        n = 1 << 16
 
         if isinstance(file, str):
-            size=len(file)
-            if size < n: return file, size
+            size = len(file)
+            if size < n:
+                return (file, size)
             # Big string: cut it into smaller chunks
             file = StringIO(file)
 
         if isinstance(file, FileUpload) and not file:
-            raise ValueError, 'File not specified'
+            raise ValueError('File not specified')
 
         if hasattr(file, '__class__') and file.__class__ is Pdata:
-            size=len(file)
-            return file, size
+            size = len(file)
+            return (file, size)
 
-        seek=file.seek
-        read=file.read
+        seek = file.seek
+        read = file.read
 
-        seek(0,2)
-        size=end=file.tell()
+        seek(0, 2)
+        size = end = file.tell()
 
-        if size <= 2*n:
+        if size <= 2 * n:
             seek(0)
-            if size < n: return read(size), size
+            if size < n:
+                return read(size), size
             return Pdata(read(size)), size
 
         # Make sure we have an _p_jar, even if we are a new object, by
@@ -550,15 +572,15 @@ class File(Persistent, Implicit, PropertyManager,
         # possible.
         next = None
         while end > 0:
-            pos = end-n
+            pos = end - n
             if pos < n:
-                pos = 0 # we always want at least n bytes
+                pos = 0  # we always want at least n bytes
             seek(pos)
 
             # Create the object and assign it a next pointer
             # in the same transaction, so that there is only
             # a single database update for it.
-            data = Pdata(read(end-pos))
+            data = Pdata(read(end - pos))
             self._p_jar.add(data)
             data.next = next
 
@@ -581,13 +603,13 @@ class File(Persistent, Implicit, PropertyManager,
         """Handle HTTP PUT requests"""
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        type=REQUEST.get_header('content-type', None)
+        type = REQUEST.get_header('content-type', None)
 
-        file=REQUEST['BODYFILE']
+        file = REQUEST['BODYFILE']
 
         data, size = self._read_data(file)
-        content_type=self._get_content_type(file, data, self.__name__,
-                                            type or self.content_type)
+        content_type = self._get_content_type(file, data, self.__name__,
+                                              type or self.content_type)
         self.update_data(data, content_type, size)
 
         RESPONSE.setStatus(204)
@@ -597,12 +619,13 @@ class File(Persistent, Implicit, PropertyManager,
     def get_size(self):
         # Get the size of a file or image.
         # Returns the size of the file or image.
-        size=self.size
-        if size is None: size=len(self.data)
+        size = self.size
+        if size is None:
+            size = len(self.data)
         return size
 
     # deprecated; use get_size!
-    getSize=get_size
+    getSize = get_size
 
     security.declareProtected(View, 'getContentType')
     def getContentType(self):
@@ -610,9 +633,11 @@ class File(Persistent, Implicit, PropertyManager,
         # Returns the content type (MIME type) of a file or image.
         return self.content_type
 
+    def __str__(self):
+        return str(self.data)
 
-    def __str__(self): return str(self.data)
-    def __len__(self): return 1
+    def __len__(self):
+        return 1
 
     security.declareProtected(ftp_access, 'manage_FTPstat')
     security.declareProtected(ftp_access, 'manage_FTPlist')
@@ -647,8 +672,10 @@ class File(Persistent, Implicit, PropertyManager,
 InitializeClass(File)
 
 
-manage_addImageForm=DTMLFile('dtml/imageAdd',globals(),
-                             Kind='Image',kind='image')
+manage_addImageForm = DTMLFile(
+    'dtml/imageAdd', globals(), Kind='Image', kind='image')
+
+
 def manage_addImage(self, id, file, title='', precondition='', content_type='',
                     REQUEST=None):
     """
@@ -657,17 +684,17 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
     Creates a new Image object 'id' with the contents of 'file'.
     """
 
-    id=str(id)
-    title=str(title)
-    content_type=str(content_type)
-    precondition=str(precondition)
+    id = str(id)
+    title = str(title)
+    content_type = str(content_type)
+    precondition = str(precondition)
 
     id, title = cookId(id, title, file)
 
-    self=self.this()
+    self = self.this()
 
     # First, we create the image without data:
-    self._setObject(id, Image(id,title,'',content_type, precondition))
+    self._setObject(id, Image(id, title, '', content_type, precondition))
 
     newFile = self._getOb(id)
 
@@ -676,13 +703,15 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
     if file:
         newFile.manage_upload(file)
     if content_type:
-        newFile.content_type=content_type
+        newFile.content_type = content_type
 
     notify(ObjectCreatedEvent(newFile))
 
     if REQUEST is not None:
-        try:    url=self.DestinationURL()
-        except: url=REQUEST['URL1']
+        try:
+            url = self.DestinationURL()
+        except Exception:
+            url = REQUEST['URL1']
         REQUEST.RESPONSE.redirect('%s/manage_main' % url)
     return id
 
@@ -705,8 +734,8 @@ def getImageInfo(data):
     # See PNG v1.2 spec (http://www.cdrom.com/pub/png/spec/)
     # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
     # and finally the 4-byte width, height
-    elif ((size >= 24) and (data[:8] == '\211PNG\r\n\032\n')
-          and (data[12:16] == 'IHDR')):
+    elif ((size >= 24) and (data[:8] == '\211PNG\r\n\032\n') and
+          (data[12:16] == 'IHDR')):
         content_type = 'image/png'
         w, h = struct.unpack(">LL", data[16:24])
         width = int(w)
@@ -728,18 +757,21 @@ def getImageInfo(data):
         b = jpeg.read(1)
         try:
             while (b and ord(b) != 0xDA):
-                while (ord(b) != 0xFF): b = jpeg.read(1)
-                while (ord(b) == 0xFF): b = jpeg.read(1)
+                while (ord(b) != 0xFF):
+                    b = jpeg.read(1)
+                while (ord(b) == 0xFF):
+                    b = jpeg.read(1)
                 if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
                     jpeg.read(3)
                     h, w = struct.unpack(">HH", jpeg.read(4))
                     break
                 else:
-                    jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
+                    jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0]) - 2)
                 b = jpeg.read(1)
             width = int(w)
             height = int(h)
-        except: pass
+        except Exception:
+            pass
 
     return content_type, width, height
 
@@ -749,14 +781,14 @@ class Image(File):
     as File objects.  Images also have a string representation that
     renders an HTML 'IMG' tag.
     """
-    meta_type='Image'
+    meta_type = 'Image'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    alt=''
-    height=''
-    width=''
+    alt = ''
+    height = ''
+    width = ''
 
     # FIXME: Redundant, already in base class
     security.declareProtected(change_images_and_files, 'manage_edit')
@@ -770,33 +802,34 @@ class Image(File):
     security.declareProtected(ftp_access, 'manage_FTPget')
     security.declareProtected(delete_objects, 'DELETE')
 
-    _properties=({'id':'title', 'type': 'string'},
-                 {'id':'alt', 'type':'string'},
-                 {'id':'content_type', 'type':'string','mode':'w'},
-                 {'id':'height', 'type':'string'},
-                 {'id':'width', 'type':'string'},
-                 )
+    _properties = (
+        {'id': 'title', 'type': 'string'},
+        {'id': 'alt', 'type': 'string'},
+        {'id': 'content_type', 'type': 'string', 'mode': 'w'},
+        {'id': 'height', 'type': 'string'},
+        {'id': 'width', 'type': 'string'},
+    )
 
-    manage_options=(
-        ({'label':'Edit', 'action':'manage_main'},
-         {'label':'View', 'action':'view_image_or_file'}, )
-        + PropertyManager.manage_options
-        + RoleManager.manage_options
-        + Item_w__name__.manage_options
-        + Cacheable.manage_options
-        )
+    manage_options = (
+        ({'label': 'Edit', 'action': 'manage_main'},
+         {'label': 'View', 'action': 'view_image_or_file'}) +
+        PropertyManager.manage_options +
+        RoleManager.manage_options +
+        Item_w__name__.manage_options +
+        Cacheable.manage_options
+    )
 
-    manage_editForm  =DTMLFile('dtml/imageEdit',globals(),
-                               Kind='Image',kind='image')
+    manage_editForm = DTMLFile('dtml/imageEdit', globals(),
+                               Kind='Image', kind='image')
     manage_editForm._setName('manage_editForm')
 
     security.declareProtected(View, 'view_image_or_file')
-    view_image_or_file =DTMLFile('dtml/imageView',globals())
+    view_image_or_file = DTMLFile('dtml/imageView', globals())
 
     security.declareProtected(view_management_screens, 'manage')
     security.declareProtected(view_management_screens, 'manage_main')
-    manage=manage_main=manage_editForm
-    manage_uploadForm=manage_editForm
+    manage = manage_main = manage_editForm
+    manage_uploadForm = manage_editForm
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
@@ -804,10 +837,11 @@ class Image(File):
             raise TypeError('Data can only be str or file-like.  '
                             'Unicode objects are expressly forbidden.')
 
-        if size is None: size=len(data)
+        if size is None:
+            size = len(data)
 
-        self.size=size
-        self.data=data
+        self.size = size
+        self.data = data
 
         ct, width, height = getImageInfo(data)
         if ct:
@@ -817,7 +851,8 @@ class Image(File):
             self.height = height
 
         # Now we should have the correct content type, or still None
-        if content_type is not None: self.content_type = content_type
+        if content_type is not None:
+            self.content_type = content_type
 
         self.ZCacheable_invalidate()
         self.ZCacheable_set(None)
@@ -842,26 +877,28 @@ class Image(File):
         # trying to use 'tag()' to include a CSS class. The tag() method
         # will accept a 'css_class' argument that will be converted to
         # 'class' in the output tag to work around this.
-        if height is None: height=self.height
-        if width is None:  width=self.width
+        if height is None:
+            height = self.height
+        if width is None:
+            width = self.width
 
         # Auto-scaling support
         xdelta = xscale or scale
         ydelta = yscale or scale
 
         if xdelta and width:
-            width =  str(int(round(int(width) * xdelta)))
+            width = str(int(round(int(width) * xdelta)))
         if ydelta and height:
             height = str(int(round(int(height) * ydelta)))
 
-        result='<img src="%s"' % (self.absolute_url())
+        result = '<img src="%s"' % (self.absolute_url())
 
         if alt is None:
-            alt=getattr(self, 'alt', '')
+            alt = getattr(self, 'alt', '')
         result = '%s alt="%s"' % (result, escape(alt, 1))
 
         if title is None:
-            title=getattr(self, 'title', '')
+            title = getattr(self, 'title', '')
         result = '%s title="%s"' % (result, escape(title, 1))
 
         if height:
@@ -869,10 +906,6 @@ class Image(File):
 
         if width:
             result = '%s width="%s"' % (result, width)
-
-        # Omitting 'border' attribute (Collector #1557)
-#        if not 'border' in [ x.lower() for x in  args.keys()]:
-#            result = '%s border="0"' % result
 
         if css_class is not None:
             result = '%s class="%s"' % (result, css_class)
@@ -888,22 +921,23 @@ InitializeClass(Image)
 
 
 def cookId(id, title, file):
-    if not id and hasattr(file,'filename'):
-        filename=file.filename
-        title=title or filename
-        id=filename[max(filename.rfind('/'),
-                        filename.rfind('\\'),
-                        filename.rfind(':'),
-                        )+1:]
+    if not id and hasattr(file, 'filename'):
+        filename = file.filename
+        title = title or filename
+        id = filename[max(filename.rfind('/'),
+                          filename.rfind('\\'),
+                          filename.rfind(':'),
+                          ) + 1:]
     return id, title
+
 
 class Pdata(Persistent, Implicit):
     # Wrapper for possibly large data
 
-    next=None
+    next = None
 
     def __init__(self, data):
-        self.data=data
+        self.data = data
 
     def __getslice__(self, i, j):
         return self.data[i:j]
@@ -913,13 +947,14 @@ class Pdata(Persistent, Implicit):
         return len(data)
 
     def __str__(self):
-        next=self.next
-        if next is None: return self.data
+        next = self.next
+        if next is None:
+            return self.data
 
-        r=[self.data]
+        r = [self.data]
         while next is not None:
-            self=next
+            self = next
             r.append(self.data)
-            next=self.next
+            next = self.next
 
         return ''.join(r)

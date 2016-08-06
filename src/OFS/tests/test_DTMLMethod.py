@@ -1,5 +1,6 @@
 import unittest
 
+
 class DTMLMethodTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -45,10 +46,3 @@ class DummyDispatcher:
 
     def _setObject(self, key, value):
         self._set[key] = value
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(DTMLMethodTests),
-        unittest.makeSuite(FactoryTests),
-        ))

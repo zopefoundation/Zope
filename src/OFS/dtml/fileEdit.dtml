@@ -87,7 +87,7 @@ text type and small enough to be edited in a text area.
   <td align="left" valign="top">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" name="manage_edit:method" 
     value="Save Changes">
@@ -114,7 +114,7 @@ text type and small enough to be edited in a text area.
   <td align="left" valign="top">
   <div class="form-element">
   <dtml-if wl_isLocked>
-   <em>Locked by WebDAV</em>
+   <em>Locked</em>
   <dtml-else>
    <input class="form-element" type="submit" name="manage_upload:method" 
     value="Upload">

@@ -11,9 +11,3 @@ class TestFolder(unittest.TestCase):
 
         verifyClass(IFolder, Folder)
         verifyClass(IWriteLock, Folder)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestFolder),
-        ))

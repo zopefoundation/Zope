@@ -2,9 +2,9 @@ import unittest
 
 import Testing
 import Zope2
-Zope2.startup()
 
-import os, sys
+import os
+import sys
 import time
 from cStringIO import StringIO
 
@@ -35,23 +35,27 @@ except:
 imagedata = os.path.join(here, 'test.gif')
 filedata = os.path.join(here, 'test.gif')
 
+Zope2.startup()
+
+
 def makeConnection():
     import ZODB
     from ZODB.DemoStorage import DemoStorage
 
     s = DemoStorage()
-    return ZODB.DB( s ).open()
+    return ZODB.DB(s).open()
 
 
 def aputrequest(file, content_type):
     resp = HTTPResponse(stdout=sys.stdout)
     environ = {}
-    environ['SERVER_NAME']='foo'
-    environ['SERVER_PORT']='80'
+    environ['SERVER_NAME'] = 'foo'
+    environ['SERVER_PORT'] = '80'
     environ['REQUEST_METHOD'] = 'PUT'
     environ['CONTENT_TYPE'] = content_type
     req = HTTPRequest(stdin=file, environ=environ, response=resp)
     return req
+
 
 class DummyCache:
     def __init__(self):
@@ -71,8 +75,8 @@ class DummyCache:
         self.invalidated = ob
 
     def clear(self):
-        self.set=None
-        self.get=None
+        self.set = None
+        self.get = None
         self.invalidated = None
         self.si = None
 
@@ -80,60 +84,61 @@ class DummyCache:
         self.si = si
 
 
-ADummyCache=DummyCache()
+ADummyCache = DummyCache()
+
 
 class DummyCacheManager(SimpleItem):
     def ZCacheManager_getCache(self):
         return ADummyCache
 
+
 class EventCatcher(object):
-    
+
     def __init__(self):
         self.created = []
         self.modified = []
-        
         self.setUp()
-    
+
     def setUp(self):
         from zope.component import provideHandler
         provideHandler(self.handleCreated)
         provideHandler(self.handleModified)
-    
+
     def tearDown(self):
         from zope.component import getSiteManager
         getSiteManager().unregisterHandler(self.handleCreated)
         getSiteManager().unregisterHandler(self.handleModified)
-    
+
     def reset(self):
         self.created = []
         self.modified = []
-    
+
     @adapter(IObjectCreatedEvent)
     def handleCreated(self, event):
         if isinstance(event.object, OFS.Image.File):
             self.created.append(event)
-    
+
     @adapter(IObjectModifiedEvent)
     def handleModified(self, event):
         if isinstance(event.object, OFS.Image.File):
             self.modified.append(event)
 
+
 class FileTests(unittest.TestCase):
     data = open(filedata, 'rb').read()
     content_type = 'application/octet-stream'
     factory = 'manage_addFile'
-    def setUp( self ):
 
+    def setUp(self):
         self.connection = makeConnection()
         self.eventCatcher = EventCatcher()
-        
         try:
             r = self.connection.root()
             a = Application()
             r['Application'] = a
             self.root = a
             responseOut = self.responseOut = StringIO()
-            self.app = makerequest( self.root, stdout=responseOut )
+            self.app = makerequest(self.root, stdout=responseOut)
             self.app.dcm = DummyCacheManager()
             factory = getattr(self.app, self.factory)
             factory('file',
@@ -148,18 +153,20 @@ class FileTests(unittest.TestCase):
             self.connection.close()
             raise
         transaction.begin()
-        self.file = getattr( self.app, 'file' )
-        
+        self.file = getattr(self.app, 'file')
+
         # Since we do the create here, let's test the events here too
         self.assertEquals(1, len(self.eventCatcher.created))
-        self.assertTrue(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
-        
+        self.assertTrue(
+            aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+
         self.assertEquals(1, len(self.eventCatcher.modified))
-        self.assertTrue(aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
-        
+        self.assertTrue(
+            aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+
         self.eventCatcher.reset()
-        
-    def tearDown( self ):
+
+    def tearDown(self):
         del self.file
         transaction.abort()
         self.connection.close()
@@ -168,7 +175,6 @@ class FileTests(unittest.TestCase):
         del self.root
         del self.connection
         ADummyCache.clear()
-        
         self.eventCatcher.tearDown()
 
     def testViewImageOrFile(self):
@@ -227,7 +233,9 @@ class FileTests(unittest.TestCase):
 
     def testIfModSince(self):
         now = time.time()
-        e = {'SERVER_NAME':'foo', 'SERVER_PORT':'80', 'REQUEST_METHOD':'GET'}
+        e = {'SERVER_NAME': 'foo',
+             'SERVER_PORT': '80',
+             'REQUEST_METHOD': 'GET'}
 
         # not modified since
         t_notmod = rfc1123_date(now)
@@ -235,7 +243,7 @@ class FileTests(unittest.TestCase):
         out = StringIO()
         resp = HTTPResponse(stdout=out)
         req = HTTPRequest(sys.stdin, e, resp)
-        data = self.file.index_html(req,resp)
+        data = self.file.index_html(req, resp)
         self.assertEqual(resp.getStatus(), 304)
         self.assertEqual(data, '')
 
@@ -245,7 +253,7 @@ class FileTests(unittest.TestCase):
         out = StringIO()
         resp = HTTPResponse(stdout=out)
         req = HTTPRequest(sys.stdin, e, resp)
-        data = self.file.index_html(req,resp)
+        data = self.file.index_html(req, resp)
         self.assertEqual(resp.getStatus(), 200)
         self.assertEqual(data, str(self.file.data))
 
@@ -271,12 +279,12 @@ class FileTests(unittest.TestCase):
         self.assertEqual(str(self.file.data), s)
 
     def testIndexHtmlWithPdata(self):
-        self.file.manage_upload('a' * (2 << 16)) # 128K
+        self.file.manage_upload('a' * (2 << 16))  # 128K
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
         self.assert_(self.app.REQUEST.RESPONSE._wrote)
 
     def testIndexHtmlWithString(self):
-        self.file.manage_upload('a' * 100) # 100 bytes
+        self.file.manage_upload('a' * 100)  # 100 bytes
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
         self.assert_(not self.app.REQUEST.RESPONSE._wrote)
 
@@ -313,10 +321,11 @@ class FileTests(unittest.TestCase):
 
     def testUnicode(self):
         val = u'some unicode string here'
-        
+
         self.assertRaises(TypeError, self.file.manage_edit,
                           'foobar', 'text/plain', filedata=val)
-        
+
+
 class ImageTests(FileTests):
     data = open(filedata, 'rb').read()
     content_type = 'image/gif'
@@ -332,19 +341,22 @@ class ImageTests(FileTests):
         self.assertTrue(ADummyCache.set)
 
     def testStr(self):
-        self.assertEqual(str(self.file),
-          ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
+        self.assertEqual(
+            str(self.file),
+            ('<img src="http://foo/file" '
+             'alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
-        tag_fmt = '<img src="http://foo/file" alt="%s" title="%s" height="16" width="16" />'
-        self.assertEqual(self.file.tag(), (tag_fmt % ('','')))
+        tag_fmt = ('<img src="http://foo/file" '
+                   'alt="%s" title="%s" height="16" width="16" />')
+        self.assertEqual(self.file.tag(), (tag_fmt % ('', '')))
         self.file.manage_changeProperties(title='foo')
-        self.assertEqual(self.file.tag(), (tag_fmt % ('','foo')))
+        self.assertEqual(self.file.tag(), (tag_fmt % ('', 'foo')))
         self.file.manage_changeProperties(alt='bar')
-        self.assertEqual(self.file.tag(), (tag_fmt % ('bar','foo')))
+        self.assertEqual(self.file.tag(), (tag_fmt % ('bar', 'foo')))
 
     def testViewImageOrFile(self):
-        pass # dtml method,screw it
+        pass  # dtml method,screw it
 
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
@@ -355,6 +367,7 @@ class ImageTests(FileTests):
 
 
 class ImagePublishTests(Testing.ZopeTestCase.FunctionalTestCase):
+
     def testTagSafe(self):
         self.app.manage_addImage("image", "")
         res = self.publish(
@@ -363,12 +376,4 @@ class ImagePublishTests(Testing.ZopeTestCase.FunctionalTestCase):
             "%3E%3Cdiv%20class%3D%22")
         self.assertFalse(
             '<script type="text/javascript">alert(\'evil\');</script>'
-                in res.getBody())
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(FileTests),
-        unittest.makeSuite(ImageTests),
-        unittest.makeSuite(ImagePublishTests)
-        ))
+            in res.getBody())

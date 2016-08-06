@@ -51,49 +51,54 @@ class View(Tabs, Base):
     def manage_workspace(self, URL1, RESPONSE):
         '''Implement a "management" interface
         '''
-        RESPONSE.redirect(URL1+'/manage')
+        RESPONSE.redirect(URL1 + '/manage')
 
-    def tpURL(self): return self.getId()
+    def tpURL(self):
+        return self.getId()
 
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
-        try: r=self.REQUEST
-        except: r=None
+        try:
+            r = self.REQUEST
+        except Exception:
+            r = None
         if r is None:
-            pre='../../'
+            pre = '../../'
         else:
-            pre=r['URL']
-            for i in (1,2,3):
-                l=pre.rfind('/')
+            pre = r['URL']
+            for i in (1, 2, 3):
+                l = pre.rfind('/')
                 if l >= 0:
-                    pre=pre[:l]
-            pre=pre+'/'
+                    pre = pre[:l]
+            pre = pre + '/'
 
-        r=[]
+        r = []
         for d in aq_parent(aq_parent(self)).manage_options:
-            path=d['action']
-            option={'label': d['label'],
-                      'action': pre+path,
-                      'path': '../../'+path}
-            help=d.get('help')
+            path = d['action']
+            option = {'label': d['label'],
+                      'action': pre + path,
+                      'path': '../../' + path}
+            help = d.get('help')
             if help is not None:
-                option['help']=help
+                option['help'] = help
             r.append(option)
         return r
 
     def tabs_path_info(self, script, path):
-        l=path.rfind('/')
+        l = path.rfind('/')
         if l >= 0:
-            path=path[:l]
-            l=path.rfind('/')
-            if l >= 0: path=path[:l]
-        return View.inheritedAttribute('tabs_path_info')(
-            self, script, path)
+            path = path[:l]
+            l = path.rfind('/')
+            if l >= 0:
+                path = path[:l]
+        return View.inheritedAttribute('tabs_path_info')(self, script, path)
 
     def meta_type(self):
-        try: return aq_parent(aq_parent(self)).meta_type
-        except: return ''
+        try:
+            return aq_parent(aq_parent(self)).meta_type
+        except Exception:
+            return ''
 
 
 class PropertySheet(Traversable, Persistent, Implicit):
@@ -101,15 +106,15 @@ class PropertySheet(Traversable, Persistent, Implicit):
        metadata describing those properties. PropertySheets may or may not
        provide a web interface for managing its properties."""
 
-    _properties=()
-    _extensible=1
+    _properties = ()
+    _extensible = 1
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)
     security.setPermissionDefault(access_contents_information,
                                   ('Anonymous', 'Manager'))
 
-    __reserved_ids= ('values','items')
+    __reserved_ids = ('values', 'items')
 
     def property_extensible_schema__(self):
         # Return a flag indicating whether new properties may be
@@ -123,12 +128,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
         if id in self.__reserved_ids:
             raise ValueError(
-                  "'%s' is a reserved Id (forbidden Ids are: %s) " % (
-                  id, self.__reserved_ids
-                  ))
+                "'%s' is a reserved Id (forbidden Ids are: %s) " % (
+                    id, self.__reserved_ids))
 
-        self.id=id
-        self._md=md or {}
+        self.id = id
+        self._md = md or {}
 
     def getId(self):
         return self.id
@@ -146,7 +150,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         return self.v_self()
 
     def valid_property_id(self, id):
-        if not id or id[:1]=='_' or (id[:3]=='aq_') \
+        if not id or id[:1] == '_' or (id[:3] == 'aq_') \
            or (' ' in id) or escape(id) != id:
             return 0
         return 1
@@ -155,7 +159,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
     def hasProperty(self, id):
         # Return a true value if a property exists with the given id.
         for prop in self._propertyMap():
-            if id==prop['id']:
+            if id == prop['id']:
                 return 1
         return 0
 
@@ -171,16 +175,16 @@ class PropertySheet(Traversable, Persistent, Implicit):
     def getPropertyType(self, id):
         # Get the type of property 'id', returning None if no
         # such property exists.
-        pself=self.p_self()
+        pself = self.p_self()
         for md in pself._properties:
-            if md['id']==id:
+            if md['id'] == id:
                 return md.get('type', 'string')
         return None
 
     def _wrapperCheck(self, object):
         # Raise an error if an object is wrapped.
         if hasattr(object, 'aq_base'):
-            raise ValueError, 'Invalid property value: wrapped object'
+            raise ValueError('Invalid property value: wrapped object')
         return
 
     def _setProperty(self, id, value, type='string', meta=None):
@@ -189,29 +193,32 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # systems.
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise BadRequest, 'Invalid property id, %s.' % escape(id)
+            raise BadRequest('Invalid property id, %s.' % escape(id))
 
         if not self.property_extensible_schema__():
-            raise BadRequest, (
+            raise BadRequest(
                 'Properties cannot be added to this property sheet')
-        pself=self.p_self()
-        self=self.v_self()
-        if hasattr(aq_base(self),id):
-            if not (id=='title' and not id in self.__dict__):
-                raise BadRequest, (
+        pself = self.p_self()
+        self = self.v_self()
+        if hasattr(aq_base(self), id):
+            if not (id == 'title' and id not in self.__dict__):
+                raise BadRequest(
                     'Invalid property id, <em>%s</em>. It is in use.' %
-                        escape(id))
-        if meta is None: meta={}
-        prop={'id':id, 'type':type, 'meta':meta}
-        pself._properties=pself._properties+(prop,)
+                    escape(id))
+        if meta is None:
+            meta = {}
+        prop = {'id': id, 'type': type, 'meta': meta}
+        pself._properties = pself._properties + (prop,)
         if type in ('selection', 'multiple selection'):
             if not value:
-                raise BadRequest, (
+                raise BadRequest(
                     'The value given for a new selection property '
                     'must be a variable name<p>')
-            prop['select_variable']=value
-            if type=='selection': value=None
-            else: value=[]
+            prop['select_variable'] = value
+            if type == 'selection':
+                value = None
+            else:
+                value = []
 
         # bleah - can't change kw name in api, so use ugly workaround.
         if sys.modules['__builtin__'].type(value) == list:
@@ -225,21 +232,22 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # it will used to _replace_ the properties meta data.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise BadRequest, 'The property %s does not exist.' % escape(id)
-        propinfo=self.propertyInfo(id)
-        if not 'w' in propinfo.get('mode', 'wd'):
-            raise BadRequest, '%s cannot be changed.' % escape(id)
-        if type(value)==type(''):
-            proptype=propinfo.get('type', 'string')
+            raise BadRequest('The property %s does not exist.' % escape(id))
+        propinfo = self.propertyInfo(id)
+        if 'w' not in propinfo.get('mode', 'wd'):
+            raise BadRequest('%s cannot be changed.' % escape(id))
+        if isinstance(value, str):
+            proptype = propinfo.get('type', 'string')
             if proptype in type_converters:
-                value=type_converters[proptype](value)
+                value = type_converters[proptype](value)
         if meta is not None:
-            props=[]
-            pself=self.p_self()
+            props = []
+            pself = self.p_self()
             for prop in pself._properties:
-                if prop['id']==id: prop['meta']=meta
+                if prop['id'] == id:
+                    prop['meta'] = meta
                 props.append(prop)
-            pself._properties=tuple(props)
+            pself._properties = tuple(props)
 
         if type(value) == list:
             value = tuple(value)
@@ -249,16 +257,18 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
-            raise BadRequest, 'The property %s does not exist.' % escape(id)
-        vself=self.v_self()
+            raise BadRequest('The property %s does not exist.' % escape(id))
+        vself = self.v_self()
         if hasattr(vself, '_reserved_names'):
-            nd=vself._reserved_names
-        else: nd=()
-        if (not 'd' in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
-            raise BadRequest, '%s cannot be deleted.' % escape(id)
+            nd = vself._reserved_names
+        else:
+            nd = ()
+        if ('d' not in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
+            raise BadRequest('%s cannot be deleted.' % escape(id))
         delattr(vself, id)
-        pself=self.p_self()
-        pself._properties=tuple(i for i in pself._properties if i['id'] != id)
+        pself = self.p_self()
+        pself._properties = tuple(
+            [i for i in pself._properties if i['id'] != id])
 
     security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
@@ -273,14 +283,16 @@ class PropertySheet(Traversable, Persistent, Implicit):
     security.declareProtected(access_contents_information, 'propertyItems')
     def propertyItems(self):
         # Return a list of (id, property) tuples.
-        return [(i['id'], self.getProperty(i['id'])) for i in self._propertyMap()]
+        return [(i['id'], self.getProperty(i['id']))
+                for i in self._propertyMap()]
 
     security.declareProtected(access_contents_information, 'propertyInfo')
     def propertyInfo(self, id):
         # Return a mapping containing property meta-data
         for p in self._propertyMap():
-            if p['id']==id: return p
-        raise ValueError, 'The property %s does not exist.' % escape(id)
+            if p['id'] == id:
+                return p
+        raise ValueError('The property %s does not exist.' % escape(id))
 
     def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
@@ -292,9 +304,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
         return tuple(dict.copy() for dict in self._propertyMap())
 
     def _propdict(self):
-        dict={}
+        dict = {}
         for p in self._propertyMap():
-            dict[p['id']]=p
+            dict[p['id']] = p
         return dict
 
     propstat='<d:propstat xmlns:n="%s">\n' \
@@ -406,14 +418,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
     security.declareProtected(manage_properties, 'manage_propertiesForm')
     def manage_propertiesForm(self, URL1):
         " "
-        raise Redirect, URL1+'/manage'
+        raise Redirect(URL1 + '/manage')
 
     security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
         if type in type_converters:
-            value=type_converters[type](value)
+            value = type_converters[type](value)
         self._setProperty(id, value, type)
         if REQUEST is not None:
             return self.manage(self, REQUEST)
@@ -422,14 +434,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
         for prop in self._propertyMap():
-            name=prop['id']
+            name = prop['id']
             if 'w' in prop.get('mode', 'wd'):
-                value=REQUEST.get(name, '')
+                value = REQUEST.get(name, '')
                 self._updateProperty(name, value)
         return MessageDialog(
-               title  ='Success!',
-               message='Your changes have been saved',
-               action ='manage')
+            title='Success!',
+            message='Your changes have been saved',
+            action='manage')
 
     security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
@@ -439,35 +451,37 @@ class PropertySheet(Traversable, Persistent, Implicit):
         name=value parameters
         """
         if REQUEST is None:
-            props={}
-        else: props=REQUEST
+            props = {}
+        else:
+            props = REQUEST
         if kw:
             for name, value in kw.items():
-                props[name]=value
-        propdict=self._propdict()
+                props[name] = value
+        propdict = self._propdict()
         for name, value in props.items():
             if self.hasProperty(name):
-                if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise BadRequest, '%s cannot be changed' % escape(name)
+                if 'w' not in propdict[name].get('mode', 'wd'):
+                    raise BadRequest('%s cannot be changed' % escape(name))
                 self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
-                title  ='Success!',
+                title='Success!',
                 message='Your changes have been saved.',
-                action ='manage')
+                action='manage')
 
     security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if REQUEST:
             # Bugfix for properties named "ids" (casey)
-            if ids == self.getProperty('ids', None): ids = None
+            if ids == self.getProperty('ids', None):
+                ids = None
             ids = REQUEST.get('_ids', ids)
         if ids is None:
             return MessageDialog(
-                   title='No property specified',
-                   message='No properties were specified!',
-                   action ='./manage',)
+                title='No property specified',
+                message='No properties were specified!',
+                action='./manage',)
         for id in ids:
             self._delProperty(id)
         if REQUEST is not None:
@@ -491,8 +505,8 @@ class DefaultProperties(Virtual, PropertySheet, View):
        properties -- it stores its property values in the instance of
        its owner."""
 
-    id='default'
-    _md={'xmlns': 'http://www.zope.org/propsets/default'}
+    id = 'default'
+    _md = {'xmlns': 'http://www.zope.org/propsets/default'}
 
 InitializeClass(DefaultProperties)
 
@@ -612,7 +626,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
 
-    id='propertysheets'
+    id = 'propertysheets'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)
@@ -620,20 +634,21 @@ class PropertySheets(Traversable, Implicit, Tabs):
                                   ('Anonymous', 'Manager'))
 
     # optionally to be overridden by derived classes
-    PropertySheetClass= PropertySheet
+    PropertySheetClass = PropertySheet
 
-    webdav =DAVProperties()
+    webdav = DAVProperties()
+
     def _get_defaults(self):
         return (self.webdav,)
 
     def __propsets__(self):
         propsets = aq_parent(self).__propsets__
-        __traceback_info__= propsets, type(propsets)
+        __traceback_info__ = propsets, type(propsets)
         return self._get_defaults() + propsets
 
     def __bobo_traverse__(self, REQUEST, name=None):
         for propset in self.__propsets__():
-            if propset.getId()==name:
+            if propset.getId() == name:
                 return propset.__of__(self)
         return getattr(self, name)
 
@@ -642,16 +657,18 @@ class PropertySheets(Traversable, Implicit, Tabs):
 
     security.declareProtected(access_contents_information, 'values')
     def values(self):
-        propsets=self.__propsets__()
+        propsets = self.__propsets__()
         return [n.__of__(self) for n in propsets]
 
     security.declareProtected(access_contents_information, 'items')
     def items(self):
-        propsets=self.__propsets__()
-        r=[]
+        propsets = self.__propsets__()
+        r = []
         for n in propsets:
-            if hasattr(n,'id'): id=n.id
-            else: id=''
+            if hasattr(n, 'id'):
+                id = n.id
+            else:
+                id = ''
             r.append((id, n.__of__(self)))
 
         return r
@@ -659,43 +676,45 @@ class PropertySheets(Traversable, Implicit, Tabs):
     security.declareProtected(access_contents_information, 'get')
     def get(self, name, default=None):
         for propset in self.__propsets__():
-            if propset.id==name or (hasattr(propset, 'xml_namespace') and \
-                                    propset.xml_namespace()==name):
+            if propset.id == name or (hasattr(propset, 'xml_namespace') and
+                                      propset.xml_namespace() == name):
                 return propset.__of__(self)
         return default
 
     security.declareProtected(manage_properties, 'manage_addPropertySheet')
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
         """ """
-        md={'xmlns':ns}
-        ps= self.PropertySheetClass(id, md)
+        md = {'xmlns': ns}
+        ps = self.PropertySheetClass(id, md)
         self.addPropertySheet(ps)
-        if REQUEST is None: return ps
-        ps= self.get(id)
+        if REQUEST is None:
+            return ps
+        ps = self.get(id)
         REQUEST.RESPONSE.redirect('%s/manage' % ps.absolute_url())
 
     security.declareProtected(manage_properties, 'addPropertySheet')
     def addPropertySheet(self, propset):
         propsets = aq_parent(self).__propsets__
-        propsets = propsets+(propset,)
+        propsets = propsets + (propset,)
         aq_parent(self).__propsets__ = propsets
 
     security.declareProtected(manage_properties, 'delPropertySheet')
     def delPropertySheet(self, name):
-        result=[]
+        result = []
         for propset in aq_parent(self).__propsets__:
-            if propset.getId() != name and  propset.xml_namespace() != name:
+            if propset.getId() != name and propset.xml_namespace() != name:
                 result.append(propset)
-        aq_parent(self).__propsets__=tuple(result)
+        aq_parent(self).__propsets__ = tuple(result)
 
-    ## DM: deletion support
-    def isDeletable(self,name):
+    def isDeletable(self, name):
         '''currently, we say that *name* is deletable when it is not a
         default sheet. Later, we may further restrict deletability
         based on an instance attribute.'''
-        ps= self.get(name)
-        if ps is None: return 0
-        if ps in self._get_defaults(): return 0
+        ps = self.get(name)
+        if ps is None:
+            return 0
+        if ps in self._get_defaults():
+            return 0
         return 1
 
     def manage_delPropertySheets(self, ids=(), REQUEST=None):
@@ -714,35 +733,35 @@ class PropertySheets(Traversable, Implicit, Tabs):
     def getId(self):
         return self.id
 
-
-    # Management interface:
-
     security.declareProtected(view_management_screens, 'manage')
     manage = DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
-        try: r=self.REQUEST
-        except: r=None
+        try:
+            r = self.REQUEST
+        except Exception:
+            r = None
         if r is None:
-            pre='../'
+            pre = '../'
         else:
-            pre=r['URLPATH0']
-            for i in (1,2):
-                l=pre.rfind('/')
+            pre = r['URLPATH0']
+            for i in (1, 2):
+                l = pre.rfind('/')
                 if l >= 0:
-                    pre=pre[:l]
-            pre=pre+'/'
+                    pre = pre[:l]
+            pre = pre + '/'
 
-        r=[]
+        r = []
         for d in aq_parent(self).manage_options:
-            r.append({'label': d['label'], 'action': pre+d['action']})
+            r.append({'label': d['label'], 'action': pre + d['action']})
         return r
 
     def tabs_path_info(self, script, path):
-        l=path.rfind('/')
-        if l >= 0: path=path[:l]
+        l = path.rfind('/')
+        if l >= 0:
+            path = path[:l]
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
@@ -753,8 +772,9 @@ class DefaultPropertySheets(PropertySheets):
     """A PropertySheets container that contains a default property
        sheet for compatibility with the arbitrary property mgmt
        design of Zope PropertyManagers."""
-    default=DefaultProperties()
-    webdav =DAVProperties()
+    default = DefaultProperties()
+    webdav = DAVProperties()
+
     def _get_defaults(self):
         return (self.default, self.webdav)
 
@@ -769,7 +789,7 @@ class vps(Base):
     attribute of a PropertyManager is accessed.
     """
     def __init__(self, c=PropertySheets):
-        self.c=c
+        self.c = c
 
     def __of__(self, parent):
         return self.c().__of__(parent)
