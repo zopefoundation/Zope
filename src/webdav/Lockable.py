@@ -23,9 +23,8 @@ from webdav.EtagSupport import EtagSupport
 from webdav.interfaces import ILockItem
 from webdav.interfaces import IWriteLock
 
-
-class ResourceLockedError(Exception):
-    pass
+# BBB
+from zExceptions import ResourceLockedError  # NOQA
 
 
 class LockableItem(EtagSupport):

@@ -47,9 +47,8 @@ from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from Persistence import Persistent
 from webdav.Collection import Collection
-from webdav.Lockable import ResourceLockedError
 from webdav.NullResource import NullResource
-from zExceptions import BadRequest
+from zExceptions import BadRequest, ResourceLockedError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.interface import implements
@@ -527,7 +526,7 @@ class ObjectManager(CopyContainer,
 
             if v.wl_isLocked():
                 raise ResourceLockedError(
-                    'Object "%s" is locked via WebDAV' % v.getId())
+                    'Object "%s" is locked.' % v.getId())
 
             if v is self:
                 raise BadRequest('%s does not exist' % escape(ids[-1]))

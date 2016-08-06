@@ -289,7 +289,7 @@ class Traversable:
                                     # or TypeError: not subscriptable
                                     raise NotFound(name)
                                 if restricted and not validate(
-                                    obj, obj, None, next):
+                                        obj, obj, None, next):
                                     raise Unauthorized(name)
 
                 except (AttributeError, NotFound, KeyError), e:

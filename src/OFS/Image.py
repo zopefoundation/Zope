@@ -31,10 +31,9 @@ from DateTime.DateTime import DateTime
 from Persistence import Persistent
 from webdav.common import rfc1123_date
 from webdav.interfaces import IWriteLock
-from webdav.Lockable import ResourceLockedError
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
-from zExceptions import Redirect
+from zExceptions import Redirect, ResourceLockedError
 from zope.contenttype import guess_content_type
 from zope.interface import implementedBy
 from zope.interface import implements
@@ -459,7 +458,7 @@ class File(Persistent, Implicit, PropertyManager,
         Changes the title and content type attributes of the File or Image.
         """
         if self.wl_isLocked():
-            raise ResourceLockedError, "File is locked via WebDAV"
+            raise ResourceLockedError("File is locked.")
 
         self.title=str(title)
         self.content_type=str(content_type)
@@ -484,7 +483,7 @@ class File(Persistent, Implicit, PropertyManager,
         The file or images contents are replaced with the contents of 'file'.
         """
         if self.wl_isLocked():
-            raise ResourceLockedError, "File is locked via WebDAV"
+            raise ResourceLockedError("File is locked.")
 
         data, size = self._read_data(file)
         content_type=self._get_content_type(file, data, self.__name__,

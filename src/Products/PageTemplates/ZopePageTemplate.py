@@ -27,14 +27,14 @@ from Acquisition import Explicit
 from Acquisition import aq_get
 from App.Common import package_home
 from DateTime.DateTime import DateTime
+from OFS.Cache import Cacheable
 from OFS.SimpleItem import SimpleItem
 from OFS.History import Historical, html_diff
-from OFS.Cache import Cacheable
-from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
+from OFS.Traversable import Traversable
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
-from webdav.Lockable import ResourceLockedError
+from zExceptions import ResourceLockedError
 
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -183,7 +183,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Change the title and document."""
 
         if self.wl_isLocked():
-            raise ResourceLockedError("File is locked via WebDAV")
+            raise ResourceLockedError("File is locked.")
 
         self.expand = expand
 
@@ -219,7 +219,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Replace the document with the text in file."""
 
         if self.wl_isLocked():
-            raise ResourceLockedError("File is locked via WebDAV")
+            raise ResourceLockedError("File is locked.")
 
         if isinstance(file, str):
             filename = None

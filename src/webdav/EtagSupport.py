@@ -122,7 +122,7 @@ class EtagSupport:
             # The resource etag is not in the list of etags required
             # to match, as specified in the 'if-match' header.  The
             # condition fails and the HTTP Method may *not* execute.
-            raise PreconditionFailed
+            raise PreconditionFailed()
         elif self.http__etag() in matchlist:
             return 1
 
@@ -133,12 +133,10 @@ class EtagSupport:
         elif ('*' in nonematch):
             # if-none-match: * means that the operation should not
             # be performed if the specified resource exists
-            # (webdav.NullResource will want to do special behavior
-            # here)
-            raise PreconditionFailed
+            raise PreconditionFailed()
         elif self.http__etag() in nonematch:
             # The opposite of if-match, the condition fails
             # IF the resources Etag is in the if-none-match list
-            raise PreconditionFailed
+            raise PreconditionFailed()
         elif self.http__etag() not in nonematch:
             return 1

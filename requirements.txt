@@ -38,7 +38,7 @@ six==1.10.0
 tempstorage==3.0
 transaction==1.6.1
 waitress==0.9.0
-zExceptions==3.2
+zExceptions==3.3
 zLOG==3.0
 zc.lockfile==1.2.1
 zdaemon==4.1.0

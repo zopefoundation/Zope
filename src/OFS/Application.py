@@ -13,7 +13,8 @@
 """Application support
 """
 
-import os, sys
+import os
+import sys
 from logging import getLogger
 
 import Products

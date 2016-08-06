@@ -668,29 +668,16 @@ def test_view_doesnt_shadow_attribute():
       >>> self.folder.ftf.unrestrictedTraverse('mouse')()
       u'The mouse has been eaten by the eagle'
 
-    Head requests have some unusual behavior in Zope 2, in particular, a
-    failed item lookup on an ObjectManager returns a NullResource, rather
-    than raising a KeyError.  We need to make sure that this doesn't
-    result in acquired attributes being shadowed by the NullResource,
-    but that unknown names still give NullResources:
-
-      >>> self.app.REQUEST.maybe_webdav_client = True
-      >>> self.app.REQUEST['REQUEST_METHOD'] = 'HEAD'
-      >>> self.folder.ftf.unrestrictedTraverse('mouse')()
-      u'The mouse has been eaten by the eagle'
-      >>> self.folder.ftf.unrestrictedTraverse('nonsense')
-      <webdav.NullResource.NullResource object at ...>
-
-
     Clean up:
 
       >>> from zope.component.testing import tearDown
       >>> tearDown()
     """
 
+
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( TestTraverse ) )
+    suite.addTest(unittest.makeSuite(TestTraverse))
     from Testing.ZopeTestCase import FunctionalDocTestSuite
-    suite.addTest( FunctionalDocTestSuite() )
+    suite.addTest(FunctionalDocTestSuite())
     return suite

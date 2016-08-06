@@ -171,7 +171,7 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setStatus_ResourceLockedError_exception(self):
         response = self._makeOne()
-        from webdav.Lockable import ResourceLockedError
+        from zExceptions import ResourceLockedError
         response.setStatus(ResourceLockedError)
         self.assertEqual(response.status, 423)
         self.assertEqual(response.errmsg, 'Locked')

@@ -34,8 +34,7 @@ from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
-from webdav.Lockable import ResourceLockedError
-from zExceptions import Forbidden
+from zExceptions import Forbidden, ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from ZPublisher.Iterators import IStreamIterator
 from zope.contenttype import guess_content_type
@@ -280,7 +279,7 @@ class DTMLMethod(RestrictedDTML,
             return self._er(data, title,
                             SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This item is locked via WebDAV')
+            raise ResourceLockedError('This item is locked.')
 
         self.title = str(title)
         if isinstance(data, TaintedString):
@@ -299,7 +298,7 @@ class DTMLMethod(RestrictedDTML,
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This DTML Method is locked via WebDAV')
+            raise ResourceLockedError('This DTML Method is locked.')
 
         if type(file) is not type(''):
             if REQUEST and not file:

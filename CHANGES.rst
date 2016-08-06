@@ -22,6 +22,7 @@ Features Added
 
   - AccessControl = 4.0a3
   - AuthEncoding = 4.0.0
+  - zExceptions = 3.3
 
 Restructuring
 +++++++++++++
