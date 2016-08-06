@@ -54,10 +54,11 @@ class PageTemplate(ExtensionClass.Base,
     def pt_macros(self):
         self._cook_check()
         if self._v_errors:
-            __traceback_supplement__ = (PageTemplateTracebackSupplement, self, {})
-            raise PTRuntimeError, (
+            __traceback_supplement__ = (
+                PageTemplateTracebackSupplement, self, {})
+            raise PTRuntimeError(
                 'Page Template %s has errors: %s' % (
-                self.id, self._v_errors
+                    self.id, self._v_errors
                 ))
         return self._v_macros
 
@@ -75,9 +76,9 @@ class PageTemplate(ExtensionClass.Base,
             showtal = sourceAnnotations = False
         if source:
             showtal = True
-        return super(PageTemplate, self).pt_render(c, source=source, sourceAnnotations=sourceAnnotations,
-                   showtal=showtal)
-
+        return super(PageTemplate, self).pt_render(
+            c, source=source, sourceAnnotations=sourceAnnotations,
+            showtal=showtal)
 
     def pt_errors(self, namespace={}, check_macro_expansion=None):
         # The check_macro_expansion argument is added for
@@ -93,7 +94,7 @@ class PageTemplate(ExtensionClass.Base,
             return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
 
     def __call__(self, *args, **kwargs):
-        if not kwargs.has_key('args'):
+        if 'args' not in kwargs:
             kwargs['args'] = args
         return self.pt_render(extra_context={'options': kwargs})
 
@@ -107,14 +108,14 @@ class PageTemplate(ExtensionClass.Base,
             except:
                 return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
                         (self._error_start, "%s: %s" % sys.exc_info()[:2],
-                         self._text) )
+                         self._text))
 
         return ('%s\n %s\n-->\n%s' % (self._error_start,
                                       '\n '.join(self._v_errors),
                                       self._text))
 
     # convenience method for the ZMI which allows to explicitly
-    # specify the HTMLness of a template.  The old Zope 2
+    # specify the HTMLness of a template. The old Zope 2
     # implementation had this as well, but arguably on the wrong class
     # (this should be a ZopePageTemplate thing if at all)
     def html(self):

@@ -36,10 +36,10 @@ class ViewPageTemplateFileTests(unittest.TestCase):
 
     def test_pt_getEngine(self):
         from zope.tales.expressions import DeferExpr
+        from zope.tales.expressions import LazyExpr
         from zope.tales.expressions import NotExpr
         from zope.tales.pythonexpr import PythonExpr
         from zope.contentprovider.tales import TALESProviderExpression
-        from Products.PageTemplates.DeferExpr import LazyExpr
         from Products.PageTemplates.Expressions import TrustedZopePathExpr
         from Products.PageTemplates.Expressions import SecureModuleImporter
         from Products.PageTemplates.Expressions import UnicodeAwareStringExpr

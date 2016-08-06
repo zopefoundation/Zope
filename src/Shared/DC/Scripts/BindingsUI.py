@@ -17,14 +17,14 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.special_dtml import DTMLFile
 from Shared.DC.Scripts.Bindings import Bindings
 
+
 class BindingsUI(Bindings):
 
     security = ClassSecurityInfo()
 
     manage_options = (
-        {'label':'Bindings',
-         'action':'ZBindingsHTML_editForm'},
-        )
+        {'label': 'Bindings', 'action': 'ZBindingsHTML_editForm'},
+    )
 
     security.declareProtected(view_management_screens,
                               'ZBindingsHTML_editForm')

@@ -29,7 +29,7 @@ def escape(s, encoding='repr'):
         s = base64.encodestring(s)[:-1]
         encoding = 'base64'
     elif '>' in s or '<' in s or '&' in s:
-        if not ']]>' in s:
+        if ']]>' not in s:
             s = '<![CDATA[' + s + ']]>'
             encoding = 'cdata'
         else:
@@ -38,6 +38,7 @@ def escape(s, encoding='repr'):
             s = s.replace('<', '&lt;')
     return encoding, s
 
+
 def unescape(s, encoding):
     if encoding == 'base64':
         return base64.decodestring(s)
@@ -45,6 +46,7 @@ def unescape(s, encoding):
         s = s.replace('&lt;', '<')
         s = s.replace('&gt;', '>')
         return s.replace('&amp;', '&')
+
 
 class Global:
     def __init__(self, module, name):
@@ -59,6 +61,7 @@ class Global:
         name = self.__class__.__name__.lower()
         return '%s<%s%s name="%s" module="%s"/>\n' % (
             ' ' * indent, name, id, self.name, self.module)
+
 
 class Scalar:
     def __init__(self, v):
@@ -76,12 +79,14 @@ class Scalar:
         return '%s<%s%s>%s</%s>\n' % (
             ' ' * indent, name, id, self.value(), name)
 
+
 class Long(Scalar):
     def value(self):
         result = str(self._v)
         if result[-1:] == 'L':
             return result[:-1]
         return result
+
 
 class String(Scalar):
     def __init__(self, v, encoding=''):
@@ -90,7 +95,7 @@ class String(Scalar):
         self._v = v
 
     def __str__(self, indent=0):
-        if hasattr(self,'id'):
+        if hasattr(self, 'id'):
             id = ' id="%s"' % self.id
         else:
             id = ''
@@ -102,6 +107,7 @@ class String(Scalar):
         return '%s<%s%s%s>%s</%s>\n' % (
             ' ' * indent, name, id, encoding, self.value(), name)
 
+
 class Unicode(String):
     def __init__(self, v, encoding):
         v = unicode(v, encoding)
@@ -109,6 +115,7 @@ class Unicode(String):
 
     def value(self):
         return self._v.encode('utf-8')
+
 
 class Wrapper:
     def __init__(self, v):
@@ -134,6 +141,7 @@ class Wrapper:
                 v = v.__str__()
             return '%s<%s%s>\n%s%s</%s>\n' % (i, name, id, v, i, name)
 
+
 class Collection:
     def __str__(self, indent=0):
         if hasattr(self, 'id'):
@@ -147,6 +155,7 @@ class Collection:
                 i, name, id, self.value(indent + 2), i, name)
         else:
             return '%s<%s%s/>\n' % (i, name, id)
+
 
 class Dictionary(Collection):
     def __init__(self):
@@ -172,6 +181,7 @@ class Dictionary(Collection):
                  ind),
                 self._d
                 ))
+
 
 class Sequence(Collection):
     def __init__(self, v=None):
@@ -199,10 +209,12 @@ class Sequence(Collection):
             lambda v, indent=indent: self._stringify(v, indent),
             self._subs))
 
+
 class none:
     def __str__(self, indent=0):
         return ' ' * indent + '<none/>\n'
 none = none()
+
 
 class Reference(Scalar):
     def __init__(self, v):
@@ -215,6 +227,7 @@ class Reference(Scalar):
 
 Get = Reference
 
+
 class Object(Sequence):
     def __init__(self, klass, args):
         self._subs = [Klass(klass), args]
@@ -222,16 +235,45 @@ class Object(Sequence):
     def __setstate__(self, v):
         self.append(State(v))
 
-class Int(Scalar): pass
-class Float(Scalar): pass
-class List(Sequence): pass
-class Tuple(Sequence): pass
-class Key(Wrapper): pass
-class Value(Wrapper): pass
-class Klass(Wrapper): pass
-class State(Wrapper): pass
-class Pickle(Wrapper): pass
-class Persistent(Wrapper): pass
+
+class Int(Scalar):
+    pass
+
+
+class Float(Scalar):
+    pass
+
+
+class List(Sequence):
+    pass
+
+
+class Tuple(Sequence):
+    pass
+
+
+class Key(Wrapper):
+    pass
+
+
+class Value(Wrapper):
+    pass
+
+
+class Klass(Wrapper):
+    pass
+
+
+class State(Wrapper):
+    pass
+
+
+class Pickle(Wrapper):
+    pass
+
+
+class Persistent(Wrapper):
+    pass
 
 
 class ToXMLUnpickler(Unpickler):
@@ -286,11 +328,11 @@ class ToXMLUnpickler(Unpickler):
         for q in "\"'":
             if rep.startswith(q):
                 if not rep.endswith(q):
-                    raise ValueError, 'insecure string pickle'
+                    raise ValueError('insecure string pickle')
                 rep = rep[len(q):-len(q)]
                 break
         else:
-            raise ValueError, 'insecure string pickle'
+            raise ValueError('insecure string pickle')
         self.append(String(rep.decode('string-escape')))
     dispatch[STRING] = load_string
 
@@ -300,7 +342,7 @@ class ToXMLUnpickler(Unpickler):
     dispatch[BINSTRING] = load_binstring
 
     def load_unicode(self):
-        self.append(Unicode(self.readline()[:-1],'raw-unicode-escape'))
+        self.append(Unicode(self.readline()[:-1], 'raw-unicode-escape'))
     dispatch[UNICODE] = load_unicode
 
     def load_binunicode(self):
@@ -422,17 +464,21 @@ class ToXMLUnpickler(Unpickler):
 def ToXMLload(file):
     return ToXMLUnpickler(file).load()
 
+
 def ToXMLloads(str):
     from StringIO import StringIO
     file = StringIO(str)
     return ToXMLUnpickler(file).load()
 
+
 def name(self, tag, data):
     return ''.join(data[2:]).strip()
+
 
 def start_pickle(self, tag, attrs):
     self._pickleids = {}
     return [tag, attrs]
+
 
 def save_int(self, tag, data):
     if self.binary:
@@ -447,11 +493,13 @@ def save_int(self, tag, data):
             return BININT + struct.pack('<i', v)
     return INT + name(self, tag, data) + '\n'
 
+
 def save_float(self, tag, data):
     if self.binary:
         return BINFLOAT + struct.pack('>d', float(name(self, tag, data)))
     else:
         return FLOAT + name(self, tag, data) + '\n'
+
 
 def save_put(self, v, attrs):
     id = attrs.get('id', '')
@@ -472,6 +520,7 @@ def save_put(self, v, attrs):
         return v + id
     return v
 
+
 def save_string(self, tag, data):
     a = data[1]
     v = ''.join(data[2:])
@@ -487,6 +536,7 @@ def save_string(self, tag, data):
     else:
         v = STRING + repr(v) + '\n'
     return save_put(self, v, a)
+
 
 def save_unicode(self, tag, data):
     a = data[1]
@@ -504,11 +554,13 @@ def save_unicode(self, tag, data):
         v = UNICODE + v + '\n'
     return save_put(self, v, a)
 
+
 def save_tuple(self, tag, data):
     T = data[2:]
     if not T:
         return EMPTY_TUPLE
     return save_put(self, MARK + ''.join(T) + TUPLE, data[1])
+
 
 def save_list(self, tag, data):
     L = data[2:]
@@ -522,6 +574,7 @@ def save_list(self, tag, data):
             v = APPEND.join(L) + APPEND
     return v
 
+
 def save_dict(self, tag, data):
     D = data[2:]
     if self.binary:
@@ -533,6 +586,7 @@ def save_dict(self, tag, data):
         if D:
             v = v + SETITEM.join(D) + SETITEM
     return v
+
 
 def save_reference(self, tag, data):
     a = data[1]
@@ -549,6 +603,7 @@ def save_reference(self, tag, data):
     else:
         return GET + repr(id) + '\n'
 
+
 def save_object(self, tag, data):
     v = MARK + data[2]
     x = data[3][1:]
@@ -559,9 +614,11 @@ def save_object(self, tag, data):
     v = v + data[4] + BUILD # state
     return v
 
+
 def save_global(self, tag, data):
     a = data[1]
     return save_put(self, GLOBAL + a['module'] + '\n' + a['name'] + '\n', a)
+
 
 def save_persis(self, tag, data):
     v = data[2]
@@ -569,6 +626,7 @@ def save_persis(self, tag, data):
         return v + BINPERSID
     else:
         return PERSID + v
+
 
 class xmlPickler(NoBlanks, xyap):
     start_handlers = {
@@ -587,11 +645,11 @@ class xmlPickler(NoBlanks, xyap):
         'dictionary': save_dict,
         'item': lambda self, tag, data: ''.join(map(str, data[2:])),
         'value': lambda self, tag, data: data[2],
-        'key' : lambda self, tag, data: data[2],
+        'key': lambda self, tag, data: data[2],
         'object': save_object,
         'klass': lambda self, tag, data: data[2],
         'state': lambda self, tag, data: data[2],
         'global': save_global,
         'persistent': save_persis,
         'unicode': save_unicode,
-        }
+    }

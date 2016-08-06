@@ -22,12 +22,10 @@ misc_ = {}
 # import ZTUtils in order to make i importable through
 # ZopeGuards.load_module() where an importable modules must be
 # available in sys.modules
-import ZTUtils
+import ZTUtils  # NOQA
 
 
 def initialize(context):
     # Import lazily, and defer initialization to the module
     import ZopePageTemplate
     ZopePageTemplate.initialize(context)
-
-

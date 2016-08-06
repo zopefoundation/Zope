@@ -13,11 +13,19 @@
 """Some helper methods
 """
 
-import re 
+import re
+import sys
 
-xml_preamble_reg = re.compile(r'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
-http_equiv_reg = re.compile(r'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I|re.M|re.S)
-http_equiv_reg2 = re.compile(r'charset.*?=.*?(?P<charset>[\w\-]*)', re.I|re.M|re.S)
+if sys.version_info >= (3, 0):
+    unicode = str
+
+xml_preamble_reg = re.compile(
+    r'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+http_equiv_reg = re.compile(
+    r'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I | re.M | re.S)
+http_equiv_reg2 = re.compile(
+    r'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
+
 
 def encodingFromXMLPreamble(xml):
     """ Extract the encoding from a xml preamble.
@@ -32,10 +40,11 @@ def encodingFromXMLPreamble(xml):
         return mo.group(1).lower()
 
 
-def charsetFromMetaEquiv(html):                                    
-    """ Return the value of the 'charset' from a html document
-        containing <meta http-equiv="content-type" content="text/html; charset=utf8>.
-        Returns None, if not available.
+def charsetFromMetaEquiv(html):
+    """
+    Return the value of the 'charset' from a html document containing
+    <meta http-equiv="content-type" content="text/html; charset=utf8>.
+    Returns None, if not available.
     """
 
     # first check for the <meta...> tag
@@ -47,7 +56,7 @@ def charsetFromMetaEquiv(html):
         # search for the charset value
         mo = http_equiv_reg2.search(meta)
         if mo:
-            # return charset 
+            # return charset
             return mo.group(1).lower()
 
     return None
@@ -60,12 +69,12 @@ def convertToUnicode(source, content_type, preferred_encodings):
 
     if content_type.startswith('text/xml'):
         encoding = encodingFromXMLPreamble(source)
-        return unicode(source, encoding), encoding  
+        return unicode(source, encoding), encoding
 
     elif content_type.startswith('text/html'):
         encoding = charsetFromMetaEquiv(source)
         if encoding:
-            return unicode(source, encoding), encoding  
+            return unicode(source, encoding), encoding
 
     # Try to detect the encoding by converting it unicode without raising
     # exceptions. There are some smarter Python-based sniffer methods

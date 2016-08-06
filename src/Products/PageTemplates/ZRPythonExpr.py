@@ -15,16 +15,23 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
+import sys
+
 from AccessControl import safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
+from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+from DocumentTemplate.security import RestrictedDTML
 from RestrictedPython import compile_restricted_eval
-from zope.tales.tales import CompilerError
 from zope.tales.pythonexpr import PythonExpr
+
+if sys.version_info >= (3, 0):
+    unicode = str
+
 
 class PythonExpr(PythonExpr):
     _globals = get_safe_globals()
     _globals['_getattr_'] = guarded_getattr
-    _globals['__debug__' ] = __debug__
+    _globals['__debug__'] = __debug__
 
     def __init__(self, name, expr, engine):
         self.text = self.expr = text = expr.strip().replace('\n', ' ')
@@ -33,11 +40,13 @@ class PythonExpr(PythonExpr):
         # We convert the expression to UTF-8 (ajung)
         if isinstance(text, unicode):
             text = text.encode('utf-8')
-        code, err, warn, use = compile_restricted_eval(text, 
-                                                       self.__class__.__name__)
+        code, err, warn, use = compile_restricted_eval(
+            text, self.__class__.__name__)
+
         if err:
-            raise engine.getCompilerError()('Python expression error:\n%s' %
-                                            '\n'.join(err))            
+            raise engine.getCompilerError()(
+                'Python expression error:\n%s' % '\n'.join(err))
+
         self._varnames = use.keys()
         self._code = code
 
@@ -47,7 +56,8 @@ class PythonExpr(PythonExpr):
         vars.update(self._globals)
         return eval(self._code, vars, {})
 
-class _SecureModuleImporter:
+
+class _SecureModuleImporter(object):
     __allow_access_to_unprotected_subobjects__ = True
 
     def __getitem__(self, module):
@@ -57,10 +67,10 @@ class _SecureModuleImporter:
             mod = getattr(mod, name)
         return mod
 
-from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from DocumentTemplate.security import RestrictedDTML
+
 class Rtd(RestrictedDTML, TemplateDict):
     this = None
+
 
 def call_with_ns(f, ns, arg=1):
     td = Rtd()
@@ -74,7 +84,7 @@ def call_with_ns(f, ns, arg=1):
     td._push(InstanceDict(td.this, td))
     td._push(ns)
     try:
-        if arg==2:
+        if arg == 2:
             return f(None, td)
         else:
             return f(td)

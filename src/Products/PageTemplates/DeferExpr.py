@@ -11,6 +11,13 @@
 #
 ##############################################################################
 
-# BBB
-from zope.tales.expressions import DeferWrapper, DeferExpr
-from zope.tales.expressions import LazyWrapper, LazyExpr
+from zope.deferredimport import deprecated
+
+# BBB Zope 5.0
+deprecated(
+    'Please import from zope.tales.expressions.',
+    DeferExpr='zope.tales.expressions:DeferExpr',
+    DeferWrapper='zope.tales.expressions:DeferWrapper',
+    LazyExpr='zope.tales.expressions:LazyExpr',
+    LazyWrapper='zope.tales.expressions:LazyWrapper',
+)

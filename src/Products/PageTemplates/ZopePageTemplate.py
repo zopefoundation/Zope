@@ -14,6 +14,7 @@
 """
 
 import os
+import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_page_templates
@@ -45,8 +46,11 @@ from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import convertToUnicode
 
+if sys.version_info >= (3, 0):
+    unicode = str
+
 preferred_encodings = ['utf-8', 'iso-8859-15']
-if os.environ.has_key('ZPT_PREFERRED_ENCODING'):
+if 'ZPT_PREFERRED_ENCODING' in os.environ:
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])
 
 
@@ -68,6 +72,7 @@ class Src(Explicit):
 
 InitializeClass(Src)
 
+
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
@@ -83,19 +88,19 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                                        'www', 'default.html')
 
     manage_options = (
-        {'label':'Edit', 'action':'pt_editForm'},
-        {'label':'Test', 'action':'ZScriptHTML_tryForm'},
-        ) + PropertyManager.manage_options \
+        {'label': 'Edit', 'action': 'pt_editForm'},
+        {'label': 'Test', 'action': 'ZScriptHTML_tryForm'},
+    ) + PropertyManager.manage_options \
         + Historical.manage_options \
         + SimpleItem.manage_options \
         + Cacheable.manage_options
 
-
-    _properties=({'id':'title', 'type': 'ustring', 'mode': 'w'},
-                 {'id':'content_type', 'type':'string', 'mode': 'w'},
-                 {'id':'output_encoding', 'type':'string', 'mode': 'w'},
-                 {'id':'expand', 'type':'boolean', 'mode': 'w'},
-                 )
+    _properties = (
+        {'id': 'title', 'type': 'ustring', 'mode': 'w'},
+        {'id': 'content_type', 'type': 'string', 'mode': 'w'},
+        {'id': 'output_encoding', 'type': 'string', 'mode': 'w'},
+        {'id': 'expand', 'type': 'boolean', 'mode': 'w'},
+    )
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(view)
@@ -120,7 +125,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, keep_output_encoding=False):
-
         text = text.strip()
 
         is_unicode = isinstance(text, unicode)
@@ -194,14 +198,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         text = unicode(text, 'utf-8')
 
         self.pt_edit(text, content_type, True)
-        REQUEST.set('text', self.read()) # May not equal 'text'!
+        REQUEST.set('text', self.read())  # May not equal 'text'!
         REQUEST.set('title', self.title)
         message = "Saved changes."
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>"
                        % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
-
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
@@ -231,9 +234,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             text = file.read()
 
         content_type = guess_type(filename, text)
-#        if not content_type in ('text/html', 'text/xml'):
-#            raise ValueError('Unsupported mimetype: %s' % content_type)
-
         self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
 
@@ -241,23 +241,24 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def pt_changePrefs(self, REQUEST, height=None, width=None,
                        dtpref_cols="100%", dtpref_rows="20"):
         """Change editing preferences."""
-        dr = {"Taller":5, "Shorter":-5}.get(height, 0)
-        dc = {"Wider":5, "Narrower":-5}.get(width, 0)
-        if isinstance(height, int): dtpref_rows = height
+        dr = {"Taller": 5, "Shorter": -5}.get(height, 0)
+        dc = {"Wider": 5, "Narrower": -5}.get(width, 0)
+        if isinstance(height, int):
+            dtpref_rows = height
         if isinstance(width, int) or \
            isinstance(width, str) and width.endswith('%'):
             dtpref_cols = width
         rows = str(max(1, int(dtpref_rows) + dr))
         cols = str(dtpref_cols)
         if cols.endswith('%'):
-           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+            cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
         else:
-           cols = str(max(35, int(cols) + dc))
+            cols = str(max(35, int(cols) + dc))
         e = (DateTime("GMT") + 365).rfc822()
         setCookie = REQUEST["RESPONSE"].setCookie
         setCookie("dtpref_rows", rows, path='/', expires=e)
         setCookie("dtpref_cols", cols, path='/', expires=e)
-        REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
+        REQUEST.other.update({"dtpref_cols": cols, "dtpref_rows": rows})
         return self.pt_editForm()
 
     def ZScriptHTML_tryParams(self):
@@ -269,7 +270,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return ZopePageTemplate.inheritedAttribute(
             'manage_historyCompare')(
             self, rev1, rev2, REQUEST,
-            historyComparisonResults=html_diff(rev1._text, rev2._text) )
+            historyComparisonResults=html_diff(rev1._text, rev2._text))
 
     def pt_getContext(self, *args, **kw):
         root = None
@@ -309,7 +310,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         request = aq_get(self, 'REQUEST', None)
         if request is not None:
             response = request.response
-            if not response.headers.has_key('content-type'):
+            if 'content-type' not in response.headers:
                 response.setHeader('content-type', self.content_type)
 
         security = getSecurityManager()
@@ -338,9 +339,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         finally:
             security.removeContext(self)
 
-    security.declareProtected(change_page_templates,
-      'manage_historyCopy',
-      'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')
+    security.declareProtected(
+        change_page_templates,
+        'manage_historyCopy',
+        'manage_beforeHistoryCopy',
+        'manage_afterHistoryCopy')
 
     security.declareProtected(change_page_templates, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
@@ -357,7 +360,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected(change_page_templates, 'manage_FTPput')
     manage_FTPput = PUT
 
-    security.declareProtected(ftp_access, 'manage_FTPstat','manage_FTPlist')
+    security.declareProtected(ftp_access, 'manage_FTPstat', 'manage_FTPlist')
     security.declareProtected(ftp_access, 'manage_FTPget')
     def manage_FTPget(self):
         "Get source for FTP download"
@@ -406,19 +409,18 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # here?
         _text = state.get('_text')
         if _text is not None and not isinstance(state['_text'], unicode):
-            text, encoding = convertToUnicode(state['_text'],
-                                    state.get('content_type', 'text/html'),
-                                    preferred_encodings)
+            text, encoding = convertToUnicode(
+                state['_text'],
+                state.get('content_type', 'text/html'),
+                preferred_encodings)
             state['_text'] = text
             state['output_encoding'] = encoding
         self.__dict__.update(state)
-
 
     def pt_render(self, source=False, extra_context={}):
         result = PageTemplate.pt_render(self, source, extra_context)
         assert isinstance(result, unicode)
         return result
-
 
     def wl_isLocked(self):
         return 0
@@ -426,12 +428,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
 InitializeClass(ZopePageTemplate)
 
-setattr(ZopePageTemplate, 'source.xml',  ZopePageTemplate.source_dot_xml)
+setattr(ZopePageTemplate, 'source.xml', ZopePageTemplate.source_dot_xml)
 setattr(ZopePageTemplate, 'source.html', ZopePageTemplate.source_dot_xml)
 
 # Product registration and Add support
 manage_addPageTemplateForm = PageTemplateFile(
     'www/ptAdd', globals(), __name__='manage_addPageTemplateForm')
+
 
 def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
                            submit=None, REQUEST=None, RESPONSE=None):
@@ -440,23 +443,21 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     filename = ''
     content_type = 'text/html'
 
-    if REQUEST and REQUEST.has_key('file'):
+    if REQUEST and 'file' in REQUEST:
         file = REQUEST['file']
         filename = file.filename
         text = file.read()
         headers = getattr(file, 'headers', None)
-        if headers and headers.has_key('content_type'):
+        if headers and 'content_type' in headers:
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text)
-
-
     else:
         if hasattr(text, 'read'):
             filename = getattr(text, 'filename', '')
             headers = getattr(text, 'headers', None)
             text = text.read()
-            if headers and headers.has_key('content_type'):
+            if headers and 'content_type' in headers:
                 content_type = headers['content_type']
             else:
                 content_type = guess_type(filename, text)
@@ -487,4 +488,4 @@ def initialize(context):
         permission='Add Page Templates',
         constructors=(manage_addPageTemplateForm,
                       manage_addPageTemplate),
-        )
+    )

@@ -14,10 +14,11 @@
 """
 
 import cgi
-import sys
 import urllib
 
 from AccessControl import getSecurityManager
+from AccessControl.unauthorized import Unauthorized
+from AccessControl.ZopeGuards import guarded_getitem
 from DateTime.DateTime import DateTime
 
 from ZTUtils.Batch import Batch
@@ -27,56 +28,50 @@ from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion
 from ZTUtils.Tree import TreeMaker
 
-try:
-    from AccessControl.ZopeGuards import guarded_getitem
-except ImportError:
-    Unauthorized = 'Unauthorized'
-    def guarded_getitem(object, index):
-        v = object[index]
-        if getSecurityManager().validate(object, object, index, v):
-            return v
-        raise Unauthorized, 'unauthorized access to element %s' % index
-else:
-    from AccessControl.unauthorized import Unauthorized
-
 
 class LazyFilter(Lazy):
     # A LazyFilter that checks with the security policy
 
     def __init__(self, seq, test=None, skip=None):
-        self._seq=seq
-        self._data=[]
-        self._eindex=-1
-        self._test=test
+        self._seq = seq
+        self._data = []
+        self._eindex = -1
+        self._test = test
         if not (skip is None or str(skip) == skip):
-            raise TypeError, 'Skip must be None or a string'
+            raise TypeError('Skip must be None or a string')
         self._skip = skip
 
-    def __getitem__(self,index):
-        data=self._data
-        try: s=self._seq
-        except AttributeError: return data[index]
+    def __getitem__(self, index):
+        data = self._data
+        try:
+            s = self._seq
+        except AttributeError:
+            return data[index]
 
-        i=index
-        if i < 0: i=len(self)+i
-        if i < 0: raise IndexError, index
+        i = index
+        if i < 0:
+            i = len(self) + i
+        if i < 0:
+            raise IndexError(index)
 
-        ind=len(data)
-        if i < ind: return data[i]
-        ind=ind-1
+        ind = len(data)
+        if i < ind:
+            return data[i]
+        ind = ind - 1
 
-        test=self._test
-        e=self._eindex
+        test = self._test
+        e = self._eindex
         skip = self._skip
         while i > ind:
             e = e + 1
             try:
-                try: v = guarded_getitem(s, e)
-                except Unauthorized, vv:
+                try:
+                    v = guarded_getitem(s, e)
+                except Unauthorized as vv:
                     if skip is None:
                         self._eindex = e
                         msg = '(item %s): %s' % (index, vv)
-                        raise Unauthorized, msg, sys.exc_info()[2]
+                        raise Unauthorized(msg)
                     skip_this = 1
                 else:
                     skip_this = 0
@@ -84,35 +79,43 @@ class LazyFilter(Lazy):
                 del self._test
                 del self._seq
                 del self._eindex
-                raise IndexError, index
-            if skip_this: continue
+                raise IndexError(index)
+            if skip_this:
+                continue
             if skip and not getSecurityManager().checkPermission(skip, v):
                 continue
             if test is None or test(v):
                 data.append(v)
-                ind=ind+1
-        self._eindex=e
+                ind = ind + 1
+        self._eindex = e
         return data[i]
+
 
 class TreeSkipMixin:
     '''Mixin class to make trees test security, and allow
     skipping of unauthorized objects. '''
     skip = None
+
     def setSkip(self, skip):
         self.skip = skip
         return self
+
     def getChildren(self, object):
         return LazyFilter(self._getChildren(object), skip=self.skip)
+
     def filterChildren(self, children):
         if self._values_filter:
             return self._values_filter(LazyFilter(children, skip=self.skip))
         return children
 
+
 class TreeMaker(TreeSkipMixin, TreeMaker):
     _getChildren = TreeMaker.getChildren
 
+
 class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
     _getChildren = SimpleTreeMaker.getChildren
+
     def cookieTree(self, root_object, default_state=None):
         '''Make a tree with state stored in a cookie.'''
         tree_pre = self.tree_pre
@@ -133,7 +136,7 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
                         m[obid] = {expid: None}
                     else:
                         m[obid][expid] = None
-                elif st == 'c' and m is not state and obid==expid:
+                elif st == 'c' and m is not state and obid == expid:
                     del m[obid]
             else:
                 state = decodeExpansion(state)
@@ -146,6 +149,8 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
 
 # Make the Batch class test security, and let it skip unauthorized.
 _Batch = Batch
+
+
 class Batch(Batch):
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=0, overlap=0, skip_unauthorized=None):
@@ -159,6 +164,7 @@ class Batch(Batch):
 # the base for the batching links, then append
 # "make_query(bstart=batch.previous.first)" to one and
 # "make_query(bstart=batch.end)" to the other.
+
 
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
@@ -187,6 +193,7 @@ def make_query(*args, **kwargs):
 
     return '&'.join(qlist)
 
+
 def make_hidden_input(*args, **kwargs):
     '''Construct a set of hidden input elements, with marshalling markup.
 
@@ -205,7 +212,9 @@ def make_hidden_input(*args, **kwargs):
         d.update(arg)
     d.update(kwargs)
 
-    hq = lambda x:cgi.escape(x, quote=True)
+    def hq(x):
+        return cgi.escape(x, quote=True)
+
     qlist = complex_marshal(d.items())
     for i in range(len(qlist)):
         k, m, v = qlist[i]
@@ -213,6 +222,7 @@ def make_hidden_input(*args, **kwargs):
                     % (hq(k), m, hq(str(v))))
 
     return '\n'.join(qlist)
+
 
 def complex_marshal(pairs):
     '''Add request marshalling information to a list of name-value pairs.
@@ -243,11 +253,11 @@ def complex_marshal(pairs):
                 if isinstance(sv, list):
                     for ssv in sv:
                         sm = simple_marshal(ssv)
-                        sublist.append(('%s.%s' % (k, sk), 
-                                            '%s:list:record' % sm, ssv))
+                        sublist.append(('%s.%s' % (k, sk),
+                                        '%s:list:record' % sm, ssv))
                 else:
                     sm = simple_marshal(sv)
-                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
+                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm, sv))
         elif isinstance(v, list):
             sublist = []
             for sv in v:
@@ -262,6 +272,7 @@ def complex_marshal(pairs):
 
     return pairs
 
+
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
@@ -274,6 +285,7 @@ def simple_marshal(v):
     if isinstance(v, DateTime):
         return ':date'
     return ''
+
 
 def url_query(request, req_name="URL", omit=None):
     '''Construct a URL with a query string, using the current request.

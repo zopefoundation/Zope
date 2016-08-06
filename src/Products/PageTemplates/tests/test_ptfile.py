@@ -1,6 +1,7 @@
 """Tests of PageTemplateFile."""
 
-import os, os.path
+import os
+import os.path
 import tempfile
 import unittest
 import Zope2
@@ -17,9 +18,12 @@ class TypeSniffingTestCase(unittest.TestCase):
 
     def setUp(self):
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
-        provideUtility(DefaultUnicodeEncodingConflictResolver, IUnicodeEncodingConflictResolver)
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            DefaultUnicodeEncodingConflictResolver
+        provideUtility(DefaultUnicodeEncodingConflictResolver,
+                       IUnicodeEncodingConflictResolver)
 
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):
@@ -131,29 +135,29 @@ class TypeSniffingTestCase(unittest.TestCase):
     def test_getId(self):
         desired_id = os.path.splitext(os.path.split(self.TEMPFILENAME)[-1])[0]
         f = open(self.TEMPFILENAME, 'w')
-        print >> f, 'Boring'
+        f.write('Boring')
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         pt_id = pt.getId()
         self.assertEqual(
-                pt_id, desired_id,
-                'getId() returned %r. Expecting %r' % (pt_id, desired_id)
-                )
+            pt_id, desired_id,
+            'getId() returned %r. Expecting %r' % (pt_id, desired_id)
+        )
 
     def test_getPhysicalPath(self):
         desired_id = os.path.splitext(os.path.split(self.TEMPFILENAME)[-1])[0]
         desired_path = (desired_id,)
         f = open(self.TEMPFILENAME, 'w')
-        print >> f, 'Boring'
+        f.write('Boring')
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         pt_path = pt.getPhysicalPath()
         self.assertEqual(
-                pt_path, desired_path,
-                'getPhysicalPath() returned %r. Expecting %r' % (
-                    desired_path, pt_path,
-                    )
-                )
+            pt_path, desired_path,
+            'getPhysicalPath() returned %r. Expecting %r' % (
+                desired_path, pt_path,
+            )
+        )
 
 
 class LineEndingsTestCase(unittest.TestCase):
@@ -203,15 +207,7 @@ class LazyLoadingTestCase(unittest.TestCase):
 
     def test_lazy(self):
         f = open(self.TEMPFILENAME, 'w')
-        print >> f, 'Lazyness'
+        f.write('Lazyness')
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         self.assertTrue(not pt._text and not pt._v_program)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TypeSniffingTestCase),
-        unittest.makeSuite(LineEndingsTestCase),
-        unittest.makeSuite(LazyLoadingTestCase),
-    ))

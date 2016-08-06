@@ -17,11 +17,12 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BaseRequest import quote
 from zExceptions import BadRequest
 
+
 class VirtualHostMonster(Persistent, Item, Implicit):
     """Provide a simple drop-in solution for virtual hosting.
     """
 
-    meta_type='Virtual Host Monster'
+    meta_type = 'Virtual Host Monster'
     priority = 25
 
     id = 'VHM'
@@ -31,8 +32,10 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     security = ClassSecurityInfo()
 
-    manage_options=({'label':'About', 'action':'manage_main'},
-                    {'label':'Mappings', 'action':'manage_edit'})
+    manage_options = (
+        {'label': 'About', 'action': 'manage_main'},
+        {'label': 'Mappings', 'action': 'manage_edit'},
+    )
 
     security.declareProtected(View, 'manage_main')
     manage_main = DTMLFile('www/VirtualHostMonster', globals(),
@@ -56,12 +59,11 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 # Drop the protocol, if any
                 line = line.split('://')[-1]
                 try:
-                    host, path = [x.strip() for x in  line.split('/', 1)]
+                    host, path = [x.strip() for x in line.split('/', 1)]
                 except:
                     raise ValueError(
-                        'Line needs a slash between host and path: %s'
-                            % line )
-                pp = filter(None, path.split( '/'))
+                        'Line needs a slash between host and path: %s' % line)
+                pp = filter(None, path.split('/'))
                 if pp:
                     obpath = pp[:]
                     if obpath[0] == 'VirtualHostBase':
@@ -76,18 +78,18 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         try:
                             ob = self.unrestrictedTraverse(obpath)
                         except:
-                            raise ValueError, (
-                                'Path not found: %s' % obpath )
+                            raise ValueError(
+                                'Path not found: %s' % obpath)
                         if not getattr(ob.aq_base, 'isAnObjectManager', 0):
-                            raise ValueError, (
-                                'Path must lead to an Object Manager: %s'
-                                    % obpath)
+                            raise ValueError(
+                                'Path must lead to an Object Manager: %s' %
+                                obpath)
                     if 'VirtualHostRoot' not in pp:
                         pp.append('/')
                     pp.reverse()
                 try:
-                    int(host.replace('.',''))
-                    raise ValueError,  (
+                    int(host.replace('.', ''))
+                    raise ValueError(
                         'IP addresses are not mappable: %s' % host)
                 except ValueError:
                     pass
@@ -96,15 +98,15 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     host = host[2:]
                 else:
                     host_map = fixed_map
-                hostname, port = (host.split( ':', 1) + [None])[:2]
+                hostname, port = (host.split(':', 1) + [None])[:2]
                 if hostname not in host_map:
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
-            except 'LineError', msg:
+            except 'LineError' as msg:
                 line = '%s #! %s' % (line, msg)
             new_lines.append(line)
         self.lines = tuple(new_lines)
-        self.have_map = not not (fixed_map or sub_map) # booleanize
+        self.have_map = bool(fixed_map or sub_map)  # booleanize
         if RESPONSE is not None:
             RESPONSE.redirect(
                 'manage_edit?manage_tabs_message=Changes%20Saved.')
@@ -115,9 +117,10 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     def manage_addToContainer(self, container, nextURL=''):
         self.addToContainer(container)
         if nextURL:
-            return MessageDialog(title='Item Added',
-              message='This object now has a %s' % self.meta_type,
-              action=nextURL)
+            return MessageDialog(
+                title='Item Added',
+                message='This object now has a %s' % self.meta_type,
+                action=nextURL)
 
     def manage_beforeDelete(self, item, container):
         if item is self:
@@ -125,19 +128,18 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def manage_afterAdd(self, item, container):
         if item is self:
-            if queryBeforeTraverse(container,
-                                                  self.meta_type):
-                raise BadRequest, ('This container already has a %s' %
-                                   self.meta_type)
+            if queryBeforeTraverse(container, self.meta_type):
+                raise BadRequest('This container already has a %s' %
+                                 self.meta_type)
             id = self.id
-            if callable(id): id = id()
+            if callable(id):
+                id = id()
 
             # We want the original object, not stuff in between
             container = container.this()
             hook = NameCaller(id)
-            registerBeforeTraverse(container, hook,
-                                                  self.meta_type,
-                                                  self.priority)
+            registerBeforeTraverse(
+                container, hook, self.meta_type, self.priority)
 
     def __call__(self, client, request, response=None):
         '''Traversing at home'''
@@ -210,11 +212,11 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     request['ACTUAL_URL'] = request['VIRTUAL_URL'] + add
 
                 return
-            vh_used = 1 # Only retry once.
+            vh_used = 1  # Only retry once.
             # Try to apply the host map if one exists, and if no
             # VirtualHost directives were found.
             host = request['SERVER_URL'].split('://')[1].lower()
-            hostname, port = (host.split( ':', 1) + [None])[:2]
+            hostname, port = (host.split(':', 1) + [None])[:2]
             ports = self.fixed_map.get(hostname, 0)
             if not ports and self.sub_map:
                 get = self.sub_map.get
@@ -243,13 +245,13 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         if name[:1] != '/':
             return getattr(self, name)
         parents = request.PARENTS
-        parents.pop() # I don't belong there
+        parents.pop()  # I don't belong there
 
         if len(name) > 1:
             request.setVirtualRoot(name)
         else:
             request.setVirtualRoot([])
-        return parents.pop() # He'll get put back on
+        return parents.pop()  # He'll get put back on
 
 InitializeClass(VirtualHostMonster)
 
@@ -266,5 +268,5 @@ def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
         REQUEST['RESPONSE'].redirect('%s?%s' % (goto, qs))
 
 constructors = (
-  ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),
+    ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),
 )

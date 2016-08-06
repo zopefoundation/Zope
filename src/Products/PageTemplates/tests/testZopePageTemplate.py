@@ -528,7 +528,7 @@ class DummyRequest(dict):
     pass
 
 
-class DummyFileUpload:
+class DummyFileUpload(object):
 
     def __init__(self, data='', filename='', content_type=''):
         self.data = data

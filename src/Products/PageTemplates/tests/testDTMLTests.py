@@ -19,41 +19,45 @@ from zope.traversing.adapters import DefaultTraversable
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from Products.PageTemplates.unicodeconflictresolver import DefaultUnicodeEncodingConflictResolver
+from Products.PageTemplates.unicodeconflictresolver import \
+    DefaultUnicodeEncodingConflictResolver
 from Acquisition import Implicit
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 
+
 class AqPageTemplate(Implicit, PageTemplate):
     pass
 
-class UnitTestSecurityPolicy:
+
+class UnitTestSecurityPolicy(object):
     """
         Stub out the existing security policy for unit testing purposes.
     """
     #
     #   Standard SecurityPolicy interface
     #
-    def validate( self
-                , accessed=None
-                , container=None
-                , name=None
-                , value=None
-                , context=None
-                , roles=None
-                , *args
-                , **kw):
+    def validate(self,
+                 accessed=None,
+                 container=None,
+                 name=None,
+                 value=None,
+                 context=None,
+                 roles=None,
+                 *args, **kw):
         return 1
 
-    def checkPermission( self, permission, object, context) :
+    def checkPermission(self, permission, object, context):
         return 1
+
 
 class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super(DTMLTests, self).setUp()
         zope.component.provideAdapter(DefaultTraversable, (None,))
-        provideUtility(DefaultUnicodeEncodingConflictResolver, IUnicodeEncodingConflictResolver)
+        provideUtility(DefaultUnicodeEncodingConflictResolver,
+                       IUnicodeEncodingConflictResolver)
 
         self.t = AqPageTemplate()
         self.policy = UnitTestSecurityPolicy()
@@ -65,7 +69,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         SecurityManager.setSecurityPolicy(self.oldPolicy)
         noSecurityManager()  # Reset to old policy.
 
-    def check1(self):
+    def test_1(self):
         """DTML test 1: if, in, and var:
 
         %(comment)[ blah %(comment)]
@@ -90,18 +94,18 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         tal = util.read_input('DTML1.html')
         self.t.write(tal)
 
-        aa=util.argv(('one', 'two', 'three', 'cha', 'cha', 'cha'))
-        o=self.t.__of__(aa)()
+        aa = util.argv(('one', 'two', 'three', 'cha', 'cha', 'cha'))
+        o = self.t.__of__(aa)()
         expect = util.read_output('DTML1a.html')
 
         util.check_xml(expect, o)
 
-        aa=util.argv(())
-        o=self.t.__of__(aa)()
+        aa = util.argv(())
+        o = self.t.__of__(aa)()
         expect = util.read_output('DTML1b.html')
         util.check_xml(expect, o)
 
-    def check3(self):
+    def test_3(self):
         """DTML test 3: batches and formatting:
 
           <html><head><title>Test of documentation templates</title></head>
@@ -134,18 +138,19 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         tal = util.read_input('DTML3.html')
         self.t.write(tal)
 
-        aa=util.argv(('one', 'two', 'three', 'four', 'five',
-                      'six', 'seven', 'eight', 'nine', 'ten',
-                      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
-                      'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty',
-                      ))
+        aa = util.argv(('one', 'two', 'three', 'four', 'five',
+                        'six', 'seven', 'eight', 'nine', 'ten',
+                        'eleven', 'twelve', 'thirteen', 'fourteen',
+                        'fifteen', 'sixteen', 'seventeen', 'eighteen',
+                        'nineteen', 'twenty',
+                        ))
         from Products.PageTemplates.tests import batch
-        o=self.t.__of__(aa)(batch=batch.batch(aa.args, 5))
+        o = self.t.__of__(aa)(batch=batch.batch(aa.args, 5))
 
         expect = util.read_output('DTML3.html')
         util.check_xml(expect, o)
 
-    def check_on_error_in_slot_filler(self):
+    def test_on_error_in_slot_filler(self):
         # The `here` isn't defined, so the macro definition is
         # expected to catch the error that gets raised.
         text = '''\
@@ -166,7 +171,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         aa = util.argv(('one', 'two', 'three', 'four', 'five'))
         self.t.__of__(aa)()
 
-    def check_on_error_in_slot_default(self):
+    def test_on_error_in_slot_default(self):
         # The `here` isn't defined, so the macro definition is
         # expected to catch the error that gets raised.
         text = '''\
@@ -184,7 +189,3 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.t.write(text)
         aa = util.argv(('one', 'two', 'three', 'four', 'five'))
         self.t.__of__(aa)()
-
-
-def test_suite():
-    return unittest.makeSuite(DTMLTests, 'check')

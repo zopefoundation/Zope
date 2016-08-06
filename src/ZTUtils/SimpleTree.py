@@ -31,7 +31,7 @@ class SimpleTreeNode(TreeNode):
         obid = self.id
         pre = self.aq_acquire('tree_pre')
 
-        return {'link': '?%s-setstate=%s,%s,%s#%s' % \
+        return {'link': '?%s-setstate=%s,%s,%s#%s' %
                         (pre, setst[0], exnum, obid, obid),
                 'img': ''}
 

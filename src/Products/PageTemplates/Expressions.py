@@ -17,6 +17,7 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
+import sys
 
 from zope.component import queryUtility
 from zope.i18n import translate
@@ -46,6 +47,10 @@ from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
+if sys.version_info >= (3, 0):
+    basestring = str
+    unicode = str
+
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
 LOG = logging.getLogger('Expressions')
@@ -56,6 +61,7 @@ LOG = logging.getLogger('Expressions')
 # list here and make sure our implementation of the TALES
 # Path Expression uses them
 ZopeUndefs = Undefs + (NotFound, Unauthorized)
+
 
 def boboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
@@ -77,6 +83,7 @@ def boboAwareZopeTraverse(object, path_items, econtext):
                                          request=request)
     return object
 
+
 def trustedBoboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
 
@@ -97,6 +104,7 @@ def trustedBoboAwareZopeTraverse(object, path_items, econtext):
                                          request=request)
     return object
 
+
 def render(ob, ns):
     """Calls the object, possibly a document template, or just returns
     it if not callable.  (From DT_Util.py)
@@ -115,10 +123,11 @@ def render(ob, ns):
                     ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
                 else:
                     ob = ob()
-            except AttributeError, n:
+            except AttributeError as n:
                 if str(n) != '__call__':
                     raise
     return ob
+
 
 class ZopePathExpr(PathExpr):
 
@@ -138,7 +147,7 @@ class ZopePathExpr(PathExpr):
             # Try all but the last subexpression, skipping undefined ones.
             try:
                 ob = expr(econtext)
-            except ZopeUndefs: # use Zope 2 expression types
+            except ZopeUndefs:  # use Zope 2 expression types
                 pass
             else:
                 break
@@ -160,14 +169,16 @@ class ZopePathExpr(PathExpr):
         for expr in self._subexprs:
             try:
                 expr(econtext)
-            except ZopeUndefs: # use Zope 2 expression types
+            except ZopeUndefs:  # use Zope 2 expression types
                 pass
             else:
                 return 1
         return 0
 
+
 class TrustedZopePathExpr(ZopePathExpr):
     _TRAVERSER = staticmethod(trustedBoboAwareZopeTraverse)
+
 
 class SafeMapping(MultiMapping):
     """Mapping with security declarations and limited method exposure.
@@ -182,6 +193,7 @@ class SafeMapping(MultiMapping):
 
     _push = MultiMapping.push
     _pop = MultiMapping.pop
+
 
 class ZopeContext(Context):
 
@@ -248,17 +260,16 @@ class ZopeContext(Context):
 
             try:
                 return resolver.resolve(self.contexts['context'], text, expr)
-            except UnicodeDecodeError,e:
-                LOG.error("""UnicodeDecodeError detected for expression "%s"\n"""
-                          """Resolver class: %s\n"""
-                          """Exception text: %s\n"""
-                          """Template: %s\n"""
-                          """Rendered text: %r"""  % \
-                          (expr, resolver.__class__, e, 
-                            self.contexts['template'].absolute_url(1), text))
-                raise 
+            except UnicodeDecodeError as e:
+                LOG.error("UnicodeDecodeError detected for expression \"%s\"\n"
+                          "Resolver class: %s\n"
+                          "Exception text: %s\n"
+                          "Template: %s\n"
+                          "Rendered text: %r" %
+                          (expr, resolver.__class__, e,
+                           self.contexts['template'].absolute_url(1), text))
+                raise
         else:
-
             # This is a weird culprit ...calling unicode() on non-string
             # objects
             return unicode(text)
@@ -276,14 +287,17 @@ class ZopeContext(Context):
         """
         raise NotImplementedError
 
+
 class ErrorInfo(BaseErrorInfo):
     """Information about an exception passed to an on-error handler.
     """
     __allow_access_to_unprotected_subobjects__ = True
 
+
 class ZopeEngine(Z3Engine):
 
     _create_context = ZopeContext
+
 
 class ZopeIterator(Iterator):
 
@@ -338,6 +352,7 @@ class ZopeIterator(Iterator):
             self._last_item = self.item
         return super(ZopeIterator, self).next()
 
+
 class PathIterator(ZopeIterator):
     """A TALES Iterator with the ability to use first() and last() on
     subpaths of elements."""
@@ -370,6 +385,7 @@ class PathIterator(ZopeIterator):
             return False
         return ob1 == ob2
 
+
 class UnicodeAwareStringExpr(StringExpr):
 
     def __call__(self, econtext):
@@ -383,6 +399,7 @@ class UnicodeAwareStringExpr(StringExpr):
             v = evaluate(var)
             vvals.append(v)
         return self._expr % tuple(vvals)
+
 
 def createZopeEngine(zpe=ZopePathExpr):
     e = ZopeEngine()
@@ -398,6 +415,7 @@ def createZopeEngine(zpe=ZopePathExpr):
     e.registerBaseName('modules', SecureModuleImporter)
     return e
 
+
 def createTrustedZopeEngine():
     # same as createZopeEngine, but use non-restricted Python
     # expression evaluator
@@ -406,5 +424,7 @@ def createTrustedZopeEngine():
     return e
 
 _engine = createZopeEngine()
+
+
 def getEngine():
     return _engine

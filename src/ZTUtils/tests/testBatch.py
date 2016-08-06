@@ -1,8 +1,9 @@
-from unittest import TestCase, makeSuite
+import unittest
 
 from ZTUtils import Batch
 
-class BatchTests(TestCase):
+
+class BatchTests(unittest.TestCase):
 
     def testEmpty(self):
         '''Test empty Batch'''
@@ -19,7 +20,7 @@ class BatchTests(TestCase):
             assert b.previous is None
             assert b.next is None
             assert b.start == 1, b.start
-            assert len(b) ==  b.end == bsize
+            assert len(b) == b.end == bsize
             assert b.sequence_length == len(seq)
             for i in seq:
                 assert b[i] == i, (b[i], i)
@@ -41,9 +42,7 @@ class BatchTests(TestCase):
 
     def testLengthEqualsSizePlusOrphans(self):
         '''Test limit case where batch length is equal to size + orphans'''
-        for bsize, length in ((12,11), (13,12), (14,13), (15,10)):
-            b = Batch(range(bsize), size=10, start=1, end=0, orphan=3, overlap=0)
+        for bsize, length in ((12, 11), (13, 12), (14, 13), (15, 10)):
+            b = Batch(range(bsize),
+                      size=10, start=1, end=0, orphan=3, overlap=0)
             assert length == b.length
-    
-def test_suite():
-    return makeSuite(BatchTests)

@@ -27,9 +27,10 @@ from OFS.SimpleItem import SimpleItem
 from zExceptions import Redirect
 
 from Shared.DC.Scripts.BindingsUI import BindingsUI
-from Shared.DC.Scripts.Bindings import defaultBindings
-# Temporary:
-from Shared.DC.Scripts.Signature import FuncCode
+
+from Shared.DC.Scripts.Bindings import defaultBindings  # NOQA
+from Shared.DC.Scripts.Signature import FuncCode  # NOQA
+
 
 class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin
@@ -53,7 +54,7 @@ class Script(SimpleItem, BindingsUI):
         for argvar in argvars:
             if argvar.value:
                 vv.append("%s=%s" % (quote(argvar.name), quote(argvar.value)))
-        raise Redirect, "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
+        raise Redirect("%s?%s" % (REQUEST['URL1'], join(vv, '&')))
 
     from Signature import _setFuncSignature
 

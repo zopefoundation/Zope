@@ -19,6 +19,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
+from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_parent
 from Acquisition import aq_inner
@@ -29,19 +30,20 @@ defaultBindings = {'name_context': 'context',
                    'name_m_self': 'script',
                    'name_ns': '',
                    'name_subpath': 'traverse_subpath',
-                  }
+                   }
 
 _marker = []  # Create a new marker
+
 
 class NameAssignments:
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
-    _exprs = (('name_context',   'self._getContext()'),
+    _exprs = (('name_context', 'self._getContext()'),
               ('name_container', 'self._getContainer()'),
-              ('name_m_self',    'self'),
-              ('name_ns',        'self._getNamespace(caller_namespace, kw)'),
-              ('name_subpath',   'self._getTraverseSubpath()'),
+              ('name_m_self', 'self'),
+              ('name_ns', 'self._getNamespace(caller_namespace, kw)'),
+              ('name_subpath', 'self._getTraverseSubpath()'),
               )
 
     _isLegalName = re.compile(r'_$|[a-zA-Z][a-zA-Z0-9_]*$').match
@@ -60,8 +62,8 @@ class NameAssignments:
                 if not assigned_name:
                     continue
                 if not _isLegalName(assigned_name):
-                    raise ValueError, ('"%s" is not a valid variable name.'
-                                       % assigned_name)
+                    raise ValueError('"%s" is not a valid variable name.' %
+                                     assigned_name)
                 asgns[name] = assigned_name
         self._asgns = asgns
 
@@ -76,7 +78,7 @@ class NameAssignments:
     def getAssignedName(self, name, default=_marker):
         val = self._asgns.get(name, default)
         if val is _marker:
-            raise KeyError, name
+            raise KeyError(name)
         return val
 
     def getAssignedNames(self):
@@ -101,7 +103,7 @@ class NameAssignments:
         text = ['bound_data.append(%s)\n' % bindtext]
         for assigned_name in assigned_names:
             text.append('if kw.has_key("%s"):\n' % assigned_name)
-            text.append('    del kw["%s"]\n'     % assigned_name)
+            text.append('    del kw["%s"]\n' % assigned_name)
         codetext = string.join(text, '')
         return (compile(codetext, '<string>', 'exec'), len(assigned_names))
 
@@ -148,8 +150,6 @@ class NameAssignments:
         return self._generateCodeBlock(text, assigned_names)
 
 
-from AccessControl.unauthorized import Unauthorized
-
 class UnauthorizedBinding:
     """Explanation: as of Zope 2.6.3 a security hole was closed - no
        security check was happening when 'context' and 'container'
@@ -191,13 +191,13 @@ class UnauthorizedBinding:
             self.__you_lose()
 
         return guarded_getattr(self._wrapped, name, default)
-        #return getattr(self._wrapped, name, default)
 
     def __you_lose(self):
         name = self.__dict__['_name']
         raise Unauthorized('Not authorized to access binding: %s' % name)
 
     __str__ = __call__ = index_html = __you_lose
+
 
 class Bindings:
 
@@ -237,7 +237,7 @@ class Bindings:
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
         if (not names.isNameAssigned('name_subpath') or
-            (path and hasattr(self.aq_base, path[-1])) ):
+                (path and hasattr(self.aq_base, path[-1]))):
             return
         subpath = path[:]
         path[:] = []
@@ -278,7 +278,8 @@ class Bindings:
                 parent = aq_parent(self)
                 inner = aq_inner(self)
                 container = aq_parent(inner)
-                try: getSecurityManager().validate(parent, container, '', self)
+                try:
+                    getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('context', self)
                 return self
@@ -291,7 +292,8 @@ class Bindings:
                 parent = aq_parent(self)
                 inner = aq_inner(self)
                 container = aq_parent(inner)
-                try: getSecurityManager().validate(parent, container, '', self)
+                try:
+                    getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
                     return UnauthorizedBinding('container', self)
                 return self

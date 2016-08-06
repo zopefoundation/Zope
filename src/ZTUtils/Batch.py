@@ -15,24 +15,30 @@
 
 from ExtensionClass import Base
 
+
 class LazyPrevBatch(Base):
     def __of__(self, parent):
         return Batch(parent._sequence, parent._size,
                      parent.first - parent._size + parent.overlap, 0,
                      parent.orphan, parent.overlap)
 
+
 class LazyNextBatch(Base):
     def __of__(self, parent):
-        try: parent._sequence[parent.end]
-        except IndexError: return None
+        try:
+            parent._sequence[parent.end]
+        except IndexError:
+            return None
         return Batch(parent._sequence, parent._size,
                      parent.end - parent.overlap, 0,
                      parent.orphan, parent.overlap)
+
 
 class LazySequenceLength(Base):
     def __of__(self, parent):
         parent.sequence_length = l = len(parent._sequence)
         return l
+
 
 class Batch(Base):
     """Create a sequence batch"""
@@ -63,7 +69,7 @@ class Batch(Base):
 
         start = start + 1
 
-        start,end,sz = opt(start,end,size,orphan,sequence)
+        start, end, sz = opt(start, end, size, orphan, sequence)
 
         self._sequence = sequence
         self.size = sz
@@ -77,43 +83,56 @@ class Batch(Base):
         if self.first == 0:
             self.previous = None
 
-
     def __getitem__(self, index):
         if index < 0:
-            if index + self.end < self.first: raise IndexError, index
+            if index + self.end < self.first:
+                raise IndexError(index)
             return self._sequence[index + self.end]
 
-        if index >= self.length: raise IndexError, index
-        return self._sequence[index+self.first]
+        if index >= self.length:
+            raise IndexError(index)
+        return self._sequence[index + self.first]
 
     def __len__(self):
         return self.length
 
-def opt(start,end,size,orphan,sequence):
+
+def opt(start, end, size, orphan, sequence):
     if size < 1:
         if start > 0 and end > 0 and end >= start:
-            size=end+1-start
-        else: size=7
+            size = end + 1 - start
+        else:
+            size = 7
 
     if start > 0:
 
-        try: sequence[start-1]
-        except IndexError: start=len(sequence)
+        try:
+            sequence[start - 1]
+        except IndexError:
+            start = len(sequence)
 
         if end > 0:
-            if end < start: end=start
+            if end < start:
+                end = start
         else:
-            end=start+size-1
-            try: sequence[end+orphan]
-            except IndexError: end=len(sequence)
+            end = start + size - 1
+            try:
+                sequence[end + orphan]
+            except IndexError:
+                end = len(sequence)
     elif end > 0:
-        try: sequence[end-1]
-        except IndexError: end=len(sequence)
-        start=end+1-size
-        if start - 1 < orphan: start=1
+        try:
+            sequence[end - 1]
+        except IndexError:
+            end = len(sequence)
+        start = end + 1 - size
+        if start - 1 < orphan:
+            start = 1
     else:
-        start=1
-        end=start+size-1
-        try: sequence[end+orphan-1]
-        except IndexError: end=len(sequence)
-    return start,end,size
+        start = 1
+        end = start + size - 1
+        try:
+            sequence[end + orphan - 1]
+        except IndexError:
+            end = len(sequence)
+    return start, end, size

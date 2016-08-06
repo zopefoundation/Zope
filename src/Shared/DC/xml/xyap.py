@@ -56,6 +56,7 @@ class xyap:
             top = end[tag](self, tag, top)
         append(top)
 
+
 class NoBlanks:
 
     def handle_data(self, data):
@@ -71,11 +72,14 @@ def struct(self, tag, data):
 
 _nulljoin = "".join
 
+
 def name(self, tag, data):
     return _nulljoin(data[2:]).strip()
 
+
 def tuplef(self, tag, data):
     return tuple(data[2:])
+
 
 class XYap(xyap):
     def __init__(self):
@@ -84,6 +88,7 @@ class XYap(xyap):
         self._parser.EndElementHandler = self.unknown_endtag
         self._parser.CharacterDataHandler = self.handle_data
         xyap.__init__(self)
+
 
 class xmlrpc(NoBlanks, XYap):
     end_handlers = {
@@ -114,4 +119,4 @@ class xmlrpc(NoBlanks, XYap):
         'name': name,
         'array': lambda self, tag, data: data[2],
         'data': lambda self, tag, data: data[2:],
-        }
+    }

@@ -13,27 +13,36 @@
 """Tree manipulation classes
 """
 
+import base64
+from string import translate, maketrans
+import zlib
+
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
 from types import ListType, TupleType
 
+
 class TreeNode(Explicit):
     __allow_access_to_unprotected_subobjects__ = 1
-    state = 0 # leaf
+    state = 0  # leaf
     height = 1
     size = 1
+
     def __init__(self):
         self._child_list = []
+
     def _add_child(self, child):
         'Add a child which already has all of its children.'
         self._child_list.append(child)
         self.height = max(self.height, child.height + 1)
         self.size = self.size + child.size
+
     def flat(self):
         'Return a flattened preorder list of tree nodes'
         items = []
         self.walk(items.append)
         return items
+
     def walk(self, f, data=None):
         'Preorder walk this tree, passing each node to a function'
         if data is None:
@@ -42,18 +51,23 @@ class TreeNode(Explicit):
             f(self, data)
         for child in self._child_list:
             child.__of__(self).walk(f, data)
+
     def _depth(self):
         return self.aq_parent.depth + 1
+
     depth = ComputedAttribute(_depth, 1)
+
     def __getitem__(self, index):
         return self._child_list[index].__of__(self)
+
     def __len__(self):
         return len(self._child_list)
 
 _marker = []
 
+
 class TreeMaker:
-    '''Class for mapping a hierachy of objects into a tree of nodes.'''
+    '''Class for mapping a hierarchy of objects into a tree of nodes.'''
 
     __allow_access_to_unprotected_subobjects__ = 1
 
@@ -87,37 +101,35 @@ class TreeMaker:
     def setIdAttr(self, id):
         """Set the attribute or method name called to get a unique Id.
 
-        The id attribute or method is used to get a unique id for every node in
-        the tree, so that the state of the tree can be encoded as a string using
-        Tree.encodeExpansion(). The returned id should be unique and stable
-        across Zope requests.
+        The id attribute or method is used to get a unique id for every
+        node in the tree, so that the state of the tree can be encoded
+        as a string using Tree.encodeExpansion(). The returned id should
+        be unique and stable across Zope requests.
 
-        If the attribute or method isn't found on an object, either the objects
-        persistence Id or the result of id() on the object is used instead.
-
+        If the attribute or method isn't found on an object, either
+        the objects persistence Id or the result of id() on the object
+        is used instead.
         """
         self._id = id
 
     def setExpandRoot(self, expand):
         """Set wether or not to expand the root node by default.
-        
+
         When no expanded flag or mapping is passed to .tree(), assume the root
         node is expanded, and leave all subnodes closed.
 
         The default is to expand the root node.
-        
         """
         self._expand_root = expand and True or False
 
     def setAssumeChildren(self, assume):
         """Set wether or not to assume nodes have children.
-        
+
         When a node is not expanded, when assume children is set, don't
         determine if it is a leaf node, but assume it can be opened. Use this
         when determining the children for a node is expensive.
-        
+
         The default is to not assume there are children.
-        
         """
         self._assume_children = assume and True or False
 
@@ -134,7 +146,6 @@ class TreeMaker:
              0: Leaf node, cannot be opened or closed, no children are
                 processed.
              1: Node opened. Children will be processed as part of the tree.
-        
         """
         self._state_function = function
 
@@ -177,9 +188,11 @@ class TreeMaker:
         id_attr = self._id
         if hasattr(object, id_attr):
             obid = getattr(object, id_attr)
-            if not simple_type(obid): obid = obid()
+            if not simple_type(obid):
+                obid = obid()
             return obid
-        if hasattr(object, '_p_oid'): return str(object._p_oid)
+        if hasattr(object, '_p_oid'):
+            return str(object._p_oid)
         return id(object)
 
     def hasChildren(self, object):
@@ -196,7 +209,7 @@ class TreeMaker:
             self._cached_children = None
             if ob is object:
                 return children
-    
+
         if self._values_function is not None:
             return self._values_function(object)
 
@@ -213,17 +226,16 @@ class TreeMaker:
             return self._values_filter(children)
         return children
 
+
 def simple_type(ob,
-                is_simple={type(''):1, type(0):1, type(0.0):1,
-                           type(0L):1, type(None):1 }.has_key):
+                is_simple={type(''): 1, type(0): 1, type(0.0): 1,
+                           type(None): 1}.has_key):
     return is_simple(type(ob))
 
-import base64
-from string import translate, maketrans
-import zlib
 
 a2u_map = maketrans('+/=', '-._')
 u2a_map = maketrans('-._', '+/=')
+
 
 def b2a(s):
     '''Encode a value as a cookie- and url-safe string.
@@ -232,9 +244,11 @@ def b2a(s):
     '''
     return translate(base64.encodestring(str(s)), a2u_map).replace('\n', '')
 
+
 def a2b(s):
     '''Decode a b2a-encoded string.'''
     return base64.decodestring(translate(s, u2a_map))
+
 
 def encodeExpansion(nodes, compress=1):
     '''Encode the expanded node ids of a tree into a string.
@@ -248,7 +262,8 @@ def encodeExpansion(nodes, compress=1):
     last_depth = -1
     n = 0
     for node in nodes:
-        if node.state <=0: continue
+        if node.state <= 0:
+            continue
         dd = last_depth - node.depth + 1
         last_depth = node.depth
         if dd > 0:
@@ -258,26 +273,27 @@ def encodeExpansion(nodes, compress=1):
         n = n + 1
     result = ':'.join(steps)
     if compress and len(result) > 2:
-        zresult = ':'  + b2a(zlib.compress(result, 9))
+        zresult = ':' + b2a(zlib.compress(result, 9))
         if len(zresult) < len(result):
             result = zresult
     return result
+
 
 def decodeExpansion(s, nth=None, maxsize=8192):
     '''Decode an expanded node map from a string.
 
     If nth is an integer, also return the (map, key) pair for the nth entry.
     '''
-    if len(s) > maxsize: # Set limit to avoid DoS attacks.
+    if len(s) > maxsize:  # Set limit to avoid DoS attacks.
         raise ValueError('Encoded node map too large')
 
-    if s[0] == ':': # Compressed state
+    if s[0] == ':':  # Compressed state
         dec = zlib.decompressobj()
         s = dec.decompress(a2b(s[1:]), maxsize)
         if dec.unconsumed_tail:
             raise ValueError('Encoded node map too large')
         del dec
-    
+
     map = m = {}
     mstack = []
     pop = 0

@@ -1,8 +1,13 @@
 # *-* coding: iso-8859-1 -*-
 
+import sys
 import unittest
 
 from zope.component.testing import PlacelessSetup
+
+if sys.version_info >= (3, 0):
+    unicode = str
+
 
 class EngineTestsBase(PlacelessSetup):
 
@@ -23,17 +28,18 @@ class EngineTestsBase(PlacelessSetup):
 
         class Dummy:
             __allow_access_to_unprotected_subobjects__ = 1
+            management_page_charset = 'utf-8'
+
             def __call__(self):
                 return 'dummy'
-            
-            management_page_charset = 'utf-8'
 
         class DummyDocumentTemplate:
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
+
             def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
                 return 'dummy'
-            
+
             def absolute_url(self, relative=0):
                 url = 'dummy'
                 if not relative:
@@ -41,25 +47,25 @@ class EngineTestsBase(PlacelessSetup):
                 return url
 
         _DEFAULT_BINDINGS = dict(
-            one = 1,
-            d = {'one': 1, 'b': 'b', '': 'blank', '_': 'under'},
-            blank = '',
-            dummy = Dummy(),
-            dummy2 = DummyDocumentTemplate(),
-            eightbit = 'äüö',
+            one=1,
+            d={'one': 1, 'b': 'b', '': 'blank', '_': 'under'},
+            blank='',
+            dummy=Dummy(),
+            dummy2=DummyDocumentTemplate(),
+            eightbit='äüö',
             # ZopeContext needs 'context' and 'template' keys for unicode
-            # conflict resolution, and 'context' needs a 
+            # conflict resolution, and 'context' needs a
             # 'management_page_charset'
-            context = Dummy(),
-            template = DummyDocumentTemplate(),
-            )
+            context=Dummy(),
+            template=DummyDocumentTemplate(),
+        )
 
         if bindings is None:
             bindings = _DEFAULT_BINDINGS
         return self._makeEngine().getContext(bindings)
 
     def test_compile(self):
-        #Test expression compilation
+        # Test expression compilation
         e = self._makeEngine()
         for p in ('x', 'x/y', 'x/y/z'):
             e.compile(p)
@@ -185,8 +191,9 @@ class EngineTestsBase(PlacelessSetup):
         from Products.PageTemplates.interfaces \
             import IUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
-                                      IUnicodeEncodingConflictResolver)
+                       IUnicodeEncodingConflictResolver)
         self.assertEqual(ec.evaluate(expr), u'äüö')
+
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
@@ -196,6 +203,7 @@ class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
     # XXX:  add tests that show security checks being enforced
 
+
 class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
     def _makeEngine(self):
@@ -203,6 +211,7 @@ class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
         return createTrustedZopeEngine()
 
     # XXX:  add tests that show security checks *not* being enforced
+
 
 class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
 
@@ -213,7 +222,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
             import IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver \
             import DefaultUnicodeEncodingConflictResolver
-        provideUtility(DefaultUnicodeEncodingConflictResolver, 
+        provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertRaises(UnicodeDecodeError,
@@ -226,8 +235,8 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
             import IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver \
             import StrictUnicodeEncodingConflictResolver
-        provideUtility(StrictUnicodeEncodingConflictResolver, 
-                                      IUnicodeEncodingConflictResolver)
+        provideUtility(StrictUnicodeEncodingConflictResolver,
+                       IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         text = u'\xe4\xfc\xe4'
         self.assertEqual(resolver.resolve(None, text, None), text)
@@ -239,8 +248,8 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
             import IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver \
             import IgnoringUnicodeEncodingConflictResolver
-        provideUtility(IgnoringUnicodeEncodingConflictResolver, 
-                                      IUnicodeEncodingConflictResolver)
+        provideUtility(IgnoringUnicodeEncodingConflictResolver,
+                       IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, 'äüö', None), '')
 
@@ -250,12 +259,13 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         from Products.PageTemplates.interfaces \
             import IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver \
-            import  ReplacingUnicodeEncodingConflictResolver
-        provideUtility(ReplacingUnicodeEncodingConflictResolver, 
-                                      IUnicodeEncodingConflictResolver)
+            import ReplacingUnicodeEncodingConflictResolver
+        provideUtility(ReplacingUnicodeEncodingConflictResolver,
+                       IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, 'äüö', None),
                          u'\ufffd\ufffd\ufffd')
+
 
 class ZopeContextTests(unittest.TestCase):
 
@@ -291,11 +301,3 @@ class ZopeContextTests(unittest.TestCase):
         info = context.createErrorInfo(AttributeError('nonesuch'), (12, 3))
         self.assertTrue(info.type is AttributeError)
         self.assertEqual(info.__allow_access_to_unprotected_subobjects__, 1)
-
-def test_suite():
-    return unittest.TestSuite((
-         unittest.makeSuite(UntrustedEngineTests),
-         unittest.makeSuite(TrustedEngineTests),
-         unittest.makeSuite(UnicodeEncodingConflictResolverTests),
-         unittest.makeSuite(ZopeContextTests),
-    ))

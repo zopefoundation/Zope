@@ -2,6 +2,7 @@ import unittest
 
 from ZTUtils import Tree
 
+
 class Item:
     children = ()
     id = ''
@@ -10,8 +11,11 @@ class Item:
         self.id = id
         self.children = children
 
-    def tpId(self): return self.id
-    def tpValues(self): return self.children
+    def tpId(self):
+        return self.id
+
+    def tpValues(self):
+        return self.children
 
 
 class TreeTests(unittest.TestCase):
@@ -66,7 +70,10 @@ class TreeTests(unittest.TestCase):
         self.assertEqual([s.object for s in set], expected_set)
 
         set = []
-        def collect(node, set=set): set.append(node.object)
+
+        def collect(node, set=set):
+            set.append(node.object)
+
         treeroot.walk(collect)
         self.assertEqual(len(set), treeroot.size)
         self.assertEqual(set, expected_set)
@@ -82,15 +89,19 @@ class TreeTests(unittest.TestCase):
         self.assert_(treeroot.object is self.root)
 
         items = self.items
-        expected_set = [items['a'], items['b'], items['d'], items['e'],
+        expected_set = [
+            items['a'], items['b'], items['d'], items['e'],
             items['c'], items['f'], items['h'], items['i'], items['g']]
-        
+
         set = treeroot.flat()
         self.assertEqual(len(set), treeroot.size)
         self.assertEqual([s.object for s in set], expected_set)
 
         set = []
-        def collect(node, set=set): set.append(node.object)
+
+        def collect(node, set=set):
+            set.append(node.object)
+
         treeroot.walk(collect)
         self.assertEqual(len(set), treeroot.size)
         self.assertEqual(set, expected_set)
@@ -145,21 +156,24 @@ class TreeTests(unittest.TestCase):
 
         self.tm.setChildAccess(filter=filter)
         treeroot = self.tm.tree(self.root, 1)
-        
+
         self.assertEqual(treeroot.size, 3)
         self.assertEqual(len(treeroot), 1)
         self.assertEqual(len(treeroot[0]), 1)
 
         expected_set = [self.items['a'], self.items['b'], self.items['d']]
         set = []
-        def collect(node, set=set): set.append(node.object)
+
+        def collect(node, set=set):
+            set.append(node.object)
+
         treeroot.walk(collect)
         self.assertEqual(set, expected_set)
 
     def testChildrenFunction(self):
         def childrenFunction(object):
             return object.children
-        
+
         self.tm.setChildAccess(function=childrenFunction)
         treeroot = self.tm.tree(self.root)
 
@@ -172,7 +186,7 @@ class TreeTests(unittest.TestCase):
             if object.id == 'd':
                 return -1
             return state
-        
+
         self.tm.setStateFunction(stateFunction)
         treeroot = self.tm.tree(self.root)
 
@@ -198,9 +212,9 @@ class TreeTests(unittest.TestCase):
     def testEncodedExpansionIdWithDot(self):
         # Regression test for Collector issue #603
         # An encoded node ID with a first character with the first 6 bits set.
-        item = Item('\xfcberbug!', (Item('b'),)) # 'uberbug!' with u-umlaut.
+        item = Item('\xfcberbug!', (Item('b'),))  # 'uberbug!' with u-umlaut.
         treeroot1 = self.tm.tree(item)
-        
+
         encoded = Tree.encodeExpansion(treeroot1.flat())
         decodedmap = Tree.decodeExpansion(encoded)
 
@@ -208,17 +222,13 @@ class TreeTests(unittest.TestCase):
 
         self.assertEqual(treeroot1.size, treeroot2.size)
         self.assertEqual(len(treeroot1), len(treeroot2))
-    
+
     def testDecodeInputSizeLimit(self):
         self.assertRaises(ValueError, Tree.decodeExpansion, 'x' * 10000)
-    
+
     def testDecodeDecompressedSizeLimit(self):
         import zlib
         from ZTUtils.Tree import b2a
-        big = b2a(zlib.compress('x' * (1024*1100)))
-        self.assert_(len(big) < 8192) # Must be under the input size limit
+        big = b2a(zlib.compress('x' * (1024 * 1100)))
+        self.assert_(len(big) < 8192)  # Must be under the input size limit
         self.assertRaises(ValueError, Tree.decodeExpansion, ':' + big)
-
-
-def test_suite():
-    return unittest.makeSuite(TreeTests)

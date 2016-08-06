@@ -11,14 +11,14 @@ class MiscTests(unittest.TestCase):
         context = ['context']
         here = ['here']
         request = {'request': 1}
-        names = {'context' : context, 'here': here, 'request' : request}
+        names = {'context': context, 'here': here, 'request': request}
         result = call_with_ns(lambda td: td.this, names)
         self.assertTrue(result is context, result)
 
     def test_call_with_ns_no_context_or_here(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
         request = {'request': 1}
-        names = {'request' : request}
+        names = {'request': request}
         result = call_with_ns(lambda td: td.this, names)
         self.assertTrue(result is None, result)
 
@@ -26,7 +26,7 @@ class MiscTests(unittest.TestCase):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
         context = ['context']
         here = ['here']
-        names = {'context' : context, 'here': here}
+        names = {'context': context, 'here': here}
 
         def _find_request(td):
             ns = td._pop()              # peel off 'ns'
@@ -42,15 +42,14 @@ class MiscTests(unittest.TestCase):
 
     def test_call_with_request_preserves_tainting(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
+
         class Request(dict):
             def taintWrapper(self):
                 return {'tainted': 'found'}
+
         context = ['context']
         here = ['here']
-        names = {'context' : context, 'here': here, 'request' : Request()}
+        names = {'context': context, 'here': here, 'request': Request()}
 
         found = call_with_ns(lambda td: td['tainted'], names)
         self.assertEqual(found, 'found')
- 
-def test_suite():
-    return unittest.makeSuite(MiscTests)

@@ -13,6 +13,7 @@
 
 from zope.interface import Interface
 
+
 class IUnicodeEncodingConflictResolver(Interface):
     """ A utility that tries to convert a non-unicode string into
        a Python unicode by implementing some policy in order
@@ -21,10 +22,8 @@ class IUnicodeEncodingConflictResolver(Interface):
     """
 
     def resolve(context, text, expression):
-        """ Returns 'text' as unicode string. 
+        """ Returns 'text' as unicode string.
             'context' is the current context object.
-            'expression' is the original expression (can be used for 
+            'expression' is the original expression (can be used for
             logging purposes)
         """
-
-

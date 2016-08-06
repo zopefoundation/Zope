@@ -4,10 +4,9 @@ These tests mainly verify that OFS.Traversable.absolute_url()
 works correctly in a VHM environment.
 
 Also see http://zope.org/Collectors/Zope/809
-
-Note: Tests require Zope >= 2.7
 """
 import unittest
+
 
 class VHMRegressions(unittest.TestCase):
 
@@ -52,70 +51,71 @@ class VHMRegressions(unittest.TestCase):
         self.assertEqual(m(), ('', 'folder', 'doc'))
 
     def test_actual_url_no_VHR_no_doc_w_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
-                        'http://www.mysite.com/folder/')
+                         'http://www.mysite.com/folder/')
 
     def test_actual_url_no_VHR_no_doc_no_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/folder')
 
     def test_actual_url_no_VHR_w_doc_w_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/doc/')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/doc/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
-                        'http://www.mysite.com/folder/doc/')
+                         'http://www.mysite.com/folder/doc/')
 
     def test_actual_url_no_VHR_w_doc_no_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/doc')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/doc')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/folder/doc')
 
     def test_actual_url_w_VHR_w_doc_w_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/VirtualHostRoot/doc/')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/VirtualHostRoot/doc/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
-                        'http://www.mysite.com/doc/')
+                         'http://www.mysite.com/doc/')
 
     def test_actual_url_w_VHR_w_doc_no_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/VirtualHostRoot/doc')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/VirtualHostRoot/doc')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/doc')
 
     def test_actual_url_w_VHR_no_doc_w_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/VirtualHostRoot/')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/VirtualHostRoot/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/')
 
     def test_actual_url_w_VHR_no_doc_no_trailing_slash(self):
-        ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
-                           '/folder/VirtualHostRoot')
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                      '/folder/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
-                         'http://www.mysite.com/') 
+                         'http://www.mysite.com/')
+
 
 def gen_cases():
     for vbase, ubase in (
-        ('', 'http://foo'),
-        ('/VirtualHostBase/http/example.com:80', 'http://example.com'),
-        ):
+            ('', 'http://foo'),
+            ('/VirtualHostBase/http/example.com:80', 'http://example.com')):
         yield vbase, '', '', 'folder/doc', ubase
+
         for vr, _vh, p in (
-            ('folder', '', 'doc'),
-            ('folder', 'foo', 'doc'),
-            ('', 'foo', 'folder/doc'),
-            ):
+                ('folder', '', 'doc'),
+                ('folder', 'foo', 'doc'),
+                ('', 'foo', 'folder/doc')):
             vparts = [vbase, vr, 'VirtualHostRoot']
             if not vr:
                 del vparts[1]
             if _vh:
                 vparts.append('_vh_' + _vh)
             yield '/'.join(vparts), vr, _vh, p, ubase
+
 
 for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
     def test(self, vaddr=vaddr, vr=vr, _vh=_vh, p=p, ubase=ubase):
@@ -160,10 +160,7 @@ class VHMAddingTests(unittest.TestCase):
 
         vhm2 = self._makeOne()
         self.assertRaises(BadRequest, vhm2.manage_addToContainer, self.root)
-        self.assertRaises( BadRequest
-                         , manage_addVirtualHostMonster
-                         , self.root
-                         )
+        self.assertRaises(BadRequest, manage_addVirtualHostMonster, self.root)
 
     def test_add_id_collision(self):
         from OFS.Folder import Folder
@@ -174,10 +171,7 @@ class VHMAddingTests(unittest.TestCase):
         vhm1 = self._makeOne()
 
         self.assertRaises(BadRequest, vhm1.manage_addToContainer, self.root)
-        self.assertRaises( BadRequest
-                         , manage_addVirtualHostMonster
-                         , self.root
-                         )
+        self.assertRaises(BadRequest, manage_addVirtualHostMonster, self.root)
 
     def test_add_addToContainer(self):
         from ZPublisher.BeforeTraverse import queryBeforeTraverse
@@ -197,9 +191,3 @@ class VHMAddingTests(unittest.TestCase):
         self.assertTrue(VirtualHostMonster.id in self.root.objectIds())
         hook = queryBeforeTraverse(self.root, VirtualHostMonster.meta_type)
         self.assertTrue(hook)
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(VHMRegressions))
-    suite.addTest(unittest.makeSuite(VHMAddingTests))
-    return suite

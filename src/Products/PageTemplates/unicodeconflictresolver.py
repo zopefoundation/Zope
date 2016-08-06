@@ -20,11 +20,14 @@ from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implements
 from zope.i18n.interfaces import IUserPreferredCharsets
 
+if sys.version_info >= (3, 0):
+    unicode = str
+
 default_encoding = sys.getdefaultencoding()
 
 
-class DefaultUnicodeEncodingConflictResolver:
-    """ This resolver implements the old-style behavior and will 
+class DefaultUnicodeEncodingConflictResolver(object):
+    """ This resolver implements the old-style behavior and will
         raise an exception in case of the string 'text' can't be converted
         propertly to unicode.
     """
@@ -34,12 +37,13 @@ class DefaultUnicodeEncodingConflictResolver:
     def resolve(self, context, text, expression):
         return unicode(text)
 
-DefaultUnicodeEncodingConflictResolver = DefaultUnicodeEncodingConflictResolver()
+DefaultUnicodeEncodingConflictResolver = \
+    DefaultUnicodeEncodingConflictResolver()
 
 
-class Z2UnicodeEncodingConflictResolver:
-    """ This resolver tries to lookup the encoding from the 
-        'management_page_charset' property and defaults to 
+class Z2UnicodeEncodingConflictResolver(object):
+    """ This resolver tries to lookup the encoding from the
+        'management_page_charset' property and defaults to
         sys.getdefaultencoding().
     """
 
@@ -53,7 +57,8 @@ class Z2UnicodeEncodingConflictResolver:
         try:
             return unicode(text)
         except UnicodeDecodeError:
-            encoding = getattr(context, 'management_page_charset', default_encoding)
+            encoding = getattr(
+                context, 'management_page_charset', default_encoding)
             try:
                 return unicode(text, encoding, self.mode)
             except UnicodeDecodeError:
@@ -61,7 +66,7 @@ class Z2UnicodeEncodingConflictResolver:
                 return unicode(text, 'iso-8859-15', self.mode)
 
 
-class PreferredCharsetResolver:
+class PreferredCharsetResolver(object):
     """ A resolver that tries use the encoding information
         from the HTTP_ACCEPT_CHARSET header.
     """
@@ -78,7 +83,8 @@ class PreferredCharsetResolver:
 
         if request is None:
             charsets = [default_encoding]
-            management_charset = getattr(context, 'management_page_charset', None)
+            management_charset = getattr(
+                context, 'management_page_charset', None)
             if management_charset:
                 charsets.insert(0, management_charset)
         else:
@@ -86,7 +92,7 @@ class PreferredCharsetResolver:
             charsets = getattr(request, '__zpt_available_charsets', None)
 
         # No uncached charsets found: investigate the HTTP_ACCEPT_CHARSET
-        # header. This code is only called if 'context' has a request 
+        # header. This code is only called if 'context' has a request
         # object. The condition is true because otherwise 'charsets' contains
         # at least the default encoding of Python.
         if charsets is None:
@@ -98,14 +104,14 @@ class PreferredCharsetResolver:
 
             # include the charsets based on the HTTP_ACCEPT_CHARSET
             # header
-            charsets = IUserPreferredCharsets(request).getPreferredCharsets() +\
-                       charsets
+            charsets = IUserPreferredCharsets(
+                request).getPreferredCharsets() + charsets
 
             # cache list of charsets
             request.__zpt_available_charsets = charsets
 
         for enc in charsets:
-            if enc == '*': 
+            if enc == '*':
                 continue
 
             try:
@@ -116,7 +122,10 @@ class PreferredCharsetResolver:
         return text
 
 
-StrictUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('strict')
-ReplacingUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('replace')
-IgnoringUnicodeEncodingConflictResolver = Z2UnicodeEncodingConflictResolver('ignore')
+StrictUnicodeEncodingConflictResolver = \
+    Z2UnicodeEncodingConflictResolver('strict')
+ReplacingUnicodeEncodingConflictResolver = \
+    Z2UnicodeEncodingConflictResolver('replace')
+IgnoringUnicodeEncodingConflictResolver = \
+    Z2UnicodeEncodingConflictResolver('ignore')
 PreferredCharsetResolver = PreferredCharsetResolver()

@@ -28,12 +28,15 @@ from Products.PageTemplates.PageTemplate import PageTemplate
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zope.contenttype import guess_content_type
-from zope.pagetemplate.pagetemplatefile import sniff_type
+from zope.pagetemplate.pagetemplatefile import (
+    sniff_type,
+    XML_PREFIX_MAX_LENGTH,
+)
 
 LOG = getLogger('PageTemplateFile')
 
-def guess_type(filename, text):
 
+def guess_type(filename, text):
     # check for XML ourself since guess_content_type can't
     # detect text/xml  if 'filename' won't end with .xml
     # XXX: fix this in zope.contenttype
@@ -45,6 +48,7 @@ def guess_type(filename, text):
     if content_type in ('text/html', 'text/xml'):
         return content_type
     return sniff_type(text) or 'text/html'
+
 
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
@@ -61,8 +65,8 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
     security = ClassSecurityInfo()
-    security.declareProtected('View management screens',
-      'read', 'document_src')
+    security.declareProtected(
+        'View management screens', 'read', 'document_src')
 
     def __init__(self, filename, _prefix=None, **kw):
         name = kw.pop('__name__', None)
@@ -114,7 +118,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         request = aq_get(self, 'REQUEST', None)
         if request is not None:
             response = request.response
-            if not response.headers.has_key('content-type'):
+            if 'content-type' not in response.headers:
                 response.setHeader('content-type', self.content_type)
 
         # Execute the template in a new security context.
@@ -199,24 +203,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
 
     def __getstate__(self):
         from ZODB.POSException import StorageError
-        raise StorageError, ("Instance of AntiPersistent class %s "
-                             "cannot be stored." % self.__class__.__name__)
+        raise StorageError("Instance of AntiPersistent class %s "
+                           "cannot be stored." % self.__class__.__name__)
 
 InitializeClass(PageTemplateFile)
-
-XML_PREFIXES = [
-    "<?xml",                      # ascii, utf-8
-    "\xef\xbb\xbf<?xml",          # utf-8 w/ byte order mark
-    "\0<\0?\0x\0m\0l",            # utf-16 big endian
-    "<\0?\0x\0m\0l\0",            # utf-16 little endian
-    "\xfe\xff\0<\0?\0x\0m\0l",    # utf-16 big endian w/ byte order mark
-    "\xff\xfe<\0?\0x\0m\0l\0",    # utf-16 little endian w/ byte order mark
-    ]
-
-XML_PREFIX_MAX_LENGTH = max(map(len, XML_PREFIXES))
-
-def sniff_type(text):
-    for prefix in XML_PREFIXES:
-        if text.startswith(prefix):
-            return "text/xml"
-    return None
