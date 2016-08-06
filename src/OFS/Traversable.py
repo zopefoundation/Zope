@@ -195,7 +195,11 @@ class Traversable:
             obj = self
 
         # import time ordering problem
-        from webdav.NullResource import NullResource
+        try:
+            from webdav.NullResource import NullResource
+        except ImportError:
+            NullResource = None
+
         resource = _marker
         try:
             while path:
@@ -277,10 +281,12 @@ class Traversable:
                             else:
                                 try:
                                     next = obj[name]
-                                    # The item lookup may return a NullResource,
-                                    # if this is the case we save it and return it
-                                    # if all other lookups fail.
-                                    if isinstance(next, NullResource):
+                                    # The item lookup may return a
+                                    # NullResource, if this is the case we
+                                    # save it and return it if all other
+                                    # lookups fail.
+                                    if (NullResource is not None and
+                                            isinstance(next, NullResource)):
                                         resource = next
                                         raise KeyError(name)
                                 except (AttributeError, TypeError):

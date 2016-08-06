@@ -1,5 +1,10 @@
 import unittest
 
+try:
+    from webdav.NullResource import NullResource
+except ImportError:
+    NullResource = None
+
 
 class ApplicationTests(unittest.TestCase):
 
@@ -90,18 +95,19 @@ class ApplicationTests(unittest.TestCase):
         request = {'REQUEST_METHOD': 'GET'}
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test___bobo_traverse__attribute_key_miss_R_M_not_GET_POST(self):
-        from Acquisition import aq_inner, aq_parent
-        from webdav.NullResource import NullResource
+    if NullResource is not None:
+        def test___bobo_traverse__attribute_key_miss_R_M_not_GET_POST(self):
+            from Acquisition import aq_inner, aq_parent
 
-        app = self._makeOne()
-        app._getOb = _noWay
-        request = {'REQUEST_METHOD': 'GOOFY'}
+            app = self._makeOne()
+            app._getOb = _noWay
+            request = {'REQUEST_METHOD': 'GOOFY'}
 
-        result = app.__bobo_traverse__(request, 'OTHER')
+            result = app.__bobo_traverse__(request, 'OTHER')
 
-        self.assertTrue(isinstance(result, NullResource))
-        self.assertTrue(aq_parent(aq_inner(result)) is app)
+            self.assertTrue(isinstance(result, NullResource))
+            self.assertTrue(aq_parent(aq_inner(result)) is app)
+
 
 def _noWay(self, key, default=None):
     raise KeyError(key)

@@ -27,8 +27,16 @@ from Acquisition.interfaces import IAcquirer
 from App.interfaces import INavigation
 from App.interfaces import IUndoSupport
 from persistent.interfaces import IPersistent
-from webdav.interfaces import IDAVCollection
-from webdav.interfaces import IDAVResource
+
+try:
+    from webdav.interfaces import IDAVCollection
+    from webdav.interfaces import IDAVResource
+except ImportError:
+    class IDAVCollection(Interface):
+        pass
+
+    class IDAVResource(Interface):
+        pass
 
 
 class IOrderedContainer(Interface):

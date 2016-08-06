@@ -435,6 +435,12 @@ class BaseRequest:
         # Set the posttraverse for duration of the traversal here
         self._post_traverse = post_traverse = []
 
+        # import time ordering problem
+        try:
+            from webdav.NullResource import NullResource
+        except ImportError:
+            NullResource = None
+
         entry_name = ''
         try:
             # We build parents in the wrong order, so we
@@ -459,11 +465,11 @@ class BaseRequest:
                     # This is webdav support. The last object in the path
                     # should not be acquired. Instead, a NullResource should
                     # be given if it doesn't exist:
-                    if (no_acquire_flag and
-                        hasattr(object, 'aq_base') and
-                        not hasattr(object,'__bobo_traverse__')):
+                    if (NullResource is not None and no_acquire_flag and
+                            hasattr(object, 'aq_base') and
+                            not hasattr(object, '__bobo_traverse__')):
+
                         if object.aq_parent is not object.aq_inner.aq_parent:
-                            from webdav.NullResource import NullResource
                             object = NullResource(parents[-2], object.getId(),
                                                   self).__of__(parents[-2])
 

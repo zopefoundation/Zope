@@ -46,8 +46,6 @@ from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from Persistence import Persistent
-from webdav.Collection import Collection
-from webdav.NullResource import NullResource
 from zExceptions import BadRequest, ResourceLockedError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
@@ -65,6 +63,16 @@ from OFS.subscribers import compatibilityCall
 from OFS.XMLExportImport import importXML
 from OFS.XMLExportImport import exportXML
 from OFS.XMLExportImport import magic
+
+try:
+    from webdav.Collection import Collection
+    from webdav.NullResource import NullResource
+except ImportError:
+    NullResource = None
+
+    class Collection(object):
+        pass
+
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -769,9 +777,10 @@ class ObjectManager(CopyContainer,
             return self._getOb(key, None)
         request = getattr(self, 'REQUEST', None)
         if not isinstance(request, (str, NoneType)):
-            method=request.get('REQUEST_METHOD', 'GET')
-            if (request.maybe_webdav_client and
-                method not in ('GET', 'POST')):
+            method = request.get('REQUEST_METHOD', 'GET')
+            if (NullResource is not None and
+                    request.maybe_webdav_client and
+                    method not in ('GET', 'POST')):
                 return NullResource(self, key, request).__of__(self)
         raise KeyError(key)
 

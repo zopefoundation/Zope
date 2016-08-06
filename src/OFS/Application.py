@@ -29,7 +29,6 @@ from DateTime import DateTime
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from webdav.NullResource import NullResource
 from zExceptions import Redirect as RedirectException, Forbidden
 
 from zope.interface import implements
@@ -39,6 +38,11 @@ import misc_
 from FindSupport import FindSupport
 from interfaces import IApplication
 from misc_ import Misc_
+
+try:
+    from webdav.NullResource import NullResource
+except ImportError:
+    NullResource = None
 
 LOG = getLogger('Application')
 
@@ -124,7 +128,7 @@ class Application(ApplicationDefaultPermissions,
             pass
 
         method = REQUEST.get('REQUEST_METHOD', 'GET')
-        if not method in ('GET', 'POST'):
+        if NullResource is not None and method not in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
