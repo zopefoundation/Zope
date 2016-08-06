@@ -15,56 +15,7 @@
 o N.B.:  DO NOT IMPORT ANYTHING HERE!  This module is just for shared data!
 """
 
-# BBB imports
-from zope.deferredimport import deprecated
-
-deprecated("import TreeDisplay directly",
-           TreeDisplay = "TreeDisplay",
-          )
-
-deprecated("import from App.Common instead",
-           package_home = 'App.Common:package_home',
-           attrget = 'App.Common:attrget',
-           Dictionary = 'App.Common:Dictionary',
-          )
-
-deprecated("import from Persistence instead",
-           Persistent = 'Persistence:Persistent',
-           PersistentMapping = 'Persistence:PersistentMapping',
-          )
-
-deprecated("import from AccessControl.class_init instead",
-           InitializeClass = 'AccessControl.class_init:InitializeClass',
-          )
-
-deprecated("import from AccessControl.Permission instead",
-           ApplicationDefaultPermissions =
-                'AccessControl.Permission:ApplicationDefaultPermissions',
-          )
-
-deprecated("import from App.special_dtml instead",
-           HTML = 'App.special_dtml:HTML',
-           HTMLFile = 'App.special_dtml:HTMLFile',
-           DTMLFile = 'App.special_dtml:DTMLFile',
-          )
-
-deprecated("import from App.Dialogs instead",
-           MessageDialog = 'App.Dialogs:MessageDialog',
-          )
-
-deprecated("import from App.ImageFile instead",
-           ImageFile = 'App.ImageFile:ImageFile',
-          )
-
-deprecated("import from OFS.ObjectManager instead",
-           UNIQUE = 'OFS.ObjectManager:UNIQUE',
-           REPLACEABLE = 'OFS.ObjectManager:REPLACEABLE',
-           NOT_REPLACEABLE = 'OFS.ObjectManager:NOT_REPLACEABLE',
-          )
-
-del deprecated
-
 DevelopmentMode = False
 
-# XXX ZODB stashes the main database object here
+# ZODB stashes the main database object here
 opened = []

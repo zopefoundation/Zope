@@ -20,10 +20,11 @@ from warnings import warn
 from ZPublisher.HTTPRequest import isCGI_NAMEs
 from zope.i18n.interfaces import IUserPreferredCharsets
 
-# taken and adapted from zope.publisher.browser.BrowserRequest
+
 def _decode(text, charsets):
     """Try to decode the text using one of the available charsets.
     """
+    # taken and adapted from zope.publisher.browser.BrowserRequest
     for charset in charsets:
         try:
             text = unicode(text, charset)
@@ -32,12 +33,13 @@ def _decode(text, charsets):
             pass
     return text
 
+
 def processInputValue(value, charsets):
     """Recursively look for values (e.g. elements of lists, tuples or dicts)
     and attempt to decode.
     """
     warn(u'processInputValue() is deprecated and will be removed in Zope '
-         u'2.16.',
+         u'5.0.',
          DeprecationWarning, stacklevel=2)
 
     if isinstance(value, list):
@@ -53,12 +55,13 @@ def processInputValue(value, charsets):
     else:
         return value
 
+
 def processInputs(request, charsets=None):
     """Process the values in request.form to decode strings to unicode, using
     the passed-in list of charsets. If none are passed in, look up the user's
     preferred charsets. The default is to use utf-8.
     """
-    warn(u'processInputs() is deprecated and will be removed in Zope 2.16. If '
+    warn(u'processInputs() is deprecated and will be removed in Zope 5.0. If '
          u'your view implements IBrowserPage, similar processing is now '
          u'executed automatically.',
          DeprecationWarning, stacklevel=2)
@@ -74,12 +77,13 @@ def processInputs(request, charsets=None):
         if not (name in isCGI_NAMEs or name.startswith('HTTP_')):
             request.form[name] = processInputValue(value, charsets)
 
+
 def setPageEncoding(request):
     """Set the encoding of the form page via the Content-Type header.
     ZPublisher uses the value of this header to determine how to
     encode unicode data for the browser.
     """
-    warn(u'setPageEncoding() is deprecated and will be removed in Zope 2.16. '
+    warn(u'setPageEncoding() is deprecated and will be removed in Zope 5.0. '
          u'It is recommended to let the ZPublisher use the default_encoding. '
          u'Please consider setting default-zpublisher-encoding to utf-8.',
          DeprecationWarning, stacklevel=2)

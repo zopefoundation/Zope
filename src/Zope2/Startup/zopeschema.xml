@@ -223,7 +223,7 @@
 
   <key name="enable-product-installation" datatype="boolean" default="off">
     <description>
-     BBB: This directive has no effect anymore.
+     BBB Zope 5.0: This directive has no effect anymore.
     </description>
     <metadefault>off</metadefault>
   </key>

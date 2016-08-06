@@ -16,24 +16,8 @@
 
 from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
-from zope.configuration.fields import GlobalObject, Tokens
+from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine
-
-
-# Deprecated, the class directive from zope.security allows the same
-class IImplementsDirective(Interface):
-    """State that a class implements something.
-    """
-    class_ = GlobalObject(
-        title=u"Class",
-        required=True
-        )
-
-    interface = Tokens(
-        title=u"One or more interfaces",
-        required=True,
-        value_type=GlobalObject()
-        )
 
 
 class ISizableDirective(Interface):
@@ -43,7 +27,7 @@ class ISizableDirective(Interface):
     class_ = GlobalObject(
         title=u"Class",
         required=True
-        )
+    )
 
 
 class IPagesFromDirectoryDirective(IBasicResourceInformation):
@@ -53,29 +37,15 @@ class IPagesFromDirectoryDirective(IBasicResourceInformation):
     for_ = GlobalObject(
         title=u"The interface this view is for.",
         required=False
-        )
+    )
 
     module = GlobalObject(
         title=u"Module",
         required=True
-        )
+    )
 
     directory = TextLine(
         title=u"Directory",
         description=u"The directory containing the resource data.",
         required=True
-        )
-
-
-from zope.deferredimport import deprecated
-
-deprecated("Please import from OFS.metadirectives",
-    IRegisterPackageDirective = 'OFS.metadirectives:IRegisterPackageDirective',
-    IRegisterClassDirective = 'OFS.metadirectives:IRegisterClassDirective',
-    IDeprecatedManageAddDeleteDirective = \
-        'OFS.metadirectives:IDeprecatedManageAddDeleteDirective',
-)
-
-deprecated("Please import from zope.configuration.xmlconfig",
-    IInclude = 'zope.configuration.xmlconfig:IInclude',
-)
+    )

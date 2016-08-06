@@ -21,13 +21,6 @@
         handler=".fiveconfigure.pagesFromDirectory"
         />
 
-    <!-- Deprecated, use the class directive instead. -->
-    <meta:directive
-       name="implements"
-       schema=".fivedirectives.IImplementsDirective"
-       handler=".fiveconfigure.implements"
-       />
-
   </meta:directives>
 
 </configure>
