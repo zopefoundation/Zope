@@ -31,10 +31,14 @@ from AccessControl.Permissions import webdav_access
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.Common import rfc1123_date
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import IWriteLock
+from OFS.Lockable import LockableItem
+from OFS.Lockable import wl_isLockable
+from OFS.Lockable import wl_isLocked
 from OFS.subscribers import compatibilityCall
 from zExceptions import BadRequest
 from zExceptions import Forbidden
@@ -50,16 +54,12 @@ from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.container.contained import notifyContainerModified
 
-from webdav.Lockable import LockableItem
-from webdav.Lockable import wl_isLockable
-from webdav.Lockable import wl_isLocked
 from webdav.common import absattr
 from webdav.common import Conflict
 from webdav.common import IfParser
 from webdav.common import isDavCollection
 from webdav.common import Locked
 from webdav.common import PreconditionFailed
-from webdav.common import rfc1123_date
 from webdav.common import tokenFinder
 from webdav.common import urlbase
 from webdav.common import urlfix

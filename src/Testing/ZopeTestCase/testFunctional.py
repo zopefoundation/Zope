@@ -39,10 +39,11 @@ SET_COOKIE_DTML = '''\
 CHANGE_TITLE_DTML = '''\
 <dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
 
+
 class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
     def afterSetUp(self):
-        self.folder_path = '/'+self.folder.absolute_url(1)
+        self.folder_path = '/' + self.folder.absolute_url(1)
         self.basic_auth = '%s:%s' % (user_name, user_password)
 
         # A simple document
@@ -68,28 +69,28 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(response.getBody(), 'index')
 
     def testPublishDocument(self):
-        response = self.publish(self.folder_path+'/index_html')
+        response = self.publish(self.folder_path + '/index_html')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getBody(), 'index')
 
     def testUnauthorized(self):
-        response = self.publish(self.folder_path+'/secret_html')
+        response = self.publish(self.folder_path + '/secret_html')
         self.assertEqual(response.getStatus(), 401)
 
     def testBasicAuth(self):
-        response = self.publish(self.folder_path+'/secret_html',
+        response = self.publish(self.folder_path + '/secret_html',
                                 self.basic_auth)
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getBody(), 'secret')
 
     def testRedirect(self):
-        response = self.publish(self.folder_path+'/redirect')
+        response = self.publish(self.folder_path + '/redirect')
         self.assertEqual(response.getStatus(), 302)
         self.assertEqual(response.getHeader('Location'),
                          self.app.absolute_url())
 
     def testCookie(self):
-        response = self.publish(self.folder_path+'/set_cookie')
+        response = self.publish(self.folder_path + '/set_cookie')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getCookie('foo').get('value'), 'Bar')
         self.assertEqual(response.getCookie('foo').get('path'), '/')
@@ -112,7 +113,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         form = {'title': 'Foo'}
         post_data = StringIO(urlencode(form))
 
-        response = self.publish(self.folder_path+'/index_html/change_title',
+        response = self.publish(self.folder_path + '/index_html/change_title',
                                 request_method='POST', stdin=post_data,
                                 basic=self.basic_auth)
 
@@ -124,50 +125,16 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.setPermissions([change_dtml_documents])
 
         put_data = StringIO('foo')
-        response = self.publish(self.folder_path+'/index_html',
+        response = self.publish(self.folder_path + '/index_html',
                                 request_method='PUT', stdin=put_data,
                                 basic=self.basic_auth)
 
         self.assertEqual(response.getStatus(), 204)
         self.assertEqual(self.folder.index_html(), 'foo')
 
-    def testPUTNew(self):
-        # Create a new object via PUT
-        self.setPermissions([add_documents_images_and_files])
-
-        put_data = StringIO('foo')
-        response = self.publish(self.folder_path+'/new_document',
-                                env={'CONTENT_TYPE': 'text/html'},
-                                request_method='PUT', stdin=put_data,
-                                basic=self.basic_auth)
-
-        self.assertEqual(response.getStatus(), 201)
-        self.assertTrue('new_document' in self.folder.objectIds())
-        self.assertEqual(self.folder.new_document.meta_type, 'DTML Document')
-        self.assertEqual(self.folder.new_document(), 'foo')
-
-    def testPUTEmpty(self):
-        # PUT operation without passing stdin should result in empty content
-        self.setPermissions([change_dtml_documents])
-
-        response = self.publish(self.folder_path+'/index_html',
-                                request_method='PUT',
-                                basic=self.basic_auth)
-
-        self.assertEqual(response.getStatus(), 204)
-        self.assertEqual(self.folder.index_html(), '')
-
-    def testPROPFIND(self):
-        # PROPFIND should work without passing stdin
-        response = self.publish(self.folder_path+'/index_html',
-                                request_method='PROPFIND',
-                                basic=self.basic_auth)
-
-        self.assertEqual(response.getStatus(), 207)
-
     def testHEAD(self):
         # HEAD should work without passing stdin
-        response = self.publish(self.folder_path+'/index_html',
+        response = self.publish(self.folder_path + '/index_html',
                                 request_method='HEAD')
 
         self.assertEqual(response.getStatus(), 200)

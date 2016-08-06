@@ -21,6 +21,7 @@ from zope.interface import implements
 
 from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
+from OFS.Lockable import LockableItem
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
@@ -30,10 +31,19 @@ try:
     from webdav.Collection import Collection
 except ImportError:
     class Collection(object):
-        pass
+        def dav__init(self, request, response):
+            pass
+
+        def dav__validate(self, object, methodname, REQUEST):
+            pass
+
+        def dav__simpleifhandler(self, request, response, method='PUT',
+                                 col=0, url=None, refresh=0):
+            pass
 
 
-manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
+manage_addFolderForm = DTMLFile('dtml/folderAdd', globals())
+
 
 def manage_addFolder(self, id, title='',
                      createPublic=0,
@@ -54,6 +64,7 @@ class Folder(
     PropertyManager,
     RoleManager,
     Collection,
+    LockableItem,
     Item,
     FindSupport,
     ):

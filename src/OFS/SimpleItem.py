@@ -56,6 +56,7 @@ from OFS.interfaces import IItemWithName
 from OFS.interfaces import ISimpleItem
 from OFS.owner import Owned
 from OFS.CopySupport import CopySource
+from OFS.Lockable import LockableItem
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 
@@ -63,13 +64,22 @@ try:
     from webdav.Resource import Resource
 except ImportError:
     class Resource(object):
-        pass
+        def dav__init(self, request, response):
+            pass
+
+        def dav__validate(self, object, methodname, REQUEST):
+            pass
+
+        def dav__simpleifhandler(self, request, response, method='PUT',
+                                 col=0, url=None, refresh=0):
+            pass
 
 logger = logging.getLogger()
 
 
 class Item(Base,
            Resource,
+           LockableItem,
            CopySource,
            Tabs,
            Traversable,

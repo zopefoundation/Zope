@@ -112,9 +112,13 @@ class TestCopySupport(EventTest):
         # Reset event log
         eventlog.reset()
 
-    def test_1_Clone(self):
-        # Test clone
-        self.subfolder.manage_clone(self.folder.mydoc, 'mydoc')
+    def test_5_COPY(self):
+        # Test COPY
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/mydoc' % self.folder.absolute_url())
+        self.folder.mydoc.COPY(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'ObjectCopiedEvent'),
@@ -124,23 +128,13 @@ class TestCopySupport(EventTest):
              ('mydoc', 'ObjectClonedEvent')]
         )
 
-    def test_2_CopyPaste(self):
-        # Test copy/paste
-        cb = self.folder.manage_copyObjects(['mydoc'])
-        self.subfolder.manage_pasteObjects(cb)
-        self.assertEqual(
-            eventlog.called(),
-            [('mydoc', 'ObjectCopiedEvent'),
-             ('mydoc', 'ObjectWillBeAddedEvent'),
-             ('mydoc', 'ObjectAddedEvent'),
-             ('subfolder', 'ContainerModifiedEvent'),
-             ('mydoc', 'ObjectClonedEvent')]
-        )
-
-    def test_3_CutPaste(self):
-        # Test cut/paste
-        cb = self.folder.manage_cutObjects(['mydoc'])
-        self.subfolder.manage_pasteObjects(cb)
+    def test_6_MOVE(self):
+        # Test MOVE
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/mydoc' % self.folder.absolute_url())
+        self.folder.mydoc.MOVE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'ObjectWillBeMovedEvent'),
@@ -149,13 +143,15 @@ class TestCopySupport(EventTest):
              ('subfolder', 'ContainerModifiedEvent')]
         )
 
-    def test_4_Rename(self):
-        # Test rename
-        self.folder.manage_renameObject('mydoc', 'yourdoc')
+    def test_7_DELETE(self):
+        # Test DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/mydoc' % self.folder.absolute_url()
+        self.folder.mydoc.DELETE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
-            [('mydoc', 'ObjectWillBeMovedEvent'),
-             ('yourdoc', 'ObjectMovedEvent'),
+            [('mydoc', 'ObjectWillBeRemovedEvent'),
+             ('mydoc', 'ObjectRemovedEvent'),
              ('folder', 'ContainerModifiedEvent')]
         )
 
@@ -188,9 +184,13 @@ class TestCopySupportSublocation(EventTest):
             raise self.failureException(
                 (msg or '%r != %r' % (first, second)))
 
-    def test_1_Clone(self):
-        # Test clone
-        self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
+    def test_5_COPY(self):
+        # Test COPY
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/myfolder' % self.folder.absolute_url())
+        self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('myfolder', 'ObjectCopiedEvent'),
@@ -204,27 +204,13 @@ class TestCopySupportSublocation(EventTest):
              ('mydoc', 'ObjectClonedEvent')]
         )
 
-    def test_2_CopyPaste(self):
-        # Test copy/paste
-        cb = self.folder.manage_copyObjects(['myfolder'])
-        self.subfolder.manage_pasteObjects(cb)
-        self.assertEqual(
-            eventlog.called(),
-            [('myfolder', 'ObjectCopiedEvent'),
-             ('mydoc', 'ObjectCopiedEvent'),
-             ('myfolder', 'ObjectWillBeAddedEvent'),
-             ('mydoc', 'ObjectWillBeAddedEvent'),
-             ('myfolder', 'ObjectAddedEvent'),
-             ('mydoc', 'ObjectAddedEvent'),
-             ('subfolder', 'ContainerModifiedEvent'),
-             ('myfolder', 'ObjectClonedEvent'),
-             ('mydoc', 'ObjectClonedEvent')]
-        )
-
-    def test_3_CutPaste(self):
-        # Test cut/paste
-        cb = self.folder.manage_cutObjects(['myfolder'])
-        self.subfolder.manage_pasteObjects(cb)
+    def test_6_MOVE(self):
+        # Test MOVE
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/myfolder' % self.folder.absolute_url())
+        self.folder.myfolder.MOVE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('myfolder', 'ObjectWillBeMovedEvent'),
@@ -235,14 +221,16 @@ class TestCopySupportSublocation(EventTest):
              ('subfolder', 'ContainerModifiedEvent')]
         )
 
-    def test_4_Rename(self):
-        # Test rename
-        self.folder.manage_renameObject('myfolder', 'yourfolder')
+    def test_7_DELETE(self):
+        # Test DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/myfolder' % self.folder.absolute_url()
+        self.folder.myfolder.DELETE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
-            [('myfolder', 'ObjectWillBeMovedEvent'),
-             ('mydoc', 'ObjectWillBeMovedEvent'),
-             ('yourfolder', 'ObjectMovedEvent'),
-             ('mydoc', 'ObjectMovedEvent'),
+            [('myfolder', 'ObjectWillBeRemovedEvent'),
+             ('mydoc', 'ObjectWillBeRemovedEvent'),
+             ('myfolder', 'ObjectRemovedEvent'),
+             ('mydoc', 'ObjectRemovedEvent'),
              ('folder', 'ContainerModifiedEvent')]
         )

@@ -22,10 +22,13 @@ Features Added
 
   - AccessControl = 4.0a3
   - AuthEncoding = 4.0.0
+  - Products.PythonScripts = 4.0
   - zExceptions = 3.3
 
 Restructuring
 +++++++++++++
+
+- Move webdav's EtagSupport, Lockable and LockItem into OFS.
 
 - Split `Products.TemporaryFolder` and `Products.ZODBMountPoint` into
   one new project called `Products.TemporaryFolder`.

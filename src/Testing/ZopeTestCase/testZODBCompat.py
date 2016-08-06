@@ -26,20 +26,18 @@ from Testing.ZopeTestCase import transaction
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
+from OFS.SimpleItem import SimpleItem
 import tempfile
 
 folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]
 
-# Dummy object
-from OFS.SimpleItem import SimpleItem
 
 class DummyObject(SimpleItem):
     id = 'dummy'
     foo = None
     _v_foo = None
     _p_foo = None
-
 
 
 class ZODBCompatLayer(layer.ZopeLite):
@@ -93,24 +91,6 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         self.assertFalse(hasattr(self.folder, 'doc'))
         self.assertTrue(hasattr(self.folder, 'new_doc'))
 
-    def testCOPY(self):
-        # WebDAV COPY
-        request = self.app.REQUEST
-        request.environ['HTTP_DEPTH'] = 'infinity'
-        request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
-        self.folder.doc.COPY(request, request.RESPONSE)
-        self.assertTrue(hasattr(self.folder, 'doc'))
-        self.assertTrue(hasattr(self.folder, 'new_doc'))
-
-    def testMOVE(self):
-        # WebDAV MOVE
-        request = self.app.REQUEST
-        request.environ['HTTP_DEPTH'] = 'infinity'
-        request.environ['HTTP_DESTINATION'] = 'http://foo.com/%s/new_doc' % folder_name
-        self.folder.doc.MOVE(request, request.RESPONSE)
-        self.assertFalse(hasattr(self.folder, 'doc'))
-        self.assertTrue(hasattr(self.folder, 'new_doc'))
-
 
 class TestImportExport(ZopeTestCase.ZopeTestCase):
 
@@ -137,7 +117,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
 
     local_home = tempfile.gettempdir()
     import_dir = os.path.join(local_home, 'import')
-    zexp_file  = os.path.join(import_dir, 'doc.zexp')
+    zexp_file = os.path.join(import_dir, 'doc.zexp')
 
     def setupLocalEnvironment(self):
         # Create the 'import' directory
@@ -152,10 +132,14 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
 
     def afterClear(self):
         # Remove external resources
-        try: os.remove(self.zexp_file)
-        except OSError: pass
-        try: os.rmdir(self.import_dir)
-        except OSError: pass
+        try:
+            os.remove(self.zexp_file)
+        except OSError:
+            pass
+        try:
+            os.rmdir(self.import_dir)
+        except OSError:
+            pass
         try:
             import App.config
         except ImportError:
@@ -182,12 +166,12 @@ class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
        their values across tests.
 
        The only use case yet encountered in the wild is portal_memberdata's
-       _v_temps attribute. Test authors are cautioned to watch out for 
+       _v_temps attribute. Test authors are cautioned to watch out for
        occurrences of _v_ and _p_ attributes of objects that are not recreated
        for every test method execution, but preexist in the test ZODB.
 
-       It is therefore deemed essential to initialize any _v_ and _p_ 
-       attributes of such objects in afterSetup(), as otherwise test results 
+       It is therefore deemed essential to initialize any _v_ and _p_
+       attributes of such objects in afterSetup(), as otherwise test results
        will be distorted!
 
        Note that _v_ attributes used to be transactional in Zope < 2.6.
@@ -198,7 +182,7 @@ class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
     layer = ZODBCompatLayer
 
     def afterSetUp(self):
-        self.dummy = self.app.dummy1 # See above
+        self.dummy = self.app.dummy1  # See above
 
     def testNormal_01(self):
         # foo is always None
@@ -252,7 +236,7 @@ class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
 
 
 class TestAttributesOfDirtyObjects(ZopeTestCase.ZopeTestCase):
-    '''This testcase shows that _v_ and _p_ attributes of dirty objects 
+    '''This testcase shows that _v_ and _p_ attributes of dirty objects
        ARE removed on abort.
 
        This testcase exploits the fact that test methods are sorted by name.
@@ -261,8 +245,8 @@ class TestAttributesOfDirtyObjects(ZopeTestCase.ZopeTestCase):
     layer = ZODBCompatLayer
 
     def afterSetUp(self):
-        self.dummy = self.app.dummy2 # See above
-        self.dummy.touchme = 1 # Tag, you're dirty
+        self.dummy = self.app.dummy2  # See above
+        self.dummy.touchme = 1  # Tag, you're dirty
 
     def testDirtyNormal_01(self):
         # foo is always None
@@ -333,4 +317,3 @@ def test_suite():
     suite.addTest(makeSuite(TestAttributesOfDirtyObjects))
     suite.addTest(makeSuite(TestTransactionAbort))
     return suite
-

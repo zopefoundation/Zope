@@ -122,42 +122,40 @@ class TestCopySupport(HookTest):
         # Reset event log
         eventlog.reset()
 
-    def test_1_Clone(self):
-        # Test clone
-        self.subfolder.manage_clone(self.folder.mydoc, 'mydoc')
+    def test_5_COPY(self):
+        # Test COPY
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/mydoc' % self.folder.absolute_url())
+        self.folder.mydoc.COPY(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'manage_afterAdd'),
              ('mydoc', 'manage_afterClone')]
         )
 
-    def test_2_CopyPaste(self):
-        # Test copy/paste
-        cb = self.folder.manage_copyObjects(['mydoc'])
-        self.subfolder.manage_pasteObjects(cb)
-        self.assertEqual(
-            eventlog.called(),
-            [('mydoc', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterClone')]
-        )
-
-    def test_3_CutPaste(self):
-        # Test cut/paste
-        cb = self.folder.manage_cutObjects(['mydoc'])
-        self.subfolder.manage_pasteObjects(cb)
+    def test_6_MOVE(self):
+        # Test MOVE
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/mydoc' % self.folder.absolute_url())
+        self.folder.mydoc.MOVE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'manage_beforeDelete'),
              ('mydoc', 'manage_afterAdd')]
         )
 
-    def test_4_Rename(self):
-        # Test rename
-        self.folder.manage_renameObject('mydoc', 'yourdoc')
+    def test_7_DELETE(self):
+        # Test DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/mydoc' % self.folder.absolute_url()
+        self.folder.mydoc.DELETE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
-            [('mydoc', 'manage_beforeDelete'),
-             ('yourdoc', 'manage_afterAdd')]
+            [('mydoc', 'manage_beforeDelete')]
         )
 
 
@@ -182,9 +180,13 @@ class TestCopySupportSublocation(HookTest):
         # Reset event log
         eventlog.reset()
 
-    def test_1_Clone(self):
-        # Test clone
-        self.subfolder.manage_clone(self.folder.myfolder, 'myfolder')
+    def test_5_COPY(self):
+        # Test COPY
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/myfolder' % self.folder.absolute_url())
+        self.folder.myfolder.COPY(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('myfolder', 'manage_afterAdd'),
@@ -193,22 +195,13 @@ class TestCopySupportSublocation(HookTest):
              ('mydoc', 'manage_afterClone')]
         )
 
-    def test_2_CopyPaste(self):
-        # Test copy/paste
-        cb = self.folder.manage_copyObjects(['myfolder'])
-        self.subfolder.manage_pasteObjects(cb)
-        self.assertEqual(
-            eventlog.called(),
-            [('myfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd'),
-             ('myfolder', 'manage_afterClone'),
-             ('mydoc', 'manage_afterClone')]
-        )
-
-    def test_3_CutPaste(self):
-        # Test cut/paste
-        cb = self.folder.manage_cutObjects(['myfolder'])
-        self.subfolder.manage_pasteObjects(cb)
+    def test_6_MOVE(self):
+        # Test MOVE
+        req = self.app.REQUEST
+        req.environ['HTTP_DEPTH'] = 'infinity'
+        req.environ['HTTP_DESTINATION'] = (
+            '%s/subfolder/myfolder' % self.folder.absolute_url())
+        self.folder.myfolder.MOVE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'manage_beforeDelete'),
@@ -217,13 +210,13 @@ class TestCopySupportSublocation(HookTest):
              ('mydoc', 'manage_afterAdd')]
         )
 
-    def test_4_Rename(self):
-        # Test rename
-        self.folder.manage_renameObject('myfolder', 'yourfolder')
+    def test_7_DELETE(self):
+        # Test DELETE
+        req = self.app.REQUEST
+        req['URL'] = '%s/myfolder' % self.folder.absolute_url()
+        self.folder.myfolder.DELETE(req, req.RESPONSE)
         self.assertEqual(
             eventlog.called(),
             [('mydoc', 'manage_beforeDelete'),
-             ('myfolder', 'manage_beforeDelete'),
-             ('yourfolder', 'manage_afterAdd'),
-             ('mydoc', 'manage_afterAdd')]
+             ('myfolder', 'manage_beforeDelete')]
         )

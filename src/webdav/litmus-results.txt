@@ -67,10 +67,9 @@ Command line used: litmus -k http://localhost:8080/ admin admin
       19. complex_cond_put...... SKIPPED
       20. fail_complex_cond_put. SKIPPED
 
-      Zope's webdav package has an webdav.EtagSupport.EtagSupport
-      class which is inherited by the webdav.Lockable.LockableItem
-      class, which is in turn inherited by the
-      webdav.Resource.Resource class, which is in turn inherited by
+      Zope's OFS package has an OFS.EtagSupport.EtagSupport
+      class which is inherited by the OFS.Lockable.LockableItem
+      class, which is in turn inherited by
       OFS.SimpleItem.SimpleItem (upon which almost all Zope content is
       based), so potentially all Zope content can reasonably easily
       generate meaningful ETags in responses.  Finding out why it's

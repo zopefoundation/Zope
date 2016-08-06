@@ -17,15 +17,15 @@ from urllib import unquote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
+from App.Common import rfc1123_date
+from OFS.Lockable import wl_isLocked
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zope.interface import implements
 
 from webdav.common import Locked
 from webdav.common import PreconditionFailed
-from webdav.common import rfc1123_date
 from webdav.common import urlfix
-from webdav.Lockable import wl_isLocked
 from webdav.interfaces import IDAVCollection
 from webdav.Resource import Resource
 

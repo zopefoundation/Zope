@@ -59,6 +59,7 @@ from OFS.interfaces import IObjectManager
 from OFS.Traversable import Traversable
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
+from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
 from OFS.XMLExportImport import importXML
 from OFS.XMLExportImport import exportXML
@@ -68,7 +69,15 @@ try:
     from webdav.Collection import Collection
 except ImportError:
     class Collection(object):
-        pass
+        def dav__init(self, request, response):
+            pass
+
+        def dav__validate(self, object, methodname, REQUEST):
+            pass
+
+        def dav__simpleifhandler(self, request, response, method='PUT',
+                                 col=0, url=None, refresh=0):
+            pass
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -147,6 +156,7 @@ class ObjectManager(CopyContainer,
                     Implicit,
                     Persistent,
                     Collection,
+                    LockableItem,
                     Traversable,
                    ):
 
