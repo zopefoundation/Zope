@@ -564,9 +564,12 @@ class HTTPResponse(BaseResponse):
         """ Request that the server shut down with exitCode after fulfilling
            the current request.
         """
-        from Zope2.Startup import config
-        config.ZSERVER_EXIT_CODE = exitCode
         self._shutdown_flag = 1
+        try:
+            from ZServer.Zope2.Startup import config
+            config.ZSERVER_EXIT_CODE = exitCode
+        except ImportError:
+            pass
 
     def _shutdownRequested(self):
         """ Returns true if this request requested a server shutdown.

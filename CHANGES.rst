@@ -42,7 +42,7 @@ Restructuring
 
 - Split a WSGI part out of `Zope2.Startup.ZopeStarter`.
 
-- Add new `Zope2.Startup.config` module to hold configuration.
+- Add new `ZServer.Zope2.Startup.config` module to hold configuration.
 
 - Remove `Control_Panel` `/DebugInfo` and `/DavLocks`.
 

@@ -1,9 +1,26 @@
+##############################################################################
+#
+# Copyright (c) 2003 Zope Foundation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+
 import os
 import re
 import sys
 from socket import gethostbyaddr
 
-from Zope2.Startup import config
+try:
+    from ZServer.Zope2.Startup import config
+except ImportError:
+    config = None
 
 
 def _setenv(name, value):
@@ -57,7 +74,8 @@ def session_timeout_minutes(value):
 
 
 def large_file_threshold(value):
-    config.ZSERVER_LARGE_FILE_THRESHOLD = value
+    if config:
+        config.ZSERVER_LARGE_FILE_THRESHOLD = value
 
 
 def http_realm(value):
@@ -66,7 +84,8 @@ def http_realm(value):
 
 
 def max_listen_sockets(value):
-    config.ZSERVER_CONNECTION_LIMIT = value
+    if config:
+        config.ZSERVER_CONNECTION_LIMIT = value
 
 
 def cgi_maxlen(value):
@@ -79,7 +98,8 @@ def http_header_max_length(value):
 
 
 def enable_ms_public_header(value):
-    config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = value
+    if config:
+        config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = value
 
 
 def root_handler(cfg):
@@ -131,7 +151,8 @@ def root_handler(cfg):
         mapped = []
         for name in cfg.trusted_proxies:
             mapped.extend(_name_to_ips(name))
-        config.TRUSTED_PROXIES = tuple(mapped)
+        if config:
+            config.TRUSTED_PROXIES = tuple(mapped)
 
         from ZPublisher import HTTPRequest
         HTTPRequest.trusted_proxies = tuple(mapped)
