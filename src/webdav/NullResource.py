@@ -105,7 +105,7 @@ class NullResource(Persistent, Implicit, Resource):
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource.
         """
-        from Zope2.Startup.config import ZSERVER_LARGE_FILE_THRESHOLD
+        from ZServer.Zope2.Startup.config import ZSERVER_LARGE_FILE_THRESHOLD
 
         self.dav__init(REQUEST, RESPONSE)
 

@@ -35,6 +35,6 @@
    Jensen, "HTTP Extensions for Distributed Authoring - WebDAV." RFC 2518.
    Microsoft, U.C. Irvine, Netscape, Novell.  February, 1999."""
 
-from Zope2.Startup.config import (  # NOQA
+from ZServer.Zope2.Startup.config import (  # NOQA
     ZSERVER_ENABLE_MS_PUBLIC_HEADER as enable_ms_public_header,
 )

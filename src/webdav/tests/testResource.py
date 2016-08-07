@@ -106,7 +106,7 @@ class TestResource(unittest.TestCase):
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_ms_public_header(self):
-        from Zope2.Startup import config
+        from ZServer.Zope2.Startup import config
 
         default_settings = config.ZSERVER_ENABLE_MS_PUBLIC_HEADER
         try:
