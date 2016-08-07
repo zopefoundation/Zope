@@ -177,6 +177,9 @@ class ApplicationManager(Folder, CacheManager):
     def thread_get_ident(self):
         return get_ident()
 
+    def debug_mode(self):
+        return getConfiguration().debug_mode
+
     def db_name(self):
         return self._p_jar.db().getName()
 

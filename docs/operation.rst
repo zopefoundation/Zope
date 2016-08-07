@@ -45,6 +45,18 @@ To run Zope without detaching from the console, use:
 In this mode, Zope emits its log messages to the console, and does not
 detach from the terminal.
 
+By default this command does not enable Zope's debug mode, so it can
+be used for production.
+
+In order to enable debug_mode, you can add the additional `-d` or
+``--debug`` argument to the command:
+
+.. code-block:: sh
+
+   $ bin/runwsgi -v etc/zope.ini -d
+   Starting server in PID 55111.
+   serving on http://127.0.0.1:8080
+
 The runwsgi commands takes a PasteDeploy configuration file as its
 argument. You can configure different WSGI capable servers,
 the WSGI pipeline or logging configuration in this file.

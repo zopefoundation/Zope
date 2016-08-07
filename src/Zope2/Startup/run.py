@@ -58,6 +58,9 @@ def make_wsgi_app(global_config, zope_conf):
     from ZPublisher.WSGIPublisher import publish_module
     starter = get_wsgi_starter()
     opts = ZopeWSGIOptions(configfile=zope_conf)()
+    if 'debug_mode' in global_config:
+        if global_config['debug_mode'] in ('true', 'on', '1'):
+            opts.configroot.debug_mode = True
     handleWSGIConfig(opts.configroot, opts.confighandlers)
     setConfiguration(opts.configroot)
     starter.setConfiguration(opts.configroot)

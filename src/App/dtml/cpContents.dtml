@@ -70,6 +70,18 @@ The Control Panel provides access to system information.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
+  Debug mode
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-debug_mode;
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
   Process Id
   </div>
   </td>

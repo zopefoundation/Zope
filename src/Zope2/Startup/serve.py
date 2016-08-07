@@ -122,6 +122,12 @@ and then use %(http_port)s in your config files.
         const=0,
         dest='verbose',
         help="Suppress verbose output")
+    parser.add_option(
+        '-d', '--debug',
+        action='store_const',
+        const=1,
+        dest='debug',
+        help="Enable debug mode.")
 
     _scheme_re = re.compile(r'^[a-z][a-z]+:', re.I)
 
@@ -170,6 +176,8 @@ and then use %(http_port)s in your config files.
         server = self.loadserver(server_spec, name=server_name,
                                  relative_to=base, global_conf=vars)
 
+        if 'debug_mode' not in vars and self.options.debug:
+            vars['debug_mode'] = 'true'
         app = self.loadapp(app_spec, name=app_name, relative_to=base,
                            global_conf=vars)
 
