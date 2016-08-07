@@ -58,6 +58,33 @@ use projects like supervisord to achieve this or use your operating
 system's built-in process manager.
 
 
+Debugging Zope
+--------------
+
+In order to debug the Zope application, it can be helpful to connect
+to its database and inspect or change it on the command line. This
+feature was previously available via the dedicated `zopectl debug`
+command and the same can be achieved in the new WSGI setup.
+
+Assuming you have a Python interpreter with the correct sys.path
+available, for example as ``bin/zopepy``, you can run::
+
+  $ ZOPE_CONFIG=etc/wsgi.conf bin/zopepy
+  >>> import Zope2
+  >>> app = Zope2.app()
+  >>> app
+  <Application at >
+
+  >>> app.acl_users
+  <UserFolder at /acl_users>
+
+  >>> import transaction
+  >>> transaction.begin()
+  >>> app.acl_users._doAddUser('foo', 'bar', ['Manager'], [])
+  <User 'foo'>
+  >>> transaction.commit()
+
+
 Logging In To Zope
 ------------------
 
