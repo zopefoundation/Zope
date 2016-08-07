@@ -14,27 +14,18 @@
 
 from __future__ import absolute_import
 
-import sys
-
 from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
 deprecated(
     'Please import from ZServer.Zope2.Startup.starter',
+    get_starter='ZServer.Zope2.Startup.starter:get_starter',
     UnixZopeStarter='ZServer.Zope2.Startup.starter:UnixZopeStarter',
     WindowsZopeStarter='ZServer.Zope2.Startup.starter:WindowsZopeStarter',
     ZopeStarter='ZServer.Zope2.Startup.starter:ZopeStarter',
 )
 
 
-def get_starter(wsgi=False):
-    if wsgi:
-        from Zope2.Startup.starter import WSGIStarter
-        return WSGIStarter()
-    else:
-        if sys.platform[:3].lower() == "win":
-            from ZServer.Zope2.Startup.starter import WindowsZopeStarter
-            return WindowsZopeStarter()
-        else:
-            from ZServer.Zope2.Startup.starter import UnixZopeStarter
-            return UnixZopeStarter()
+def get_wsgi_starter():
+    from Zope2.Startup.starter import WSGIStarter
+    return WSGIStarter()

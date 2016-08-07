@@ -99,7 +99,7 @@ class WSGIStarter(object):
     def startZope(self):
         # Import Zope
         import Zope2
-        Zope2.startup()
+        Zope2.startup_wsgi()
 
 
 def _name_to_ips(host, _is_ip=re.compile(r'(\d+\.){3}').match):

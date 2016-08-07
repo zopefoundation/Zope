@@ -88,6 +88,7 @@ _configure_client_cache()
 
 _exec('import Zope2')
 import Zope2
+import Zope2.Startup.run
 _exec('import ZODB')
 import ZODB
 _write('.')
@@ -214,7 +215,7 @@ installProduct('OFSP', 1)
 app = Zope2.app
 debug = Zope2.debug
 DB = Zope2.DB
-configure = Zope2.configure
+configure = Zope2.Startup.run.configure_wsgi
 def startup(): pass
 Zope = Zope2
 active = _patched

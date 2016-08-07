@@ -11,16 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-The Zope run script.
-
-Usage: runzope [-C URL][-h] [options]
-
-Options:
--C/--configure URL -- configuration file or URL
--X -- overwrite config file settings, e.g. -X "debug-mode=on"
--h/--help -- print this usage message and exit
-"""
 
 import os
 import xml.sax
@@ -28,6 +18,14 @@ import xml.sax
 from ZConfig.loader import SchemaLoader
 from ZConfig.schema import SchemaParser
 from zdaemon.zdoptions import ZDOptions
+from zope.deferredimport import deprecated
+
+# BBB Zope 5.0
+_prefix = 'ZServer.Zope2.Startup.options:'
+deprecated(
+    'Please import from ZServer.Zope2.Startup.options.',
+    ZopeOptions=_prefix + 'ZopeOptions',
+)
 
 
 class ConditionalSchemaParser(SchemaParser):
@@ -50,13 +48,12 @@ class ConditionalSchemaParser(SchemaParser):
             SchemaParser.start_import(self, attrs)
 
 
-class ZopeOptions(ZDOptions):
-
-    # Provide help message, without indentation.
-    __doc__ = __doc__
+class ZopeWSGIOptions(ZDOptions):
+    """zdaemon based ZopeWSGIOptions to parse a ZConfig schema.
+    """
 
     schemadir = os.path.dirname(os.path.abspath(__file__))
-    schemafile = 'zopeschema.xml'
+    schemafile = 'wsgischema.xml'
 
     def load_schema(self):
         if self.schema is None:

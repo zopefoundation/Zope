@@ -5,7 +5,7 @@ from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 import Zope2
 
-Zope2.startup()
+Zope2.startup_wsgi()
 
 pt_simple_was_run = 0
 

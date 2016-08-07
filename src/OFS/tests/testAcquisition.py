@@ -21,9 +21,6 @@ import unittest
 
 from Testing.makerequest import makerequest
 
-import Zope2
-Zope2.startup()
-
 from OFS.SimpleItem import SimpleItem
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -32,6 +29,9 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.ImplPython import guarded_getattr as guarded_getattr_py
 from AccessControl.ImplC import guarded_getattr as guarded_getattr_c
+
+import Zope2
+Zope2.startup_wsgi()
 
 
 class AllowedItem(SimpleItem):

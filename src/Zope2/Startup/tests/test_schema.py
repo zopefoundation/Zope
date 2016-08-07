@@ -19,7 +19,7 @@ import unittest
 
 import ZConfig
 
-from Zope2.Startup.options import ZopeOptions
+from Zope2.Startup.options import ZopeWSGIOptions
 
 _SCHEMA = {}
 TEMPNAME = tempfile.mktemp()
@@ -29,7 +29,7 @@ TEMPVAR = os.path.join(TEMPNAME, "var")
 def getSchema(schemafile):
     global _SCHEMA
     if schemafile not in _SCHEMA:
-        opts = ZopeOptions()
+        opts = ZopeWSGIOptions()
         opts.schemafile = schemafile
         opts.load_schema()
         _SCHEMA[schemafile] = opts.schema

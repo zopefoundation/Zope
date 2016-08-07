@@ -14,6 +14,7 @@
 
 _config = None
 
+
 def getConfiguration():
     """Return the global Zope configuration object.
 
@@ -24,6 +25,7 @@ def getConfiguration():
     if _config is None:
         setConfiguration(DefaultConfiguration())
     return _config
+
 
 def setConfiguration(cfg):
     """Set the global configuration object.
@@ -54,6 +56,7 @@ def setConfiguration(cfg):
 
     Globals.DevelopmentMode = cfg.debug_mode
 
+
 class DefaultConfiguration:
     """
     This configuration should be used effectively only during unit tests
@@ -64,11 +67,7 @@ class DefaultConfiguration:
         self.instancehome = FindHomes.INSTANCE_HOME
         self.dbtab = None
         self.debug_mode = True
-        self.enable_product_installation = False
         self.locale = None
-
-        # ZServer.HTTPServer
-        self.http_header_max_length = 8196
 
         # VerboseSecurity
         self.skip_ownership_checking = False

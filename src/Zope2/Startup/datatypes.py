@@ -18,8 +18,22 @@ import os
 from UserDict import UserDict
 import traceback
 
-from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
+
+from zope.deferredimport import deprecated
+
+# BBB Zope 5.0
+_prefix = 'ZServer.Zope2.Startup.datatypes:'
+deprecated(
+    'Please import from ZServer.Zope2.Startup.datatypes.',
+    cgi_environment=_prefix + 'cgi_environment',
+    LoggerFactory=_prefix + 'LoggerFactory',
+    dns_resolver=_prefix + 'dns_resolver',
+    python_dotted_path=_prefix + 'python_dotted_path',
+    zdaemonEnvironDict=_prefix + 'zdaemonEnvironDict',
+    root_config=_prefix + 'root_config',
+    minimalClassFactory=_prefix + 'minimalClassFactory',
+)
 
 
 def security_policy_implementation(value):
@@ -39,29 +53,8 @@ def datetime_format(value):
     return value
 
 
-def cgi_environment(section):
+def environment(section):
     return section.environ
-
-
-class LoggerFactory(logger.LoggerFactory):
-    """
-    A factory used to create loggers while delaying actual logger
-    instance construction.  We need to do this because we may want to
-    reference a logger before actually instantiating it (for example,
-    to allow the app time to set an effective user).  An instance of
-    this wrapper is a callable which, when called, returns a logger
-    object.
-    """
-    def __init__(self, section):
-        section.name = section.getSectionName()
-        section.propagate = False
-        logger.LoggerFactory.__init__(self, section)
-
-
-def dns_resolver(hostname):
-    # DNS resolver
-    from ZServer.medusa import resolver
-    return resolver.caching_resolver(hostname)
 
 
 def mount_point(value):
@@ -98,14 +91,7 @@ def importable_name(name):
                 name, IO.getvalue()))
 
 
-def python_dotted_path(name):
-    # A datatype that ensures that a dotted path name can be resolved but
-    # returns the name instead of the object
-    ob = importable_name(name)  # NOQA - will fail in course
-    return name
-
-
-class zdaemonEnvironDict(UserDict):
+class ZDaemonEnvironDict(UserDict):
     # zdaemon 2 expects to use a 'mapping' attribute of the environ object.
 
     @property
@@ -113,23 +99,13 @@ class zdaemonEnvironDict(UserDict):
         return self.data
 
 
-def root_config(section):
+def root_wsgi_config(section):
     from ZConfig import ConfigurationError
     from ZConfig.matcher import SectionValue
     if section.environment is None:
-        section.environment = zdaemonEnvironDict()
-    if hasattr(section, 'cgi_environment'):
-        if section.cgi_environment is None:
-            section.cgi_environment = zdaemonEnvironDict()
+        section.environment = ZDaemonEnvironDict()
     if section.clienthome is None:
         section.clienthome = os.path.join(section.instancehome, "var")
-
-    if hasattr(section, 'pid_filename'):
-        if section.pid_filename is None:
-            section.pid_filename = os.path.join(section.clienthome, 'Z2.pid')
-    if hasattr(section, 'lock_filename'):
-        if section.lock_filename is None:
-            section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
 
     if not section.databases:
         section.databases = []
@@ -294,24 +270,8 @@ class DBTab:
         return name
 
 
-def minimalClassFactory(jar, module, name,
-                        _silly=('__doc__',), _globals={}):
-    """Minimal class factory.
-
-    If any class is not found, this class factory will propagate
-    the exception to the application, unlike the other class factories.
+def simpleClassFactory(jar, module, name, _silly=('__doc__',), _globals={}):
+    """Class factory.
     """
     m = __import__(module, _globals, _globals, _silly)
     return getattr(m, name)
-
-
-def simpleClassFactory(jar, module, name,
-                       _silly=('__doc__',), _globals={}):
-    """Class factory.
-    """
-    import OFS.Uninstalled
-    try:
-        m = __import__(module, _globals, _globals, _silly)
-        return getattr(m, name)
-    except:
-        return OFS.Uninstalled.Broken(jar, None, (module, name))

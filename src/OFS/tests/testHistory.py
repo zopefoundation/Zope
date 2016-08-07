@@ -1,18 +1,18 @@
-import unittest
-import Zope2
-Zope2.startup()
-
 import os
 import shutil
 import time
-import transaction
 import tempfile
+import unittest
+
+import transaction
 import ZODB
+from ZODB.FileStorage import FileStorage
 
 from OFS.Application import Application
 from OFS.History import Historical
 from OFS.SimpleItem import SimpleItem
-from ZODB.FileStorage import FileStorage
+import Zope2
+Zope2.startup_wsgi()
 
 
 class HistoryItem(SimpleItem, Historical):

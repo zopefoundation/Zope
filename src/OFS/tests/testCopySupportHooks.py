@@ -16,7 +16,7 @@ from OFS.Folder import Folder
 
 from Zope2.App import zcml
 
-Zope2.startup()
+Zope2.startup_wsgi()
 
 
 class EventLogger(object):

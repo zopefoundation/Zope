@@ -21,8 +21,8 @@ import unittest
 
 import ZConfig
 
-from Zope2.Startup import get_starter
-from Zope2.Startup.options import ZopeOptions
+from Zope2.Startup import get_wsgi_starter
+from Zope2.Startup.options import ZopeWSGIOptions
 
 _SCHEMA = None
 
@@ -30,7 +30,7 @@ _SCHEMA = None
 def getSchema(schemafile):
     global _SCHEMA
     if _SCHEMA is None:
-        opts = ZopeOptions()
+        opts = ZopeWSGIOptions()
         opts.schemafile = schemafile
         opts.load_schema()
         _SCHEMA = opts.schema
@@ -50,7 +50,7 @@ class WSGIStarterTestCase(unittest.TestCase):
         shutil.rmtree(self.TEMPNAME)
 
     def get_starter(self, conf):
-        starter = get_starter(wsgi=True)
+        starter = get_wsgi_starter()
         starter.setConfiguration(conf)
         return starter
 

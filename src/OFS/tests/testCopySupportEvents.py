@@ -15,7 +15,7 @@ from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from Zope2.App import zcml
 
-Zope2.startup()
+Zope2.startup_wsgi()
 
 
 class EventLogger(object):

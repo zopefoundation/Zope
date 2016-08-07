@@ -1,31 +1,13 @@
 <schema prefix="Zope2.Startup.datatypes"
-        datatype=".root_config"
-        handler="root_handler">
+        datatype=".root_wsgi_config"
+        handler="root_wsgi_handler">
 
   <!-- type definitions -->
 
-  <import package="ZConfig.components.logger" file="handlers.xml"/>
-  <import package="ZConfig.components.logger" file="eventlog.xml"/>
   <import package="ZODB"/>
 
-  <sectiontype name="logger" datatype=".LoggerFactory">
-    <description>
-      This "logger" type only applies to access and request ("trace")
-      logging; event logging is handled by the "logging" package in
-      the Python standard library.  The loghandler type used here is
-      provided by the "ZConfig.components.logger" package.
-    </description>
-    <key name="level"
-         datatype="ZConfig.components.logger.datatypes.logging_level"
-         default="info"/>
-    <multisection name="*"
-                  type="ZConfig.logger.handler"
-                  attribute="handlers"
-                  required="yes"/>
-  </sectiontype>
-
   <sectiontype name="environment"
-               datatype=".cgi_environment"
+               datatype=".environment"
                keytype="identifier">
     <description>
      A section which allows you to define simple key-value pairs which
@@ -269,43 +251,6 @@
      works if security-policy-implementation is set to 'PYTHON'.
      </description>
      <metadefault>off</metadefault>
-  </key>
-
-  <section type="eventlog" name="*" attribute="eventlog">
-    <description>
-      Describes what level of log output is desired and where it
-      should be written.
-    </description>
-  </section>
-
-  <section type="logger" name="access">
-     <description>
-      Describes the logging performed to capture the 'access' log,
-      which typically captures per-request data in common or combined
-      log format.
-    </description>
-  </section>
-
-  <section type="logger" name="trace">
-     <description>
-      Describes the logging performed to capture the 'trace' log,
-      which typically captures detailed per-request data useful for
-      Zope debugging.
-    </description>
-  </section>
-
-  <key name="conflict-error-log-level"
-       datatype="ZConfig.components.logger.datatypes.logging_level"
-       default="info">
-     <description>
-       Specifies at which level conflict errors are logged. Conflict
-       errors, when occurring in small numbers, are a normal part of the
-       Zope optimistic transaction conflict resolution algorithms. They
-       are retried automatically a few times, and are therefore usually
-       not visible by the user. You can specify 'notset' if you don't
-       want them logged, or use any other logger level.
-     </description>
-     <metadefault>info</metadefault>
   </key>
 
   <multisection type="ZODB.Database" name="+" attribute="databases">

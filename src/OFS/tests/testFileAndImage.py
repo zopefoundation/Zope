@@ -35,7 +35,7 @@ except:
 imagedata = os.path.join(here, 'test.gif')
 filedata = os.path.join(here, 'test.gif')
 
-Zope2.startup()
+Zope2.startup_wsgi()
 
 
 def makeConnection():
