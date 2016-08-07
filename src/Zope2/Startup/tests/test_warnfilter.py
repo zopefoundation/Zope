@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test that the warning filter works."""
 
 import os
 import cStringIO

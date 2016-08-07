@@ -10,8 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope Framework Class Finder
-"""
 
-# Stub in case anyone depends on this
-from App.ClassFactory import ClassFactory  # NOQA
+from zope.deferredimport import deprecated
+
+# BBB Zope 5.0
+deprecated(
+    'Please import from Zope2.App.ClassFactory.',
+    ClassFactory='Zope2.App.ClassFactory:ClassFactory',
+)

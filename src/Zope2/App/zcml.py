@@ -11,8 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""ZCML machinery
-"""
 
 import os.path
 
@@ -70,6 +68,6 @@ def cleanUp():
     _context = None
 
 
-from zope.testing.cleanup import addCleanUp
+from zope.testing.cleanup import addCleanUp  # NOQA
 addCleanUp(cleanUp)
 del addCleanUp

@@ -84,21 +84,21 @@ def startup():
     try:
         # Try to use custom storage
         try:
-            m=imp.find_module('custom_zodb',[configuration.testinghome])
+            m = imp.find_module('custom_zodb', [configuration.testinghome])
         except:
-            m=imp.find_module('custom_zodb',[configuration.instancehome])
+            m = imp.find_module('custom_zodb', [configuration.instancehome])
     except Exception:
         # if there is no custom_zodb, use the config file specified databases
         DB = dbtab.getDatabase('/', is_root=1)
     else:
-        m=imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
-        sys.modules['Zope2.custom_zodb']=m
+        m = imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
+        sys.modules['Zope2.custom_zodb'] = m
 
         # Get the database and join it to the dbtab multidatabase
         # FIXME: this uses internal datastructures of dbtab
         databases = getattr(dbtab, 'databases', {})
-        if hasattr(m,'DB'):
-            DB=m.DB
+        if hasattr(m, 'DB'):
+            DB = m.DB
             databases.update(getattr(DB, 'databases', {}))
             DB.databases = databases
         else:
@@ -173,7 +173,7 @@ def validated_hook(request, user):
 class RequestContainer(ExtensionClass.Base):
 
     def __init__(self, r):
-        self.REQUEST=r
+        self.REQUEST = r
 
 
 class ZPublisherExceptionHook:
@@ -234,8 +234,8 @@ class ZPublisherExceptionHook:
                         error_log_url = log.raising((t, v, traceback))
 
             if (REQUEST is None or
-                (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
-                 != 'text/html')):
+                    (getattr(REQUEST.get('RESPONSE', None),
+                             '_error_format', '') != 'text/html')):
                 raise t, v, traceback
 
             # Lookup a view for the exception and render it, then
@@ -245,7 +245,8 @@ class ZPublisherExceptionHook:
             # zope.publisher uses as well.
             view = queryMultiAdapter((v, REQUEST), name=u'index.html')
             if view is not None:
-                if IAcquirer.providedBy(view) and IAcquirer.providedBy(published):
+                if (IAcquirer.providedBy(view) and
+                        IAcquirer.providedBy(published)):
                     view = view.__of__(published)
                 else:
                     view.__parent__ = published
@@ -262,9 +263,9 @@ class ZPublisherExceptionHook:
                 return response
 
             if (published is None or published is app or
-                isinstance(published, list)):
+                    isinstance(published, list)):
                 # At least get the top-level object
-                published=app.__bobo_traverse__(REQUEST).__of__(
+                published = app.__bobo_traverse__(REQUEST).__of__(
                     RequestContainer(REQUEST))
 
             published = getattr(published, 'im_self', published)
@@ -312,7 +313,9 @@ class ZPublisherExceptionHook:
 zpublisher_exception_hook = ZPublisherExceptionHook()
 ac_logger = logging.getLogger('event.AccessControl')
 
-class TransactionsManager:
+
+class TransactionsManager(object):
+
     def begin(self,
               # Optimize global var lookups:
               transaction=transaction):
@@ -345,8 +348,8 @@ class TransactionsManager:
                 to_append = (object.__name__,)
                 object = object.im_self
 
-            while object is not None and \
-                  not hasattr(object, 'getPhysicalPath'):
+            while (object is not None and
+                   not hasattr(object, 'getPhysicalPath')):
                 if getattr(object, '__name__', None) is None:
                     object = None
                     break
@@ -364,14 +367,13 @@ class TransactionsManager:
 
         T = transaction.get()
         T.note(path)
-        auth_user=request_get('AUTHENTICATED_USER',None)
+        auth_user = request_get('AUTHENTICATED_USER', None)
         if auth_user is not None:
             auth_folder = aq_parent(auth_user)
             if auth_folder is None:
                 ac_logger.warning(
                     'A user object of type %s has no aq_parent.',
-                    type(auth_user)
-                    )
+                    type(auth_user))
                 auth_path = request_get('AUTHENTICATION_PATH')
             else:
                 auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])

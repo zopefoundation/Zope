@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test that the Zope schema can be loaded."""
 
 import os
 import cStringIO

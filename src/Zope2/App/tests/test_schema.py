@@ -43,6 +43,7 @@ class Zope2VocabularyRegistryTests(unittest.TestCase, CleanUp):
         from zope.component import provideUtility
         from zope.schema.interfaces import IVocabularyFactory
         _marker = object()
+
         def _factory(context):
             return _marker
         provideUtility(_factory, IVocabularyFactory, 'foundit')

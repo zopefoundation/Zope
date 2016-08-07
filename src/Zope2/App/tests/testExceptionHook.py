@@ -110,8 +110,9 @@ class ExceptionHookTestCase(unittest.TestCase):
                             sys.exc_info()[1],
                             sys.exc_info()[2],
                             )
-            except Exception, e:
+            except Exception as e:
                 return e
+
 
 class ExceptionHookTest(ExceptionHookTestCase):
 
@@ -122,6 +123,7 @@ class ExceptionHookTest(ExceptionHookTestCase):
 
     def testUnauthorized(self):
         from AccessControl import Unauthorized
+
         def f():
             raise Unauthorized('1')
         self.assertRaises(Unauthorized, self.call, None, {}, f)
@@ -130,11 +132,12 @@ class ExceptionHookTest(ExceptionHookTestCase):
         from ZPublisher import Retry
         from ZODB.POSException import ConflictError
         from App.config import getConfiguration
+
         def f():
             raise ConflictError()
         request = self._makeRequest()
         old_value = getattr(getConfiguration(), 'conflict_error_log_level', 0)
-        self.assertEquals(old_value, 0) # default value
+        self.assertEquals(old_value, 0)  # default value
         try:
             getConfiguration().conflict_error_log_level = logging.CRITICAL
             level = getattr(getConfiguration(), 'conflict_error_log_level', 0)
@@ -145,6 +148,7 @@ class ExceptionHookTest(ExceptionHookTestCase):
 
     def testConflictErrorCount(self):
         from ZODB.POSException import ConflictError
+
         def f():
             raise ConflictError()
         hook = self._makeOne()
@@ -156,8 +160,10 @@ class ExceptionHookTest(ExceptionHookTestCase):
 
     def testRetryRaisesOriginalException(self):
         from ZPublisher import Retry
+
         class CustomException(Exception):
             pass
+
         def f():
             try:
                 raise CustomException('Zope')
@@ -170,6 +176,7 @@ class ExceptionHookTest(ExceptionHookTestCase):
     def testRetryRaisesConflictError(self):
         from ZPublisher import Retry
         from ZODB.POSException import ConflictError
+
         def f():
             try:
                 raise ConflictError()
@@ -182,6 +189,7 @@ class ExceptionHookTest(ExceptionHookTestCase):
     def testRetryUnresolvedConflictErrorCount(self):
         from ZPublisher import Retry
         from ZODB.POSException import ConflictError
+
         def f():
             try:
                 raise ConflictError()
@@ -196,6 +204,7 @@ class ExceptionHookTest(ExceptionHookTestCase):
         self.call_no_exc(hook, None, None, f)
         self.assertEquals(hook.unresolved_conflict_errors, 2)
 
+
 class Client(Acquisition.Explicit):
 
     def __init__(self):
@@ -205,6 +214,7 @@ class Client(Acquisition.Explicit):
     def dummyMethod(self):
         return 'Aye'
 
+
 class StandardClient(Client):
 
     def raise_standardErrorMessage(self, c, r, t, v, tb, error_log_url):
@@ -212,15 +222,18 @@ class StandardClient(Client):
         fmt = format_exception(t, v, tb, as_html=0)
         self.messages.append(''.join([error_log_url] + fmt))
 
+
 class BrokenClient(Client):
 
     def raise_standardErrorMessage(self, c, r, t, v, tb, error_log_url):
         raise AttributeError('ouch')
 
+
 class ExceptionMessageRenderTest(ExceptionHookTestCase):
 
     def testRenderUnauthorizedStandardClient(self):
         from AccessControl import Unauthorized
+
         def f():
             raise Unauthorized('1')
         request = self._makeRequest()
@@ -232,6 +245,7 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
 
     def testRenderUnauthorizedStandardClientMethod(self):
         from AccessControl import Unauthorized
+
         def f():
             raise Unauthorized('1')
         request = self._makeRequest()
@@ -243,6 +257,7 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
 
     def testRenderUnauthorizedBrokenClient(self):
         from AccessControl import Unauthorized
+
         def f():
             raise Unauthorized('1')
         request = self._makeRequest()
@@ -251,8 +266,10 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
 
     def testRenderRetryRaisesOriginalException(self):
         from ZPublisher import Retry
+
         class CustomException(Exception):
             pass
+
         def f():
             try:
                 raise CustomException('Zope')
@@ -270,6 +287,7 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
     def testRenderRetryRaisesConflictError(self):
         from ZPublisher import Retry
         from ZODB.POSException import ConflictError
+
         def f():
             try:
                 raise ConflictError()
@@ -284,6 +302,7 @@ class ExceptionMessageRenderTest(ExceptionHookTestCase):
         tb = client.messages[0]
         self.assertTrue("ConflictError: database conflict error" in tb, tb)
 
+
 class CustomExceptionView(Acquisition.Explicit):
 
     def __init__(self, context, request):
@@ -291,9 +310,10 @@ class CustomExceptionView(Acquisition.Explicit):
         self.request = request
 
     def __call__(self):
-        return "Exception View: %s\nContext: %s" % (
+        return ("Exception View: %s\nContext: %s" % (
                 self.context.__class__.__name__,
-                Acquisition.aq_parent(self).__class__.__name__)
+                Acquisition.aq_parent(self).__class__.__name__))
+
 
 def registerExceptionView(for_):
     from zope.interface import Interface
@@ -307,11 +327,13 @@ def registerExceptionView(for_):
         name=u'index.html',
     )
 
+
 class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
 
     def testCustomExceptionViewUnauthorized(self):
         from AccessControl import Unauthorized
         registerExceptionView(IUnauthorized)
+
         def f():
             raise Unauthorized('1')
         request = self._makeRequest()
@@ -325,6 +347,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import Forbidden
         registerExceptionView(IForbidden)
+
         def f():
             raise Forbidden("argh")
         request = self._makeRequest()
@@ -338,6 +361,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import NotFound
         registerExceptionView(INotFound)
+
         def f():
             raise NotFound("argh")
         request = self._makeRequest()
@@ -351,6 +375,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import BadRequest
         registerExceptionView(IException)
+
         def f():
             raise BadRequest("argh")
         request = self._makeRequest()
@@ -364,6 +389,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         from ZPublisher.HTTPResponse import HTTPResponse
         from zExceptions import InternalError
         registerExceptionView(IException)
+
         def f():
             raise InternalError("argh")
         request = self._makeRequest()
@@ -376,6 +402,7 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
     def testRedirectNoExceptionView(self):
         from zExceptions import Redirect
         registerExceptionView(IException)
+
         def f():
             raise Redirect("http://zope.org/")
         request = self._makeRequest()
@@ -383,11 +410,3 @@ class ExceptionViewsTest(PlacelessSetup, ExceptionHookTestCase):
         v = self.call_exc_value(client, request, f)
         self.assertTrue(isinstance(v, Redirect), v)
         self.assertEquals(v.args[0], "http://zope.org/")
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ExceptionHookTest))
-    suite.addTest(unittest.makeSuite(ExceptionMessageRenderTest))
-    suite.addTest(unittest.makeSuite(ExceptionViewsTest))
-    return suite
