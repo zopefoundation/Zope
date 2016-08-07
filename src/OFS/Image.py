@@ -596,8 +596,6 @@ class File(Persistent, Implicit, PropertyManager,
 
         return next, size
 
-    security.declareProtected(delete_objects, 'DELETE')
-
     security.declareProtected(change_images_and_files, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
@@ -800,7 +798,6 @@ class Image(File):
     security.declareProtected(ftp_access, 'manage_FTPstat')
     security.declareProtected(ftp_access, 'manage_FTPlist')
     security.declareProtected(ftp_access, 'manage_FTPget')
-    security.declareProtected(delete_objects, 'DELETE')
 
     _properties = (
         {'id': 'title', 'type': 'string'},
