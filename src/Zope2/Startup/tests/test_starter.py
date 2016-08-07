@@ -27,21 +27,16 @@ from Zope2.Startup.options import ZopeWSGIOptions
 _SCHEMA = None
 
 
-def getSchema(schemafile):
+def getSchema():
     global _SCHEMA
     if _SCHEMA is None:
         opts = ZopeWSGIOptions()
-        opts.schemafile = schemafile
         opts.load_schema()
         _SCHEMA = opts.schema
     return _SCHEMA
 
 
 class WSGIStarterTestCase(unittest.TestCase):
-
-    @property
-    def schema(self):
-        return getSchema('wsgischema.xml')
 
     def setUp(self):
         self.TEMPNAME = tempfile.mktemp()
@@ -66,7 +61,7 @@ class WSGIStarterTestCase(unittest.TestCase):
             if why == 17:
                 # already exists
                 pass
-        conf, self.handler = ZConfig.loadConfigFile(self.schema, sio)
+        conf, self.handler = ZConfig.loadConfigFile(getSchema(), sio)
         self.assertEqual(conf.instancehome, self.TEMPNAME)
         return conf
 

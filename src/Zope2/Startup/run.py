@@ -43,13 +43,7 @@ def _set_wsgi_config(configfile=None):
     Optionally accept a configfile argument (string path) in order
     to specify where the configuration file exists. """
     from Zope2.Startup import options, handlers
-    opts = options.ZopeWSGIOptions()
-    if configfile:
-        opts.configfile = configfile
-        opts.realize(raise_getopt_errs=0)
-    else:
-        opts.realize()
-
+    opts = options.ZopeWSGIOptions(configfile=configfile)()
     handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
     import App.config
     App.config.setConfiguration(opts.configroot)
@@ -63,9 +57,7 @@ def make_wsgi_app(global_config, zope_conf):
     from Zope2.Startup.options import ZopeWSGIOptions
     from ZPublisher.WSGIPublisher import publish_module
     starter = get_wsgi_starter()
-    opts = ZopeWSGIOptions()
-    opts.configfile = zope_conf
-    opts.realize(args=(), progname='Zope2WSGI', raise_getopt_errs=False)
+    opts = ZopeWSGIOptions(configfile=zope_conf)()
     handleWSGIConfig(opts.configroot, opts.confighandlers)
     setConfiguration(opts.configroot)
     starter.setConfiguration(opts.configroot)

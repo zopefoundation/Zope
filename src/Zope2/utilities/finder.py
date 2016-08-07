@@ -30,9 +30,7 @@ class ZopeFinder(object):
         from Zope2.Startup import options, handlers
         import App.config
         import Zope2
-        opts = options.ZopeWSGIOptions()
-        opts.configfile = config_file
-        opts.realize(args=[], doc="", raise_getopt_errs=0)
+        opts = options.ZopeWSGIOptions(configfile=config_file)()
         handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
         App.config.setConfiguration(opts.configroot)
         app = Zope2.app()

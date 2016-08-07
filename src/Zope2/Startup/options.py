@@ -15,9 +15,8 @@
 import os
 import xml.sax
 
-from ZConfig.loader import SchemaLoader
+from ZConfig.loader import ConfigLoader, SchemaLoader
 from ZConfig.schema import SchemaParser
-from zdaemon.zdoptions import ZDOptions
 from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
@@ -48,12 +47,18 @@ class ConditionalSchemaParser(SchemaParser):
             SchemaParser.start_import(self, attrs)
 
 
-class ZopeWSGIOptions(ZDOptions):
-    """zdaemon based ZopeWSGIOptions to parse a ZConfig schema.
+class ZopeWSGIOptions(object):
+    """ZopeWSGIOptions parses a ZConfig schema and config file.
     """
-
+    configfile = None
+    confighandlers = None
+    configroot = None
+    schema = None
     schemadir = os.path.dirname(os.path.abspath(__file__))
     schemafile = 'wsgischema.xml'
+
+    def __init__(self, configfile=None):
+        self.configfile = configfile
 
     def load_schema(self):
         if self.schema is None:
@@ -75,3 +80,13 @@ class ZopeWSGIOptions(ZDOptions):
             self.schema = parser._schema
         finally:
             resource.close()
+
+    def load_configfile(self):
+        loader = ConfigLoader(self.schema)
+        self.configroot, self.confighandlers = loader.loadURL(
+            self.configfile)
+
+    def __call__(self):
+        self.load_schema()
+        self.load_configfile()
+        return self

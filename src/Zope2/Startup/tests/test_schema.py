@@ -21,38 +21,32 @@ import ZConfig
 
 from Zope2.Startup.options import ZopeWSGIOptions
 
-_SCHEMA = {}
+_SCHEMA = None
 TEMPNAME = tempfile.mktemp()
 TEMPVAR = os.path.join(TEMPNAME, "var")
 
 
-def getSchema(schemafile):
+def getSchema():
     global _SCHEMA
-    if schemafile not in _SCHEMA:
+    if _SCHEMA is None:
         opts = ZopeWSGIOptions()
-        opts.schemafile = schemafile
         opts.load_schema()
-        _SCHEMA[schemafile] = opts.schema
-    return _SCHEMA[schemafile]
+        _SCHEMA = opts.schema
+    return _SCHEMA
 
 
 class WSGIStartupTestCase(unittest.TestCase):
-
-    @property
-    def schema(self):
-        return getSchema('wsgischema.xml')
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        schema = self.schema
         sio = cStringIO.StringIO(
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         os.mkdir(TEMPNAME)
         os.mkdir(TEMPVAR)
         try:
-            conf, handler = ZConfig.loadConfigFile(schema, sio)
+            conf, handler = ZConfig.loadConfigFile(getSchema(), sio)
         finally:
             os.rmdir(TEMPVAR)
             os.rmdir(TEMPNAME)

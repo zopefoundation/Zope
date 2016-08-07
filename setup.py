@@ -67,7 +67,6 @@ setup(
         'setuptools',
         'transaction',
         'waitress',
-        'zdaemon',
         'zExceptions >= 3.2',
         'zope.browser',
         'zope.browsermenu',
