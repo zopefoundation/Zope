@@ -130,7 +130,7 @@ def root_handler(cfg):
     if cfg.trusted_proxies:
         mapped = []
         for name in cfg.trusted_proxies:
-            mapped.extend(_name2Ips(name))
+            mapped.extend(_name_to_ips(name))
         config.TRUSTED_PROXIES = tuple(mapped)
 
         from ZPublisher import HTTPRequest
@@ -150,13 +150,13 @@ def handleConfig(cfg, multihandler):
     return multihandler(handlers)
 
 
-def _name2Ips(host, isIp_=re.compile(r'(\d+\.){3}').match):
+def _name_to_ips(host, _is_ip=re.compile(r'(\d+\.){3}').match):
     """Map a name *host* to the sequence of its ip addresses.
 
     use *host* itself (as sequence) if it already is an ip address.
     Thus, if only a specific interface on a host is trusted,
     identify it by its ip (and not the host name).
     """
-    if isIp_(host):
+    if _is_ip(host):
         return [host]
     return gethostbyaddr(host)[2]

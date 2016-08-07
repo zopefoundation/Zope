@@ -12,29 +12,9 @@
 #
 ##############################################################################
 
-"""Utility function for file locking.
+from zope.deferredimport import deprecated
 
-This module provides a platform-specific function which uses the
-best-available strategy for locking a file object.
-"""
-
-try:
-    import fcntl
-except ImportError:
-    # Try windows-specific code:
-    try:
-        # We expect this module to exist, but the LockFile function may not.
-        from ZODB.winlock import LockFile
-    except ImportError:
-        # we don't understand any kind of locking, forget it
-        def lock_file(file):
-            pass
-    else:
-        # Windows
-        def lock_file(file):
-            un = file.fileno()
-            LockFile(un, 0, 0, 1, 0) # just lock the first byte, who cares
-else:
-    # Unix-specific locking:
-    def lock_file(file):
-        fcntl.flock(file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+# BBB Zope 5.0
+deprecated(
+    'Please import from ZServer.Zope2.Startup.utils',
+    lock_file='ZServer.Zope2.Startup.utils:lock_file')
