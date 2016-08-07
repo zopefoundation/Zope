@@ -12,19 +12,13 @@
 #
 ##############################################################################
 
+from zope.deferredimport import deprecated
 
-def run():
-    """ Start a Zope instance """
-    import Zope2.Startup
-    starter = Zope2.Startup.get_starter(wsgi=False)
-    opts = _setconfig()
-    starter.setConfiguration(opts.configroot)
-    try:
-        starter.prepare()
-    except:
-        starter.shutdown()
-        raise
-    starter.run()
+# BBB Zope 5.0
+deprecated(
+    'Please import from ZServer.Zope2.Startup.run',
+    run='ZServer.Zope2.Startup.run:run',
+)
 
 
 def configure(configfile):
@@ -75,7 +69,3 @@ def make_wsgi_app(global_config, zope_conf):
     starter.setConfiguration(opts.configroot)
     starter.prepare()
     return publish_module
-
-
-if __name__ == '__main__':
-    run()

@@ -1,1 +1,10 @@
-%include <<INSTANCE_HOME>>/etc/base.conf
+%define INSTANCE <<INSTANCE_HOME>>
+
+instancehome $INSTANCE
+
+<zodb_db main>
+   <filestorage>
+     path $INSTANCE/var/Data.fs
+   </filestorage>
+   mount-point /
+</zodb_db>

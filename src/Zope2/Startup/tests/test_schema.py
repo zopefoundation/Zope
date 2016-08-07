@@ -62,7 +62,7 @@ class WSGIStartupTestCase(unittest.TestCase):
     def test_load_config_template(self):
         import Zope2.utilities
         base = os.path.dirname(Zope2.utilities.__file__)
-        fn = os.path.join(base, "skel", "etc", "base.conf.in")
+        fn = os.path.join(base, "skel", "etc", "wsgi.conf.in")
         f = open(fn)
         text = f.read()
         f.close()

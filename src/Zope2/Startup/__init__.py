@@ -20,7 +20,7 @@ from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
 deprecated(
-    'Please import from ZServer.Startup.starter',
+    'Please import from ZServer.Zope2.Startup.starter',
     UnixZopeStarter='ZServer.Zope2.Startup.starter:UnixZopeStarter',
     WindowsZopeStarter='ZServer.Zope2.Startup.starter:WindowsZopeStarter',
     ZopeStarter='ZServer.Zope2.Startup.starter:ZopeStarter',
