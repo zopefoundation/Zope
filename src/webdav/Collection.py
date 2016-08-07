@@ -16,6 +16,8 @@
 from urllib import unquote
 
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import delete_objects
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import rfc1123_date
 from OFS.Lockable import wl_isLocked
@@ -39,6 +41,7 @@ class Collection(Resource):
     than those for non-collection resources."""
 
     implements(IDAVCollection)
+    security = ClassSecurityInfo()
 
     __dav_collection__=1
 
@@ -76,6 +79,7 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed, 'Method not supported for collections.'
 
+    security.declareProtected(delete_objects, 'DELETE')
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a collection resource. For collection resources, DELETE
         may return either 200 (OK) or 204 (No Content) to indicate total
