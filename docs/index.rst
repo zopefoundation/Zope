@@ -10,11 +10,7 @@ Contents:
    INSTALL-buildout
    INSTALL-virtualenv
    operation
-   WSGI
    USERS
    SECURITY
-   SETUID
-   SIGNALS
-   DEBUGGING
    maintenance
    changes

@@ -38,24 +38,23 @@ Creating a Zope instance
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a
 Zope server process.  The instance home is created using the
-``mkzopeinstance`` script:
+``mkwsgiinstance`` script:
 
 .. code-block:: sh
 
-  $ bin/mkzopeinstance -d .
+  $ bin/mkwsgiinstance -d .
 
 You will be asked to provide a user name and password for an
-administrator's account during ``mkzopeinstance``.  To see the available
+administrator's account during ``mkwsgiinstance``.  To see the available
 command-line options, run the script with the ``--help`` option:
 
 .. code-block:: sh
 
-   $ bin/mkzopeinstance --help
+   $ bin/mkwsgiinstance --help
 
 The `-d .` specifies the directory to create the instance home in.
 If you follow the example and choose the current directory, you'll
 find the instances files in the subdirectories of the ``virtualenv``:
 
 - ``etc/`` will hold the configuration files.
-- ``log/`` will hold the log files.
 - ``var/`` will hold the database files.

@@ -15,4 +15,3 @@ case 'nobody' needs read and write permissions to the var directory.
 If you change the way you run Zope, you may need to modify the permissions
 of the directory and the files in it to allow Zope to read and write
 under its changed userid.
-

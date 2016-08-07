@@ -12,78 +12,50 @@ configured and operated the same way.
 Configuring Zope
 ----------------
 
-Your instance's configuration is defined in its ``etc/zope.conf`` file.
-Unless you created the file manually, that file should contain fully-
-annotated examples of each directive.
-
-You can also pass an explicit configuration file on the command line::
-
-  $ /path/to/zope/instance/bin/zopectl -c /tmp/other.conf show
-  ...
-  Config file:  /tmp/other.conf
+Your instance's configuration is defined in its ``etc/wsgi.conf``
+and ``etc/zope.ini`` configuration files.
 
 When starting Zope, if you see errors indicating that an address is in
-use, then you may have to change the ports Zope uses for HTTP or FTP.
-The default HTTP and FTP ports used by Zope are
-8080 and 8021 respectively. You can change the ports used by
-editing ./etc/zope.conf appropriately.
+use, then you may have to change the ports Zope uses for HTTP.
+The default HTTP port used by Zope is 8080. You can change the port
+used by editing ./etc/zope.ini appropriately.
 
 The section in the configuration file looks like this::
 
-  <http-server>
-    # valid keys are "address" and "force-connection-close"
-    address 8080
-    # force-connection-close on
-  </http-server>
-
-The address can just be a port number as shown, or a host:port
-pair to bind only to a specific interface.
+  [server:main]
+  use = egg:waitress#main
+  host = 127.0.0.1
+  port = 8080
 
 After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
 
-Running Zope in the Foreground
-------------------------------
+Running Zope
+------------
 
-To run Zope without detaching from the console, use the ``fg``
-command (short for ``foreground``)::
+To run Zope without detaching from the console, use:
 
-  $ /path/to/zope/instance/bin/zopectl fg
+.. code-block:: sh
+
+   $ bin/runwsgi -v etc/zope.ini
+   Starting server in PID 24934.
+   serving on http://127.0.0.1:8080
 
 In this mode, Zope emits its log messages to the console, and does not
-detach from the terminal. This also automatically enables debug-mode. Do
-not use this for production servers.
+detach from the terminal.
+
+The runwsgi commands takes a PasteDeploy configuration file as its
+argument. You can configure different WSGI capable servers,
+the WSGI pipeline or logging configuration in this file.
 
 
 Running Zope as a Daemon
 ------------------------
 
-Once an instance home has been created, the Zope server can now be
-started using this command::
-
-  $ /path/to/zope/instance/bin/zopectl start
-
-During startup, Zope emits log messages into
-`/path/to/zope/instance/log/event.log`.  You can examine it with the usual
-tools (``cat``, ``more``, ``tail``, etc) and see if there are any errors
-preventing Zope from starting.
-
-.. note::
-
-  Running Zope as a daemon is not supported on Windows.
-
-
-Integrating with System Startup
--------------------------------
-
-zopectl can be linked as rc-script in the usual start directories
-on linux or other System V unix variants.
-
-You can use ``zopectl`` interactively as a command shell by just
-calling it without any arguments. Try ``help`` there and ``help <command>``
-to find out about additionally commands of zopectl. These commands
-also work at the command line.
+Zope has no built-in support for running as a daemon any more. You can
+use projects like supervisord to achieve this or use your operating
+system's built-in process manager.
 
 
 Logging In To Zope
@@ -107,10 +79,6 @@ management screen which is divided into two frames. On the left you
 can navigate between Zope objects and on the right you can edit them
 by selecting different management functions with the tabs at the top
 of the frame.
-
-If you haven't used Zope before, you should head to the Zope web
-site and read some documentation. The Zope Documentation section is
-a good place to start. You can access it at https://zope.readthedocs.io/
 
 
 Troubleshooting
