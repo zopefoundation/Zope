@@ -556,20 +556,15 @@ class HTTPResponse(BaseResponse):
 
         return str(location)
 
-    # The following two methods are part of a private protocol with the
-    # publisher for handling fatal import errors and TTW shutdown requests.
+    # The following two methods are part of a private protocol with
+    # ZServer for handling fatal import errors.
     _shutdown_flag = None
 
     def _requestShutdown(self, exitCode=0):
         """ Request that the server shut down with exitCode after fulfilling
            the current request.
         """
-        self._shutdown_flag = 1
-        try:
-            from ZServer.Zope2.Startup import config
-            config.ZSERVER_EXIT_CODE = exitCode
-        except ImportError:
-            pass
+        self._shutdown_flag = exitCode
 
     def _shutdownRequested(self):
         """ Returns true if this request requested a server shutdown.
