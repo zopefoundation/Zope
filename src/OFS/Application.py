@@ -25,6 +25,7 @@ from AccessControl.Permission import ApplicationDefaultPermissions
 from Acquisition import aq_base
 from App.ApplicationManager import ApplicationManager
 from App import FactoryDispatcher
+from App.ProductContext import ProductContext
 from DateTime import DateTime
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
@@ -49,10 +50,7 @@ LOG = getLogger('Application')
 APP_MANAGER = None
 
 
-class Application(ApplicationDefaultPermissions,
-                  Folder.Folder,
-                  FindSupport,
-                 ):
+class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     """Top-level system object"""
 
     implements(IApplication)
@@ -64,12 +62,12 @@ class Application(ApplicationDefaultPermissions,
     __error_log__ = None
     isTopLevelPrincipiaApplicationObject = 1
 
-    manage_options=((
-            Folder.Folder.manage_options[0],
-            Folder.Folder.manage_options[1],
-            {'label': 'Control Panel', 'action': 'Control_Panel/manage_main'}, ) +
-                    Folder.Folder.manage_options[2:]
-                    )
+    manage_options = ((
+        Folder.Folder.manage_options[0],
+        Folder.Folder.manage_options[1],
+        {'label': 'Control Panel', 'action': 'Control_Panel/manage_main'}, ) +
+        Folder.Folder.manage_options[2:]
+    )
 
     p_ = misc_.p_
     misc_ = misc_.misc_
@@ -155,7 +153,8 @@ class Application(ApplicationDefaultPermissions,
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".
         """
-        if relative: return ''
+        if relative:
+            return ''
         try:
             # Take advantage of computed URL cache
             return self.REQUEST['BASE1']
@@ -231,7 +230,8 @@ class AppInitializer:
         # Remove Control Panel.
         if 'Control_Panel' in app.__dict__.keys():
             del app.__dict__['Control_Panel']
-            app._objects = tuple(i for i in app._objects if i['id'] != 'Control_Panel')
+            app._objects = tuple(i for i in app._objects
+                                 if i['id'] != 'Control_Panel')
             self.commit('Removed persistent Control_Panel')
 
     def install_required_roles(self):
@@ -239,13 +239,13 @@ class AppInitializer:
 
         # Ensure that Owner role exists.
         if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
-            app.__ac_roles__=app.__ac_roles__ + ('Owner',)
+            app.__ac_roles__ = app.__ac_roles__ + ('Owner',)
             self.commit('Added Owner role')
 
         # ensure the Authenticated role exists.
         if hasattr(app, '__ac_roles__'):
-            if not 'Authenticated' in app.__ac_roles__:
-                app.__ac_roles__=app.__ac_roles__ + ('Authenticated',)
+            if 'Authenticated' not in app.__ac_roles__:
+                app.__ac_roles__ = app.__ac_roles__ + ('Authenticated',)
                 self.commit('Added Authenticated role')
 
     def install_inituser(self):
@@ -317,6 +317,20 @@ def install_products(app=None):
     Products.meta_types = Products.meta_types + tuple(meta_types)
     InitializeClass(Folder.Folder)
 
+
+def _is_package(product_dir, product_name):
+    package_dir = os.path.join(product_dir, product_name)
+    if not os.path.isdir(package_dir):
+        return False
+
+    init_py = os.path.join(package_dir, '__init__.py')
+    if (not os.path.exists(init_py) and
+            not os.path.exists(init_py + 'c') and
+            not os.path.exists(init_py + 'o')):
+        return False
+    return True
+
+
 def get_products():
     """ Return a list of tuples in the form:
     [(priority, dir_name, index, base_dir), ...] for each Product directory
@@ -324,19 +338,13 @@ def get_products():
     products = []
     i = 0
     for product_dir in Products.__path__:
-        product_names=os.listdir(product_dir)
-        for name in product_names:
-            fullpath = os.path.join(product_dir, name)
-            # Products must be directories
-            if os.path.isdir(fullpath):
-                # Products must be directories with an __init__.py[co]
-                if ( os.path.exists(os.path.join(fullpath, '__init__.py')) or
-                     os.path.exists(os.path.join(fullpath, '__init__.pyo')) or
-                     os.path.exists(os.path.join(fullpath, '__init__.pyc')) ):
-                    # i is used as sort ordering in case a conflict exists
-                    # between Product names.  Products will be found as
-                    # per the ordering of Products.__path__
-                    products.append((0, name, i, product_dir))
+        product_names = os.listdir(product_dir)
+        for product_name in product_names:
+            if _is_package(product_dir, product_name):
+                # i is used as sort ordering in case a conflict exists
+                # between Product names.  Products will be found as
+                # per the ordering of Products.__path__
+                products.append((0, product_name, i, product_dir))
         i = i + 1
     products.sort()
     return products
@@ -347,9 +355,9 @@ def import_products():
     for priority, product_name, index, product_dir in get_products():
         if product_name in done:
             LOG.warn('Duplicate Product name: '
-                     'After loading Product %s from %s, '
-                     'I skipped the one in %s.' % (
-                    `product_name`, `done[product_name]`, `product_dir`) )
+                     'After loading Product %r from %r, '
+                     'I skipped the one in %r.' % (
+                         product_name, done[product_name], product_dir))
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
@@ -357,58 +365,37 @@ def import_products():
 
 
 def import_product(product_dir, product_name, raise_exc=None):
-    path_join=os.path.join
-    isdir=os.path.isdir
-    exists=os.path.exists
-    global_dict=globals()
-    modules=sys.modules
-
-    package_dir = path_join(product_dir, product_name)
-    if not isdir(package_dir):
+    if not _is_package(product_dir, product_name):
         return
 
-    if not exists(path_join(package_dir, '__init__.py')):
-        if not exists(path_join(package_dir, '__init__.pyc')):
-            if not exists(path_join(package_dir, '__init__.pyo')):
-                return
-
-    pname = "Products.%s" % product_name
-    product = __import__(pname, global_dict, global_dict, ('__doc__', ))
+    global_dict = globals()
+    product = __import__("Products.%s" % product_name,
+                         global_dict, global_dict, ('__doc__', ))
     if hasattr(product, '__module_aliases__'):
         for k, v in product.__module_aliases__:
-            if k not in modules:
-                if isinstance(v, str) and v in modules:
-                    v = modules[v]
-                modules[k] = v
+            if k not in sys.modules:
+                if isinstance(v, str) and v in sys.modules:
+                    v = sys.modules[v]
+                sys.modules[k] = v
 
 
 def get_folder_permissions():
-    folder_permissions={}
+    folder_permissions = {}
     for p in Folder.Folder.__ac_permissions__:
         permission, names = p[:2]
-        folder_permissions[permission]=names
+        folder_permissions[permission] = names
     return folder_permissions
 
 
 def install_product(app, product_dir, product_name, meta_types,
                     folder_permissions, raise_exc=None):
+    if not _is_package(product_dir, product_name):
+        return
 
-    from App.ProductContext import ProductContext
-    path_join=os.path.join
-    isdir=os.path.isdir
-    exists=os.path.exists
-    global_dict=globals()
-
-    package_dir=path_join(product_dir, product_name)
-    __traceback_info__=product_name
-    if not isdir(package_dir): return
-    if not exists(path_join(package_dir, '__init__.py')):
-        if not exists(path_join(package_dir, '__init__.pyc')):
-            if not exists(path_join(package_dir, '__init__.pyo')):
-                return
-
-    product=__import__("Products.%s" % product_name,
-                       global_dict, global_dict, ('__doc__', ))
+    __traceback_info__ = product_name
+    global_dict = globals()
+    product = __import__("Products.%s" % product_name,
+                         global_dict, global_dict, ('__doc__', ))
 
     # Install items into the misc_ namespace, used by products
     # and the framework itself to store common static resources
@@ -416,8 +403,8 @@ def install_product(app, product_dir, product_name, meta_types,
     misc_ = pgetattr(product, 'misc_', {})
     if misc_:
         if isinstance(misc_, dict):
-            misc_=Misc_(product_name, misc_)
-        Application.misc_.__dict__[product_name]=misc_
+            misc_ = Misc_(product_name, misc_)
+        Application.misc_.__dict__[product_name] = misc_
 
     productObject = FactoryDispatcher.Product(product_name)
     context = ProductContext(productObject, None, product)
@@ -430,7 +417,6 @@ def install_product(app, product_dir, product_name, meta_types,
 
 def install_package(app, module, init_func, raise_exc=None):
     """Installs a Python package like a product."""
-    from App.ProductContext import ProductContext
     name = module.__name__
     product = FactoryDispatcher.Product(name)
     product.package_name = name
@@ -446,7 +432,7 @@ def pgetattr(product, name, default=install_products, __init__=0):
     if not __init__ and hasattr(product, name):
         return getattr(product, name)
     if hasattr(product, '__init__'):
-        product=product.__init__
+        product = product.__init__
         if hasattr(product, name):
             return getattr(product, name)
 
