@@ -50,7 +50,7 @@ def makerequest(app, stdout=stdout, environ=None):
     if environ is None:
         environ = {}
     resp = HTTPResponse(stdout=stdout)
-    environ.setdefault('SERVER_NAME', 'foo')
+    environ.setdefault('SERVER_NAME', 'nohost')
     environ.setdefault('SERVER_PORT', '80')
     environ.setdefault('REQUEST_METHOD', 'GET')
     req = HTTPRequest(stdin, environ, resp)

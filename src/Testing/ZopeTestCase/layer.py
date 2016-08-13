@@ -13,6 +13,8 @@
 """ZopeLite layer
 """
 
+from Testing.ZopeTestCase import utils
+
 _deferred_setup = []
 
 
@@ -71,9 +73,8 @@ def appcall(func):
             return func(*args, **kw)
         if kw.get('app') is not None:
             return func(*args, **kw)
+
         def caller(*args, **kw):
-            import utils
             utils.appcall(func, *args, **kw)
         _deferred_setup.append((caller, args, kw))
     return appcalled_func
-

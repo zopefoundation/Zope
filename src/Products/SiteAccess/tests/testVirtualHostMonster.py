@@ -34,7 +34,7 @@ class VHMRegressions(unittest.TestCase):
 
     def testAbsoluteUrl(self):
         m = self.app.folder.doc.absolute_url
-        self.assertEqual(m(), 'http://foo/folder/doc')
+        self.assertEqual(m(), 'http://nohost/folder/doc')
 
     def testAbsoluteUrlPath(self):
         m = self.app.folder.doc.absolute_url_path
@@ -101,7 +101,7 @@ class VHMRegressions(unittest.TestCase):
 
 def gen_cases():
     for vbase, ubase in (
-            ('', 'http://foo'),
+            ('', 'http://nohost'),
             ('/VirtualHostBase/http/example.com:80', 'http://example.com')):
         yield vbase, '', '', 'folder/doc', ubase
 

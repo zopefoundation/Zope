@@ -28,6 +28,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Move ZServer related testing support into ZServer.Testing.
+
 - Split out Lifetime, webdav and ZServer packages into a ZServer project.
 
 - Move webdav's EtagSupport, Lockable and LockItem into OFS.

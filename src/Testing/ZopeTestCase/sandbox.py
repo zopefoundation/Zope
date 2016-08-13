@@ -13,11 +13,11 @@
 """Support for ZODB sandboxes in ZTC
 """
 
-import ZopeLite as Zope2
 import transaction
-import base
-import utils
-import connections
+
+from Testing.makerequest import makerequest
+from Testing.ZopeTestCase import connections
+from Testing.ZopeTestCase import ZopeLite as Zope2
 
 
 class Sandboxed:
@@ -32,7 +32,7 @@ class Sandboxed:
         '''Returns the app object for a test.'''
         app = Zope2.app(Zope2.sandbox().open())
         AppZapper().set(app)
-        app = utils.makerequest(app)
+        app = makerequest(app)
         connections.register(app)
         return app
 

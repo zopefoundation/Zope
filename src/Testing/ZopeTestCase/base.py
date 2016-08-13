@@ -13,22 +13,23 @@
 """TestCase for Zope testing
 """
 
-import ZopeLite as Zope2
 import unittest
 import transaction
-import utils
-import interfaces
-import connections
-import layer
 
 from zope.interface import implements
 from AccessControl.SecurityManagement import noSecurityManager
+
+from Testing.makerequest import makerequest
+from Testing.ZopeTestCase import connections
+from Testing.ZopeTestCase import interfaces
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import ZopeLite as Zope2
 
 
 def app():
     '''Opens a ZODB connection and returns the app object.'''
     app = Zope2.app()
-    app = utils.makerequest(app)
+    app = makerequest(app)
     connections.register(app)
     return app
 

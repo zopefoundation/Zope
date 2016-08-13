@@ -343,11 +343,11 @@ class ImageTests(FileTests):
     def testStr(self):
         self.assertEqual(
             str(self.file),
-            ('<img src="http://foo/file" '
+            ('<img src="http://nohost/file" '
              'alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
-        tag_fmt = ('<img src="http://foo/file" '
+        tag_fmt = ('<img src="http://nohost/file" '
                    'alt="%s" title="%s" height="16" width="16" />')
         self.assertEqual(self.file.tag(), (tag_fmt % ('', '')))
         self.file.manage_changeProperties(title='foo')
