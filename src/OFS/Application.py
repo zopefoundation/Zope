@@ -27,6 +27,7 @@ from App.ApplicationManager import ApplicationManager
 from App import FactoryDispatcher
 from App.ProductContext import ProductContext
 from DateTime import DateTime
+from OFS import bbb
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
@@ -40,10 +41,10 @@ from FindSupport import FindSupport
 from interfaces import IApplication
 from misc_ import Misc_
 
-try:
+if bbb.HAS_ZSERVER:
     from webdav.NullResource import NullResource
-except ImportError:
-    NullResource = None
+else:
+    NullResource = bbb.NullResource
 
 LOG = getLogger('Application')
 

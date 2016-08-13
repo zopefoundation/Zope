@@ -54,6 +54,7 @@ from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
 
+from OFS import bbb
 from OFS.CopySupport import CopyContainer
 from OFS.interfaces import IObjectManager
 from OFS.Traversable import Traversable
@@ -65,19 +66,10 @@ from OFS.XMLExportImport import importXML
 from OFS.XMLExportImport import exportXML
 from OFS.XMLExportImport import magic
 
-try:
+if bbb.HAS_ZSERVER:
     from webdav.Collection import Collection
-except ImportError:
-    class Collection(object):
-        def dav__init(self, request, response):
-            pass
-
-        def dav__validate(self, object, methodname, REQUEST):
-            pass
-
-        def dav__simpleifhandler(self, request, response, method='PUT',
-                                 col=0, url=None, refresh=0):
-            pass
+else:
+    Collection = bbb.Collection
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0

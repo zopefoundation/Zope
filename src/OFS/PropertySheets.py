@@ -28,17 +28,17 @@ from App.Dialogs import MessageDialog
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+from OFS import bbb
 from Persistence import Persistent
 from Traversable import Traversable
 from zExceptions import BadRequest
 from zExceptions import Redirect
 from ZPublisher.Converters import type_converters
 
-try:
+if bbb.HAS_ZSERVER:
     from webdav.PropertySheet import DAVPropertySheetMixin
-except ImportError:
-    class DAVPropertySheetMixin(object):
-        pass
+else:
+    DAVPropertySheetMixin = bbb.DAVPropertySheetMixin
 
 
 class Virtual:
@@ -408,11 +408,10 @@ InitializeClass(DefaultProperties)
 
 
 # import cycles
-try:
+if bbb.HAS_ZSERVER:
     from webdav.PropertySheets import DAVProperties
-except ImportError:
-    class DAVProperties(object):
-        pass
+else:
+    DAVProperties = bbb.DAVProperties
 
 
 class PropertySheets(Traversable, Implicit, Tabs):

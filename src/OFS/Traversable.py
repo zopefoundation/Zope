@@ -26,6 +26,7 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
+from OFS import bbb
 from OFS.interfaces import ITraversable, IApplication
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
@@ -195,10 +196,10 @@ class Traversable:
             obj = self
 
         # import time ordering problem
-        try:
+        if bbb.HAS_ZSERVER:
             from webdav.NullResource import NullResource
-        except ImportError:
-            NullResource = None
+        else:
+            NullResource = bbb.NullResource
 
         resource = _marker
         try:

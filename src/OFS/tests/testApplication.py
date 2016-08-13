@@ -91,10 +91,11 @@ class ApplicationTests(unittest.TestCase):
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
     def test___bobo_traverse__attribute_key_miss_R_M_not_GET_POST(self):
-        try:
+        from OFS import bbb
+        if bbb.HAS_ZSERVER:
             from webdav.NullResource import NullResource
-        except ImportError:
-            NullResource = None
+        else:
+            NullResource = bbb.NullResource
 
         if NullResource is None:
             return

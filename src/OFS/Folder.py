@@ -19,6 +19,7 @@ from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from zope.interface import implements
 
+from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
 from OFS.Lockable import LockableItem
@@ -27,19 +28,10 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 
-try:
+if bbb.HAS_ZSERVER:
     from webdav.Collection import Collection
-except ImportError:
-    class Collection(object):
-        def dav__init(self, request, response):
-            pass
-
-        def dav__validate(self, object, methodname, REQUEST):
-            pass
-
-        def dav__simpleifhandler(self, request, response, method='PUT',
-                                 col=0, url=None, refresh=0):
-            pass
+else:
+    Collection = bbb.Collection
 
 
 manage_addFolderForm = DTMLFile('dtml/folderAdd', globals())

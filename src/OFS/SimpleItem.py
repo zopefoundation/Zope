@@ -51,6 +51,7 @@ from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implements
 
+from OFS import bbb
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
 from OFS.interfaces import ISimpleItem
@@ -60,19 +61,10 @@ from OFS.Lockable import LockableItem
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 
-try:
+if bbb.HAS_ZSERVER:
     from webdav.Resource import Resource
-except ImportError:
-    class Resource(object):
-        def dav__init(self, request, response):
-            pass
-
-        def dav__validate(self, object, methodname, REQUEST):
-            pass
-
-        def dav__simpleifhandler(self, request, response, method='PUT',
-                                 col=0, url=None, refresh=0):
-            pass
+else:
+    Resource = bbb.Resource
 
 logger = logging.getLogger()
 
@@ -276,7 +268,7 @@ class Item(Base,
     def manage(self, URL1):
         """
         """
-        raise Redirect, "%s/manage_main" % URL1
+        raise Redirect("%s/manage_main" % URL1)
 
     # This keeps simple items from acquiring their parents
     # objectValues, etc., when used in simple tree tags.
