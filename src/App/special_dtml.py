@@ -21,19 +21,27 @@ import MethodObject
 import Persistence
 from App import Common
 from App.config import getConfiguration
+import Zope2
+
+from Shared.DC.Scripts.Bindings import Bindings
+from Acquisition import Explicit, aq_inner, aq_parent
+from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
+from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+from AccessControl import getSecurityManager
+from ComputedAttribute import ComputedAttribute
 
 LOG = getLogger('special_dtml')
 
-import Zope2
 PREFIX = os.path.realpath(
     os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir)
-    )
+)
 
 
-class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
+class HTML(DocumentTemplate.HTML, Persistence.Persistent):
     "Persistent HTML Document Templates"
 
-class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
+
+class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     "Persistent HTML Document Templates read from files"
 
     class func_code:
@@ -48,26 +56,31 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     def __init__(self, name, _prefix=None, **kw):
         if _prefix is None:
             _prefix = PREFIX
-        elif type(_prefix) is not type(''):
+        elif not isinstance(_prefix, str):
             _prefix = Common.package_home(_prefix)
-        args=(self, os.path.join(_prefix, name + '.dtml'))
+        args = (self, os.path.join(_prefix, name + '.dtml'))
         if '__name__' not in kw:
             kw['__name__'] = os.path.split(name)[-1]
-        apply(ClassicHTMLFile.inheritedAttribute('__init__'), args, kw)
+        ClassicHTMLFile.inheritedAttribute('__init__')(*args, **kw)
 
     def _cook_check(self):
         if getConfiguration().debug_mode:
-            __traceback_info__=self.raw
-            try:    mtime=os.stat(self.raw)[8]
-            except: mtime=0
+            __traceback_info__ = self.raw
+            try:
+                mtime = os.stat(self.raw)[8]
+            except Exception:
+                mtime = 0
             if mtime != self._v_last_read:
                 self.cook()
-                self._v_last_read=mtime
-        elif not hasattr(self,'_v_cooked'):
-            try: changed=self.__changed__()
-            except: changed=1
+                self._v_last_read = mtime
+        elif not hasattr(self, '_v_cooked'):
+            try:
+                changed = self.__changed__()
+            except Exception:
+                changed = 1
             self.cook()
-            if not changed: self.__changed__(0)
+            if not changed:
+                self.__changed__(0)
 
     def _setName(self, name):
         self.__name__ = name
@@ -75,8 +88,8 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
 
     def __call__(self, *args, **kw):
         self._cook_check()
-        return apply(HTMLFile.inheritedAttribute('__call__'),
-                     (self,)+args[1:],kw)
+        return HTMLFile.inheritedAttribute('__call__')(
+            *(self,) + args[1:], **kw)
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -84,21 +97,16 @@ defaultBindings = {'name_context': 'context',
                    'name_ns': 'caller_namespace',
                    'name_subpath': 'traverse_subpath'}
 
-from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit, aq_inner, aq_parent
-from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
-from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from AccessControl import getSecurityManager
-from ComputedAttribute import ComputedAttribute
 
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
 
     func_code = __code__ = None
     func_defaults = __defaults__ = None
-    _need__name__=1
+    _need__name__ = 1
 
     _Bindings_ns_class = TemplateDict
+
     def _get__roles__(self):
         imp = getattr(aq_parent(aq_inner(self)),
                       '%s__roles__' % self.__name__)
@@ -112,11 +120,9 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     _Bindings_client = 'container'
 
     def __init__(self, name, _prefix=None, **kw):
-
         self.ZBindings_edit(defaultBindings)
         self._setFuncSignature()
-        apply(DTMLFile.inheritedAttribute('__init__'),
-              (self, name, _prefix), kw)
+        DTMLFile.inheritedAttribute('__init__')(self, name, _prefix, **kw)
 
     def getOwner(self, info=0):
         '''
@@ -155,14 +161,16 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 if old_kw:
                     kw_bind = old_kw.copy()
                     kw_bind.update(kw)
-            except: pass
+            except Exception:
+                pass
         else:
             # We're first, so get the REQUEST.
             try:
                 req = self.aq_acquire('REQUEST')
                 if hasattr(req, 'taintWrapper'):
                     req = req.taintWrapper()
-            except: pass
+            except Exception:
+                pass
             bound_data['REQUEST'] = req
             ns.this = bound_data['context']
         # Bind 'keyword_args' to the complete set of keyword arguments.
@@ -189,13 +197,16 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         try:
             value = self.ZDocumentTemplate_beforeRender(ns, _marker)
             if value is _marker:
-                try: result = render_blocks(self._v_blocks, ns)
-                except DTReturn, v: result = v.v
+                try:
+                    result = render_blocks(self._v_blocks, ns)
+                except DTReturn as v:
+                    result = v.v
                 except AttributeError:
-                    if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
+                    if (type(sys.exc_value) == InstanceType and
+                            sys.exc_value.args[0] == "_v_blocks"):
                         LOG.warn("DTML file '%s' could not be read" % self.raw)
-                        raise ValueError, ("DTML file error: "
-                                           "Check logfile for details")
+                        raise ValueError(
+                            "DTML file error: Check logfile for details")
                     else:
                         raise
 
@@ -206,7 +217,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         finally:
             security.removeContext(self)
             # Clear the namespace, breaking circular references.
-            while len(ns): ns._pop()
+            while len(ns):
+                ns._pop()
     from Shared.DC.Scripts.Signature import _setFuncSignature
 
 

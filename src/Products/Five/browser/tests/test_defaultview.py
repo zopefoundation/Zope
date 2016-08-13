@@ -84,6 +84,7 @@ def test_default_view():
       >>> tearDown()
     """
 
+
 def test_default_method_args_marshalling():
     """\
     Test the default call method of a view, with respect to possible

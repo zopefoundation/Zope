@@ -13,6 +13,8 @@
 """Undo support.
 """
 
+import binascii
+
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from AccessControl import getSecurityManager
@@ -34,9 +36,9 @@ class UndoSupport(ExtensionClass.Base):
 
     security = ClassSecurityInfo()
 
-    manage_options=(
+    manage_options = (
         {'label': 'Undo', 'action': 'manage_UndoForm'},
-        )
+    )
 
     security.declareProtected(undo_changes, 'manage_UndoForm')
     manage_UndoForm = DTMLFile(
@@ -45,12 +47,12 @@ class UndoSupport(ExtensionClass.Base):
         PrincipiaUndoBatchSize=20,
         first_transaction=0,
         last_transaction=20,
-        )
+    )
 
     def _get_request_var_or_attr(self, name, default):
         if hasattr(self, 'REQUEST'):
-            REQUEST=self.REQUEST
-            if REQUEST.has_key(name):
+            REQUEST = self.REQUEST
+            if name in REQUEST:
                 return REQUEST[name]
             if hasattr(self, name):
                 v = getattr(self, name)
@@ -81,7 +83,7 @@ class UndoSupport(ExtensionClass.Base):
         if last_transaction is None:
             last_transaction = self._get_request_var_or_attr(
                 'last_transaction',
-                first_transaction+PrincipiaUndoBatchSize)
+                first_transaction + PrincipiaUndoBatchSize)
 
         spec = {}
 
@@ -151,10 +153,7 @@ class UndoSupport(ExtensionClass.Base):
 
 InitializeClass(UndoSupport)
 
-########################################################################
 # Blech, need this cause binascii.b2a_base64 is too pickly
-
-import binascii
 
 
 def encode64(s, b2a=binascii.b2a_base64):
@@ -163,12 +162,10 @@ def encode64(s, b2a=binascii.b2a_base64):
     r = []
     a = r.append
     for i in range(0, len(s), 57):
-        a(b2a(s[i:i+57])[:-1])
+        a(b2a(s[i:i + 57])[:-1])
     return ''.join(r)
 
 
 def decode64(s, a2b=binascii.a2b_base64):
-    __traceback_info__=len(s), `s`
-    return a2b(s+'\n')
-
-del binascii
+    __traceback_info__ = len(s), repr(s)
+    return a2b(s + '\n')

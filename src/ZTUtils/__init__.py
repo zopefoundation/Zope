@@ -16,10 +16,10 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 security = ModuleSecurityInfo('ZTUtils')
 
 security.declarePublic('encodeExpansion', 'decodeExpansion', 'a2b', 'b2a')
-from Tree import encodeExpansion, decodeExpansion, a2b, b2a
+from Tree import encodeExpansion, decodeExpansion, a2b, b2a  # NOQA
 
 security.declarePublic('Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter')
-from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
+from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter  # NOQA
 
 security.declarePublic('url_query', 'make_query', 'make_hidden_input')
-from ZTUtils.Zope import url_query, make_query, make_hidden_input
+from ZTUtils.Zope import url_query, make_query, make_hidden_input  # NOQA

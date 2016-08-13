@@ -25,7 +25,7 @@ class SetConfigTests(unittest.TestCase):
     def setUp(self):
         # Save away everything as we need to restore it later on
         self.clienthome = self.getconfig('clienthome')
-        self.instancehome = self.getconfig('instancehome') 
+        self.instancehome = self.getconfig('instancehome')
         self.debug_mode = self.getconfig('debug_mode')
 
     def tearDown(self):
@@ -73,9 +73,3 @@ class SetConfigTests(unittest.TestCase):
         self.assertEqual(Globals.DevelopmentMode, True)
         self.setconfig(debug_mode=False)
         self.assertEqual(Globals.DevelopmentMode, False)
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(SetConfigTests))
-    return suite

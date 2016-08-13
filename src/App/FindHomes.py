@@ -60,10 +60,10 @@ if ppathpat is not None:
     psep = os.pathsep
     if ppathpat.find('%(') >= 0:
         newppath = (ppathpat % {
-            'PRODUCTS_PATH': psep.join(ppath ),
-            'SOFTWARE_PRODUCTS': psep.join(ppath[ippart:] ),
+            'PRODUCTS_PATH': psep.join(ppath),
+            'SOFTWARE_PRODUCTS': psep.join(ppath[ippart:]),
             'INSTANCE_PRODUCTS': ip,
-            }).split(psep)
+        }).split(psep)
     else:
         newppath = ppathpat.split(psep)
     del ppath[:]

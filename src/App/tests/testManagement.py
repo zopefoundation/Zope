@@ -9,9 +9,3 @@ class TestNavigation(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(INavigation, Navigation)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestNavigation),
-        ))

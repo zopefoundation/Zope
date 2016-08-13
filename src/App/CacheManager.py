@@ -19,7 +19,8 @@ from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 
-class CacheManager:
+
+class CacheManager(object):
     """Cache management mix-in
     """
     _cache_age = 60
@@ -47,46 +48,46 @@ class CacheManager:
     def cache_age(self):
         return self._cache_age
 
-    def manage_cache_age(self,value,REQUEST):
+    def manage_cache_age(self, value, REQUEST):
         "set cache age"
         db = self._getDB()
         self._cache_age = value
         db.setCacheDeactivateAfter(value)
 
         if REQUEST is not None:
-            response=REQUEST['RESPONSE']
-            response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
+            response = REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1'] + '/manage_cacheParameters')
 
     def cache_size(self):
         db = self._getDB()
         return db.getCacheSize()
 
-    def manage_cache_size(self,value,REQUEST):
+    def manage_cache_size(self, value, REQUEST):
         "set cache size"
         db = self._getDB()
         db.setCacheSize(value)
 
         if REQUEST is not None:
-            response=REQUEST['RESPONSE']
-            response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
+            response = REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1'] + '/manage_cacheParameters')
 
-    def manage_full_sweep(self,value,REQUEST):
+    def manage_full_sweep(self, value, REQUEST):
         "Perform a full sweep through the cache"
         db = self._getDB()
         db.cacheFullSweep(value)
 
         if REQUEST is not None:
-            response=REQUEST['RESPONSE']
-            response.redirect(REQUEST['URL1']+'/manage_cacheGC')
+            response = REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1'] + '/manage_cacheGC')
 
-    def manage_minimize(self,value=1,REQUEST=None):
+    def manage_minimize(self, value=1, REQUEST=None):
         "Perform a full sweep through the cache"
         # XXX Add a deprecation warning about value?
         self._getDB().cacheMinimize()
 
         if REQUEST is not None:
-            response=REQUEST['RESPONSE']
-            response.redirect(REQUEST['URL1']+'/manage_cacheGC')
+            response = REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1'] + '/manage_cacheGC')
 
     def cache_detail(self, REQUEST=None):
         """
@@ -129,7 +130,7 @@ class CacheManager:
                 else:
                     state = 'G'  # ghost
                 res.append('%d %-34s %6d %s %s%s' % (
-                    dict['conn_no'], `dict['oid']`, dict['rc'],
+                    dict['conn_no'], repr(dict['oid']), dict['rc'],
                     state, dict['klass'], idinfo))
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
             return '\n'.join(res)
@@ -158,7 +159,7 @@ class CacheManager:
         am = self._getActivityMonitor()
         length = int(length)
         if length < 0:
-            raise ValueError, 'length can not be negative'
+            raise ValueError('length can not be negative')
         if am is not None:
             am.setHistoryLength(length)
         self._history_length = length  # Restore on startup
@@ -235,7 +236,7 @@ class CacheManager:
                 'start': div['start'],
                 'end': div['end'],
                 'time_offset': time_offset,
-                })
+            })
 
         if analysis:
             start_time = DateTime(divs[0]['start']).aCommonZ()

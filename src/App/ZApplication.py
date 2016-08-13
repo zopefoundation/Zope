@@ -21,18 +21,19 @@ import transaction
 
 connection_open_hooks = []
 
+
 class ZApplicationWrapper:
 
-    def __init__(self, db, name, klass= None, klass_args=()):
+    def __init__(self, db, name, klass=None, klass_args=()):
         self._stuff = db, name
         if klass is not None:
-            conn=db.open()
-            root=conn.root()
-            if not root.has_key(name):
-                root[name]=klass()
+            conn = db.open()
+            root = conn.root()
+            if name not in root:
+                root[name] = klass()
                 transaction.commit()
             conn.close()
-            self._klass=klass
+            self._klass = klass
 
     # This hack is to overcome a bug in Bobo!
     def __getattr__(self, name):
@@ -52,25 +53,25 @@ class ZApplicationWrapper:
 
         conn.setDebugInfo(REQUEST.environ, REQUEST.other)
 
-        v=conn.root()[aname]
+        v = conn.root()[aname]
 
         if name is not None:
             if hasattr(v, '__bobo_traverse__'):
                 return v.__bobo_traverse__(REQUEST, name)
 
-            if hasattr(v,name): return getattr(v,name)
+            if hasattr(v, name):
+                return getattr(v, name)
             return v[name]
 
         return v
-
 
     def __call__(self, connection=None):
         db, aname = self._stuff
 
         if connection is None:
-            connection=db.open()
+            connection = db.open()
         elif isinstance(connection, basestring):
-            connection=db.open(connection)
+            connection = db.open(connection)
 
         return connection.root()[aname]
 

@@ -122,7 +122,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             content_type = 'text/html'
         self.pt_edit(text, content_type)
 
-
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, keep_output_encoding=False):
         text = text.strip()
@@ -401,7 +400,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             # This page template is being compiled without an
             # acquisition context, so we don't know where it is. :-(
             return None
-
 
     def __setstate__(self, state):
         # Perform on-the-fly migration to unicode.

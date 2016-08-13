@@ -8,7 +8,7 @@ class TestImageFile(unittest.TestCase):
 
     def setUp(self):
         # ugly: need to save the old App.config configuration value since
-        # ImageFile might read it and trigger setting it to the default value 
+        # ImageFile might read it and trigger setting it to the default value
         self.oldcfg = App.config._config
         self.warningshook = WarningsHook()
         self.warningshook.install()
@@ -25,7 +25,7 @@ class TestImageFile(unittest.TestCase):
 
     def test_no_warn_on_absolute_path(self):
         path = os.path.join(os.path.dirname(App.__file__),
-                            'www','zopelogo.png')
+                            'www', 'zopelogo.png')
         App.ImageFile.ImageFile(path)
         self.assertFalse(self.warningshook.warnings)
 
@@ -35,11 +35,7 @@ class TestImageFile(unittest.TestCase):
         self.assertFalse(self.warningshook.warnings)
 
     def test_no_warn_on_namespace_as_prefix(self):
-        prefix = App.__dict__ # same as calling globals() inside the App module
+        # same as calling globals() inside the App module
+        prefix = App.__dict__
         App.ImageFile.ImageFile('www/zopelogo.png', prefix)
         self.assertFalse(self.warningshook.warnings)
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestImageFile),
-        ))

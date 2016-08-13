@@ -14,27 +14,22 @@
 """Tests class initialization.
 """
 
-def test_InitializeClass():
-    """Test that InitializeClass (default__class_init__)
-    works in specific corner cases.
-
-    Check when the class has an ExtensionClass as attribute.
-
-    >>> import ExtensionClass
-    >>> from AccessControl.class_init import InitializeClass
-    >>> class AnotherClass(ExtensionClass.Base):
-    ...     _need__name__ = 1
-
-    >>> class C:
-    ...     foo = AnotherClass
-
-    >>> InitializeClass(C)
-    """
-
-from doctest import DocTestSuite
 import unittest
 
-def test_suite():
-    return unittest.TestSuite((
-        DocTestSuite(),
-        ))
+from AccessControl.class_init import InitializeClass
+import ExtensionClass
+
+
+class TestInitializeClass(unittest.TestCase):
+
+    def test_extension_class(self):
+        # Test that InitializeClass works in specific corner cases.
+        # Check when the class has an ExtensionClass as attribute.
+
+        class AnotherClass(ExtensionClass.Base):
+            _need__name__ = 1
+
+        class C:
+            foo = AnotherClass
+
+        InitializeClass(C)

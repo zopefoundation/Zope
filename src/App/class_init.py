@@ -13,7 +13,17 @@
 """Class initialization.
 """
 
-# BBB
-from AccessControl.Permission import ApplicationDefaultPermissions
-from AccessControl.class_init import InitializeClass
-default__class_init__ = InitializeClass # BBB: old name
+from zope.deferredimport import deprecated
+
+# BBB Zope 5.0
+deprecated(
+    'Please import from AccessControl.Permission.',
+    ApplicationDefaultPermissions=(
+        'AccessControl.Permission:ApplicationDefaultPermissions'),
+)
+
+deprecated(
+    'Please import from AccessControl.class_init.',
+    default__class_init__='AccessControl.class_init:InitializeClass',
+    InitializeClass='AccessControl.class_init:InitializeClass',
+)

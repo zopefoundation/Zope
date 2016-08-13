@@ -161,7 +161,7 @@ class TreeMaker:
         child_exp = expanded
         if not simple_type(expanded):
             # Assume a mapping
-            expanded = expanded.has_key(node.id)
+            expanded = node.id in expanded
             child_exp = child_exp.get(node.id)
 
         expanded = expanded or (not subtree and self._expand_root)

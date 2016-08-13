@@ -27,13 +27,14 @@ from App.FactoryDispatcher import FactoryDispatcher
 # Waaaa
 import Products
 if not hasattr(Products, 'meta_types'):
-    Products.meta_types=()
+    Products.meta_types = ()
 if not hasattr(Products, 'meta_classes'):
-    Products.meta_classes={}
-    Products.meta_class_info={}
+    Products.meta_classes = {}
+    Products.meta_class_info = {}
 
 _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
+
 
 class ProductContext:
 
@@ -45,8 +46,7 @@ class ProductContext:
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
                       visibility="Global", interfaces=_marker,
-                      container_filter=None
-        ):
+                      container_filter=None):
         """Register a constructor
 
         Keyword arguments are used to provide meta data:
@@ -94,18 +94,19 @@ class ProductContext:
            before calling an object's constructor.
 
         """
-        pack=self.__pack
-        initial=constructors[0]
-        productObject=self.__prod
-        pid=productObject.id
+        pack = self.__pack
+        initial = constructors[0]
+        productObject = self.__prod
+        pid = productObject.id
 
         if permissions:
-            if isinstance(permissions, basestring): # You goofed it!
-                raise TypeError, ('Product context permissions should be a '
+            if isinstance(permissions, basestring):  # You goofed it!
+                raise TypeError(
+                    'Product context permissions should be a '
                     'list of permissions not a string', permissions)
             for p in permissions:
                 if isinstance(p, tuple):
-                    p, default= p
+                    p, default = p
                     registerPermissions(((p, (), default),))
                 else:
                     registerPermissions(((p, ()),))
@@ -113,14 +114,14 @@ class ProductContext:
         ############################################################
         # Constructor permission setup
         if permission is None:
-            permission="Add %ss" % (meta_type or instance_class.meta_type)
+            permission = "Add %ss" % (meta_type or instance_class.meta_type)
 
         if isinstance(permission, tuple):
             permission, default = permission
         else:
             default = ('Manager',)
 
-        pr = PermissionRole(permission,default)
+        pr = PermissionRole(permission, default)
         registerPermissions(((permission, (), default),))
         ############################################################
 
@@ -131,17 +132,17 @@ class ProductContext:
                 name, method = method
                 aliased = 1
             else:
-                name=method.__name__
+                name = method.__name__
                 aliased = 0
             if name not in OM.__dict__:
                 setattr(OM, name, method)
-                setattr(OM, name+'__roles__', pr)
+                setattr(OM, name + '__roles__', pr)
                 if aliased:
                     # Set the unaliased method name and its roles
                     # to avoid security holes.  XXX: All "legacy"
                     # methods need to be eliminated.
                     setattr(OM, method.__name__, method)
-                    setattr(OM, method.__name__+'__roles__', pr)
+                    setattr(OM, method.__name__ + '__roles__', pr)
 
         if isinstance(initial, tuple):
             name, initial = initial
@@ -166,36 +167,36 @@ class ProductContext:
             else:
                 interfaces = tuple(implementedBy(instance_class))
 
-        Products.meta_types = Products.meta_types + (
-            { 'name': meta_type or instance_class.meta_type,
-              # 'action': The action in the add drop down in the ZMI. This is
-              #           currently also required by the _verifyObjectPaste
-              #           method of CopyContainers like Folders.
-              'action': ('manage_addProduct/%s/%s' % (pid, name)),
-              # 'product': product id
-              'product': pid,
-              # 'permission': Guards the add action.
-              'permission': permission,
-              # 'visibility': A silly name. Doesn't have much to do with
-              #               visibility. Allowed values: 'Global', None
-              'visibility': visibility,
-              # 'interfaces': A tuple of oldstyle and/or newstyle interfaces.
-              'interfaces': interfaces,
-              'instance': instance_class,
-              'container_filter': container_filter
-              },)
+        Products.meta_types = Products.meta_types + ({
+            'name': meta_type or instance_class.meta_type,
+            # 'action': The action in the add drop down in the ZMI. This is
+            #           currently also required by the _verifyObjectPaste
+            #           method of CopyContainers like Folders.
+            'action': ('manage_addProduct/%s/%s' % (pid, name)),
+            # 'product': product id
+            'product': pid,
+            # 'permission': Guards the add action.
+            'permission': permission,
+            # 'visibility': A silly name. Doesn't have much to do with
+            #               visibility. Allowed values: 'Global', None
+            'visibility': visibility,
+            # 'interfaces': A tuple of oldstyle and/or newstyle interfaces.
+            'interfaces': interfaces,
+            'instance': instance_class,
+            'container_filter': container_filter
+        },)
 
-        m[name]=initial
-        m[name+'__roles__']=pr
+        m[name] = initial
+        m[name + '__roles__'] = pr
 
         for method in constructors[1:]:
             if isinstance(method, tuple):
                 name, method = method
             else:
-                name=os.path.split(method.__name__)[-1]
+                name = os.path.split(method.__name__)[-1]
             if name not in productObject.__dict__:
-                m[name]=method
-                m[name+'__roles__']=pr
+                m[name] = method
+                m[name + '__roles__'] = pr
 
     def registerHelp(self, directory=None, clear=None, title_re=None):
         pass

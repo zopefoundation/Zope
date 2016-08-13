@@ -9,9 +9,3 @@ class TestUndoSupport(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IUndoSupport, UndoSupport)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestUndoSupport),
-        ))

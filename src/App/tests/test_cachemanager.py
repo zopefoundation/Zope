@@ -42,6 +42,7 @@ class CacheManagerTestCase(unittest.TestCase):
 
     def _getManagerClass(self):
         from App.CacheManager import CacheManager
+
         class TestCacheManager(CacheManager):
             # Derived CacheManager that fakes enough of the DatabaseManager to
             # make it possible to test at least some parts of the CacheManager.
@@ -56,7 +57,3 @@ class CacheManagerTestCase(unittest.TestCase):
         self.assertEqual(manager.cache_size(), 42)
         db._set_sizes(12)
         self.assertEqual(manager.cache_size(), 12)
-
-
-def test_suite():
-    return unittest.makeSuite(CacheManagerTestCase)

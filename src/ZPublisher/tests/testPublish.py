@@ -3,7 +3,6 @@ import doctest
 from zope.interface import implements
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.skinnable import setDefaultSkin
 from ZPublisher import Retry
 from ZODB.POSException import ConflictError
 
@@ -293,6 +292,7 @@ def testPublisher():
 
     >>> tracer.reset()
     >>> request = RequestWithSkinCheck()
+    >>> from zope.publisher.skinnable import setDefaultSkin
     >>> setDefaultSkin(request)
     >>> response = publish(request, module_name, after_list)
     >>> tracer.showTracedPath()

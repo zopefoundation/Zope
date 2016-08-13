@@ -46,8 +46,8 @@ def _getPath(home, prefix, name, suffixes):
     fn = os.path.join(dir, name)
     if fn == name:
         # Paranoia
-        raise ValueError('The file name, %s, should be a simple file name'
-                            % name)
+        raise ValueError(
+            'The file name, %s, should be a simple file name' % name)
 
     for suffix in suffixes:
         if suffix:
@@ -87,8 +87,8 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
     """
     dir, ignored = os.path.split(name)
     if dir:
-        raise ValueError('The file name, %s, should be a simple file name'
-                            % name)
+        raise ValueError(
+            'The file name, %s, should be a simple file name' % name)
 
     if checkProduct:
         dot = name.find('.')
@@ -120,27 +120,28 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
     try:
         dot = name.rfind('.')
         if dot > 0:
-            realName = name[dot+1:]
+            realName = name[dot + 1:]
             toplevel = name[:dot]
-            
+
             rdot = toplevel.rfind('.')
             if rdot > -1:
-                module = __import__(toplevel, globals(), {}, toplevel[rdot+1:])
+                module = __import__(
+                    toplevel, globals(), {}, toplevel[rdot + 1:])
             else:
                 module = __import__(toplevel)
-    
+
             prefix = os.path.join(module.__path__[0], prefix, realName)
-            
+
             for suffix in suffixes:
                 if suffix:
                     fn = "%s.%s" % (prefix, suffix)
                 else:
                     fn = prefix
-                if os.path.exists(fn): 
+                if os.path.exists(fn):
                     return fn
-    except:
+    except Exception:
         pass
-    
+
 
 def getObject(module, name, reload=0,
               # The use of a mutable default is intentional here,
@@ -163,15 +164,15 @@ def getObject(module, name, reload=0,
     else:
         prefix = module
 
-    path = getPath('Extensions', prefix, suffixes=('','py','pyc'))
+    path = getPath('Extensions', prefix, suffixes=('', 'py', 'pyc'))
     if path is None:
-        raise NotFound("The specified module, '%s', couldn't be found."
-                        % module)
+        raise NotFound(
+            "The specified module, '%s', couldn't be found." % module)
 
-    __traceback_info__= path, module
+    __traceback_info__ = path, module
 
     base, ext = os.path.splitext(path)
-    if ext=='.pyc':
+    if ext == '.pyc':
         file = open(path, 'rb')
         binmod = imp.load_compiled('Extension', path, file)
         file.close()

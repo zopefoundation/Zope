@@ -50,32 +50,32 @@ class ImageFile(Explicit):
             _prefix = PREFIX
             if not os.path.isabs(path):
                 warnings.warn(NON_PREFIX_WARNING, UserWarning, 2)
-        elif type(_prefix) is not type(''):
-            _prefix=package_home(_prefix)
+        elif not isinstance(_prefix, str):
+            _prefix = package_home(_prefix)
         # _prefix is ignored if path is absolute
         path = os.path.join(_prefix, path)
-        self.path=path
+        self.path = path
         if getConfiguration().debug_mode:
             # In development mode, a shorter time is handy
-            max_age = 60 # One minute
+            max_age = 60  # One minute
         else:
             # A longer time reduces latency in production mode
-            max_age = 3600 # One hour
+            max_age = 3600  # One hour
         self.cch = 'public,max-age=%d' % max_age
 
         # First try to get the content_type by name
-        content_type, enc=guess_content_type(path, default='failed')
+        content_type, enc = guess_content_type(path, default='failed')
 
         if content_type == 'failed':
             # This failed, lets look into the file content
             img = open(path, 'rb')
-            data = img.read(1024) # 1k should be enough
+            data = img.read(1024)  # 1k should be enough
             img.close()
 
-            content_type, enc=guess_content_type(path, data)
+            content_type, enc = guess_content_type(path, data)
 
         if content_type:
-            self.content_type=content_type
+            self.content_type = content_type
         else:
             ext = os.path.splitext(path)[-1].replace('.', '')
             self.content_type = 'image/%s' % ext
@@ -97,7 +97,7 @@ class ImageFile(Explicit):
         RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         header = REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
-            header=header.split(';')[0]
+            header = header.split(';')[0]
             # Some proxies seem to send invalid date strings for this
             # header. If the date string is not valid, we ignore it
             # rather than raise an error to be generally consistent
@@ -105,14 +105,14 @@ class ImageFile(Explicit):
             # understand the screwy date string as a lucky side effect
             # of the way they parse it).
             try:
-                mod_since = long(DateTime(header).timeTime())
+                mod_since = int(DateTime(header).timeTime())
             except:
                 mod_since = None
             if mod_since is not None:
                 if getattr(self, 'lmt', None):
-                    last_mod = long(self.lmt)
+                    last_mod = int(self.lmt)
                 else:
-                    last_mod = long(0)
+                    last_mod = int(0)
                 if last_mod > 0 and last_mod <= mod_since:
                     RESPONSE.setStatus(304)
                     return ''
