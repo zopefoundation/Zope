@@ -22,7 +22,8 @@ def test_standard_macros():
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
       >>> self.login('manager')
 
-      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
       >>> import Products.Five.skin.tests

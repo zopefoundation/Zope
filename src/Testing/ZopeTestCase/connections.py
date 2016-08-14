@@ -13,7 +13,8 @@
 """ZODB connection registry
 """
 
-class ConnectionRegistry:
+
+class ConnectionRegistry(object):
     '''ZODB connection registry
 
     This registry can hold either ZODB.Connection objects or OFS.Application
@@ -60,4 +61,3 @@ contains = registry.contains
 count = registry.count
 close = registry.close
 closeAll = registry.closeAll
-

@@ -11,7 +11,11 @@
 #
 ##############################################################################
 
+import sys
 import unittest
+
+if sys.version_info >= (3, ):
+    unicode = str
 
 
 class ConvertersTests(unittest.TestCase):

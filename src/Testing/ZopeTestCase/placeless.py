@@ -20,6 +20,9 @@ from zope.i18n.testing import PlacelessSetup as I18nPlacelessSetup
 from zope.security.testing import addCheckerPublic
 from AccessControl.security import newInteraction
 
+# For convenience
+from Zope2.App import zcml  # NOQA
+
 
 class PlacelessSetup(CAPlacelessSetup,
                      EventPlacelessSetup,
@@ -39,8 +42,11 @@ class PlacelessSetup(CAPlacelessSetup,
 ps = PlacelessSetup()
 setUp = ps.setUp
 
+
 def tearDown():
+    global ps
     tearDown_ = ps.tearDown
+
     def tearDown(doctesttest=None):
         tearDown_()
     return tearDown
@@ -48,9 +54,6 @@ def tearDown():
 tearDown = tearDown()
 
 del ps
-
-# For convenience
-from Zope2.App import zcml
 
 
 def callZCML(zcml_callback):
@@ -61,7 +64,8 @@ def callZCML(zcml_callback):
             func()
 
 
-def temporaryPlacelessSetUp(orig_func, placeless_available=True, required_zcml=[]):
+def temporaryPlacelessSetUp(orig_func, placeless_available=True,
+                            required_zcml=[]):
     '''A wrapper for test functions that require CA to be available and/or
        some ZCML to be run during test fixture creation.
     '''
@@ -81,9 +85,9 @@ def temporaryPlacelessSetUp(orig_func, placeless_available=True, required_zcml=[
 
         # Call any necessary callbacks for setting up ZCML
         callZCML(required_zcml)
-        if kw.has_key('required_zcml'):
-            zcml = kw.pop('required_zcml')
-            callZCML(zcml)
+        if 'required_zcml' in kw:
+            req_zcml = kw.pop('required_zcml')
+            callZCML(req_zcml)
 
         value = orig_func(*args, **kw)
 
@@ -92,4 +96,3 @@ def temporaryPlacelessSetUp(orig_func, placeless_available=True, required_zcml=[
         return value
 
     return wrapper
-

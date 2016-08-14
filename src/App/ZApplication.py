@@ -17,7 +17,12 @@ This module provides a wrapper that causes a database connection to be created
 and used when bobo publishes a bobo_application object.
 """
 
+import sys
+
 import transaction
+
+if sys.version_info >= (3, ):
+    basestring = str
 
 connection_open_hooks = []
 

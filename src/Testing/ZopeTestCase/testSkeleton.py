@@ -25,7 +25,7 @@ class TestSomeProduct(ZopeTestCase.ZopeTestCase):
 
     def testSomething(self):
         # Test something
-        self.assertEqual(1+1, 2)
+        self.assertEqual(1 + 1, 2)
 
 
 def test_suite():
@@ -33,4 +33,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestSomeProduct))
     return suite
-

@@ -46,7 +46,8 @@ def test_zpt_i18n():
     In order to be able to traverse to the PageTemplate view, we need
     a traversable object:
 
-      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
     We tell Zope to translate the messages by passing the

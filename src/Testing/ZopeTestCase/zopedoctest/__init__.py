@@ -13,5 +13,5 @@
 """ZopeTestCase doctest support
 """
 
-from doctest import *
-from functional import *
+from doctest import *  # NOQA
+from Testing.ZopeTestCase.zopedoctest.functional import *  # NOQA

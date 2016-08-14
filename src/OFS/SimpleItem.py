@@ -289,13 +289,15 @@ class Item(Base,
 
                 if nobody.allowed(
                         self.manage_FTPget,
-                        getRoles(self, 'manage_FTPget', self.manage_FTPget, ())):
+                        getRoles(self, 'manage_FTPget',
+                                 self.manage_FTPget, ())):
                     mode = mode | 0o0004
 
             # check write permissions
             if hasattr(aq_base(self), 'PUT'):
                 try:
-                    if getSecurityManager().validate(None, self, 'PUT', self.PUT):
+                    if getSecurityManager().validate(None, self,
+                                                     'PUT', self.PUT):
                         mode = mode | 0o0220
                 except Unauthorized:
                     pass
@@ -338,7 +340,8 @@ class Item(Base,
             ob = self
             while 1:
                 if is_acquired(ob):
-                    raise ValueError('FTP List not supported on acquired objects')
+                    raise ValueError(
+                        'FTP List not supported on acquired objects')
                 if not hasattr(ob, '__parent__'):
                     break
                 ob = aq_parent(ob)
@@ -410,8 +413,8 @@ class Item_w__name__(Item):
     def getPhysicalPath(self):
         # Get the physical path of the object.
         #
-        # Returns a path (an immutable sequence of strings) that can be used to
-        # access this object again later, for example in a copy/paste
+        # Returns a path (an immutable sequence of strings) that can be used
+        # to access this object again later, for example in a copy/paste
         # operation.  getPhysicalRoot() and getPhysicalPath() are designed to
         # operate together.
 

@@ -22,18 +22,20 @@ The default user is logged in and has the 'Access contents information'
 and 'View' permissions given to his role.
 """
 
-import base
-import functional
-import interfaces
-import utils
-import connections
-
 from zope.interface import implements
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view
+
+from Testing.ZopeTestCase import base
+from Testing.ZopeTestCase.base import app  # NOQA
+from Testing.ZopeTestCase.base import close  # NOQA
+from Testing.ZopeTestCase import functional
+from Testing.ZopeTestCase import interfaces
+from Testing.ZopeTestCase import utils
+from Testing.ZopeTestCase import connections
 
 folder_name = 'test_folder_1_'
 user_name = 'test_user_1_'
@@ -119,8 +121,3 @@ class FunctionalTestCase(functional.Functional, ZopeTestCase):
        You can mix-in Functional with every xTestCase
        to turn it into a functional test case.
     '''
-
-
-from base import app
-from base import close
-

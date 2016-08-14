@@ -38,6 +38,7 @@ class IAdaptable(Interface):
         """This method will be adapted
         """
 
+
 class IAdapted(Interface):
     """The interface we adapt to.
     """
@@ -45,6 +46,7 @@ class IAdapted(Interface):
     def adaptedMethod():
         """A method to adapt.
         """
+
 
 class Adaptable:
     implements(IAdaptable)
@@ -81,7 +83,7 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
         self.assertEqual(adapted.adaptedMethod(), 'Adapted: The method')
 
     def func(self, *args):
-        adapted = IAdapted(Adaptable())
+        IAdapted(Adaptable())
         return True
 
     def testNoCA(self):
@@ -101,7 +103,8 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
         self.assertEqual(f(), True)
 
     def testPlacelessFlagDisablesDecoration(self):
-        f = temporaryPlacelessSetUp(self.func, placeless_available=False, required_zcml=setupZCML)
+        f = temporaryPlacelessSetUp(
+            self.func, placeless_available=False, required_zcml=setupZCML)
         self.assertRaises(TypeError, f)
 
     def testDecoratedFuncLoadsZCMLCallable(self):
@@ -118,4 +121,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestPlacelessSetUp))
     return suite
-

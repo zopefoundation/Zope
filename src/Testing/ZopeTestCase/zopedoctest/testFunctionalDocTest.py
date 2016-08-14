@@ -85,13 +85,13 @@ class HTTPHeaderOutputTests(unittest.TestCase):
         self.assertEqual(str(hho),
                          'HTTP/1.0 200 OK\n'
                          'Content-Length: 23\n'
-                         'Content-Type: text/html'
-                        )
+                         'Content-Type: text/html')
 
 SHOW_COOKIES_DTML = '''\
 <dtml-in "REQUEST.cookies.keys()">
 <dtml-var sequence-item>: <dtml-var "REQUEST.cookies[_['sequence-item']]">
 </dtml-in>'''
+
 
 def setUp(self):
     '''This method will run after the test_class' setUp.
@@ -112,13 +112,9 @@ def setUp(self):
     from Testing.ZopeTestCase.testFunctional import SET_COOKIE_DTML
 
     self.folder.addDTMLDocument('index_html', file='index')
-
     self.folder.addDTMLMethod('change_title', file=CHANGE_TITLE_DTML)
-
     self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)
-
     self.folder.addDTMLMethod('show_cookies', file=SHOW_COOKIES_DTML)
-
     self.globs['foo'] = 1
 
 
@@ -128,4 +124,3 @@ def test_suite():
         FunctionalDocTestSuite(setUp=setUp),
         FunctionalDocFileSuite('FunctionalDocTest.txt', setUp=setUp),
     ))
-

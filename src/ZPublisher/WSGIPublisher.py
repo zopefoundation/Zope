@@ -38,6 +38,11 @@ MONTHNAME = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 WEEKDAYNAME = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
+if sys.version_info >= (3, ):
+    from io import IOBase
+else:
+    IOBase = file  # NOQA
+
 
 def _now():
     if _NOW is not None:
@@ -114,7 +119,7 @@ class WSGIResponse(HTTPResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=0):
-        if isinstance(body, file):
+        if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)
@@ -287,7 +292,7 @@ def publish_module(environ, start_response,
 
     body = response.body
 
-    if isinstance(body, file) or IUnboundStreamIterator.providedBy(body):
+    if isinstance(body, IOBase) or IUnboundStreamIterator.providedBy(body):
         result = body
     else:
         # If somebody used response.write, that data will be in the

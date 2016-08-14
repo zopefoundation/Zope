@@ -19,6 +19,7 @@ See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
+import gc
 
 import transaction
 
@@ -113,9 +114,11 @@ class TestTestCase(HookTest):
         uf = self.app.acl_users
         uf.userFolderAddUser('user_1', '', [], [])
         newSecurityManager(None, uf.getUserById('user_1').__of__(uf))
-        self.assertEqual(getSecurityManager().getUser().getUserName(), 'user_1')
+        self.assertEqual(
+            getSecurityManager().getUser().getUserName(), 'user_1')
         self._clear()
-        self.assertEqual(getSecurityManager().getUser().getUserName(), 'Anonymous User')
+        self.assertEqual(
+            getSecurityManager().getUser().getUserName(), 'Anonymous User')
 
     def testClearSurvivesDoubleCall(self):
         self._called = []
@@ -169,9 +172,11 @@ class TestTestCase(HookTest):
         uf = self.app.acl_users
         uf.userFolderAddUser('user_1', '', [], [])
         newSecurityManager(None, uf.getUserById('user_1').__of__(uf))
-        self.assertEqual(getSecurityManager().getUser().getUserName(), 'user_1')
+        self.assertEqual(
+            getSecurityManager().getUser().getUserName(), 'user_1')
         self.logout()
-        self.assertEqual(getSecurityManager().getUser().getUserName(), 'Anonymous User')
+        self.assertEqual(
+            getSecurityManager().getUser().getUserName(), 'Anonymous User')
 
     def getObjectsInTransaction(self):
         # Lets us spy into the transaction
@@ -181,7 +186,7 @@ class TestTestCase(HookTest):
         elif hasattr(t, '_resources'):  # Zope >= 2.8
             return t._resources
         else:
-            raise Exception, 'Unknown version'
+            raise Exception('Unknown version')
 
 
 class TestSetUpRaises(HookTest):
@@ -230,10 +235,12 @@ class TestTearDownRaises(HookTest):
 class TestConnectionRegistry(base.TestCase):
     '''Test the registry with Connection-like objects'''
 
-    class Conn:
+    class Conn(object):
         _closed = 0
+
         def close(self):
             self._closed = 1
+
         def closed(self):
             return self._closed
 
@@ -309,11 +316,13 @@ class TestConnectionRegistry(base.TestCase):
 class TestApplicationRegistry(TestConnectionRegistry):
     '''Test the registry with Application-like objects'''
 
-    class App:
-        class Conn:
+    class App(object):
+        class Conn(object):
             _closed = 0
+
             def close(self):
                 self._closed = 1
+
             def closed(self):
                 return self._closed
 
@@ -363,8 +372,9 @@ class TestListConverter(base.TestCase):
         self.assertRaises(ValueError, utils.makelist, 0)
 
     def testObject(self):
-        class dummy: pass
-        self.assertRaises(ValueError, utils.makelist, dummy())
+        class Dummy(object):
+            pass
+        self.assertRaises(ValueError, utils.makelist, Dummy())
 
 
 class TestRequestVariables(base.TestCase):
@@ -385,7 +395,6 @@ class TestRequestVariables(base.TestCase):
         self.assertNotEqual(request.get('ACTUAL_URL', ''), '')
 
 
-import gc
 _sentinel1 = []
 _sentinel2 = []
 _sentinel3 = []
@@ -457,4 +466,3 @@ def test_suite():
     suite.addTest(makeSuite(TestRequestGarbage2))
     suite.addTest(makeSuite(TestRequestGarbage3))
     return suite
-

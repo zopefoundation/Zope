@@ -25,7 +25,8 @@ def test_absoluteurl():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
 
-      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
     A simple traversal will yield us the @@absolute_url view:

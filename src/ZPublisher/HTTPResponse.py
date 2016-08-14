@@ -36,6 +36,9 @@ from ZPublisher import NotFound
 from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.pubevents import PubBeforeStreaming
 
+if sys.version_info >= (3, ):
+    unicode = str
+
 nl2sp = maketrans('\n', ' ')
 
 # This may get overwritten during configuration

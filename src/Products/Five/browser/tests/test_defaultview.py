@@ -29,9 +29,11 @@ def test_default_view():
 
     Now let's add a couple of stub objects:
 
-      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
-      >>> from Products.Five.tests.testing.simplecontent import manage_addCallableSimpleContent
-      >>> from Products.Five.tests.testing.simplecontent import manage_addIndexSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import (
+      ... manage_addSimpleContent,
+      ... manage_addCallableSimpleContent,
+      ... manage_addIndexSimpleContent,
+      ... )
 
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
       >>> manage_addCallableSimpleContent(self.folder, 'testcall', 'TestCall')
@@ -60,7 +62,7 @@ def test_default_view():
 
     In Five 1.5 ``index_html`` you can no longer set default views to anything
     else than views:
-    
+
       >>> print http(r'''
       ... GET /test_folder_1_/testindex HTTP/1.1
       ... ''')

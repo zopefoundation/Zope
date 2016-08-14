@@ -49,4 +49,3 @@ def test_suite():
     return TestSuite((
         makeSuite(AuthHeaderTestCase),
     ))
-

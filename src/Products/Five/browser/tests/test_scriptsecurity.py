@@ -41,9 +41,11 @@ def test_resource_restricted_code():
       >>> import Products.Five.browser.tests
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
-      >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
+      >>> zcml.load_config('resource.zcml',
+      ...                  package=Products.Five.browser.tests)
 
-      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
       >>> import os, glob
@@ -54,8 +56,10 @@ def test_resource_restricted_code():
       ...     glob.glob('%s/[a-z]*.py' % _prefix) +
       ...     glob.glob('%s/*.css' % _prefix))]
 
-      >>> from Products.Five.browser.tests.test_scriptsecurity import checkRestricted
-      >>> from Products.Five.browser.tests.test_scriptsecurity import checkUnauthorized
+      >>> from Products.Five.browser.tests.test_scriptsecurity import (
+      ... checkRestricted,
+      ... checkUnauthorized,
+      ... )
 
       >>> resource_names = ['cockatiel.html', 'style.css', 'pattern.png']
 
@@ -64,12 +68,14 @@ def test_resource_restricted_code():
       >>> for resource in resource_names:
       ...     checkUnauthorized(
       ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
+      ...         'context.restrictedTraverse("testoid/++resource++%s")()' %
+      ...             resource)
 
       >>> base = 'testoid/++resource++fivetest_resources/%s'
       >>> for resource in dir_resource_names:
       ...     path = base % resource
-      ...     checkUnauthorized(self.folder, 'context.restrictedTraverse("%s")' % path)
+      ...     checkUnauthorized(
+      ...         self.folder, 'context.restrictedTraverse("%s")' % path)
 
     Now let's create a manager user account and log in:
 
@@ -82,20 +88,25 @@ def test_resource_restricted_code():
       >>> for resource in resource_names:
       ...     checkRestricted(
       ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/++resource++%s")()' % resource)
+      ...         'context.restrictedTraverse("testoid/++resource++%s")()' %
+      ...             resource)
 
       >>> base = 'testoid/++resource++fivetest_resources/%s'
       >>> for resource in dir_resource_names:
       ...     path = base % resource
-      ...     checkRestricted(self.folder, 'context.restrictedTraverse("%s")' % path)
+      ...     checkRestricted(
+      ...         self.folder, 'context.restrictedTraverse("%s")' %path)
 
     Let's make sure restrictedTraverse() works directly, too. It used to get
     tripped up on subdirectories due to missing security declarations.
 
-      >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource.txt') is not None
+      >>> self.folder.restrictedTraverse(
+      ...     '++resource++fivetest_resources/resource.txt') is not None
       True
 
-      >>> self.folder.restrictedTraverse('++resource++fivetest_resources/resource_subdir/resource.txt') is not None
+      >>> self.folder.restrictedTraverse(
+      ...     '++resource++fivetest_resources/resource_subdir/resource.txt'
+      ... ) is not None
       True
 
     Clean up
@@ -116,7 +127,8 @@ def test_view_restricted_code():
 
     Let's add a test object that we view most of the pages off of:
 
-      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import (
+      ... manage_addSimpleContent)
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
 
     We also need to create a stub user account and login; otherwise we
@@ -137,8 +149,10 @@ def test_view_restricted_code():
       ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
       ...     'dirpage1', 'dirpage2']
 
-      >>> from Products.Five.browser.tests.test_scriptsecurity import checkRestricted
-      >>> from Products.Five.browser.tests.test_scriptsecurity import checkUnauthorized
+      >>> from Products.Five.browser.tests.test_scriptsecurity import (
+      ... checkRestricted,
+      ... checkUnauthorized,
+      ... )
 
     As long as we're not authenticated, we should get Unauthorized for
     protected views, but we should be able to view the public ones:
@@ -169,8 +183,9 @@ def test_view_restricted_code():
 
     Even when logged in though the private methods should not be accessible:
 
-      >>> checkUnauthorized( self.folder,
-      ...             'context.restrictedTraverse("testoid/eagle.method").mouse()')
+      >>> checkUnauthorized(
+      ...     self.folder,
+      ...     'context.restrictedTraverse("testoid/eagle.method").mouse()')
 
     Cleanup:
 

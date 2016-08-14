@@ -95,10 +95,9 @@ class IPortalSecurity(IZopeSecurity):
 
 class IFunctional(Interface):
 
-    def publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None):
+    def publish(path, basic=None, env=None, extra=None,
+                request_method='GET', stdin=None):
         '''Publishes the object at 'path' returning an
-           extended response object. The path may contain 
+           extended response object. The path may contain
            a query string.
         '''
-
-

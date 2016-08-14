@@ -13,8 +13,20 @@
 """Interface tests
 """
 
-from Testing.ZopeTestCase import *
-from Testing.ZopeTestCase.interfaces import *
+from Testing.ZopeTestCase import (
+    Functional,
+    FunctionalTestCase,
+    PortalTestCase,
+    TestCase,
+    ZopeTestCase,
+)
+from Testing.ZopeTestCase.interfaces import (
+    IFunctional,
+    IPortalSecurity,
+    IPortalTestCase,
+    IZopeSecurity,
+    IZopeTestCase,
+)
 
 from zope.interface.verify import verifyClass
 from zope.interface.verify import verifyObject
@@ -92,4 +104,3 @@ def test_suite():
     suite.addTest(makeSuite(TestFunctionalTestCase))
     suite.addTest(makeSuite(TestPortalTestCase))
     return suite
-

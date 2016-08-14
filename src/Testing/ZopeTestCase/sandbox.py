@@ -15,6 +15,7 @@
 
 import transaction
 
+from App.ZApplication import ZApplicationWrapper
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import ZopeLite as Zope2
@@ -69,9 +70,7 @@ def __bobo_traverse__(self, REQUEST=None, name=None):
     return self.__old_bobo_traverse__(REQUEST, name)
 
 
-from App.ZApplication import ZApplicationWrapper
 if not hasattr(ZApplicationWrapper, '__old_bobo_traverse__'):
     ZApplicationWrapper.__old_bobo_traverse__ = (
         ZApplicationWrapper.__bobo_traverse__)
     ZApplicationWrapper.__bobo_traverse__ = __bobo_traverse__
-

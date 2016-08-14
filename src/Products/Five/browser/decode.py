@@ -15,10 +15,14 @@
     encoding.
 """
 
+import sys
 from warnings import warn
 
 from ZPublisher.HTTPRequest import isCGI_NAMEs
 from zope.i18n.interfaces import IUserPreferredCharsets
+
+if sys.version_info >= (3, ):
+    unicode = str
 
 
 def _decode(text, charsets):

@@ -21,4 +21,3 @@ def test_suite():
     return TestSuite((
         ZopeDocFileSuite('WarningsTest.txt'),
     ))
-

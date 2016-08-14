@@ -33,7 +33,8 @@ def test_traversable():
     the wrong reason: None doesn't have a docstring so BaseRequest
     raises NotFoundError.)
 
-      >>> from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import (
+      ... manage_addSimpleContent)
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
       >>> print http(r'''
       ... GET /test_folder_1_/testoid/doesntexist HTTP/1.1
@@ -79,7 +80,8 @@ def test_traversable():
       ... </configure>'''
       >>> zcml.load_string(configure_zcml)
 
-      >>> from Products.Five.tests.testing.fancycontent import manage_addFancyContent
+      >>> from Products.Five.tests.testing.fancycontent import (
+      ... manage_addFancyContent)
       >>> info = manage_addFancyContent(self.folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
@@ -135,8 +137,10 @@ def test_traversable():
     __bobo_traverse__ method itself does it (i.e. the __bobo_traverse__ is the
     only element used for traversal lookup).  Let's demonstrate:
 
-      >>> from Products.Five.tests.testing.fancycontent import manage_addNonTraversableFancyContent
-      >>> info = manage_addNonTraversableFancyContent(self.folder, 'fancy_zope2', '')
+      >>> from Products.Five.tests.testing.fancycontent import (
+      ... manage_addNonTraversableFancyContent)
+      >>> info = manage_addNonTraversableFancyContent(
+      ...     self.folder, 'fancy_zope2', '')
       >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
       >>> print http(r'''
       ... GET /test_folder_1_/fancy_zope2/an_attribute HTTP/1.1
@@ -217,12 +221,14 @@ def test_view_doesnt_shadow_attribute():
 
     Then we create a traversable folder...
 
-      >>> from Products.Five.tests.testing.folder import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing.folder import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
 
     and add an object called ``eagle`` to it:
 
-      >>> from Products.Five.tests.testing.simplecontent import manage_addIndexSimpleContent
+      >>> from Products.Five.tests.testing.simplecontent import (
+      ... manage_addIndexSimpleContent)
       >>> manage_addIndexSimpleContent(self.folder.ftf, 'eagle', 'Eagle')
 
     When we publish the ``ftf/eagle`` now, we expect the attribute to

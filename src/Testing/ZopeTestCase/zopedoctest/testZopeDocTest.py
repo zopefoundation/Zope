@@ -36,4 +36,3 @@ def test_suite():
         ZopeDocTestSuite(setUp=setUp),
         ZopeDocFileSuite('ZopeDocTest.txt', setUp=setUp),
     ))
-

@@ -33,6 +33,9 @@ from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
 
+if sys.version_info >= (3, ):
+    basestring = str
+
 
 class HTTPHeaderOutput:
 

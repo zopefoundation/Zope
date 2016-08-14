@@ -12,9 +12,13 @@
 ##############################################################################
 
 import re
+import sys
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
 from cgi import escape
+
+if sys.version_info >= (3, ):
+    unicode = str
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'

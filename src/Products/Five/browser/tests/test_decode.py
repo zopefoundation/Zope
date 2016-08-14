@@ -83,7 +83,8 @@ def test_processInputs():
 
     Mixed dicts work:
 
-      >>> request.form['foo'] = {'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2}
+      >>> request.form['foo'] = {
+      ... 'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2}
       >>> with warnings.catch_warnings():
       ...     warnings.simplefilter('ignore')
       ...     processInputs(request, charsets)
@@ -92,11 +93,14 @@ def test_processInputs():
 
     Deep recursion works:
 
-      >>> request.form['foo'] = [{'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2}, {'foo': u"one", 'bar': 3}]
+      >>> request.form['foo'] = [
+      ... {'foo': u'f\xf6\xf6'.encode('iso-8859-1'), 'bar': 2},
+      ... {'foo': u"one", 'bar': 3}]
       >>> with warnings.catch_warnings():
       ...     warnings.simplefilter('ignore')
       ...     processInputs(request, charsets)
-      >>> request.form['foo'] == [{'foo': u'f\xf6\xf6', 'bar': 2}, {'foo': u"one", 'bar': 3}]
+      >>> request.form['foo'] == [
+      ... {'foo': u'f\xf6\xf6', 'bar': 2}, {'foo': u"one", 'bar': 3}]
       True
 
     """

@@ -54,4 +54,3 @@ def test_suite():
         ZopeDocTestSuite(test_class=TestCase),
         ZopeDocFileSuite('layerextraction.txt', test_class=TestCase),
     ))
-

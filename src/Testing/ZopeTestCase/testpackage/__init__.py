@@ -1,2 +1,2 @@
 def initialize(context):
-    print 'testpackage.initialize called'
+    print('testpackage.initialize called')

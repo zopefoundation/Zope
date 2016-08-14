@@ -35,9 +35,10 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 
-portal_name = 'portal'
 from ZopeTestCase import user_name
 from ZopeTestCase import user_password
+
+portal_name = 'portal'
 
 
 class PortalTestCase(base.TestCase):
@@ -96,7 +97,7 @@ class PortalTestCase(base.TestCase):
         '''Refreshes the skin cache.'''
         if hasattr(aq_base(self.portal), 'clearCurrentSkin'):
             self.portal.clearCurrentSkin()
-        else: # CMF 1.4
+        else:  # CMF 1.4
             self.portal._v_skindata = None
         try:
             self.portal.setupCurrentSkin(self.app.REQUEST)
@@ -122,7 +123,7 @@ class PortalTestCase(base.TestCase):
         pm = self.portal.portal_membership
         if hasattr(aq_base(pm), 'createMemberArea'):
             pm.createMemberArea(name)
-        else: # CMF 1.4
+        else:  # CMF 1.4
             pm.createMemberarea(name)
 
     # Security interface
@@ -149,4 +150,3 @@ class PortalTestCase(base.TestCase):
     def logout(self):
         '''Logs out.'''
         noSecurityManager()
-

@@ -21,7 +21,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
-from DateTime.DateTime import DateTime
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_proxy_roles

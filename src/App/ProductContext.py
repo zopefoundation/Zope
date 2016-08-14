@@ -15,6 +15,7 @@
 
 from logging import getLogger
 import os
+import sys
 
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
@@ -31,6 +32,9 @@ if not hasattr(Products, 'meta_types'):
 if not hasattr(Products, 'meta_classes'):
     Products.meta_classes = {}
     Products.meta_class_info = {}
+
+if sys.version_info >= (3, ):
+    basestring = str
 
 _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')

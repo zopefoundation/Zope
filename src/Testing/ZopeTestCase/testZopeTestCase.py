@@ -20,18 +20,18 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 
-from Testing import ZopeTestCase
+import transaction
 
+from AccessControl import getSecurityManager
+from Acquisition import aq_base
+from OFS.userfolder import UserFolder
+from types import ListType
+
+from Testing import ZopeTestCase
 from Testing.ZopeTestCase import folder_name
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_role
 from Testing.ZopeTestCase import standard_permissions
-
-from Acquisition import aq_base
-from AccessControl import getSecurityManager
-from types import ListType
-
-import transaction
 
 
 def hasattr_(ob, attr):
@@ -235,7 +235,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupUser()
         self.login()
         self._clear(1)
-        self.assertFalse(self.app.__dict__.has_key(folder_name))
+        self.assertFalse(folder_name in self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -256,8 +256,6 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEqual(type(acl_user.roles), ListType)
         auth_name = getSecurityManager().getUser().getId()
         self.assertEqual(auth_name, user_name)
-        # XXX: Changed in 0.9.0
-        #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
 
     def test_tearDown(self):
@@ -265,10 +263,11 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.assertFalse(self.app.__dict__.has_key(folder_name))
+        self.assertFalse(folder_name in self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
-        self.assertEqual(self._called, ['beforeTearDown', 'beforeClose', 'afterClear'])
+        self.assertEqual(
+            self._called, ['beforeTearDown', 'beforeClose', 'afterClear'])
 
     def test_setupFlag(self):
         # Nothing should be set up
@@ -277,8 +276,6 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.assertFalse(hasattr_(self.app, folder_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
-        # XXX: Changed in 0.9.0
-        #self.assertEqual(self._called, ['afterClear', 'beforeSetUp', 'afterSetUp'])
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
 
     # Bug tests
@@ -347,9 +344,6 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEqual(lhs, rhs)
 
 
-from OFS.userfolder import UserFolder
-from Acquisition import aq_inner, aq_parent, aq_chain
-
 class WrappingUserFolder(UserFolder):
     '''User folder returning wrapped user objects'''
 
@@ -384,14 +378,16 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
         user = self.folder.acl_users.getUserById(user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertFalse(user is aq_base(user))
-        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(
+            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
         self.assertEqual(user.getId(), user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertTrue(user.__class__.__name__, 'User')
-        self.assertTrue(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(
+            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
         self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
@@ -402,4 +398,3 @@ def test_suite():
     suite.addTest(makeSuite(TestPlainUserFolder))
     suite.addTest(makeSuite(TestWrappingUserFolder))
     return suite
-

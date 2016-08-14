@@ -30,7 +30,8 @@ def test_check_permission():
     In order to be able to traverse to the PageTemplate view, we need
     a traversable object:
 
-      >>> from Products.Five.tests.testing import manage_addFiveTraversableFolder
+      >>> from Products.Five.tests.testing import (
+      ... manage_addFiveTraversableFolder)
       >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
 
     Now we access a page that uses
@@ -39,10 +40,14 @@ def test_check_permission():
 
       >>> from Testing.testbrowser import Browser
       >>> browser = Browser()
-      >>> browser.open('http://localhost/test_folder_1_/testoid/@@zope3security.html?permission=zope2.View')
+      >>> browser.open(
+      ...     'http://localhost/test_folder_1_/testoid/'
+      ...     '@@zope3security.html?permission=zope2.View')
       >>> print browser.contents
       Yes, you have the 'zope2.View' permission.
-      >>> browser.open('http://localhost/test_folder_1_/testoid/@@zope3security.html?permission=zope2.DeleteObjects')
+      >>> browser.open(
+      ...     'http://localhost/test_folder_1_/testoid/'
+      ...     '@@zope3security.html?permission=zope2.DeleteObjects')
       >>> print browser.contents
       No, you don't have the 'zope2.DeleteObjects' permission.
 
@@ -55,8 +60,8 @@ def test_check_permission():
 
 
 def test_allowed_interface():
-    """This test demonstrates that allowed_interface security declarations work
-    as expected.
+    """This test demonstrates that allowed_interface security declarations
+    work as expected.
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
@@ -125,8 +130,8 @@ def test_allowed_interface():
       >>> getRoles(view, 'wot', view.wot, ('Def',)) is ACCESS_PRIVATE
       True
 
-    But 'superMethod' is defined on IDummy by inheritance from ISuperDummy, and
-    so should have the 'Manager' role setup.
+    But 'superMethod' is defined on IDummy by inheritance from ISuperDummy,
+    and so should have the 'Manager' role setup.
 
       >>> getRoles(view, 'superMethod', view.superMethod, ('Def',))
       ('Manager',)

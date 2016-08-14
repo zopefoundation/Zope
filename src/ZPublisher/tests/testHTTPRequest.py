@@ -1,8 +1,12 @@
+import sys
 import unittest
-from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
-
 
 from zope.testing.cleanup import cleanUp
+
+from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
+
+if sys.version_info >= (3, ):
+    unicode = str
 
 
 class RecordTests(unittest.TestCase):

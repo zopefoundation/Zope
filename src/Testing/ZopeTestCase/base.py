@@ -131,4 +131,3 @@ class TestCase(unittest.TestCase, object):
     def logout(self):
         '''Logs out.'''
         noSecurityManager()
-
