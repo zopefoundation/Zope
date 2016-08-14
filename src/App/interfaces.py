@@ -17,11 +17,7 @@ from zope.interface import Attribute
 from zope.interface import Interface
 
 
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on App.Management.Navigation
 class INavigation(Interface):
-
     """Basic navigation UI support"""
 
     manage = Attribute(""" """)
@@ -34,21 +30,3 @@ class INavigation(Interface):
         """Logout current user"""
 
 INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
-
-
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on App.Undo.UndoSupport
-class IUndoSupport(Interface):
-
-    manage_UndoForm = Attribute("""Manage Undo form""")
-
-    def undoable_transactions(first_transaction=None,
-                              last_transaction=None,
-                              PrincipiaUndoBatchSize=None):
-        """
-        """
-
-    def manage_undo_transactions(transaction_info=(), REQUEST=None):
-        """
-        """

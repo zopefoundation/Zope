@@ -28,6 +28,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Drop ZopeUndo dependency and move undo management to the control panel.
+
 - Simplify ZMI control panel and globally available management screens.
 
 - Move ZServer related testing support into ZServer.Testing.

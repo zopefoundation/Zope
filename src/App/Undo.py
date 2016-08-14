@@ -15,24 +15,18 @@
 
 import binascii
 
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-from AccessControl import getSecurityManager
+from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import undo_changes
-from App.interfaces import IUndoSupport
-from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
-import ExtensionClass
 import transaction
-from ZopeUndo.Prefix import Prefix
-from zope.interface import implements
+
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
 
 
-class UndoSupport(ExtensionClass.Base):
-
-    implements(IUndoSupport)
+class UndoSupport(Tabs, Implicit):
 
     security = ClassSecurityInfo()
 
@@ -85,33 +79,7 @@ class UndoSupport(ExtensionClass.Base):
                 'last_transaction',
                 first_transaction + PrincipiaUndoBatchSize)
 
-        spec = {}
-
-        # A user is allowed to undo transactions that were initiated
-        # by any member of a user folder in the place where the user
-        # is defined.
-        user = getSecurityManager().getUser()
-        user_parent = aq_parent(user)
-        if user_parent is not None:
-            path = '/'.join(user_parent.getPhysicalPath()[1:-1])
-        else:
-            path = ''
-        if path:
-            spec['user_name'] = Prefix(path)
-
-        if getattr(aq_parent(aq_inner(self)), '_p_jar', None) == self._p_jar:
-            # We only want to undo things done here (and not in mounted
-            # databases)
-            opath = '/'.join(self.getPhysicalPath())
-        else:
-            # Special case: at the root of a database,
-            # allow undo of any path.
-            opath = None
-        if opath:
-            spec['description'] = Prefix(opath)
-
-        r = self._p_jar.db().undoInfo(
-            first_transaction, last_transaction, spec)
+        r = self._p_jar.db().undoInfo(first_transaction, last_transaction)
 
         for d in r:
             d['time'] = t = DateTime(d['time'])

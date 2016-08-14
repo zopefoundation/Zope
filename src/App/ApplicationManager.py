@@ -21,6 +21,7 @@ from Acquisition import Implicit
 from App.config import getConfiguration
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
+from App.Undo import UndoSupport
 from App.version_txt import version_txt
 from OFS.Traversable import Traversable
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -123,7 +124,7 @@ class ApplicationManager(Tabs, Traversable, Implicit):
         return getConfiguration().clienthome
 
 
-class AltDatabaseManager(Tabs, Implicit):
+class AltDatabaseManager(Traversable, UndoSupport):
     """ Database management DBTab-style
     """
     id = 'DatabaseManagement'
@@ -132,11 +133,11 @@ class AltDatabaseManager(Tabs, Implicit):
 
     manage = manage_main = DTMLFile('dtml/dbMain', globals())
     manage_main._setName('manage_main')
-    manage_options = ((
+    manage_options = (
         {'label': 'Control Panel', 'action': '../../manage_main'},
         {'label': 'Databases', 'action': '../manage_main'},
         {'label': 'Database', 'action': 'manage_main'},
-    ))
+    ) + UndoSupport.manage_options
     MANAGE_TABS_NO_BANNER = True
 
     def _getDB(self):

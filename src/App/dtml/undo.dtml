@@ -22,7 +22,6 @@ modified objects that were modified by a selected transaction.
 <dtml-call "REQUEST.set('first_transaction', _.None)">
 </dtml-unless>
 
-<a name="t_list" />
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr class="list-header">
     <td align="left" valign="top">

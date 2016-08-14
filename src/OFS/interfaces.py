@@ -25,7 +25,6 @@ from AccessControl.interfaces import IOwned
 from AccessControl.interfaces import IRoleManager
 from Acquisition.interfaces import IAcquirer
 from App.interfaces import INavigation
-from App.interfaces import IUndoSupport
 from persistent.interfaces import IPersistent
 
 
@@ -522,7 +521,7 @@ class ILockItem(Interface):
 #      not synced with ZopeBook API Reference;
 #      based on OFS.SimpleItem.Item
 class IItem(IZopeObject, IManageable, IFTPAccess,
-            ICopySource, ITraversable, IOwned, IUndoSupport):
+            ICopySource, ITraversable, IOwned):
 
     __name__ = BytesLine(
         title=u"Name"

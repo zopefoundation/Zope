@@ -40,7 +40,6 @@ from Acquisition import Implicit
 from App.Management import Tabs
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
-from App.Undo import UndoSupport
 from ComputedAttribute import ComputedAttribute
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
@@ -75,9 +74,7 @@ class Item(Base,
            CopySource,
            Tabs,
            Traversable,
-           Owned,
-           UndoSupport,
-           ):
+           Owned):
     """A common base class for simple, non-container objects."""
 
     implements(IItem)
@@ -125,11 +122,6 @@ class Item(Base,
 
     # Default propertysheet info:
     __propsets__ = ()
-
-    manage_options = (
-        UndoSupport.manage_options +
-        Owned.manage_options
-    )
 
     # Attributes that must be acquired
     REQUEST = Acquired

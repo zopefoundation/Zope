@@ -61,7 +61,6 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
-        'ZopeUndo',
         'five.globalrequest',
         'repoze.retry',
         'setuptools',
