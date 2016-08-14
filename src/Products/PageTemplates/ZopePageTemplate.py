@@ -30,7 +30,6 @@ from App.Common import package_home
 from DateTime.DateTime import DateTime
 from OFS.Cache import Cacheable
 from OFS.SimpleItem import SimpleItem
-from OFS.History import Historical, html_diff
 from OFS.PropertyManager import PropertyManager
 from OFS.Traversable import Traversable
 from Shared.DC.Scripts.Script import Script
@@ -74,7 +73,7 @@ class Src(Explicit):
 InitializeClass(Src)
 
 
-class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
+class ZopePageTemplate(Script, PageTemplate, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
@@ -92,7 +91,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         {'label': 'Edit', 'action': 'pt_editForm'},
         {'label': 'Test', 'action': 'ZScriptHTML_tryForm'},
     ) + PropertyManager.manage_options \
-        + Historical.manage_options \
         + SimpleItem.manage_options \
         + Cacheable.manage_options
 
@@ -265,13 +263,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Parameters to test the script with."""
         return []
 
-    def manage_historyCompare(self, rev1, rev2, REQUEST,
-                              historyComparisonResults=''):
-        return ZopePageTemplate.inheritedAttribute(
-            'manage_historyCompare')(
-            self, rev1, rev2, REQUEST,
-            historyComparisonResults=html_diff(rev1._text, rev2._text))
-
     def pt_getContext(self, *args, **kw):
         root = None
         meth = aq_get(self, 'getPhysicalRoot', None)
@@ -338,12 +329,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             return result
         finally:
             security.removeContext(self)
-
-    security.declareProtected(
-        change_page_templates,
-        'manage_historyCopy',
-        'manage_beforeHistoryCopy',
-        'manage_afterHistoryCopy')
 
     if bbb.HAS_ZSERVER:
         security.declareProtected(change_page_templates, 'PUT')

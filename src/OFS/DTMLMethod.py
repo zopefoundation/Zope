@@ -33,8 +33,6 @@ from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
 from OFS import bbb
 from OFS.Cache import Cacheable
-from OFS.History import Historical
-from OFS.History import html_diff
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from zExceptions import Forbidden, ResourceLockedError
@@ -53,7 +51,6 @@ class DTMLMethod(RestrictedDTML,
                  Implicit,
                  RoleManager,
                  Item_w__name__,
-                 Historical,
                  Cacheable):
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
@@ -78,17 +75,10 @@ class DTMLMethod(RestrictedDTML,
         {'label': 'View', 'action': ''},
         {'label': 'Proxy', 'action': 'manage_proxyForm'},
     ) +
-        Historical.manage_options +
         RoleManager.manage_options +
         Item_w__name__.manage_options +
         Cacheable.manage_options
     )
-
-    # Careful in permission changes--used by DTMLDocument!
-
-    security.declareProtected(change_dtml_methods, 'manage_historyCopy')
-    security.declareProtected(change_dtml_methods, 'manage_beforeHistoryCopy')
-    security.declareProtected(change_dtml_methods, 'manage_afterHistoryCopy')
 
     # More reasonable default for content-type for http HEAD requests.
     default_content_type = 'text/html'
@@ -389,12 +379,6 @@ class DTMLMethod(RestrictedDTML,
             """ Get source for FTP download.
             """
             return self.read()
-
-    def manage_historyCompare(self, rev1, rev2, REQUEST,
-                              historyComparisonResults=''):
-        return DTMLMethod.inheritedAttribute('manage_historyCompare')(
-            self, rev1, rev2, REQUEST,
-            historyComparisonResults=html_diff(rev1.read(), rev2.read()))
 
 InitializeClass(DTMLMethod)
 
