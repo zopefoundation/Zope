@@ -157,8 +157,6 @@ class ZopeDatabase(ZODBDatabase):
             DB.klass = self.config.connection_class
         if self.config.class_factory is not None:
             DB.classFactory = self.config.class_factory
-        from ZODB.ActivityMonitor import ActivityMonitor
-        DB.setActivityMonitor(ActivityMonitor())
         return DB
 
     def getName(self):

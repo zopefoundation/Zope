@@ -1,6 +1,17 @@
 <dtml-var manage_page_header>
 
-<table width="100%" cellspacing="0" border="0">
+<table width="100%">
+<tr bgcolor="#eeeeee">
+  <td>
+  <a href="Control_Panel/manage_main" target="manage_main">
+      Control Panel
+  </a>
+  </td>
+</tr>
+</table>
+<br />
+
+<table width="100%">
 <tr bgcolor="#000000">
   <td valign="top" nowrap="nowrap">
   <a href="manage_workspace" target="manage_main" style="color: #ffffff;">
@@ -13,11 +24,11 @@
   </td>
 </tr>
 </table>
+
 <dtml-tree nowrap=1>
 <a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main">&dtml-id;</a>
 </dtml-tree>
-
 <br />
 
 <table width="100%" bgcolor="#6699cc">

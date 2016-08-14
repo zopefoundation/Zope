@@ -63,13 +63,6 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     __error_log__ = None
     isTopLevelPrincipiaApplicationObject = 1
 
-    manage_options = ((
-        Folder.Folder.manage_options[0],
-        Folder.Folder.manage_options[1],
-        {'label': 'Control Panel', 'action': 'Control_Panel/manage_main'}, ) +
-        Folder.Folder.manage_options[2:]
-    )
-
     p_ = misc_.p_
     misc_ = misc_.misc_
     _reserved_names = ('Control_Panel', )
@@ -213,22 +206,21 @@ class AppInitializer:
 
     def initialize(self):
         # make sure to preserve relative ordering of calls below.
-        self.install_cp_and_products()
+        self.install_app_manager()
         self.install_required_roles()
         self.install_inituser()
         self.install_products()
         self.install_standards()
         self.install_virtual_hosting()
 
-    def install_cp_and_products(self):
+    def install_app_manager(self):
         global APP_MANAGER
         APP_MANAGER = ApplicationManager()
-        APP_MANAGER._init()
 
+        # Remove persistent Control Panel.
         app = self.getApp()
         app._p_activate()
 
-        # Remove Control Panel.
         if 'Control_Panel' in app.__dict__.keys():
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects

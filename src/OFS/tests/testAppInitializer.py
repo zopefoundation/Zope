@@ -86,14 +86,6 @@ class TestInitialization(unittest.TestCase):
         app = getApp()
         return AppInitializer(app)
 
-    def test_install_cp_and_products(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        app = i.getApp()
-        i.install_cp_and_products()
-        self.assertTrue(hasattr(app, 'Control_Panel'))
-        self.assertEqual(app.Control_Panel.meta_type, 'Control Panel')
-
     def test_install_virtual_hosting(self):
         self.configure(good_cfg)
         i = self.getOne()

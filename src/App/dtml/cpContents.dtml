@@ -5,7 +5,6 @@
 The Control Panel provides access to system information.
 </p>
 
-<form action="&dtml-URL1;" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>
   <td align="left" valign="top">
@@ -87,27 +86,11 @@ The Control Panel provides access to system information.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  &dtml-process_id; (&dtml-thread_get_ident;)
+  &dtml-process_id;
   </div>
   </td>
 </tr>
 
-</table>
-</form>
-
-<table cellspacing="0" cellpadding="2" border="0">
-<dtml-in objectItems>
-<tr>
-  <td width="16" align="left" valign="top"></td>
-  <td align="left" valign="top">
-  <div class="list-item">
-  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  &dtml-title;
-  </a>
-  </div>
-  </td>
-</tr>
-</dtml-in objectValues>
 </table>
 
 <dtml-var manage_page_footer>

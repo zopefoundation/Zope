@@ -118,19 +118,10 @@ def startup():
 
     notify(DatabaseOpened(DB))
 
-    Globals.BobobaseName = DB.getName()
-
-    if DB.getActivityMonitor() is None:
-        from ZODB.ActivityMonitor import ActivityMonitor
-        DB.setActivityMonitor(ActivityMonitor())
-
     Globals.DB = DB
     Zope2.DB = DB
-
-    # Hook for providing multiple transaction object manager undo support:
-    Globals.UndoManager = DB
-
     Globals.opened.append(DB)
+
     import ClassFactory
     DB.classFactory = ClassFactory.ClassFactory
 
