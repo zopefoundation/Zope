@@ -14,6 +14,7 @@
 """
 
 from zope.deferredimport import deprecated
+from zope.interface import Interface
 from zope.schema import Bool, Tuple
 
 from OFS.interfaces import IWriteLock
@@ -147,3 +148,28 @@ class IDAVCollection(IDAVResource):
         may return either 200 (OK) or 204 (No Content) to indicate total
         success, or may return 207 (Multistatus) to indicate partial
         success. Note that in Zope a DELETE currently never returns 207."""
+
+
+class IFTPAccess(Interface):
+    """Provide support for FTP access"""
+
+    def manage_FTPstat(REQUEST):
+        """Returns a stat-like tuple. (marshalled to a string) Used by
+        FTP for directory listings, and MDTM and SIZE"""
+
+    def manage_FTPlist(REQUEST):
+        """Returns a directory listing consisting of a tuple of
+        (id,stat) tuples, marshaled to a string. Note, the listing it
+        should include '..' if there is a Folder above the current
+        one.
+
+        In the case of non-foldoid objects it should return a single
+        tuple (id,stat) representing itself."""
+
+    # Optional method to support FTP download.
+    # Should not be implemented by folderish objects.
+
+    def manage_FTPget():
+        """Returns the source content of an object. For example, the
+        source text of a Document, or the data of a file.
+        """
