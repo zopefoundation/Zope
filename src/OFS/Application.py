@@ -133,15 +133,16 @@ class Application(ApplicationDefaultPermissions, Folder.Folder):
         """Utility function to return current date/time"""
         return DateTime(*args)
 
-    def DELETE(self, REQUEST, RESPONSE):
-        """Delete a resource object."""
-        self.dav__init(REQUEST, RESPONSE)
-        raise Forbidden('This resource cannot be deleted.')
+    if bbb.HAS_ZSERVER:
+        def DELETE(self, REQUEST, RESPONSE):
+            """Delete a resource object."""
+            self.dav__init(REQUEST, RESPONSE)
+            raise Forbidden('This resource cannot be deleted.')
 
-    def MOVE(self, REQUEST, RESPONSE):
-        """Move a resource to a new location."""
-        self.dav__init(REQUEST, RESPONSE)
-        raise Forbidden('This resource cannot be moved.')
+        def MOVE(self, REQUEST, RESPONSE):
+            """Move a resource to a new location."""
+            self.dav__init(REQUEST, RESPONSE)
+            raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".

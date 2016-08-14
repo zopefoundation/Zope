@@ -37,6 +37,7 @@ from zope.contenttype import guess_content_type
 from zope.interface import implementedBy
 from zope.interface import implements
 
+from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
@@ -595,23 +596,6 @@ class File(Persistent, Implicit, PropertyManager,
 
         return next, size
 
-    security.declareProtected(change_images_and_files, 'PUT')
-    def PUT(self, REQUEST, RESPONSE):
-        """Handle HTTP PUT requests"""
-        self.dav__init(REQUEST, RESPONSE)
-        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        type = REQUEST.get_header('content-type', None)
-
-        file = REQUEST['BODYFILE']
-
-        data, size = self._read_data(file)
-        content_type = self._get_content_type(file, data, self.__name__,
-                                              type or self.content_type)
-        self.update_data(data, content_type, size)
-
-        RESPONSE.setStatus(204)
-        return RESPONSE
-
     security.declareProtected(View, 'get_size')
     def get_size(self):
         # Get the size of a file or image.
@@ -636,35 +620,53 @@ class File(Persistent, Implicit, PropertyManager,
     def __len__(self):
         return 1
 
-    security.declareProtected(ftp_access, 'manage_FTPstat')
-    security.declareProtected(ftp_access, 'manage_FTPlist')
+    if bbb.HAS_ZSERVER:
+        security.declareProtected(change_images_and_files, 'PUT')
+        def PUT(self, REQUEST, RESPONSE):
+            """Handle HTTP PUT requests"""
+            self.dav__init(REQUEST, RESPONSE)
+            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+            type = REQUEST.get_header('content-type', None)
 
-    security.declareProtected(ftp_access, 'manage_FTPget')
-    def manage_FTPget(self):
-        """Return body for ftp."""
-        RESPONSE = self.REQUEST.RESPONSE
+            file = REQUEST['BODYFILE']
 
-        if self.ZCacheable_isCachingEnabled():
-            result = self.ZCacheable_get(default=None)
-            if result is not None:
-                # We will always get None from RAMCacheManager but we will get
-                # something implementing the IStreamIterator interface
-                # from FileCacheManager.
-                # the content-length is required here by HTTPResponse, even
-                # though FTP doesn't use it.
-                RESPONSE.setHeader('Content-Length', self.size)
-                return result
+            data, size = self._read_data(file)
+            content_type = self._get_content_type(file, data, self.__name__,
+                                                  type or self.content_type)
+            self.update_data(data, content_type, size)
 
-        data = self.data
-        if isinstance(data, str):
-            RESPONSE.setBase(None)
-            return data
+            RESPONSE.setStatus(204)
+            return RESPONSE
 
-        while data is not None:
-            RESPONSE.write(data.data)
-            data = data.next
+        security.declareProtected(ftp_access, 'manage_FTPstat')
+        security.declareProtected(ftp_access, 'manage_FTPlist')
 
-        return ''
+        security.declareProtected(ftp_access, 'manage_FTPget')
+        def manage_FTPget(self):
+            """Return body for ftp."""
+            RESPONSE = self.REQUEST.RESPONSE
+
+            if self.ZCacheable_isCachingEnabled():
+                result = self.ZCacheable_get(default=None)
+                if result is not None:
+                    # We will always get None from RAMCacheManager but we will
+                    # get something implementing the IStreamIterator interface
+                    # from FileCacheManager.
+                    # the content-length is required here by HTTPResponse,
+                    # even though FTP doesn't use it.
+                    RESPONSE.setHeader('Content-Length', self.size)
+                    return result
+
+            data = self.data
+            if isinstance(data, str):
+                RESPONSE.setBase(None)
+                return data
+
+            while data is not None:
+                RESPONSE.write(data.data)
+                data = data.next
+
+            return ''
 
 InitializeClass(File)
 

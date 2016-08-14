@@ -31,6 +31,7 @@ from AccessControl.requestmethod import requestmethod
 from AccessControl.tainted import TaintedString
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
@@ -366,27 +367,28 @@ class DTMLMethod(RestrictedDTML,
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
-    security.declareProtected(change_dtml_methods, 'PUT')
-    def PUT(self, REQUEST, RESPONSE):
-        """ Handle FTP / HTTP PUT requests.
-        """
-        self.dav__init(REQUEST, RESPONSE)
-        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        body = REQUEST.get('BODY', '')
-        self._validateProxy(REQUEST)
-        self.munge(body)
-        self.ZCacheable_invalidate()
-        RESPONSE.setStatus(204)
-        return RESPONSE
+    if bbb.HAS_ZSERVER:
+        security.declareProtected(change_dtml_methods, 'PUT')
+        def PUT(self, REQUEST, RESPONSE):
+            """ Handle FTP / HTTP PUT requests.
+            """
+            self.dav__init(REQUEST, RESPONSE)
+            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+            body = REQUEST.get('BODY', '')
+            self._validateProxy(REQUEST)
+            self.munge(body)
+            self.ZCacheable_invalidate()
+            RESPONSE.setStatus(204)
+            return RESPONSE
 
-    security.declareProtected(ftp_access, 'manage_FTPstat')
-    security.declareProtected(ftp_access, 'manage_FTPlist')
+        security.declareProtected(ftp_access, 'manage_FTPstat')
+        security.declareProtected(ftp_access, 'manage_FTPlist')
 
-    security.declareProtected(ftp_access, 'manage_FTPget')
-    def manage_FTPget(self):
-        """ Get source for FTP download.
-        """
-        return self.read()
+        security.declareProtected(ftp_access, 'manage_FTPget')
+        def manage_FTPget(self):
+            """ Get source for FTP download.
+            """
+            return self.read()
 
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):

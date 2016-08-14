@@ -15,6 +15,7 @@ from zope.publisher.http import HTTPCharsets
 
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import ZopeTestCase, installProduct
+from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PageTemplates.utils import encodingFromXMLPreamble
@@ -308,9 +309,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def _put(self, text):
         zpt = self._createZPT()
-        REQUEST = self.app.REQUEST
-        REQUEST.set('BODY', text)
-        zpt.PUT(REQUEST, REQUEST.RESPONSE)
+        content_type = guess_type('', text)
+        zpt.pt_edit(text, content_type)
         return zpt
 
     def testPutHTMLIso8859_15WithCharsetInfo(self):
@@ -416,14 +416,6 @@ class ZPTRegressions(unittest.TestCase):
         # no object is returned when REQUEST is passed.
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
-
-    def testFTPGet(self):
-        # check for bug #2269
-        request = self.app.REQUEST
-        text = '<span tal:content="string:foobar"></span>'
-        self._addPT('pt1', text=text, REQUEST=request)
-        result = self.app.pt1.manage_FTPget()
-        self.assertEqual(result, text)
 
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):

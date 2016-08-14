@@ -270,81 +270,82 @@ class Item(Base,
         return ()
     objectIds = objectItems = objectValues
 
-    # FTP support methods
+    if bbb.HAS_ZSERVER:
+        # FTP support methods
 
-    def manage_FTPstat(self, REQUEST):
-        """Psuedo stat, used by FTP for directory listings.
-        """
-        from AccessControl.User import nobody
-        mode = 0o0100000
+        def manage_FTPstat(self, REQUEST):
+            """Psuedo stat, used by FTP for directory listings.
+            """
+            from AccessControl.User import nobody
+            mode = 0o0100000
 
-        if (hasattr(aq_base(self), 'manage_FTPget')):
-            try:
-                if getSecurityManager().validate(
-                        None, self, 'manage_FTPget', self.manage_FTPget):
-                    mode = mode | 0o0440
-            except Unauthorized:
-                pass
+            if (hasattr(aq_base(self), 'manage_FTPget')):
+                try:
+                    if getSecurityManager().validate(
+                            None, self, 'manage_FTPget', self.manage_FTPget):
+                        mode = mode | 0o0440
+                except Unauthorized:
+                    pass
 
-            if nobody.allowed(
-                    self.manage_FTPget,
-                    getRoles(self, 'manage_FTPget', self.manage_FTPget, ())):
-                mode = mode | 0o0004
+                if nobody.allowed(
+                        self.manage_FTPget,
+                        getRoles(self, 'manage_FTPget', self.manage_FTPget, ())):
+                    mode = mode | 0o0004
 
-        # check write permissions
-        if hasattr(aq_base(self), 'PUT'):
-            try:
-                if getSecurityManager().validate(None, self, 'PUT', self.PUT):
-                    mode = mode | 0o0220
-            except Unauthorized:
-                pass
+            # check write permissions
+            if hasattr(aq_base(self), 'PUT'):
+                try:
+                    if getSecurityManager().validate(None, self, 'PUT', self.PUT):
+                        mode = mode | 0o0220
+                except Unauthorized:
+                    pass
 
-            if nobody.allowed(
-                    self.PUT,
-                    getRoles(self, 'PUT', self.PUT, ())):
-                mode = mode | 0o0002
+                if nobody.allowed(
+                        self.PUT,
+                        getRoles(self, 'PUT', self.PUT, ())):
+                    mode = mode | 0o0002
 
-        # get size
-        if hasattr(aq_base(self), 'get_size'):
-            size = self.get_size()
-        elif hasattr(aq_base(self), 'manage_FTPget'):
-            size = len(self.manage_FTPget())
-        else:
-            size = 0
-        # get modification time
-        if hasattr(aq_base(self), '_p_mtime'):
-            mtime = DateTime(self._p_mtime).timeTime()
-        else:
-            mtime = time.time()
-        # get owner and group
-        owner = group = 'Zope'
-        if hasattr(aq_base(self), 'get_local_roles'):
-            for user, roles in self.get_local_roles():
-                if 'Owner' in roles:
-                    owner = user
+            # get size
+            if hasattr(aq_base(self), 'get_size'):
+                size = self.get_size()
+            elif hasattr(aq_base(self), 'manage_FTPget'):
+                size = len(self.manage_FTPget())
+            else:
+                size = 0
+            # get modification time
+            if hasattr(aq_base(self), '_p_mtime'):
+                mtime = DateTime(self._p_mtime).timeTime()
+            else:
+                mtime = time.time()
+            # get owner and group
+            owner = group = 'Zope'
+            if hasattr(aq_base(self), 'get_local_roles'):
+                for user, roles in self.get_local_roles():
+                    if 'Owner' in roles:
+                        owner = user
+                        break
+            return marshal.dumps(
+                (mode, 0, 0, 1, owner, group, size, mtime, mtime, mtime))
+
+        def manage_FTPlist(self, REQUEST):
+            """Directory listing for FTP.
+
+            In the case of non-Foldoid objects, the listing should contain one
+            object, the object itself.
+            """
+            from App.Common import is_acquired
+            # check to see if we are being acquiring or not
+            ob = self
+            while 1:
+                if is_acquired(ob):
+                    raise ValueError('FTP List not supported on acquired objects')
+                if not hasattr(ob, '__parent__'):
                     break
-        return marshal.dumps(
-            (mode, 0, 0, 1, owner, group, size, mtime, mtime, mtime))
+                ob = aq_parent(ob)
 
-    def manage_FTPlist(self, REQUEST):
-        """Directory listing for FTP.
-
-        In the case of non-Foldoid objects, the listing should contain one
-        object, the object itself.
-        """
-        from App.Common import is_acquired
-        # check to see if we are being acquiring or not
-        ob = self
-        while 1:
-            if is_acquired(ob):
-                raise ValueError('FTP List not supported on acquired objects')
-            if not hasattr(ob, '__parent__'):
-                break
-            ob = aq_parent(ob)
-
-        stat = marshal.loads(self.manage_FTPstat(REQUEST))
-        id = self.getId()
-        return marshal.dumps((id, stat))
+            stat = marshal.loads(self.manage_FTPstat(REQUEST))
+            id = self.getId()
+            return marshal.dumps((id, stat))
 
     def __len__(self):
         return 1

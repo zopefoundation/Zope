@@ -120,18 +120,6 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
 
-    def testPUTExisting(self):
-        # FTP new data into an existing object
-        self.setPermissions([change_dtml_documents])
-
-        put_data = StringIO('foo')
-        response = self.publish(self.folder_path + '/index_html',
-                                request_method='PUT', stdin=put_data,
-                                basic=self.basic_auth)
-
-        self.assertEqual(response.getStatus(), 204)
-        self.assertEqual(self.folder.index_html(), 'foo')
-
     def testHEAD(self):
         # HEAD should work without passing stdin
         response = self.publish(self.folder_path + '/index_html',

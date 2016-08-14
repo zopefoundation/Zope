@@ -37,6 +37,7 @@ from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zExceptions import ResourceLockedError
 
+from Products.PageTemplates import bbb
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
@@ -344,27 +345,29 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         'manage_beforeHistoryCopy',
         'manage_afterHistoryCopy')
 
-    security.declareProtected(change_page_templates, 'PUT')
-    def PUT(self, REQUEST, RESPONSE):
-        """ Handle HTTP PUT requests """
+    if bbb.HAS_ZSERVER:
+        security.declareProtected(change_page_templates, 'PUT')
+        def PUT(self, REQUEST, RESPONSE):
+            """ Handle HTTP PUT requests """
 
-        self.dav__init(REQUEST, RESPONSE)
-        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        text = REQUEST.get('BODY', '')
-        content_type = guess_type('', text)
-        self.pt_edit(text, content_type)
-        RESPONSE.setStatus(204)
-        return RESPONSE
+            self.dav__init(REQUEST, RESPONSE)
+            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+            text = REQUEST.get('BODY', '')
+            content_type = guess_type('', text)
+            self.pt_edit(text, content_type)
+            RESPONSE.setStatus(204)
+            return RESPONSE
 
-    security.declareProtected(change_page_templates, 'manage_FTPput')
-    manage_FTPput = PUT
+        security.declareProtected(change_page_templates, 'manage_FTPput')
+        manage_FTPput = PUT
 
-    security.declareProtected(ftp_access, 'manage_FTPstat', 'manage_FTPlist')
-    security.declareProtected(ftp_access, 'manage_FTPget')
-    def manage_FTPget(self):
-        "Get source for FTP download"
-        result = self.read()
-        return result.encode(self.output_encoding)
+        security.declareProtected(ftp_access, 'manage_FTPstat')
+        security.declareProtected(ftp_access, 'manage_FTPlist')
+        security.declareProtected(ftp_access, 'manage_FTPget')
+        def manage_FTPget(self):
+            "Get source for FTP download"
+            result = self.read()
+            return result.encode(self.output_encoding)
 
     security.declareProtected(view_management_screens, 'html')
     def html(self):

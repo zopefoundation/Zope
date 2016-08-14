@@ -15,6 +15,7 @@
 
 from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
+from zope.deferredimport import deprecated
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
@@ -169,27 +170,6 @@ class ICopySource(Interface):
     def cb_userHasCopyOrMovePermission():
         """
         """
-
-
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on OFS.FTPInterface.FTPInterface
-class IFTPAccess(Interface):
-
-    """Provide support for FTP access"""
-
-    def manage_FTPstat(REQUEST):
-        """Returns a stat-like tuple. (marshalled to a string) Used by
-        FTP for directory listings, and MDTM and SIZE"""
-
-    def manage_FTPlist(REQUEST):
-        """Returns a directory listing consisting of a tuple of
-        (id,stat) tuples, marshaled to a string. Note, the listing it
-        should include '..' if there is a Folder above the current
-        one.
-
-        In the case of non-foldoid objects it should return a single
-        tuple (id,stat) representing itself."""
 
 
 # XXX: might contain non-API methods and outdated comments;
@@ -519,7 +499,7 @@ class ILockItem(Interface):
 # XXX: might contain non-API methods and outdated comments;
 #      not synced with ZopeBook API Reference;
 #      based on OFS.SimpleItem.Item
-class IItem(IZopeObject, IManageable, IFTPAccess,
+class IItem(IZopeObject, IManageable,
             ICopySource, ITraversable, IOwned):
 
     __name__ = BytesLine(title=u"Name")
@@ -1057,3 +1037,10 @@ class IObjectClonedEvent(IObjectEvent):
     event.object is the copied object, already added to its container.
     Note that this event is dispatched to all sublocations.
     """
+
+
+# BBB Zope 5.0
+deprecated(
+    'Please import from webdav.interfaces.',
+    IFTPAccess='webdav.interfaces:IFTPAccess',
+)

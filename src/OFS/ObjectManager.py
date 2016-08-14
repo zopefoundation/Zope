@@ -596,62 +596,6 @@ class ObjectManager(CopyContainer,
         listing.sort()
         return listing
 
-    # FTP support methods
-
-    security.declareProtected(ftp_access, 'manage_FTPlist')
-    def manage_FTPlist(self, REQUEST):
-        """Directory listing for FTP.
-        """
-        out = ()
-
-        # check to see if we are being acquiring or not
-        ob = self
-        while 1:
-            if is_acquired(ob):
-                raise ValueError('FTP List not supported on acquired objects')
-            if not hasattr(ob, '__parent__'):
-                break
-            ob = aq_parent(ob)
-
-        files = list(self.objectItems())
-
-        # recursive ride through all subfolders (ls -R) (ajung)
-
-        if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
-            all_files = copy.copy(files)
-            for f in files:
-                if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
-                        f[1].isPrincipiaFolderish):
-                    all_files.extend(findChildren(f[1]))
-            files = all_files
-
-        # Perform globbing on list of files (ajung)
-
-        globbing = REQUEST.environ.get('GLOBBING', '')
-        if globbing:
-            files = [x for x in files if fnmatch.fnmatch(x[0], globbing)]
-
-        files.sort()
-
-        if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
-                self.isTopLevelPrincipiaApplicationObject):
-            files.insert(0, ('..', aq_parent(self)))
-        files.insert(0, ('.', self))
-        for k, v in files:
-            # Note that we have to tolerate failure here, because
-            # Broken objects won't stat correctly. If an object fails
-            # to be able to stat itself, we will ignore it, but log
-            # the error.
-            try:
-                stat = marshal.loads(v.manage_FTPstat(REQUEST))
-            except:
-                LOG.error("Failed to stat file '%s'" % k,
-                          exc_info=sys.exc_info())
-                stat = None
-            if stat is not None:
-                out = out + ((k, stat),)
-        return marshal.dumps(out)
-
     security.declareProtected(ftp_access, 'manage_hasId')
     def manage_hasId(self, REQUEST):
         """ check if the folder has an object with REQUEST['id'] """
@@ -659,37 +603,94 @@ class ObjectManager(CopyContainer,
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 
-    security.declareProtected(ftp_access, 'manage_FTPstat')
-    def manage_FTPstat(self, REQUEST):
-        """Psuedo stat, used by FTP for directory listings.
-        """
-        mode = 0o0040000
-        from AccessControl.User import nobody
-        # check to see if we are acquiring our objectValues or not
-        if not (len(REQUEST.PARENTS) > 1 and
-                self.objectValues() == REQUEST.PARENTS[1].objectValues()):
-            try:
-                if getSecurityManager().validate(
-                        None, self, 'manage_FTPlist', self.manage_FTPlist):
-                    mode = mode | 0o0770
-            except Exception:
-                pass
+    if bbb.HAS_ZSERVER:
+        # FTP support methods
+        security.declareProtected(ftp_access, 'manage_FTPlist')
+        def manage_FTPlist(self, REQUEST):
+            """Directory listing for FTP.
+            """
+            out = ()
 
-            if nobody.allowed(self, getRoles(
-                    self, 'manage_FTPlist', self.manage_FTPlist, ())):
-                mode = mode | 0o0007
-        if hasattr(aq_base(self), '_p_mtime'):
-            mtime = DateTime(self._p_mtime).timeTime()
-        else:
-            mtime = time.time()
-        # get owner and group
-        owner = group = 'Zope'
-        for user, roles in self.get_local_roles():
-            if 'Owner' in roles:
-                owner = user
-                break
-        return marshal.dumps(
-            (mode, 0, 0, 1, owner, group, 0, mtime, mtime, mtime))
+            # check to see if we are being acquiring or not
+            ob = self
+            while 1:
+                if is_acquired(ob):
+                    raise ValueError(
+                        'FTP List not supported on acquired objects')
+                if not hasattr(ob, '__parent__'):
+                    break
+                ob = aq_parent(ob)
+
+            files = list(self.objectItems())
+
+            # recursive ride through all subfolders (ls -R) (ajung)
+
+            if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
+                all_files = copy.copy(files)
+                for f in files:
+                    if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
+                            f[1].isPrincipiaFolderish):
+                        all_files.extend(findChildren(f[1]))
+                files = all_files
+
+            # Perform globbing on list of files (ajung)
+
+            globbing = REQUEST.environ.get('GLOBBING', '')
+            if globbing:
+                files = [x for x in files if fnmatch.fnmatch(x[0], globbing)]
+
+            files.sort()
+
+            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
+                    self.isTopLevelPrincipiaApplicationObject):
+                files.insert(0, ('..', aq_parent(self)))
+            files.insert(0, ('.', self))
+            for k, v in files:
+                # Note that we have to tolerate failure here, because
+                # Broken objects won't stat correctly. If an object fails
+                # to be able to stat itself, we will ignore it, but log
+                # the error.
+                try:
+                    stat = marshal.loads(v.manage_FTPstat(REQUEST))
+                except:
+                    LOG.error("Failed to stat file '%s'" % k,
+                              exc_info=sys.exc_info())
+                    stat = None
+                if stat is not None:
+                    out = out + ((k, stat),)
+            return marshal.dumps(out)
+
+        security.declareProtected(ftp_access, 'manage_FTPstat')
+        def manage_FTPstat(self, REQUEST):
+            """Psuedo stat, used by FTP for directory listings.
+            """
+            mode = 0o0040000
+            from AccessControl.User import nobody
+            # check to see if we are acquiring our objectValues or not
+            if not (len(REQUEST.PARENTS) > 1 and
+                    self.objectValues() == REQUEST.PARENTS[1].objectValues()):
+                try:
+                    if getSecurityManager().validate(
+                            None, self, 'manage_FTPlist', self.manage_FTPlist):
+                        mode = mode | 0o0770
+                except Exception:
+                    pass
+
+                if nobody.allowed(self, getRoles(
+                        self, 'manage_FTPlist', self.manage_FTPlist, ())):
+                    mode = mode | 0o0007
+            if hasattr(aq_base(self), '_p_mtime'):
+                mtime = DateTime(self._p_mtime).timeTime()
+            else:
+                mtime = time.time()
+            # get owner and group
+            owner = group = 'Zope'
+            for user, roles in self.get_local_roles():
+                if 'Owner' in roles:
+                    owner = user
+                    break
+            return marshal.dumps(
+                (mode, 0, 0, 1, owner, group, 0, mtime, mtime, mtime))
 
     def __delitem__(self, name):
         return self.manage_delObjects(ids=[name])
