@@ -28,6 +28,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed ZMI export/import feature.
+
 - Drop ZopeUndo dependency and move undo management to the control panel.
 
 - Simplify ZMI control panel and globally available management screens.
