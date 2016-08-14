@@ -28,6 +28,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Simplify ZMI control panel and globally available management screens.
+
 - Move ZServer related testing support into ZServer.Testing.
 
 - Split out Lifetime, webdav and ZServer packages into a ZServer project.

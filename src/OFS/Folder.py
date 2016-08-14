@@ -20,7 +20,6 @@ from App.special_dtml import DTMLFile
 from zope.interface import implements
 
 from OFS import bbb
-from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
 from OFS.Lockable import LockableItem
 from OFS.ObjectManager import ObjectManager
@@ -52,14 +51,12 @@ def manage_addFolder(self, id, title='',
 
 
 class Folder(
-    ObjectManager,
-    PropertyManager,
-    RoleManager,
-    Collection,
-    LockableItem,
-    Item,
-    FindSupport,
-    ):
+        ObjectManager,
+        PropertyManager,
+        RoleManager,
+        Collection,
+        LockableItem,
+        Item):
 
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement
@@ -71,16 +68,15 @@ class Folder(
 
     _properties=({'id':'title', 'type': 'string','mode':'wd'},)
 
-    manage_options=(
+    manage_options = (
         ObjectManager.manage_options +
         ({'label': 'View', 'action': ''}, ) +
         PropertyManager.manage_options +
         RoleManager.manage_options +
-        Item.manage_options +
-        FindSupport.manage_options
-        )
+        Item.manage_options
+    )
 
-    __ac_permissions__=()
+    __ac_permissions__ = ()
 
     def __init__(self, id=None):
         if id is not None:

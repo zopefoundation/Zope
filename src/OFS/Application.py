@@ -37,7 +37,6 @@ from zope.interface import implements
 
 import Folder
 import misc_
-from FindSupport import FindSupport
 from interfaces import IApplication
 from misc_ import Misc_
 
@@ -51,7 +50,7 @@ LOG = getLogger('Application')
 APP_MANAGER = None
 
 
-class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
+class Application(ApplicationDefaultPermissions, Folder.Folder):
     """Top-level system object"""
 
     implements(IApplication)

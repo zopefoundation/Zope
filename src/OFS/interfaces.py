@@ -774,17 +774,8 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
         """
 
 
-# XXX: might contain non-API methods and outdated comments;
-#      not synced with ZopeBook API Reference;
-#      based on OFS.FindSupport.FindSupport
 class IFindSupport(Interface):
-
     """Find support for Zope Folders"""
-
-    manage_findFrame = Attribute(""" """)
-    manage_findForm = Attribute(""" """)
-    manage_findAdv = Attribute(""" """)
-    manage_findResult = Attribute(""" """)
 
     def ZopeFind(obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
@@ -793,8 +784,6 @@ class IFindSupport(Interface):
                  search_sub=0,
                  REQUEST=None, result=None, pre=''):
         """Zope Find interface"""
-
-    PrincipiaFind = ZopeFind
 
     def ZopeFindAndApply(obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
@@ -1004,10 +993,7 @@ class IPropertyManager(Interface):
         """Delete one or more properties specified by 'ids'."""
 
 
-# XXX: based on OFS.Folder.Folder
-class IFolder(IObjectManager, IPropertyManager, IRoleManager,
-              IItem, IFindSupport):
-
+class IFolder(IObjectManager, IPropertyManager, IRoleManager, IItem):
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement a
     management interface and can have arbitrary properties.
