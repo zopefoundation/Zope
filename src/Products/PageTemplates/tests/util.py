@@ -11,17 +11,11 @@
 #
 ##############################################################################
 
-######################################################################
-# Utility facilities to aid setting things up.
-
 import os
 import re
-import string
 import sys
 
 from ExtensionClass import Base
-
-import Products.PageTemplates.tests
 
 
 class Bruce(Base):
@@ -91,36 +85,10 @@ class argv(Base):
         return self
 
 
-def nicerange(lo, hi):
-    if hi <= lo + 1:
-        return str(lo + 1)
-    else:
-        return "%d,%d" % (lo + 1, hi)
-
-
 def check_html(s1, s2):
     s1 = normalize_html(s1)
     s2 = normalize_html(s2)
-    if s1 != s2:
-        from OFS.ndiff import SequenceMatcher, dump, IS_LINE_JUNK
-        a = string.split(s1, '\n')
-        b = string.split(s2, '\n')
-
-        def add_nl(s):
-            return s + '\n'
-
-        a = map(add_nl, a)
-        b = map(add_nl, b)
-        cruncher = SequenceMatcher(isjunk=IS_LINE_JUNK, a=a, b=b)
-        for tag, alo, ahi, blo, bhi in cruncher.get_opcodes():
-            if tag == 'equal':
-                continue
-            print(nicerange(alo, ahi) + tag[0] + nicerange(blo, bhi))
-            dump('<', a, alo, ahi)
-            if a and b:
-                print('---')
-            dump('>', b, blo, bhi)
-    assert s1 == s2, "HTML Output Changed"
+    assert s1 == s2
 
 
 def check_xml(s1, s2):
@@ -142,9 +110,9 @@ def normalize_xml(s):
     return s
 
 
-dir = os.path.dirname(Products.PageTemplates.tests.__file__)
-input_dir = os.path.join(dir, 'input')
-output_dir = os.path.join(dir, 'output')
+HERE = os.path.dirname(__file__)
+input_dir = os.path.join(HERE, 'input')
+output_dir = os.path.join(HERE, 'output')
 
 
 def read_input(filename):
