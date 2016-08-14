@@ -118,26 +118,24 @@ class Item(Base,
     __name__ = ComputedAttribute(lambda self: self.id)
 
     # Meta type used for selecting all objects of a given type.
-    meta_type='simple item'
+    meta_type = 'simple item'
 
     # Default title.
-    title=''
+    title = ''
 
     # Default propertysheet info:
-    __propsets__=()
+    __propsets__ = ()
 
-    manage_options=(
-        UndoSupport.manage_options
-        + Owned.manage_options
-        + ({'label': 'Interfaces',
-            'action': 'manage_interfaces'},)
-        )
+    manage_options = (
+        UndoSupport.manage_options +
+        Owned.manage_options
+    )
 
     # Attributes that must be acquired
     REQUEST = Acquired
 
     # Allow (reluctantly) access to unprotected attributes
-    __allow_access_to_unprotected_subobjects__=1
+    __allow_access_to_unprotected_subobjects__ = 1
 
     def title_or_id(self):
         """Return the title if it is not blank and the id otherwise.

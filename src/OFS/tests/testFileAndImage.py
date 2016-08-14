@@ -302,14 +302,6 @@ class FileTests(unittest.TestCase):
                                        'come to the aid of the Party.')
         self.assertTrue('Party' in self.file.PrincipiaSearchSource())
 
-    def testFindFile(self):
-        self.file.manage_edit('foobar', 'text/plain',
-                              filedata='Now is the time for all good men to '
-                                       'come to the aid of the Party.')
-        results = self.app.ZopeFind(self.app, obj_searchterm='Party')
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0][1], self.file)
-
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import File
