@@ -64,6 +64,7 @@ setup(
         'five.globalrequest',
         'repoze.retry',
         'setuptools',
+        'six',
         'transaction',
         'waitress',
         'zExceptions >= 3.2',

@@ -24,7 +24,7 @@ from DocumentTemplate.security import RestrictedDTML
 from RestrictedPython import compile_restricted_eval
 from zope.tales.pythonexpr import PythonExpr
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 

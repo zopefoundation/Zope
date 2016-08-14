@@ -26,6 +26,9 @@ Typically used as in
 import os
 import sys
 import time
+
+from six import exec_
+
 from Testing.ZopeTestCase import layer
 
 # Allow code to tell it is run by the test framework
@@ -54,7 +57,7 @@ def _exec(cmd):
     '''Prints the time it takes to execute 'cmd'.'''
     if os.environ.get('X', None):
         start = time.time()
-        exec cmd
+        exec_(cmd)
         _print('(%.3fs)' % (time.time() - start))
 
 _write('Loading Zope, please stand by ')

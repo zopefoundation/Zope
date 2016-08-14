@@ -48,7 +48,7 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.lifecycleevent import ObjectCreatedEvent
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 manage_addFileForm = DTMLFile(

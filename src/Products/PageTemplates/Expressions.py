@@ -47,7 +47,7 @@ from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     basestring = str
     unicode = str
 

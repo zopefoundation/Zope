@@ -20,7 +20,7 @@ from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implements
 from zope.i18n.interfaces import IUserPreferredCharsets
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 default_encoding = sys.getdefaultencoding()

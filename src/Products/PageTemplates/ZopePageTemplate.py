@@ -45,7 +45,7 @@ from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import convertToUnicode
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 preferred_encodings = ['utf-8', 'iso-8859-15']

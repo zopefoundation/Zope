@@ -22,6 +22,7 @@ from Acquisition import Explicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Overridable
+from six import exec_
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
 
@@ -58,8 +59,8 @@ def Broken(self, oid, pair):
         else:
             module, klassname = pair
             d = {'BrokenClass': BrokenClass}
-            exec("class %s(BrokenClass): ' '; __module__=%r" %
-                 (klassname, module)) in d
+            exec_("class %s(BrokenClass): ' '; __module__=%r" %
+                  (klassname, module), d)
             klass = broken_klasses[pair] = d[klassname]
             module = module.split('.')
             if len(module) > 2 and module[0] == 'Products':

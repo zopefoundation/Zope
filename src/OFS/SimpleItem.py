@@ -24,6 +24,8 @@ import re
 import sys
 import time
 
+from six import reraise
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -189,7 +191,7 @@ class Item(Base,
 
             if hasattr(self, '_v_eek'):
                 # Stop if there is recursion.
-                raise error_type, error_value, tb
+                reraise(error_type, error_value, tb)
             self._v_eek = 1
 
             if hasattr(error_type, '__name__'):

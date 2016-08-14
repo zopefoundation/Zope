@@ -18,6 +18,8 @@ import logging
 import sys
 from time import asctime
 
+from six import reraise
+
 import AccessControl.User
 import App.ZApplication
 import ExtensionClass
@@ -196,7 +198,7 @@ class ZPublisherExceptionHook:
     def __call__(self, published, REQUEST, t, v, traceback):
         try:
             if t is SystemExit or issubclass(t, Redirect):
-                raise t, v, traceback
+                reraise(t, v, traceback)
 
             if issubclass(t, ConflictError):
                 self.logConflicts(v, REQUEST)
@@ -227,7 +229,7 @@ class ZPublisherExceptionHook:
             if (REQUEST is None or
                     (getattr(REQUEST.get('RESPONSE', None),
                              '_error_format', '') != 'text/html')):
-                raise t, v, traceback
+                reraise(t, v, traceback)
 
             # Lookup a view for the exception and render it, then
             # raise the rendered value as the exception value
@@ -247,7 +249,7 @@ class ZPublisherExceptionHook:
                     # correctly. We can't do that with all exceptions
                     # because some don't work with the rendered v as
                     # argument.
-                    raise t, v, traceback
+                    reraise(t, v, traceback)
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
                 response.setBody(v)
@@ -265,7 +267,7 @@ class ZPublisherExceptionHook:
                 if f is None:
                     published = aq_parent(published)
                     if published is None:
-                        raise t, v, traceback
+                        reraise(t, v, traceback)
                 else:
                     break
 
@@ -293,7 +295,7 @@ class ZPublisherExceptionHook:
                     # correctly. We can't do that with all exceptions
                     # because some don't work with the rendered v as
                     # argument.
-                    raise t, v, traceback
+                    reraise(t, v, traceback)
                 response = REQUEST.RESPONSE
                 response.setStatus(t)
                 response.setBody(v)

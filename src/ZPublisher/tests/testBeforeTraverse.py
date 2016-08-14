@@ -119,7 +119,8 @@ def testBeforeTraverse(self):
 
     Unregister the borken hook:
 
-    >>> _ = BeforeTraverse.unregisterBeforeTraverse(container, 'broken_callable')
+    >>> _ = BeforeTraverse.unregisterBeforeTraverse(
+    ...         container, 'broken_callable')
 
     The list of 'before traverse' hooks is empty:
 

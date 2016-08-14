@@ -46,7 +46,7 @@ from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 # Flags

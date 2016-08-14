@@ -27,7 +27,7 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 from Products.Five.browser.metaconfigure import page
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     basestring = str
 
 logger = logging.getLogger('Products.Five')

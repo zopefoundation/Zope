@@ -18,6 +18,7 @@ from thread import allocate_lock
 import transaction
 from urlparse import urlparse
 
+from six import reraise
 from zExceptions import Redirect
 from zope.event import notify
 from zope.publisher.interfaces import ISkinnable
@@ -45,7 +46,7 @@ class Retry(Exception):
         if tb is None:
             raise t(v)
         try:
-            raise t, v, tb
+            reraise(t, v, tb)
         finally:
             tb = None
 
@@ -310,7 +311,7 @@ def publish_module_standard(
             request.response._requestShutdown(code)
 
         try:
-            raise must_die[0], must_die[1], must_die[2]
+            reraise(must_die[0], must_die[1], must_die[2])
         finally:
             must_die = None
 
@@ -378,10 +379,9 @@ def get_module_info(module_name, modules={},
             modules[module_name] = modules[module_name + '.cgi'] = info
 
             return info
-        except:
+        except Exception:
             t, v, tb = sys.exc_info()
-            v = str(v)
-            raise ImportError, (t, v), tb
+            reraise(t, str(v), tb)
     finally:
         tb = None
         release()

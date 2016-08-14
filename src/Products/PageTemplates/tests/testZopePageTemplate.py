@@ -26,7 +26,7 @@ from Products.PageTemplates.unicodeconflictresolver \
     import PreferredCharsetResolver
 import Zope2
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 ascii_str = '<html><body>hello world</body></html>'

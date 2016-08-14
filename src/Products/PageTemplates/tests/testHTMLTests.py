@@ -27,7 +27,7 @@ from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 

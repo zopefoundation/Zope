@@ -14,6 +14,8 @@
 import re
 import string
 
+from six import exec_
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -23,7 +25,6 @@ from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_parent
 from Acquisition import aq_inner
-from Persistence import Persistent
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -207,7 +208,7 @@ class Bindings:
 
     security.declareProtected('Change bindings', 'ZBindings_edit')
     def ZBindings_edit(self, mapping):
-        names = self._setupBindings(mapping)
+        self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
 
@@ -356,7 +357,7 @@ class Bindings:
                 bound_data = {}
             else:
                 bound_data = []
-                exec bindcode
+                exec_(bindcode)
                 bound_data = bound_data[0]
             return self._exec(bound_data, args, kw)
         finally:

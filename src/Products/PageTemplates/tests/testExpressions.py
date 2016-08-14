@@ -5,7 +5,7 @@ import unittest
 
 from zope.component.testing import PlacelessSetup
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 

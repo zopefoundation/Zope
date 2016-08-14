@@ -16,7 +16,7 @@
 import re
 import sys
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     unicode = str
 
 xml_preamble_reg = re.compile(
