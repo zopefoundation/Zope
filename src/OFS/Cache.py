@@ -39,14 +39,17 @@ LOG = getLogger('Cache')
 def isCacheable(ob):
     return getattr(aq_base(ob), '_isCacheable', 0)
 
+
 def managersExist(ob):
     # Returns 1 if any CacheManagers exist in the context of ob.
     if aq_get(ob, ZCM_MANAGERS, None, 1):
         return 1
     return 0
 
+
 def filterCacheTab(ob):
     return managersExist(ob)
+
 
 def filterCacheManagers(orig, container, name, value, extra):
     '''
@@ -55,9 +58,10 @@ def filterCacheManagers(orig, container, name, value, extra):
     in the list of cache managers.
     '''
     if (hasattr(aq_base(container), ZCM_MANAGERS) and
-        name in getattr(container, ZCM_MANAGERS)):
+            name in getattr(container, ZCM_MANAGERS)):
         return 1
     return 0
+
 
 def getVerifiedManagerIds(container):
     '''
@@ -81,11 +85,10 @@ class Cacheable:
     '''Mix-in for cacheable objects.
     '''
 
-    manage_options = ({
-        'label':'Cache',
-        'action':'ZCacheable_manage',
-        'filter':filterCacheTab,
-        },)
+    manage_options = (
+        {'label': 'Cache', 'action': 'ZCacheable_manage',
+         'filter': filterCacheTab},
+    )
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(ChangeCacheSettingsPermission, ('Manager',))
@@ -162,8 +165,7 @@ class Cacheable:
                                    mtime_func, default)
                 return val
             except:
-                LOG.warn('ZCache_get() exception',
-                    exc_info=sys.exc_info())
+                LOG.warn('ZCache_get() exception')
                 return default
         return default
 
@@ -180,8 +182,7 @@ class Cacheable:
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                LOG.warn('ZCache_set() exception',
-                    exc_info=sys.exc_info())
+                LOG.warn('ZCache_set() exception')
 
     security.declareProtected(ViewManagementScreensPermission,
                               'ZCacheable_invalidate')
@@ -200,8 +201,7 @@ class Cacheable:
             except:
                 exc = sys.exc_info()
                 try:
-                    LOG.warn('ZCache_invalidate() exception',
-                        exc_info=exc)
+                    LOG.warn('ZCache_invalidate() exception')
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None
@@ -262,10 +262,9 @@ class Cacheable:
                     manager = getattr(ob, id, None)
                     if manager is not None:
                         id = manager.getId()
-                        if not used_ids.has_key(id):
-                            title = getattr(aq_base(manager),
-                                            'title', '')
-                            rval.append({'id':id, 'title':title})
+                        if id not in used_ids:
+                            title = getattr(aq_base(manager), 'title', '')
+                            rval.append({'id': id, 'title': title})
                             used_ids[id] = 1
             ob = aq_parent(aq_inner(ob))
         return tuple(rval)
@@ -345,7 +344,8 @@ def findCacheables(ob, manager_id, require_assoc, subfolders,
                 'path': '/'.join(subpath),
                 'title': getattr(aq_base(subob), 'title', ''),
                 'icon': None,
-                'associated': associated,}
+                'associated': associated,
+            }
             rval.append(info)
 
         # Visit subfolders.
@@ -356,7 +356,7 @@ def findCacheables(ob, manager_id, require_assoc, subfolders,
                 subpath = path + (subob.getId(),)
                 if hasattr(aq_base(subob), 'objectValues'):
                     if sm.checkPermission(
-                        'Access contents information', subob):
+                            'Access contents information', subob):
                         findCacheables(
                             subob, manager_id, require_assoc,
                             subfolders, meta_types, rval, subpath)
@@ -415,10 +415,8 @@ class CacheManager:
     _isCacheManager = 1
 
     manage_options = (
-        {'label':'Associate',
-         'action':'ZCacheManager_associate',
-         },
-        )
+        {'label': 'Associate', 'action': 'ZCacheManager_associate'},
+    )
 
     def manage_afterAdd(self, item, container):
         # Adds self to the list of cache managers in the container.
@@ -503,8 +501,8 @@ class CacheManager:
         if REQUEST is not None:
             return self.ZCacheManager_associate(
                 self, REQUEST, management_view="Associate",
-                manage_tabs_message='%d association(s) made, %d removed.'%
+                manage_tabs_message='%d association(s) made, %d removed.' %
                 (addcount, remcount)
-                )
+            )
 
 InitializeClass(CacheManager)

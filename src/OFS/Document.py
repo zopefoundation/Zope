@@ -13,7 +13,11 @@
 """Deprecated - use DTMLMethod
 """
 
-import DTMLMethod
+from zope.deferredimport import deprecated
 
-Document=DTMLMethod.DTMLMethod
-manage_addDocument=DTMLMethod.addDTMLMethod
+# BBB Zope 5.0
+deprecated(
+    'Please import from OFS.DTMLMethod.',
+    Document='OFS.DTMLMethod:Document',
+    manage_addDocument='OFS.DTMLMethod:manage_addDocument',
+)

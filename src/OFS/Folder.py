@@ -64,9 +64,11 @@ class Folder(
     """
 
     implements(IFolder)
-    meta_type='Folder'
+    meta_type = 'Folder'
 
-    _properties=({'id':'title', 'type': 'string','mode':'wd'},)
+    _properties = (
+        {'id': 'title', 'type': 'string', 'mode': 'wd'},
+    )
 
     manage_options = (
         ObjectManager.manage_options +

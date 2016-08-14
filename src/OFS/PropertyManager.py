@@ -31,8 +31,8 @@ from OFS.interfaces import IPropertyManager
 from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
 
-class PropertyManager(Base):
 
+class PropertyManager(Base):
     """
     The PropertyManager mixin class provides an object with
     transparent property management. An object which wants to
@@ -102,26 +102,28 @@ class PropertyManager(Base):
     security.setPermissionDefault(access_contents_information,
                                   ('Anonymous', 'Manager'))
 
-    manage_options=(
-        {'label':'Properties', 'action':'manage_propertiesForm'},
-        )
+    manage_options = (
+        {'label': 'Properties', 'action': 'manage_propertiesForm'},
+    )
 
     security.declareProtected(manage_properties, 'manage_propertiesForm')
-    manage_propertiesForm=DTMLFile('dtml/properties', globals(),
-                                   property_extensible_schema__=1)
+    manage_propertiesForm = DTMLFile(
+        'dtml/properties', globals(), property_extensible_schema__=1)
     security.declareProtected(manage_properties, 'manage_propertyTypeForm')
-    manage_propertyTypeForm=DTMLFile('dtml/propertyType', globals())
+    manage_propertyTypeForm = DTMLFile('dtml/propertyType', globals())
 
-    title=''
-    _properties=({'id':'title', 'type': 'string', 'mode':'wd'},)
-    _reserved_names=()
+    title = ''
+    _properties = (
+        {'id': 'title', 'type': 'string', 'mode': 'wd'},
+    )
+    _reserved_names = ()
 
-    __propsets__=()
-    propertysheets=vps(DefaultPropertySheets)
+    __propsets__ = ()
+    propertysheets = vps(DefaultPropertySheets)
 
     security.declareProtected(access_contents_information, 'valid_property_id')
     def valid_property_id(self, id):
-        if not id or id[:1]=='_' or (id[:3]=='aq_') \
+        if not id or id[:1] == '_' or (id[:3] == 'aq_') \
            or (' ' in id) or hasattr(aq_base(self), id) or escape(id) != id:
             return 0
         return 1
@@ -131,7 +133,7 @@ class PropertyManager(Base):
         """Return true if object has a property 'id'.
         """
         for p in self._properties:
-            if id==p['id']:
+            if id == p['id']:
                 return 1
         return 0
 
@@ -153,24 +155,24 @@ class PropertyManager(Base):
         Returns None if no such property exists.
         """
         for md in self._properties:
-            if md['id']==id:
+            if md['id'] == id:
                 return md.get('type', 'string')
         return None
 
     def _wrapperCheck(self, object):
         # Raise an error if an object is wrapped.
         if hasattr(object, 'aq_base'):
-            raise ValueError, 'Invalid property value: wrapped object'
+            raise ValueError('Invalid property value: wrapped object')
         return
 
     def _setPropValue(self, id, value):
         self._wrapperCheck(value)
         if type(value) == list:
             value = tuple(value)
-        setattr(self,id,value)
+        setattr(self, id, value)
 
     def _delPropValue(self, id):
-        delattr(self,id)
+        delattr(self, id)
 
     def _setProperty(self, id, value, type='string'):
         # for selection and multiple selection properties
@@ -178,19 +180,19 @@ class PropertyManager(Base):
         # of the property
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise BadRequest, 'Invalid or duplicate property id'
+            raise BadRequest('Invalid or duplicate property id')
 
         if type in ('selection', 'multiple selection'):
             if not hasattr(self, value):
-                raise BadRequest, 'No select variable %s' % value
-            self._properties=self._properties + (
-                {'id':id, 'type':type, 'select_variable':value},)
-            if type=='selection':
+                raise BadRequest('No select variable %s' % value)
+            self._properties = self._properties + (
+                {'id': id, 'type': type, 'select_variable': value},)
+            if type == 'selection':
                 self._setPropValue(id, '')
             else:
                 self._setPropValue(id, [])
         else:
-            self._properties=self._properties+({'id':id,'type':type},)
+            self._properties = self._properties + ({'id': id, 'type': type},)
             self._setPropValue(id, value)
 
     def _updateProperty(self, id, value):
@@ -199,18 +201,18 @@ class PropertyManager(Base):
         # the value to the type of the existing property.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise BadRequest, 'The property %s does not exist' % escape(id)
-        if type(value)==type(''):
-            proptype=self.getPropertyType(id) or 'string'
+            raise BadRequest('The property %s does not exist' % escape(id))
+        if isinstance(value, str):
+            proptype = self.getPropertyType(id) or 'string'
             if proptype in type_converters:
-                value=type_converters[proptype](value)
+                value = type_converters[proptype](value)
         self._setPropValue(id, value)
 
     def _delProperty(self, id):
         if not self.hasProperty(id):
-            raise ValueError, 'The property %s does not exist' % escape(id)
+            raise ValueError('The property %s does not exist' % escape(id))
         self._delPropValue(id)
-        self._properties=tuple(i for i in self._properties if i['id'] != id)
+        self._properties = tuple(i for i in self._properties if i['id'] != id)
 
     security.declareProtected(access_contents_information, 'propertyIds')
     def propertyIds(self):
@@ -264,12 +266,10 @@ class PropertyManager(Base):
 
     security.declareProtected(access_contents_information, 'propdict')
     def propdict(self):
-        dict={}
+        dict = {}
         for p in self._properties:
-            dict[p['id']]=p
+            dict[p['id']] = p
         return dict
-
-    # Web interface
 
     security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
@@ -324,15 +324,13 @@ class PropertyManager(Base):
         propdict = self.propdict()
         for name, value in props.items():
             if self.hasProperty(name):
-                if not 'w' in propdict[name].get('mode', 'wd'):
+                if 'w' not in propdict[name].get('mode', 'wd'):
                     raise BadRequest('%s cannot be changed' % escape(name))
                 self._updateProperty(name, value)
         if REQUEST:
             message = "Saved changes."
             return self.manage_propertiesForm(self, REQUEST,
                                               manage_tabs_message=message)
-
-    # Note - this is experimental, pending some community input.
 
     security.declareProtected(manage_properties, 'manage_changePropertyTypes')
     def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
@@ -353,30 +351,31 @@ class PropertyManager(Base):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
-
     security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if REQUEST:
             # Bugfix for property named "ids" (Casey)
-            if ids == self.getProperty('ids', None): ids = None
+            if ids == self.getProperty('ids', None):
+                ids = None
             ids = REQUEST.get('_ids', ids)
         if ids is None:
             return MessageDialog(
-                   title='No property specified',
-                   message='No properties were specified!',
-                   action ='./manage_propertiesForm',)
-        propdict=self.propdict()
-        nd=self._reserved_names
+                title='No property specified',
+                message='No properties were specified!',
+                action='./manage_propertiesForm')
+        propdict = self.propdict()
+        nd = self._reserved_names
         for id in ids:
             if not hasattr(aq_base(self), id):
-                raise BadRequest, (
-                      'The property <em>%s</em> does not exist' % escape(id))
-            if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
+                raise BadRequest(
+                    'The property <em>%s</em> does not exist' % escape(id))
+            if ('d' not in propdict[id].get('mode', 'wd')) or (id in nd):
                 return MessageDialog(
-                title  ='Cannot delete %s' % id,
-                message='The property <em>%s</em> cannot be deleted.' % escape(id),
-                action ='manage_propertiesForm')
+                    title='Cannot delete %s' % id,
+                    message='The property <em>%s</em> '
+                            'cannot be deleted.' % escape(id),
+                    action='manage_propertiesForm')
             self._delProperty(id)
 
         if REQUEST is not None:

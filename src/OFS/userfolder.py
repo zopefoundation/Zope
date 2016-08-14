@@ -26,7 +26,7 @@ from OFS.SimpleItem import Item
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import manage_users as ManageUsers
+from AccessControl.Permissions import manage_users as ManageUsers  # NOQA
 from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import DEFAULTMAXLISTUSERS
 from AccessControl import userfolder as accesscontrol_userfolder
@@ -45,14 +45,13 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     # Note: use of the '_super' name is deprecated.
     _super = emergency_user
 
-    manage_options=(
-        (
+    manage_options = ((
         {'label': 'Contents', 'action': 'manage_main'},
         {'label': 'Properties', 'action': 'manage_userFolderProperties'},
-        )
-        +RoleManager.manage_options
-        +Item.manage_options
-        )
+    ) +
+        RoleManager.manage_options +
+        Item.manage_options
+    )
 
     security.declareProtected(ManageUsers, 'userFolderAddUser')
     @requestmethod('POST')
@@ -85,12 +84,12 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._doDelUsers(names)
         raise NotImplementedError
 
-    _mainUser=DTMLFile('dtml/mainUser', globals())
-    _add_User=DTMLFile('dtml/addUser', globals(),
-                       remote_user_mode__=_remote_user_mode)
-    _editUser=DTMLFile('dtml/editUser', globals(),
-                       remote_user_mode__=_remote_user_mode)
-    manage=manage_main=_mainUser
+    _mainUser = DTMLFile('dtml/mainUser', globals())
+    _add_User = DTMLFile('dtml/addUser', globals(),
+                         remote_user_mode__=_remote_user_mode)
+    _editUser = DTMLFile('dtml/editUser', globals(),
+                         remote_user_mode__=_remote_user_mode)
+    manage = manage_main = _mainUser
     manage_main._setName('manage_main')
 
     _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
@@ -143,26 +142,26 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     def _addUser(self, name, password, confirm, roles, domains, REQUEST=None):
         if not name:
             return MessageDialog(
-                   title='Illegal value',
-                   message='A username must be specified',
-                   action='manage_main')
+                title='Illegal value',
+                message='A username must be specified',
+                action='manage_main')
         if not password or not confirm:
             if not domains:
                 return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation must be specified',
-                   action='manage_main')
+                    title='Illegal value',
+                    message='Password and confirmation must be specified',
+                    action='manage_main')
         if self.getUser(name) or (self._emergency_user and
                                   name == self._emergency_user.getUserName()):
             return MessageDialog(
-                   title='Illegal value',
-                   message='A user with the specified name already exists',
-                   action='manage_main')
+                title='Illegal value',
+                message='A user with the specified name already exists',
+                action='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation do not match',
-                   action='manage_main')
+                title='Illegal value',
+                message='Password and confirmation do not match',
+                action='manage_main')
 
         if not roles:
             roles = []
@@ -171,9 +170,9 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title='Illegal value',
-                   message='Illegal domain specification',
-                   action='manage_main')
+                title='Illegal value',
+                message='Illegal domain specification',
+                action='manage_main')
         self._doAddUser(name, password, roles, domains)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -186,25 +185,25 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             password = confirm = None
         if not name:
             return MessageDialog(
-                   title='Illegal value',
-                   message='A username must be specified',
-                   action='manage_main')
+                title='Illegal value',
+                message='A username must be specified',
+                action='manage_main')
         if password == confirm == '':
             if not domains:
                 return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation must be specified',
-                   action='manage_main')
+                    title='Illegal value',
+                    message='Password and confirmation must be specified',
+                    action='manage_main')
         if not self.getUser(name):
             return MessageDialog(
-                   title='Illegal value',
-                   message='Unknown user',
-                   action='manage_main')
+                title='Illegal value',
+                message='Unknown user',
+                action='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title='Illegal value',
-                   message='Password and confirmation do not match',
-                   action='manage_main')
+                title='Illegal value',
+                message='Password and confirmation do not match',
+                action='manage_main')
 
         if not roles:
             roles = []
@@ -213,9 +212,9 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title='Illegal value',
-                   message='Illegal domain specification',
-                   action='manage_main')
+                title='Illegal value',
+                message='Illegal domain specification',
+                action='manage_main')
         self._doChangeUser(name, password, roles, domains)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -224,9 +223,9 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     def _delUsers(self, names, REQUEST=None):
         if not names:
             return MessageDialog(
-                   title='Illegal value',
-                   message='No users specified',
-                   action='manage_main')
+                title='Illegal value',
+                message='No users specified',
+                action='manage_main')
         self._doDelUsers(names)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -237,12 +236,12 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
            of the ZMI. Application code (code that is outside of the forms
            that implement the UI of a user folder) are encouraged to use
            manage_std_addUser"""
-        if submit=='Add...':
+        if submit == 'Add...':
             return self._add_User(self, REQUEST)
 
-        if submit=='Edit':
+        if submit == 'Edit':
             try:
-                user=self.getUser(reqattr(REQUEST, 'name'))
+                user = self.getUser(reqattr(REQUEST, 'name'))
             except:
                 return MessageDialog(
                     title='Illegal value',
@@ -250,7 +249,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
                     action='manage_main')
             return self._editUser(self, REQUEST, user=user, password=user.__)
 
-        if submit=='Add':
+        if submit == 'Add':
             name = reqattr(REQUEST, 'name')
             password = reqattr(REQUEST, 'password')
             confirm = reqattr(REQUEST, 'confirm')
@@ -259,7 +258,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._addUser(name, password, confirm, roles,
                                  domains, REQUEST)
 
-        if submit=='Change':
+        if submit == 'Change':
             name = reqattr(REQUEST, 'name')
             password = reqattr(REQUEST, 'password')
             confirm = reqattr(REQUEST, 'confirm')
@@ -268,7 +267,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._changeUser(name, password, confirm, roles,
                                     domains, REQUEST)
 
-        if submit=='Delete':
+        if submit == 'Delete':
             names = reqattr(REQUEST, 'names')
             return self._delUsers(names, REQUEST)
 
@@ -349,4 +348,4 @@ def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
             action='%s/manage_main' % REQUEST['URL1'])
     self.__allow_groups__ = f
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')

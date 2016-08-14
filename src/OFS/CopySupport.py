@@ -101,11 +101,11 @@ class CopyContainer(Base):
         elif ids is None:
             raise ValueError('ids must be specified')
 
-        if type(ids) is type(''):
-            ids=[ids]
-        oblist=[]
+        if isinstance(ids, str):
+            ids = [ids]
+        oblist = []
         for id in ids:
-            ob=self._getOb(id)
+            ob = self._getOb(id)
 
             if ob.wl_isLocked():
                 raise ResourceLockedError('Object "%s" is locked' % ob.getId())
@@ -114,10 +114,10 @@ class CopyContainer(Base):
                 raise CopyError(eNotSupported % escape(id))
             m = Moniker(ob)
             oblist.append(m.dump())
-        cp=(1, oblist)
-        cp=_cb_encode(cp)
+        cp = (1, oblist)
+        cp = _cb_encode(cp)
         if REQUEST is not None:
-            resp=REQUEST['RESPONSE']
+            resp = REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
@@ -131,19 +131,19 @@ class CopyContainer(Base):
         elif ids is None:
             raise ValueError('ids must be specified')
 
-        if type(ids) is type(''):
-            ids=[ids]
-        oblist=[]
+        if isinstance(ids, str):
+            ids = [ids]
+        oblist = []
         for id in ids:
-            ob=self._getOb(id)
+            ob = self._getOb(id)
             if not ob.cb_isCopyable():
                 raise CopyError(eNotSupported % escape(id))
             m = Moniker(ob)
             oblist.append(m.dump())
-        cp=(0, oblist)
-        cp=_cb_encode(cp)
+        cp = (0, oblist)
+        cp = _cb_encode(cp)
         if REQUEST is not None:
-            resp=REQUEST['RESPONSE']
+            resp = REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
@@ -163,8 +163,8 @@ class CopyContainer(Base):
         while 1:
             if self._getOb(id, None) is None:
                 return id
-            id='copy%s_of_%s' % (n and n+1 or '', orig_id)
-            n=n+1
+            id = 'copy%s_of_%s' % (n and n + 1 or '', orig_id)
+            n = n + 1
 
     security.declareProtected(view_management_screens, 'manage_pasteObjects')
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
@@ -179,7 +179,7 @@ class CopyContainer(Base):
         """
         if cb_copy_data is not None:
             cp = cb_copy_data
-        elif REQUEST is not None and REQUEST.has_key('__cp'):
+        elif REQUEST is not None and '__cp' in REQUEST:
             cp = REQUEST['__cp']
         else:
             cp = None
@@ -201,7 +201,7 @@ class CopyContainer(Base):
                 raise
             except:
                 raise CopyError(eNotFound)
-            self._verifyObjectPaste(ob, validate_src=op+1)
+            self._verifyObjectPaste(ob, validate_src=op + 1)
             oblist.append(ob)
 
         result = []
@@ -262,8 +262,7 @@ class CopyContainer(Base):
                         action='manage_main'))
 
                 if not sanity_check(self, ob):
-                    raise CopyError(
-                            "This object cannot be pasted into itself")
+                    raise CopyError("This object cannot be pasted into itself")
 
                 orig_container = aq_parent(aq_inner(ob))
                 if aq_base(orig_container) is aq_base(self):
@@ -309,9 +308,10 @@ class CopyContainer(Base):
                 ob.manage_changeOwnershipType(explicit=0)
 
             if REQUEST is not None:
-                REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
-                                    path='%s' % cookie_path(REQUEST),
-                                    expires='Wed, 31-Dec-97 23:59:59 GMT')
+                REQUEST['RESPONSE'].setCookie(
+                    '__cp', 'deleted',
+                    path='%s' % cookie_path(REQUEST),
+                    expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
                 return self.manage_main(self, REQUEST, update_menu=1,
                                         cb_dataValid=0)
@@ -343,7 +343,7 @@ class CopyContainer(Base):
             raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
-                action ='manage_main'))
+                action='manage_main'))
 
         ob = self._getOb(id)
 
@@ -361,7 +361,7 @@ class CopyContainer(Base):
             raise CopyError(MessageDialog(
                 title="Rename Error",
                 message=sys.exc_info()[1],
-                action ='manage_main'))
+                action='manage_main'))
 
         notify(ObjectWillBeMovedEvent(ob, self, id, self, new_id))
 
@@ -412,7 +412,7 @@ class CopyContainer(Base):
             raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
-                action ='manage_main'))
+                action='manage_main'))
 
         self._verifyObjectPaste(ob)
 
@@ -444,15 +444,19 @@ class CopyContainer(Base):
 
     def cb_dataValid(self):
         # Return true if clipboard data seems valid.
-        try:    cp=_cb_decode(self.REQUEST['__cp'])
-        except: return 0
+        try:
+            _cb_decode(self.REQUEST['__cp'])
+        except Exception:
+            return 0
         return 1
 
     def cb_dataItems(self):
         # List of objects in the clip board
-        try:    cp=_cb_decode(self.REQUEST['__cp'])
-        except: return []
-        oblist=[]
+        try:
+            cp = _cb_decode(self.REQUEST['__cp'])
+        except Exception:
+            return []
+        oblist = []
 
         app = self.getPhysicalRoot()
         for mdata in cp[1]:
@@ -460,7 +464,7 @@ class CopyContainer(Base):
             oblist.append(m.bind(app))
         return oblist
 
-    validClipData=cb_dataValid
+    validClipData = cb_dataValid
 
     def _verifyObjectPaste(self, object, validate_src=1):
         # Verify whether the current user is allowed to paste the
@@ -479,24 +483,22 @@ class CopyContainer(Base):
 
         if not hasattr(object, 'meta_type'):
             raise CopyError(MessageDialog(
-                  title   = 'Not Supported',
-                  message = ('The object <em>%s</em> does not support this' \
-                             ' operation' % escape(absattr(object.id))),
-                  action  = 'manage_main'))
+                title='Not Supported',
+                message=('The object <em>%s</em> does not support this '
+                         'operation' % escape(absattr(object.id))),
+                action='manage_main'))
 
         if not hasattr(self, 'all_meta_types'):
             raise CopyError(MessageDialog(
-                  title   = 'Not Supported',
-                  message = 'Cannot paste into this object.',
-                  action  = 'manage_main'))
+                title='Not Supported',
+                message='Cannot paste into this object.',
+                action='manage_main'))
 
-        method_name = None
         mt_permission = None
         meta_types = absattr(self.all_meta_types)
 
         for d in meta_types:
             if d['name'] == object.meta_type:
-                method_name = d['action']
                 mt_permission = d.get('permission')
                 break
 
@@ -515,23 +517,23 @@ class CopyContainer(Base):
                     if not sm.validate(None, parent, None, object):
                         raise Unauthorized(absattr(object.id))
 
-                    if validate_src == 2: # moving
+                    if validate_src == 2:  # moving
                         if not sm.checkPermission(delete_objects, parent):
                             raise Unauthorized('Delete not allowed.')
             else:
                 raise CopyError(MessageDialog(
-                    title = 'Insufficient Privileges',
-                    message = ('You do not possess the %s permission in the '
-                               'context of the container into which you are '
-                               'pasting, thus you are not able to perform '
-                               'this operation.' % mt_permission),
-                    action = 'manage_main'))
+                    title='Insufficient Privileges',
+                    message=('You do not possess the %s permission in the '
+                             'context of the container into which you are '
+                             'pasting, thus you are not able to perform '
+                             'this operation.' % mt_permission),
+                    action='manage_main'))
         else:
             raise CopyError(MessageDialog(
-                title = 'Not Supported',
-                message = ('The object <em>%s</em> does not support this '
-                           'operation.' % escape(absattr(object.id))),
-                action = 'manage_main'))
+                title='Not Supported',
+                message=('The object <em>%s</em> does not support this '
+                         'operation.' % escape(absattr(object.id))),
+                action='manage_main'))
 
 InitializeClass(CopyContainer)
 
@@ -571,18 +573,16 @@ class CopySource(Base):
 
         if self._p_jar is None:
             raise CopyError(
-                'Object "%s" needs to be in the database to be copied' %
-                `self`)
+                'Object "%r" needs to be in the database to be copied' % self)
         if container._p_jar is None:
             raise CopyError(
-                'Container "%s" needs to be in the database' %
-                `container`)
+                'Container "%r" needs to be in the database' % container)
 
         # Ask an object for a new copy of itself.
-        f=tempfile.TemporaryFile()
-        self._p_jar.exportFile(self._p_oid,f)
+        f = tempfile.TemporaryFile()
+        self._p_jar.exportFile(self._p_oid, f)
         f.seek(0)
-        ob=container._p_jar.importFile(f)
+        ob = container._p_jar.importFile(f)
         f.close()
         return ob
 
@@ -593,7 +593,7 @@ class CopySource(Base):
 
     def _setId(self, id):
         # Called to set the new id of a copied object.
-        self.id=id
+        self.id = id
 
     def cb_isCopyable(self):
         # Is object copyable? Returns 0 or 1
@@ -609,8 +609,10 @@ class CopySource(Base):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
-        try:    n=aq_parent(aq_inner(self))._reserved_names
-        except: n=()
+        try:
+            n = aq_parent(aq_inner(self))._reserved_names
+        except Exception:
+            n = ()
         if absattr(self.id) in n:
             return 0
         if not self.cb_userHasCopyOrMovePermission():
@@ -637,12 +639,16 @@ def sanity_check(c, ob):
             return 1
         c = aq_parent(inner)
 
+
 def absattr(attr):
-    if callable(attr): return attr()
+    if callable(attr):
+        return attr()
     return attr
+
 
 def _cb_encode(d):
     return quote(compress(dumps(d), 9))
+
 
 def _cb_decode(s, maxsize=8192):
     dec = decompressobj()
@@ -651,11 +657,11 @@ def _cb_decode(s, maxsize=8192):
         raise ValueError
     return loads(data)
 
+
 def cookie_path(request):
     # Return a "path" value for use in a cookie that refers
     # to the root of the Zope object space.
     return request['BASEPATH1'] or "/"
-
 
 
 fMessageDialog = HTML("""
@@ -693,41 +699,40 @@ fMessageDialog = HTML("""
 </BODY></HTML>""", target='', action='manage_main', title='Changed')
 
 
-eNoData=MessageDialog(
-        title='No Data',
-        message='No clipboard data found.',
-        action ='manage_main',)
+eNoData = MessageDialog(
+    title='No Data',
+    message='No clipboard data found.',
+    action='manage_main')
 
-eInvalid=MessageDialog(
-         title='Clipboard Error',
-         message='The data in the clipboard could not be read, possibly due ' \
-         'to cookie data being truncated by your web browser. Try copying ' \
-         'fewer objects.',
-         action ='manage_main',)
+eInvalid = MessageDialog(
+    title='Clipboard Error',
+    message='The data in the clipboard could not be read, possibly due '
+            'to cookie data being truncated by your web browser. Try copying '
+            'fewer objects.',
+    action='manage_main')
 
-eNotFound=MessageDialog(
-          title='Item Not Found',
-          message='One or more items referred to in the clipboard data was ' \
-          'not found. The item may have been moved or deleted after you ' \
-          'copied it.',
-          action ='manage_main',)
+eNotFound = MessageDialog(
+    title='Item Not Found',
+    message='One or more items referred to in the clipboard data was '
+            'not found. The item may have been moved or deleted after you '
+            'copied it.',
+    action='manage_main')
 
-eNotSupported=fMessageDialog(
-              title='Not Supported',
-              message=(
-              'The action against the <em>%s</em> object could not be carried '
-              'out. '
-              'One of the following constraints caused the problem: <br><br>'
-              'The object does not support this operation.'
-              '<br><br>-- OR --<br><br>'
-              'The currently logged-in user does not have the <b>Copy or '
-              'Move</b> permission respective to the object.'
-              ),
-              action ='manage_main',)
+eNotSupported = fMessageDialog(
+    title='Not Supported',
+    message=(
+        'The action against the <em>%s</em> object could not be carried '
+        'out. '
+        'One of the following constraints caused the problem: <br><br>'
+        'The object does not support this operation.'
+        '<br><br>-- OR --<br><br>'
+        'The currently logged-in user does not have the <b>Copy or '
+        'Move</b> permission respective to the object.'
+    ),
+    action='manage_main')
 
-eNoItemsSpecified=MessageDialog(
-                  title='No items specified',
-                  message='You must select one or more items to perform ' \
-                  'this operation.',
-                  action ='manage_main'
-                  )
+eNoItemsSpecified = MessageDialog(
+    title='No items specified',
+    message='You must select one or more items to perform '
+            'this operation.',
+    action='manage_main')

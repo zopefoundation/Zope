@@ -39,10 +39,6 @@ class ObjectWillBeAddedEvent(ObjectWillBeMovedEvent):
     implements(OFS.interfaces.IObjectWillBeAddedEvent)
 
     def __init__(self, object, newParent=None, newName=None):
-        #if newParent is None:
-        #    newParent = object.__parent__
-        #if newName is None:
-        #    newName = object.__name__
         ObjectWillBeMovedEvent.__init__(self, object, None, None,
                                         newParent, newName)
 
@@ -53,10 +49,6 @@ class ObjectWillBeRemovedEvent(ObjectWillBeMovedEvent):
     implements(OFS.interfaces.IObjectWillBeRemovedEvent)
 
     def __init__(self, object, oldParent=None, oldName=None):
-        #if oldParent is None:
-        #    oldParent = object.__parent__
-        #if oldName is None:
-        #    oldName = object.__name__
         ObjectWillBeMovedEvent.__init__(self, object, oldParent, oldName,
                                         None, None)
 

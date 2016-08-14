@@ -12,6 +12,8 @@
 ##############################################################################
 """DTML Method objects.
 """
+import re
+import sys
 from urllib import quote
 
 from AccessControl.class_init import InitializeClass
@@ -23,7 +25,7 @@ from DateTime.DateTime import DateTime
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import change_proxy_roles
-from AccessControl.Permissions import view as View
+from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
 from AccessControl.requestmethod import requestmethod
 from AccessControl.tainted import TaintedString
@@ -39,8 +41,11 @@ from zExceptions.TracebackSupplement import PathTracebackSupplement
 from ZPublisher.Iterators import IStreamIterator
 from zope.contenttype import guess_content_type
 
+if sys.version_info >= (3, ):
+    basestring = str
 
 _marker = []  # Create a new marker object.
+
 
 class DTMLMethod(RestrictedDTML,
                  HTML,
@@ -48,21 +53,21 @@ class DTMLMethod(RestrictedDTML,
                  RoleManager,
                  Item_w__name__,
                  Historical,
-                 Cacheable,
-                ):
+                 Cacheable):
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
     _proxy_roles = ()
-    index_html = None # Prevent accidental acquisition
+    index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    # Documents masquerade as functions:
-    class func_code:
+    class func_code(object):
+        # Documents masquerade as functions:
         pass
+
     func_code = __code__ = func_code()
     func_code.co_varnames = 'self', 'REQUEST', 'RESPONSE'
     func_code.co_argcount = 3
@@ -71,12 +76,12 @@ class DTMLMethod(RestrictedDTML,
         {'label': 'Edit', 'action': 'manage_main'},
         {'label': 'View', 'action': ''},
         {'label': 'Proxy', 'action': 'manage_proxyForm'},
-        )
-        + Historical.manage_options
-        + RoleManager.manage_options
-        + Item_w__name__.manage_options
-        + Cacheable.manage_options
-        )
+    ) +
+        Historical.manage_options +
+        RoleManager.manage_options +
+        Item_w__name__.manage_options +
+        Cacheable.manage_options
+    )
 
     # Careful in permission changes--used by DTMLDocument!
 
@@ -100,17 +105,19 @@ class DTMLMethod(RestrictedDTML,
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:
-                if ( IStreamIterator.isImplementedBy(data) and
-                     RESPONSE is not None ):
+                if (IStreamIterator.isImplementedBy(data) and
+                        RESPONSE is not None):
                     # This is a stream iterator and we need to set some
                     # headers now before giving it to medusa
-                    if RESPONSE.headers.get('content-length', None) is None:
+                    headers_get = RESPONSE.headers.get
+
+                    if headers_get('content-length', None) is None:
                         RESPONSE.setHeader('content-length', len(data))
 
-                    if ( RESPONSE.headers.get('content-type', None) is None and
-                         RESPONSE.headers.get('Content-type', None) is None ):
-                        ct = ( self.__dict__.get('content_type') or
-                               self.default_content_type )
+                    if (headers_get('content-type', None) is None and
+                            headers_get('Content-type', None) is None):
+                        ct = (self.__dict__.get('content_type') or
+                              self.default_content_type)
                         RESPONSE.setHeader('content-type', ct)
 
                 # Return cached results.
@@ -122,7 +129,7 @@ class DTMLMethod(RestrictedDTML,
 
         security = getSecurityManager()
         security.addContext(self)
-        if self.__dict__.has_key('validate'):
+        if 'validate' in self.__dict__:
             first_time_through = 0
         else:
             self.__dict__['validate'] = security.DTMLValidate
@@ -131,7 +138,7 @@ class DTMLMethod(RestrictedDTML,
 
             if client is None:
                 # Called as subtemplate, so don't need error propagation!
-                r = apply(HTML.__call__, (self, client, REQUEST), kw)
+                r = HTML.__call__(self, client, REQUEST, **kw)
                 if RESPONSE is None:
                     result = r
                 else:
@@ -140,8 +147,8 @@ class DTMLMethod(RestrictedDTML,
                     self.ZCacheable_set(result)
                 return result
 
-            r = apply(HTML.__call__, (self, client, REQUEST), kw)
-            if type(r) is not type('') or RESPONSE is None:
+            r = HTML.__call__(self, client, REQUEST, **kw)
+            if RESPONSE is None or not isinstance(r, str):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -153,7 +160,7 @@ class DTMLMethod(RestrictedDTML,
 
         have_key = RESPONSE.headers.has_key
         if not (have_key('content-type') or have_key('Content-Type')):
-            if self.__dict__.has_key('content_type'):
+            if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
                 c, e = guess_content_type(self.getId(), r)
@@ -242,7 +249,7 @@ class DTMLMethod(RestrictedDTML,
         'Wider': (0, 5),
         'Taller': (5, 0),
         'Shorter': (-5, 0),
-        }
+    }
 
     def _er(self, data, title, SUBMIT, dtpref_cols, dtpref_rows, REQUEST):
         dr, dc = self._size_changes[SUBMIT]
@@ -275,7 +282,7 @@ class DTMLMethod(RestrictedDTML,
         the data gets checked for DTML errors and is saved.
         """
         self._validateProxy(REQUEST)
-        if self._size_changes.has_key(SUBMIT):
+        if SUBMIT in self._size_changes:
             return self._er(data, title,
                             SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
         if self.wl_isLocked():
@@ -300,7 +307,7 @@ class DTMLMethod(RestrictedDTML,
         if self.wl_isLocked():
             raise ResourceLockedError('This DTML Method is locked.')
 
-        if type(file) is not type(''):
+        if not isinstance(file, str):
             if REQUEST and not file:
                 raise ValueError('No file specified')
             file = file.read()
@@ -310,8 +317,6 @@ class DTMLMethod(RestrictedDTML,
         if REQUEST:
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
-
-
 
     def manage_haveProxy(self, r):
         return r in self._proxy_roles
@@ -333,8 +338,8 @@ class DTMLMethod(RestrictedDTML,
 
         raise Forbidden(
             'You are not authorized to change <em>%s</em> because you '
-            'do not have proxy roles.\n<!--%s, %s-->'
-                % (self.__name__, u, roles))
+            'do not have proxy roles.\n<!--%s, %s-->' % (
+                self.__name__, u, roles))
 
     security.declareProtected(change_proxy_roles, 'manage_proxy')
     @requestmethod('POST')
@@ -361,8 +366,6 @@ class DTMLMethod(RestrictedDTML,
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
-    ## Protocol handlers
-
     security.declareProtected(change_dtml_methods, 'PUT')
     def PUT(self, REQUEST, RESPONSE):
         """ Handle FTP / HTTP PUT requests.
@@ -385,31 +388,29 @@ class DTMLMethod(RestrictedDTML,
         """
         return self.read()
 
-
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
         return DTMLMethod.inheritedAttribute('manage_historyCompare')(
             self, rev1, rev2, REQUEST,
-            historyComparisonResults = html_diff(rev1.read(), rev2.read()))
+            historyComparisonResults=html_diff(rev1.read(), rev2.read()))
 
 InitializeClass(DTMLMethod)
 
-import re
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
 hdr_start = re.compile(r'(%s):(.*)' % token).match
 
 
 def decapitate(html, RESPONSE=None):
     headers = []
-    spos  = 0
+    spos = 0
     eolen = 1
     while 1:
         m = hdr_start(html, spos)
         if not m:
-            if html[spos:spos+2] == '\r\n':
+            if html[spos:spos + 2] == '\r\n':
                 eolen = 2
                 break
-            if html[spos:spos+1] == '\n':
+            if html[spos:spos + 1] == '\n':
                 eolen = 1
                 break
             return html
@@ -418,10 +419,10 @@ def decapitate(html, RESPONSE=None):
         spos = m.end() + 1
         while spos < len(html) and html[spos] in ' \t':
             eol = html.find('\r\n', spos)
-            if eol <> -1:
+            if eol != -1:
                 eolen = 2
             else:
-                eol = html.find( '\n', spos)
+                eol = html.find('\n', spos)
                 if eol < 0:
                     return html
                 eolen = 1
@@ -434,7 +435,7 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
-default_dm_html="""<html>
+default_dm_html = """<html>
   <head><title><dtml-var title_or_id></title>
   </head>
   <body bgcolor="#FFFFFF">
@@ -446,13 +447,14 @@ in the <dtml-var title_and_id> Folder.
   </body>
 </html>"""
 
-addForm=DTMLFile('dtml/methodAdd', globals())
+addForm = DTMLFile('dtml/methodAdd', globals())
+
 
 def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if type(file) is not type(''):
+    if not isinstance(file, str):
         file = file.read()
     if not file:
         file = default_dm_html
@@ -468,5 +470,5 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
             u = REQUEST['URL1']
         if submit == " Add and Edit ":
             u = "%s/%s" % (u, quote(id))
-        REQUEST.RESPONSE.redirect(u+'/manage_main')
+        REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

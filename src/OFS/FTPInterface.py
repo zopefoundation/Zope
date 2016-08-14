@@ -25,7 +25,6 @@ from interfaces import IFTPAccess
 
 
 class FTPInterface:
-
     "Interface for FTP objects"
 
     implements(IFTPAccess)
@@ -34,11 +33,11 @@ class FTPInterface:
     #     be XML, not marshal, maybe Andrew K's xml-marshal.
     #     This will probably be changed later.
 
-    def manage_FTPstat(self,REQUEST):
+    def manage_FTPstat(self, REQUEST):
         """Returns a stat-like tuple. (marshalled to a string) Used by
         FTP for directory listings, and MDTM and SIZE"""
 
-    def manage_FTPlist(self,REQUEST):
+    def manage_FTPlist(self, REQUEST):
         """Returns a directory listing consisting of a tuple of
         (id,stat) tuples, marshaled to a string. Note, the listing it
         should include '..' if there is a Folder above the current

@@ -41,7 +41,7 @@ else:
     DAVPropertySheetMixin = bbb.DAVPropertySheetMixin
 
 
-class Virtual:
+class Virtual(object):
     """A virtual propertysheet stores it's properties in it's instance."""
 
     def __init__(self):

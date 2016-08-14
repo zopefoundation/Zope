@@ -37,10 +37,10 @@ class Owned(BaseOwned):
     security = ClassSecurityInfo()
     security.setPermissionDefault(take_ownership, ('Owner', ))
 
-    manage_options=({'label': 'Ownership',
-                     'action': 'manage_owner',
-                     'filter': ownableFilter},
-                   )
+    manage_options = (
+        {'label': 'Ownership', 'action': 'manage_owner',
+         'filter': ownableFilter},
+    )
 
     security.declareProtected(view_management_screens, 'manage_owner')
     manage_owner = DTMLFile('dtml/owner', globals())
@@ -52,11 +52,11 @@ class Owned(BaseOwned):
 
         If 'recursive' is true, then also take ownership of all sub-objects.
         """
-        security=getSecurityManager()
-        want_referer=REQUEST['URL1']+'/manage_owner'
-        got_referer=("%s://%s%s" %
-                     urlparse.urlparse(REQUEST['HTTP_REFERER'])[:3])
-        __traceback_info__=want_referer, got_referer
+        security = getSecurityManager()
+        want_referer = REQUEST['URL1'] + '/manage_owner'
+        got_referer = ("%s://%s%s" %
+                       urlparse.urlparse(REQUEST['HTTP_REFERER'])[:3])
+        __traceback_info__ = want_referer, got_referer
         if (want_referer != got_referer or security.calledByExecutable()):
             raise Unauthorized(
                 'manage_takeOwnership was called from an invalid context')
@@ -71,13 +71,13 @@ class Owned(BaseOwned):
                                    RESPONSE=None, REQUEST=None):
         """Change the type (implicit or explicit) of ownership.
         """
-        old=getattr(self, '_owner', None)
+        old = getattr(self, '_owner', None)
         if explicit:
             if old is not None:
                 return
             owner = self.getOwnerTuple()
             if owner is not None and owner is not UnownableOwner:
-                self._owner=owner
+                self._owner = owner
         else:
             if old is None:
                 return

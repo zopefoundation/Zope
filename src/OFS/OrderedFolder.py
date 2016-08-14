@@ -22,6 +22,7 @@ from OFS.OrderSupport import OrderSupport
 
 manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())
 
+
 def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
                             REQUEST=None):
     """Add a new ordered Folder object with id *id*.
@@ -39,7 +40,9 @@ class OrderedFolder(OrderSupport, Folder):
     """ Extends the default Folder by order support.
     """
     implements(IOrderedFolder)
-    meta_type='Folder (Ordered)'
+    meta_type = 'Folder (Ordered)'
 
-    manage_options = ( OrderSupport.manage_options +
-                       Folder.manage_options[1:] )
+    manage_options = (
+        OrderSupport.manage_options +
+        Folder.manage_options[1:]
+    )

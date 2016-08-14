@@ -24,7 +24,6 @@ from AccessControl.Permissions import change_images_and_files
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
-from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.Common import rfc1123_date

@@ -89,7 +89,7 @@ def _registerPackage(module_, init_func=None):
     """Registers the given python package as a Zope 2 style product
     """
     if not hasattr(module_, '__path__'):
-        raise ValueError("Must be a package and the " \
+        raise ValueError("Must be a package and the "
                          "package must be filesystem based")
 
     registered_packages = get_registered_packages()
@@ -108,10 +108,10 @@ def registerPackage(_context, package, initialize=None):
     """
 
     _context.action(
-        discriminator = ('registerPackage', package),
-        callable = _registerPackage,
-        args = (package,initialize)
-        )
+        discriminator=('registerPackage', package),
+        callable=_registerPackage,
+        args=(package, initialize)
+    )
 
 
 def _registerClass(class_, meta_type, permission, addview, icon, global_):
@@ -140,10 +140,11 @@ def _registerClass(class_, meta_type, permission, addview, icon, global_):
 def registerClass(_context, class_, meta_type, permission, addview=None,
                   icon=None, global_=True):
     _context.action(
-        discriminator = ('registerClass', meta_type),
-        callable = _registerClass,
-        args = (class_, meta_type, permission, addview, icon, global_)
-        )
+        discriminator=('registerClass', meta_type),
+        callable=_registerClass,
+        args=(class_, meta_type, permission, addview, icon, global_)
+    )
+
 
 def unregisterClass(class_):
     delattr(class_, 'meta_type')
@@ -159,7 +160,7 @@ def deprecatedManageAddDelete(_context, class_):
         discriminator=('five:deprecatedManageAddDelete', class_),
         callable=setDeprecatedManageAddDelete,
         args=(class_,),
-        )
+    )
 
 
 def cleanUp():
@@ -183,6 +184,6 @@ def cleanUp():
     _meta_type_regs = []
 
 
-from zope.testing.cleanup import addCleanUp
+from zope.testing.cleanup import addCleanUp  # NOQA
 addCleanUp(cleanUp)
 del addCleanUp

@@ -18,14 +18,16 @@
    and aquisition relationships via a simple interface.
 """
 
-class Moniker:
+
+class Moniker(object):
     """An object moniker is an intelligent reference to a
     persistent object. A moniker can be turned back into
     a real object that retains its correct version context
     and acquisition relationships via a simple interface."""
 
     def __init__(self, ob=None):
-        if ob is None: return
+        if ob is None:
+            return
         self.idpath = ob.getPhysicalPath()
 
     def bind(self, app):
@@ -47,6 +49,8 @@ def loadMoniker(data):
     m.idpath = data
     return m
 
+
 def absattr(attr):
-    if callable(attr): return attr()
+    if callable(attr):
+        return attr()
     return attr

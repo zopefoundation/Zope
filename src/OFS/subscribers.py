@@ -34,6 +34,7 @@ deprecatedManageAddDeleteClasses = []
 
 LOG = getLogger('OFS.subscribers')
 
+
 def compatibilityCall(method_name, *args):
     """Call a method if events have not been setup yet.
 
@@ -49,6 +50,7 @@ def compatibilityCall(method_name, *args):
         callManageBeforeDelete(*args)
     else:
         callManageAfterClone(*args)
+
 
 def maybeWarnDeprecated(ob, method_name):
     """Send a warning if a method is deprecated.
@@ -66,7 +68,6 @@ def maybeWarnDeprecated(ob, method_name):
         "%s.%s.%s is discouraged. You should use event subscribers instead." %
         (class_.__module__, class_.__name__, method_name))
 
-##################################################
 
 class ObjectManagerSublocations(object):
     """Get the sublocations for an ObjectManager.
@@ -91,6 +92,7 @@ class ObjectManagerSublocations(object):
 # could have a simple subscriber for IObjectManager that directly calls
 # dispatchToSublocations.
 
+
 @zope.component.adapter(OFS.interfaces.IItem,
                         OFS.interfaces.IObjectWillBeMovedEvent)
 def dispatchObjectWillBeMovedEvent(ob, event):
@@ -102,6 +104,7 @@ def dispatchObjectWillBeMovedEvent(ob, event):
     # Next, do the manage_beforeDelete dance
     callManageBeforeDelete(ob, event.object, event.oldParent)
 
+
 @zope.component.adapter(OFS.interfaces.IItem, IObjectMovedEvent)
 def dispatchObjectMovedEvent(ob, event):
     """Multi-subscriber for IItem + IObjectMovedEvent.
@@ -111,6 +114,7 @@ def dispatchObjectMovedEvent(ob, event):
     # Next, dispatch to sublocations
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
+
 
 @zope.component.adapter(OFS.interfaces.IItem,
                         OFS.interfaces.IObjectClonedEvent)
@@ -122,6 +126,7 @@ def dispatchObjectClonedEvent(ob, event):
     # Next, dispatch to sublocations
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
+
 
 @zope.component.adapter(OFS.interfaces.IItem, IObjectCopiedEvent)
 def dispatchObjectCopiedEvent(ob, event):
@@ -142,6 +147,7 @@ def callManageAfterAdd(ob, item, container):
     maybeWarnDeprecated(ob, 'manage_afterAdd')
     ob.manage_afterAdd(item, container)
 
+
 def callManageBeforeDelete(ob, item, container):
     """Compatibility subscriber for manage_beforeDelete.
     """
@@ -150,7 +156,7 @@ def callManageBeforeDelete(ob, item, container):
     if getattr(aq_base(ob), 'manage_beforeDelete', None) is None:
         return
     maybeWarnDeprecated(ob, 'manage_beforeDelete')
-    import OFS.ObjectManager # avoid circular imports
+    import OFS.ObjectManager  # avoid circular imports
     try:
         ob.manage_beforeDelete(item, container)
     except OFS.ObjectManager.BeforeDeleteException:
@@ -163,6 +169,7 @@ def callManageBeforeDelete(ob, item, container):
         if getConfiguration().debug_mode:
             if not getSecurityManager().getUser().has_role('Manager'):
                 raise
+
 
 def callManageAfterClone(ob, item):
     """Compatibility subscriber for manage_afterClone.

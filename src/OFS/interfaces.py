@@ -241,8 +241,8 @@ class ITraversable(Interface):
     def unrestrictedTraverse(path, default=None, restricted=0):
         """Lookup an object by path.
 
-        path -- The path to the object. May be a sequence of strings or a slash
-        separated string. If the path begins with an empty path element
+        path -- The path to the object. May be a sequence of strings or a
+        slash separated string. If the path begins with an empty path element
         (i.e., an empty string or a slash) then the lookup is performed
         from the application root. Otherwise, the lookup is relative to
         self. Two dots (..) as a path element indicates an upward traversal
@@ -252,9 +252,10 @@ class ITraversable(Interface):
         be traversed for any reason (i.e., no object exists at that path or
         the object is inaccessible).
 
-        restricted -- If false (default) then no security checking is performed.
-        If true, then all of the objects along the path are validated with
-        the security machinery. Usually invoked using restrictedTraverse().
+        restricted -- If false (default) then no security checking is
+        performed. If true, then all of the objects along the path are
+        validated with the security machinery. Usually invoked using
+        restrictedTraverse().
         """
 
     def restrictedTraverse(path, default=None):
@@ -270,12 +271,12 @@ class IZopeObject(Interface):
     isPrincipiaFolderish = Bool(
         title=u"Is a folderish object",
         description=u"Should be false for simple items",
-        )
+    )
 
     meta_type = BytesLine(
         title=u"Meta type",
         description=u"The object's Zope2 meta type",
-        )
+    )
 
 
 # XXX: might contain non-API methods and outdated comments;
@@ -287,9 +288,7 @@ class IManageable(Interface):
 
     manage_tabs = Attribute("""Management tabs""")
 
-    manage_options = Tuple(
-        title=u"Manage options",
-        )
+    manage_options = Tuple(title=u"Manage options")
 
     def manage(URL1):
         """Show management screen"""
@@ -523,13 +522,9 @@ class ILockItem(Interface):
 class IItem(IZopeObject, IManageable, IFTPAccess,
             ICopySource, ITraversable, IOwned):
 
-    __name__ = BytesLine(
-        title=u"Name"
-        )
+    __name__ = BytesLine(title=u"Name")
 
-    title = BytesLine(
-        title=u"Title"
-        )
+    title = BytesLine(title=u"Title")
 
     def getId():
         """Return the id of the object as a string.
@@ -673,11 +668,11 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
     meta_types = Tuple(
         title=u"Meta types",
         description=u"Sub-object types that are specific to this object",
-        )
+    )
 
     isAnObjectManager = Bool(
         title=u"Is an object manager",
-        )
+    )
 
     manage_main = Attribute(""" """)
     manage_index_main = Attribute(""" """)
@@ -852,15 +847,11 @@ class IPropertyManager(Interface):
     manage_propertiesForm = Attribute(""" """)
     manage_propertyTypeForm = Attribute(""" """)
 
-    title = BytesLine(
-        title=u"Title"
-        )
+    title = BytesLine(title=u"Title")
 
-    _properties = Tuple(
-        title=u"Properties",
-        )
+    _properties = Tuple(title=u"Properties")
 
-    propertysheets = Attribute(""" """)
+    propertysheets = Attribute(" ")
 
     def valid_property_id(id):
         """
@@ -1002,8 +993,8 @@ class IApplication(IFolder, IRoot):
     """Top-level system object"""
 
     isTopLevelPrincipiaApplicationObject = Bool(
-        title=u"Is top level Principa application object",
-        )
+        title=u"Is top level application object",
+    )
 
     p_ = Attribute(""" """)
     misc_ = Attribute("Misc.")

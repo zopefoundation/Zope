@@ -81,8 +81,8 @@ class Item(Base,
 
     security = ClassSecurityInfo()
 
-    isPrincipiaFolderish=0
-    isTopLevelPrincipiaApplicationObject=0
+    isPrincipiaFolderish = 0
+    isTopLevelPrincipiaApplicationObject = 0
 
     def manage_afterAdd(self, item, container):
         pass
@@ -132,10 +132,11 @@ class Item(Base,
     def title_or_id(self):
         """Return the title if it is not blank and the id otherwise.
         """
-        title=self.title
+        title = self.title
         if callable(title):
-            title=title()
-        if title: return title
+            title = title()
+        if title:
+            return title
         return self.getId()
 
     def title_and_id(self):
@@ -143,11 +144,11 @@ class Item(Base,
 
         If the title is not blank, then the id is included in parens.
         """
-        title=self.title
+        title = self.title
         if callable(title):
-            title=title()
+            title = title()
         id = self.getId()
-        return title and ("%s (%s)" % (title,id)) or id
+        return title and ("%s (%s)" % (title, id)) or id
 
     def this(self):
         # Handy way to talk to ourselves in document templates.
@@ -163,25 +164,27 @@ class Item(Base,
 
     _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
-        return apply(self._manage_editedDialog,(self, REQUEST), args)
+        return self._manage_editedDialog(self, REQUEST, **args)
 
     def raise_standardErrorMessage(
-        self, client=None, REQUEST={},
-        error_type=None, error_value=None, tb=None,
-        error_tb=None, error_message='',
-        tagSearch=re.compile(r'[a-zA-Z]>').search,
-        error_log_url=''):
+            self, client=None, REQUEST={},
+            error_type=None, error_value=None, tb=None,
+            error_tb=None, error_message='',
+            tagSearch=re.compile(r'[a-zA-Z]>').search,
+            error_log_url=''):
 
         try:
-            if error_type  is None: error_type =sys.exc_info()[0]
-            if error_value is None: error_value=sys.exc_info()[1]
+            if error_type is None:
+                error_type = sys.exc_info()[0]
+            if error_value is None:
+                error_value = sys.exc_info()[1]
 
             # allow for a few different traceback options
             if tb is None and error_tb is None:
-                tb=sys.exc_info()[2]
-            if type(tb) is not type('') and (error_tb is None):
+                tb = sys.exc_info()[2]
+            if not isinstance(tb, str) and (error_tb is None):
                 error_tb = pretty_tb(error_type, error_value, tb)
-            elif type(tb) is type('') and not error_tb:
+            elif isinstance(tb, str) and not error_tb:
                 error_tb = tb
 
             if hasattr(self, '_v_eek'):
@@ -204,7 +207,7 @@ class Item(Base,
                 except TypeError:
                     match = None
                 if match is not None:
-                    error_message=error_value
+                    error_message = error_value
 
             if client is None:
                 client = self
@@ -235,24 +238,25 @@ class Item(Base,
                 logger.error(
                     'Exception while rendering an error message',
                     exc_info=True
-                    )
+                )
                 try:
-                    strv = repr(error_value) # quotes tainted strings
+                    strv = repr(error_value)  # quotes tainted strings
                 except:
                     strv = ('<unprintable %s object>' %
                             str(type(error_value).__name__))
                 v = strv + (
                     (" (Also, the following error occurred while attempting "
                      "to render the standard error message, please see the "
-                     "event log for full details: %s)")%(
-                    html_quote(sys.exc_info()[1]),
+                     "event log for full details: %s)") % (
+                        html_quote(sys.exc_info()[1]),
                     ))
 
             # If we've been asked to handle errors, just return the rendered
             # exception and let the ZPublisher Exception Hook deal with it.
             return error_type, v, tb
         finally:
-            if hasattr(self, '_v_eek'): del self._v_eek
+            if hasattr(self, '_v_eek'):
+                del self._v_eek
             tb = None
 
     def manage(self, URL1):
@@ -264,66 +268,65 @@ class Item(Base,
     # objectValues, etc., when used in simple tree tags.
     def objectValues(self, spec=None):
         return ()
-    objectIds=objectItems=objectValues
+    objectIds = objectItems = objectValues
 
     # FTP support methods
 
-    def manage_FTPstat(self,REQUEST):
+    def manage_FTPstat(self, REQUEST):
         """Psuedo stat, used by FTP for directory listings.
         """
         from AccessControl.User import nobody
-        mode=0100000
+        mode = 0o0100000
 
-        if (hasattr(aq_base(self),'manage_FTPget')):
+        if (hasattr(aq_base(self), 'manage_FTPget')):
             try:
                 if getSecurityManager().validate(
-                    None, self, 'manage_FTPget', self.manage_FTPget):
-                    mode=mode | 0440
+                        None, self, 'manage_FTPget', self.manage_FTPget):
+                    mode = mode | 0o0440
             except Unauthorized:
                 pass
 
             if nobody.allowed(
-                self.manage_FTPget,
-                getRoles(self, 'manage_FTPget', self.manage_FTPget, ()),
-                ):
-                mode=mode | 0004
+                    self.manage_FTPget,
+                    getRoles(self, 'manage_FTPget', self.manage_FTPget, ())):
+                mode = mode | 0o0004
 
         # check write permissions
-        if hasattr(aq_base(self),'PUT'):
+        if hasattr(aq_base(self), 'PUT'):
             try:
                 if getSecurityManager().validate(None, self, 'PUT', self.PUT):
-                    mode=mode | 0220
+                    mode = mode | 0o0220
             except Unauthorized:
                 pass
 
             if nobody.allowed(
-                self.PUT,
-                getRoles(self, 'PUT', self.PUT, ()),
-                ):
-                mode=mode | 0002
+                    self.PUT,
+                    getRoles(self, 'PUT', self.PUT, ())):
+                mode = mode | 0o0002
 
         # get size
         if hasattr(aq_base(self), 'get_size'):
-            size=self.get_size()
-        elif hasattr(aq_base(self),'manage_FTPget'):
-            size=len(self.manage_FTPget())
+            size = self.get_size()
+        elif hasattr(aq_base(self), 'manage_FTPget'):
+            size = len(self.manage_FTPget())
         else:
-            size=0
+            size = 0
         # get modification time
         if hasattr(aq_base(self), '_p_mtime'):
-            mtime=DateTime(self._p_mtime).timeTime()
+            mtime = DateTime(self._p_mtime).timeTime()
         else:
-            mtime=time.time()
+            mtime = time.time()
         # get owner and group
-        owner=group='Zope'
+        owner = group = 'Zope'
         if hasattr(aq_base(self), 'get_local_roles'):
             for user, roles in self.get_local_roles():
                 if 'Owner' in roles:
-                    owner=user
+                    owner = user
                     break
-        return marshal.dumps((mode,0,0,1,owner,group,size,mtime,mtime,mtime))
+        return marshal.dumps(
+            (mode, 0, 0, 1, owner, group, size, mtime, mtime, mtime))
 
-    def manage_FTPlist(self,REQUEST):
+    def manage_FTPlist(self, REQUEST):
         """Directory listing for FTP.
 
         In the case of non-Foldoid objects, the listing should contain one
@@ -331,17 +334,17 @@ class Item(Base,
         """
         from App.Common import is_acquired
         # check to see if we are being acquiring or not
-        ob=self
+        ob = self
         while 1:
             if is_acquired(ob):
                 raise ValueError('FTP List not supported on acquired objects')
-            if not hasattr(ob,'aq_parent'):
+            if not hasattr(ob, '__parent__'):
                 break
             ob = aq_parent(ob)
 
-        stat=marshal.loads(self.manage_FTPstat(REQUEST))
+        stat = marshal.loads(self.manage_FTPstat(REQUEST))
         id = self.getId()
-        return marshal.dumps((id,stat))
+        return marshal.dumps((id, stat))
 
     def __len__(self):
         return 1
@@ -397,11 +400,11 @@ class Item_w__name__(Item):
 
         If the title is not blank, then the id is included in parens.
         """
-        t=self.title
-        return t and ("%s (%s)" % (t,self.__name__)) or self.__name__
+        t = self.title
+        return t and ("%s (%s)" % (t, self.__name__)) or self.__name__
 
     def _setId(self, id):
-        self.__name__=id
+        self.__name__ = id
 
     def getPhysicalPath(self):
         # Get the physical path of the object.
@@ -429,8 +432,6 @@ class SimpleItem(Item,
                  Implicit,
                  RoleManager,
                  ):
-
-    # Blue-plate special, Zope Masala
     """Mix-in class combining the most common set of basic mix-ins
     """
 
@@ -439,8 +440,8 @@ class SimpleItem(Item,
     security = ClassSecurityInfo()
     security.setPermissionDefault(View, ('Manager',))
 
-    manage_options=Item.manage_options+(
+    manage_options = Item.manage_options + (
         {'label': 'Security', 'action': 'manage_access'},
-        )
+    )
 
 InitializeClass(SimpleItem)

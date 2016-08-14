@@ -10,12 +10,10 @@ class IDeprecatedManageAddDeleteDirective(Interface):
     """
     class_ = GlobalObject(
         title=u"Class",
-        required=True,
-        )
+        required=True)
 
 
 class IRegisterClassDirective(Interface):
-
     """registerClass directive schema.
 
     Register content with Zope 2.
@@ -24,43 +22,37 @@ class IRegisterClassDirective(Interface):
     class_ = GlobalObject(
         title=u'Instance Class',
         description=u'Dotted name of the class that is registered.',
-        required=True
-        )
+        required=True)
 
     meta_type = ASCII(
         title=u'Meta Type',
         description=u'A human readable unique identifier for the class.',
-        required=True
-        )
+        required=True)
 
     permission = Permission(
         title=u'Add Permission',
         description=u'The permission for adding objects of this class.',
-        required=True
-        )
+        required=True)
 
     addview = ASCII(
         title=u'Add View ID',
         description=u'The ID of the add view used in the ZMI. Consider this '
                     u'required unless you know exactly what you do.',
         default=None,
-        required=False
-        )
+        required=False)
 
     icon = ASCII(
         title=u'Icon ID',
         description=u'The ID of the icon used in the ZMI.',
         default=None,
-        required=False
-        )
+        required=False)
 
     global_ = Bool(
         title=u'Global scope?',
         description=u'If "global" is False the class is only available in '
                     u'containers that explicitly allow one of its interfaces.',
         default=True,
-        required=False
-        )
+        required=False)
 
 
 class IRegisterPackageDirective(Interface):
@@ -70,12 +62,10 @@ class IRegisterPackageDirective(Interface):
 
     package = GlobalObject(
         title=u'Target package',
-        required=True
-        )
+        required=True)
 
     initialize = GlobalObject(
         title=u'Initialization function to invoke',
         description=u'The dotted name of a function that will get invoked '
                     u'with a ProductContext instance',
-        required=False
-        )
+        required=False)
