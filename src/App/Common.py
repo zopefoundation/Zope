@@ -16,7 +16,7 @@ import os
 import sys
 import time
 
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent
 
 # BBB
 from os.path import realpath  # NOQA
@@ -83,11 +83,11 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
     # Note that this method is misnamed since parents can (and do)
     # spoof it. It is not a true measure of whether something is
     # acquired, it relies on the parent's parent-ness exclusively
-    if not hasattr(ob, 'aq_parent'):
-        # We can't be acquired if we don't have an aq_parent
+    if not hasattr(ob, '__parent__'):
+        # We can't be acquired if we don't have an __parent__
         return 0
 
-    parent = aq_base(ob.aq_parent)
+    parent = aq_base(aq_parent(ob))
     absId = absattr(ob.id)
 
     if hasattr(parent, absId):
@@ -100,7 +100,7 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
         try:
             # We assume that getitem will not acquire which
             # is the standard behavior for Zope objects
-            if aq_base(ob.aq_parent[absId]) is aq_base(ob):
+            if aq_base(aq_parent(ob)[absId]) is aq_base(ob):
                 # This object is an item of the aq_parent, its not acquired
                 return 0
         except KeyError:

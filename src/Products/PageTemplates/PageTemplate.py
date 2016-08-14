@@ -14,6 +14,8 @@
 """
 
 import sys
+
+from Acquisition import aq_base
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
 from zope.pagetemplate.pagetemplate import PTRuntimeError
@@ -35,14 +37,14 @@ class PageTemplate(ExtensionClass.Base,
              'request': None,
              'modules': SimpleModuleImporter(),
              }
-        parent = getattr(self, 'aq_parent', None)
+        parent = getattr(self, '__parent__', None)
         if parent is not None:
             c['here'] = parent
             c['context'] = parent
             c['container'] = self.aq_inner.aq_parent
             while parent is not None:
                 self = parent
-                parent = getattr(self, 'aq_parent', None)
+                parent = getattr(self, '__parent__', None)
             c['root'] = self
         return c
 
@@ -119,6 +121,6 @@ class PageTemplate(ExtensionClass.Base,
     # implementation had this as well, but arguably on the wrong class
     # (this should be a ZopePageTemplate thing if at all)
     def html(self):
-        if not hasattr(getattr(self, 'aq_base', self), 'is_html'):
+        if not hasattr(aq_base(self), 'is_html'):
             return self.content_type == 'text/html'
         return self.is_html
