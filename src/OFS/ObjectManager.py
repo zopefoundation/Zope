@@ -35,7 +35,7 @@ from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import import_export_objects
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent
 from Acquisition import Implicit
 from App.Common import is_acquired
 from App.config import getConfiguration
@@ -71,6 +71,10 @@ if bbb.HAS_ZSERVER:
 else:
     Collection = bbb.Collection
 
+if sys.version_info >= (3, ):
+    basestring = str
+    unicode = str
+
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
 REPLACEABLE = 1
@@ -95,18 +99,24 @@ def checkValidId(self, id, allow_dup=0):
     if not id or not isinstance(id, str):
         if isinstance(id, unicode):
             id = escape(id)
-        raise BadRequest, ('Empty or invalid id specified', id)
+        raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
-        raise BadRequest, (
+        raise BadRequest(
             'The id "%s" contains characters illegal in URLs.' % escape(id))
-    if id in ('.', '..'): raise BadRequest, (
-        'The id "%s" is invalid because it is not traversable.' % id)
-    if id.startswith('_'): raise BadRequest, (
-        'The id "%s" is invalid because it begins with an underscore.' % id)
-    if id.startswith('aq_'): raise BadRequest, (
-        'The id "%s" is invalid because it begins with "aq_".' % id)
-    if id.endswith('__'): raise BadRequest, (
-        'The id "%s" is invalid because it ends with two underscores.' % id)
+    if id in ('.', '..'):
+        raise BadRequest(
+            'The id "%s" is invalid because it is not traversable.' % id)
+    if id.startswith('_'):
+        raise BadRequest(
+            'The id "%s" is invalid because it '
+            'begins with an underscore.' % id)
+    if id.startswith('aq_'):
+        raise BadRequest(
+            'The id "%s" is invalid because it begins with "aq_".' % id)
+    if id.endswith('__'):
+        raise BadRequest(
+            'The id "%s" is invalid because it '
+            'ends with two underscores.' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
         if obj is not None:
@@ -116,30 +126,28 @@ def checkValidId(self, id, allow_dup=0):
             if hasattr(aq_base(self), id):
                 # The object is located in this ObjectManager.
                 if not flags & REPLACEABLE:
-                    raise BadRequest, (
+                    raise BadRequest(
                         'The id "%s" is invalid - it is already in use.' % id)
                 # else the object is replaceable even if the UNIQUE
                 # flag is set.
             elif flags & UNIQUE:
-                raise BadRequest, ('The id "%s" is reserved.' % id)
+                raise BadRequest('The id "%s" is reserved.' % id)
     if id == 'REQUEST':
-        raise BadRequest, 'REQUEST is a reserved name.'
+        raise BadRequest('REQUEST is a reserved name.')
     if '/' in id:
-        raise BadRequest, (
+        raise BadRequest(
             'The id "%s" contains characters illegal in URLs.' % id)
 
 
 class BeforeDeleteException(Exception):
-
-    pass # raise to veto deletion
+    pass  # raise to veto deletion
 
 
 class BreakoutException(Exception):
-
     pass  # raised to break out of loops
 
 
-_marker=[]
+_marker = []
 
 
 class ObjectManager(CopyContainer,
@@ -149,8 +157,7 @@ class ObjectManager(CopyContainer,
                     Persistent,
                     Collection,
                     LockableItem,
-                    Traversable,
-                   ):
+                    Traversable):
 
     """Generic object manager
 
@@ -166,27 +173,24 @@ class ObjectManager(CopyContainer,
 
     meta_type = 'Object Manager'
 
-    meta_types=() # Sub-object types that are specific to this object
+    meta_types = ()  # Sub-object types that are specific to this object
 
     _objects = ()
 
     security.declareProtected(view_management_screens, 'manage_main')
-    manage_main=DTMLFile('dtml/main', globals())
+    manage_main = DTMLFile('dtml/main', globals())
 
-    manage_index_main=DTMLFile('dtml/index_main', globals())
+    manage_index_main = DTMLFile('dtml/index_main', globals())
 
-    manage_options=(
-        {'label':'Contents', 'action':'manage_main'},
-        )
+    manage_options = (
+        {'label': 'Contents', 'action': 'manage_main'},
+    )
 
-    isAnObjectManager=1
-
-    isPrincipiaFolderish=1
-
-    has_order_support = 0 # See OrderSupport.py
+    isAnObjectManager = 1
+    isPrincipiaFolderish = 1
+    has_order_support = 0  # See OrderSupport.py
 
     # IPossibleSite API
-
     _components = None
 
     security.declarePublic('getSiteManager')
@@ -199,19 +203,22 @@ class ObjectManager(CopyContainer,
     def setSiteManager(self, components):
         self._components = components
 
-
     def __class_init__(self):
-        try:    mt=list(self.meta_types)
-        except: mt=[]
+        try:
+            mt = list(self.meta_types)
+        except Exception:
+            mt = []
         for b in self.__bases__:
             try:
                 for t in b.meta_types:
-                    if t not in mt: mt.append(t)
-            except: pass
+                    if t not in mt:
+                        mt.append(t)
+            except Exception:
+                pass
         mt.sort()
-        self.meta_types=tuple(mt)
+        self.meta_types = tuple(mt)
 
-        InitializeClass(self) # default__class_init__
+        InitializeClass(self)
 
     def all_meta_types(self, interfaces=None):
         # A list of products registered elsewhere
@@ -221,7 +228,7 @@ class ObjectManager(CopyContainer,
         # Look at all globally visible meta types.
         for entry in getattr(Products, 'meta_types', ()):
             if ((interfaces is not None) or
-                (entry.get("visibility", None)=="Global")):
+                    (entry.get("visibility", None) == "Global")):
                 external_candidates.append(entry)
 
         # Filter the list of external candidates based on the
@@ -232,13 +239,13 @@ class ObjectManager(CopyContainer,
             interface_constrained_meta_types = icmt = []
             for entry in external_candidates:
                 try:
-                    eil = entry.get('interfaces',None)
+                    eil = entry.get('interfaces', None)
                     if eil is not None:
                         for ei in eil:
                             for i in interfaces:
                                 if ei is i or ei.extends(i):
                                     icmt.append(entry)
-                                    raise BreakoutException # only append 1ce
+                                    raise BreakoutException  # only append 1ce
                 except BreakoutException:
                     pass
 
@@ -250,7 +257,7 @@ class ObjectManager(CopyContainer,
         # Filter the list based on each meta-types's container_filter
         meta_types = []
         for entry in interface_constrained_meta_types:
-            container_filter = entry.get('container_filter',None)
+            container_filter = entry.get('container_filter', None)
             if container_filter is None:
                 meta_types.append(entry)
             else:
@@ -295,7 +302,7 @@ class ObjectManager(CopyContainer,
         if id[:1] != '_' and hasattr(aq_base(self), id):
             return getattr(self, id)
         if default is _marker:
-            raise AttributeError, id
+            raise AttributeError(id)
         return default
 
     security.declareProtected(access_contents_information, 'hasObject')
@@ -306,9 +313,9 @@ class ObjectManager(CopyContainer,
         # consult _objects (for performance reasons). The common use case
         # is to check that an object does *not* exist.
         if (id in ('.', '..') or
-            id.startswith('_') or
-            id.startswith('aq_') or
-            id.endswith('__')):
+                id.startswith('_') or
+                id.startswith('aq_') or
+                id.endswith('__')):
             return False
         return getattr(aq_base(self), id, None) is not None
 
@@ -318,7 +325,7 @@ class ObjectManager(CopyContainer,
 
         Also sends IObjectWillBeAddedEvent and IObjectAddedEvent.
         """
-        ob = object # better name, keep original function signature
+        ob = object  # better name, keep original function signature
         v = self._checkId(id)
         if v is not None:
             id = v
@@ -410,28 +417,28 @@ class ObjectManager(CopyContainer,
         # If 'spec' is specified, returns objects whose meta_type
         # matches 'spec'.
         if spec is not None:
-            if type(spec)==type('s'):
-                spec=[spec]
-            set=[]
+            if isinstance(spec, str):
+                spec = [spec]
+            set = []
             for ob in self._objects:
                 if ob['meta_type'] in spec:
                     set.append(ob['id'])
             return set
-        return [ o['id']  for o in self._objects ]
+        return [o['id'] for o in self._objects]
 
     security.declareProtected(access_contents_information, 'objectValues')
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
-        return [ self._getOb(id) for id in self.objectIds(spec) ]
+        return [self._getOb(id) for id in self.objectIds(spec)]
 
     security.declareProtected(access_contents_information, 'objectItems')
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
         # If 'spec' is specified, returns only objects whose meta_type match
         # 'spec'
-        return [ (id, self._getOb(id)) for id in self.objectIds(spec) ]
+        return [(id, self._getOb(id)) for id in self.objectIds(spec)]
 
     def objectMap(self):
         # Return a tuple of mappings containing subobject meta-data
@@ -439,13 +446,16 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'objectIds_d')
     def objectIds_d(self, t=None):
-        if hasattr(self, '_reserved_names'): n=self._reserved_names
-        else: n=()
-        if not n: return self.objectIds(t)
-        r=[]
-        a=r.append
+        if hasattr(self, '_reserved_names'):
+            n = self._reserved_names
+        else:
+            n = ()
+        if not n:
+            return self.objectIds(t)
+        r = []
         for id in self.objectIds(t):
-            if id not in n: a(id)
+            if id not in n:
+                r.append(id)
         return r
 
     security.declareProtected(access_contents_information, 'objectValues_d')
@@ -454,54 +464,59 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'objectItems_d')
     def objectItems_d(self, t=None):
-        r=[]
-        a=r.append
-        g=self._getOb
-        for id in self.objectIds_d(t): a((id, g(id)))
+        r = []
+        for id in self.objectIds_d(t):
+            r.append((id, self._getOb(id)))
         return r
 
     security.declareProtected(access_contents_information, 'objectMap_d')
     def objectMap_d(self, t=None):
-        if hasattr(self, '_reserved_names'): n=self._reserved_names
-        else: n=()
-        if not n: return self._objects
-        r=[]
-        a=r.append
+        if hasattr(self, '_reserved_names'):
+            n = self._reserved_names
+        else:
+            n = ()
+        if not n:
+            return self._objects
+        r = []
         for d in self._objects:
-            if d['id'] not in n: a(d.copy())
+            if d['id'] not in n:
+                r.append(d.copy())
         return r
 
     security.declareProtected(access_contents_information, 'superValues')
     def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
-        if type(t)==type('s'): t=(t,)
-        obj=self
-        seen={}
-        vals=[]
+        if isinstance(t, str):
+            t = (t,)
+        obj = self
+        seen = {}
+        vals = []
         relativePhysicalPath = ()
-        x=0
+        x = 0
         while x < 100:
-            if not hasattr(obj,'_getOb'): break
-            get=obj._getOb
-            if hasattr(obj,'_objects'):
+            if not hasattr(obj, '_getOb'):
+                break
+            get = obj._getOb
+            if hasattr(obj, '_objects'):
                 for i in obj._objects:
                     try:
-                        id=i['id']
+                        id = i['id']
                         physicalPath = relativePhysicalPath + (id,)
-                        if (physicalPath not in seen) and (i['meta_type'] in t):
+                        if ((physicalPath not in seen) and
+                                (i['meta_type'] in t)):
                             vals.append(get(id))
-                            seen[physicalPath]=1
-                    except: pass
+                            seen[physicalPath] = 1
+                    except Exception:
+                        pass
 
-            if hasattr(obj,'aq_parent'):
-                obj=obj.aq_parent
+            if hasattr(obj, '__parent__'):
+                obj = aq_parent(obj)
                 relativePhysicalPath = ('..',) + relativePhysicalPath
             else:
                 return vals
-            x=x+1
+            x = x + 1
         return vals
-
 
     manage_addProduct = ProductDispatcher()
 
@@ -514,18 +529,20 @@ class ObjectManager(CopyContainer,
         if isinstance(ids, basestring):
             ids = [ids]
         if not ids:
-            return MessageDialog(title='No items specified',
-                   message='No items were specified!',
-                   action='./manage_main',)
+            return MessageDialog(
+                title='No items specified',
+                message='No items were specified!',
+                action='./manage_main',)
         try:
             p = self._reserved_names
         except:
             p = ()
         for n in ids:
             if n in p:
-                return MessageDialog(title='Not Deletable',
-                       message='<EM>%s</EM> cannot be deleted.' % escape(n),
-                       action='./manage_main',)
+                return MessageDialog(
+                    title='Not Deletable',
+                    message='<EM>%s</EM> cannot be deleted.' % escape(n),
+                    action='./manage_main',)
         while ids:
             id = ids[-1]
             v = self._getOb(id, self)
@@ -544,10 +561,11 @@ class ObjectManager(CopyContainer,
     security.declareProtected(access_contents_information, 'tpValues')
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
-        r=[]
+        r = []
         if hasattr(aq_base(self), 'tree_ids'):
-            tree_ids=self.tree_ids
-            try:   tree_ids=list(tree_ids)
+            tree_ids = self.tree_ids
+            try:
+                tree_ids = list(tree_ids)
             except TypeError:
                 pass
             if hasattr(tree_ids, 'sort'):
@@ -556,10 +574,10 @@ class ObjectManager(CopyContainer,
                 if hasattr(self, id):
                     r.append(self._getOb(id))
         else:
-            obj_ids=self.objectIds()
+            obj_ids = self.objectIds()
             obj_ids.sort()
             for id in obj_ids:
-                o=self._getOb(id)
+                o = self._getOb(id)
                 if hasattr(aq_base(o), 'isPrincipiaFolderish') and \
                    o.isPrincipiaFolderish:
                     r.append(o)
@@ -654,9 +672,9 @@ class ObjectManager(CopyContainer,
     def _getImportPaths(self):
         cfg = getConfiguration()
         paths = []
-        if not cfg.instancehome in paths:
+        if cfg.instancehome not in paths:
             paths.append(cfg.instancehome)
-        if not cfg.clienthome in paths:
+        if cfg.clienthome not in paths:
             paths.append(cfg.clienthome)
         return paths
 
@@ -677,55 +695,54 @@ class ObjectManager(CopyContainer,
     def manage_FTPlist(self, REQUEST):
         """Directory listing for FTP.
         """
-        out=()
+        out = ()
 
         # check to see if we are being acquiring or not
-        ob=self
+        ob = self
         while 1:
             if is_acquired(ob):
                 raise ValueError('FTP List not supported on acquired objects')
-            if not hasattr(ob,'aq_parent'):
+            if not hasattr(ob, '__parent__'):
                 break
-            ob=ob.aq_parent
+            ob = aq_parent(ob)
 
         files = list(self.objectItems())
 
         # recursive ride through all subfolders (ls -R) (ajung)
 
-        if REQUEST.environ.get('FTP_RECURSIVE',0) == 1:
-
+        if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
             all_files = copy.copy(files)
             for f in files:
                 if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
-                    f[1].isPrincipiaFolderish):
+                        f[1].isPrincipiaFolderish):
                     all_files.extend(findChildren(f[1]))
             files = all_files
 
         # Perform globbing on list of files (ajung)
 
-        globbing = REQUEST.environ.get('GLOBBING','')
-        if globbing :
-            files = [x for x in files if fnmatch.fnmatch(x[0],globbing)]
+        globbing = REQUEST.environ.get('GLOBBING', '')
+        if globbing:
+            files = [x for x in files if fnmatch.fnmatch(x[0], globbing)]
 
         files.sort()
 
-        if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
+        if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
-            files.insert(0,('..',self.aq_parent))
+            files.insert(0, ('..', aq_parent(self)))
         files.insert(0, ('.', self))
-        for k,v in files:
+        for k, v in files:
             # Note that we have to tolerate failure here, because
             # Broken objects won't stat correctly. If an object fails
             # to be able to stat itself, we will ignore it, but log
             # the error.
             try:
-                stat=marshal.loads(v.manage_FTPstat(REQUEST))
+                stat = marshal.loads(v.manage_FTPstat(REQUEST))
             except:
                 LOG.error("Failed to stat file '%s'" % k,
                           exc_info=sys.exc_info())
-                stat=None
+                stat = None
             if stat is not None:
-                out=out+((k,stat),)
+                out = out + ((k, stat),)
         return marshal.dumps(out)
 
     security.declareProtected(ftp_access, 'manage_hasId')
@@ -736,36 +753,36 @@ class ObjectManager(CopyContainer,
             raise KeyError(REQUEST['id'])
 
     security.declareProtected(ftp_access, 'manage_FTPstat')
-    def manage_FTPstat(self,REQUEST):
+    def manage_FTPstat(self, REQUEST):
         """Psuedo stat, used by FTP for directory listings.
         """
-        mode=0040000
+        mode = 0o0040000
         from AccessControl.User import nobody
         # check to see if we are acquiring our objectValues or not
         if not (len(REQUEST.PARENTS) > 1 and
                 self.objectValues() == REQUEST.PARENTS[1].objectValues()):
             try:
                 if getSecurityManager().validate(
-                    None, self, 'manage_FTPlist', self.manage_FTPlist
-                    ):
-                    mode=mode | 0770
-            except: pass
+                        None, self, 'manage_FTPlist', self.manage_FTPlist):
+                    mode = mode | 0o0770
+            except Exception:
+                pass
 
-            if nobody.allowed(
-                self,
-                getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ())):
-                mode=mode | 0007
+            if nobody.allowed(self, getRoles(
+                    self, 'manage_FTPlist', self.manage_FTPlist, ())):
+                mode = mode | 0o0007
         if hasattr(aq_base(self), '_p_mtime'):
             mtime = DateTime(self._p_mtime).timeTime()
         else:
             mtime = time.time()
         # get owner and group
-        owner=group='Zope'
+        owner = group = 'Zope'
         for user, roles in self.get_local_roles():
             if 'Owner' in roles:
-                owner=user
+                owner = user
                 break
-        return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
+        return marshal.dumps(
+            (mode, 0, 0, 1, owner, group, 0, mtime, mtime, mtime))
 
     def __delitem__(self, name):
         return self.manage_delObjects(ids=[name])
@@ -827,7 +844,7 @@ class ObjectManager(CopyContainer,
 # InitializeClass(ObjectManager)
 
 
-def findChildren(obj,dirname=''):
+def findChildren(obj, dirname=''):
     """ recursive walk through the object hierarchy to
     find all children of an object (ajung)
     """
@@ -835,7 +852,7 @@ def findChildren(obj,dirname=''):
     lst = []
     for name, child in obj.objectItems():
         if (hasattr(aq_base(child), 'isPrincipiaFolderish') and
-            child.isPrincipiaFolderish):
+                child.isPrincipiaFolderish):
             lst.extend(findChildren(child, dirname + obj.id + '/'))
         else:
             lst.append((dirname + obj.id + "/" + name, child))
@@ -849,9 +866,11 @@ class IFAwareObjectManager:
 
         if interfaces is None:
             if hasattr(self, '_product_interfaces'):
-                interfaces=self._product_interfaces
+                interfaces = self._product_interfaces
             elif hasattr(self, 'aq_acquire'):
-                try: interfaces=self.aq_acquire('_product_interfaces')
-                except: pass    # Bleah generic pass is bad
+                try:
+                    interfaces = self.aq_acquire('_product_interfaces')
+                except Exception:
+                    pass
 
         return ObjectManager.all_meta_types(self, interfaces)
