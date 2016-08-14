@@ -15,7 +15,7 @@ import sys
 
 from webdav.xmltools import escape
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     basestring = str
     unicode = str
 

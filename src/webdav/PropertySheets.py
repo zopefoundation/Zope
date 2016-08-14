@@ -24,7 +24,7 @@ from OFS.PropertySheets import Virtual, PropertySheet, View
 from webdav.common import isDavCollection
 from webdav.common import urlbase
 
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, ):
     basestring = str
     unicode = str
 

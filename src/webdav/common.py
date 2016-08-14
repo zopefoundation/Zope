@@ -15,7 +15,7 @@
 import re
 import urllib
 
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent
 from zExceptions import (
     HTTPConflict,
     HTTPLocked,
@@ -81,10 +81,10 @@ def urlfix(url, s):
 
 def is_acquired(ob):
     # Return true if this object is not a direct
-    # subobject of its aq_parent object.
-    if not hasattr(ob, 'aq_parent'):
+    # subobject of its __parent__ object.
+    if not hasattr(ob, '__parent__'):
         return 0
-    if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
+    if hasattr(aq_base(aq_parent(ob)), absattr(ob.id)):
         return 0
     if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
             ob.isTopLevelPrincipiaApplicationObject:
