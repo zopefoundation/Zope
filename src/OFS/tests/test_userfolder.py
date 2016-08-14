@@ -18,11 +18,11 @@ import unittest
 
 
 class BasicUserFolderTests(unittest.TestCase):
- 
+
     def _getTargetClass(self):
         from OFS.userfolder import BasicUserFolder
         return BasicUserFolder
- 
+
     def test_manage_users_security_initialized(self):
         uf = self._getTargetClass()()
         self.assertTrue(hasattr(uf, 'manage_users__roles__'))
@@ -119,7 +119,7 @@ class UserFolderTests(unittest.TestCase):
         app.manage_role('Owner', ['Add Folders'])
         app.manage_addLocalRoles('user1', ['Owner'])
         self.assertTrue(user.has_permission('Add Folders', app))
-        
+
     def testAuthenticate(self):
         app = self._makeApp()
         uf = self._makeOne(app)
@@ -176,11 +176,3 @@ class UserFolderTests(unittest.TestCase):
         from AccessControl import Unauthorized
         app = self._makeApp()
         self.assertRaises(Unauthorized, app.restrictedTraverse, 'doc')
-
-
-def test_suite():
-    suite = unittest.TestSuite((
-        unittest.makeSuite(BasicUserFolderTests),
-        unittest.makeSuite(UserFolderTests),
-    ))
-    return suite

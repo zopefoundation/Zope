@@ -32,9 +32,3 @@ class CacheTests(unittest.TestCase):
 
         # The parent_cache should still trigger managersExist
         self.assertTrue(managersExist(root.child.child_content))
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(CacheTests))
-    return suite

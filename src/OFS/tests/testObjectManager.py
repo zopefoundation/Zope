@@ -5,7 +5,7 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
-from AccessControl.User import User # before SpecialUsers
+from AccessControl.User import User  # before SpecialUsers
 from Acquisition import Implicit
 from App.config import getConfiguration
 from logging import getLogger
@@ -22,27 +22,28 @@ from OFS.SimpleItem import SimpleItem
 logger = getLogger('OFS.subscribers')
 
 
-class FauxRoot( Implicit ):
+class FauxRoot(Implicit):
 
     id = '/'
 
-    def getPhysicalRoot( self ):
+    def getPhysicalRoot(self):
         return self
 
-    def getPhysicalPath( self ):
+    def getPhysicalPath(self):
         return ()
 
 
-class FauxUser( Implicit ):
+class FauxUser(Implicit):
 
-    def __init__( self, id, login ):
+    def __init__(self, id, login):
 
         self._id = id
         self._login = login
 
-    def getId( self ):
+    def getId(self):
 
         return self._id
+
 
 class DeleteFailed(Exception):
     pass
@@ -83,7 +84,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         zcml.load_config('configure.zcml', OFS)
         setDeprecatedManageAddDelete(ItemForDeletion)
 
-    def tearDown( self ):
+    def tearDown(self):
         noSecurityManager()
         getConfiguration().debug_mode = self.saved_cfg_debug_mode
         super(ObjectManagerTests, self).tearDown()
@@ -91,11 +92,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def setDebugMode(self, mode):
         getConfiguration().debug_mode = mode
 
-    def _getTargetClass( self ):
+    def _getTargetClass(self):
         return ObjectManagerWithIItem
 
-    def _makeOne( self, *args, **kw ):
-        return self._getTargetClass()( *args, **kw ).__of__( FauxRoot() )
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw).__of__(FauxRoot())
 
     def test_interfaces(self):
         from OFS.interfaces import IObjectManager
@@ -126,104 +127,105 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             noSecurityManager()
             setSecurityPolicy(oldPolicy)
 
-    def test_setObject_set_owner_with_no_user( self ):
+    def test_setObject_set_owner_with_no_user(self):
         om = self._makeOne()
-        newSecurityManager( None, None )
-        si = SimpleItem( 'no_user' )
-        om._setObject( 'no_user', si )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, None)
+        si = SimpleItem('no_user')
+        om._setObject('no_user', si)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_set_owner_with_emergency_user( self ):
+    def test_setObject_set_owner_with_emergency_user(self):
         om = self._makeOne()
-        newSecurityManager( None, emergency_user )
-        si = SimpleItem( 'should_fail' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        self.assertRaises( EmergencyUserCannotOwn
-                         , om._setObject, 'should_fail', si )
+        newSecurityManager(None, emergency_user)
+        si = SimpleItem('should_fail')
+        self.assertEqual(si.__ac_local_roles__, None)
+        self.assertRaises(
+            EmergencyUserCannotOwn,
+            om._setObject, 'should_fail', si)
 
-    def test_setObject_set_owner_with_system_user( self ):
+    def test_setObject_set_owner_with_system_user(self):
         om = self._makeOne()
-        newSecurityManager( None, system )
-        si = SimpleItem( 'system' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'system', si )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, system)
+        si = SimpleItem('system')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('system', si)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_set_owner_with_anonymous_user( self ):
+    def test_setObject_set_owner_with_anonymous_user(self):
         om = self._makeOne()
-        newSecurityManager( None, nobody )
-        si = SimpleItem( 'anon' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'anon', si )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, nobody)
+        si = SimpleItem('anon')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('anon', si)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_set_owner_with_user( self ):
+    def test_setObject_set_owner_with_user(self):
         om = self._makeOne()
-        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
-        newSecurityManager( None, user )
-        si = SimpleItem( 'user_creation' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'user_creation', si )
-        self.assertEqual( si.__ac_local_roles__, { 'user': ['Owner'] } )
+        user = User('user', '123', (), ()).__of__(FauxRoot())
+        newSecurityManager(None, user)
+        si = SimpleItem('user_creation')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('user_creation', si)
+        self.assertEqual(si.__ac_local_roles__, {'user': ['Owner']})
 
-    def test_setObject_set_owner_with_faux_user( self ):
+    def test_setObject_set_owner_with_faux_user(self):
         om = self._makeOne()
-        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
-        newSecurityManager( None, user )
-        si = SimpleItem( 'faux_creation' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'faux_creation', si )
-        self.assertEqual( si.__ac_local_roles__, { 'user_id': ['Owner'] } )
+        user = FauxUser('user_id', 'user_login').__of__(FauxRoot())
+        newSecurityManager(None, user)
+        si = SimpleItem('faux_creation')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('faux_creation', si)
+        self.assertEqual(si.__ac_local_roles__, {'user_id': ['Owner']})
 
-    def test_setObject_no_set_owner_with_no_user( self ):
+    def test_setObject_no_set_owner_with_no_user(self):
         om = self._makeOne()
-        newSecurityManager( None, None )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, None)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_no_set_owner_with_emergency_user( self ):
+    def test_setObject_no_set_owner_with_emergency_user(self):
         om = self._makeOne()
-        newSecurityManager( None, emergency_user )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, emergency_user)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_no_set_owner_with_system_user( self ):
+    def test_setObject_no_set_owner_with_system_user(self):
         om = self._makeOne()
-        newSecurityManager( None, system )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, system)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_no_set_owner_with_anonymous_user( self ):
+    def test_setObject_no_set_owner_with_anonymous_user(self):
         om = self._makeOne()
-        newSecurityManager( None, nobody )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        newSecurityManager(None, nobody)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_no_set_owner_with_user( self ):
+    def test_setObject_no_set_owner_with_user(self):
         om = self._makeOne()
-        user = User( 'user', '123', (), () ).__of__( FauxRoot() )
-        newSecurityManager( None, user )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        user = User('user', '123', (), ()).__of__(FauxRoot())
+        newSecurityManager(None, user)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
-    def test_setObject_no_set_owner_with_faux_user( self ):
+    def test_setObject_no_set_owner_with_faux_user(self):
         om = self._makeOne()
-        user = FauxUser( 'user_id', 'user_login' ).__of__( FauxRoot() )
-        newSecurityManager( None, user )
-        si = SimpleItem( 'should_be_okay' )
-        self.assertEqual( si.__ac_local_roles__, None )
-        om._setObject( 'should_be_okay', si, set_owner=0 )
-        self.assertEqual( si.__ac_local_roles__, None )
+        user = FauxUser('user_id', 'user_login').__of__(FauxRoot())
+        newSecurityManager(None, user)
+        si = SimpleItem('should_be_okay')
+        self.assertEqual(si.__ac_local_roles__, None)
+        om._setObject('should_be_okay', si, set_owner=0)
+        self.assertEqual(si.__ac_local_roles__, None)
 
     def test_delObject_before_delete(self):
         # Test that manage_beforeDelete is called
@@ -238,7 +240,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # Test exception behavior in manage_beforeDelete
         # Manager user
         self.setDebugMode(False)
-        newSecurityManager(None, system) # Manager
+        newSecurityManager(None, system)  # Manager
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
@@ -265,7 +267,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # Test exception behavior in manage_beforeDelete in debug mode
         # Manager user
         self.setDebugMode(True)
-        newSecurityManager(None, system) # Manager
+        newSecurityManager(None, system)  # Manager
         om = self._makeOne()
         ob = ItemForDeletion(fail_on_delete=True)
         om._setObject(ob.getId(), ob)
@@ -494,9 +496,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
-
 _marker = object()
-class Test_checkValidId(unittest.TestCase):
+
+
+class TestCheckValidId(unittest.TestCase):
 
     def _callFUT(self, container, id, allow_dup=_marker):
         from OFS.ObjectManager import checkValidId
@@ -569,10 +572,3 @@ class Test_checkValidId(unittest.TestCase):
         self.assertEqual(str(e),
                          'The id "abc__" is invalid because it ends with '
                          'two underscores.')
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(ObjectManagerTests),
-        unittest.makeSuite(Test_checkValidId),
-    ))

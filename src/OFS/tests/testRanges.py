@@ -13,12 +13,14 @@
 ##############################################################################
 import unittest
 
+
 def makeConnection():
     import ZODB
     from ZODB.DemoStorage import DemoStorage
 
     s = DemoStorage()
-    return ZODB.DB( s ).open()
+    return ZODB.DB(s).open()
+
 
 def createBigFile():
     # Create a file that is several 1<<16 blocks of data big, to force the
@@ -27,11 +29,10 @@ def createBigFile():
     import cStringIO
     import random
     import string
-    size = (1<<16) * 5 + 12345
+    size = (1 << 16) * 5 + 12345
     file = cStringIO.StringIO()
 
-    def addLetter(x, add=file.write, l=string.letters,
-            c=random.choice):
+    def addLetter(x, add=file.write, l=string.letters, c=random.choice):
         add(c(l))
     filter(addLetter, range(size))
 
@@ -39,6 +40,7 @@ def createBigFile():
 
 TESTFOLDER_NAME = 'RangesTestSuite_testFolder'
 BIGFILE = createBigFile()
+
 
 class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
@@ -58,14 +60,16 @@ class TestRequestRange(unittest.TestCase):
             r['Application'] = a
             self.root = a
             self.app = makerequest(self.root, stdout=self.responseOut)
-            try: self.app._delObject(TESTFOLDER_NAME)
-            except AttributeError: pass
+            try:
+                self.app._delObject(TESTFOLDER_NAME)
+            except AttributeError:
+                pass
             manage_addFolder(self.app, TESTFOLDER_NAME)
-            folder = getattr( self.app, TESTFOLDER_NAME )
+            folder = getattr(self.app, TESTFOLDER_NAME)
 
             data = string.letters
-            manage_addFile( folder, 'file'
-                          , file=data, content_type='text/plain')
+            manage_addFile(
+                folder, 'file', file=data, content_type='text/plain')
 
             self.file = folder.file
             self.data = data
@@ -121,17 +125,13 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.assertTrue(rsp.getStatus() == 416,
-            'Expected a 416 status, got %s' % rsp.getStatus())
+        self.assertTrue(rsp.getStatus() == 416)
 
         expect_content_range = 'bytes */%d' % len(self.data)
         content_range = rsp.getHeader('content-range')
-        self.assertFalse(content_range is None, 'No Content-Range header was set!')
-        self.assertTrue(content_range == expect_content_range,
-            'Received incorrect Content-Range header. Expected %s, got %s' % (
-                `expect_content_range`, `content_range`))
-
-        self.assertTrue(body == '', 'index_html returned %s' % `body`)
+        self.assertFalse(content_range is None)
+        self.assertEqual(content_range, expect_content_range)
+        self.assertEqual(body, '')
 
     def expectOK(self, rangeHeader, if_range=None):
         req = self.app.REQUEST
@@ -142,10 +142,8 @@ class TestRequestRange(unittest.TestCase):
         if if_range is not None:
             req.environ['HTTP_IF_RANGE'] = if_range
 
-        body = self.doGET(req, rsp)
-
-        self.assertTrue(rsp.getStatus() == 200,
-            'Expected a 200 status, got %s' % rsp.getStatus())
+        self.doGET(req, rsp)
+        self.assertEqual(rsp.getStatus(), 200)
 
     def expectSingleRange(self, range, start, end, if_range=None):
         req = self.app.REQUEST
@@ -157,24 +155,15 @@ class TestRequestRange(unittest.TestCase):
             req.environ['HTTP_IF_RANGE'] = if_range
 
         body = self.doGET(req, rsp)
-
-        self.assertTrue(rsp.getStatus() == 206,
-            'Expected a 206 status, got %s' % rsp.getStatus())
+        self.assertEqual(rsp.getStatus(), 206)
 
         expect_content_range = 'bytes %d-%d/%d' % (
             start, end - 1, len(self.data))
         content_range = rsp.getHeader('content-range')
-        self.assertFalse(content_range is None, 'No Content-Range header was set!')
-        self.assertTrue(content_range == expect_content_range,
-            'Received incorrect Content-Range header. Expected %s, got %s' % (
-                `expect_content_range`, `content_range`))
-        self.assertFalse(rsp.getHeader('content-length') != str(len(body)),
-            'Incorrect Content-Length is set! Expected %s, got %s.' % (
-                str(len(body)), rsp.getHeader('content-length')))
-
-        self.assertTrue(body == self.data[start:end],
-            'Incorrect range returned, expected %s, got %s' % (
-                `self.data[start:end]`, `body`))
+        self.assertFalse(content_range is None)
+        self.assertEqual(content_range, expect_content_range)
+        self.assertEqual(rsp.getHeader('content-length'), str(len(body)))
+        self.assertEqual(body, self.data[start:end])
 
     def expectMultipleRanges(self, range, sets, draft=0):
         import cStringIO
@@ -192,20 +181,14 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.assertTrue(rsp.getStatus() == 206,
-            'Expected a 206 status, got %s' % rsp.getStatus())
-        self.assertFalse(rsp.getHeader('content-range'),
-            'The Content-Range header should not be set!')
+        self.assertTrue(rsp.getStatus() == 206)
+        self.assertFalse(rsp.getHeader('content-range'))
 
         ct = rsp.getHeader('content-type').split(';')[0]
         draftprefix = draft and 'x-' or ''
-        self.assertFalse(ct != 'multipart/%sbyteranges' % draftprefix,
-            "Incorrect Content-Type set. Expected 'multipart/%sbyteranges', "
-            "got %s" % (draftprefix, ct))
+        self.assertFalse(ct != 'multipart/%sbyteranges' % draftprefix)
         if rsp.getHeader('content-length'):
-            self.assertFalse(rsp.getHeader('content-length') != str(len(body)),
-                'Incorrect Content-Length is set! Expected %s, got %s.' % (
-                    str(len(body)), rsp.getHeader('content-length')))
+            self.assertFalse(rsp.getHeader('content-length') != str(len(body)))
 
         # Decode the multipart message
         bodyfile = cStringIO.StringIO('Content-Type: %s\n\n%s' % (
@@ -224,25 +207,16 @@ class TestRequestRange(unittest.TestCase):
             start, end, size = int(start), int(end), int(size)
             end = end + 1
 
-            self.assertFalse(size != len(self.data),
-                'Part Content-Range header reported incorrect length. '
-                'Expected %d, got %d.' % (len(self.data), size))
-
+            self.assertFalse(size != len(self.data))
             body = part.get_payload()
 
-            self.assertFalse(len(body) != end - start,
-                'Part (%d, %d) is of wrong length, expected %d, got %d.' % (
-                    start, end, end - start, len(body)))
-            self.assertFalse(body != self.data[start:end],
-                'Part (%d, %d) has incorrect data. Expected %s, got %s.' % (
-                    start, end, `self.data[start:end]`, `body`))
+            self.assertFalse(len(body) != end - start)
+            self.assertFalse(body != self.data[start:end])
 
             add((start, end))
 
-        # Copmare the ranges used with the expected range sets.
-        self.assertFalse(returnedRanges != sets,
-            'Got unexpected sets, expected %s, got %s' % (
-                sets, returnedRanges))
+        # Compare the ranges used with the expected range sets.
+        self.assertFalse(returnedRanges != sets)
 
     # Unsatisfiable requests
     def testNegativeZero(self):
@@ -286,7 +260,7 @@ class TestRequestRange(unittest.TestCase):
         # Files of size 1<<16 are stored in linked Pdata objects. They are
         # treated seperately in the range code.
         self.uploadBigFile()
-        join = 3 * (1<<16) # A join between two linked objects
+        join = 3 * (1 << 16)  # A join between two linked objects
         start = join - 1000
         end = join + 1000
         range = '%d-%d' % (start, end - 1)
@@ -311,12 +285,14 @@ class TestRequestRange(unittest.TestCase):
 
     def testMultipleRangesBigFile(self):
         self.uploadBigFile()
-        self.expectMultipleRanges('3-700,10-15,-10000',
+        self.expectMultipleRanges(
+            '3-700,10-15,-10000',
             [(3, 701), (10, 16), (len(self.data) - 10000, len(self.data))])
 
     def testMultipleRangesBigFileOutOfOrder(self):
         self.uploadBigFile()
-        self.expectMultipleRanges('10-15,-10000,70000-80000', 
+        self.expectMultipleRanges(
+            '10-15,-10000,70000-80000',
             [(10, 16), (len(self.data) - 10000, len(self.data)),
              (70000, 80001)])
 
@@ -324,7 +300,8 @@ class TestRequestRange(unittest.TestCase):
         self.uploadBigFile()
         l = len(self.data)
         start, end = l - 100, l + 100
-        self.expectMultipleRanges('3-700,%s-%s' % (start, end),
+        self.expectMultipleRanges(
+            '3-700,%s-%s' % (start, end),
             [(3, 701), (len(self.data) - 100, len(self.data))])
 
     # If-Range headers
@@ -334,27 +311,26 @@ class TestRequestRange(unittest.TestCase):
         self.expectSingleRange('10-25', 10, 26, if_range='garbage')
 
     def testEqualIfRangeDate(self):
-        self.expectSingleRange('10-25', 10, 26,
+        self.expectSingleRange(
+            '10-25', 10, 26,
             if_range=self.createLastModifiedDate())
 
     def testIsModifiedIfRangeDate(self):
-        self.expectOK('21-25,10-20',
+        self.expectOK(
+            '21-25,10-20',
             if_range=self.createLastModifiedDate(offset=-100))
 
     def testIsNotModifiedIfRangeDate(self):
-        self.expectSingleRange('10-25', 10, 26,
+        self.expectSingleRange(
+            '10-25', 10, 26,
             if_range=self.createLastModifiedDate(offset=100))
 
     def testEqualIfRangeEtag(self):
-        self.expectSingleRange('10-25', 10, 26,
+        self.expectSingleRange(
+            '10-25', 10, 26,
             if_range=self.file.http__etag())
 
     def testNotEqualIfRangeEtag(self):
-        self.expectOK('10-25',
+        self.expectOK(
+            '10-25',
             if_range=self.file.http__etag() + 'bar')
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( TestRequestRange ) )
-    return suite

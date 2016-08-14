@@ -20,6 +20,7 @@ import sys
 from Products.Five.tests import testing
 sys.path.append(testing.__path__[0])
 
+
 def test_registerPackage():
     """
     Testing registerPackage
@@ -33,7 +34,7 @@ def test_registerPackage():
 
     Make sure a python package with a valid initialize gets its
     initialize function called::
-    
+
       >>> configure_zcml = '''
       ... <configure
       ...     xmlns="http://namespaces.zope.org/zope"
@@ -45,8 +46,8 @@ def test_registerPackage():
       ...       />
       ... </configure>'''
       >>> zcml.load_string(configure_zcml)
-      
-    We need to load the product as well. This would normally happen during 
+
+    We need to load the product as well. This would normally happen during
     Zope startup, but in the test, we're already too late.
 
       >>> import Zope2

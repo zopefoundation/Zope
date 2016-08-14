@@ -20,35 +20,24 @@ class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
-    #
     #   Standard SecurityPolicy interface
-    #
-    def validate( self
-                , accessed=None
-                , container=None
-                , name=None
-                , value=None
-                , context=None
-                , roles=None
-                , *args
-                , **kw):
+    def validate(self, accessed=None, container=None, name=None, value=None,
+                 context=None, roles=None, *args, **kw):
         return 1
 
-    def checkPermission( self, permission, object, context) :
+    def checkPermission(self, permission, object, context):
         return 1
 
 
 class CruelSecurityPolicy:
     """Denies everything
     """
-    #
     #   Standard SecurityPolicy interface
-    #
     def validate(self, accessed, container, name, value, *args):
         from AccessControl import Unauthorized
-        raise Unauthorized, name
+        raise Unauthorized(name)
 
-    def checkPermission( self, permission, object, context) :
+    def checkPermission(self, permission, object, context):
         return 0
 
 
@@ -65,15 +54,16 @@ class ProtectedMethodSecurityPolicy:
         if name is None:
             raise Unauthorized
         klass = value.im_self.__class__
-        roles = getattr(klass, name+'__roles__', object())
-        if roles is None: # ACCESS_PUBLIC
+        roles = getattr(klass, name + '__roles__', object())
+        if roles is None:  # ACCESS_PUBLIC
             return 1
 
         raise Unauthorized(name)
 
-class TestTraverse( unittest.TestCase ):
 
-    def setUp( self ):
+class TestTraverse(unittest.TestCase):
+
+    def setUp(self):
         import cStringIO
         import transaction
         from AccessControl import SecurityManager
@@ -94,37 +84,36 @@ class TestTraverse( unittest.TestCase ):
             r['Application'] = a
             self.root = a
             responseOut = self.responseOut = cStringIO.StringIO()
-            self.app = makerequest( self.root, stdout=responseOut )
-            manage_addFolder( self.app, 'folder1' )
-            folder1 = getattr( self.app, 'folder1' )
+            self.app = makerequest(self.root, stdout=responseOut)
+            manage_addFolder(self.app, 'folder1')
+            folder1 = getattr(self.app, 'folder1')
             setattr(folder1, '+something', 'plus')
 
-            folder1.all_meta_types = \
-                                    ({ 'name'        : 'File'
-                                     , 'action'      : 'manage_addFile'
-                                     , 'permission'  : 'Add images and files'
-                                     }
-                                    ,
-                                    )
+            folder1.all_meta_types = (
+                {'name': 'File',
+                 'action': 'manage_addFile',
+                 'permission': 'Add images and files'
+                 },
+            )
 
-            manage_addFile( folder1, 'file'
-                          , file='', content_type='text/plain')
+            manage_addFile(folder1, 'file',
+                           file='', content_type='text/plain')
 
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
             # later and pretend we didn't touch the ZODB.
             transaction.commit()
-        except:
+        except Exception:
             self.connection.close()
             raise
         transaction.begin()
-        self.folder1 = getattr( self.app, 'folder1' )
+        self.folder1 = getattr(self.app, 'folder1')
 
         self.policy = UnitTestSecurityPolicy()
-        self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
-        newSecurityManager( None, self._makeUser().__of__( self.root ) )
+        self.oldPolicy = SecurityManager.setSecurityPolicy(self.policy)
+        newSecurityManager(None, self._makeUser().__of__(self.root))
 
-    def tearDown( self ):
+    def tearDown(self):
         import transaction
         self._setupSecurity()
         del self.oldPolicy
@@ -140,14 +129,16 @@ class TestTraverse( unittest.TestCase ):
 
     def _makeUser(self):
         from Acquisition import Implicit
+
         class UnitTestUser(Implicit):
             """
                 Stubbed out manager for unit testing purposes.
             """
-            def getId( self ):
+            def getId(self):
                 return 'unit_tester'
             getUserName = getId
-            def allowed( self, object, object_roles=None ):
+
+            def allowed(self, object, object_roles=None):
                 return 1
 
         return UnitTestUser()
@@ -199,11 +190,11 @@ class TestTraverse( unittest.TestCase ):
         class Restricted(SimpleItem):
             """Instance we'll check with ProtectedMethodSecurityPolicy
             """
-            getId__roles__ = None # ACCESS_PUBLIC
+            getId__roles__ = None  # ACCESS_PUBLIC
             def getId(self):
                 return self.id
 
-            private__roles__ = () # ACCESS_PRIVATE
+            private__roles__ = ()  # ACCESS_PRIVATE
             def private(self):
                 return 'private!'
 
@@ -228,33 +219,30 @@ class TestTraverse( unittest.TestCase ):
 
         verifyClass(ITraversable, Traversable)
 
-    def testTraversePath( self ):
-        self.assertTrue( 'file' in self.folder1.objectIds() )
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse( ('', 'folder1', 'file' ) ))
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse( ('', 'folder1' ) ))
-
-    def testTraverseURLNoSlash( self ):
-        self.assertTrue( 'file' in self.folder1.objectIds() )
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse( '/folder1/file' ))
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse( '/folder1' ))
-
-    def testTraverseURLSlash( self ):
+    def testTraversePath(self):
         self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue(self.folder1.unrestrictedTraverse( '/folder1/file/'))
-        self.assertTrue(self.folder1.unrestrictedTraverse( '/folder1/'))
+        self.assertTrue(
+            self.folder1.unrestrictedTraverse(('', 'folder1', 'file')))
+        self.assertTrue(self.folder1.unrestrictedTraverse(('', 'folder1')))
 
-    def testTraverseToNone( self ):
+    def testTraverseURLNoSlash(self):
+        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file'))
+        self.assertTrue(self.folder1.unrestrictedTraverse('/folder1'))
+
+    def testTraverseURLSlash(self):
+        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file/'))
+        self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/'))
+
+    def testTraverseToNone(self):
         self.assertRaises(
             KeyError,
-            self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
+            self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2'))
         self.assertRaises(
-            KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
+            KeyError, self.folder1.unrestrictedTraverse, '/folder1/file2')
         self.assertRaises(
-            KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
+            KeyError, self.folder1.unrestrictedTraverse, '/folder1/file2/')
 
     def testTraverseMethodRestricted(self):
         from AccessControl import Unauthorized
@@ -324,7 +312,7 @@ class TestTraverse( unittest.TestCase ):
         bb = self._makeBoboTraversableWithAcquisition()
         bb = bb.__of__(self.root)
         self.assertRaises(Unauthorized,
-                              bb.restrictedTraverse, 'folder1')
+                          bb.restrictedTraverse, 'folder1')
 
     def testBoboTraverseToAcquiredAttribute(self):
         # Verify it's possible to use __bobo_traverse__ to an acquired
@@ -350,11 +338,12 @@ class TestTraverse( unittest.TestCase ):
         bb = self._makeBoboTraversableWithAcquisition()
         bb = bb.__of__(folder)
         self.assertRaises(Unauthorized,
-                              self.root.folder1.restrictedTraverse, 'stuff')
+                          self.root.folder1.restrictedTraverse, 'stuff')
 
     def testBoboTraverseTraversalDefault(self):
         from OFS.SimpleItem import SimpleItem
         from ZPublisher.interfaces import UseTraversalDefault
+
         class BoboTraversableUseTraversalDefault(SimpleItem):
             """
               A BoboTraversable class which may use "UseTraversalDefault"
@@ -364,9 +353,9 @@ class TestTraverse( unittest.TestCase ):
             default = 'Default'
 
             def __bobo_traverse__(self, request, name):
-                if name == 'normal': return 'Normal'
+                if name == 'normal':
+                    return 'Normal'
                 raise UseTraversalDefault
-
 
         bb = BoboTraversableUseTraversalDefault()
         # normal access -- no traversal default used
@@ -377,7 +366,8 @@ class TestTraverse( unittest.TestCase ):
         si = SimpleItem()
         si.default_acquire = 'Default_Acquire'
         si.bb = bb
-        self.assertEqual(si.unrestrictedTraverse('bb/default_acquire'), 'Default_Acquire')
+        self.assertEqual(si.unrestrictedTraverse('bb/default_acquire'),
+                         'Default_Acquire')
 
     def testAcquiredAttributeDenial(self):
         # Verify that restrictedTraverse raises the right kind of exception
@@ -387,17 +377,17 @@ class TestTraverse( unittest.TestCase ):
         from AccessControl import Unauthorized
         from AccessControl.SecurityManagement import newSecurityManager
         self._setupSecurity(CruelSecurityPolicy())
-        newSecurityManager( None, self._makeUser().__of__( self.root ) )
+        newSecurityManager(None, self._makeUser().__of__(self.root))
         self.root.stuff = 'stuff here'
         self.assertRaises(Unauthorized,
-                              self.app.folder1.restrictedTraverse, 'stuff')
+                          self.app.folder1.restrictedTraverse, 'stuff')
 
     def testDefaultValueWhenUnathorized(self):
         # Test that traversing to an unauthorized object returns
         # the default when provided
         from AccessControl.SecurityManagement import newSecurityManager
         self._setupSecurity(CruelSecurityPolicy())
-        newSecurityManager( None, self._makeUser().__of__( self.root ) )
+        newSecurityManager(None, self._makeUser().__of__(self.root))
         self.root.stuff = 'stuff here'
         self.assertEqual(
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
@@ -429,7 +419,7 @@ class TestTraverse( unittest.TestCase ):
         self.assertTrue(
             aq_base(self.root.folder1.file.restrictedTraverse('../..')) is
             aq_base(self.root))
-    
+
     def testTraverseToNameStartingWithPlus(self):
         # Verify it's possible to traverse to a name such as +something
         self.assertTrue(
@@ -450,14 +440,14 @@ def test_traversable():
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> from Testing.makerequest import makerequest
       >>> self.app = makerequest(self.app)
-      
+
     ``SimpleContent`` is a traversable class by default.  Its fallback
     traverser should raise NotFound when traversal fails.  (Note: If
     we return None in __fallback_traverse__, this test passes but for
     the wrong reason: None doesn't have a docstring so BaseRequest
     raises NotFoundError.)
 
-      >>> from Products.Five.tests.testing import simplecontent 
+      >>> from Products.Five.tests.testing import simplecontent
       >>> simplecontent.manage_addSimpleContent(self.folder, 'testoid',
       ...                                       'Testoid')
       >>> from zExceptions import NotFound
@@ -474,7 +464,7 @@ def test_traversable():
       ...            xmlns:meta="http://namespaces.zope.org/meta"
       ...            xmlns:browser="http://namespaces.zope.org/browser"
       ...            xmlns:five="http://namespaces.zope.org/five">
-      ... 
+      ...
       ... <!-- make the zope2.Public permission work -->
       ... <meta:redefinePermission from="zope2.Public" to="zope.Public" />
       ...
@@ -527,7 +517,6 @@ def test_traversable():
 
       >>> self.folder.fancy.unrestrictedTraverse('fancyview').index_html({})
       'fancyview'
-      
 
     Note that during publishing, if the original __bobo_traverse__ method
     *does* raise AttributeError or KeyError, we can get normal view look-up.
@@ -566,13 +555,13 @@ def test_traversable():
       ...                             'an_attribute').index_html({})
       'an_attribute'
 
-    If we traverse to something via an adapter lookup and it provides IAcquirer,
-    it should get acquisition-wrapped so we can acquire attributes implicitly:
-    
+    If we traverse to something via an adapter lookup and it provides
+    IAcquirer, it should get acquisition-wrapped so we can acquire
+    attributes implicitly:
+
       >>> acquirer = self.folder.unrestrictedTraverse('acquirer')
       >>> acquirer.fancy
       <FancyContent ...>
-
 
     Clean up:
 
@@ -595,6 +584,7 @@ def test_traversable():
       >>> hasattr(FancyContent, '__fallback_traverse__')
       False
     """
+
 
 def test_view_doesnt_shadow_attribute():
     """

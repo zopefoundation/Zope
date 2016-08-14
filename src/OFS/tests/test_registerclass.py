@@ -167,6 +167,7 @@ def test_registerClass():
       []
     """
 
+
 def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return ZopeDocTestSuite()

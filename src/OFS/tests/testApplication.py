@@ -47,27 +47,27 @@ class ApplicationTests(unittest.TestCase):
         self.assertEqual(app.title_and_id(), 'Other')
         self.assertEqual(app.title_or_id(), 'Other')
 
-    def test___bobo_traverse__attribute_hit(self):
+    def test_bobo_traverse_attribute_hit(self):
         app = self._makeOne()
         app.NAME = 'attribute'
         app._getOb = lambda x, y: x
         request = {}
         self.assertEqual(app.__bobo_traverse__(request, 'NAME'), 'attribute')
 
-    def test___bobo_traverse__attribute_miss_key_hit(self):
+    def test_bobo_traverse_attribute_miss_key_hit(self):
         app = self._makeOne()
         app._getOb = lambda x, y: x
         app._objects = [{'id': 'OTHER', 'meta_type': None}]
         request = {}
         self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
 
-    def test___bobo_traverse__attribute_key_miss_R_M_default_real_request(self):
+    def test_bobo_traverse_attribute_key_miss_R_M_default_real_request(self):
         from UserDict import UserDict
         request = UserDict()
 
         class _Response:
             def notFoundError(self, msg):
-                1/0
+                1 / 0
 
         request.RESPONSE = _Response()
         app = self._makeOne()
@@ -76,21 +76,21 @@ class ApplicationTests(unittest.TestCase):
         self.assertRaises(ZeroDivisionError,
                           app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test___bobo_traverse__attribute_key_miss_R_M_default_fake_request(self):
+    def test_bobo_traverse_attribute_key_miss_R_M_default_fake_request(self):
         app = self._makeOne()
 
         app._getOb = _noWay
         request = {}
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test___bobo_traverse__attribute_key_miss_R_M_is_GET(self):
+    def test_bobo_traverse_attribute_key_miss_R_M_is_GET(self):
         app = self._makeOne()
 
         app._getOb = _noWay
         request = {'REQUEST_METHOD': 'GET'}
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test___bobo_traverse__attribute_key_miss_R_M_not_GET_POST(self):
+    def test_bobo_traverse_attribute_key_miss_R_M_not_GET_POST(self):
         from OFS import bbb
         if bbb.HAS_ZSERVER:
             from webdav.NullResource import NullResource

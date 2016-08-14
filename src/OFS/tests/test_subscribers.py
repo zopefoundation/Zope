@@ -27,7 +27,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             deprecatedManageAddDeleteClasses[:])
         self.deprecatedManageAddDeleteClasses = (
             deprecatedManageAddDeleteClasses)
-        # Add a class to make sure there is at least one because an empty 
+        # Add a class to make sure there is at least one because an empty
         # deprecatedManageAddDeleteClasses list is special cased
         self.deprecatedManageAddDeleteClasses.append(int)
         # Pick up log messages
@@ -66,8 +66,10 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
         class Deprecated(object):
             def manage_afterAdd(self):
                 pass
+
         class ASubClass(Deprecated):
             pass
+
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
         self.assertLog(ASubClass, '')
 

@@ -10,12 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Tests demonstrating consequences of guarded_getattr fix from 2004/08/07
-
-   http://mail.zope.org/pipermail/zope-checkins/2004-August/028152.html
-   http://zope.org/Collectors/CMF/259
-
-"""
 
 import unittest
 
@@ -41,12 +35,14 @@ class AllowedItem(SimpleItem):
 
 InitializeClass(AllowedItem)
 
+
 class DeniedItem(SimpleItem):
     id = 'denied'
     security = ClassSecurityInfo()
     security.setDefaultAccess('deny')
 
 InitializeClass(DeniedItem)
+
 
 class ProtectedItem(SimpleItem):
     id = 'protected'
@@ -74,7 +70,8 @@ class TestGetAttr(unittest.TestCase):
             self.app.manage_addFolder('plain_folder')
 
             # We also want to be able to acquire simple attributes
-            self.app.manage_addProperty(id='simple_type', type='string', value='a string')
+            self.app.manage_addProperty(
+                id='simple_type', type='string', value='a string')
 
             # Set up a subfolder and the objects we want to acquire from
             self.app.manage_addFolder('subfolder')
@@ -142,7 +139,6 @@ class TestGetAttr(unittest.TestCase):
 
 
 class TestGetAttrAnonymous(TestGetAttr):
-
     # Run all tests again as Anonymous User
 
     def setUp(self):
@@ -151,23 +147,15 @@ class TestGetAttrAnonymous(TestGetAttr):
         noSecurityManager()
 
 
-class TestGetAttr_c(TestGetAttr):
+class TestGetAttrC(TestGetAttr):
 
     def setUp(self):
         TestGetAttr.setUp(self)
         self.guarded_getattr = guarded_getattr_c
 
-class TestGetAttrAnonymous_c(TestGetAttrAnonymous):
+
+class TestGetAttrAnonymousC(TestGetAttrAnonymous):
 
     def setUp(self):
         TestGetAttrAnonymous.setUp(self)
         self.guarded_getattr = guarded_getattr_c
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestGetAttr))
-    suite.addTest(unittest.makeSuite(TestGetAttrAnonymous))
-    suite.addTest(unittest.makeSuite(TestGetAttr_c))
-    suite.addTest(unittest.makeSuite(TestGetAttrAnonymous_c))
-    return suite

@@ -27,16 +27,17 @@ class TestItem(unittest.TestCase):
             class RESPONSE(object):
                 handle_errors = True
         item = self._makeOne()
+
         def _raise_during_standard_error_message(*args, **kw):
             raise ZeroDivisionError('testing')
         item.standard_error_message = _raise_during_standard_error_message
         try:
             item.raise_standardErrorMessage(
-                            error_type=OverflowError,
-                            error_value='simple',
-                            REQUEST=REQUEST(),
-                            )
-        except:
+                error_type=OverflowError,
+                error_value='simple',
+                REQUEST=REQUEST(),
+            )
+        except Exception:
             import sys
             self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
@@ -45,20 +46,22 @@ class TestItem(unittest.TestCase):
 
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
         from AccessControl.tainted import TaintedString
+
         class REQUEST(object):
             class RESPONSE(object):
                 handle_errors = True
         item = self._makeOne()
+
         def _raise_during_standard_error_message(*args, **kw):
             raise ZeroDivisionError('testing')
         item.standard_error_message = _raise_during_standard_error_message
         try:
             item.raise_standardErrorMessage(
-                            error_type=OverflowError,
-                            error_value=TaintedString('<simple>'),
-                            REQUEST=REQUEST(),
-                            )
-        except:
+                error_type=OverflowError,
+                error_value=TaintedString('<simple>'),
+                REQUEST=REQUEST(),
+            )
+        except Exception:
             import sys
             self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
@@ -113,10 +116,3 @@ class TestSimpleItem(unittest.TestCase):
                                             REQUEST=REQUEST())
 
         self.assertEquals(sem.kw.get('error_type'), 'BadRequest')
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestItem),
-        unittest.makeSuite(TestItem_w__name__),
-        unittest.makeSuite(TestSimpleItem),
-        ))

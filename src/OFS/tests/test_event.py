@@ -23,43 +23,57 @@ from OFS.OrderedFolder import OrderedFolder
 
 from zope.component import testing, eventtesting
 
+
 def setUp(test):
     testing.setUp(test)
     eventtesting.setUp(test)
 
+
 class DontComplain(object):
+
     def _verifyObjectPaste(self, object, validate_src=1):
         pass
+
     def cb_isMoveable(self):
         return True
+
     def cb_isCopyable(self):
         return True
 
+
 class NotifyBase(DontComplain):
+
     def manage_afterAdd(self, item, container):
-        print 'old manage_afterAdd %s %s %s' % (self.getId(), item.getId(),
-                                                container.getId())
+        print('old manage_afterAdd %s %s %s' % (
+            self.getId(), item.getId(), container.getId()))
         super(NotifyBase, self).manage_afterAdd(item, container)
-    manage_afterAdd.__five_method__ = True # Shut up deprecation warnings
+
+    manage_afterAdd.__five_method__ = True  # Shut up deprecation warnings
+
     def manage_beforeDelete(self, item, container):
         super(NotifyBase, self).manage_beforeDelete(item, container)
-        print 'old manage_beforeDelete %s %s %s' % (self.getId(), item.getId(),
-                                                    container.getId())
-    manage_beforeDelete.__five_method__ = True # Shut up deprecation warnings
+        print('old manage_beforeDelete %s %s %s' % (
+            self.getId(), item.getId(), container.getId()))
+    manage_beforeDelete.__five_method__ = True  # Shut up deprecation warnings
+
     def manage_afterClone(self, item):
-        print 'old manage_afterClone %s %s' % (self.getId(), item.getId())
+        print('old manage_afterClone %s %s' % (self.getId(), item.getId()))
         super(NotifyBase, self).manage_afterClone(item)
-    manage_afterClone.__five_method__ = True # Shut up deprecation warnings
+    manage_afterClone.__five_method__ = True  # Shut up deprecation warnings
+
 
 class MyApp(Folder):
     def getPhysicalRoot(self):
         return self
 
+
 class MyFolder(NotifyBase, Folder):
     pass
 
+
 class MyOrderedFolder(NotifyBase, OrderedFolder):
     pass
+
 
 class MyContent(NotifyBase, SimpleItem):
     def __init__(self, id):
@@ -67,9 +81,11 @@ class MyContent(NotifyBase, SimpleItem):
 
 # These don't have manage_beforeDelete & co methods
 
+
 class MyNewContent(DontComplain, SimpleItem):
     def __init__(self, id):
         self._setId(id)
+
 
 class MyNewFolder(DontComplain, Folder):
     pass

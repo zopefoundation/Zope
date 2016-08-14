@@ -42,12 +42,12 @@ class HistoryTests(unittest.TestCase):
         t.description = None
         t.note('Change 1')
         t.commit()
-        time.sleep(0.02) # wait at least one Windows clock tick
+        time.sleep(0.02)  # wait at least one Windows clock tick
         hi.title = 'Second title'
         t = transaction.get()
         t.note('Change 2')
         t.commit()
-        time.sleep(0.02) # wait at least one Windows clock tick
+        time.sleep(0.02)  # wait at least one Windows clock tick
         hi.title = 'Third title'
         t = transaction.get()
         t.note('Change 3')
@@ -65,13 +65,13 @@ class HistoryTests(unittest.TestCase):
 
     def test_manage_change_history(self):
         r = self.hi.manage_change_history()
-        self.assertEqual(len(r),3) # three transactions
+        self.assertEqual(len(r), 3)  # three transactions
         for i in range(3):
             entry = r[i]
             # check no new keys show up without testing
-            self.assertEqual(len(entry.keys()),6)
+            self.assertEqual(len(entry.keys()), 6)
             # the transactions are in newest-first order
-            self.assertEqual(entry['description'],'Change %i' % (3-i))
+            self.assertEqual(entry['description'], 'Change %i' % (3 - i))
             self.assertTrue('key' in entry)
             # lets not assume the size will stay the same forever
             self.assertTrue('size' in entry)
@@ -79,24 +79,18 @@ class HistoryTests(unittest.TestCase):
             self.assertTrue('time' in entry)
             if i:
                 # check times are increasing
-                self.assertTrue(entry['time']<r[i-1]['time'])
-            self.assertEqual(entry['user_name'],'')
+                self.assertTrue(entry['time'] < r[i - 1]['time'])
+            self.assertEqual(entry['user_name'], '')
 
     def test_manage_historyCopy(self):
         # we assume this works 'cos it's tested above
         r = self.hi.manage_change_history()
         # now we do the copy
-        self.hi.manage_historyCopy(
-            keys=[r[2]['key']]
-                  )
+        self.hi.manage_historyCopy(keys=[r[2]['key']])
         # do a commit, just like ZPublisher would
         transaction.commit()
-        # check the body is as it should be, we assume (hopefully not foolishly)
+        # check the body is as it should be, we assume
+        # (hopefully not foolishly)
         # that all other attributes will behave the same
         self.assertEqual(self.hi.title,
                          'First title')
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(HistoryTests))
-    return suite

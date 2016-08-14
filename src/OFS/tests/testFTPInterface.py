@@ -9,9 +9,3 @@ class TestFTPInterface(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IFTPAccess, FTPInterface)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestFTPInterface),
-        ))

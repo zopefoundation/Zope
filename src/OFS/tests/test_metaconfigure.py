@@ -1,8 +1,9 @@
 import unittest
 
-
 _marker = object()
-class Test__registerClass(unittest.TestCase):
+
+
+class TestRegisterClass(unittest.TestCase):
 
     def setUp(self):
         from zope.component.testing import setUp
@@ -22,8 +23,8 @@ class Test__registerClass(unittest.TestCase):
         from zope.component.testing import tearDown
         import OFS.metaconfigure
         # restore registrations
-        OFS.metaconfigure._meta_type_regs[:] = self._old_mt_regs 
-        OFS.metaconfigure._register_monkies[:] = self._old_monkies 
+        OFS.metaconfigure._meta_type_regs[:] = self._old_mt_regs
+        OFS.metaconfigure._register_monkies[:] = self._old_monkies
         if self._old_metatypes is not _marker:
             import Products
             Products.meta_types = self._old_metatypes
@@ -35,7 +36,7 @@ class Test__registerClass(unittest.TestCase):
         tearDown()
 
     def _callFUT(self, klass, meta_type, permission,
-                addview=None, icon=None, global_=False):
+                 addview=None, icon=None, global_=False):
         from OFS.metaconfigure import _registerClass
         _registerClass(klass, meta_type, permission, addview, icon, global_)
 
@@ -45,6 +46,7 @@ class Test__registerClass(unittest.TestCase):
                 pass
         else:
             from zope.interface import implements
+
             class Dummy(object):
                 implements(ifaces)
         return Dummy
@@ -53,10 +55,13 @@ class Test__registerClass(unittest.TestCase):
         from zope.component import provideUtility
         from zope.interface import implements
         from zope.security.interfaces import IPermission
+
         class Perm:
             implements(IPermission)
+
             def __init__(self, title):
                 self. title = title
+
         if title is None:
             title = name.capitalize()
         provideUtility(Perm(title), name=name)
@@ -65,9 +70,8 @@ class Test__registerClass(unittest.TestCase):
         import OFS.metaconfigure
         import Products
         return (getattr(Products, 'meta_types', _marker),
-                OFS.metaconfigure._register_monkies, 
-                OFS.metaconfigure._meta_type_regs,
-               )
+                OFS.metaconfigure._register_monkies,
+                OFS.metaconfigure._meta_type_regs)
 
     def test_minimal(self):
         klass = self._makeClass()
@@ -80,7 +84,7 @@ class Test__registerClass(unittest.TestCase):
         self.assertEqual(len(mt), 1)
         self.assertEqual(mt[0]['name'], 'Dummy')
         self.assertEqual(mt[0]['action'], '')
-        self.assertEqual(mt[0]['product'], 'OFS') # XXX why?
+        self.assertEqual(mt[0]['product'], 'OFS')
         self.assertEqual(mt[0]['permission'], 'Perm')
         self.assertEqual(mt[0]['visibility'], None)
         self.assertEqual(mt[0]['interfaces'], ())
@@ -109,8 +113,10 @@ class Test__registerClass(unittest.TestCase):
 
     def test_w_interfaces(self):
         from zope.interface import Interface
+
         class IDummy(Interface):
             pass
+
         klass = self._makeClass((IDummy,))
         self._registerPermission('perm')
 
@@ -135,8 +141,3 @@ class Test__registerClass(unittest.TestCase):
         self.assertEqual(klass.meta_type, 'Dummy')
         mt, monkies, mt_regs = self._getRegistered()
         self.assertEqual(len(mt), 1)
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(Test__registerClass),
-    ))

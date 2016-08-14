@@ -91,23 +91,21 @@ class TestsOfBroken(unittest.TestCase):
                              "_p_mtime",
                              "_p_oid",
                              "_p_serial",
-                             "_p_state",
-                            ]
+                             "_p_state"]
         PERSISTENCE_METHODS = ["_p_deactivate",
                                "_p_activate",
                                "_p_invalidate",
                                "_p_getattr",
                                "_p_setattr",
-                               "_p_delattr",
-                              ]
+                               "_p_delattr"]
 
         inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
 
         for attr_name in PERSISTENCE_ATTRS:
-            attr = getattr(inst, attr_name) # doesn't raise
+            getattr(inst, attr_name)  # doesn't raise
 
         for meth_name in PERSISTENCE_METHODS:
-            meth = getattr(inst, meth_name) # doesn't raise
+            getattr(inst, meth_name)  # doesn't raise
 
 
 class TestsIntegratedBroken(base.TestCase):
@@ -146,7 +144,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestsOfBroken))
     suite.addTest(unittest.makeSuite(TestsIntegratedBroken))
     return suite
-
-
-def main():
-    unittest.main(defaultTest='test_suite')

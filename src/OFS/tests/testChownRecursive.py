@@ -14,6 +14,7 @@
 import unittest
 from Testing import ZopeTestCase
 
+
 class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
     user_name2 = "dumdidum"
     user_pass2 = "dumdidum"
@@ -27,10 +28,10 @@ class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
         # remember user objects
         # is the __of__() call correct? is it needed? without it ownerInfo in
         # owner.py throws an AttributeError ...
-        self.user1 = self.folder['acl_users'].getUser(ZopeTestCase.user_name
-                                                     ).__of__(self.folder)
-        self.user2 = self.folder['acl_users'].getUser(self.user_name2
-                                                     ).__of__(self.folder)
+        self.user1 = self.folder['acl_users'].getUser(
+            ZopeTestCase.user_name).__of__(self.folder)
+        self.user2 = self.folder['acl_users'].getUser(
+            self.user_name2).__of__(self.folder)
 
         self.folder.changeOwnership(self.user1)
 
