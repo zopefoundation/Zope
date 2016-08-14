@@ -73,7 +73,7 @@ def temporaryPlacelessSetUp(orig_func, placeless_available=True,
         return orig_func
 
     def wrapper(*args, **kw):
-        __doc__ = '''%s ::
+        '''%s ::
 
         @param required_zcml callback or iterable of callbacks
         required for setup of configuration needed by fixture
