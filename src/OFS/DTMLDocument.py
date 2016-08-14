@@ -128,14 +128,18 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 InitializeClass(DTMLDocument)
 
 
-default_dd_html = """<html>
-  <head><title><dtml-var title_or_id></title>
+default_dd_html = """\
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><dtml-var title_or_id></title>
+    <meta charset="utf-8" />
   </head>
-  <body bgcolor="#FFFFFF">
+  <body>
     <h2><dtml-var title_or_id></h2>
-<p>
-This is the <dtml-var id> Document.
-</p>
+    <p>
+    This is the <dtml-var id> Document.
+    </p>
 </body>
 </html>"""
 

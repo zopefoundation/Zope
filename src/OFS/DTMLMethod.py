@@ -233,49 +233,11 @@ class DTMLMethod(RestrictedDTML,
     security.declareProtected(change_proxy_roles, 'manage_proxyForm')
     manage_proxyForm = DTMLFile('dtml/documentProxy', globals())
 
-    _size_changes = {
-        'Bigger': (5, 5),
-        'Smaller': (-5, -5),
-        'Narrower': (0, -5),
-        'Wider': (0, 5),
-        'Taller': (5, 0),
-        'Shorter': (-5, 0),
-    }
-
-    def _er(self, data, title, SUBMIT, dtpref_cols, dtpref_rows, REQUEST):
-        dr, dc = self._size_changes[SUBMIT]
-        rows = str(max(1, int(dtpref_rows) + dr))
-        cols = str(dtpref_cols)
-        if cols.endswith('%'):
-            cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
-        else:
-            cols = str(max(35, int(cols) + dc))
-        e = (DateTime("GMT") + 365).rfc822()
-        setCookie = REQUEST["RESPONSE"].setCookie
-        setCookie("dtpref_rows", rows, path='/', expires=e)
-        setCookie("dtpref_cols", cols, path='/', expires=e)
-        REQUEST.other.update({"dtpref_cols": cols, "dtpref_rows": rows})
-        return self.manage_main(self, REQUEST, title=title,
-                                __str__=self.quotedHTML(data))
-
     security.declareProtected(change_dtml_methods, 'manage_edit')
-    def manage_edit(self, data, title,
-                    SUBMIT='Change',
-                    dtpref_cols='100%',
-                    dtpref_rows='20',
-                    REQUEST=None):
+    def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
         """ Replace contents with 'data', title with 'title'.
-
-        The SUBMIT parameter is also used to change the size of the editing
-        area on the default Document edit screen.  If the value is "Smaller",
-        the rows and columns decrease by 5.  If the value is "Bigger", the
-        rows and columns increase by 5.  If any other or no value is supplied,
-        the data gets checked for DTML errors and is saved.
         """
         self._validateProxy(REQUEST)
-        if SUBMIT in self._size_changes:
-            return self._er(data, title,
-                            SUBMIT, dtpref_cols, dtpref_rows, REQUEST)
         if self.wl_isLocked():
             raise ResourceLockedError('This item is locked.')
 
@@ -421,15 +383,19 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
-default_dm_html = """<html>
-  <head><title><dtml-var title_or_id></title>
+default_dm_html = """\
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><dtml-var title_or_id></title>
+    <meta charset="utf-8" />
   </head>
-  <body bgcolor="#FFFFFF">
-<h2><dtml-var title_or_id> <dtml-var document_title></h2>
-<p>
-This is the <dtml-var document_id> Document
-in the <dtml-var title_and_id> Folder.
-</p>
+  <body>
+    <h2><dtml-var title_or_id> <dtml-var document_title></h2>
+    <p>
+    This is the <dtml-var document_id> Document
+    in the <dtml-var title_and_id> Folder.
+    </p>
   </body>
 </html>"""
 

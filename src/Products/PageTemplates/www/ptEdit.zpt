@@ -5,7 +5,6 @@
 <tal:block define="global body request/other/text | request/form/text
                                                   | context/read" /> 
 <form action="" method="post" tal:attributes="action request/URL1">
-<input type="hidden" name=":default_method" value="pt_changePrefs" />
 <input type="hidden" name="encoding" value="utf-8" />
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
@@ -46,17 +45,8 @@
     </td>
   </tr>
   <tr>
-    <td align="left" valign="top" colspan="4"
-        tal:define="width request/dtpref_cols | string:100%;
-                    relative_width python:str(width).endswith('%')">
+    <td align="left" valign="top" colspan="4">
       <textarea name="text:text" wrap="off" style="width: 100%;" rows="20"
-                tal:condition="relative_width"
-                tal:attributes="style string:width: $width;;;
-                                rows request/dtpref_rows | default"
-                tal:content="body">Template Body</textarea>
-      <textarea name="text:text" wrap="off" rows="20" cols="50"
-                tal:condition="not:relative_width"
-                tal:attributes="cols width; rows request/dtpref_rows | default"
                 tal:content="body">Template Body</textarea>
     </td>
   </tr>
@@ -69,10 +59,6 @@
            class="form-element" type="submit" 
            name="pt_editAction:method" value="Save Changes"/>
     &nbsp;&nbsp;
-    <input class="form-element" type="submit" name="height" value="Taller" />
-    <input class="form-element" type="submit" name="height" value="Shorter" />
-    <input class="form-element" type="submit" name="width" value="Wider" />
-    <input class="form-element" type="submit" name="width" value="Narrower" />
   </div>
   </td>
 </tr>

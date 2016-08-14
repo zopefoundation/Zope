@@ -21,16 +21,9 @@ probably need to manage Zope using its raw IP address to fix things.
   (<strong>host/path</strong>),
   or a set of hosts (<strong>*.host/path</strong>).
   <div style="width: 100%;">
-  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
-            rows="REQUEST.get('dtpref_rows', '20')">
-  <dtml-if "cols[-1]=='%'">
-  <textarea name="map_text:text" wrap="off" style="width: &dtml-cols;;"
-  <dtml-else>
-  <textarea name="map_text:text" wrap="off" cols="&dtml-cols;"
-  </dtml-if>
-            rows="&dtml-rows;"><dtml-in lines>&dtml-sequence-item;
+  <textarea name="map_text:text" wrap="off" style="width: 100%;"
+            rows="20"><dtml-in lines>&dtml-sequence-item;
 </dtml-in></textarea>
-  </dtml-let>
   </div>
   </td>
 </tr>
@@ -44,11 +37,6 @@ probably need to manage Zope using its raw IP address to fix things.
   <dtml-else>
    <input class="form-element" type="submit" name="SUBMIT" value="Save Changes">
   </dtml-if>
-  &nbsp;&nbsp;
-  <input class="form-element" type="submit" name="SUBMIT" value="Taller">
-  <input class="form-element" type="submit" name="SUBMIT" value="Shorter">
-  <input class="form-element" type="submit" name="SUBMIT" value="Wider">
-  <input class="form-element" type="submit" name="SUBMIT" value="Narrower">
   </div>
   </td>
 </tr>

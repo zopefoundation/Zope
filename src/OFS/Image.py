@@ -792,13 +792,15 @@ class Image(File):
     # FIXME: Redundant, already in base class
     security.declareProtected(change_images_and_files, 'manage_edit')
     security.declareProtected(change_images_and_files, 'manage_upload')
-    security.declareProtected(change_images_and_files, 'PUT')
     security.declareProtected(View, 'index_html')
     security.declareProtected(View, 'get_size')
     security.declareProtected(View, 'getContentType')
-    security.declareProtected(ftp_access, 'manage_FTPstat')
-    security.declareProtected(ftp_access, 'manage_FTPlist')
-    security.declareProtected(ftp_access, 'manage_FTPget')
+
+    if bbb.HAS_ZSERVER:
+        security.declareProtected(change_images_and_files, 'PUT')
+        security.declareProtected(ftp_access, 'manage_FTPstat')
+        security.declareProtected(ftp_access, 'manage_FTPlist')
+        security.declareProtected(ftp_access, 'manage_FTPget')
 
     _properties = (
         {'id': 'title', 'type': 'string'},
