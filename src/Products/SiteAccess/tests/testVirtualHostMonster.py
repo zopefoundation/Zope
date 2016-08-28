@@ -167,7 +167,7 @@ class VHMAddingTests(unittest.TestCase):
         from Products.SiteAccess.VirtualHostMonster import \
             manage_addVirtualHostMonster
         from zExceptions import BadRequest
-        self.root._setObject('VHM', Folder('VHM'))
+        self.root._setObject('virtual_hosting', Folder('virtual_hosting'))
         vhm1 = self._makeOne()
 
         self.assertRaises(BadRequest, vhm1.manage_addToContainer, self.root)

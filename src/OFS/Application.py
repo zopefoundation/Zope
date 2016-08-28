@@ -31,8 +31,10 @@ from OFS import bbb
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from zExceptions import Redirect as RedirectException, Forbidden
-
+from zExceptions import (
+    Forbidden,
+    Redirect as RedirectException,
+)
 from zope.interface import implements
 
 import Folder
@@ -270,10 +272,13 @@ class AppInitializer:
         if 'virtual_hosting' not in app:
             from Products.SiteAccess.VirtualHostMonster \
                 import VirtualHostMonster
-            vhm = VirtualHostMonster()
-            vhm.id = 'virtual_hosting'
-            vhm.addToContainer(app)
-            self.commit('Added virtual_hosting')
+            any_vhm = [obj for obj in app.values()
+                       if isinstance(obj, VirtualHostMonster)]
+            if not any_vhm:
+                vhm = VirtualHostMonster()
+                vhm.id = 'virtual_hosting'
+                vhm.addToContainer(app)
+                self.commit('Added virtual_hosting')
 
     def install_products(self):
         return install_products()

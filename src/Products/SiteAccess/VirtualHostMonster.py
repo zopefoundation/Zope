@@ -24,7 +24,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     meta_type = 'Virtual Host Monster'
     priority = 25
 
-    id = 'VHM'
+    id = 'virtual_hosting'
     title = ''
     lines = ()
     have_map = 0

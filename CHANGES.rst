@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Change VHM id to `virtual_hosting` to match AppInitializer.
+
 - Raise BadRequest instead of returning MessageDialog.
 
 - Remove property management ZMI screens.
