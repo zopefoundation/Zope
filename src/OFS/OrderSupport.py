@@ -65,8 +65,8 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message, update_menu=1)
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_move_objects_down')
     def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
@@ -81,8 +81,8 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message, update_menu=1)
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_move_objects_to_top')
     def manage_move_objects_to_top(self, REQUEST, ids=None):
@@ -97,8 +97,8 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message, update_menu=1)
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
     security.declareProtected(
         manage_properties, 'manage_move_objects_to_bottom')
@@ -114,15 +114,15 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message, update_menu=1)
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_set_default_sorting')
     def manage_set_default_sorting(self, REQUEST, key, reverse):
         """ Set default sorting key and direction.
         """
         self.setDefaultSorting(key, reverse)
-        return self.manage_main(self, REQUEST, update_menu=1)
+        return self.manage_main(self, REQUEST)
 
     security.declareProtected(manage_properties, 'moveObjectsByDelta')
     def moveObjectsByDelta(self, ids, delta, subset_ids=None,

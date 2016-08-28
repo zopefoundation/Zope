@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove ZMI copy/cut/paste and re-ordering features.
+
 - Drop `OFS.History` functionality.
 
 - Removed ZMI export/import feature.

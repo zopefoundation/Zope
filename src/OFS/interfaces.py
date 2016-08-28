@@ -609,14 +609,6 @@ class ICopyContainer(Interface):
         """Clone an object, creating a new object with the given id.
         """
 
-    def cb_dataValid():
-        """Return true if clipboard data seems valid.
-        """
-
-    def cb_dataItems():
-        """List of objects in the clip board.
-        """
-
     def _verifyObjectPaste(object, validate_src=1):
         """Verify whether the current user is allowed to paste the passed
         object into self. This is determined by checking to see if the

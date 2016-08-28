@@ -117,9 +117,6 @@ class CopyContainer(Base):
         cp = (1, oblist)
         cp = _cb_encode(cp)
         if REQUEST is not None:
-            resp = REQUEST['RESPONSE']
-            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
-            REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
         return cp
 
@@ -143,9 +140,6 @@ class CopyContainer(Base):
         cp = (0, oblist)
         cp = _cb_encode(cp)
         if REQUEST is not None:
-            resp = REQUEST['RESPONSE']
-            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
-            REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
         return cp
 
@@ -177,18 +171,13 @@ class CopyContainer(Base):
         Also sends IObjectCopiedEvent and IObjectClonedEvent
         or IObjectWillBeMovedEvent and IObjectMovedEvent.
         """
-        if cb_copy_data is not None:
-            cp = cb_copy_data
-        elif REQUEST is not None and '__cp' in REQUEST:
-            cp = REQUEST['__cp']
-        else:
-            cp = None
+        cp = cb_copy_data
         if cp is None:
             raise CopyError(eNoData)
 
         try:
             op, mdatas = _cb_decode(cp)
-        except:
+        except Exception:
             raise CopyError(eInvalid)
 
         oblist = []
@@ -199,7 +188,7 @@ class CopyContainer(Base):
                 ob = m.bind(app)
             except ConflictError:
                 raise
-            except:
+            except Exception:
                 raise CopyError(eNotFound)
             self._verifyObjectPaste(ob, validate_src=op + 1)
             oblist.append(ob)
@@ -216,7 +205,7 @@ class CopyContainer(Base):
                     ob._notifyOfCopyTo(self, op=0)
                 except ConflictError:
                     raise
-                except:
+                except Exception:
                     raise CopyError(MessageDialog(
                         title="Copy Error",
                         message=sys.exc_info()[1],
@@ -241,8 +230,7 @@ class CopyContainer(Base):
                 notify(ObjectClonedEvent(ob))
 
             if REQUEST is not None:
-                return self.manage_main(self, REQUEST, update_menu=1,
-                                        cb_dataValid=1)
+                return self.manage_main(self, REQUEST)
 
         elif op == 1:
             # Move operation
@@ -255,7 +243,7 @@ class CopyContainer(Base):
                     ob._notifyOfCopyTo(self, op=1)
                 except ConflictError:
                     raise
-                except:
+                except Exception:
                     raise CopyError(MessageDialog(
                         title="Move Error",
                         message=sys.exc_info()[1],
@@ -308,13 +296,7 @@ class CopyContainer(Base):
                 ob.manage_changeOwnershipType(explicit=0)
 
             if REQUEST is not None:
-                REQUEST['RESPONSE'].setCookie(
-                    '__cp', 'deleted',
-                    path='%s' % cookie_path(REQUEST),
-                    expires='Wed, 31-Dec-97 23:59:59 GMT')
-                REQUEST['__cp'] = None
-                return self.manage_main(self, REQUEST, update_menu=1,
-                                        cb_dataValid=0)
+                return self.manage_main(self, REQUEST)
 
         return result
 
@@ -330,7 +312,7 @@ class CopyContainer(Base):
             if ids[i] != new_ids[i]:
                 self.manage_renameObject(ids[i], new_ids[i], REQUEST)
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST, update_menu=1)
+            return self.manage_main(self, REQUEST)
         return None
 
     security.declareProtected(view_management_screens, 'manage_renameObject')
@@ -339,7 +321,7 @@ class CopyContainer(Base):
         """
         try:
             self._checkId(new_id)
-        except:
+        except Exception:
             raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
@@ -357,7 +339,7 @@ class CopyContainer(Base):
             ob._notifyOfCopyTo(self, op=1)
         except ConflictError:
             raise
-        except:
+        except Exception:
             raise CopyError(MessageDialog(
                 title="Rename Error",
                 message=sys.exc_info()[1],
@@ -392,7 +374,7 @@ class CopyContainer(Base):
         ob._postCopy(self, op=1)
 
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST, update_menu=1)
+            return self.manage_main(self, REQUEST)
         return None
 
     # Why did we give this a manage_ prefix if its really
@@ -408,7 +390,7 @@ class CopyContainer(Base):
             raise CopyError(eNotSupported % escape(ob.getId()))
         try:
             self._checkId(id)
-        except:
+        except Exception:
             raise CopyError(MessageDialog(
                 title='Invalid Id',
                 message=sys.exc_info()[1],
@@ -420,7 +402,7 @@ class CopyContainer(Base):
             ob._notifyOfCopyTo(self, op=0)
         except ConflictError:
             raise
-        except:
+        except Exception:
             raise CopyError(MessageDialog(
                 title="Clone Error",
                 message=sys.exc_info()[1],
@@ -441,30 +423,6 @@ class CopyContainer(Base):
         notify(ObjectClonedEvent(ob))
 
         return ob
-
-    def cb_dataValid(self):
-        # Return true if clipboard data seems valid.
-        try:
-            _cb_decode(self.REQUEST['__cp'])
-        except Exception:
-            return 0
-        return 1
-
-    def cb_dataItems(self):
-        # List of objects in the clip board
-        try:
-            cp = _cb_decode(self.REQUEST['__cp'])
-        except Exception:
-            return []
-        oblist = []
-
-        app = self.getPhysicalRoot()
-        for mdata in cp[1]:
-            m = loadMoniker(mdata)
-            oblist.append(m.bind(app))
-        return oblist
-
-    validClipData = cb_dataValid
 
     def _verifyObjectPaste(self, object, validate_src=1):
         # Verify whether the current user is allowed to paste the
@@ -511,7 +469,7 @@ class CopyContainer(Base):
                     # clipboard.
                     try:
                         parent = aq_parent(aq_inner(object))
-                    except:
+                    except Exception:
                         parent = None
 
                     if not sm.validate(None, parent, None, object):
@@ -656,12 +614,6 @@ def _cb_decode(s, maxsize=8192):
     if dec.unconsumed_tail:
         raise ValueError
     return loads(data)
-
-
-def cookie_path(request):
-    # Return a "path" value for use in a cookie that refers
-    # to the root of the Zope object space.
-    return request['BASEPATH1'] or "/"
 
 
 fMessageDialog = HTML("""

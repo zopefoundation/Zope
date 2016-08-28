@@ -32,7 +32,7 @@ def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
     self._setObject(id, ob)
     ob = self._getOb(id)
     if REQUEST:
-        return self.manage_main(self, REQUEST, update_menu=1)
+        return self.manage_main(self, REQUEST)
 
 
 class OrderedFolder(OrderSupport, Folder):

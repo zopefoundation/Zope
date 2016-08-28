@@ -47,7 +47,7 @@ def manage_addFolder(self, id, title='',
     self._setObject(id, ob)
     ob = self._getOb(id)
     if REQUEST is not None:
-        return self.manage_main(self, REQUEST, update_menu=1)
+        return self.manage_main(self, REQUEST)
 
 
 class Folder(

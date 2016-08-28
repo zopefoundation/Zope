@@ -549,7 +549,7 @@ class ObjectManager(CopyContainer,
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST, update_menu=1)
+            return self.manage_main(self, REQUEST)
 
     security.declareProtected(access_contents_information, 'tpValues')
     def tpValues(self):

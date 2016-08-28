@@ -2,13 +2,6 @@
 <html>
 <head>
 <title>Zope on &dtml-BASE0;</title>
-<script type="text/javascript">
-<!--
-function update_menu() {   
-  window.manage_menu.location.href=window.manage_menu.location.href;
-}
-//-->
-</script>
 </head>
 
 <frameset cols="250, *">
