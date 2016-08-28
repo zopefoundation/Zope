@@ -37,7 +37,6 @@ from Acquisition import aq_base, aq_parent
 from Acquisition import Implicit
 from App.Common import is_acquired
 from App.config import getConfiguration
-from App.Dialogs import MessageDialog
 from App.FactoryDispatcher import ProductDispatcher
 from App.Management import Navigation
 from App.Management import Tabs
@@ -522,20 +521,14 @@ class ObjectManager(CopyContainer,
         if isinstance(ids, basestring):
             ids = [ids]
         if not ids:
-            return MessageDialog(
-                title='No items specified',
-                message='No items were specified!',
-                action='./manage_main',)
+            raise BadRequest('No items specified')
         try:
             p = self._reserved_names
         except:
             p = ()
         for n in ids:
             if n in p:
-                return MessageDialog(
-                    title='Not Deletable',
-                    message='<EM>%s</EM> cannot be deleted.' % escape(n),
-                    action='./manage_main',)
+                raise BadRequest('Not Deletable')
         while ids:
             id = ids[-1]
             v = self._getOb(id, self)

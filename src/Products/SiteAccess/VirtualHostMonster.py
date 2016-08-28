@@ -3,10 +3,9 @@
 Defines the VirtualHostMonster class
 """
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view as View
+from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Persistent
@@ -116,11 +115,6 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def manage_addToContainer(self, container, nextURL=''):
         self.addToContainer(container)
-        if nextURL:
-            return MessageDialog(
-                title='Item Added',
-                message='This object now has a %s' % self.meta_type,
-                action=nextURL)
 
     def manage_beforeDelete(self, item, container):
         if item is self:

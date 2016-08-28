@@ -15,7 +15,6 @@
 
 from cgi import escape
 
-from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 
 from AccessControl import ClassSecurityInfo
@@ -26,6 +25,7 @@ from AccessControl.Permission import Permission
 from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import _string_hash
+from zExceptions import BadRequest
 
 
 class RoleManager(BaseRoleManager):
@@ -122,15 +122,10 @@ class RoleManager(BaseRoleManager):
                 fails.append(name)
 
         if fails:
-            return MessageDialog(
-                title="Warning!",
-                message="Some permissions had errors: " +
-                escape(', '.join(fails)),
-                action='manage_access')
-        return MessageDialog(
-            title='Success!',
-            message='Your changes have been saved',
-            action='manage_access')
+            raise BadRequest('Some permissions had errors: ' +
+                             escape(', '.join(fails)))
+        if REQUEST is not None:
+            return self.manage_access(REQUEST)
 
     security.declareProtected(change_permissions, 'manage_listLocalRoles')
     manage_listLocalRoles = DTMLFile('dtml/listLocalRoles', globals(),
@@ -184,15 +179,9 @@ class RoleManager(BaseRoleManager):
     @requestmethod('POST')
     def _addRole(self, role, REQUEST=None):
         if not role:
-            return MessageDialog(
-                title='Incomplete',
-                message='You must specify a role name',
-                action='manage_access')
+            raise BadRequest('You must specify a role name')
         if role in self.__ac_roles__:
-            return MessageDialog(
-                title='Role Exists',
-                message='The given role is already defined',
-                action='manage_access')
+            raise BadRequest('The given role is already defined')
         data = list(self.__ac_roles__)
         data.append(role)
         self.__ac_roles__ = tuple(data)
@@ -202,10 +191,7 @@ class RoleManager(BaseRoleManager):
     @requestmethod('POST')
     def _delRoles(self, roles, REQUEST=None):
         if not roles:
-            return MessageDialog(
-                title='Incomplete',
-                message='You must specify a role name',
-                action='manage_access')
+            raise BadRequest('You must specify a role name')
         data = list(self.__ac_roles__)
         for role in roles:
             try:

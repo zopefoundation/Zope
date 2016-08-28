@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Raise BadRequest instead of returning MessageDialog.
+
 - Remove property management ZMI screens.
 
 - Remove ZMI copy/cut/paste/rename and re-ordering features.

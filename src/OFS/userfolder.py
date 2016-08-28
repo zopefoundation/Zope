@@ -20,9 +20,9 @@ from Acquisition import aq_base
 from App.Management import Navigation
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
-from App.Dialogs import MessageDialog
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
+from zExceptions import BadRequest
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -141,27 +141,15 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     @requestmethod('POST')
     def _addUser(self, name, password, confirm, roles, domains, REQUEST=None):
         if not name:
-            return MessageDialog(
-                title='Illegal value',
-                message='A username must be specified',
-                action='manage_main')
+            raise BadRequest('A username must be specified')
         if not password or not confirm:
             if not domains:
-                return MessageDialog(
-                    title='Illegal value',
-                    message='Password and confirmation must be specified',
-                    action='manage_main')
+                raise BadRequest('Password and confirmation must be specified')
         if self.getUser(name) or (self._emergency_user and
                                   name == self._emergency_user.getUserName()):
-            return MessageDialog(
-                title='Illegal value',
-                message='A user with the specified name already exists',
-                action='manage_main')
+            raise BadRequest('A user with the specified name already exists')
         if (password or confirm) and (password != confirm):
-            return MessageDialog(
-                title='Illegal value',
-                message='Password and confirmation do not match',
-                action='manage_main')
+            raise BadRequest('Password and confirmation do not match')
 
         if not roles:
             roles = []
@@ -169,10 +157,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             domains = []
 
         if domains and not self.domainSpecValidate(domains):
-            return MessageDialog(
-                title='Illegal value',
-                message='Illegal domain specification',
-                action='manage_main')
+            raise BadRequest('Illegal domain specification')
         self._doAddUser(name, password, roles, domains)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -184,26 +169,14 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             # Protocol for editUser.dtml to indicate unchanged password
             password = confirm = None
         if not name:
-            return MessageDialog(
-                title='Illegal value',
-                message='A username must be specified',
-                action='manage_main')
+            raise BadRequest('A username must be specified')
         if password == confirm == '':
             if not domains:
-                return MessageDialog(
-                    title='Illegal value',
-                    message='Password and confirmation must be specified',
-                    action='manage_main')
+                raise BadRequest('Password and confirmation must be specified')
         if not self.getUser(name):
-            return MessageDialog(
-                title='Illegal value',
-                message='Unknown user',
-                action='manage_main')
+            raise BadRequest('Unknown user')
         if (password or confirm) and (password != confirm):
-            return MessageDialog(
-                title='Illegal value',
-                message='Password and confirmation do not match',
-                action='manage_main')
+            raise BadRequest('Password and confirmation do not match')
 
         if not roles:
             roles = []
@@ -211,10 +184,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             domains = []
 
         if domains and not self.domainSpecValidate(domains):
-            return MessageDialog(
-                title='Illegal value',
-                message='Illegal domain specification',
-                action='manage_main')
+            raise BadRequest('Illegal domain specification')
         self._doChangeUser(name, password, roles, domains)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -222,10 +192,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     @requestmethod('POST')
     def _delUsers(self, names, REQUEST=None):
         if not names:
-            return MessageDialog(
-                title='Illegal value',
-                message='No users specified',
-                action='manage_main')
+            raise BadRequest('No users specified')
         self._doDelUsers(names)
         if REQUEST:
             return self._mainUser(self, REQUEST)
@@ -242,11 +209,8 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if submit == 'Edit':
             try:
                 user = self.getUser(reqattr(REQUEST, 'name'))
-            except:
-                return MessageDialog(
-                    title='Illegal value',
-                    message='The specified user does not exist',
-                    action='manage_main')
+            except Exception:
+                raise BadRequest('The specified user does not exist')
             return self._editUser(self, REQUEST, user=user, password=user.__)
 
         if submit == 'Add':
@@ -287,10 +251,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
     def _setId(self, id):
         if id != self.id:
-            raise ValueError(MessageDialog(
-                title='Invalid Id',
-                message='Cannot change the id of a UserFolder',
-                action='./manage_main'))
+            raise ValueError('Cannot change the id of a UserFolder')
 
 InitializeClass(BasicUserFolder)
 
@@ -341,11 +302,8 @@ def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
     self = self.this()
     try:
         self._setObject('acl_users', f)
-    except:
-        return MessageDialog(
-            title='Item Exists',
-            message='This object already contains a User Folder',
-            action='%s/manage_main' % REQUEST['URL1'])
+    except Exception:
+        raise BadRequest('This object already contains a User Folder')
     self.__allow_groups__ = f
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
