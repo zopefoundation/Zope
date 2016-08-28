@@ -334,21 +334,15 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         try:
             callable(*args, **kw)
-
         except CopyError as e:
-
             if ce_regex is not None:
-
                 pattern = re.compile(ce_regex, re.DOTALL)
                 if pattern.search(e.args[0]) is None:
                     self.fail("Paste failed; didn't match pattern:\n%s" % e)
-
             else:
                 self.fail("Paste failed; no pattern:\n%s" % e)
-
         except Unauthorized:
             pass
-
         else:
             self.fail("Paste allowed unexpectedly.")
 
@@ -464,7 +458,7 @@ class TestCopySupportSecurity(CopySupportTestBase):
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
             folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient Privileges.*%s' % ADD_IMAGES_AND_FILES)
+            ce_regex='Insufficient privileges')
 
     def test_move_cant_delete_source(self):
         from AccessControl.Permissions import delete_objects
@@ -481,4 +475,4 @@ class TestCopySupportSecurity(CopySupportTestBase):
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
             folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient Privileges.*%s' % delete_objects)
+            ce_regex='Insufficient privileges')

@@ -13,11 +13,9 @@
 """Copy interface
 """
 
-from cgi import escape
 from marshal import dumps
 from marshal import loads
 import re
-import sys
 import tempfile
 from urllib import quote
 from urllib import unquote
@@ -35,9 +33,6 @@ from AccessControl.Permissions import delete_objects
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.Dialogs import MessageDialog
-from App.special_dtml import HTML
-from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from zExceptions import Unauthorized, BadRequest, ResourceLockedError
 from ZODB.POSException import ConflictError
@@ -97,7 +92,7 @@ class CopyContainer(Base):
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
-            return eNoItemsSpecified
+            raise BadRequest('No items specified')
         elif ids is None:
             raise ValueError('ids must be specified')
 
@@ -111,20 +106,18 @@ class CopyContainer(Base):
                 raise ResourceLockedError('Object "%s" is locked' % ob.getId())
 
             if not ob.cb_isMoveable():
-                raise CopyError(eNotSupported % escape(id))
+                raise CopyError('Not Supported')
             m = Moniker(ob)
             oblist.append(m.dump())
         cp = (1, oblist)
         cp = _cb_encode(cp)
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST)
         return cp
 
     security.declareProtected(view_management_screens, 'manage_copyObjects')
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
-            return eNoItemsSpecified
+            raise BadRequest('No items specified')
         elif ids is None:
             raise ValueError('ids must be specified')
 
@@ -134,13 +127,11 @@ class CopyContainer(Base):
         for id in ids:
             ob = self._getOb(id)
             if not ob.cb_isCopyable():
-                raise CopyError(eNotSupported % escape(id))
+                raise CopyError('Not Supported')
             m = Moniker(ob)
             oblist.append(m.dump())
         cp = (0, oblist)
         cp = _cb_encode(cp)
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST)
         return cp
 
     def _get_id(self, id):
@@ -173,12 +164,12 @@ class CopyContainer(Base):
         """
         cp = cb_copy_data
         if cp is None:
-            raise CopyError(eNoData)
+            raise CopyError('No clipboard data found.')
 
         try:
             op, mdatas = _cb_decode(cp)
         except Exception:
-            raise CopyError(eInvalid)
+            raise CopyError('Clipboard Error')
 
         oblist = []
         app = self.getPhysicalRoot()
@@ -189,7 +180,7 @@ class CopyContainer(Base):
             except ConflictError:
                 raise
             except Exception:
-                raise CopyError(eNotFound)
+                raise CopyError('Item Not Found')
             self._verifyObjectPaste(ob, validate_src=op + 1)
             oblist.append(ob)
 
@@ -199,17 +190,14 @@ class CopyContainer(Base):
             for ob in oblist:
                 orig_id = ob.getId()
                 if not ob.cb_isCopyable():
-                    raise CopyError(eNotSupported % escape(orig_id))
+                    raise CopyError('Not Supported')
 
                 try:
                     ob._notifyOfCopyTo(self, op=0)
                 except ConflictError:
                     raise
                 except Exception:
-                    raise CopyError(MessageDialog(
-                        title="Copy Error",
-                        message=sys.exc_info()[1],
-                        action='manage_main'))
+                    raise CopyError('Copy Error')
 
                 id = self._get_id(orig_id)
                 result.append({'id': orig_id, 'new_id': id})
@@ -229,25 +217,19 @@ class CopyContainer(Base):
 
                 notify(ObjectClonedEvent(ob))
 
-            if REQUEST is not None:
-                return self.manage_main(self, REQUEST)
-
         elif op == 1:
             # Move operation
             for ob in oblist:
                 orig_id = ob.getId()
                 if not ob.cb_isMoveable():
-                    raise CopyError(eNotSupported % escape(orig_id))
+                    raise CopyError('Not Supported')
 
                 try:
                     ob._notifyOfCopyTo(self, op=1)
                 except ConflictError:
                     raise
                 except Exception:
-                    raise CopyError(MessageDialog(
-                        title="Move Error",
-                        message=sys.exc_info()[1],
-                        action='manage_main'))
+                    raise CopyError('Move Error')
 
                 if not sanity_check(self, ob):
                     raise CopyError("This object cannot be pasted into itself")
@@ -295,13 +277,7 @@ class CopyContainer(Base):
                 # try to make ownership implicit if possible
                 ob.manage_changeOwnershipType(explicit=0)
 
-            if REQUEST is not None:
-                return self.manage_main(self, REQUEST)
-
         return result
-
-    security.declareProtected(view_management_screens, 'manage_renameForm')
-    manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
     security.declareProtected(view_management_screens, 'manage_renameObjects')
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
@@ -311,9 +287,6 @@ class CopyContainer(Base):
         for i in range(len(ids)):
             if ids[i] != new_ids[i]:
                 self.manage_renameObject(ids[i], new_ids[i], REQUEST)
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST)
-        return None
 
     security.declareProtected(view_management_screens, 'manage_renameObject')
     def manage_renameObject(self, id, new_id, REQUEST=None):
@@ -322,17 +295,14 @@ class CopyContainer(Base):
         try:
             self._checkId(new_id)
         except Exception:
-            raise CopyError(MessageDialog(
-                title='Invalid Id',
-                message=sys.exc_info()[1],
-                action='manage_main'))
+            raise CopyError('Invalid Id')
 
         ob = self._getOb(id)
 
         if ob.wl_isLocked():
             raise ResourceLockedError('Object "%s" is locked' % ob.getId())
         if not ob.cb_isMoveable():
-            raise CopyError(eNotSupported % escape(id))
+            raise CopyError('Not Supported')
         self._verifyObjectPaste(ob)
 
         try:
@@ -340,10 +310,7 @@ class CopyContainer(Base):
         except ConflictError:
             raise
         except Exception:
-            raise CopyError(MessageDialog(
-                title="Rename Error",
-                message=sys.exc_info()[1],
-                action='manage_main'))
+            raise CopyError('Rename Error')
 
         notify(ObjectWillBeMovedEvent(ob, self, id, self, new_id))
 
@@ -373,28 +340,16 @@ class CopyContainer(Base):
 
         ob._postCopy(self, op=1)
 
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST)
-        return None
-
-    # Why did we give this a manage_ prefix if its really
-    # supposed to be public since it does its own auth ?
-    #
-    # Because it's still a "management" function.
-
     security.declarePublic('manage_clone')
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
         if not ob.cb_isCopyable():
-            raise CopyError(eNotSupported % escape(ob.getId()))
+            raise CopyError('Not Supported')
         try:
             self._checkId(id)
         except Exception:
-            raise CopyError(MessageDialog(
-                title='Invalid Id',
-                message=sys.exc_info()[1],
-                action='manage_main'))
+            raise CopyError('Invalid Id')
 
         self._verifyObjectPaste(ob)
 
@@ -403,10 +358,7 @@ class CopyContainer(Base):
         except ConflictError:
             raise
         except Exception:
-            raise CopyError(MessageDialog(
-                title="Clone Error",
-                message=sys.exc_info()[1],
-                action='manage_main'))
+            raise CopyError('Clone Error')
 
         orig_ob = ob
         ob = ob._getCopy(self)
@@ -440,17 +392,10 @@ class CopyContainer(Base):
         # heirarchy).
 
         if not hasattr(object, 'meta_type'):
-            raise CopyError(MessageDialog(
-                title='Not Supported',
-                message=('The object <em>%s</em> does not support this '
-                         'operation' % escape(absattr(object.id))),
-                action='manage_main'))
+            raise CopyError('Not Supported')
 
         if not hasattr(self, 'all_meta_types'):
-            raise CopyError(MessageDialog(
-                title='Not Supported',
-                message='Cannot paste into this object.',
-                action='manage_main'))
+            raise CopyError('Cannot paste into this object.')
 
         mt_permission = None
         meta_types = absattr(self.all_meta_types)
@@ -479,19 +424,9 @@ class CopyContainer(Base):
                         if not sm.checkPermission(delete_objects, parent):
                             raise Unauthorized('Delete not allowed.')
             else:
-                raise CopyError(MessageDialog(
-                    title='Insufficient Privileges',
-                    message=('You do not possess the %s permission in the '
-                             'context of the container into which you are '
-                             'pasting, thus you are not able to perform '
-                             'this operation.' % mt_permission),
-                    action='manage_main'))
+                raise CopyError('Insufficient privileges')
         else:
-            raise CopyError(MessageDialog(
-                title='Not Supported',
-                message=('The object <em>%s</em> does not support this '
-                         'operation.' % escape(absattr(object.id))),
-                action='manage_main'))
+            raise CopyError('Not Supported')
 
 InitializeClass(CopyContainer)
 
@@ -614,77 +549,3 @@ def _cb_decode(s, maxsize=8192):
     if dec.unconsumed_tail:
         raise ValueError
     return loads(data)
-
-
-fMessageDialog = HTML("""
-<HTML>
-<HEAD>
-<TITLE>&dtml-title;</TITLE>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<FORM ACTION="&dtml-action;" METHOD="GET" <dtml-if
- target>TARGET="&dtml-target;"</dtml-if>>
-<TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
-<TR>
-  <TD VALIGN="TOP">
-  <BR>
-  <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
-  </TD>
-  <TD VALIGN="TOP">
-  <BR><BR>
-  <CENTER>
-  <dtml-var message>
-  </CENTER>
-  </TD>
-</TR>
-<TR>
-  <TD VALIGN="TOP">
-  </TD>
-  <TD VALIGN="TOP">
-  <CENTER>
-  <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
-  </CENTER>
-  </TD>
-</TR>
-</TABLE>
-</FORM>
-</BODY></HTML>""", target='', action='manage_main', title='Changed')
-
-
-eNoData = MessageDialog(
-    title='No Data',
-    message='No clipboard data found.',
-    action='manage_main')
-
-eInvalid = MessageDialog(
-    title='Clipboard Error',
-    message='The data in the clipboard could not be read, possibly due '
-            'to cookie data being truncated by your web browser. Try copying '
-            'fewer objects.',
-    action='manage_main')
-
-eNotFound = MessageDialog(
-    title='Item Not Found',
-    message='One or more items referred to in the clipboard data was '
-            'not found. The item may have been moved or deleted after you '
-            'copied it.',
-    action='manage_main')
-
-eNotSupported = fMessageDialog(
-    title='Not Supported',
-    message=(
-        'The action against the <em>%s</em> object could not be carried '
-        'out. '
-        'One of the following constraints caused the problem: <br><br>'
-        'The object does not support this operation.'
-        '<br><br>-- OR --<br><br>'
-        'The currently logged-in user does not have the <b>Copy or '
-        'Move</b> permission respective to the object.'
-    ),
-    action='manage_main')
-
-eNoItemsSpecified = MessageDialog(
-    title='No items specified',
-    message='You must select one or more items to perform '
-            'this operation.',
-    action='manage_main')
