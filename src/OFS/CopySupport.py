@@ -13,8 +13,8 @@
 """Copy interface
 """
 
-from marshal import dumps
-from marshal import loads
+from json import dumps
+from json import loads
 import re
 import tempfile
 from urllib import quote
@@ -111,6 +111,10 @@ class CopyContainer(Base):
             oblist.append(m.dump())
         cp = (1, oblist)
         cp = _cb_encode(cp)
+        if REQUEST is not None:
+            resp = REQUEST['RESPONSE']
+            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
+            REQUEST['__cp'] = cp
         return cp
 
     security.declareProtected(view_management_screens, 'manage_copyObjects')
@@ -132,6 +136,10 @@ class CopyContainer(Base):
             oblist.append(m.dump())
         cp = (0, oblist)
         cp = _cb_encode(cp)
+        if REQUEST is not None:
+            resp = REQUEST['RESPONSE']
+            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
+            REQUEST['__cp'] = cp
         return cp
 
     def _get_id(self, id):
@@ -163,6 +171,8 @@ class CopyContainer(Base):
         or IObjectWillBeMovedEvent and IObjectMovedEvent.
         """
         cp = cb_copy_data
+        if cp is None and REQUEST is not None and '__cp' in REQUEST:
+            cp = REQUEST['__cp']
         if cp is None:
             raise CopyError('No clipboard data found.')
 
@@ -276,6 +286,13 @@ class CopyContainer(Base):
                 ob._postCopy(self, op=1)
                 # try to make ownership implicit if possible
                 ob.manage_changeOwnershipType(explicit=0)
+
+            if REQUEST is not None:
+                REQUEST['RESPONSE'].setCookie(
+                    '__cp', 'deleted',
+                    path='%s' % cookie_path(REQUEST),
+                    expires='Wed, 31-Dec-97 23:59:59 GMT')
+                REQUEST['__cp'] = None
 
         return result
 
@@ -540,7 +557,7 @@ def absattr(attr):
 
 
 def _cb_encode(d):
-    return quote(compress(dumps(d), 9))
+    return quote(compress(dumps(d), 2))
 
 
 def _cb_decode(s, maxsize=8192):
@@ -549,3 +566,9 @@ def _cb_decode(s, maxsize=8192):
     if dec.unconsumed_tail:
         raise ValueError
     return loads(data)
+
+
+def cookie_path(request):
+    # Return a "path" value for use in a cookie that refers
+    # to the root of the Zope object space.
+    return request['BASEPATH1'] or "/"
