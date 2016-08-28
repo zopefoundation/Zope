@@ -86,15 +86,6 @@ class TestInitialization(unittest.TestCase):
         app = getApp()
         return AppInitializer(app)
 
-    def test_install_virtual_hosting(self):
-        self.configure(good_cfg)
-        i = self.getOne()
-        i.install_virtual_hosting()
-        app = i.getApp()
-        self.assertTrue('virtual_hosting' in app)
-        self.assertEqual(
-            app.virtual_hosting.meta_type, 'Virtual Host Monster')
-
     def test_install_required_roles(self):
         self.configure(good_cfg)
         i = self.getOne()

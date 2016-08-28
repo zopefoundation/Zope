@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Move `Products.SiteAccess` into ZServer distribution.
+
 - Simplify Page Template and Scripts ZMI screens.
 
 - Change VHM id to `virtual_hosting` to match AppInitializer.
