@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove property management ZMI screens.
+
 - Remove ZMI copy/cut/paste and re-ordering features.
 
 - Drop `OFS.History` functionality.

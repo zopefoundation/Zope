@@ -19,20 +19,16 @@ import sys
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
-from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
-from App.Dialogs import MessageDialog
 from App.Management import Tabs
-from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from OFS import bbb
 from Persistence import Persistent
 from Traversable import Traversable
 from zExceptions import BadRequest
-from zExceptions import Redirect
 from ZPublisher.Converters import type_converters
 
 if bbb.HAS_ZSERVER:
@@ -319,13 +315,6 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             dict[p['id']] = p
         return dict
 
-    manage = DTMLFile('dtml/properties', globals())
-
-    security.declareProtected(manage_properties, 'manage_propertiesForm')
-    def manage_propertiesForm(self, URL1):
-        " "
-        raise Redirect(URL1 + '/manage')
-
     security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
@@ -333,8 +322,6 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         if type in type_converters:
             value = type_converters[type](value)
         self._setProperty(id, value, type)
-        if REQUEST is not None:
-            return self.manage(self, REQUEST)
 
     security.declareProtected(manage_properties, 'manage_editProperties')
     def manage_editProperties(self, REQUEST):
@@ -344,10 +331,6 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             if 'w' in prop.get('mode', 'wd'):
                 value = REQUEST.get(name, '')
                 self._updateProperty(name, value)
-        return MessageDialog(
-            title='Success!',
-            message='Your changes have been saved',
-            action='manage')
 
     security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
@@ -369,11 +352,6 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
                 if 'w' not in propdict[name].get('mode', 'wd'):
                     raise BadRequest('%s cannot be changed' % escape(name))
                 self._updateProperty(name, value)
-        if REQUEST is not None:
-            return MessageDialog(
-                title='Success!',
-                message='Your changes have been saved.',
-                action='manage')
 
     security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
@@ -384,14 +362,9 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
                 ids = None
             ids = REQUEST.get('_ids', ids)
         if ids is None:
-            return MessageDialog(
-                title='No property specified',
-                message='No properties were specified!',
-                action='./manage',)
+            raise BadRequest('No property specified.')
         for id in ids:
             self._delProperty(id)
-        if REQUEST is not None:
-            return self.manage(self, REQUEST)
 
 InitializeClass(PropertySheet)
 
@@ -482,7 +455,6 @@ class PropertySheets(Traversable, Implicit, Tabs):
         if REQUEST is None:
             return ps
         ps = self.get(id)
-        REQUEST.RESPONSE.redirect('%s/manage' % ps.absolute_url())
 
     security.declareProtected(manage_properties, 'addPropertySheet')
     def addPropertySheet(self, propset):
@@ -516,17 +488,12 @@ class PropertySheets(Traversable, Implicit, Tabs):
                 raise BadRequest(
                     'attempt to delete undeletable property sheet: ' + id)
             self.delPropertySheet(id)
-        if REQUEST is not None:
-            REQUEST.RESPONSE.redirect('%s/manage' % self.absolute_url())
 
     def __len__(self):
         return len(self.__propsets__())
 
     def getId(self):
         return self.id
-
-    security.declareProtected(view_management_screens, 'manage')
-    manage = DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance
