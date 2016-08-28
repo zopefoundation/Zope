@@ -13,10 +13,10 @@
 
 import time
 
+from Acquisition import aq_acquire
+from zExceptions import HTTPPreconditionFailed
 from zope.interface import implements
 from zope.interface import Interface
-
-from zExceptions import HTTPPreconditionFailed
 
 
 class EtagBaseInterface(Interface):
@@ -108,7 +108,7 @@ class EtagSupport(object):
         # Process if-match and if-none-match headers
 
         if REQUEST is None:
-            REQUEST = self.aq_acquire('REQUEST')
+            REQUEST = aq_acquire(self, 'REQUEST')
 
         matchlist = self.http__parseMatchList(REQUEST, 'if-match')
         nonematch = self.http__parseMatchList(REQUEST, 'if-none-match')

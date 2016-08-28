@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Stop mixing in `Five.bbb.AcquisitionBBB` into browser components.
+
 - Integrate `five.pt` code directly into `Products.PageTemplates`.
 
 - Move `Products.SiteAccess` into ZServer distribution.

@@ -24,8 +24,6 @@ from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
 
-from Products.Five.bbb import AcquisitionBBB
-
 _engine = createTrustedZopeEngine()
 
 
@@ -107,12 +105,10 @@ class ViewMapper(object):
         return getMultiAdapter((self.ob, self.request), name=name)
 
 # When a view's template is accessed e.g. as template.view, a
-# BoundPageTemplate object is returned. For BBB reasons, it needs to
-# support the aq_* methods and attributes known from Acquisition.  For
-# that it also needs to be locatable through __parent__.
+# BoundPageTemplate object is returned.
 
 
-class BoundPageTemplate(AcquisitionBBB):
+class BoundPageTemplate(object):
     def __init__(self, pt, ob):
         object.__setattr__(self, 'im_func', pt)
         object.__setattr__(self, 'im_self', ob)

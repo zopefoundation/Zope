@@ -33,7 +33,7 @@ from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import ftp_access
 from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_parent
+from Acquisition import aq_base, aq_acquire, aq_parent
 from Acquisition import Implicit
 from App.Common import is_acquired
 from App.config import getConfiguration
@@ -770,7 +770,7 @@ class IFAwareObjectManager:
                 interfaces = self._product_interfaces
             elif hasattr(self, 'aq_acquire'):
                 try:
-                    interfaces = self.aq_acquire('_product_interfaces')
+                    interfaces = aq_acquire(self, '_product_interfaces')
                 except Exception:
                     pass
 

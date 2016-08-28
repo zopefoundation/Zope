@@ -13,6 +13,7 @@
 """Simple Tree classes
 """
 
+from Acquisition import aq_acquire
 from Tree import TreeMaker, TreeNode, b2a
 
 
@@ -23,13 +24,13 @@ class SimpleTreeNode(TreeNode):
 
         if self.state < 0:
             setst = 'expand'
-            exnum = self.aq_parent.expansion_number
+            exnum = self.__parent__.expansion_number
         else:
             setst = 'collapse'
             exnum = self.expansion_number
 
         obid = self.id
-        pre = self.aq_acquire('tree_pre')
+        pre = aq_acquire(self, 'tree_pre')
 
         return {'link': '?%s-setstate=%s,%s,%s#%s' %
                         (pre, setst[0], exnum, obid, obid),

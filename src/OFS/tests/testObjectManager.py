@@ -6,7 +6,7 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
 from AccessControl.User import User  # before SpecialUsers
-from Acquisition import Implicit
+from Acquisition import aq_self, Implicit
 from App.config import getConfiguration
 from logging import getLogger
 from zExceptions import BadRequest
@@ -444,8 +444,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         got = om['1']
-        self.assertTrue(got.aq_self is si1)
-        self.assertTrue(got.aq_parent is om)
+        self.assertTrue(aq_self(got) is si1)
+        self.assertTrue(got.__parent__ is om)
 
     def test_get_miss_wo_default(self):
         om = self._makeOne()
@@ -465,8 +465,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         got = om.get('1')
-        self.assertTrue(got.aq_self is si1)
-        self.assertTrue(got.aq_parent is om)
+        self.assertTrue(aq_self(got) is si1)
+        self.assertTrue(got.__parent__ is om)
 
     def test_items(self):
         om = self._makeOne()

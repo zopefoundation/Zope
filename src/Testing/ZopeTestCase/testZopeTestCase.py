@@ -364,8 +364,9 @@ class TestPlainUserFolder(ZopeTestCase.ZopeTestCase):
         self.assertEqual(user.getId(), user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertTrue(user.__class__.__name__, 'User')
-        self.assertTrue(user.aq_parent.__class__.__name__, 'UserFolder')
-        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(user.__parent__.__class__.__name__, 'UserFolder')
+        self.assertTrue(
+            user.__parent__.__parent__.__class__.__name__, 'Folder')
 
 
 class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
@@ -379,7 +380,7 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertFalse(user is aq_base(user))
         self.assertTrue(
-            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+            user.__parent__.__class__.__name__, 'WrappingUserFolder')
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
@@ -387,8 +388,9 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertTrue(user.__class__.__name__, 'User')
         self.assertTrue(
-            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
-        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+            user.__parent__.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(
+            user.__parent__.__parent__.__class__.__name__, 'Folder')
 
 
 def test_suite():

@@ -18,7 +18,7 @@ import types
 import xmlrpc
 
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner
 from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
 from zExceptions import Forbidden
@@ -469,7 +469,8 @@ class BaseRequest:
                             hasattr(object, 'aq_base') and
                             not hasattr(object, '__bobo_traverse__')):
 
-                        if object.aq_parent is not object.aq_inner.aq_parent:
+                        if (object.__parent__ is not
+                                aq_inner(object).__parent__):
                             object = NullResource(parents[-2], object.getId(),
                                                   self).__of__(parents[-2])
 
@@ -556,7 +557,7 @@ class BaseRequest:
         if (no_acquire_flag and
                 hasattr(parents[1], 'aq_base') and
                 not hasattr(parents[1], '__bobo_traverse__')):
-            base = parents[1].aq_base
+            base = aq_base(parents[1])
             if not hasattr(base, entry_name):
                 try:
                     if entry_name not in base:

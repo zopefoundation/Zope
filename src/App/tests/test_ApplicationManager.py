@@ -127,7 +127,7 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         found = dc['foo']
         self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.aq_parent is dc)
+        self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
         self.assertTrue(isinstance(conn, FakeConnection))
         self.assertTrue(conn.db() is foo)
@@ -150,7 +150,7 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         found = dc.__bobo_traverse__(None, 'foo')
         self.assertTrue(isinstance(found, AltDatabaseManager))
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.aq_parent is dc)
+        self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
         self.assertTrue(isinstance(conn, FakeConnection))
         self.assertTrue(conn.db() is foo)

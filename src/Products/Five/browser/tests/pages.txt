@@ -150,7 +150,7 @@ Make sure that global template variables in ZPT pages are correct:
   >>> print view()
   View is a view: True
   Context is testoid: True
-  Context.aq_parent is test_folder_1_: True
+  Context.__parent__ is test_folder_1_: True
   Container is context: True
   Here is context: True
   Nothing is None: True
@@ -260,7 +260,7 @@ The parent of the view is the view's context:
 
 The direct parent of the context is 
 
-  >>> context.aq_inner.aq_parent
+  >>> aq_inner(context).__parent__
   <Folder at /test_folder_1_> 
 
 C methods work the same
@@ -285,7 +285,7 @@ The same applies to a view registered with <browser:view /> instead of
   True
   >>> aq_parent(view) == view.context
   True
-  >>> context.aq_inner.aq_parent
+  >>> aq_inner(context).__parent__
   <Folder at /test_folder_1_> 
   >>> aq_parent(aq_inner(context))
   <Folder at /test_folder_1_> 

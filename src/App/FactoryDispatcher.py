@@ -90,7 +90,7 @@ class ProductDispatcher(Implicit):
             FactoryDispatcher)
 
         product = Product(name)
-        dispatcher = dispatcher_class(product, self.aq_parent, REQUEST)
+        dispatcher = dispatcher_class(product, self.__parent__, REQUEST)
         return dispatcher.__of__(self)
 
 

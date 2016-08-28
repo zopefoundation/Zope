@@ -14,7 +14,6 @@
 """Viewlet manager.
 """
 
-from Acquisition import aq_base
 from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface
 import zope.security
@@ -76,7 +75,7 @@ class ViewletManagerBase(origManagerBase):
         # but it allows the tests to have deterministic results.
 
         def _key(info):
-            return aq_base(info[1])
+            return info[1]
 
         return sorted(viewlets, key=_key)
 

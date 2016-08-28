@@ -53,7 +53,7 @@ class TreeNode(Explicit):
             child.__of__(self).walk(f, data)
 
     def _depth(self):
-        return self.aq_parent.depth + 1
+        return self.__parent__.depth + 1
 
     depth = ComputedAttribute(_depth, 1)
 

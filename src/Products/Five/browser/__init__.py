@@ -14,13 +14,10 @@
 """Provide basic browser functionality
 """
 
-import Acquisition
-import zope.publisher.browser
-
-from Products.Five.bbb import AcquisitionBBB
+from zope.publisher import browser
 
 
-class BrowserView(zope.publisher.browser.BrowserView, AcquisitionBBB):
+class BrowserView(browser.BrowserView):
 
     # Use an explicit __init__ to work around problems with magically inserted
     # super classes when using BrowserView as a base for viewlets.
@@ -28,14 +25,10 @@ class BrowserView(zope.publisher.browser.BrowserView, AcquisitionBBB):
         self.context = context
         self.request = request
 
-    # Classes which are still based on Acquisition and access
-    # self.context in a method need to call aq_inner on it, or get a
-    # funky aq_chain. We do this here for BBB friendly purposes.
-
     def __getParent(self):
-        return getattr(self, '_parent', Acquisition.aq_inner(self.context))
+        return getattr(self, '_parent', self.context)
 
     def __setParent(self, parent):
         self._parent = parent
 
-    aq_parent = __parent__ = property(__getParent, __setParent)
+    __parent__ = property(__getParent, __setParent)

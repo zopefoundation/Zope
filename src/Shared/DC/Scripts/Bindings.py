@@ -23,8 +23,7 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import aq_parent
-from Acquisition import aq_inner
+from Acquisition import aq_base, aq_inner, aq_parent
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -238,7 +237,7 @@ class Bindings:
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
         if (not names.isNameAssigned('name_subpath') or
-                (path and hasattr(self.aq_base, path[-1]))):
+                (path and hasattr(aq_base(self), path[-1]))):
             return
         subpath = path[:]
         path[:] = []

@@ -22,7 +22,7 @@ way of getting started.
 
 from Testing import ZopeTestCase
 
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner
 from AccessControl import getSecurityManager
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
@@ -61,11 +61,11 @@ class DummyMembershipTool(SimpleItem):
 
     def createMemberarea(self, member_id):
         self._called.append('createMemberarea')
-        portal = self.aq_inner.aq_parent
+        portal = aq_inner(self).__parent__
         portal.Members.manage_addFolder(member_id)
 
     def getHomeFolder(self, member_id):
-        portal = self.aq_inner.aq_parent
+        portal = aq_inner(self).__parent__
         return getattr(portal.Members, member_id)
 
 
@@ -73,7 +73,7 @@ class NewMembershipTool(DummyMembershipTool):
 
     def createMemberArea(self, member_id):
         self._called.append('createMemberArea')
-        portal = self.aq_inner.aq_parent
+        portal = aq_inner(self).__parent__
         portal.Members.manage_addFolder(member_id)
 
 
@@ -434,8 +434,9 @@ class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
         self.assertEqual(user.getId(), user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertTrue(user.__class__.__name__, 'User')
-        self.assertTrue(user.aq_parent.__class__.__name__, 'UserFolder')
-        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+        self.assertTrue(user.__parent__.__class__.__name__, 'UserFolder')
+        self.assertTrue(
+            user.__parent__.__parent__.__class__.__name__, 'Folder')
 
 
 class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
@@ -453,7 +454,7 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertFalse(user is aq_base(user))
         self.assertTrue(
-            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
+            user.__parent__.__class__.__name__, 'WrappingUserFolder')
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
@@ -461,8 +462,9 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
         self.assertTrue(hasattr(user, 'aq_base'))
         self.assertTrue(user.__class__.__name__, 'User')
         self.assertTrue(
-            user.aq_parent.__class__.__name__, 'WrappingUserFolder')
-        self.assertTrue(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
+            user.__parent__.__class__.__name__, 'WrappingUserFolder')
+        self.assertTrue(
+            user.__parent__.__parent__.__class__.__name__, 'Folder')
 
 
 # Because we override setUp we need to test again

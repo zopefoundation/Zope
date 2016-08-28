@@ -15,7 +15,7 @@
 
 import sys
 
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner, aq_parent
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
 from zope.pagetemplate.pagetemplate import PTRuntimeError
@@ -41,7 +41,7 @@ class PageTemplate(ExtensionClass.Base,
         if parent is not None:
             c['here'] = parent
             c['context'] = parent
-            c['container'] = self.aq_inner.aq_parent
+            c['container'] = aq_parent(aq_inner(self))
             while parent is not None:
                 self = parent
                 parent = getattr(self, '__parent__', None)

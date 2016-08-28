@@ -24,7 +24,7 @@ from App.config import getConfiguration
 import Zope2
 
 from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit, aq_inner, aq_parent
+from Acquisition import Explicit, aq_inner, aq_parent, aq_acquire
 from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
 from AccessControl import getSecurityManager
@@ -166,7 +166,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         else:
             # We're first, so get the REQUEST.
             try:
-                req = self.aq_acquire('REQUEST')
+                req = aq_acquire(self, 'REQUEST')
                 if hasattr(req, 'taintWrapper'):
                     req = req.taintWrapper()
             except Exception:

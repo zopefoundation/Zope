@@ -16,16 +16,14 @@
 
 import os
 import zope.viewlet.viewlet
-from Products.Five.bbb import AcquisitionBBB
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
-class ViewletBase(zope.viewlet.viewlet.ViewletBase, AcquisitionBBB):
+class ViewletBase(zope.viewlet.viewlet.ViewletBase):
     pass
 
 
-class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet,
-                             AcquisitionBBB):
+class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet):
     pass
 
 
