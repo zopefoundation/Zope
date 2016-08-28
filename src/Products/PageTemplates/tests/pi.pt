@@ -1,0 +1,1 @@
+<p xmlns="http://www.w3.org/1999/xhtml"><?python 1/0 ?>Hello world</p>

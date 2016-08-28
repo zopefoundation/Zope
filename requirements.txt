@@ -3,6 +3,7 @@ AccessControl==4.0a3
 Acquisition==4.2.2
 AuthEncoding==4.0.0
 BTrees==4.3.1
+Chameleon==2.24
 DateTime==4.1.1
 DocumentTemplate==2.13.2
 ExtensionClass==4.1.2
@@ -35,9 +36,11 @@ persistent==4.2.1
 pytz==2016.6.1
 repoze.retry==1.4
 six==1.10.0
+sourcecodegen==0.6.14
 tempstorage==3.0
 transaction==1.6.1
 waitress==0.9.0
+z3c.pt==2.2.3
 zExceptions==3.3
 zLOG==3.0
 zc.lockfile==1.2.1

@@ -1,0 +1,6 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal">
+    <div tal:repeat="key options">
+        <div tal:replace="key" /> : <div tal:replace="python:options[key]" />
+    </div>
+</div>

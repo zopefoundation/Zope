@@ -1,0 +1,1 @@
+<div tal:condition="exists: options/callable">ok</div>

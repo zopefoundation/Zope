@@ -1,0 +1,15 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal">
+    <div tal:replace="string:view:${view/available|nothing}" />
+    <div tal:replace="python:'here==context:'+str(here==context)" />
+    <div tal:replace="python:'here==container:'+str(here==container)" />
+    <div tal:replace="string:root:${root/getPhysicalPath}" />
+    <div tal:replace="string:nothing:${nothing}" />
+    <div tal:define="cgi python:modules['cgi']"
+         tal:replace="python: dir(cgi)"
+         tal:on-error="nothing" />
+    <tal:error on-error="nothing">
+      <div tal:define="test python: test" tal:replace="python: test" />
+      <div tal:define="same python: same_type" tal:replace="python: same" />
+    </tal:error>
+</div>

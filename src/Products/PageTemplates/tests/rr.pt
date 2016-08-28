@@ -1,0 +1,8 @@
+<html>
+  <body>
+    <ul tal:define="refs options/refs;
+                    refs python:sorted(refs, lambda x,y: cmp(x.order, y.order))">
+      <li tal:repeat="ref refs" tal:content="ref" />
+    </ul>
+  </body>
+</html>

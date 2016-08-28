@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Integrate `five.pt` code directly into `Products.PageTemplates`.
+
 - Move `Products.SiteAccess` into ZServer distribution.
 
 - Simplify Page Template and Scripts ZMI screens.

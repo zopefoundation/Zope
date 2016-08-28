@@ -1,8 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <include package="z3c.pt" />
+
   <utility
       provides="Products.PageTemplates.interfaces.IUnicodeEncodingConflictResolver"
       component="Products.PageTemplates.unicodeconflictresolver.PreferredCharsetResolver"
       />
+
+  <utility component=".engine.Program" />
 
 </configure>
