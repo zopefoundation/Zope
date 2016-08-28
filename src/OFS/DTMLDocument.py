@@ -38,11 +38,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """
     meta_type = 'DTML Document'
 
-    manage_options = (
-        DTMLMethod.manage_options[:2] +
-        PropertyManager.manage_options +
-        DTMLMethod.manage_options[2:]
-    )
+    manage_options = DTMLMethod.manage_options
 
     # Replace change_dtml_methods by change_dtml_documents
     __ac_permissions__ = tuple([

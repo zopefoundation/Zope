@@ -72,8 +72,6 @@ class Folder(
 
     manage_options = (
         ObjectManager.manage_options +
-        ({'label': 'View', 'action': ''}, ) +
-        PropertyManager.manage_options +
         RoleManager.manage_options +
         Item.manage_options
     )
