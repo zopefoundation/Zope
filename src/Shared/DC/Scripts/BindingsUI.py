@@ -12,9 +12,7 @@
 ##############################################################################
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.special_dtml import DTMLFile
 from Shared.DC.Scripts.Bindings import Bindings
 
 
@@ -22,13 +20,7 @@ class BindingsUI(Bindings):
 
     security = ClassSecurityInfo()
 
-    manage_options = (
-        {'label': 'Bindings', 'action': 'ZBindingsHTML_editForm'},
-    )
-
-    security.declareProtected(view_management_screens,
-                              'ZBindingsHTML_editForm')
-    ZBindingsHTML_editForm = DTMLFile('dtml/scriptBindings', globals())
+    manage_options = tuple()
 
     security.declareProtected('Change bindings', 'ZBindingsHTML_editAction')
     def ZBindingsHTML_editAction(self, REQUEST):

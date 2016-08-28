@@ -88,7 +88,6 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     manage_options = (
         {'label': 'Edit', 'action': 'pt_editForm'},
-        {'label': 'Test', 'action': 'ZScriptHTML_tryForm'},
     ) + SimpleItem.manage_options + Cacheable.manage_options
 
     _properties = (
@@ -103,8 +102,6 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     # protect methods from base class(es)
     security.declareProtected(view, '__call__')
-    security.declareProtected(view_management_screens,
-                              'read', 'ZScriptHTML_tryForm')
 
     def __init__(self, id, text=None, content_type='text/html', strict=True,
                  output_encoding='utf-8'):
@@ -231,10 +228,6 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         content_type = guess_type(filename, text)
         self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
-
-    def ZScriptHTML_tryParams(self):
-        """Parameters to test the script with."""
-        return []
 
     def pt_getContext(self, *args, **kw):
         root = None
