@@ -18,8 +18,8 @@ Products.Sessions==4.0
 Products.SiteErrorLog==4.0
 Products.StandardCacheManagers==3.0
 Products.TemporaryFolder==4.0
-Products.ZCTextIndex==3.0
-Products.ZCatalog==4.0a1
+Products.ZCTextIndex==4.0
+Products.ZCatalog==4.0a2
 Record==3.1
 RestrictedPython==3.6.0
 WebOb==1.6.1

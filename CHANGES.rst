@@ -23,6 +23,8 @@ Features Added
   - AccessControl = 4.0a3
   - AuthEncoding = 4.0.0
   - Products.PythonScripts = 4.0
+  - Products.ZCatalog = 4.0.a2
+  - Products.ZCTextIndex = 4.0
   - zExceptions = 3.3
 
 Restructuring
