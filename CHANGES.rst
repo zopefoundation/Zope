@@ -22,9 +22,7 @@ Features Added
 
   - AccessControl = 4.0a3
   - AuthEncoding = 4.0.0
-  - Products.PythonScripts = 4.0
-  - Products.ZCatalog = 4.0.a2
-  - Products.ZCTextIndex = 4.0
+  - Products.ZCatalog = 4.0a2
   - zExceptions = 3.3
 
 Restructuring
@@ -84,6 +82,17 @@ Restructuring
   and Products.Transience code.
 
 - Merge `Products.OFSP` project back in.
+
+- No longer test compatibility with dependencies:
+
+    ``Products.ExternalMethod``
+    ``Products.PythonScripts``
+    ``Products.Sessions``
+    ``Products.SiteErrorLog``
+    ``Products.TemporaryFolder``
+    ``tempstorage``
+    ``zLOG``
+    ``ZopeUndo``
 
 - Dropped dependency declarations for indirect dependencies:
 
