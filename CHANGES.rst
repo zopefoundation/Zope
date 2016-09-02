@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove proxy role support from DTML documents and methods.
+
 - Remove ZCacheable logic and StandardCacheManagers dependency.
 
 - Stop mixing in `Five.bbb.AcquisitionBBB` into browser components.
