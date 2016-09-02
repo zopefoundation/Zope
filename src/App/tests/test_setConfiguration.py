@@ -47,29 +47,12 @@ class SetConfigTests(unittest.TestCase):
 
     def testClientHomeLegacySources(self):
         import os
-        import App.FindHomes
-        import Globals  # for data
-        import __builtin__
         self.setconfig(clienthome='foo')
+        self.assertEqual(self.getconfig('clienthome'), 'foo')
         self.assertEqual(os.environ.get('CLIENT_HOME'), 'foo')
-        self.assertEqual(App.FindHomes.CLIENT_HOME, 'foo')
-        self.assertEqual(__builtin__.CLIENT_HOME, 'foo')
-        self.assertEqual(Globals.data_dir, 'foo')
 
     def testInstanceHomeLegacySources(self):
         import os
-        import App.FindHomes
-        import Globals  # for data
-        import __builtin__
         self.setconfig(instancehome='foo')
+        self.assertEqual(self.getconfig('instancehome'), 'foo')
         self.assertEqual(os.environ.get('INSTANCE_HOME'), 'foo')
-        self.assertEqual(App.FindHomes.INSTANCE_HOME, 'foo')
-        self.assertEqual(__builtin__.INSTANCE_HOME, 'foo')
-        self.assertEqual(Globals.INSTANCE_HOME, 'foo')
-
-    def testDebugModeLegacySources(self):
-        import Globals  # for data
-        self.setconfig(debug_mode=True)
-        self.assertEqual(Globals.DevelopmentMode, True)
-        self.setconfig(debug_mode=False)
-        self.assertEqual(Globals.DevelopmentMode, False)

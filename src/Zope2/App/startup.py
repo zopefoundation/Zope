@@ -71,7 +71,6 @@ def patch_persistent():
 
 
 def startup():
-    import Globals  # to set / fetch data
     patch_persistent()
 
     global app
@@ -120,9 +119,8 @@ def startup():
 
     notify(DatabaseOpened(DB))
 
-    Globals.DB = DB
     Zope2.DB = DB
-    Globals.opened.append(DB)
+    Zope2.opened.append(DB)
 
     import ClassFactory
     DB.classFactory = ClassFactory.ClassFactory

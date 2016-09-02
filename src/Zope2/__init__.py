@@ -66,6 +66,7 @@ def _configure_wsgi():
 
 # Zope2.App.startup.startup() sets the following variables in this module.
 DB = None
+opened = []
 bobo_application = None
 zpublisher_transactions_manager = None
 zpublisher_validated_hook = None

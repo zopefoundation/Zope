@@ -12,6 +12,8 @@
 #
 ##############################################################################
 
+import os
+
 _config = None
 
 
@@ -41,20 +43,11 @@ def setConfiguration(cfg):
         return
 
     from App import FindHomes
-    import __builtin__
-    import os
-    import Globals  # to set data
-
-    __builtin__.CLIENT_HOME = FindHomes.CLIENT_HOME = cfg.clienthome
+    FindHomes.CLIENT_HOME = cfg.clienthome
     os.environ["CLIENT_HOME"] = cfg.clienthome
-    # Globals does not export CLIENT_HOME
-    Globals.data_dir = cfg.clienthome
 
-    __builtin__.INSTANCE_HOME = FindHomes.INSTANCE_HOME = cfg.instancehome
+    FindHomes.INSTANCE_HOME = cfg.instancehome
     os.environ["INSTANCE_HOME"] = cfg.instancehome
-    Globals.INSTANCE_HOME = cfg.instancehome
-
-    Globals.DevelopmentMode = cfg.debug_mode
 
 
 class DefaultConfiguration:

@@ -28,6 +28,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove `Globals` package, opened database are now found in
+  `Zope2.opened` next to `Zope2.DB`.
+
 - Remove proxy role support from DTML documents and methods.
 
 - Remove ZCacheable logic and StandardCacheManagers dependency.
