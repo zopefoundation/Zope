@@ -17,7 +17,6 @@ Products.MailHost==3.0
 Products.PythonScripts==4.0
 Products.Sessions==4.0
 Products.SiteErrorLog==4.0
-Products.StandardCacheManagers==3.0
 Products.TemporaryFolder==4.0
 Products.ZCTextIndex==4.0
 Products.ZCatalog==4.0a2

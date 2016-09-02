@@ -59,7 +59,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             file = file.read()
 
         self.munge(file)
-        self.ZCacheable_invalidate()
         if REQUEST:
             message = "Content uploaded."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
@@ -69,12 +68,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
         o If supplied, use REQUEST mapping, Response, and key word arguments.
         """
-        if not self._cache_namespace_keys:
-            data = self.ZCacheable_get(default=_marker)
-            if data is not _marker:
-                # Return cached results.
-                return data
-
         __traceback_supplement__ = (PathTracebackSupplement, self)
         kw['document_id'] = self.getId()
         kw['document_title'] = self.title
@@ -94,15 +87,11 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                     result = r
                 else:
                     result = decapitate(r, RESPONSE)
-                if not self._cache_namespace_keys:
-                    self.ZCacheable_set(result)
                 return result
 
             r = HTML.__call__(self, (client, bself), REQUEST, **kw)
 
             if RESPONSE is None or not isinstance(r, str):
-                if not self._cache_namespace_keys:
-                    self.ZCacheable_set(r)
                 return r
 
         finally:
@@ -116,8 +105,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                 c, e = guess_content_type(self.__name__, r)
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
-        if not self._cache_namespace_keys:
-            self.ZCacheable_set(result)
         return result
 
 

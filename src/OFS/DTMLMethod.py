@@ -36,7 +36,6 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from zExceptions import Forbidden, ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
-from ZPublisher.Iterators import IStreamIterator
 from zope.contenttype import guess_content_type
 
 if sys.version_info >= (3, ):
@@ -49,14 +48,13 @@ class DTMLMethod(RestrictedDTML,
                  HTML,
                  Implicit,
                  RoleManager,
-                 Item_w__name__,
-                 Cacheable):
+                 Cacheable,
+                 Item_w__name__):
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
-    _cache_namespace_keys = ()
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -74,8 +72,7 @@ class DTMLMethod(RestrictedDTML,
         {'label': 'Proxy', 'action': 'manage_proxyForm'},
     ) +
         RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
+        Item_w__name__.manage_options
     )
 
     # More reasonable default for content-type for http HEAD requests.
@@ -91,27 +88,6 @@ class DTMLMethod(RestrictedDTML,
         o If supplied, use the REQUEST mapping, Response, and key word
         arguments.
         """
-        if not self._cache_namespace_keys:
-            data = self.ZCacheable_get(default=_marker)
-            if data is not _marker:
-                if (IStreamIterator.isImplementedBy(data) and
-                        RESPONSE is not None):
-                    # This is a stream iterator and we need to set some
-                    # headers now before giving it to medusa
-                    headers_get = RESPONSE.headers.get
-
-                    if headers_get('content-length', None) is None:
-                        RESPONSE.setHeader('content-length', len(data))
-
-                    if (headers_get('content-type', None) is None and
-                            headers_get('Content-type', None) is None):
-                        ct = (self.__dict__.get('content_type') or
-                              self.default_content_type)
-                        RESPONSE.setHeader('content-type', ct)
-
-                # Return cached results.
-                return data
-
         __traceback_supplement__ = (PathTracebackSupplement, self)
         kw['document_id'] = self.getId()
         kw['document_title'] = self.title
@@ -132,14 +108,10 @@ class DTMLMethod(RestrictedDTML,
                     result = r
                 else:
                     result = decapitate(r, RESPONSE)
-                if not self._cache_namespace_keys:
-                    self.ZCacheable_set(result)
                 return result
 
             r = HTML.__call__(self, client, REQUEST, **kw)
             if RESPONSE is None or not isinstance(r, str):
-                if not self._cache_namespace_keys:
-                    self.ZCacheable_set(r)
                 return r
 
         finally:
@@ -155,59 +127,24 @@ class DTMLMethod(RestrictedDTML,
                 c, e = guess_content_type(self.getId(), r)
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
-        if not self._cache_namespace_keys:
-            self.ZCacheable_set(result)
         return result
 
     def validate(self, inst, parent, name, value, md=None):
         return getSecurityManager().validate(inst, parent, name, value)
 
     def ZDocumentTemplate_beforeRender(self, md, default):
-        # Tries to get a cached value.
-        if self._cache_namespace_keys:
-            # Use the specified keys from the namespace to identify a
-            # cache entry.
-            kw = {}
-            for key in self._cache_namespace_keys:
-                try:
-                    val = md[key]
-                except:
-                    val = None
-                kw[key] = val
-            return self.ZCacheable_get(keywords=kw, default=default)
         return default
 
     def ZDocumentTemplate_afterRender(self, md, result):
-        # Tries to set a cache value.
-        if self._cache_namespace_keys:
-            kw = {}
-            for key in self._cache_namespace_keys:
-                try:
-                    val = md[key]
-                except:
-                    val = None
-                kw[key] = val
-            self.ZCacheable_set(result, keywords=kw)
-
-    security.declareProtected(change_dtml_methods, 'ZCacheable_configHTML')
-    ZCacheable_configHTML = DTMLFile('dtml/cacheNamespaceKeys', globals())
+        pass
 
     security.declareProtected(change_dtml_methods, 'getCacheNamespaceKeys')
     def getCacheNamespaceKeys(self):
-        # Return the cacheNamespaceKeys.
-        return self._cache_namespace_keys
+        return ()
 
     security.declareProtected(change_dtml_methods, 'setCacheNamespaceKeys')
     def setCacheNamespaceKeys(self, keys, REQUEST=None):
-        # Set the list of names looked up to provide a cache key.
-        ks = []
-        for key in keys:
-            key = str(key).strip()
-            if key:
-                ks.append(key)
-        self._cache_namespace_keys = tuple(ks)
-        if REQUEST is not None:
-            return self.ZCacheable_manage(self, REQUEST)
+        pass
 
     security.declareProtected(View, 'get_size')
     def get_size(self):
@@ -245,7 +182,6 @@ class DTMLMethod(RestrictedDTML,
         if not isinstance(data, basestring):
             data = data.read()
         self.munge(data)
-        self.ZCacheable_invalidate()
         if REQUEST:
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
@@ -264,7 +200,6 @@ class DTMLMethod(RestrictedDTML,
             file = file.read()
 
         self.munge(file)
-        self.ZCacheable_invalidate()
         if REQUEST:
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
@@ -299,7 +234,6 @@ class DTMLMethod(RestrictedDTML,
         self._validateProxy(REQUEST, roles)
         self._validateProxy(REQUEST)
         self._proxy_roles = tuple(roles)
-        self.ZCacheable_invalidate()
         if REQUEST:
             message = "Saved changes."
             return self.manage_proxyForm(self, REQUEST,
@@ -327,7 +261,6 @@ class DTMLMethod(RestrictedDTML,
             body = REQUEST.get('BODY', '')
             self._validateProxy(REQUEST)
             self.munge(body)
-            self.ZCacheable_invalidate()
             RESPONSE.setStatus(204)
             return RESPONSE
 

@@ -30,6 +30,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove ZCacheable logic and StandardCacheManagers dependency.
+
 - Stop mixing in `Five.bbb.AcquisitionBBB` into browser components.
 
 - Integrate `five.pt` code directly into `Products.PageTemplates`.
@@ -309,5 +311,4 @@ Restructuring
     ``Products.SiteErrorLog``
     ``Products.StandardCacheManagers``
     ``Products.ZCatalog``
-    ``Products.ZCTextIndex``
     ``Record``

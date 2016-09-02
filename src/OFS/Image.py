@@ -97,7 +97,6 @@ class File(Persistent, Implicit, PropertyManager,
                implementedBy(PropertyManager),
                implementedBy(RoleManager),
                implementedBy(Item_w__name__),
-               implementedBy(Cacheable),
                IWriteLock,
                HTTPRangeSupport.HTTPRangeInterface)
 
@@ -121,8 +120,7 @@ class File(Persistent, Implicit, PropertyManager,
     manage_options = (
         ({'label': 'Edit', 'action': 'manage_main'}, ) +
         RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
+        Item_w__name__.manage_options
     )
 
     _properties = (
@@ -382,13 +380,6 @@ class File(Persistent, Implicit, PropertyManager,
         """
 
         if self._if_modified_since_request_handler(REQUEST, RESPONSE):
-            # we were able to handle this by returning a 304
-            # unfortunately, because the HTTP cache manager uses the cache
-            # API, and because 304 responses are required to carry the Expires
-            # header for HTTP/1.1, we need to call ZCacheable_set here.
-            # This is nonsensical for caches other than the HTTP cache manager
-            # unfortunately.
-            self.ZCacheable_set(None)
             return ''
 
         if self.precondition and hasattr(self, str(self.precondition)):
@@ -409,17 +400,6 @@ class File(Persistent, Implicit, PropertyManager,
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Content-Length', self.size)
         RESPONSE.setHeader('Accept-Ranges', 'bytes')
-
-        if self.ZCacheable_isCachingEnabled():
-            result = self.ZCacheable_get(default=None)
-            if result is not None:
-                # We will always get None from RAMCacheManager and HTTP
-                # Accelerated Cache Manager but we will get
-                # something implementing the IStreamIterator interface
-                # from a "FileCacheManager"
-                return result
-
-        self.ZCacheable_set(None)
 
         data = self.data
         if isinstance(data, str):
@@ -458,8 +438,6 @@ class File(Persistent, Implicit, PropertyManager,
             size = len(data)
         self.size = size
         self.data = data
-        self.ZCacheable_invalidate()
-        self.ZCacheable_set(None)
         self.http__refreshEtag()
 
     security.declareProtected(change_images_and_files, 'manage_edit')
@@ -479,8 +457,6 @@ class File(Persistent, Implicit, PropertyManager,
             del self.precondition
         if filedata is not None:
             self.update_data(filedata, content_type, len(filedata))
-        else:
-            self.ZCacheable_invalidate()
 
         notify(ObjectModifiedEvent(self))
 
@@ -641,18 +617,6 @@ class File(Persistent, Implicit, PropertyManager,
         def manage_FTPget(self):
             """Return body for ftp."""
             RESPONSE = self.REQUEST.RESPONSE
-
-            if self.ZCacheable_isCachingEnabled():
-                result = self.ZCacheable_get(default=None)
-                if result is not None:
-                    # We will always get None from RAMCacheManager but we will
-                    # get something implementing the IStreamIterator interface
-                    # from FileCacheManager.
-                    # the content-length is required here by HTTPResponse,
-                    # even though FTP doesn't use it.
-                    RESPONSE.setHeader('Content-Length', self.size)
-                    return result
-
             data = self.data
             if isinstance(data, str):
                 RESPONSE.setBase(None)
@@ -809,8 +773,7 @@ class Image(File):
     manage_options = (
         ({'label': 'Edit', 'action': 'manage_main'}, ) +
         RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
+        Item_w__name__.manage_options
     )
 
     manage_editForm = DTMLFile('dtml/imageEdit', globals(),
@@ -848,8 +811,6 @@ class Image(File):
         if content_type is not None:
             self.content_type = content_type
 
-        self.ZCacheable_invalidate()
-        self.ZCacheable_set(None)
         self.http__refreshEtag()
 
     def __str__(self):

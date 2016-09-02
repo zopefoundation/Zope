@@ -11,8 +11,6 @@ from cStringIO import StringIO
 from Acquisition import aq_base
 
 from OFS.Application import Application
-from OFS.SimpleItem import SimpleItem
-from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -55,41 +53,6 @@ def aputrequest(file, content_type):
     environ['CONTENT_TYPE'] = content_type
     req = HTTPRequest(stdin=file, environ=environ, response=resp)
     return req
-
-
-class DummyCache:
-    def __init__(self):
-        self.clear()
-
-    def ZCache_set(self, ob, data, view_name='', keywords=None,
-                   mtime_func=None):
-        self.set = (ob, data)
-
-    def ZCache_get(self, ob, data, view_name='', keywords=None,
-                   mtime_func=None):
-        self.get = ob
-        if self.si:
-            return self.si
-
-    def ZCache_invalidate(self, ob):
-        self.invalidated = ob
-
-    def clear(self):
-        self.set = None
-        self.get = None
-        self.invalidated = None
-        self.si = None
-
-    def setStreamIterator(self, si):
-        self.si = si
-
-
-ADummyCache = DummyCache()
-
-
-class DummyCacheManager(SimpleItem):
-    def ZCacheManager_getCache(self):
-        return ADummyCache
 
 
 class EventCatcher(object):
@@ -139,13 +102,9 @@ class FileTests(unittest.TestCase):
             self.root = a
             responseOut = self.responseOut = StringIO()
             self.app = makerequest(self.root, stdout=responseOut)
-            self.app.dcm = DummyCacheManager()
             factory = getattr(self.app, self.factory)
             factory('file',
                     file=self.data, content_type=self.content_type)
-            self.app.file.ZCacheable_setManagerId('dcm')
-            self.app.file.ZCacheable_setEnabled(enabled=1)
-            setattr(self.app, ZCM_MANAGERS, ('dcm',))
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one.
             transaction.commit()
@@ -174,7 +133,6 @@ class FileTests(unittest.TestCase):
         del self.responseOut
         del self.root
         del self.connection
-        ADummyCache.clear()
         self.eventCatcher.tearDown()
 
     def testViewImageOrFile(self):
@@ -184,8 +142,6 @@ class FileTests(unittest.TestCase):
         self.file.update_data('foo')
         self.assertEqual(self.file.size, 3)
         self.assertEqual(self.file.data, 'foo')
-        self.assertTrue(ADummyCache.invalidated)
-        self.assertTrue(ADummyCache.set)
 
     def testReadData(self):
         s = "a" * (2 << 16)
@@ -210,8 +166,6 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain', filedata='ASD')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.assertTrue(ADummyCache.invalidated)
-        self.assertTrue(ADummyCache.set)
         self.assertEquals(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
@@ -219,7 +173,6 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.assertTrue(ADummyCache.invalidated)
         self.assertEquals(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
@@ -308,8 +261,6 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.data, self.data)
         self.assertEqual(self.file.width, 16)
         self.assertEqual(self.file.height, 16)
-        self.assertTrue(ADummyCache.invalidated)
-        self.assertTrue(ADummyCache.set)
 
     def testStr(self):
         self.assertEqual(
