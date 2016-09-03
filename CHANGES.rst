@@ -31,6 +31,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Remove support for repoze.tm2.
+
 - Change Testing to use the WSGI publisher for functional and testbrowser
   based tests incl. functional doctests. Alternatives are available
   in `ZServer.Testing`.
@@ -164,8 +166,6 @@ Bugs Fixed
 
 Features Added
 ++++++++++++++
-
-- Make repoze.tm2 optional when using the WSGIPublisher.
 
 - Include waitress as a default WSGI app server.
 

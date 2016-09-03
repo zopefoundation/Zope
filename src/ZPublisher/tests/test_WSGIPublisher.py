@@ -297,9 +297,8 @@ class TestPublishModule(unittest.TestCase):
         self.assertEqual(status, '204 No Content')
         self.assertEqual(headers, [('Content-Length', '0')])
         self.assertEqual(kw, {})
-        (request, module_info, repoze_tm_active), kw = _publish._called_with
+        (request, module_info), kw = _publish._called_with
         self.assertTrue(isinstance(request, HTTPRequest))
-        self.assertEqual(repoze_tm_active, False)
         self.assertEqual(kw, {})
         self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))
@@ -403,7 +402,7 @@ class TestPublishModule(unittest.TestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter is body)
 
-    def test_request_closed_when_tm_middleware_not_active(self):
+    def test_request_closed(self):
         environ = self._makeEnviron()
         start_response = DummyCallable()
         _request = DummyRequest()
@@ -419,48 +418,6 @@ class TestPublishModule(unittest.TestCase):
         _publish._result = DummyResponse()
         self._callFUT(environ, start_response, _publish,
                       _request_factory=_request_factory)
-        self.assertTrue(_request._closed)
-
-    def test_request_not_closed_when_tm_middleware_active(self):
-        import transaction
-        from ZPublisher import WSGIPublisher
-        environ = self._makeEnviron()
-        environ['repoze.tm.active'] = 1
-        start_response = DummyCallable()
-        _request = DummyRequest()
-        _request._closed = False
-
-        def _close():
-            _request._closed = True
-        _request.close = _close
-
-        def _request_factory(stdin, environ, response):
-            return _request
-        _publish = DummyCallable()
-        _publish._result = DummyResponse()
-        self._callFUT(environ, start_response, _publish,
-                      _request_factory=_request_factory)
-        self.assertFalse(_request._closed)
-        txn = transaction.get()
-        self.assertTrue(
-            txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
-        txn.commit()
-        self.assertTrue(_request._closed)
-        self.assertFalse(
-            txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
-        # try again, but this time raise an exception and abort
-        _request._closed = False
-        _publish._raise = Exception('oops')
-        self.assertRaises(Exception, self._callFUT,
-                          environ, start_response, _publish,
-                          _request_factory=_request_factory)
-        self.assertFalse(_request._closed)
-        txn = transaction.get()
-        self.assertTrue(
-            txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
-        txn.abort()
-        self.assertFalse(
-            txn in WSGIPublisher._request_closer_for_repoze_tm.requests)
         self.assertTrue(_request._closed)
 
 

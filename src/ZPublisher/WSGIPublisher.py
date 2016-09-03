@@ -17,7 +17,6 @@ import sys
 from thread import allocate_lock
 import time
 
-import transaction
 from zExceptions import (
     HTTPOk,
     HTTPRedirection,
@@ -197,7 +196,7 @@ class WSGIResponse(HTTPResponse):
         raise NotImplementedError
 
 
-def publish(request, module_info, repoze_tm_active=False):
+def publish(request, module_info):
     (bobo_before,
      bobo_after,
      object,
@@ -231,7 +230,7 @@ def publish(request, module_info, repoze_tm_active=False):
 
         request['PARENTS'] = [object]
 
-        if not repoze_tm_active and transactions_manager:
+        if transactions_manager:
             transactions_manager.begin()
 
         object = request.traverse(path, validated_hook=validated_hook)
@@ -261,7 +260,7 @@ def publish(request, module_info, repoze_tm_active=False):
 
         notify(pubevents.PubBeforeCommit(request))
 
-        if not repoze_tm_active and transactions_manager:
+        if transactions_manager:
             transactions_manager.commit()
             notify(pubevents.PubSuccess(request))
 
@@ -274,44 +273,15 @@ def publish(request, module_info, repoze_tm_active=False):
     return response
 
 
-class _RequestCloserForTransaction(object):
-    """Unconditionally close the request at the end of a transaction.
-
-    See transaction.interfaces.ISynchronizer
-    """
-
-    def __init__(self):
-        self.requests = {}
-
-    def add(self, txn, request):
-        assert txn not in self.requests
-        self.requests[txn] = request
-
-    def beforeCompletion(self, txn):
-        pass
-
-    newTransaction = beforeCompletion
-
-    def afterCompletion(self, txn):
-        request = self.requests.pop(txn, None)
-        if request is not None:
-            if txn.status == 'Committed':
-                notify(pubevents.PubSuccess(request))
-
-            request.close()
-
-_request_closer_for_repoze_tm = _RequestCloserForTransaction()
-
-
 def publish_module(environ, start_response,
                    _publish=publish,  # only for testing
                    _response=None,
                    _response_factory=WSGIResponse,
                    _request=None,
                    _request_factory=HTTPRequest,
-                   module_name='Zope2',
+                   _module_name='Zope2',
                    ):
-    module_info = get_module_info(module_name)
+    module_info = get_module_info(_module_name)
     transactions_manager = module_info[7]
 
     status = 200
@@ -329,26 +299,18 @@ def publish_module(environ, start_response,
     else:
         request = _request
 
-    repoze_tm_active = 'repoze.tm.active' in environ
-
-    if repoze_tm_active:
-        # NOTE: registerSynch is a no-op after the first request
-        transaction.manager.registerSynch(_request_closer_for_repoze_tm)
-        txn = transaction.get()
-        _request_closer_for_repoze_tm.add(txn, request)
-
     setDefaultSkin(request)
 
     try:
         try:
-            response = _publish(request, module_info, repoze_tm_active)
+            response = _publish(request, module_info)
         except Exception:
             try:
                 exc_info = sys.exc_info()
                 notify(pubevents.PubBeforeAbort(
                     request, exc_info, request.supports_retry()))
 
-                if not repoze_tm_active and transactions_manager:
+                if transactions_manager:
                     transactions_manager.abort()
 
                 notify(pubevents.PubFailure(
@@ -374,9 +336,7 @@ def publish_module(environ, start_response,
         # stdout StringIO, so we put that before the body.
         result = (stdout.getvalue(), response.body)
 
-    if not repoze_tm_active:
-        request.close()  # this aborts the transaction!
-
+    request.close()  # this aborts the transaction!
     stdout.close()
 
     for func in response.after_list:

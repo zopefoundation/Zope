@@ -82,7 +82,7 @@ class TestPubEvents(TestCase):
             'SERVER_NAME': 'localhost',
             'SERVER_PORT': 'localhost',
             'REQUEST_METHOD': 'GET',
-        }, start_response, _request=request, module_name=module_name)
+        }, start_response, _request=request, _module_name=module_name)
 
     def testSuccess(self):
         r = self.request
