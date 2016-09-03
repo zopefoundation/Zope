@@ -32,6 +32,7 @@ class PublisherConnection(object):
     def __init__(self, host, timeout=None):
         self.caller = functional.http
         self.host = host
+        self.response = None
 
     def set_debuglevel(self, level):
         pass
@@ -79,35 +80,20 @@ class PublisherConnection(object):
     def getresponse(self):
         """Return a ``urllib2`` compatible response.
 
-        The goal of ths method is to convert the Zope Publisher's reseponse to
+        The goal of ths method is to convert the Zope Publisher's response to
         a ``urllib2`` compatible response, which is also understood by
         mechanize.
         """
         real_response = self.response._response
         status = real_response.getStatus()
         reason = status_reasons[real_response.status]
-        headers = []
-        # Convert header keys to camel case. This is basically a copy
-        # paste from ZPublisher.HTTPResponse
-        for key, val in real_response.headers.items():
-            if key.lower() == key:
-                # only change non-literal header names
-                key = "%s%s" % (key[:1].upper(), key[1:])
-                start = 0
-                l = key.find('-', start)
-                while l >= start:
-                    key = "%s-%s%s" % (
-                        key[:l], key[l + 1:l + 2].upper(), key[l + 2:])
-                    start = l + 1
-                    l = key.find('-', start)
-            headers.append((key, val))
-        # get the cookies, breaking them into tuples for sorting
-        cookies = real_response._cookie_list()
-        headers.extend(cookies)
-        headers.sort()
-        headers.insert(0, ('Status', "%s %s" % (status, reason)))
-        headers = '\r\n'.join('%s: %s' % h for h in headers)
-        content = real_response.body
+
+        # Replace HTTP/1.1 200 OK with Status: 200 OK line.
+        headers = ['Status: %s %s' % (status, reason)]
+        wsgi_headers = self.response._wsgi_headers.getvalue().split('\r\n')
+        headers += [line for line in wsgi_headers[1:]]
+        headers = '\r\n'.join(headers)
+        content = self.response.getBody()
         return PublisherResponse(content, headers, status, reason)
 
 

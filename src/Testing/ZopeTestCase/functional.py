@@ -16,13 +16,15 @@ After Marius Gedminas' functional.py module for Zope3.
 """
 
 import base64
-import re
+from functools import partial
 import sys
 import transaction
-import sandbox
-import interfaces
 
 from zope.interface import implements
+
+from Testing.ZopeTestCase import interfaces
+from Testing.ZopeTestCase import sandbox
+from Zope2.Startup.httpexceptions import HTTPExceptionHandler
 
 
 def savestate(func):
@@ -61,8 +63,10 @@ class Functional(sandbox.Sandboxed):
 
         from StringIO import StringIO
         from ZPublisher.HTTPRequest import HTTPRequest as Request
-        from ZPublisher.HTTPResponse import HTTPResponse as Response
-        from ZPublisher.Publish import publish_module
+        from ZPublisher.WSGIPublisher import (
+            publish_module,
+            WSGIResponse,
+        )
 
         # Commit the sandbox for good measure
         transaction.commit()
@@ -76,6 +80,7 @@ class Functional(sandbox.Sandboxed):
 
         env['SERVER_NAME'] = request['SERVER_NAME']
         env['SERVER_PORT'] = request['SERVER_PORT']
+        env['SERVER_PROTOCOL'] = 'HTTP/1.1'
         env['REQUEST_METHOD'] = request_method
 
         p = path.split('?')
@@ -93,42 +98,54 @@ class Functional(sandbox.Sandboxed):
             stdin = StringIO()
 
         outstream = StringIO()
-        response = Response(stdout=outstream, stderr=sys.stderr)
+        response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
         request = Request(stdin, env, response)
+        request.retry_max_count = 0
         for k, v in extra.items():
             request[k] = v
 
-        publish_module('Zope2',
-                       debug=not handle_errors,
-                       request=request,
-                       response=response)
+        wsgi_headers = StringIO()
 
-        return ResponseWrapper(response, outstream, path)
+        def start_response(status, headers):
+            wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
+            headers = '\r\n'.join([': '.join(x) for x in headers])
+            wsgi_headers.write(headers)
+            wsgi_headers.write('\r\n\r\n')
+
+        publish = partial(publish_module, _request=request, _response=response)
+        if handle_errors:
+            publish = HTTPExceptionHandler(publish)
+
+        wsgi_result = publish(env, start_response)
+
+        return ResponseWrapper(response, outstream, path,
+                               wsgi_result, wsgi_headers)
 
 
-class ResponseWrapper:
+class ResponseWrapper(object):
     '''Decorates a response object with additional introspective methods.'''
 
-    _bodyre = re.compile('\r\n\r\n(.*)', re.MULTILINE | re.DOTALL)
-
-    def __init__(self, response, outstream, path):
+    def __init__(self, response, outstream, path,
+                 wsgi_result=(), wsgi_headers=''):
         self._response = response
         self._outstream = outstream
         self._path = path
+        self._wsgi_result = wsgi_result
+        self._wsgi_headers = wsgi_headers
 
     def __getattr__(self, name):
         return getattr(self._response, name)
 
+    def __str__(self):
+        return self.getOutput()
+
     def getOutput(self):
         '''Returns the complete output, headers and all.'''
-        return self._outstream.getvalue()
+        return self._wsgi_headers.getvalue() + self.getBody()
 
     def getBody(self):
         '''Returns the page body, i.e. the output par headers.'''
-        body = self._bodyre.search(self.getOutput())
-        if body is not None:
-            body = body.group(1)
-        return body
+        return ''.join(self._wsgi_result)
 
     def getPath(self):
         '''Returns the path used by the request.'''

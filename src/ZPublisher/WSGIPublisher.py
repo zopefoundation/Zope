@@ -304,21 +304,30 @@ _request_closer_for_repoze_tm = _RequestCloserForTransaction()
 
 
 def publish_module(environ, start_response,
-                   _publish=publish,                # only for testing
-                   _response_factory=WSGIResponse,  # only for testing
-                   _request_factory=HTTPRequest,    # only for testing
+                   _publish=publish,  # only for testing
+                   _response=None,
+                   _response_factory=WSGIResponse,
+                   _request=None,
+                   _request_factory=HTTPRequest,
+                   module_name='Zope2',
                    ):
-    module_info = get_module_info()
+    module_info = get_module_info(module_name)
     transactions_manager = module_info[7]
 
     status = 200
     stdout = StringIO()
     stderr = StringIO()
-    response = _response_factory(stdout=stdout, stderr=stderr)
+    if _response is None:
+        response = _response_factory(stdout=stdout, stderr=stderr)
+    else:
+        response = _response
     response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
     response._server_version = environ.get('SERVER_SOFTWARE')
 
-    request = _request_factory(environ['wsgi.input'], environ, response)
+    if _request is None:
+        request = _request_factory(environ['wsgi.input'], environ, response)
+    else:
+        request = _request
 
     repoze_tm_active = 'repoze.tm.active' in environ
 

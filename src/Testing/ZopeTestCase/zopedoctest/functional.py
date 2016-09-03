@@ -15,6 +15,7 @@
 
 import base64
 import doctest
+from functools import partial
 import re
 import sys
 import warnings
@@ -32,6 +33,7 @@ from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
+from Zope2.Startup.httpexceptions import HTTPExceptionHandler
 
 if sys.version_info >= (3, ):
     basestring = str
@@ -82,15 +84,11 @@ class DocResponseWrapper(ResponseWrapper):
     """Response Wrapper for use in doctests
     """
 
-    def __init__(self, response, outstream, path, header_output):
-        ResponseWrapper.__init__(self, response, outstream, path)
+    def __init__(self, response, outstream, path, header_output,
+                 wsgi_result=(), wsgi_headers=''):
+        ResponseWrapper.__init__(self, response, outstream, path,
+                                 wsgi_result, wsgi_headers)
         self.header_output = header_output
-
-    def __str__(self):
-        body = self.getBody()
-        if body:
-            return "%s\n\n%s" % (self.header_output, body)
-        return "%s\n" % (self.header_output)
 
 
 basicre = re.compile('Basic (.+)?:(.+)?$')
@@ -131,8 +129,11 @@ def http(request_string, handle_errors=True):
     import urllib
     import rfc822
     from cStringIO import StringIO
-    from ZPublisher.HTTPResponse import HTTPResponse as Response
-    from ZPublisher.Publish import publish_module
+    from ZPublisher.HTTPRequest import HTTPRequest as Request
+    from ZPublisher.WSGIPublisher import (
+        publish_module,
+        WSGIResponse,
+    )
 
     # Commit work done by previous python code.
     transaction.commit()
@@ -185,13 +186,24 @@ def http(request_string, handle_errors=True):
         env['HTTP_AUTHORIZATION'] = auth_header(env['HTTP_AUTHORIZATION'])
 
     outstream = StringIO()
-    response = Response(stdout=outstream, stderr=sys.stderr)
+    response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
+    request = Request(instream, env, response)
+    request.retry_max_count = 0
 
-    publish_module('Zope2',
-                   response=response,
-                   stdin=instream,
-                   environ=env,
-                   debug=not handle_errors)
+    env['wsgi.input'] = instream
+    wsgi_headers = StringIO()
+
+    def start_response(status, headers):
+        wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
+        headers = '\r\n'.join([': '.join(x) for x in headers])
+        wsgi_headers.write(headers)
+        wsgi_headers.write('\r\n\r\n')
+
+    publish = partial(publish_module, _request=request, _response=response)
+    if handle_errors:
+        publish = HTTPExceptionHandler(publish)
+
+    wsgi_result = publish(env, start_response)
 
     header_output.setResponseStatus(response.getStatus(), response.errmsg)
     header_output.setResponseHeaders(response.headers)
@@ -200,7 +212,8 @@ def http(request_string, handle_errors=True):
 
     sync()
 
-    return DocResponseWrapper(response, outstream, path, header_output)
+    return DocResponseWrapper(
+        response, outstream, path, header_output, wsgi_result, wsgi_headers)
 
 
 class ZopeSuiteFactory:

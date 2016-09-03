@@ -31,6 +31,12 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Change Testing to use the WSGI publisher for functional and testbrowser
+  based tests incl. functional doctests. Alternatives are available
+  in `ZServer.Testing`.
+
+- Move `ZPublisher.Publish` module into ZServer distribution.
+
 - Remove `Globals` package, opened database are now found in
   `Zope2.opened` next to `Zope2.DB`.
 

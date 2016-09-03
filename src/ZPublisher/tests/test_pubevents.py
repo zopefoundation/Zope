@@ -6,9 +6,7 @@ from ZODB.POSException import ConflictError
 from zope.interface.verify import verifyObject
 from zope.event import subscribers
 
-from ZPublisher.Publish import publish, Retry
 from ZPublisher.BaseRequest import BaseRequest
-from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.pubevents import (
     PubStart, PubSuccess, PubFailure,
     PubAfterTraversal, PubBeforeCommit, PubBeforeAbort,
@@ -19,6 +17,10 @@ from ZPublisher.interfaces import (
     IPubAfterTraversal, IPubBeforeCommit,
     IPubBeforeStreaming,
 )
+from ZPublisher import Retry
+from ZPublisher.WSGIPublisher import publish_module
+from ZPublisher.WSGIPublisher import WSGIResponse
+
 
 PUBMODULE = 'TEST_testpubevents'
 
@@ -71,85 +73,77 @@ class TestPubEvents(TestCase):
             del modules[PUBMODULE]
         subscribers[:] = self._saved_subscribers
 
+    def _publish(self, request, module_name):
+        def start_response(status, headers):
+            pass
+
+        publish_module({
+            'SERVER_PROTOCOL': 'HTTP/1.1',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': 'localhost',
+            'REQUEST_METHOD': 'GET',
+        }, start_response, _request=request, module_name=module_name)
+
     def testSuccess(self):
         r = self.request
         r.action = 'succeed'
-        publish(r, PUBMODULE, [None])
+        self._publish(r, PUBMODULE)
         events = self.reporter.events
-        self.assertEqual(len(events), 4)
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[-1], PubSuccess))
-        self.assertEqual(events[-1].request, r)
-        # test AfterTraversal and BeforeCommit as well
         self.assert_(isinstance(events[1], PubAfterTraversal))
         self.assertEqual(events[1].request, r)
         self.assert_(isinstance(events[2], PubBeforeCommit))
         self.assertEqual(events[2].request, r)
+        self.assert_(isinstance(events[3], PubSuccess))
+        self.assertEqual(events[3].request, r)
 
     def testFailureReturn(self):
         r = self.request
         r.action = 'fail_return'
-        publish(r, PUBMODULE, [None])
+        self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertEqual(len(events), 3)
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
         self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
-        self.assertEqual(events[1].retry, False)
         self.assert_(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
-        self.assertEqual(events[2].retry, False)
         self.assertEqual(len(events[2].exc_info), 3)
 
     def testFailureException(self):
         r = self.request
         r.action = 'fail_exception'
-        self.assertRaises(Exception, publish, r, PUBMODULE, [None])
+        self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertEqual(len(events), 3)
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
         self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
-        self.assertEqual(events[1].retry, False)
         self.assertEqual(len(events[1].exc_info), 3)
         self.assert_(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
-        self.assertEqual(events[2].retry, False)
         self.assertEqual(len(events[2].exc_info), 3)
 
     def testFailureConflict(self):
         r = self.request
         r.action = 'conflict'
-        publish(r, PUBMODULE, [None])
+        self.assertRaises(ConflictError, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertEqual(len(events), 7)
-
         self.assert_(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-
         self.assert_(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
-        self.assertEqual(events[1].retry, True)
         self.assertEqual(len(events[1].exc_info), 3)
         self.assert_(isinstance(events[1].exc_info[1], ConflictError))
-
         self.assert_(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
-        self.assertEqual(events[2].retry, True)
         self.assertEqual(len(events[2].exc_info), 3)
         self.assert_(isinstance(events[2].exc_info[1], ConflictError))
 
-        self.assert_(isinstance(events[3], PubStart))
-        self.assert_(isinstance(events[4], PubAfterTraversal))
-        self.assert_(isinstance(events[5], PubBeforeCommit))
-        self.assert_(isinstance(events[6], PubSuccess))
-
     def testStreaming(self):
         out = StringIO()
-        response = HTTPResponse(stdout=out)
+        response = WSGIResponse(stdout=out)
         response.write('datachunk1')
         response.write('datachunk2')
 
@@ -184,7 +178,7 @@ class _Response(object):
 
 
 class _Request(BaseRequest):
-    response = _Response()
+    response = WSGIResponse()
     _hacked_path = False
     args = ()
 
@@ -192,14 +186,6 @@ class _Request(BaseRequest):
         BaseRequest.__init__(self, *args, **kw)
         self['PATH_INFO'] = self['URL'] = ''
         self.steps = []
-
-    def supports_retry(self):
-        return True
-
-    def retry(self):
-        r = self.__class__()
-        r.action = 'succeed'
-        return r
 
     def traverse(self, *unused, **unused_kw):
         action = self.action
@@ -216,8 +202,28 @@ class _Request(BaseRequest):
         # override to get rid of the 'EndRequestEvent' notification
         pass
 
+
+class _TransactionsManager(object):
+
+    def __init__(self, *args, **kw):
+        self.tracer = []
+
+    def abort(self):
+        self.tracer.append('abort')
+
+    def begin(self):
+        self.tracer.append('begin')
+
+    def commit(self):
+        self.tracer.append('commit')
+
+    def recordMetaData(self, obj, request):
+        pass
+
+
 # define things necessary for publication
 bobo_application = _Application()
+zpublisher_transactions_manager = _TransactionsManager()
 
 
 def zpublisher_exception_hook(parent, request, *unused):
