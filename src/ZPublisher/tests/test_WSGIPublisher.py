@@ -146,7 +146,7 @@ class TestPublish(unittest.TestCase):
     def _callFUT(self, request, module_info=None):
         from ZPublisher.WSGIPublisher import publish
         if module_info is None:
-            module_info = get_module_info('Zope2')
+            module_info = get_module_info()
 
         return publish(request, module_info)
 

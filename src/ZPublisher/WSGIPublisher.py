@@ -14,6 +14,7 @@
 """
 from cStringIO import StringIO
 import sys
+from thread import allocate_lock
 import time
 
 import transaction
@@ -30,10 +31,6 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.mapply import mapply
 from ZPublisher import pubevents
-from ZPublisher.Publish import call_object
-from ZPublisher.Publish import dont_publish_class
-from ZPublisher.Publish import get_module_info
-from ZPublisher.Publish import missing_name
 from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 
 _NOW = None  # overwrite for testing
@@ -46,6 +43,11 @@ if sys.version_info >= (3, ):
 else:
     IOBase = file  # NOQA
 
+_DEFAULT_DEBUG_MODE = False
+_DEFAULT_REALM = None
+_MODULE_LOCK = allocate_lock()
+_MODULES = {}
+
 
 def _now():
     if _NOW is not None:
@@ -57,6 +59,59 @@ def build_http_date(when):
     year, month, day, hh, mm, ss, wd, y, z = time.gmtime(when)
     return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
         WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
+
+
+def call_object(object, args, request):
+    return object(*args)
+
+
+def dont_publish_class(klass, request):
+    request.response.forbiddenError("class %s" % klass.__name__)
+
+
+def missing_name(name, request):
+    if name == 'self':
+        return request['PARENTS'][0]
+    request.response.badRequestError(name)
+
+
+def set_default_debug_mode(debug_mode):
+    global _DEFAULT_DEBUG_MODE
+    _DEFAULT_DEBUG_MODE = debug_mode
+
+
+def set_default_authentication_realm(realm):
+    global _DEFAULT_REALM
+    _DEFAULT_REALM = realm
+
+
+def get_module_info(module_name='Zope2'):
+    global _MODULES
+    info = _MODULES.get(module_name)
+    if info is not None:
+        return info
+
+    with _MODULE_LOCK:
+        g = globals()
+        module = __import__(module_name, g, g, ('__doc__',))
+
+        # Let the app specify a realm
+        realm = module_name
+        if _DEFAULT_REALM is not None:
+            realm = _DEFAULT_REALM
+
+        app = getattr(module, 'bobo_application', module)
+        bobo_before = getattr(module, '__bobo_before__', None)
+        bobo_after = getattr(module, '__bobo_after__', None)
+        error_hook = getattr(module, 'zpublisher_exception_hook', None)
+        validated_hook = getattr(module, 'zpublisher_validated_hook', None)
+        transactions_manager = module.zpublisher_transactions_manager
+
+        info = (bobo_before, bobo_after, app, realm, _DEFAULT_DEBUG_MODE,
+                error_hook, validated_hook, transactions_manager)
+
+        _MODULES[module_name] = info
+        return info
 
 
 class WSGIResponse(HTTPResponse):
@@ -253,7 +308,7 @@ def publish_module(environ, start_response,
                    _response_factory=WSGIResponse,  # only for testing
                    _request_factory=HTTPRequest,    # only for testing
                    ):
-    module_info = get_module_info('Zope2')
+    module_info = get_module_info()
     transactions_manager = module_info[7]
 
     status = 200

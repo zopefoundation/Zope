@@ -77,9 +77,9 @@ class WSGIStarter(object):
 
     def setupPublisher(self):
         import ZPublisher.HTTPRequest
-        import ZPublisher.Publish
-        ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
-        ZPublisher.Publish.set_default_authentication_realm(
+        from ZPublisher import WSGIPublisher
+        WSGIPublisher.set_default_debug_mode(self.cfg.debug_mode)
+        WSGIPublisher.set_default_authentication_realm(
             self.cfg.http_realm)
         if self.cfg.trusted_proxies:
             mapped = []

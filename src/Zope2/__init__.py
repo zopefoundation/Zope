@@ -71,4 +71,5 @@ bobo_application = None
 zpublisher_transactions_manager = None
 zpublisher_validated_hook = None
 zpublisher_exception_hook = None
+__bobo_after__ = None
 __bobo_before__ = None
