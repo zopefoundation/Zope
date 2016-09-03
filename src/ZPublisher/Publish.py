@@ -32,27 +32,9 @@ from zope.security.management import newInteraction, endInteraction
 
 from ZPublisher.mapply import mapply
 from ZPublisher import pubevents
+from ZPublisher import Retry
 from ZPublisher.HTTPRequest import HTTPRequest as Request
 from ZPublisher.HTTPResponse import HTTPResponse as Response
-
-
-class Retry(Exception):
-    """Raise this to retry a request
-    """
-
-    def __init__(self, t=None, v=None, tb=None):
-        self._args = t, v, tb
-
-    def reraise(self):
-        t, v, tb = self._args
-        if t is None:
-            t = Retry
-        if tb is None:
-            raise t(v)
-        try:
-            reraise(t, v, tb)
-        finally:
-            tb = None
 
 
 def call_object(object, args, request):

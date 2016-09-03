@@ -12,7 +12,7 @@
 ##############################################################################
 import unittest
 
-from ZPublisher.Publish import get_module_info
+from ZPublisher.WSGIPublisher import get_module_info
 
 
 class WSGIResponseTests(unittest.TestCase):

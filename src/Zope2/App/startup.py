@@ -27,7 +27,7 @@ import OFS.Application
 import transaction
 import ZODB
 import Zope2
-import ZPublisher
+from ZPublisher import Retry
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
@@ -200,9 +200,9 @@ class ZPublisherExceptionHook:
 
             if issubclass(t, ConflictError):
                 self.logConflicts(v, REQUEST)
-                raise ZPublisher.Retry(t, v, traceback)
+                raise Retry(t, v, traceback)
 
-            if t is ZPublisher.Retry:
+            if t is Retry:
                 try:
                     v.reraise()
                 except:

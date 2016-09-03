@@ -14,6 +14,7 @@
 """ HTTP request management.
 """
 
+import base64
 from cgi import escape
 from cgi import FieldStorage
 import codecs
@@ -33,6 +34,8 @@ from urllib import unquote
 from urllib import splittype
 from urllib import splitport
 
+from AccessControl.tainted import TaintedString
+import pkg_resources
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
 from zope.interface import directlyProvidedBy
@@ -41,13 +44,20 @@ from zope.interface import implements
 from zope.publisher.base import DebugFlags
 from zope.publisher.interfaces.browser import IBrowserRequest
 
-from AccessControl.tainted import TaintedString
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 
 if sys.version_info >= (3, ):
     unicode = str
+
+xmlrpc = None
+try:
+    dist = pkg_resources.get_distribution('ZServer')
+except pkg_resources.DistributionNotFound:
+    pass
+else:
+    from ZServer.ZPublisher import xmlrpc
 
 # Flags
 SEQUENCE = 1
@@ -57,10 +67,6 @@ RECORDS = 8
 REC = RECORD | RECORDS
 EMPTY = 16
 CONVERTED = 32
-
-# Placeholders for module that we'll import if we have to.
-xmlrpc = None
-base64 = None
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -504,14 +510,10 @@ class HTTPRequest(BaseRequest):
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
-            # Hm, maybe it's an XML-RPC
-            elif ('content-type' in fs.headers and
-                  'text/xml' in fs.headers['content-type'] and
-                  method == 'POST'):
+            elif (xmlrpc is not None and method == 'POST' and
+                  ('content-type' in fs.headers and
+                   'text/xml' in fs.headers['content-type'])):
                 # Ye haaa, XML-RPC!
-                global xmlrpc
-                if xmlrpc is None:
-                    from ZPublisher import xmlrpc
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response = xmlrpc.response(response)
                 other['RESPONSE'] = self.response = response
@@ -1528,12 +1530,9 @@ class HTTPRequest(BaseRequest):
         return result
 
     def _authUserPW(self):
-        global base64
         auth = self._auth
         if auth:
             if auth[:6].lower() == 'basic ':
-                if base64 is None:
-                    import base64
                 [name, password] = \
                     base64.decodestring(auth.split()[-1]).split(':', 1)
                 return name, password

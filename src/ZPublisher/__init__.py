@@ -11,6 +11,25 @@
 #
 ##############################################################################
 
+from six import reraise
+
 from zExceptions import NotFound, BadRequest, InternalError, Forbidden  # NOQA
 
-from ZPublisher.Publish import publish_module, Retry  # NOQA
+
+class Retry(Exception):
+    """Raise this to retry a request
+    """
+
+    def __init__(self, t=None, v=None, tb=None):
+        self._args = t, v, tb
+
+    def reraise(self):
+        t, v, tb = self._args
+        if t is None:
+            t = Retry
+        if tb is None:
+            raise t(v)
+        try:
+            reraise(t, v, tb)
+        finally:
+            tb = None

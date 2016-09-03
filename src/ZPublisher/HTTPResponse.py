@@ -517,8 +517,7 @@ class HTTPResponse(BaseResponse):
 
            This function is designed to be called on each request to specify
            on a request-by-request basis that the response content should
-           be compressed. This is quite useful for xml-rpc transactions, where
-           compression rates of 90% or more can be achieved for text data.
+           be compressed.
 
            The REQUEST headers are used to determine if the client accepts
            gzip content encoding. The force parameter can force the use
@@ -705,11 +704,6 @@ class HTTPResponse(BaseResponse):
             et = translate(str(t), nl2sp)
             self.setHeader('bobo-exception-type', et)
 
-            # As of Zope 2.6.2 / 2.7, we no longer try to pass along a
-            # meaningful exception value. Now that there are good logging
-            # facilities on the server side (and given that xml-rpc has
-            # largely removed the need for this code at all), we just
-            # refer the caller to the server error log.
             ev = 'See the server error log for details'
             self.setHeader('bobo-exception-value', ev)
 

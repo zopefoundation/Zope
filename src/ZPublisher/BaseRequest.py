@@ -15,12 +15,12 @@
 
 from urllib import quote as urllib_quote
 import types
-import xmlrpc
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_inner
 from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
+import pkg_resources
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
@@ -38,6 +38,14 @@ from zope.traversing.namespace import nsParse
 
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
+
+try:
+    dist = pkg_resources.get_distribution('ZServer')
+except pkg_resources.DistributionNotFound:
+    def is_xmlrpc_response(response):
+        return False
+else:
+    from ZServer.ZPublisher.xmlrpc import is_xmlrpc_response
 
 _marker = []
 UNSPECIFIED_ROLES = ''
@@ -386,8 +394,8 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method = request_get('REQUEST_METHOD', 'GET').upper()
 
-        if (method in ["GET", "POST", "PURGE"] and
-                not isinstance(response, xmlrpc.Response)):
+        if (method in ('GET', 'POST', 'PURGE') and
+                not is_xmlrpc_response(response)):
             # Probably a browser
             no_acquire_flag = 0
             # index_html is still the default method, only any object can
