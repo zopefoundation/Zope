@@ -19,7 +19,11 @@ import transaction
 from urlparse import urlparse
 
 from six import reraise
-from zExceptions import Redirect
+from zExceptions import (
+    HTTPOk,
+    HTTPRedirection,
+    Redirect,
+)
 from zope.event import notify
 from zope.publisher.interfaces import ISkinnable
 from zope.publisher.interfaces.browser import IBrowserPage
@@ -146,22 +150,29 @@ def publish(request, module_name, after_list, debug=0,
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
 
-        result = mapply(object, request.args, request,
-                        call_object, 1,
-                        missing_name,
-                        dont_publish_class,
-                        request, bind=1)
-
-        if result is not response:
-            response.setBody(result)
+        ok_exception = None
+        try:
+            result = mapply(object, request.args, request,
+                            call_object, 1,
+                            missing_name,
+                            dont_publish_class,
+                            request, bind=1)
+        except (HTTPOk, HTTPRedirection) as exc:
+            ok_exception = exc
+        else:
+            if result is not response:
+                response.setBody(result)
 
         notify(pubevents.PubBeforeCommit(request))
 
         if transactions_manager:
             transactions_manager.commit()
-        endInteraction()
 
         notify(pubevents.PubSuccess(request))
+        endInteraction()
+
+        if ok_exception:
+            raise ok_exception
 
         return response
     except:

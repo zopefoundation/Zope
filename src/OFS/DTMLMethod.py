@@ -18,23 +18,25 @@ from urllib import quote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import Implicit
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
 from AccessControl.tainted import TaintedString
+from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from zExceptions import Redirect
+from zExceptions import ResourceLockedError
+from zExceptions.TracebackSupplement import PathTracebackSupplement
+from zope.contenttype import guess_content_type
+
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
 from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
-from zExceptions import ResourceLockedError
-from zExceptions.TracebackSupplement import PathTracebackSupplement
-from zope.contenttype import guess_content_type
 
 if sys.version_info >= (3, ):
     basestring = str
@@ -308,5 +310,5 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
             u = REQUEST['URL1']
         if submit == " Add and Edit ":
             u = "%s/%s" % (u, quote(id))
-        REQUEST.RESPONSE.redirect(u + '/manage_main')
+        raise Redirect(u + '/manage_main')
     return ''

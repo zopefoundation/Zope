@@ -16,6 +16,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add support for raising HTTPOK and HTTPRedirection exceptions and
+  have them result in successful transactions.
+
 - Add better blob support to HTTPRequest.ZopeFieldStorage.
 
 - Updated distributions:

@@ -23,12 +23,14 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
-from App.Management import Tabs
 from ExtensionClass import Base
-from OFS import bbb
 from Persistence import Persistent
-from Traversable import Traversable
 from zExceptions import BadRequest
+from zExceptions import Redirect
+
+from App.Management import Tabs
+from OFS import bbb
+from OFS.Traversable import Traversable
 from ZPublisher.Converters import type_converters
 
 if bbb.HAS_ZSERVER:
@@ -57,7 +59,7 @@ class View(Tabs, Base):
     def manage_workspace(self, URL1, RESPONSE):
         '''Implement a "management" interface
         '''
-        RESPONSE.redirect(URL1 + '/manage')
+        raise Redirect(URL1 + '/manage')
 
     def tpURL(self):
         return self.getId()

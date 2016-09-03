@@ -25,6 +25,7 @@ import zlib
 
 from zope.event import notify
 from zExceptions import (
+    HTTPRedirection,
     Redirect,
     status_reasons,
     Unauthorized,
@@ -554,10 +555,12 @@ class HTTPResponse(BaseResponse):
 
     def redirect(self, location, status=302, lock=0):
         """Cause a redirection without raising an error"""
+        if isinstance(location, HTTPRedirection):
+            status = location.getStatus()
+        location = str(location)
         self.setStatus(status, lock=lock)
         self.setHeader('Location', location)
-
-        return str(location)
+        return location
 
     # The following two methods are part of a private protocol with
     # ZServer for handling fatal import errors.

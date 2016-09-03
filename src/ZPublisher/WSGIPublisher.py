@@ -17,8 +17,11 @@ import sys
 import time
 
 import transaction
-from zExceptions import Redirect
-from zExceptions import Unauthorized
+from zExceptions import (
+    HTTPOk,
+    HTTPRedirection,
+    Unauthorized,
+)
 from zope.event import notify
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
@@ -182,25 +185,33 @@ def publish(request, module_info, repoze_tm_active=False):
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
 
-        result = mapply(object,
-                        request.args,
-                        request,
-                        call_object,
-                        1,
-                        missing_name,
-                        dont_publish_class,
-                        request,
-                        bind=1,
-                        )
-
-        if result is not response:
-            response.setBody(result)
+        ok_exception = None
+        try:
+            result = mapply(object,
+                            request.args,
+                            request,
+                            call_object,
+                            1,
+                            missing_name,
+                            dont_publish_class,
+                            request,
+                            bind=1)
+        except (HTTPOk, HTTPRedirection) as exc:
+            # 2xx and 3xx responses raised as exceptions are considered
+            # successful.
+            ok_exception = exc
+        else:
+            if result is not response:
+                response.setBody(result)
 
         notify(pubevents.PubBeforeCommit(request))
 
         if not repoze_tm_active and transactions_manager:
             transactions_manager.commit()
             notify(pubevents.PubSuccess(request))
+
+        if ok_exception:
+            raise ok_exception
 
     finally:
         endInteraction()
@@ -283,8 +294,8 @@ def publish_module(environ, start_response,
             raise
     except Unauthorized:
         response._unauthorized()
-    except Redirect as v:
-        response.redirect(v)
+    except HTTPRedirection as exc:
+        response.redirect(exc)
 
     # Start the WSGI server response
     status, headers = response.finalize()

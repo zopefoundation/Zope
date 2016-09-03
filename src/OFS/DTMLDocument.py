@@ -16,16 +16,18 @@ from urllib import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.permissions import change_dtml_documents
-from OFS.DTMLMethod import decapitate
-from OFS.DTMLMethod import DTMLMethod
-from OFS.PropertyManager import PropertyManager
+from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from OFS.DTMLMethod import decapitate
+from OFS.DTMLMethod import DTMLMethod
+from OFS.PropertyManager import PropertyManager
 
 
 done = 'done'
@@ -148,5 +150,5 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
             u = REQUEST['URL1']
         if submit == " Add and Edit ":
             u = "%s/%s" % (u, quote(id))
-        REQUEST.RESPONSE.redirect(u + '/manage_main')
+        raise Redirect(u + '/manage_main')
     return ''

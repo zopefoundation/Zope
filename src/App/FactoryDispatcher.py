@@ -24,6 +24,8 @@ from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
 from ExtensionClass import Base
+from zExceptions import Redirect
+
 from OFS.metaconfigure import get_registered_packages
 
 
@@ -159,6 +161,6 @@ class FactoryDispatcher(Implicit):
     def manage_main(trueself, self, REQUEST, update_menu=0):
         """Implement a contents view by redirecting to the true view
         """
-        REQUEST['RESPONSE'].redirect(self.DestinationURL() + '/manage_main')
+        raise Redirect(self.DestinationURL() + '/manage_main')
 
 InitializeClass(FactoryDispatcher)

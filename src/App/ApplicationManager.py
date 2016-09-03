@@ -18,6 +18,8 @@ import urllib
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
+from zExceptions import Redirect
+
 from App.config import getConfiguration
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
@@ -178,7 +180,6 @@ class AltDatabaseManager(Traversable, UndoSupport):
         self._getDB().cacheMinimize()
 
         if REQUEST is not None:
-            response = REQUEST['RESPONSE']
-            response.redirect(REQUEST['URL1'] + '/manage_main')
+            raise Redirect(REQUEST['URL1'] + '/manage_main')
 
 InitializeClass(AltDatabaseManager)

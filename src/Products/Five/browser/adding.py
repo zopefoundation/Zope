@@ -21,6 +21,8 @@ factory screen.
 
 import operator
 
+from zExceptions import BadRequest
+from zExceptions import Redirect
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
 from zope.component import getMultiAdapter
@@ -40,9 +42,7 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
 
-from zExceptions import BadRequest
 from OFS.SimpleItem import SimpleItem
-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -136,8 +136,7 @@ class Adding(BrowserView):
                              name=view_name) is not None:
             url = "%s/%s=%s" % (
                 absoluteURL(self, self.request), type_name, id)
-            self.request.response.redirect(url)
-            return
+            raise Redirect(url)
 
         if not self.contentName:
             self.contentName = id
@@ -148,7 +147,7 @@ class Adding(BrowserView):
         notify(ObjectCreatedEvent(content))
 
         self.add(content)
-        self.request.response.redirect(self.nextURL())
+        raise Redirect(self.nextURL())
 
     def nameAllowed(self):
         """Return whether names can be input by the user."""

@@ -24,8 +24,11 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
-from Acquisition import Explicit
 from Acquisition import aq_get
+from Acquisition import Explicit
+from zExceptions import Redirect
+from zExceptions import ResourceLockedError
+
 from App.Common import package_home
 from OFS.Cache import Cacheable
 from OFS.SimpleItem import SimpleItem
@@ -33,14 +36,11 @@ from OFS.PropertyManager import PropertyManager
 from OFS.Traversable import Traversable
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
-from zExceptions import ResourceLockedError
-
 from Products.PageTemplates import bbb
+from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
-from Products.PageTemplates.Expressions import SecureModuleImporter
-
 from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import convertToUnicode
@@ -405,9 +405,9 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
 
     if RESPONSE:
         if submit == " Add and Edit ":
-            RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
+            raise Redirect(zpt.absolute_url() + '/pt_editForm')
         else:
-            RESPONSE.redirect(self.absolute_url() + '/manage_main')
+            raise Redirect(self.absolute_url() + '/manage_main')
     else:
         return zpt
 

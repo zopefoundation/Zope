@@ -26,27 +26,26 @@ from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.Common import rfc1123_date
-from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
-from ZPublisher import HTTPRangeSupport
-from ZPublisher.HTTPRequest import FileUpload
 from zExceptions import Redirect, ResourceLockedError
 from zope.contenttype import guess_content_type
+from zope.event import notify
 from zope.interface import implementedBy
 from zope.interface import implements
+from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 
+from App.Common import rfc1123_date
+from App.special_dtml import DTMLFile
 from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
-
-from zope.event import notify
-from zope.lifecycleevent import ObjectModifiedEvent
-from zope.lifecycleevent import ObjectCreatedEvent
+from ZPublisher import HTTPRangeSupport
+from ZPublisher.HTTPRequest import FileUpload
 
 if sys.version_info >= (3, ):
     unicode = str
@@ -85,7 +84,7 @@ def manage_addFile(self, id, file='', title='', precondition='',
     notify(ObjectCreatedEvent(newFile))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
+        raise Redirect(self.absolute_url() + '/manage_main')
 
 
 class File(Persistent, Implicit, PropertyManager,
@@ -671,7 +670,7 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
             url = self.DestinationURL()
         except Exception:
             url = REQUEST['URL1']
-        REQUEST.RESPONSE.redirect('%s/manage_main' % url)
+        raise Redirect('%s/manage_main' % url)
     return id
 
 

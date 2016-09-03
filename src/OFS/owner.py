@@ -15,11 +15,6 @@
 
 import urlparse
 
-from Acquisition import aq_get
-from Acquisition import aq_parent
-
-from App.special_dtml import DTMLFile
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import ownableFilter
@@ -30,6 +25,11 @@ from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
+from Acquisition import aq_get
+from Acquisition import aq_parent
+from zExceptions import Redirect
+
+from App.special_dtml import DTMLFile
 
 
 class Owned(BaseOwned):
@@ -63,7 +63,7 @@ class Owned(BaseOwned):
 
         self.changeOwnership(security.getUser(), recursive)
 
-        RESPONSE.redirect(REQUEST['HTTP_REFERER'])
+        raise Redirect(REQUEST['HTTP_REFERER'])
 
     security.declareProtected(take_ownership, 'manage_changeOwnershipType')
     @requestmethod('POST')
@@ -87,6 +87,6 @@ class Owned(BaseOwned):
                 del self._owner
 
         if RESPONSE is not None:
-            RESPONSE.redirect(REQUEST['HTTP_REFERER'])
+            raise Redirect(REQUEST['HTTP_REFERER'])
 
 InitializeClass(Owned)
