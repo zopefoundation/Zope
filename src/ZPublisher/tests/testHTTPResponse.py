@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import unittest
+from StringIO import StringIO
 import sys
+import unittest
+
+from zExceptions import (
+    BadRequest,
+    Forbidden,
+    InternalError,
+    NotFound,
+    ResourceLockedError,
+    Unauthorized,
+)
 
 
 class HTTPResponseTests(unittest.TestCase):
@@ -56,7 +66,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers, {})
 
     def test_ctor_w_status_exception(self):
-        from zExceptions import Unauthorized
         response = self._makeOne(status=Unauthorized)
         self.assertEqual(response.status, 401)
         self.assertEqual(response.errmsg, 'Unauthorized')
@@ -141,28 +150,24 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.errmsg, 'Bad Request')
 
     def test_setStatus_BadRequest(self):
-        from zExceptions import BadRequest
         response = self._makeOne()
         response.setStatus(BadRequest)
         self.assertEqual(response.status, 400)
         self.assertEqual(response.errmsg, 'Bad Request')
 
     def test_setStatus_Unauthorized_exception(self):
-        from zExceptions import Unauthorized
         response = self._makeOne()
         response.setStatus(Unauthorized)
         self.assertEqual(response.status, 401)
         self.assertEqual(response.errmsg, 'Unauthorized')
 
     def test_setStatus_Forbidden_exception(self):
-        from zExceptions import Forbidden
         response = self._makeOne()
         response.setStatus(Forbidden)
         self.assertEqual(response.status, 403)
         self.assertEqual(response.errmsg, 'Forbidden')
 
     def test_setStatus_NotFound_exception(self):
-        from zExceptions import NotFound
         response = self._makeOne()
         response.setStatus(NotFound)
         self.assertEqual(response.status, 404)
@@ -170,13 +175,11 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setStatus_ResourceLockedError_exception(self):
         response = self._makeOne()
-        from zExceptions import ResourceLockedError
         response.setStatus(ResourceLockedError)
         self.assertEqual(response.status, 423)
         self.assertEqual(response.errmsg, 'Locked')
 
     def test_setStatus_InternalError_exception(self):
-        from zExceptions import InternalError
         response = self._makeOne()
         response.setStatus(InternalError)
         self.assertEqual(response.status, 500)
@@ -615,7 +618,6 @@ class HTTPResponseTests(unittest.TestCase):
         # (r19315): "merged content type on error fixes from 2.3
         # If the str of the object returs a Python "pointer" looking mess,
         # don't let it get treated as HTML.
-        from ZPublisher import NotFound
         BOGUS = '<Bogus a39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
@@ -782,7 +784,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.quoteHTML(BEFORE), AFTER)
 
     def test_notFoundError(self):
-        from ZPublisher import NotFound
         response = self._makeOne()
         try:
             response.notFoundError()
@@ -793,7 +794,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise NotFound")
 
     def test_notFoundError_w_entry(self):
-        from ZPublisher import NotFound
         response = self._makeOne()
         try:
             response.notFoundError('ENTRY')
@@ -804,7 +804,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise NotFound")
 
     def test_forbiddenError(self):
-        from ZPublisher import NotFound
         response = self._makeOne()
         try:
             response.forbiddenError()
@@ -815,7 +814,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise NotFound")
 
     def test_forbiddenError_w_entry(self):
-        from ZPublisher import NotFound
         response = self._makeOne()
         try:
             response.forbiddenError('ENTRY')
@@ -826,7 +824,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise NotFound")
 
     def test_debugError(self):
-        from ZPublisher import NotFound
         response = self._makeOne()
         try:
             response.debugError('testing')
@@ -838,7 +835,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise NotFound")
 
     def test_badRequestError_valid_parameter_name(self):
-        from ZPublisher import BadRequest
         response = self._makeOne()
         try:
             response.badRequestError('some_parameter')
@@ -850,7 +846,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise BadRequest")
 
     def test_badRequestError_invalid_parameter_name(self):
-        from ZPublisher import InternalError
         response = self._makeOne()
         try:
             response.badRequestError('URL1')
@@ -883,7 +878,6 @@ class HTTPResponseTests(unittest.TestCase):
                          'basic realm="Folly"')
 
     def test_unauthorized_no_debug_mode(self):
-        from zExceptions import Unauthorized
         response = self._makeOne()
         try:
             response.unauthorized()
@@ -895,7 +889,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise Unauthorized")
 
     def test_unauthorized_w_debug_mode_no_credentials(self):
-        from zExceptions import Unauthorized
         response = self._makeOne()
         response.debug_mode = True
         try:
@@ -907,7 +900,6 @@ class HTTPResponseTests(unittest.TestCase):
             self.fail("Didn't raise Unauthorized")
 
     def test_unauthorized_w_debug_mode_w_credentials(self):
-        from zExceptions import Unauthorized
         response = self._makeOne()
         response.debug_mode = True
         response._auth = 'bogus'
@@ -1243,7 +1235,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(lines[5], 'BLAH')
 
     def test_write_already_wrote(self):
-        from StringIO import StringIO
         stdout = StringIO()
         response = self._makeOne(stdout=stdout)
         response.write('Kilroy was here!')
@@ -1258,7 +1249,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(lines[4], 'Kilroy was here!')
 
     def test_write_not_already_wrote(self):
-        from StringIO import StringIO
         stdout = StringIO()
         response = self._makeOne(stdout=stdout)
         response._wrote = True

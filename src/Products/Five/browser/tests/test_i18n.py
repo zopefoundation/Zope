@@ -54,14 +54,12 @@ def test_zpt_i18n():
     ``Accept-Language`` header which is processed by the
     ``IUserPreferredLangauges`` adapter:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/testoid/@@i18n.html HTTP/1.1
       ... Accept-Language: de
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
-      <html>
-      <body>
       <p>Dies ist eine Nachricht</p>
       <p>Dies ist eine explizite Nachricht</p>
       <p>Dies sind 4 Nachrichten</p>
@@ -72,8 +70,6 @@ def test_zpt_i18n():
       </table>
       <p>Dies ist eine Nachricht</p>
       <p>Dies ist eine Nachricht</p>
-      </body>
-      </html>
       ...
 
 
@@ -86,5 +82,6 @@ def test_zpt_i18n():
 
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocTestSuite
-    from doctest import ELLIPSIS
-    return FunctionalDocTestSuite(optionflags=ELLIPSIS)
+    import doctest
+    return FunctionalDocTestSuite(
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)

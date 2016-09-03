@@ -39,8 +39,8 @@ def doctest_cookies():
     This response looks alright:
 
         >>> response = self.publish('/test_folder_1_/stub')
-        >>> print str(response) #doctest: +ELLIPSIS
-        Status: 200 OK
+        >>> print(str(response)) #doctest: +ELLIPSIS
+        HTTP/1.1 200 OK
         ...
         Set-Cookie: evil="cookie"
         ...

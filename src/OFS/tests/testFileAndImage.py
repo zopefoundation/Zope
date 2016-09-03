@@ -1,6 +1,5 @@
 import unittest
 
-import Testing
 import Zope2
 
 import os
@@ -286,16 +285,3 @@ class ImageTests(FileTests):
         from OFS.interfaces import IWriteLock
 
         verifyClass(IWriteLock, Image)
-
-
-class ImagePublishTests(Testing.ZopeTestCase.FunctionalTestCase):
-
-    def testTagSafe(self):
-        self.app.manage_addImage("image", "")
-        res = self.publish(
-            "/image/tag?height=0&width=0&css_class=%22%3E%3Cscript%20type"
-            "%3D%22text%2Fjavascript%22%3Ealert('evil')%3B%3C%2Fscript"
-            "%3E%3Cdiv%20class%3D%22")
-        self.assertFalse(
-            '<script type="text/javascript">alert(\'evil\');</script>'
-            in res.getBody())

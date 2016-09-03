@@ -1,6 +1,14 @@
+import base64
+from StringIO import StringIO
 import sys
 import unittest
 
+from zExceptions import NotFound
+from zope.component import provideAdapter
+from zope.i18n.interfaces import IUserPreferredLanguages
+from zope.i18n.interfaces.locales import ILocale
+from zope.publisher.browser import BrowserLanguages
+from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -31,7 +39,6 @@ class HTTPRequestFactoryMixin(object):
         return HTTPRequest
 
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
-        from StringIO import StringIO
         from ZPublisher.HTTPResponse import HTTPResponse
         if stdin is None:
             stdin = StringIO()
@@ -715,8 +722,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
         # request.close().  Otherwise a tempfile may stick around.
-        import sys
-        from StringIO import StringIO
         s = StringIO(TEST_FILE_DATA)
         start_count = sys.getrefcount(s)
 
@@ -728,7 +733,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def test_processInputs_w_large_input_gets_tempfile(self):
         # checks fileupload object supports the filename
-        from StringIO import StringIO
         s = StringIO(TEST_LARGEFILE_DATA)
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
@@ -739,7 +743,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_processInputs_with_file_upload_gets_iterator(self):
         # checks fileupload object supports the iterator protocol
         # collector entry 1837
-        from StringIO import StringIO
         s = StringIO(TEST_FILE_DATA)
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
@@ -752,7 +755,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(f.xreadlines(), f)
 
     def test__authUserPW_simple(self):
-        import base64
         user_id = 'user'
         password = 'password'
         encoded = base64.encodestring('%s:%s' % (user_id, password))
@@ -768,7 +770,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def test__authUserPW_with_embedded_colon(self):
         # http://www.zope.org/Collectors/Zope/2039
-        import base64
         user_id = 'user'
         password = 'embedded:colon'
         encoded = base64.encodestring('%s:%s' % (user_id, password))
@@ -812,11 +813,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(request.debug, '2')
 
     def test_locale_property_accessor(self):
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
         from ZPublisher.HTTPRequest import _marker
 
         provideAdapter(BrowserLanguages, [IHTTPRequest],
@@ -839,11 +835,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assert_(request.get('locale') is None)
 
     def test_locale_in_qs(self):
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
 
@@ -858,12 +849,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(request['locale'], '1')
 
     def test_locale_property_override_via_form_other(self):
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
-
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
         env = {'HTTP_ACCEPT_LANGUAGE': 'en'}
@@ -881,12 +866,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(request.locale, '2')
 
     def test_locale_semantics(self):
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
-
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
         env_ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
@@ -910,12 +889,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             self.assertEqual(locale.id.variant, variant)
 
     def test_locale_fallback(self):
-        from zope.component import provideAdapter
-        from zope.publisher.browser import BrowserLanguages
-        from zope.publisher.interfaces.http import IHTTPRequest
-        from zope.i18n.interfaces import IUserPreferredLanguages
-        from zope.i18n.interfaces.locales import ILocale
-
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
 
@@ -1084,7 +1057,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_resolve_url_errorhandling(self):
         # Check that resolve_url really raises the same error
         # it received from ZPublisher.BaseRequest.traverse
-        from zExceptions import NotFound
         request = self._makeOne()
         request['PARENTS'] = [object()]
         self.assertRaises(
@@ -1129,7 +1101,6 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
     def test_no_traversal_of_view_request_attribute(self):
         # make sure views don't accidentally publish the 'request' attribute
-        from ZPublisher import NotFound
         root, _ = self._makeRootAndFolder()
 
         # make sure the view itself is traversable:

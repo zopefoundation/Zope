@@ -96,10 +96,11 @@ SHOW_COOKIES_DTML = '''\
 def setUp(self):
     '''This method will run after the test_class' setUp.
 
-    >>> print http(r"""
+    >>> print(http(r"""
     ... GET /test_folder_1_/index_html HTTP/1.1
-    ... """)
+    ... """))
     HTTP/1.1 200 OK
+    ...
     Content-Length: 5
     Content-Type: text/plain; charset=...
     <BLANKLINE>

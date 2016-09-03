@@ -1,5 +1,6 @@
 import unittest
 
+from zExceptions import NotFound
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
@@ -15,7 +16,7 @@ class DummyTraverser(object):
         raise ztkNotFound(self, name)
 
 
-class BaseRequest_factory:
+class BaseRequest_factory(object):
 
     def _makeOne(self, root):
         from Acquisition import Implicit
@@ -37,7 +38,6 @@ class BaseRequest_factory:
                 self.base = str(base)
 
             def notFoundError(self, name):
-                from zExceptions import NotFound
                 raise NotFound(name)
 
             forbiddenError = notFoundError
@@ -280,7 +280,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
 
     def test_traverse_withBDEmpty(self):
         # Collector 1079 (infinite loop 2)
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder._setObject('objWithBD', self._makeObjectWithBD())
         folder.objWithBD._default_path = ['']
@@ -290,7 +289,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_traverse_withBBT_handles_AttributeError(self):
         # Test that if __bobo_traverse__ raises AttributeError
         # that we get a NotFound
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
 
         def _faux___bobo_traverse__(REQUEST, name):
@@ -331,7 +329,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         # and __bobo_traverse__
         # __bobo_traverse__ should raise an AttributeError, which will
         # raise a NotFound
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder._setObject('objWithBDBBT', self._makeObjectWithBDBBT())
         folder.objWithBDBBT._default_path = ['xxx']
@@ -356,14 +353,12 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertEqual(r.response.base, '')
 
     def test_traverse_attribute_without_docstring(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder._setObject('objBasic', self._makeBasicObject())
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/objBasic/noview')
 
     def test_traverse_acquired_attribute_without_docstring(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         root._setObject('objBasic',
                         self._makeObjectWithEmptyDocstring())
@@ -371,7 +366,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertRaises(NotFound, r.traverse, 'folder/objBasic')
 
     def test_traverse_class_without_docstring(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder._setObject('objWithoutDocstring',
                           self._makeObjectWithEmptyDocstring())
@@ -379,7 +373,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring')
 
     def test_traverse_attribute_of_class_without_docstring(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder._setObject('objWithoutDocstring',
                           self._makeObjectWithEmptyDocstring())
@@ -388,7 +381,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
                           'folder/objWithoutDocstring/view')
 
     def test_traverse_attribute_and_class_without_docstring(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
         folder._setObject('objWithoutDocstring',
@@ -397,28 +389,24 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
                           'folder/objWithoutDocstring/noview')
 
     def test_traverse_simple_string(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleString = 'foo'
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleString')
 
     def test_traverse_simple_list(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleList = []
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleList')
 
     def test_traverse_simple_boolean(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleBoolean = True
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleBoolean')
 
     def test_traverse_simple_complex(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleComplex = complex(1)
         folder.simpleString = 'foo'
@@ -426,14 +414,12 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertRaises(NotFound, r.traverse, 'folder/simpleComplex')
 
     def test_traverse_simple_set(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleSet = set([])
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
 
     def test_traverse_simple_frozen_set(self):
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder.simpleFrozenSet = frozenset([])
         r = self._makeOne(root)
@@ -470,7 +456,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
 
     def test_traverse_unsubscriptable(self):
         # See https://bugs.launchpad.net/bugs/213311
-        from ZPublisher import NotFound
         r = self._makeOne(None)
         self.assertRaises(NotFound, r.traverse, 'not_found')
 
@@ -479,7 +464,6 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertEqual(r.traverse('dummy'), 'dummy object')
 
     def test_traverse_publishTraverse_error(self):
-        from ZPublisher import NotFound
         r = self._makeOne(DummyTraverser())
         self.assertRaises(NotFound, r.traverse, 'not_found')
 
@@ -715,7 +699,6 @@ class TestBaseRequestViews(TestRequestViewsBase):
 
     def test_traverse_view_attr_acquired(self):
         # normal acquired attribute without view
-        from ZPublisher import NotFound
         root, folder = self._makeRootAndFolder()
         folder2 = root._setObject(
             'folder2', self._makeDummyObjectWithAttr('folder2'))

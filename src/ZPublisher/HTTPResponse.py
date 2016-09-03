@@ -25,15 +25,15 @@ import zlib
 
 from zope.event import notify
 from zExceptions import (
+    BadRequest,
     HTTPRedirection,
+    InternalError,
+    NotFound,
     Redirect,
     status_reasons,
     Unauthorized,
 )
 from zExceptions.ExceptionFormatter import format_exception
-from ZPublisher import BadRequest
-from ZPublisher import InternalError
-from ZPublisher import NotFound
 from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.pubevents import PubBeforeStreaming
 

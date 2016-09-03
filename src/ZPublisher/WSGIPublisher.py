@@ -363,7 +363,6 @@ def publish_module(environ, start_response,
     else:
         # If somebody used response.write, that data will be in the
         # stdout StringIO, so we put that before the body.
-        # XXX This still needs verification that it really works.
         result = (stdout.getvalue(), response.body)
 
     if not repoze_tm_active:
@@ -371,8 +370,8 @@ def publish_module(environ, start_response,
 
     stdout.close()
 
-    for callable in response.after_list:
-        callable()
+    for func in response.after_list:
+        func()
 
     # Return the result body iterable.
     return result

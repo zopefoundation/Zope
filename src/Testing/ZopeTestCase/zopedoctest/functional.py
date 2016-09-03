@@ -149,11 +149,12 @@ def http(request_string, handle_errors=True):
 
     instream = StringIO(request_string)
 
-    env = {"HTTP_HOST": 'localhost',
-           "HTTP_REFERER": 'localhost',
-           "REQUEST_METHOD": method,
-           "SERVER_PROTOCOL": protocol,
-           }
+    env = {
+        'HTTP_HOST': 'localhost',
+        'HTTP_REFERER': 'localhost',
+        'REQUEST_METHOD': method,
+        'SERVER_PROTOCOL': protocol,
+    }
 
     p = path.split('?', 1)
     if len(p) == 1:
