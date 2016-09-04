@@ -62,7 +62,6 @@ setup(
         'ZConfig >= 2.9.2',
         'ZODB',
         'five.globalrequest',
-        'repoze.retry',
         'setuptools',
         'six',
         'sourcecodegen',

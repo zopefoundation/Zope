@@ -26,7 +26,6 @@ five.globalrequest==1.0
 mechanize==0.2.5
 persistent==4.2.1
 pytz==2016.6.1
-repoze.retry==1.4
 six==1.10.0
 sourcecodegen==0.6.14
 transaction==1.6.1

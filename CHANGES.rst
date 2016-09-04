@@ -16,6 +16,9 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add support for ConflictError and TransientError retry logic directly
+  into WSGIPublisher.
+
 - Add support for raising HTTPOK and HTTPRedirection exceptions and
   have them result in successful transactions.
 

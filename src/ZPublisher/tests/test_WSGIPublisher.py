@@ -12,8 +12,6 @@
 ##############################################################################
 import unittest
 
-import transaction
-
 from ZPublisher.WSGIPublisher import get_module_info
 
 

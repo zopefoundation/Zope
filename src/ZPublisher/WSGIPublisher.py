@@ -21,11 +21,13 @@ import time
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 import transaction
+from transaction.interfaces import TransientError
 from zExceptions import (
     HTTPOk,
     HTTPRedirection,
     Unauthorized,
 )
+from ZODB.POSException import ConflictError
 from zope.event import notify
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
@@ -197,7 +199,7 @@ def transaction_pubevents(request, tm=transaction.manager):
         tm.begin()
         notify(pubevents.PubStart(request))
         try:
-            yield tm
+            yield None
         except (HTTPOk, HTTPRedirection) as exc:
             ok_exception = exc
 
@@ -259,6 +261,32 @@ def publish(request, module_info):
     return response
 
 
+def _publish_wsgi(request, response, module_info, start_response, stdout,
+                  _publish=publish):
+    try:
+        with transaction_pubevents(request):
+            response = _publish(request, module_info)
+    except Unauthorized:
+        response._unauthorized()
+    except HTTPRedirection as exc:
+        # TODO: HTTPOk is only handled by the httpexceptions
+        # middleware, maybe it should be handled here.
+        response.redirect(exc)
+
+    # Start the WSGI server response
+    status, headers = response.finalize()
+    start_response(status, headers)
+
+    if (isinstance(response.body, IOBase) or
+            IUnboundStreamIterator.providedBy(response.body)):
+        result = response.body
+    else:
+        # If somebody used response.write, that data will be in the
+        # stdout StringIO, so we put that before the body.
+        result = (stdout.getvalue(), response.body)
+    return (response, result)
+
+
 def publish_module(environ, start_response,
                    _publish=publish,  # only for testing
                    _response=None,
@@ -266,7 +294,8 @@ def publish_module(environ, start_response,
                    _request=None,
                    _request_factory=WSGIRequest,
                    _module_name='Zope2'):
-    status = 200
+    module_info = get_module_info(_module_name)
+    result = ()
 
     with closing(StringIO()) as stdout, closing(StringIO()) as stderr:
         response = (_response if _response is not None else
@@ -277,31 +306,26 @@ def publish_module(environ, start_response,
         request = (_request if _request is not None else
                    _request_factory(environ['wsgi.input'], environ, response))
 
-        with closing(request) as request:
+        for i in range(getattr(request, 'retry_max_count', 3) + 1):
             try:
-                with transaction_pubevents(request):
-                    response = _publish(request, get_module_info(_module_name))
-            except Unauthorized:
-                response._unauthorized()
-            except HTTPRedirection as exc:
-                # TODO: HTTPOk is only handled by the httpexceptions
-                # middleware, maybe it should be handled here.
-                response.redirect(exc)
+                response, result = _publish_wsgi(
+                    request, response,
+                    module_info, start_response,
+                    stdout, _publish=_publish)
+                break
+            except (ConflictError, TransientError) as exc:
+                if request.supports_retry():
+                    new_request = request.retry()
+                    request.close()
+                    request = new_request
+                    response = new_request.response
+                else:
+                    raise
+            finally:
+                request.close()
 
-            # Start the WSGI server response
-            status, headers = response.finalize()
-            start_response(status, headers)
-
-            if (isinstance(response.body, IOBase) or
-                    IUnboundStreamIterator.providedBy(response.body)):
-                result = response.body
-            else:
-                # If somebody used response.write, that data will be in the
-                # stdout StringIO, so we put that before the body.
-                result = (stdout.getvalue(), response.body)
-
-    for func in response.after_list:
-        func()
+        for func in response.after_list:
+            func()
 
     # Return the result body iterable.
     return result
