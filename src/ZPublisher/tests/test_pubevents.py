@@ -203,27 +203,8 @@ class _Request(BaseRequest):
         pass
 
 
-class _TransactionsManager(object):
-
-    def __init__(self, *args, **kw):
-        self.tracer = []
-
-    def abort(self):
-        self.tracer.append('abort')
-
-    def begin(self):
-        self.tracer.append('begin')
-
-    def commit(self):
-        self.tracer.append('commit')
-
-    def recordMetaData(self, obj, request):
-        pass
-
-
 # define things necessary for publication
 bobo_application = _Application()
-zpublisher_transactions_manager = _TransactionsManager()
 
 
 def zpublisher_exception_hook(parent, request, *unused):

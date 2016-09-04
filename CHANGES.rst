@@ -31,6 +31,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Add new `ZPublisher.utils.recordMetaData` function and use default
+  `transaction.manager` as the transaction manager.
+
 - Remove support for repoze.tm2.
 
 - Change Testing to use the WSGI publisher for functional and testbrowser

@@ -12,6 +12,8 @@
 ##############################################################################
 import unittest
 
+import transaction
+
 from ZPublisher.WSGIPublisher import get_module_info
 
 
@@ -162,7 +164,7 @@ class TestPublish(unittest.TestCase):
         _debug_mode = True
         _err_hook = DummyCallable()
         _validated_hook = object()
-        _tm = DummyTM()
+        _tm = transaction.manager
         module_info = (_before, _after, _object, _realm, _debug_mode,
                        _err_hook, _validated_hook, _tm)
         returned = self._callFUT(request, module_info)
@@ -174,9 +176,6 @@ class TestPublish(unittest.TestCase):
         self.assertEqual(_before._called_with, ((), {}))
         self.assertEqual(request['PARENTS'], [_object])
         self.assertEqual(request._traversed, ('/', None, _validated_hook))
-        self.assertEqual(_tm._recorded, (_object, request))
-        self.assertTrue(_tm._begin)
-        self.assertTrue(_tm._commit)
         self.assertEqual(_object._called_with, ((), {}))
         self.assertEqual(response._body, 'RESULT')
         self.assertEqual(_err_hook._called_with, None)
@@ -193,7 +192,7 @@ class TestPublish(unittest.TestCase):
         _debug_mode = True
         _err_hook = DummyCallable()
         _validated_hook = object()
-        _tm = DummyTM()
+        _tm = transaction.manager
         module_info = (_before, _after, _object, _realm, _debug_mode,
                        _err_hook, _validated_hook, _tm)
         self._callFUT(request, module_info)
@@ -462,23 +461,6 @@ class DummyCallable(object):
         if self._raise:
             raise self._raise
         return self._result
-
-
-class DummyTM(object):
-    _recorded = _raise = _result = None
-    _abort = _begin = _commit = False
-
-    def abort(self):
-        self._abort = True
-
-    def begin(self):
-        self._begin = True
-
-    def commit(self):
-        self._commit = True
-
-    def recordMetaData(self, *args):
-        self._recorded = args
 
 
 def noopStartResponse(status, headers):

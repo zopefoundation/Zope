@@ -17,6 +17,7 @@ import sys
 from thread import allocate_lock
 import time
 
+import transaction
 from zExceptions import (
     HTTPOk,
     HTTPRedirection,
@@ -28,9 +29,10 @@ from zope.publisher.skinnable import setDefaultSkin
 
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 from ZPublisher.mapply import mapply
 from ZPublisher import pubevents
-from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
+from ZPublisher.utils import recordMetaData
 
 _NOW = None  # overwrite for testing
 MONTHNAME = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -60,8 +62,8 @@ def build_http_date(when):
         WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
-def call_object(object, args, request):
-    return object(*args)
+def call_object(obj, args, request):
+    return obj(*args)
 
 
 def dont_publish_class(klass, request):
@@ -104,7 +106,8 @@ def get_module_info(module_name='Zope2'):
         bobo_after = getattr(module, '__bobo_after__', None)
         error_hook = getattr(module, 'zpublisher_exception_hook', None)
         validated_hook = getattr(module, 'zpublisher_validated_hook', None)
-        transactions_manager = module.zpublisher_transactions_manager
+        transactions_manager = getattr(
+            module, 'zpublisher_transactions_manager', transaction.manager)
 
         info = (bobo_before, bobo_after, app, realm, _DEFAULT_DEBUG_MODE,
                 error_hook, validated_hook, transactions_manager)
@@ -237,7 +240,7 @@ def publish(request, module_info):
         notify(pubevents.PubAfterTraversal(request))
 
         if transactions_manager:
-            transactions_manager.recordMetaData(object, request)
+            recordMetaData(object, request)
 
         ok_exception = None
         try:

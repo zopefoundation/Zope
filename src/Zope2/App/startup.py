@@ -18,31 +18,32 @@ import logging
 import sys
 from time import asctime
 
-from six import reraise
-
 import AccessControl.User
-import App.ZApplication
-import ExtensionClass
-import OFS.Application
-import transaction
-import ZODB
-import Zope2
-from ZPublisher import Retry
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_acquire
-from Acquisition import aq_base
-from Acquisition import aq_inner
-from Acquisition import aq_parent
+from Acquisition import (
+    aq_acquire,
+    aq_base,
+    aq_parent,
+)
 from Acquisition.interfaces import IAcquirer
-from App.config import getConfiguration
+import ExtensionClass
+from six import reraise
+import transaction
 from zExceptions import Redirect
 from zExceptions import Unauthorized
+import ZODB
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
+
+from App.config import getConfiguration
+import App.ZApplication
+import OFS.Application
+import Zope2
+from ZPublisher import Retry
 
 app = None
 startup_time = asctime()
@@ -151,7 +152,7 @@ def startup():
 
     notify(DatabaseOpenedWithRoot(DB))
 
-    Zope2.zpublisher_transactions_manager = TransactionsManager()
+    Zope2.zpublisher_transactions_manager = transaction.manager
     Zope2.zpublisher_exception_hook = zpublisher_exception_hook
     Zope2.zpublisher_validated_hook = validated_hook
     Zope2.__bobo_before__ = noSecurityManager
@@ -302,71 +303,3 @@ class ZPublisherExceptionHook:
             traceback = None
 
 zpublisher_exception_hook = ZPublisherExceptionHook()
-ac_logger = logging.getLogger('event.AccessControl')
-
-
-class TransactionsManager(object):
-
-    def begin(self,
-              # Optimize global var lookups:
-              transaction=transaction):
-        transaction.begin()
-
-    def commit(self):
-        if hasattr(transaction, 'isDoomed') and transaction.isDoomed():
-            transaction.abort()
-        else:
-            transaction.commit()
-
-    def abort(self):
-        transaction.abort()
-
-    def recordMetaData(self, object, request,
-                       # Optimize global var lookups:
-                       hasattr=hasattr, getattr=getattr,
-                       logger=ac_logger,
-                       ):
-        request_get = request.get
-        if hasattr(object, 'getPhysicalPath'):
-            path = '/'.join(object.getPhysicalPath())
-        else:
-            # Try hard to get the physical path of the object,
-            # but there are many circumstances where that's not possible.
-            to_append = ()
-
-            if hasattr(object, 'im_self') and hasattr(object, '__name__'):
-                # object is a Python method.
-                to_append = (object.__name__,)
-                object = object.im_self
-
-            while (object is not None and
-                   not hasattr(object, 'getPhysicalPath')):
-                if getattr(object, '__name__', None) is None:
-                    object = None
-                    break
-                to_append = (object.__name__,) + to_append
-                object = aq_parent(aq_inner(object))
-
-            if object is not None:
-                path = '/'.join(object.getPhysicalPath() + to_append)
-            else:
-                # As Jim would say, "Waaaaaaaa!"
-                # This may cause problems with virtual hosts
-                # since the physical path is different from the path
-                # used to retrieve the object.
-                path = request_get('PATH_INFO')
-
-        T = transaction.get()
-        T.note(path)
-        auth_user = request_get('AUTHENTICATED_USER', None)
-        if auth_user is not None:
-            auth_folder = aq_parent(auth_user)
-            if auth_folder is None:
-                ac_logger.warning(
-                    'A user object of type %s has no aq_parent.',
-                    type(auth_user))
-                auth_path = request_get('AUTHENTICATION_PATH')
-            else:
-                auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
-
-            T.setUser(auth_user.getId(), auth_path)
