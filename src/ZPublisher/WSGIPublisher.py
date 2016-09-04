@@ -149,8 +149,9 @@ class WSGIResponse(HTTPResponse):
         result.extend(HTTPResponse.listHeaders(self))
         return result
 
-    def _unauthorized(self):
-        self.setStatus(401)
+    def _unauthorized(self, exc=None):
+        status = exc.getStatus() if exc is not None else 401
+        self.setStatus(status)
         if self.realm:
             self.setHeader('WWW-Authenticate',
                            'basic realm="%s"' % self.realm, 1)
@@ -266,8 +267,8 @@ def _publish_wsgi(request, response, module_info, start_response, stdout,
     try:
         with transaction_pubevents(request):
             response = _publish(request, module_info)
-    except Unauthorized:
-        response._unauthorized()
+    except Unauthorized as exc:
+        response._unauthorized(exc)
     except HTTPRedirection as exc:
         # TODO: HTTPOk is only handled by the httpexceptions
         # middleware, maybe it should be handled here.
