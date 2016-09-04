@@ -111,7 +111,7 @@ setup(
             'main=Zope2.Startup.run:make_wsgi_app',
         ],
         'paste.filter_app_factory': [
-            'httpexceptions=Zope2.Startup.httpexceptions:main',
+            'httpexceptions=ZPublisher.httpexceptions:main',
         ],
         'console_scripts': [
             'addzope2user=Zope2.utilities.adduser:main',

@@ -24,7 +24,7 @@ from zope.interface import implements
 
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
-from Zope2.Startup.httpexceptions import HTTPExceptionHandler
+from ZPublisher.httpexceptions import HTTPExceptionHandler
 
 
 def savestate(func):

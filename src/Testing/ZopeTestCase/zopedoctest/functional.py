@@ -33,7 +33,7 @@ from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
-from Zope2.Startup.httpexceptions import HTTPExceptionHandler
+from ZPublisher.httpexceptions import HTTPExceptionHandler
 
 if sys.version_info >= (3, ):
     basestring = str

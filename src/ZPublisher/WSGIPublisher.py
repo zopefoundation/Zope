@@ -292,10 +292,9 @@ def publish_module(environ, start_response,
             status, headers = response.finalize()
             start_response(status, headers)
 
-            body = response.body
-            if (isinstance(body, IOBase) or
-                    IUnboundStreamIterator.providedBy(body)):
-                result = body
+            if (isinstance(response.body, IOBase) or
+                    IUnboundStreamIterator.providedBy(response.body)):
+                result = response.body
             else:
                 # If somebody used response.write, that data will be in the
                 # stdout StringIO, so we put that before the body.
