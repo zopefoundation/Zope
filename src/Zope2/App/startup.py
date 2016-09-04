@@ -155,7 +155,6 @@ def startup():
     Zope2.zpublisher_transactions_manager = transaction.manager
     Zope2.zpublisher_exception_hook = zpublisher_exception_hook
     Zope2.zpublisher_validated_hook = validated_hook
-    Zope2.__bobo_before__ = noSecurityManager
 
 
 def validated_hook(request, user):

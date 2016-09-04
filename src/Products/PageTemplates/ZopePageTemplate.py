@@ -174,7 +174,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
     source_dot_xml = Src()
 
     security.declareProtected(change_page_templates, 'pt_editAction')
-    def pt_editAction(self, REQUEST, title, text, content_type, expand):
+    def pt_editAction(self, REQUEST, title, text, content_type, expand=0):
         """Change the title and document."""
 
         if self.wl_isLocked():

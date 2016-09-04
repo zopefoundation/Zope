@@ -12,11 +12,13 @@
 ##############################################################################
 """ Python Object Publisher -- Publish Python objects on web servers
 """
+from contextlib import contextmanager, closing
 from cStringIO import StringIO
 import sys
 from thread import allocate_lock
 import time
 
+from AccessControl.SecurityManagement import noSecurityManager
 import transaction
 from zExceptions import (
     HTTPOk,
@@ -199,79 +201,85 @@ class WSGIResponse(HTTPResponse):
         raise NotImplementedError
 
 
+@contextmanager
+def transaction_pubevents(tm, request):
+    ok_exception = None
+    try:
+        setDefaultSkin(request)
+        newInteraction()
+        tm.begin()
+        notify(pubevents.PubStart(request))
+        try:
+            yield tm
+        except (HTTPOk, HTTPRedirection) as exc:
+            ok_exception = exc
+
+        notify(pubevents.PubBeforeCommit(request))
+        if tm.isDoomed():
+            tm.abort()
+        else:
+            tm.commit()
+        notify(pubevents.PubSuccess(request))
+    except Exception:
+        exc_info = sys.exc_info()
+        notify(pubevents.PubBeforeAbort(
+            request, exc_info, request.supports_retry()))
+        tm.abort()
+        notify(pubevents.PubFailure(
+            request, exc_info, request.supports_retry()))
+        raise
+    finally:
+        endInteraction()
+        if ok_exception is not None:
+            raise ok_exception
+
+
 def publish(request, module_info):
     (bobo_before,
      bobo_after,
-     object,
+     obj,
      realm,
      debug_mode,
      err_hook,
      validated_hook,
      transactions_manager) = module_info
 
-    notify(pubevents.PubStart(request))
-    newInteraction()
-    try:
-        request.processInputs()
-        response = request.response
+    request.processInputs()
+    response = request.response
 
-        if bobo_after is not None:
-            response.after_list += (bobo_after,)
+    if bobo_after is not None:
+        response.after_list += (bobo_after,)
 
-        if debug_mode:
-            response.debug_mode = debug_mode
+    if debug_mode:
+        response.debug_mode = debug_mode
 
-        if realm and not request.get('REMOTE_USER', None):
-            response.realm = realm
+    if realm and not request.get('REMOTE_USER', None):
+        response.realm = realm
 
-        if bobo_before is not None:
-            bobo_before()
+    noSecurityManager()
+    if bobo_before is not None:
+        bobo_before()
 
-        # Get the path list.
-        # According to RFC1738 a trailing space in the path is valid.
-        path = request.get('PATH_INFO')
+    # Get the path list.
+    # According to RFC1738 a trailing space in the path is valid.
+    path = request.get('PATH_INFO')
+    request['PARENTS'] = [obj]
 
-        request['PARENTS'] = [object]
+    obj = request.traverse(path, validated_hook=validated_hook)
+    notify(pubevents.PubAfterTraversal(request))
+    recordMetaData(obj, request)
 
-        if transactions_manager:
-            transactions_manager.begin()
-
-        object = request.traverse(path, validated_hook=validated_hook)
-        notify(pubevents.PubAfterTraversal(request))
-
-        if transactions_manager:
-            recordMetaData(object, request)
-
-        ok_exception = None
-        try:
-            result = mapply(object,
-                            request.args,
-                            request,
-                            call_object,
-                            1,
-                            missing_name,
-                            dont_publish_class,
-                            request,
-                            bind=1)
-        except (HTTPOk, HTTPRedirection) as exc:
-            # 2xx and 3xx responses raised as exceptions are considered
-            # successful.
-            ok_exception = exc
-        else:
-            if result is not response:
-                response.setBody(result)
-
-        notify(pubevents.PubBeforeCommit(request))
-
-        if transactions_manager:
-            transactions_manager.commit()
-            notify(pubevents.PubSuccess(request))
-
-        if ok_exception:
-            raise ok_exception
-
-    finally:
-        endInteraction()
+    result = mapply(obj,
+                    request.args,
+                    request,
+                    call_object,
+                    1,
+                    missing_name,
+                    dont_publish_class,
+                    request,
+                    bind=1)
+    if result is not response:
+        response.setBody(result)
 
     return response
 
@@ -288,59 +296,44 @@ def publish_module(environ, start_response,
     transactions_manager = module_info[7]
 
     status = 200
-    stdout = StringIO()
-    stderr = StringIO()
-    if _response is None:
-        response = _response_factory(stdout=stdout, stderr=stderr)
-    else:
-        response = _response
-    response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
-    response._server_version = environ.get('SERVER_SOFTWARE')
 
-    if _request is None:
-        request = _request_factory(environ['wsgi.input'], environ, response)
-    else:
-        request = _request
+    with closing(StringIO()) as stdout, closing(StringIO()) as stderr:
+        if _response is None:
+            response = _response_factory(stdout=stdout, stderr=stderr)
+        else:
+            response = _response
+        response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
+        response._server_version = environ.get('SERVER_SOFTWARE')
 
-    setDefaultSkin(request)
+        if _request is None:
+            request = _request_factory(
+                environ['wsgi.input'], environ, response)
+        else:
+            request = _request
 
-    try:
-        try:
-            response = _publish(request, module_info)
-        except Exception:
+        with closing(request) as request:
             try:
-                exc_info = sys.exc_info()
-                notify(pubevents.PubBeforeAbort(
-                    request, exc_info, request.supports_retry()))
+                with transaction_pubevents(transactions_manager, request):
+                    response = _publish(request, module_info)
+            except Unauthorized:
+                response._unauthorized()
+            except HTTPRedirection as exc:
+                # TODO: HTTPOk is only handled by the httpexceptions
+                # middleware, maybe it should be handled here.
+                response.redirect(exc)
 
-                if transactions_manager:
-                    transactions_manager.abort()
+            # Start the WSGI server response
+            status, headers = response.finalize()
+            start_response(status, headers)
 
-                notify(pubevents.PubFailure(
-                    request, exc_info, request.supports_retry()))
-            finally:
-                del exc_info
-            raise
-    except Unauthorized:
-        response._unauthorized()
-    except HTTPRedirection as exc:
-        response.redirect(exc)
-
-    # Start the WSGI server response
-    status, headers = response.finalize()
-    start_response(status, headers)
-
-    body = response.body
-
-    if isinstance(body, IOBase) or IUnboundStreamIterator.providedBy(body):
-        result = body
-    else:
-        # If somebody used response.write, that data will be in the
-        # stdout StringIO, so we put that before the body.
-        result = (stdout.getvalue(), response.body)
-
-    request.close()  # this aborts the transaction!
-    stdout.close()
+            body = response.body
+            if (isinstance(body, IOBase) or
+                    IUnboundStreamIterator.providedBy(body)):
+                result = body
+            else:
+                # If somebody used response.write, that data will be in the
+                # stdout StringIO, so we put that before the body.
+                result = (stdout.getvalue(), response.body)
 
     for func in response.after_list:
         func()
