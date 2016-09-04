@@ -18,8 +18,12 @@ from zExceptions import (
 )
 
 ERROR_HTML = """\
+<!DOCTYPE html>
 <html>
-<head><title>Site Error</title></head>
+<head>
+<title>Site Error</title>
+<meta charset="utf-8" />
+</head>
 <body bgcolor="#FFFFFF">
 <h2>Site Error</h2>
 <p>An error was encountered while publishing this resource.
@@ -40,7 +44,8 @@ ERROR_HTML = """\
 
 <p>If the error persists please contact the site maintainer.
 Thank you for your patience.
-</p></body></html>"""
+</p>
+</body></html>"""
 
 
 class HTTPExceptionHandler(object):
@@ -55,9 +60,12 @@ class HTTPExceptionHandler(object):
         except HTTPException as exc:
             return exc(environ, start_response)
         except Exception as exc:
-            wrapper = InternalError()
-            wrapper.setBody(ERROR_HTML % repr(exc))
-            return wrapper(environ, start_response)
+            return self.catch_all_response(exc)(environ, start_response)
+
+    def catch_all_response(self, exc):
+        response = InternalError()
+        response.setBody(ERROR_HTML % repr(exc))
+        return response
 
 
 def main(app, global_conf=None):
