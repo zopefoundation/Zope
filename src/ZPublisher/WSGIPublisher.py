@@ -28,6 +28,7 @@ from zExceptions import (
     Unauthorized,
 )
 from ZODB.POSException import ConflictError
+from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
@@ -266,12 +267,25 @@ def _publish_response(request, response, module_info, _publish=publish):
     try:
         with transaction_pubevents(request):
             response = _publish(request, module_info)
-    except Unauthorized as exc:
-        response._unauthorized(exc)
     except HTTPRedirection as exc:
         # TODO: HTTPOk is only handled by the httpexceptions
         # middleware, maybe it should be handled here.
         response.redirect(exc)
+    except Exception as exc:
+        view = queryMultiAdapter((exc, request), name=u'index.html')
+        if view is not None:
+            parents = request.get('PARENTS')
+            if parents:
+                view.__parent__ = parents[0]
+            response.setStatus(exc.__class__)
+            response.setBody(view())
+            return response
+
+        if isinstance(exc, Unauthorized):
+            response._unauthorized(exc)
+            return response
+
+        raise
 
     return response
 

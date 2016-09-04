@@ -16,6 +16,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add support for exception views to WSGIPublisher.
+
 - Add support for ConflictError and TransientError retry logic directly
   into WSGIPublisher.
 
