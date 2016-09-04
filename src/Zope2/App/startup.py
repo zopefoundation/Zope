@@ -14,27 +14,15 @@
 """
 
 import imp
-import logging
 import sys
 from time import asctime
 
 import AccessControl.User
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import (
-    aq_acquire,
-    aq_base,
-    aq_parent,
-)
-from Acquisition.interfaces import IAcquirer
-import ExtensionClass
-from six import reraise
 import transaction
-from zExceptions import Redirect
-from zExceptions import Unauthorized
 import ZODB
-from ZODB.POSException import ConflictError
-from zope.component import queryMultiAdapter
+from zope.deferredimport import deprecated
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
@@ -43,7 +31,15 @@ from App.config import getConfiguration
 import App.ZApplication
 import OFS.Application
 import Zope2
-from ZPublisher import Retry
+
+# BBB Zope 5.0
+deprecated(
+    'Please import from ZServer.ZPublisher.exceptionhook.',
+    RequestContainer='ZServer.ZPublisher.exceptionhook:RequestContainer',
+    zpublisher_exception_hook=(
+        'ZServer.ZPublisher.exceptionhook:EXCEPTION_HOOK'),
+    ZPublisherExceptionHook='ZServer.ZPublisher.exceptionhook:ExceptionHook',
+)
 
 app = None
 startup_time = asctime()
@@ -153,152 +149,8 @@ def startup():
     notify(DatabaseOpenedWithRoot(DB))
 
     Zope2.zpublisher_transactions_manager = transaction.manager
-    Zope2.zpublisher_exception_hook = zpublisher_exception_hook
     Zope2.zpublisher_validated_hook = validated_hook
 
 
 def validated_hook(request, user):
     newSecurityManager(request, user)
-
-
-class RequestContainer(ExtensionClass.Base):
-
-    def __init__(self, r):
-        self.REQUEST = r
-
-
-class ZPublisherExceptionHook:
-
-    def __init__(self):
-        self.conflict_errors = 0
-        self.unresolved_conflict_errors = 0
-        self.conflict_logger = logging.getLogger('ZPublisher.Conflict')
-        self.error_message = 'standard_error_message'
-        self.raise_error_message = 'raise_standardErrorMessage'
-
-    def logConflicts(self, v, REQUEST):
-        self.conflict_errors += 1
-        level = getattr(getConfiguration(), 'conflict_error_log_level', 0)
-        if not self.conflict_logger.isEnabledFor(level):
-            return False
-        self.conflict_logger.log(
-            level,
-            "%s at %s: %s (%d conflicts (%d unresolved) "
-            "since startup at %s)",
-            v.__class__.__name__,
-            REQUEST.get('PATH_INFO', '<unknown>'),
-            v,
-            self.conflict_errors,
-            self.unresolved_conflict_errors,
-            startup_time)
-        return True
-
-    def __call__(self, published, REQUEST, t, v, traceback):
-        try:
-            if t is SystemExit or issubclass(t, Redirect):
-                reraise(t, v, traceback)
-
-            if issubclass(t, ConflictError):
-                self.logConflicts(v, REQUEST)
-                raise Retry(t, v, traceback)
-
-            if t is Retry:
-                try:
-                    v.reraise()
-                except:
-                    # we catch the re-raised exception so that it gets
-                    # stored in the error log and gets rendered with
-                    # standard_error_message
-                    t, v, traceback = sys.exc_info()
-                if issubclass(t, ConflictError):
-                    # ouch, a user saw this conflict error :-(
-                    self.unresolved_conflict_errors += 1
-
-            error_log_url = ''
-            if not isinstance(published, list):
-                try:
-                    log = aq_acquire(published, '__error_log__', containment=1)
-                except AttributeError:
-                    pass
-                else:
-                    if log is not None:
-                        error_log_url = log.raising((t, v, traceback))
-
-            if (REQUEST is None or
-                    (getattr(REQUEST.get('RESPONSE', None),
-                             '_error_format', '') != 'text/html')):
-                reraise(t, v, traceback)
-
-            # Lookup a view for the exception and render it, then
-            # raise the rendered value as the exception value
-            # (basically the same that 'raise_standardErrorMessage'
-            # does. The view is named 'index.html' because that's what
-            # zope.publisher uses as well.
-            view = queryMultiAdapter((v, REQUEST), name=u'index.html')
-            if view is not None:
-                if (IAcquirer.providedBy(view) and
-                        IAcquirer.providedBy(published)):
-                    view = view.__of__(published)
-                else:
-                    view.__parent__ = published
-                v = view()
-                if issubclass(t, Unauthorized):
-                    # Re-raise Unauthorized to make sure it is handled
-                    # correctly. We can't do that with all exceptions
-                    # because some don't work with the rendered v as
-                    # argument.
-                    reraise(t, v, traceback)
-                response = REQUEST.RESPONSE
-                response.setStatus(t)
-                response.setBody(v)
-                return response
-
-            if (published is None or published is app or
-                    isinstance(published, list)):
-                # At least get the top-level object
-                published = app.__bobo_traverse__(REQUEST).__of__(
-                    RequestContainer(REQUEST))
-
-            published = getattr(published, 'im_self', published)
-            while 1:
-                f = getattr(published, self.raise_error_message, None)
-                if f is None:
-                    published = aq_parent(published)
-                    if published is None:
-                        reraise(t, v, traceback)
-                else:
-                    break
-
-            client = published
-            while 1:
-                if getattr(client, self.error_message, None) is not None:
-                    break
-                client = aq_parent(client)
-                # If we are going in circles without getting the error_message
-                # let the response handle it
-                if client is None or aq_base(client) is aq_base(published):
-                    response = REQUEST.RESPONSE
-                    response.exception()
-                    return response
-
-            if REQUEST.get('AUTHENTICATED_USER', None) is None:
-                REQUEST['AUTHENTICATED_USER'] = AccessControl.User.nobody
-
-            result = f(client, REQUEST, t, v, traceback,
-                       error_log_url=error_log_url)
-            if result is not None:
-                t, v, traceback = result
-                if issubclass(t, Unauthorized):
-                    # Re-raise Unauthorized to make sure it is handled
-                    # correctly. We can't do that with all exceptions
-                    # because some don't work with the rendered v as
-                    # argument.
-                    reraise(t, v, traceback)
-                response = REQUEST.RESPONSE
-                response.setStatus(t)
-                response.setBody(v)
-                return response
-        finally:
-            traceback = None
-
-zpublisher_exception_hook = ZPublisherExceptionHook()
