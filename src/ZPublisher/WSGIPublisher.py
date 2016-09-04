@@ -262,8 +262,7 @@ def publish(request, module_info):
     return response
 
 
-def _publish_wsgi(request, response, module_info, start_response, stdout,
-                  _publish=publish):
+def _publish_response(request, response, module_info, _publish=publish):
     try:
         with transaction_pubevents(request):
             response = _publish(request, module_info)
@@ -274,18 +273,7 @@ def _publish_wsgi(request, response, module_info, start_response, stdout,
         # middleware, maybe it should be handled here.
         response.redirect(exc)
 
-    # Start the WSGI server response
-    status, headers = response.finalize()
-    start_response(status, headers)
-
-    if (isinstance(response.body, IOBase) or
-            IUnboundStreamIterator.providedBy(response.body)):
-        result = response.body
-    else:
-        # If somebody used response.write, that data will be in the
-        # stdout StringIO, so we put that before the body.
-        result = (stdout.getvalue(), response.body)
-    return (response, result)
+    return response
 
 
 def publish_module(environ, start_response,
@@ -309,10 +297,8 @@ def publish_module(environ, start_response,
 
         for i in range(getattr(request, 'retry_max_count', 3) + 1):
             try:
-                response, result = _publish_wsgi(
-                    request, response,
-                    module_info, start_response,
-                    stdout, _publish=_publish)
+                response = _publish_response(
+                    request, response, module_info, _publish=_publish)
                 break
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():
@@ -324,6 +310,18 @@ def publish_module(environ, start_response,
                     raise
             finally:
                 request.close()
+
+        # Start the WSGI server response
+        status, headers = response.finalize()
+        start_response(status, headers)
+
+        if (isinstance(response.body, IOBase) or
+                IUnboundStreamIterator.providedBy(response.body)):
+            result = response.body
+        else:
+            # If somebody used response.write, that data will be in the
+            # stdout StringIO, so we put that before the body.
+            result = (stdout.getvalue(), response.body)
 
         for func in response.after_list:
             func()
