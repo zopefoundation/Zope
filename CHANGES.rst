@@ -31,6 +31,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Simplified `ZPublisher.WSGIPublisher.get_module_info` contract.
+
 - Add new `ZPublisher.utils.recordMetaData` function and use default
   `transaction.manager` as the transaction manager.
 

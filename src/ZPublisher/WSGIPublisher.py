@@ -100,27 +100,10 @@ def get_module_info(module_name='Zope2'):
         return info
 
     with _MODULE_LOCK:
-        g = globals()
-        module = __import__(module_name, g, g, ('__doc__',))
-
-        # Let the app specify a realm
-        realm = module_name
-        if _DEFAULT_REALM is not None:
-            realm = _DEFAULT_REALM
-
+        module = __import__(module_name)
         app = getattr(module, 'bobo_application', module)
-        bobo_before = getattr(module, '__bobo_before__', None)
-        bobo_after = getattr(module, '__bobo_after__', None)
-        error_hook = getattr(module, 'zpublisher_exception_hook', None)
-        validated_hook = getattr(
-            module, 'zpublisher_validated_hook', validate_user)
-        transactions_manager = getattr(
-            module, 'zpublisher_transactions_manager', transaction.manager)
-
-        info = (bobo_before, bobo_after, app, realm, _DEFAULT_DEBUG_MODE,
-                error_hook, validated_hook, transactions_manager)
-
-        _MODULES[module_name] = info
+        realm = _DEFAULT_REALM if _DEFAULT_REALM is not None else module_name
+        _MODULES[module_name] = info = (app, realm, _DEFAULT_DEBUG_MODE)
     return info
 
 
@@ -206,7 +189,7 @@ class WSGIResponse(HTTPResponse):
 
 
 @contextmanager
-def transaction_pubevents(tm, request):
+def transaction_pubevents(request, tm=transaction.manager):
     ok_exception = None
     try:
         setDefaultSkin(request)
@@ -239,20 +222,10 @@ def transaction_pubevents(tm, request):
 
 
 def publish(request, module_info):
-    (bobo_before,
-     bobo_after,
-     obj,
-     realm,
-     debug_mode,
-     err_hook,
-     validated_hook,
-     transactions_manager) = module_info
+    obj, realm, debug_mode = module_info
 
     request.processInputs()
     response = request.response
-
-    if bobo_after is not None:
-        response.after_list += (bobo_after,)
 
     if debug_mode:
         response.debug_mode = debug_mode
@@ -261,15 +234,13 @@ def publish(request, module_info):
         response.realm = realm
 
     noSecurityManager()
-    if bobo_before is not None:
-        bobo_before()
 
     # Get the path list.
     # According to RFC1738 a trailing space in the path is valid.
     path = request.get('PATH_INFO')
     request['PARENTS'] = [obj]
 
-    obj = request.traverse(path, validated_hook=validated_hook)
+    obj = request.traverse(path, validated_hook=validate_user)
     notify(pubevents.PubAfterTraversal(request))
     recordMetaData(obj, request)
 
@@ -294,31 +265,22 @@ def publish_module(environ, start_response,
                    _response_factory=WSGIResponse,
                    _request=None,
                    _request_factory=WSGIRequest,
-                   _module_name='Zope2',
-                   ):
-    module_info = get_module_info(_module_name)
-    transactions_manager = module_info[7]
-
+                   _module_name='Zope2'):
     status = 200
 
     with closing(StringIO()) as stdout, closing(StringIO()) as stderr:
-        if _response is None:
-            response = _response_factory(stdout=stdout, stderr=stderr)
-        else:
-            response = _response
+        response = (_response if _response is not None else
+                    _response_factory(stdout=stdout, stderr=stderr))
         response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
         response._server_version = environ.get('SERVER_SOFTWARE')
 
-        if _request is None:
-            request = _request_factory(
-                environ['wsgi.input'], environ, response)
-        else:
-            request = _request
+        request = (_request if _request is not None else
+                   _request_factory(environ['wsgi.input'], environ, response))
 
         with closing(request) as request:
             try:
-                with transaction_pubevents(transactions_manager, request):
-                    response = _publish(request, module_info)
+                with transaction_pubevents(request):
+                    response = _publish(request, get_module_info(_module_name))
             except Unauthorized:
                 response._unauthorized()
             except HTTPRedirection as exc:

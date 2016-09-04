@@ -17,7 +17,6 @@ from ZPublisher.interfaces import (
     IPubAfterTraversal, IPubBeforeCommit,
     IPubBeforeStreaming,
 )
-from ZPublisher import Retry
 from ZPublisher.WSGIPublisher import publish_module
 from ZPublisher.WSGIPublisher import WSGIResponse
 
@@ -202,17 +201,5 @@ class _Request(BaseRequest):
         # override to get rid of the 'EndRequestEvent' notification
         pass
 
-
 # define things necessary for publication
 bobo_application = _Application()
-
-
-def zpublisher_exception_hook(parent, request, *unused):
-    action = request.action
-    if action == 'fail_return':
-        return 0
-    if action == 'fail_exception':
-        raise Exception()
-    if action == 'conflict':
-        raise Retry()
-    raise ValueError('unknown action: %s' % action)

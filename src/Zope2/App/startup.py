@@ -20,7 +20,6 @@ from time import asctime
 import AccessControl.User
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-import transaction
 import ZODB
 from zope.deferredimport import deprecated
 from zope.event import notify
@@ -152,5 +151,3 @@ def startup():
     startup_time = asctime()
 
     notify(DatabaseOpenedWithRoot(DB))
-
-    Zope2.zpublisher_transactions_manager = transaction.manager

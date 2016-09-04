@@ -31,6 +31,11 @@ deprecated(
 
 _began_startup = 0
 
+# Zope2.App.startup.startup() sets the following variables in this module.
+bobo_application = None
+DB = None
+opened = []
+
 
 def startup_wsgi():
     """Initialize the Zope Package and provide a published module"""
@@ -62,14 +67,3 @@ def _configure_wsgi():
     configfile = os.environ.get('ZOPE_CONFIG')
     if configfile is not None:
         configure_wsgi(configfile)
-
-
-# Zope2.App.startup.startup() sets the following variables in this module.
-DB = None
-opened = []
-bobo_application = None
-zpublisher_transactions_manager = None
-zpublisher_validated_hook = None
-zpublisher_exception_hook = None
-__bobo_after__ = None
-__bobo_before__ = None

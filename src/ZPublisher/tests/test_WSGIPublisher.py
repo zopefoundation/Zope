@@ -155,47 +155,30 @@ class TestPublish(unittest.TestCase):
     def test_wo_REMOTE_USER(self):
         request = DummyRequest(PATH_INFO='/')
         response = request.response = DummyResponse()
-        _before = DummyCallable()
-        _after = object()
         _object = DummyCallable()
         _object._result = 'RESULT'
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        _err_hook = DummyCallable()
-        _validated_hook = object()
-        _tm = transaction.manager
-        module_info = (_before, _after, _object, _realm, _debug_mode,
-                       _err_hook, _validated_hook, _tm)
-        returned = self._callFUT(request, module_info)
+        returned = self._callFUT(request, (_object, _realm, _debug_mode))
         self.assertTrue(returned is response)
         self.assertTrue(request._processedInputs)
-        self.assertEqual(response.after_list, (_after,))
         self.assertTrue(response.debug_mode)
         self.assertEqual(response.realm, 'TESTING')
-        self.assertEqual(_before._called_with, ((), {}))
         self.assertEqual(request['PARENTS'], [_object])
-        self.assertEqual(request._traversed, ('/', None, _validated_hook))
+        self.assertEqual(request._traversed[:2], ('/', None))
         self.assertEqual(_object._called_with, ((), {}))
         self.assertEqual(response._body, 'RESULT')
-        self.assertEqual(_err_hook._called_with, None)
 
     def test_w_REMOTE_USER(self):
         request = DummyRequest(PATH_INFO='/', REMOTE_USER='phred')
         response = request.response = DummyResponse()
-        _before = DummyCallable()
-        _after = object()
         _object = DummyCallable()
         _object._result = 'RESULT'
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        _err_hook = DummyCallable()
-        _validated_hook = object()
-        _tm = transaction.manager
-        module_info = (_before, _after, _object, _realm, _debug_mode,
-                       _err_hook, _validated_hook, _tm)
-        self._callFUT(request, module_info)
+        self._callFUT(request, (_object, _realm, _debug_mode))
         self.assertEqual(response.realm, None)
 
 
