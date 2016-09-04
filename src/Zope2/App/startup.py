@@ -41,6 +41,11 @@ deprecated(
     ZPublisherExceptionHook='ZServer.ZPublisher.exceptionhook:ExceptionHook',
 )
 
+deprecated(
+    'Please import from ZPublisher.WSGIPublisher.',
+    validated_hook='ZPublisher.WSGIPublisher:validate_user',
+)
+
 app = None
 startup_time = asctime()
 _patched = False
@@ -149,8 +154,3 @@ def startup():
     notify(DatabaseOpenedWithRoot(DB))
 
     Zope2.zpublisher_transactions_manager = transaction.manager
-    Zope2.zpublisher_validated_hook = validated_hook
-
-
-def validated_hook(request, user):
-    newSecurityManager(request, user)

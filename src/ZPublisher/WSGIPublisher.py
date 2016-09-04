@@ -18,6 +18,7 @@ import sys
 from thread import allocate_lock
 import time
 
+from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 import transaction
 from zExceptions import (
@@ -78,6 +79,10 @@ def missing_name(name, request):
     request.response.badRequestError(name)
 
 
+def validate_user(request, user):
+    newSecurityManager(request, user)
+
+
 def set_default_debug_mode(debug_mode):
     global _DEFAULT_DEBUG_MODE
     _DEFAULT_DEBUG_MODE = debug_mode
@@ -107,7 +112,8 @@ def get_module_info(module_name='Zope2'):
         bobo_before = getattr(module, '__bobo_before__', None)
         bobo_after = getattr(module, '__bobo_after__', None)
         error_hook = getattr(module, 'zpublisher_exception_hook', None)
-        validated_hook = getattr(module, 'zpublisher_validated_hook', None)
+        validated_hook = getattr(
+            module, 'zpublisher_validated_hook', validate_user)
         transactions_manager = getattr(
             module, 'zpublisher_transactions_manager', transaction.manager)
 
@@ -115,7 +121,7 @@ def get_module_info(module_name='Zope2'):
                 error_hook, validated_hook, transactions_manager)
 
         _MODULES[module_name] = info
-        return info
+    return info
 
 
 class WSGIResponse(HTTPResponse):
