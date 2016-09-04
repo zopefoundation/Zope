@@ -124,11 +124,14 @@ def get_module_info(module_name='Zope2'):
     return info
 
 
+class WSGIRequest(HTTPRequest):
+    """A request object for WSGI
+    """
+    pass
+
+
 class WSGIResponse(HTTPResponse):
     """A response object for WSGI
-
-    This Response object knows nothing about ZServer, but tries to be
-    compatible with the ZServerHTTPResponse.
     """
     _streaming = 0
     _http_version = None
@@ -138,24 +141,19 @@ class WSGIResponse(HTTPResponse):
     after_list = ()
 
     def finalize(self):
-
-        headers = self.headers
-        body = self.body
-
-        # set 204 (no content) status if 200 and response is empty
-        # and not streaming
-        if ('content-type' not in headers and
-                'content-length' not in headers and
+        # Set 204 (no content) status if 200 and response is empty
+        # and not streaming.
+        if ('content-type' not in self.headers and
+                'content-length' not in self.headers and
                 not self._streaming and self.status == 200):
             self.setStatus('nocontent')
 
-        # add content length if not streaming
-        content_length = headers.get('content-length')
-
+        # Add content length if not streaming.
+        content_length = self.headers.get('content-length')
         if content_length is None and not self._streaming:
-            self.setHeader('content-length', len(body))
+            self.setHeader('content-length', len(self.body))
 
-        return '%s %s' % (self.status, self.errmsg), self.listHeaders()
+        return ('%s %s' % (self.status, self.errmsg), self.listHeaders())
 
     def listHeaders(self):
         result = []
@@ -168,16 +166,16 @@ class WSGIResponse(HTTPResponse):
 
     def _unauthorized(self):
         self.setStatus(401)
-        realm = self.realm
-        if realm:
-            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+        if self.realm:
+            self.setHeader('WWW-Authenticate',
+                           'basic realm="%s"' % self.realm, 1)
 
     def write(self, data):
-        """ Add data to our output stream.
+        """Add data to our output stream.
 
         HTML data may be returned using a stream-oriented interface.
         This allows the browser to display partial results while
-        computation of a response to proceed.
+        computation of a response proceeds.
         """
         if not self._streaming:
             notify(pubevents.PubBeforeStreaming(self))
@@ -295,7 +293,7 @@ def publish_module(environ, start_response,
                    _response=None,
                    _response_factory=WSGIResponse,
                    _request=None,
-                   _request_factory=HTTPRequest,
+                   _request_factory=WSGIRequest,
                    _module_name='Zope2',
                    ):
     module_info = get_module_info(_module_name)
