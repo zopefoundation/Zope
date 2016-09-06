@@ -39,9 +39,12 @@ from zope.traversing.namespace import nsParse
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 
+HAS_ZSERVER = True
 try:
     dist = pkg_resources.get_distribution('ZServer')
 except pkg_resources.DistributionNotFound:
+    HAS_ZSERVER = False
+
     def is_xmlrpc_response(response):
         return False
 else:
@@ -189,7 +192,7 @@ class BaseRequest:
     collection of variable to value mappings.
     """
 
-    maybe_webdav_client = 1
+    maybe_webdav_client = HAS_ZSERVER
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -394,18 +397,16 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method = request_get('REQUEST_METHOD', 'GET').upper()
 
+        # Probably a browser
+        no_acquire_flag = 0
         if (method in ('GET', 'POST', 'PURGE') and
                 not is_xmlrpc_response(response)):
-            # Probably a browser
-            no_acquire_flag = 0
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
         elif self.maybe_webdav_client:
             # Probably a WebDAV client.
             no_acquire_flag = 1
-        else:
-            no_acquire_flag = 0
 
         URL = request['URL']
         parents = request['PARENTS']
