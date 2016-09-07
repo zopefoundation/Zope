@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
+- Quote variables in manage_tabs and manage_container to avoid XSS.
+  From Products.PloneHotfix20160830.  [maurits]
+
 - Add a dependency on the empty `Products.TemporaryFolder` project.
 
 - Add a dependency on the empty `Products.Sessions` project.

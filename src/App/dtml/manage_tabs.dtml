@@ -16,35 +16,35 @@
 <table cellpadding="0" cellspacing="0" width="100%" border="0">
 
 <tr>
-  <td bgcolor="#000000" rowspan="5" width="10%" valign="bottom" 
-   align="left">&nbsp;&nbsp;<img src="&dtml-BASEPATH1;/p_/sp" 
+  <td bgcolor="#000000" rowspan="5" width="10%" valign="bottom"
+   align="left">&nbsp;&nbsp;<img src="&dtml-BASEPATH1;/p_/sp"
    width="2" height="1" alt="" />
   </td>
-  <td bgcolor="#000000" colspan="<dtml-var "4 * (n_ + 1)">"><img 
+  <td bgcolor="#000000" colspan="<dtml-var "4 * (n_ + 1)">"><img
    src="&dtml-BASEPATH1;/p_/sp" width="1" height="5" alt="" /></td>
 </tr>
 
 <tr>
 <dtml-in manage_options>
 <dtml-if "_['sequence-index']==a_">
-  <td bgcolor="#ffffff" rowspan="2" valign="top" 
-   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
+  <td bgcolor="#ffffff" rowspan="2" valign="top"
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5"
    height="5" alt="" /></td>
   <td bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
    width="1" height="2" alt="" /></td>
-  <td bgcolor="#ffffff" rowspan="2" valign="top" 
-   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
+  <td bgcolor="#ffffff" rowspan="2" valign="top"
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5"
    height="5" alt="" /></td>
   <td bgcolor="#000000" rowspan="4"><img src="&dtml-BASEPATH1;/p_/sp"
  width="2" height="1" alt="" /></td>
 <dtml-else>
-  <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
+  <td bgcolor="#efefef" rowspan="2" valign="top"
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5"
    height="5" alt="" /></td>
   <td bgcolor="#efefef"><img src="&dtml-BASEPATH1;/p_/sp"
  width="1" height="2" alt="" /></td>
-  <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
+  <td bgcolor="#efefef" rowspan="2" valign="top"
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5"
    height="5" alt="" /></td>
   <td bgcolor="#000000" rowspan="4"><img src="&dtml-BASEPATH1;/p_/sp"
  width="2" height="1" alt="" /></td>
@@ -55,8 +55,8 @@
 <dtml-in manage_options mapping>
 <dtml-let s_item=sequence-item s_index=sequence-index>
 <dtml-if "s_index==a_">
-  <td bgcolor="#ffffff" valign="bottom" class="tab-small" 
-   align="center"><font face="Verdana, Arial, Helvetica" 
+  <td bgcolor="#ffffff" valign="bottom" class="tab-small"
+   align="center"><font face="Verdana, Arial, Helvetica"
    size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
    >href="&dtml-action;"<dtml-else
    >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
@@ -64,8 +64,8 @@
    >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
    ></strong></span></a>&nbsp;</font></td>
 <dtml-else>
-  <td bgcolor="#efefef" valign="bottom" class="tab-small" 
-   align="center"><font face="Verdana, Arial, Helvetica" 
+  <td bgcolor="#efefef" valign="bottom" class="tab-small"
+   align="center"><font face="Verdana, Arial, Helvetica"
    size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
    >href="&dtml-action;"<dtml-else
    >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
@@ -108,7 +108,7 @@
     <td align="left" valign="top">
     <div class="std-text">
     <dtml-if icon>
-    <img src="&dtml-BASEPATH1;/&dtml-icon;" 
+    <img src="&dtml-BASEPATH1;/&dtml-icon;"
          alt="&dtml-meta_type;" border="0" />
     </dtml-if>
     <strong>
@@ -116,7 +116,7 @@
       &dtml-meta_type;
     <dtml-else>
     Object
-    </dtml-if> 
+    </dtml-if>
     at <dtml-var expr="tabs_path_default(REQUEST)">
     </strong>
     <dtml-if wl_isLocked>
@@ -156,7 +156,7 @@
 
 <dtml-if manage_tabs_message>
 <div class="system-msg">
-<dtml-var manage_tabs_message newline_to_br> 
+<dtml-var manage_tabs_message newline_to_br html_quote>
 (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
 </div>
 </dtml-if>
