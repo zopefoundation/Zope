@@ -11,6 +11,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Quote variable in manage_tabs to avoid XSS.
+  From Products.PloneHotfix20160830.  [maurits]
+
 - Remove more HelpSys references.
 
 Features Added
