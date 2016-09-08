@@ -1555,6 +1555,11 @@ class HTTPRequest(BaseRequest):
         return self.URL
 
 
+class WSGIRequest(HTTPRequest):
+    # A request object for WSGI, no docstring to avoid being publishable.
+    pass
+
+
 class TaintRequestWrapper:
     def __init__(self, req):
         self._req = req

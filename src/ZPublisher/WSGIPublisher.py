@@ -16,7 +16,6 @@ from contextlib import contextmanager, closing
 from cStringIO import StringIO
 import sys
 from thread import allocate_lock
-import time
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -33,17 +32,12 @@ from zope.event import notify
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
 
-from ZPublisher.HTTPRequest import HTTPRequest
-from ZPublisher.HTTPResponse import HTTPResponse
-from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
+from ZPublisher.HTTPRequest import WSGIRequest
+from ZPublisher.HTTPResponse import WSGIResponse
+from ZPublisher.Iterators import IUnboundStreamIterator
 from ZPublisher.mapply import mapply
 from ZPublisher import pubevents
 from ZPublisher.utils import recordMetaData
-
-_NOW = None  # overwrite for testing
-MONTHNAME = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-WEEKDAYNAME = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 if sys.version_info >= (3, ):
     from io import IOBase
@@ -54,18 +48,6 @@ _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
 _MODULE_LOCK = allocate_lock()
 _MODULES = {}
-
-
-def _now():
-    if _NOW is not None:
-        return _NOW
-    return time.time()
-
-
-def build_http_date(when):
-    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(when)
-    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
-        WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
 def call_object(obj, args, request):
@@ -108,88 +90,6 @@ def get_module_info(module_name='Zope2'):
         realm = _DEFAULT_REALM if _DEFAULT_REALM is not None else module_name
         _MODULES[module_name] = info = (app, realm, _DEFAULT_DEBUG_MODE)
     return info
-
-
-class WSGIRequest(HTTPRequest):
-    """A request object for WSGI
-    """
-    pass
-
-
-class WSGIResponse(HTTPResponse):
-    """A response object for WSGI
-    """
-    _streaming = 0
-    _http_version = None
-    _server_version = None
-
-    # Append any "cleanup" functions to this list.
-    after_list = ()
-
-    def finalize(self):
-        # Set 204 (no content) status if 200 and response is empty
-        # and not streaming.
-        if ('content-type' not in self.headers and
-                'content-length' not in self.headers and
-                not self._streaming and self.status == 200):
-            self.setStatus('nocontent')
-
-        # Add content length if not streaming.
-        content_length = self.headers.get('content-length')
-        if content_length is None and not self._streaming:
-            self.setHeader('content-length', len(self.body))
-
-        return ('%s %s' % (self.status, self.errmsg), self.listHeaders())
-
-    def listHeaders(self):
-        result = []
-        if self._server_version:
-            result.append(('Server', self._server_version))
-
-        result.append(('Date', build_http_date(_now())))
-        result.extend(HTTPResponse.listHeaders(self))
-        return result
-
-    def _unauthorized(self, exc=None):
-        status = exc.getStatus() if exc is not None else 401
-        self.setStatus(status)
-        if self.realm:
-            self.setHeader('WWW-Authenticate',
-                           'basic realm="%s"' % self.realm, 1)
-
-    def write(self, data):
-        """Add data to our output stream.
-
-        HTML data may be returned using a stream-oriented interface.
-        This allows the browser to display partial results while
-        computation of a response proceeds.
-        """
-        if not self._streaming:
-            notify(pubevents.PubBeforeStreaming(self))
-            self._streaming = 1
-            self.stdout.flush()
-
-        self.stdout.write(data)
-
-    def setBody(self, body, title='', is_error=0):
-        if isinstance(body, IOBase):
-            body.seek(0, 2)
-            length = body.tell()
-            body.seek(0)
-            self.setHeader('Content-Length', '%d' % length)
-            self.body = body
-        elif IStreamIterator.providedBy(body):
-            self.body = body
-            HTTPResponse.setBody(self, '', title, is_error)
-        elif IUnboundStreamIterator.providedBy(body):
-            self.body = body
-            self._streaming = 1
-            HTTPResponse.setBody(self, '', title, is_error)
-        else:
-            HTTPResponse.setBody(self, body, title, is_error)
-
-    def __str__(self):
-        raise NotImplementedError
 
 
 @contextmanager

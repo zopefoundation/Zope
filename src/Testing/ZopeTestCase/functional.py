@@ -62,11 +62,9 @@ class Functional(sandbox.Sandboxed):
         '''Publishes the object at 'path' returning a response object.'''
 
         from StringIO import StringIO
-        from ZPublisher.HTTPRequest import HTTPRequest as Request
-        from ZPublisher.WSGIPublisher import (
-            publish_module,
-            WSGIResponse,
-        )
+        from ZPublisher.HTTPRequest import WSGIRequest as Request
+        from ZPublisher.HTTPResponse import WSGIResponse
+        from ZPublisher.WSGIPublisher import publish_module
 
         # Commit the sandbox for good measure
         transaction.commit()

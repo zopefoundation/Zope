@@ -30,15 +30,15 @@ class WSGIResponseTests(unittest.TestCase):
             self._setNOW(self._old_NOW)
 
     def _getTargetClass(self):
-        from ZPublisher.WSGIPublisher import WSGIResponse
+        from ZPublisher.HTTPResponse import WSGIResponse
         return WSGIResponse
 
     def _makeOne(self, *args, **kw):
         return self._getTargetClass()(*args, **kw)
 
     def _setNOW(self, value):
-        from ZPublisher import WSGIPublisher
-        WSGIPublisher._NOW, self._old_NOW = value, WSGIPublisher._NOW
+        from ZPublisher import HTTPResponse
+        HTTPResponse._NOW, self._old_NOW = value, HTTPResponse._NOW
 
     def test_finalize_sets_204_on_empty_not_streaming(self):
         response = self._makeOne()

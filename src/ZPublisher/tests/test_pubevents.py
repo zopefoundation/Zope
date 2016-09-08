@@ -7,18 +7,18 @@ from zope.interface.verify import verifyObject
 from zope.event import subscribers
 
 from ZPublisher.BaseRequest import BaseRequest
-from ZPublisher.pubevents import (
-    PubStart, PubSuccess, PubFailure,
-    PubAfterTraversal, PubBeforeCommit, PubBeforeAbort,
-    PubBeforeStreaming,
-)
+from ZPublisher.HTTPResponse import WSGIResponse
 from ZPublisher.interfaces import (
     IPubStart, IPubEnd, IPubSuccess, IPubFailure,
     IPubAfterTraversal, IPubBeforeCommit,
     IPubBeforeStreaming,
 )
+from ZPublisher.pubevents import (
+    PubStart, PubSuccess, PubFailure,
+    PubAfterTraversal, PubBeforeCommit, PubBeforeAbort,
+    PubBeforeStreaming,
+)
 from ZPublisher.WSGIPublisher import publish_module
-from ZPublisher.WSGIPublisher import WSGIResponse
 
 
 PUBMODULE = 'TEST_testpubevents'

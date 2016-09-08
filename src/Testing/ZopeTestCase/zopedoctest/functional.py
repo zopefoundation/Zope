@@ -129,11 +129,9 @@ def http(request_string, handle_errors=True):
     import urllib
     import rfc822
     from cStringIO import StringIO
-    from ZPublisher.HTTPRequest import HTTPRequest as Request
-    from ZPublisher.WSGIPublisher import (
-        publish_module,
-        WSGIResponse,
-    )
+    from ZPublisher.HTTPRequest import WSGIRequest as Request
+    from ZPublisher.HTTPResponse import WSGIResponse
+    from ZPublisher.WSGIPublisher import publish_module
 
     # Commit work done by previous python code.
     transaction.commit()
