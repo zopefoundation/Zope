@@ -97,7 +97,7 @@ class HTTPResponse(BaseResponse):
 
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
-    A published object may recieve the response abject as an argument
+    A published object may receive the response abject as an argument
     named 'RESPONSE'.  A published object may also create it's own
     response object.  Normally, published objects use response objects
     to:

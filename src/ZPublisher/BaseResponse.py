@@ -16,7 +16,7 @@
 from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 
 
-class BaseResponse:
+class BaseResponse(object):
     """Base Response Class
     """
     debug_mode = None
@@ -59,7 +59,7 @@ class BaseResponse:
         return self.status
 
     def setCookie(self, name, value, **kw):
-        '''\
+        '''
         Set an HTTP cookie on the browser
 
         The response will include an HTTP header that sets a cookie on
@@ -80,12 +80,13 @@ class BaseResponse:
         self.setBody(self.getBody() + body)
 
     def getHeader(self, name):
-        '''\
+        '''
         Get a header value
 
         Returns the value associated with a HTTP return header, or
         "None" if no such header has been set in the response
-        yet. '''
+        yet.
+        '''
         return self.headers.get(name, None)
 
     def __getitem__(self, name):
@@ -106,7 +107,7 @@ class BaseResponse:
         pass
 
     def write(self, data):
-        """\
+        """
         Return data as a stream
 
         HTML data may be returned using a stream-oriented interface.
@@ -118,7 +119,6 @@ class BaseResponse:
 
         Note that published objects must not generate any errors
         after beginning stream-oriented output.
-
         """
         self.body = self.body + data
 
@@ -137,7 +137,7 @@ class BaseResponse:
         raise NotFound(v)
 
     def debugError(self, v=''):
-        """Raise an error with debigging info and in debugging mode"""
+        """Raise an error with debugging info and in debugging mode"""
         raise NotFound("Debugging notice: %s" % v)
 
     def badRequestError(self, v=''):
@@ -149,7 +149,7 @@ class BaseResponse:
         raise Forbidden(v)
 
     def unauthorized(self):
-        """Raise an eror indicating that the user was not authizated
+        """Raise an error indicating that the user was not authorized.
 
         Make sure to generate an appropriate challenge, as appropriate.
         """

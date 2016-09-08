@@ -179,7 +179,7 @@ class DefaultPublishTraverse(object):
         return self.context, ()
 
 
-class BaseRequest:
+class BaseRequest(object):
     """Provide basic ZPublisher request management
 
     This object provides access to request data. Request data may
