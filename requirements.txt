@@ -31,7 +31,7 @@ sourcecodegen==0.6.14
 transaction==1.6.1
 waitress==1.0.0
 z3c.pt==3.0
-zExceptions==3.3
+zExceptions==3.4
 zc.lockfile==1.2.1
 zdaemon==4.1.0
 zodbpickle==0.6.0

@@ -67,7 +67,7 @@ setup(
         'sourcecodegen',
         'transaction',
         'waitress',
-        'zExceptions >= 3.2',
+        'zExceptions >= 3.4',
         'z3c.pt',
         'zope.browser',
         'zope.browsermenu',

@@ -469,7 +469,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
             start_response._called_with[0][0], '500 Internal Server Error')
         self.assertTrue('Exception View: InternalError' in body)
 
-    def testRedirectNoExceptionView(self):
+    def testRedirectExceptionView(self):
         from zExceptions import Redirect
         registerExceptionView(IException)
         environ = self._makeEnviron()
@@ -478,9 +478,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish._raise = Redirect('http://localhost:9/')
         app_iter = self._callFUT(environ, start_response, _publish)
         body = ''.join(app_iter)
-        self.assertEqual(body, '')
         status, headers = start_response._called_with[0]
         self.assertEqual(status, '302 Found')
+        self.assertTrue('Exception View: Redirect' in body)
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
 

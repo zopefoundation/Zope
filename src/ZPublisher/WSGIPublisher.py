@@ -167,11 +167,12 @@ def _publish_response(request, response, module_info, _publish=publish):
     try:
         with transaction_pubevents(request):
             response = _publish(request, module_info)
-    except HTTPRedirection as exc:
-        # TODO: HTTPOk is only handled by the httpexceptions
-        # middleware, maybe it should be handled here.
-        response.redirect(exc)
     except Exception as exc:
+        if isinstance(exc, HTTPRedirection):
+            response._redirect(exc)
+        elif isinstance(exc, Unauthorized):
+            response._unauthorized(exc)
+
         view = queryMultiAdapter((exc, request), name=u'index.html')
         if view is not None:
             parents = request.get('PARENTS')
@@ -181,8 +182,7 @@ def _publish_response(request, response, module_info, _publish=publish):
             response.setBody(view())
             return response
 
-        if isinstance(exc, Unauthorized):
-            response._unauthorized(exc)
+        if isinstance(exc, (HTTPRedirection, Unauthorized)):
             return response
 
         raise

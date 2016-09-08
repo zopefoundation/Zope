@@ -39,6 +39,13 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Change the WSGIResponse exception methods to raise exceptions instead
+  of returning responses. This includes notFoundError, forbiddenError,
+  debugError, badRequestError, unauthorized and redirect.
+
+- Split a common HTTPBaseResponse base class out of HTTPResponse and
+  WSGIResponse. Move ZServer specific logic onto HTTPResponse.
+
 - Simplified `ZPublisher.WSGIPublisher.get_module_info` contract.
 
 - Add new `ZPublisher.utils.recordMetaData` function and use default

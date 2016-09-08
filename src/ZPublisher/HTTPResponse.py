@@ -24,6 +24,7 @@ import types
 from urllib import quote
 import zlib
 
+from six import reraise
 from zope.event import notify
 from zExceptions import (
     BadRequest,
@@ -67,7 +68,7 @@ for name in en:
     status_codes[name.lower()] = 500
 status_codes['nameerror'] = 503
 status_codes['keyerror'] = 503
-status_codes['redirect'] = 300
+status_codes['redirect'] = 302
 status_codes['resourcelockederror'] = 423
 
 
@@ -115,7 +116,7 @@ def build_http_date(when):
         WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
-class HTTPResponse(BaseResponse):
+class HTTPBaseResponse(BaseResponse):
     """ An object representation of an HTTP response.
 
     The Response type encapsulates all possible responses to HTTP
@@ -575,30 +576,6 @@ class HTTPResponse(BaseResponse):
 
         return self.use_HTTP_content_compression
 
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection without raising an error"""
-        if isinstance(location, HTTPRedirection):
-            status = location.getStatus()
-        location = str(location)
-        self.setStatus(status, lock=lock)
-        self.setHeader('Location', location)
-        return location
-
-    # The following two methods are part of a private protocol with
-    # ZServer for handling fatal import errors.
-    _shutdown_flag = None
-
-    def _requestShutdown(self, exitCode=0):
-        """ Request that the server shut down with exitCode after fulfilling
-           the current request.
-        """
-        self._shutdown_flag = exitCode
-
-    def _shutdownRequested(self):
-        """ Returns true if this request requested a server shutdown.
-        """
-        return self._shutdown_flag is not None
-
     def _encode_unicode(self, body,
                         charset_re=re.compile(
                             r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
@@ -636,6 +613,101 @@ class HTTPResponse(BaseResponse):
         body = fix_xml_preamble(body, default_encoding)
         return body
 
+    def _cookie_list(self):
+        cookie_list = []
+        for name, attrs in self.cookies.items():
+
+            # Note that as of May 98, IE4 ignores cookies with
+            # quoted cookie attr values, so only the value part
+            # of name=value pairs may be quoted.
+
+            if attrs.get('quoted', True):
+                cookie = '%s="%s"' % (name, quote(attrs['value']))
+            else:
+                cookie = '%s=%s' % (name, quote(attrs['value']))
+            for name, v in attrs.items():
+                name = name.lower()
+                if name == 'expires':
+                    cookie = '%s; Expires=%s' % (cookie, v)
+                elif name == 'domain':
+                    cookie = '%s; Domain=%s' % (cookie, v)
+                elif name == 'path':
+                    cookie = '%s; Path=%s' % (cookie, v)
+                elif name == 'max_age':
+                    cookie = '%s; Max-Age=%s' % (cookie, v)
+                elif name == 'comment':
+                    cookie = '%s; Comment=%s' % (cookie, v)
+                elif name == 'secure' and v:
+                    cookie = '%s; Secure' % cookie
+                # Some browsers recognize this cookie attribute
+                # and block read/write access via JavaScript
+                elif name == 'http_only' and v:
+                    cookie = '%s; HTTPOnly' % cookie
+            cookie_list.append(('Set-Cookie', cookie))
+
+        # Should really check size of cookies here!
+
+        return cookie_list
+
+    def listHeaders(self):
+        """ Return a list of (key, value) pairs for our headers.
+
+        o Do appropriate case normalization.
+        """
+
+        result = [
+            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
+        ]
+
+        for key, value in self.headers.items():
+            if key.lower() == key:
+                # only change non-literal header names
+                key = '-'.join([x.capitalize() for x in key.split('-')])
+            result.append((key, value))
+
+        result.extend(self._cookie_list())
+        result.extend(self.accumulated_headers)
+        return result
+
+
+class HTTPResponse(HTTPBaseResponse):
+
+    _wrote = None
+
+    def __str__(self, html_search=re.compile('<html>', re.I).search):
+        if self._wrote:
+            return ''  # Streaming output was used.
+
+        status, headers = self.finalize()
+        body = self.body
+
+        chunks = []
+
+        # status header must come first.
+        chunks.append("Status: %s" % status)
+
+        for key, value in headers:
+            chunks.append("%s: %s" % (key, value))
+        # RFC 2616 mandates empty line between headers and payload
+        chunks.append('')
+        chunks.append(body)
+        return '\r\n'.join(chunks)
+
+    # The following two methods are part of a private protocol with
+    # ZServer for handling fatal import errors.
+    _shutdown_flag = None
+
+    def _requestShutdown(self, exitCode=0):
+        """ Request that the server shut down with exitCode after fulfilling
+           the current request.
+        """
+        self._shutdown_flag = exitCode
+
+    def _shutdownRequested(self):
+        """ Returns true if this request requested a server shutdown.
+        """
+        return self._shutdown_flag is not None
+
     # deprecated
     def quoteHTML(self, text):
         return escape(text, 1)
@@ -651,8 +723,8 @@ class HTTPResponse(BaseResponse):
                 "</html>\n" % (title, body))
 
     def _error_html(self, title, body):
-        return ("""<html>
-  <head><title>Site Error</title></head>
+        return ("""<!DOCTYPE html><html>
+  <head><title>Site Error</title><meta charset="utf-8" /></head>
   <body bgcolor="#FFFFFF">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
@@ -721,6 +793,15 @@ class HTTPResponse(BaseResponse):
                 m = m + '\nNo Authorization header found.'
         raise Unauthorized(m)
 
+    def redirect(self, location, status=302, lock=0):
+        """Cause a redirection without raising an error"""
+        if isinstance(location, HTTPRedirection):
+            status = location.getStatus()
+        location = str(location)
+        self.setStatus(status, lock=lock)
+        self.setHeader('Location', location)
+        return location
+
     def _setBCIHeaders(self, t, tb):
         try:
             # Try to capture exception info for bci calls
@@ -741,7 +822,7 @@ class HTTPResponse(BaseResponse):
 
             self.setHeader('bobo-exception-file', ef)
             self.setHeader('bobo-exception-line', el)
-        except:
+        except Exception:
             # Don't try so hard that we cause other problems ;)
             pass
 
@@ -750,8 +831,7 @@ class HTTPResponse(BaseResponse):
     def exception(self, fatal=0, info=None,
                   absuri_match=re.compile(r'\w+://[\w\.]+').match,
                   tag_search=re.compile('[a-zA-Z]>').search,
-                  abort=1
-                  ):
+                  abort=1):
         if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
         else:
@@ -769,7 +849,7 @@ class HTTPResponse(BaseResponse):
                 self.setHeader('location', v)
                 tb = None  # just one path covered
                 return self
-            elif isinstance(v, Redirect):  # death to string exceptions!
+            elif isinstance(v, Redirect):
                 if self.status == 300:
                     self.setStatus(302)
                 self.setHeader('location', v.args[0])
@@ -830,44 +910,6 @@ class HTTPResponse(BaseResponse):
         del tb
         return body
 
-    _wrote = None
-
-    def _cookie_list(self):
-        cookie_list = []
-        for name, attrs in self.cookies.items():
-
-            # Note that as of May 98, IE4 ignores cookies with
-            # quoted cookie attr values, so only the value part
-            # of name=value pairs may be quoted.
-
-            if attrs.get('quoted', True):
-                cookie = '%s="%s"' % (name, quote(attrs['value']))
-            else:
-                cookie = '%s=%s' % (name, quote(attrs['value']))
-            for name, v in attrs.items():
-                name = name.lower()
-                if name == 'expires':
-                    cookie = '%s; Expires=%s' % (cookie, v)
-                elif name == 'domain':
-                    cookie = '%s; Domain=%s' % (cookie, v)
-                elif name == 'path':
-                    cookie = '%s; Path=%s' % (cookie, v)
-                elif name == 'max_age':
-                    cookie = '%s; Max-Age=%s' % (cookie, v)
-                elif name == 'comment':
-                    cookie = '%s; Comment=%s' % (cookie, v)
-                elif name == 'secure' and v:
-                    cookie = '%s; Secure' % cookie
-                # Some browsers recognize this cookie attribute
-                # and block read/write access via JavaScript
-                elif name == 'http_only' and v:
-                    cookie = '%s; HTTPOnly' % cookie
-            cookie_list.append(('Set-Cookie', cookie))
-
-        # Should really check size of cookies here!
-
-        return cookie_list
-
     def finalize(self):
         """ Set headers required by various parts of protocol.
         """
@@ -876,45 +918,6 @@ class HTTPResponse(BaseResponse):
                 'transfer-encoding' not in self.headers):
             self.setHeader('content-length', len(body))
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
-
-    def listHeaders(self):
-        """ Return a list of (key, value) pairs for our headers.
-
-        o Do appropriate case normalization.
-        """
-
-        result = [
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
-        ]
-
-        for key, value in self.headers.items():
-            if key.lower() == key:
-                # only change non-literal header names
-                key = '-'.join([x.capitalize() for x in key.split('-')])
-            result.append((key, value))
-
-        result.extend(self._cookie_list())
-        result.extend(self.accumulated_headers)
-        return result
-
-    def __str__(self, html_search=re.compile('<html>', re.I).search):
-        if self._wrote:
-            return ''       # Streaming output was used.
-
-        status, headers = self.finalize()
-        body = self.body
-
-        chunks = []
-
-        # status header must come first.
-        chunks.append("Status: %s" % status)
-
-        for key, value in headers:
-            chunks.append("%s: %s" % (key, value))
-        # RFC 2616 mandates empty line between headers and payload
-        chunks.append('')
-        chunks.append(body)
-        return '\r\n'.join(chunks)
 
     def write(self, data):
         """
@@ -940,7 +943,7 @@ class HTTPResponse(BaseResponse):
         self.stdout.write(data)
 
 
-class WSGIResponse(HTTPResponse):
+class WSGIResponse(HTTPBaseResponse):
     """A response object for WSGI
     """
     _streaming = 0
@@ -949,6 +952,86 @@ class WSGIResponse(HTTPResponse):
 
     # Append any "cleanup" functions to this list.
     after_list = ()
+
+    def notFoundError(self, entry='Unknown'):
+        self.setStatus(404)
+        exc = NotFound(entry)
+        exc.title = 'Resource not found'
+        exc.detail = (
+            'Sorry, the requested resource does not exist.'
+            '<p>Check the URL and try again.</p>'
+            '<p><b>Resource:</b> %s</p>' % escape(entry))
+        raise exc
+
+    # If a resource is forbidden, why reveal that it exists?
+    forbiddenError = notFoundError
+
+    def debugError(self, entry):
+        self.setStatus(404)
+        exc = NotFound(entry)
+        exc.title = 'Debugging Notice'
+        exc.detail = (
+            'Zope has encountered a problem publishing your object.<p>'
+            '\n%s</p>' % entry)
+        raise exc
+
+    def badRequestError(self, name):
+        if re.match('^[A-Z_0-9]+$', name):
+            self.setStatus(500)
+            exc = InternalError(name)
+            exc.title = 'Internal Error'
+            exc.detail = 'Sorry, an internal error occurred in this resource.'
+            raise exc
+
+        self.setStatus(400)
+        exc = BadRequest(name)
+        exc.title = 'Invalid request'
+        exc.detail = (
+            'The parameter, <em>%s</em>, '
+            'was omitted from the request.<p>'
+            'Make sure to specify all required parameters, '
+            'and try the request again.</p>' % name)
+        raise exc
+
+    def _unauthorized(self, exc=None):
+        # This should be handled by zExceptions
+        status = exc.getStatus() if exc is not None else 401
+        self.setStatus(status)
+        if self.realm:
+            self.setHeader('WWW-Authenticate',
+                           'basic realm="%s"' % self.realm, 1)
+
+    def unauthorized(self):
+        exc = Unauthorized()
+        exc.title = 'You are not authorized to access this resource.'
+        if self.debug_mode:
+            if self._auth:
+                exc.detail = 'Username and password are not correct.'
+            else:
+                exc.detail = 'No Authorization header found.'
+        raise exc
+
+    def _redirect(self, exc):
+        # This should be handled by zExceptions
+        self.setStatus(exc.getStatus())
+        self.setHeader('Location', str(exc))
+
+    def redirect(self, location, status=302, lock=0):
+        """Cause a redirection."""
+        if isinstance(location, HTTPRedirection):
+            raise location
+
+        exc = Redirect(str(location))
+        exc.setStatus(status)
+        raise exc
+
+    def exception(self, fatal=0, info=None, abort=1):
+        if isinstance(info, tuple) and len(info) == 3:
+            t, v, tb = info
+        else:
+            t, v, tb = sys.exc_info()
+
+        reraise(t, v, tb)
 
     def finalize(self):
         # Set 204 (no content) status if 200 and response is empty
@@ -971,15 +1054,8 @@ class WSGIResponse(HTTPResponse):
             result.append(('Server', self._server_version))
 
         result.append(('Date', build_http_date(_now())))
-        result.extend(HTTPResponse.listHeaders(self))
+        result.extend(super(WSGIResponse, self).listHeaders())
         return result
-
-    def _unauthorized(self, exc=None):
-        status = exc.getStatus() if exc is not None else 401
-        self.setStatus(status)
-        if self.realm:
-            self.setHeader('WWW-Authenticate',
-                           'basic realm="%s"' % self.realm, 1)
 
     def write(self, data):
         """Add data to our output stream.
@@ -1004,13 +1080,13 @@ class WSGIResponse(HTTPResponse):
             self.body = body
         elif IStreamIterator.providedBy(body):
             self.body = body
-            HTTPResponse.setBody(self, '', title, is_error)
+            super(WSGIResponse, self).setBody('', title, is_error)
         elif IUnboundStreamIterator.providedBy(body):
             self.body = body
             self._streaming = 1
-            HTTPResponse.setBody(self, '', title, is_error)
+            super(WSGIResponse, self).setBody('', title, is_error)
         else:
-            HTTPResponse.setBody(self, body, title, is_error)
+            super(WSGIResponse, self).setBody(body, title, is_error)
 
     def __str__(self):
         raise NotImplementedError

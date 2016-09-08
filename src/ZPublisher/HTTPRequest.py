@@ -1195,7 +1195,7 @@ class HTTPRequest(BaseRequest):
         # method is called on the response).
         try:
             object = req.traverse(path)
-        except:
+        except Exception:
             rsp.exception()
         if object is None:
             req.clear()
