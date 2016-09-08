@@ -17,36 +17,6 @@ from zExceptions import (
     InternalError,
 )
 
-ERROR_HTML = """\
-<!DOCTYPE html>
-<html>
-<head>
-<title>Site Error</title>
-<meta charset="utf-8" />
-</head>
-<body bgcolor="#FFFFFF">
-<h2>Site Error</h2>
-<p>An error was encountered while publishing this resource.
-</p>
-<p><strong>Sorry, a site error occurred.</strong></p>
-
-%s
-<hr noshade="noshade"/>
-
-<p>Troubleshooting Suggestions</p>
-
-<ul>
-<li>The URL may be incorrect.</li>
-<li>The parameters passed to this resource may be incorrect.</li>
-<li>A resource that this resource relies on may be
-  encountering an error.</li>
-</ul>
-
-<p>If the error persists please contact the site maintainer.
-Thank you for your patience.
-</p>
-</body></html>"""
-
 
 class HTTPExceptionHandler(object):
 
@@ -64,7 +34,7 @@ class HTTPExceptionHandler(object):
 
     def catch_all_response(self, exc):
         response = InternalError()
-        response.setBody(ERROR_HTML % repr(exc))
+        response.detail = repr(exc)
         return response
 
 
