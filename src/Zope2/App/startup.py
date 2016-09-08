@@ -135,8 +135,7 @@ def startup():
     # Set up the "app" object that automagically opens
     # connections
     app = App.ZApplication.ZApplicationWrapper(
-        DB, 'Application', OFS.Application.Application, ()
-    )
+        DB, 'Application', OFS.Application.Application)
     Zope2.bobo_application = app
 
     # Initialize the app object

@@ -19,24 +19,21 @@ and used when bobo publishes a bobo_application object.
 
 import sys
 
-import transaction
-
 if sys.version_info >= (3, ):
     basestring = str
 
-connection_open_hooks = []
 
+class ZApplicationWrapper(object):
 
-class ZApplicationWrapper:
-
-    def __init__(self, db, name, klass=None, klass_args=()):
-        self._stuff = db, name
+    def __init__(self, db, name, klass=None):
+        self._db = db
+        self._name = name
         if klass is not None:
             conn = db.open()
             root = conn.root()
             if name not in root:
                 root[name] = klass()
-                transaction.commit()
+                conn.transaction_manager.commit()
             conn.close()
             self._klass = klass
 
@@ -45,12 +42,7 @@ class ZApplicationWrapper:
         return getattr(self._klass, name)
 
     def __bobo_traverse__(self, REQUEST=None, name=None):
-        db, aname = self._stuff
-        conn = db.open()
-
-        if connection_open_hooks:
-            for hook in connection_open_hooks:
-                hook(conn)
+        conn = self._db.open()
 
         # arrange for the connection to be closed when the request goes away
         cleanup = Cleanup(conn)
@@ -58,7 +50,7 @@ class ZApplicationWrapper:
 
         conn.setDebugInfo(REQUEST.environ, REQUEST.other)
 
-        v = conn.root()[aname]
+        v = conn.root()[self._name]
 
         if name is not None:
             if hasattr(v, '__bobo_traverse__'):
@@ -71,14 +63,13 @@ class ZApplicationWrapper:
         return v
 
     def __call__(self, connection=None):
-        db, aname = self._stuff
-
+        db = self._db
         if connection is None:
             connection = db.open()
         elif isinstance(connection, basestring):
             connection = db.open(connection)
 
-        return connection.root()[aname]
+        return connection.root()[self._name]
 
 
 class Cleanup:
@@ -86,5 +77,8 @@ class Cleanup:
         self._jar = jar
 
     def __del__(self):
-        transaction.abort()
+        if self._jar.transaction_manager._txn is not None:
+            # Only abort a transaction, if one exists. Otherwise the
+            # abort creates a new transaction just to abort it.
+            self._jar.transaction_manager.abort()
         self._jar.close()

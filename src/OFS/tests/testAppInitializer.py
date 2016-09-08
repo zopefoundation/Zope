@@ -46,7 +46,7 @@ def getSchema():
 def getApp():
     from App.ZApplication import ZApplicationWrapper
     DB = getConfiguration().dbtab.getDatabase('/')
-    return ZApplicationWrapper(DB, 'Application', Application, ())()
+    return ZApplicationWrapper(DB, 'Application', Application)()
 
 original_config = None
 
