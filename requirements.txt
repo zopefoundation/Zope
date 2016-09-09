@@ -22,6 +22,7 @@ WebTest==2.0.23
 ZConfig==3.1.0
 ZEO==5.0.1
 ZODB==5.0.0
+ZServer==4.0a1
 five.globalrequest==1.0
 mechanize==0.2.5
 persistent==4.2.1
