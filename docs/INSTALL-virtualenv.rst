@@ -26,7 +26,7 @@ master as suggested in the below example:
 .. code-block:: sh
 
    $ bin/pip install \
-   -r https://raw.githubusercontent.com/zopefoundation/Zope/master/requirements.txt
+   -r https://raw.githubusercontent.com/zopefoundation/Zope/master/requirements-full.txt
    Obtaining Zope2
    ...
    Successfully installed ...

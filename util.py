@@ -38,7 +38,7 @@ def generate(in_, out):
 
 
 def main():
-    generate('versions-prod.cfg', 'requirements.txt')
+    generate('versions-prod.cfg', 'requirements-full.txt')
 
 
 if __name__ == '__main__':
