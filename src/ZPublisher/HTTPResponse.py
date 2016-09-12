@@ -642,6 +642,8 @@ class HTTPBaseResponse(BaseResponse):
                 # and block read/write access via JavaScript
                 elif name == 'http_only' and v:
                     cookie = '%s; HTTPOnly' % cookie
+                elif name == 'same_site' and v:
+                    cookie = '%s; SameSite=%s' % (cookie, v)
             cookie_list.append(('Set-Cookie', cookie))
 
         # Should really check size of cookies here!
