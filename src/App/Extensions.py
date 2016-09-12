@@ -14,6 +14,7 @@
 
 Extensions currently include external methods.
 """
+from functools import total_ordering
 import imp
 import os
 
@@ -23,20 +24,24 @@ import Products
 from zExceptions import NotFound
 
 
-class FuncCode:
+@total_ordering
+class FuncCode(object):
 
     def __init__(self, f, im=0):
         self.co_varnames = f.func_code.co_varnames[im:]
         self.co_argcount = f.func_code.co_argcount - im
 
-    def __cmp__(self, other):
-        if other is None:
-            return 1
-        try:
-            return cmp((self.co_argcount, self.co_varnames),
-                       (other.co_argcount, other.co_varnames))
-        except Exception:
-            return 1
+    def __eq__(self, other):
+        if not isinstance(other, FuncCode):
+            return False
+        return ((self.co_argcount, self.co_varnames) ==
+                (other.co_argcount, other.co_varnames))
+
+    def __lt__(self, other):
+        if not isinstance(other, FuncCode):
+            return False
+        return ((self.co_argcount, self.co_varnames) <
+                (other.co_argcount, other.co_varnames))
 
 
 def _getPath(home, prefix, name, suffixes):

@@ -754,6 +754,8 @@ two features are not part of the view logic, they should be treated with
 independent components. In this example, we are going to only implement
 sorting using a simple utility:
 
+  >>> from operator import attrgetter
+
   >>> class ISorter(zope.interface.Interface):
   ...
   ...     def sort(values):
@@ -763,7 +765,7 @@ sorting using a simple utility:
   ...     zope.interface.implements(ISorter)
   ...
   ...     def sort(self, values):
-  ...         return sorted(values, lambda x, y: cmp(x.__name__, y.__name__))
+  ...         return sorted(values, key=attrgetter('__name__'))
 
   >>> zope.component.provideUtility(SortByName(), name='name')
 
@@ -771,10 +773,9 @@ sorting using a simple utility:
   ...     zope.interface.implements(ISorter)
   ...
   ...     def sort(self, values):
-  ...         return sorted(
-  ...             values,
-  ...             lambda x, y: cmp(size.interfaces.ISized(x).sizeForSorting(),
-  ...                              size.interfaces.ISized(y).sizeForSorting()))
+  ...         def _key(value):
+  ...             return size.interfaces.ISized(value).sizeForSorting()
+  ...         return sorted(values, key=_key)
 
   >>> zope.component.provideUtility(SortBySize(), name='size')
 

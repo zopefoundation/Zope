@@ -1743,7 +1743,7 @@ def parse_cookie(text,
     return parse_cookie(text[l:], result)
 
 
-class record:
+class record(object):
 
     # Allow access to record methods and values from DTML
     __allow_access_to_unprotected_subobjects__ = 1
@@ -1766,21 +1766,19 @@ class record:
         return self.__dict__[key]
 
     def __str__(self):
-        L1 = self.__dict__.items()
-        L1.sort()
-        return ", ".join("%s: %s" % item for item in L1)
+        return ", ".join("%s: %s" % item for item in
+                         sorted(self.__dict__.items()))
 
     def __repr__(self):
         # return repr( self.__dict__ )
-        L1 = self.__dict__.items()
-        L1.sort()
         return '{%s}' % ', '.join(
-            "'%s': %s" % (item[0], repr(item[1])) for item in L1)
+            "'%s': %s" % (item[0], repr(item[1])) for item in
+            sorted(self.__dict__.items()))
 
-    def __cmp__(self, other):
-        return (cmp(type(self), type(other)) or
-                cmp(self.__class__, other.__class__) or
-                cmp(self.__dict__.items(), other.__dict__.items()))
+    def __eq__(self, other):
+        if not isinstance(other, record):
+            return False
+        return self.__dict__.items() == other.__dict__.items()
 
 
 def _filterPasswordFields(items):

@@ -15,26 +15,31 @@
 This provides support for simulating function signatures
 """
 
+from functools import total_ordering
 
-class FuncCode:
+
+@total_ordering
+class FuncCode(object):
 
     def __init__(self, varnames, argcount):
         self.co_varnames = varnames
         self.co_argcount = argcount
 
-    def __cmp__(self, other):
-        if other is None:
-            return 1
-        try:
-            return cmp((self.co_argcount, self.co_varnames),
-                       (other.co_argcount, other.co_varnames))
-        except Exception:
-            return 1
+    def __eq__(self, other):
+        if not isinstance(other, FuncCode):
+            return False
+        return ((self.co_argcount, self.co_varnames) ==
+                (other.co_argcount, other.co_varnames))
 
-# This is meant to be imported directly into a class.
+    def __lt__(self, other):
+        if not isinstance(other, FuncCode):
+            return False
+        return ((self.co_argcount, self.co_varnames) <
+                (other.co_argcount, other.co_varnames))
 
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
+    # This is meant to be imported directly into a class.
     # Simplify calls.
     if argcount < 0 and varnames:
         argcount = len(varnames)

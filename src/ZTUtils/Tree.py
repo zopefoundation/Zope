@@ -300,6 +300,7 @@ def decodeExpansion(s, nth=None, maxsize=8192):
     nth_pair = None
     if nth is not None:
         nth_pair = (None, None)
+    obid = None
     for step in s.split(':'):
         if step.startswith('_'):
             pop = len(step) - 1

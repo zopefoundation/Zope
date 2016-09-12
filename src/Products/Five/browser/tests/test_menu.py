@@ -47,7 +47,8 @@ def test_menu():
 
     Sort menu items by title so we get a stable testable result:
 
-      >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
+      >>> from operator import itemgetter
+      >>> menu.sort(key=itemgetter('title'))
       >>> from pprint import pprint
       >>> pprint(menu[0])
       {'action': '@@cockatiel_menu_public.html',
@@ -99,7 +100,7 @@ def test_menu():
       >>> len(menu)
       7
 
-      >>> menu.sort(lambda x, y: cmp(x['title'], y['title']))
+      >>> menu.sort(key=itemgetter('title'))
       >>> pprint(menu[0])
       {'action': '@@cockatiel_menu_protected.html',
        'description': u'',
