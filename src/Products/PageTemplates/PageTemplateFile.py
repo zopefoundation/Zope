@@ -154,7 +154,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         f = open(self.filename, "rb")
         try:
             text = f.read(XML_PREFIX_MAX_LENGTH)
-        except:
+        except Exception:
             f.close()
             raise
         t = sniff_type(text)

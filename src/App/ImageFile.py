@@ -107,7 +107,7 @@ class ImageFile(Explicit):
             # of the way they parse it).
             try:
                 mod_since = int(DateTime(header).timeTime())
-            except:
+            except Exception:
                 mod_since = None
             if mod_since is not None:
                 if getattr(self, 'lmt', None):

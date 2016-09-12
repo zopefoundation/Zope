@@ -80,7 +80,7 @@ class TestGetAttr(unittest.TestCase):
             self.folder._setObject('denied', DeniedItem())
             self.folder._setObject('protected', ProtectedItem())
 
-        except:
+        except Exception:
             self.tearDown()
             raise
 

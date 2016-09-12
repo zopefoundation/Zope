@@ -163,7 +163,7 @@ def callManageBeforeDelete(ob, item, container):
         raise
     except ConflictError:
         raise
-    except:
+    except Exception:
         LOG.error('_delObject() threw', exc_info=True)
         # In debug mode when non-Manager, let exceptions propagate.
         if getConfiguration().debug_mode:

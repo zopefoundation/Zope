@@ -35,7 +35,7 @@ class FuncCode:
         try:
             return cmp((self.co_argcount, self.co_varnames),
                        (other.co_argcount, other.co_varnames))
-        except:
+        except Exception:
             return 1
 
 
@@ -182,7 +182,7 @@ def getObject(module, name, reload=0,
     else:
         try:
             execsrc = open(path)
-        except:
+        except Exception:
             raise NotFound("The specified module, '%s', "
                            "couldn't be opened." % module)
         module_dict = {}

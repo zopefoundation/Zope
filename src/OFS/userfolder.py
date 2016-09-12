@@ -241,7 +241,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if item is self:
             try:
                 del container.__allow_groups__
-            except:
+            except Exception:
                 pass
 
     def manage_afterAdd(self, item, container):
@@ -290,7 +290,7 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
                 cfg = App.config.getConfiguration()
                 try:
                     os.remove(os.path.join(cfg.instancehome, 'inituser'))
-                except:
+                except Exception:
                     pass
 
 InitializeClass(UserFolder)

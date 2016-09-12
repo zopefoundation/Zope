@@ -202,7 +202,7 @@ class Item(Base,
             if not error_message:
                 try:
                     s = ustr(error_value)
-                except:
+                except Exception:
                     s = error_value
                 try:
                     match = tagSearch(s)
@@ -236,14 +236,14 @@ class Item(Base,
                     v = s(**kwargs)
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)
-            except:
+            except Exception:
                 logger.error(
                     'Exception while rendering an error message',
                     exc_info=True
                 )
                 try:
                     strv = repr(error_value)  # quotes tainted strings
-                except:
+                except Exception:
                     strv = ('<unprintable %s object>' %
                             str(type(error_value).__name__))
                 v = strv + (
@@ -360,7 +360,7 @@ class Item(Base,
         """
         try:
             path = '/'.join(self.getPhysicalPath())
-        except:
+        except Exception:
             return Base.__repr__(self)
         context_path = None
         context = aq_parent(self)
@@ -368,7 +368,7 @@ class Item(Base,
         if aq_base(context) is not aq_base(container):
             try:
                 context_path = '/'.join(context.getPhysicalPath())
-            except:
+            except Exception:
                 context_path = None
         res = '<%s' % self.__class__.__name__
         res += ' at %s' % path

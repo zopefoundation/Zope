@@ -78,7 +78,7 @@ class TestRequestRange(unittest.TestCase):
             # has one. We use a subtransaction, which means we can rollback
             # later and pretend we didn't touch the ZODB.
             transaction.commit()
-        except:
+        except Exception:
             self.connection.close()
             raise
 

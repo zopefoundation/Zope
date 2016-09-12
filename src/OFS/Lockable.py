@@ -118,7 +118,7 @@ class LockableItem(EtagSupport):
         try:
             locks = self.wl_lockmapping()
             locks.clear()
-        except:
+        except Exception:
             # The locks may be totally messed up, so we'll just delete
             # and replace.
             if hasattr(self, '_dav_writelocks'):

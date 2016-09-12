@@ -111,7 +111,7 @@ class TestSimpleItem(unittest.TestCase):
 
         try:
             raise BadRequest("1")
-        except:
+        except Exception:
             item.raise_standardErrorMessage(client=item,
                                             REQUEST=REQUEST())
 

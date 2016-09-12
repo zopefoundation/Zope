@@ -90,7 +90,7 @@ class TestCase(unittest.TestCase, object):
             self.app = self._app()
             self._setup()
             self.afterSetUp()
-        except:
+        except Exception:
             self._clear()
             raise
 
@@ -101,7 +101,7 @@ class TestCase(unittest.TestCase, object):
         try:
             self.beforeTearDown()
             self._clear(1)
-        except:
+        except Exception:
             self._clear()
             raise
 

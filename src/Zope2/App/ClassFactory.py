@@ -18,5 +18,5 @@ def ClassFactory(jar, module, name, _silly=('__doc__',), _globals={}):
     try:
         m = __import__(module, _globals, _globals, _silly)
         return getattr(m, name)
-    except:
+    except Exception:
         return OFS.Uninstalled.Broken(jar, None, (module, name))

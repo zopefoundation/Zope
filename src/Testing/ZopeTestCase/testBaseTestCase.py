@@ -191,7 +191,7 @@ class TestTestCase(HookTest):
 
 class TestSetUpRaises(HookTest):
 
-    class Error:
+    class Error(Exception):
         pass
 
     def setUp(self):
@@ -212,7 +212,7 @@ class TestSetUpRaises(HookTest):
 
 class TestTearDownRaises(HookTest):
 
-    class Error:
+    class Error(Exception):
         pass
 
     def tearDown(self):

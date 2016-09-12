@@ -29,7 +29,7 @@ default_encoding = sys.getdefaultencoding()
 class DefaultUnicodeEncodingConflictResolver(object):
     """ This resolver implements the old-style behavior and will
         raise an exception in case of the string 'text' can't be converted
-        propertly to unicode.
+        properly to unicode.
     """
 
     implements(IUnicodeEncodingConflictResolver)

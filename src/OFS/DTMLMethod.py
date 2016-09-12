@@ -306,7 +306,7 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     if REQUEST is not None:
         try:
             u = self.DestinationURL()
-        except:
+        except Exception:
             u = REQUEST['URL1']
         if submit == " Add and Edit ":
             u = "%s/%s" % (u, quote(id))

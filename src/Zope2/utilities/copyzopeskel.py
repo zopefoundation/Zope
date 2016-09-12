@@ -110,7 +110,7 @@ def main():
                     sys.exit(2)
                 try:
                     uid = int(arg)
-                except:
+                except Exception:
                     try:
                         import pwd
                         uid = pwd.getpwnam(arg)[2]
@@ -135,7 +135,7 @@ def main():
                     sys.exit(2)
                 try:
                     gid = int(arg)
-                except:
+                except Exception:
                     try:
                         import pwd
                         gid = pwd.getpwnam(arg)[3]

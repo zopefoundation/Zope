@@ -876,7 +876,7 @@ class HTTPResponse(HTTPBaseResponse):
                     b = str(b)
                 except UnicodeEncodeError:
                     b = self._encode_unicode(unicode(b))
-            except:
+            except Exception:
                 b = '<unprintable %s object>' % type(b).__name__
 
         if fatal and t is SystemExit and v.code == 0:

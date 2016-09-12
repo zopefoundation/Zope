@@ -94,7 +94,7 @@ class HookTest(unittest.TestCase):
             uf._doAddUser('manager', 'secret', ['Manager'], [])
             user = uf.getUserById('manager').__of__(uf)
             newSecurityManager(None, user)
-        except:
+        except Exception:
             self.tearDown()
             raise
 

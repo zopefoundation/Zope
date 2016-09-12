@@ -59,7 +59,7 @@ class PortalTestCase(base.TestCase):
             self.portal = self._portal()
             self._setup()
             self.afterSetUp()
-        except:
+        except Exception:
             self._clear()
             raise
 

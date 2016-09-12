@@ -61,7 +61,7 @@ class WSGIStarter(object):
         if locale_id is not None:
             try:
                 import locale
-            except:
+            except Exception:
                 raise ConfigurationError(
                     'The locale module could not be imported.\n'
                     'To use localization options, you must ensure\n'
@@ -69,7 +69,7 @@ class WSGIStarter(object):
                     'Python installation.')
             try:
                 locale.setlocale(locale.LC_ALL, locale_id)
-            except:
+            except Exception:
                 raise ConfigurationError(
                     'The specified locale "%s" is not supported by your'
                     'system.\nSee your operating system documentation for '

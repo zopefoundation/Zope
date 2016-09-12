@@ -278,7 +278,7 @@ class view(zope.browserpage.metaconfigure.view):
 
         try:
             cname = str(name)
-        except:
+        except Exception:
             cname = "GeneratedClass"
 
         cdict['__name__'] = name

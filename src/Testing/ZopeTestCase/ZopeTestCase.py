@@ -85,7 +85,7 @@ class ZopeTestCase(base.TestCase):
         try:
             if connections.contains(self.app):
                 self.app._delObject(folder_name)
-        except:
+        except Exception:
             pass
         base.TestCase._clear(self, call_close_hook)
 

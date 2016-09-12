@@ -346,7 +346,7 @@ class Traversable:
 
         except ConflictError:
             raise
-        except:
+        except Exception:
             if default is not _marker:
                 return default
             else:

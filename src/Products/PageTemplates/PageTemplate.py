@@ -92,7 +92,7 @@ class PageTemplate(ExtensionClass.Base,
             return err
         try:
             self.pt_render(source=True, extra_context=namespace)
-        except:
+        except Exception:
             return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
 
     def __call__(self, *args, **kwargs):
@@ -107,7 +107,7 @@ class PageTemplate(ExtensionClass.Base,
                 return self._text
             try:
                 return self.pt_render(source=True)
-            except:
+            except Exception:
                 return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
                         (self._error_start, "%s: %s" % sys.exc_info()[:2],
                          self._text))

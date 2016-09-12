@@ -493,7 +493,7 @@ class HookTest(ZopeTestCase.PortalTestCase):
 
 class TestSetUpRaises(HookTest):
 
-    class Error:
+    class Error(Exception):
         pass
 
     def getPortal(self):

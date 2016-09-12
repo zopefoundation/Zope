@@ -24,11 +24,7 @@ from zope.component import adapter
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 
-try:
-    here = os.path.dirname(os.path.abspath(__file__))
-except:
-    here = os.path.dirname(os.path.abspath(sys.argv[0]))
-
+here = os.path.dirname(os.path.abspath(__file__))
 imagedata = os.path.join(here, 'test.gif')
 filedata = os.path.join(here, 'test.gif')
 
@@ -107,7 +103,7 @@ class FileTests(unittest.TestCase):
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one.
             transaction.commit()
-        except:
+        except Exception:
             self.connection.close()
             raise
         transaction.begin()

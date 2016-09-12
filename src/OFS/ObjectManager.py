@@ -396,7 +396,7 @@ class ObjectManager(CopyContainer,
         # on Broken objects.
         try:
             ob._v__object_deleted__ = 1
-        except:
+        except Exception:
             pass
 
         if not suppress_events:
@@ -524,7 +524,7 @@ class ObjectManager(CopyContainer,
             raise BadRequest('No items specified')
         try:
             p = self._reserved_names
-        except:
+        except Exception:
             p = ()
         for n in ids:
             if n in p:
@@ -645,7 +645,7 @@ class ObjectManager(CopyContainer,
                 # the error.
                 try:
                     stat = marshal.loads(v.manage_FTPstat(REQUEST))
-                except:
+                except Exception:
                     LOG.error("Failed to stat file '%s'" % k,
                               exc_info=sys.exc_info())
                     stat = None

@@ -678,7 +678,7 @@ class HTTPRequest(BaseRequest):
                                 if not is_tainted:
                                     tainted = None
 
-                        except:
+                        except Exception:
                             if (not item and not (flags & DEFAULT) and
                                     key in defaults):
                                 item = defaults[key]
@@ -1605,7 +1605,7 @@ def sane_environment(env):
         dict['HTTP_AUTHORIZATION'] = dict['HTTP_CGI_AUTHORIZATION']
         try:
             del dict['HTTP_CGI_AUTHORIZATION']
-        except:
+        except Exception:
             pass
     return dict
 

@@ -328,7 +328,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         """Returns a file name to be compiled into the TAL code."""
         try:
             return '/'.join(self.getPhysicalPath())
-        except:
+        except Exception:
             # This page template is being compiled without an
             # acquisition context, so we don't know where it is. :-(
             return None

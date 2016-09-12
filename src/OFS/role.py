@@ -118,7 +118,7 @@ class RoleManager(BaseRoleManager):
                 if not have('acquire_%s' % permission_hash):
                     roles = tuple(roles)
                 p.setRoles(roles)
-            except:
+            except Exception:
                 fails.append(name)
 
         if fails:
@@ -196,7 +196,7 @@ class RoleManager(BaseRoleManager):
         for role in roles:
             try:
                 data.remove(role)
-            except:
+            except Exception:
                 pass
         self.__ac_roles__ = tuple(data)
         if REQUEST is not None:
