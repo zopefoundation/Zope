@@ -14,6 +14,7 @@
 """
 from contextlib import contextmanager, closing
 from cStringIO import StringIO
+from io import IOBase
 import sys
 from thread import allocate_lock
 
@@ -40,9 +41,9 @@ from ZPublisher import pubevents
 from ZPublisher.utils import recordMetaData
 
 if sys.version_info >= (3, ):
-    from io import IOBase
+    _FILE_TYPES = (IOBase, )
 else:
-    IOBase = file  # NOQA
+    _FILE_TYPES = (IOBase, file)  # NOQA
 
 _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
@@ -229,7 +230,7 @@ def publish_module(environ, start_response,
         status, headers = response.finalize()
         start_response(status, headers)
 
-        if (isinstance(response.body, IOBase) or
+        if (isinstance(response.body, _FILE_TYPES) or
                 IUnboundStreamIterator.providedBy(response.body)):
             result = response.body
         else:

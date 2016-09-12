@@ -273,7 +273,10 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.tag(), (tag_fmt % ('bar', 'foo')))
 
     def testViewImageOrFile(self):
-        pass  # dtml method,screw it
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        result = self.file.index_html(request, response)
+        self.assertEqual(result, self.data)
 
     def test_interfaces(self):
         from zope.interface.verify import verifyClass

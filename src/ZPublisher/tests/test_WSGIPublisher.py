@@ -320,8 +320,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         self.assertEqual(kw, {})
 
     def test_response_body_is_file(self):
+        from io import BytesIO
 
-        class DummyFile(file):
+        class DummyFile(BytesIO):
             def __init__(self):
                 pass
 

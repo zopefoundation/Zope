@@ -1,7 +1,12 @@
-import unittest
+import io
 import os.path
+from StringIO import StringIO
+import unittest
+
 import App
 from Testing.ZopeTestCase.warnhook import WarningsHook
+from ZPublisher.HTTPRequest import WSGIRequest
+from ZPublisher.HTTPResponse import WSGIResponse
 
 
 class TestImageFile(unittest.TestCase):
@@ -39,3 +44,26 @@ class TestImageFile(unittest.TestCase):
         prefix = App.__dict__
         App.ImageFile.ImageFile('www/zopelogo.png', prefix)
         self.assertFalse(self.warningshook.warnings)
+
+
+class TestImageFileFunctional(unittest.TestCase):
+
+    def test_index_html(self):
+        env = {
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
+            'REQUEST_METHOD': 'GET',
+        }
+        stdin = StringIO()
+        stdout = StringIO()
+        response = WSGIResponse(stdout)
+        request = WSGIRequest(stdin, env, response)
+        path = os.path.join(os.path.dirname(App.__file__),
+                            'www', 'zopelogo.png')
+        image = App.ImageFile.ImageFile(path)
+        result = image.index_html(request, response)
+        self.assertEqual(stdout.getvalue(), '')
+        self.assertTrue(isinstance(result, io.FileIO))
+        self.assertTrue(b''.join(result).startswith(b'\x89PNG\r\n'))
+        self.assertEqual(len(result), image.size)
