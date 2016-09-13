@@ -30,7 +30,7 @@ def recordMetaData(object, request):
         if hasattr(object, 'im_self') and hasattr(object, '__name__'):
             # object is a Python method.
             to_append = (object.__name__,)
-            object = object.im_self
+            object = object.__self__
 
         while (object is not None and
                not hasattr(object, 'getPhysicalPath')):

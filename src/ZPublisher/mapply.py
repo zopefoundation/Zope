@@ -26,10 +26,10 @@ def default_missing_name(name, context):
 
 def default_handle_class(klass, context):
     if hasattr(klass, '__init__'):
-        f = klass.__init__.im_func
-        c = f.func_code
+        f = klass.__init__.__func__
+        c = f.__code__
         names = c.co_varnames[1:c.co_argcount]
-        return klass, names, f.func_defaults
+        return klass, names, f.__defaults__
     else:
         return klass, (), ()
 
@@ -50,8 +50,8 @@ def mapply(object, positional=(), keyword={},
             if maybe:
                 return object
             raise
-        code = f.func_code
-        defaults = f.func_defaults
+        code = f.__code__
+        defaults = f.__defaults__
         names = code.co_varnames[count:code.co_argcount]
 
     nargs = len(names)

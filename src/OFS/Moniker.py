@@ -17,6 +17,7 @@
    a real object that retains its correct version context
    and aquisition relationships via a simple interface.
 """
+import collections
 
 
 class Moniker(object):
@@ -51,6 +52,6 @@ def loadMoniker(data):
 
 
 def absattr(attr):
-    if callable(attr):
+    if isinstance(attr, collections.Callable):
         return attr()
     return attr

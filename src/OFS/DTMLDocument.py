@@ -12,12 +12,12 @@
 ##############################################################################
 """DTML Document objects.
 """
-from urllib import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.permissions import change_dtml_documents
+from six.moves.urllib.parse import quote
 from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement

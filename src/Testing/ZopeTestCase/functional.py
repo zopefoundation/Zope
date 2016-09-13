@@ -60,7 +60,7 @@ class Functional(sandbox.Sandboxed):
                 request_method='GET', stdin=None, handle_errors=True):
         '''Publishes the object at 'path' returning a response object.'''
 
-        from StringIO import StringIO
+        from io import BytesIO
         from ZPublisher.HTTPRequest import WSGIRequest as Request
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.WSGIPublisher import publish_module
@@ -92,16 +92,15 @@ class Functional(sandbox.Sandboxed):
             env['HTTP_AUTHORIZATION'] = "Basic %s" % base64.encodestring(basic)
 
         if stdin is None:
-            stdin = StringIO()
+            stdin = BytesIO()
 
-        outstream = StringIO()
+        outstream = BytesIO()
         response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
         request = Request(stdin, env, response)
-        request.retry_max_count = 0
         for k, v in extra.items():
             request[k] = v
 
-        wsgi_headers = StringIO()
+        wsgi_headers = BytesIO()
 
         def start_response(status, headers):
             wsgi_headers.write('HTTP/1.1 %s\r\n' % status)

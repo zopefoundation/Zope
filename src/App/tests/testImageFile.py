@@ -1,6 +1,6 @@
 import io
 import os.path
-from StringIO import StringIO
+from io import BytesIO
 import unittest
 
 import App
@@ -25,8 +25,8 @@ class TestImageFile(unittest.TestCase):
 
     def test_warn_on_software_home_default(self):
         App.ImageFile.ImageFile('App/www/zopelogo.png')
-        self.assertEquals(self.warningshook.warnings.pop()[0],
-                          App.ImageFile.NON_PREFIX_WARNING)
+        self.assertEqual(self.warningshook.warnings.pop()[0],
+                         App.ImageFile.NON_PREFIX_WARNING)
 
     def test_no_warn_on_absolute_path(self):
         path = os.path.join(os.path.dirname(App.__file__),
@@ -55,8 +55,8 @@ class TestImageFileFunctional(unittest.TestCase):
             'SERVER_PROTOCOL': 'HTTP/1.1',
             'REQUEST_METHOD': 'GET',
         }
-        stdin = StringIO()
-        stdout = StringIO()
+        stdin = BytesIO()
+        stdout = BytesIO()
         response = WSGIResponse(stdout)
         request = WSGIRequest(stdin, env, response)
         path = os.path.join(os.path.dirname(App.__file__),

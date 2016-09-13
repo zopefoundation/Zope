@@ -20,11 +20,10 @@ from string import translate
 import struct
 import sys
 import time
-import types
-from urllib import quote
 import zlib
 
-from six import reraise
+from six import class_types, reraise
+from six.moves.urllib.parse import quote
 from zope.event import notify
 from zExceptions import (
     BadRequest,
@@ -63,7 +62,7 @@ for key, val in status_reasons.items():
     status_codes[val.lower()] = key
     status_codes[key] = key
     status_codes[str(key)] = key
-en = filter(lambda n: n[-5:] == 'Error', dir(__builtins__))
+en = [n for n in dir(__builtins__) if n[-5:] == 'Error']
 for name in en:
     status_codes[name.lower()] = 500
 status_codes['nameerror'] = 503
@@ -195,7 +194,7 @@ class HTTPBaseResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, (type, types.ClassType)) and
+        if (isinstance(status, class_types) and
                 issubclass(status, Exception)):
             status = status.__name__
 

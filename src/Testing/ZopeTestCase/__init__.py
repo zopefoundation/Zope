@@ -13,44 +13,44 @@
 """Names exported by the ZopeTestCase package
 """
 
-import ZopeLite as Zope2
-import utils  # NOQA
-import layer  # NOQA
+from . import ZopeLite as Zope2
+from . import utils  # NOQA
+from . import layer  # NOQA
 
-from ZopeLite import hasProduct  # NOQA
-from ZopeLite import installProduct  # NOQA
-from ZopeLite import hasPackage  # NOQA
-from ZopeLite import installPackage  # NOQA
-from ZopeLite import _print  # NOQA
+from .ZopeLite import hasProduct  # NOQA
+from .ZopeLite import installProduct  # NOQA
+from .ZopeLite import hasPackage  # NOQA
+from .ZopeLite import installPackage  # NOQA
+from .ZopeLite import _print  # NOQA
 
-from ZopeTestCase import folder_name  # NOQA
-from ZopeTestCase import user_name  # NOQA
-from ZopeTestCase import user_password  # NOQA
-from ZopeTestCase import user_role  # NOQA
-from ZopeTestCase import standard_permissions  # NOQA
-from ZopeTestCase import ZopeTestCase  # NOQA
-from ZopeTestCase import FunctionalTestCase  # NOQA
+from .ZopeTestCase import folder_name  # NOQA
+from .ZopeTestCase import user_name  # NOQA
+from .ZopeTestCase import user_password  # NOQA
+from .ZopeTestCase import user_role  # NOQA
+from .ZopeTestCase import standard_permissions  # NOQA
+from .ZopeTestCase import ZopeTestCase  # NOQA
+from .ZopeTestCase import FunctionalTestCase  # NOQA
 
-from PortalTestCase import portal_name  # NOQA
-from PortalTestCase import PortalTestCase  # NOQA
+from .PortalTestCase import portal_name  # NOQA
+from .PortalTestCase import PortalTestCase  # NOQA
 
-from sandbox import Sandboxed  # NOQA
-from functional import Functional  # NOQA
+from .sandbox import Sandboxed  # NOQA
+from .functional import Functional  # NOQA
 
-from base import TestCase  # NOQA
-from base import app  # NOQA
-from base import close  # NOQA
+from .base import TestCase  # NOQA
+from .base import app  # NOQA
+from .base import close  # NOQA
 
-from warnhook import WarningsHook  # NOQA
+from .warnhook import WarningsHook  # NOQA
 from unittest import main  # NOQA
 
-from zopedoctest import ZopeDocTestSuite  # NOQA
-from zopedoctest import ZopeDocFileSuite  # NOQA
-from zopedoctest import FunctionalDocTestSuite  # NOQA
-from zopedoctest import FunctionalDocFileSuite  # NOQA
+from .zopedoctest import ZopeDocTestSuite  # NOQA
+from .zopedoctest import ZopeDocFileSuite  # NOQA
+from .zopedoctest import FunctionalDocTestSuite  # NOQA
+from .zopedoctest import FunctionalDocFileSuite  # NOQA
 
-import zopedoctest as doctest  # NOQA
+from . import zopedoctest as doctest  # NOQA
 import transaction  # NOQA
-import placeless  # NOQA
+from . import placeless  # NOQA
 
 Zope = Zope2

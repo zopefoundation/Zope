@@ -9,7 +9,7 @@ class IUnboundStreamIterator(Interface):
     An iterator with unknown length that can be published.
     """
 
-    def next():
+    def __next__():
         """
         Return a sequence of bytes out of the bytestream, or raise
         StopIeration if we've reached the end of the bytestream.
@@ -49,11 +49,13 @@ class filestream_iterator(io.FileIO):
         super(filestream_iterator, self).__init__(name, mode)
         self.streamsize = streamsize
 
-    def next(self):
+    def __next__(self):
         data = self.read(self.streamsize)
         if not data:
             raise StopIteration
         return data
+
+    next = __next__
 
     def __len__(self):
         cur_pos = self.tell()

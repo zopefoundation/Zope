@@ -14,9 +14,7 @@
 """
 
 from cgi import escape
-import urllib
 
-from zope.interface import implementer
 from AccessControl import Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -24,7 +22,9 @@ from AccessControl.Permissions import view_management_screens
 from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
+from zope.interface import implementer
 
 
 class Tabs(Base):
@@ -46,8 +46,8 @@ class Tabs(Base):
             options = tuple(self.manage_options())
 
         for d in options:
-            filter = d.get('filter', None)
-            if filter is not None and not filter(self):
+            filter_ = d.get('filter', None)
+            if filter_ is not None and not filter_(self):
                 continue
 
             path = d.get('path', None)
@@ -81,10 +81,7 @@ class Tabs(Base):
 
         return getattr(self, m)(self, REQUEST)
 
-    def tabs_path_default(self, REQUEST,
-                          # Static var
-                          unquote=urllib.unquote,
-                          ):
+    def tabs_path_default(self, REQUEST):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']
         linkpat = '<a href="%s/manage_workspace">%s</a>'
@@ -102,10 +99,7 @@ class Tabs(Base):
             (escape(script, 1), escape(unquote(last))))
         return '%s%s' % (url, '/'.join(out))
 
-    def tabs_path_info(self, script, path,
-                       # Static vars
-                       quote=urllib.quote,
-                       ):
+    def tabs_path_info(self, script, path):
         out = []
         while path[:1] == '/':
             path = path[1:]

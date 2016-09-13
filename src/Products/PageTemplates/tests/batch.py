@@ -14,7 +14,7 @@
 ######################################################################
 # Sequence batching support
 
-import util
+from . import util
 
 __allow_access_to_unprotected_subobjects__ = {'batch': 1}
 __roles__ = None

@@ -62,7 +62,7 @@ def _configure_z2security(_context, new_class, required):
         callable=protectClass,
         args=(new_class, required.pop(''))
     )
-    for attr, permission in required.iteritems():
+    for attr, permission in required.items():
         _context.action(
             discriminator=('five:protectName', new_class, attr),
             callable=protectName,
@@ -146,10 +146,10 @@ def page(_context, name, permission, for_=Interface,
                 if not func.__doc__:
                     # cannot test for MethodType/UnboundMethod here
                     # because of ExtensionClass
-                    if hasattr(func, 'im_func'):
+                    if hasattr(func, '__func__'):
                         # you can only set a docstring on functions, not
                         # on method objects
-                        func = func.im_func
+                        func = func.__func__
                     func.__doc__ = "Stub docstring to make ZPublisher work"
 
         if hasattr(class_, '__implements__'):
@@ -395,7 +395,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
         f_resource = type(class_name, (factory.resource,), {})
         f_cache[factory] = type(factory_name, (factory,),
                                 {'resource': f_resource})
-    for ext, factory in resource_factories.items():
+    for ext, factory in list(resource_factories.items()):
         resource_factories[ext] = f_cache[factory]
     default_factory = resource_factories['default']
     del resource_factories['default']
@@ -410,8 +410,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
     factory = DirectoryResourceFactory(name, directory,
                                        resource_factory=dir_factory)
 
-    new_classes = [dir_factory,
-                   ] + [f.resource for f in f_cache.values()]
+    new_classes = [dir_factory] + [f.resource for f in f_cache.values()]
 
     _context.action(
         discriminator=('resource', name, IBrowserRequest, layer),

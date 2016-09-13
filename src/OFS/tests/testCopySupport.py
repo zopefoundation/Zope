@@ -1,6 +1,6 @@
 import unittest
 
-import cStringIO
+import io
 
 import transaction
 from AccessControl import SecurityManager
@@ -63,7 +63,7 @@ class CopySupportTestBase(unittest.TestCase):
             a = Application()
             r['Application'] = a
             self.root = a
-            responseOut = self.responseOut = cStringIO.StringIO()
+            responseOut = self.responseOut = io.BytesIO()
             self.app = makerequest(self.root, stdout=responseOut)
             manage_addFolder(self.app, 'folder1')
             manage_addFolder(self.app, 'folder2')

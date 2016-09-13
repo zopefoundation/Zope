@@ -15,7 +15,7 @@ class BatchTests(unittest.TestCase):
     def testSingle(self):
         '''Test single Batch'''
         for bsize in range(1, 6):
-            seq = range(bsize)
+            seq = list(range(bsize))
             b = Batch(seq, 5)
             assert b.previous is None
             assert b.next is None
@@ -30,12 +30,12 @@ class BatchTests(unittest.TestCase):
     def testOrphan(self):
         '''Test orphan collection'''
         for bsize in (6, 7):
-            b = Batch(range(bsize), 5, orphan=3)
+            b = Batch(list(range(bsize)), 5, orphan=3)
             assert b.next is None
             assert len(b) == bsize
             assert b[bsize - 1] == bsize - 1
             assert b.sequence_length == bsize
-        b = Batch(range(8), 5)
+        b = Batch(list(range(8)), 5)
         assert len(b) == 5
         assert b.sequence_length == 8
         assert len(b.next) == 3
@@ -43,6 +43,6 @@ class BatchTests(unittest.TestCase):
     def testLengthEqualsSizePlusOrphans(self):
         '''Test limit case where batch length is equal to size + orphans'''
         for bsize, length in ((12, 11), (13, 12), (14, 13), (15, 10)):
-            b = Batch(range(bsize),
+            b = Batch(list(range(bsize)),
                       size=10, start=1, end=0, orphan=3, overlap=0)
             assert length == b.length

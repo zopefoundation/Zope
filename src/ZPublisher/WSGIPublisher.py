@@ -13,13 +13,13 @@
 """ Python Object Publisher -- Publish Python objects on web servers
 """
 from contextlib import contextmanager, closing
-from cStringIO import StringIO
+from io import BytesIO
 from io import IOBase
 import sys
-from thread import allocate_lock
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from six.moves._thread import allocate_lock
 import transaction
 from transaction.interfaces import TransientError
 from zExceptions import (
@@ -201,7 +201,7 @@ def publish_module(environ, start_response,
     module_info = get_module_info(_module_name)
     result = ()
 
-    with closing(StringIO()) as stdout, closing(StringIO()) as stderr:
+    with closing(BytesIO()) as stdout, closing(BytesIO()) as stderr:
         response = (_response if _response is not None else
                     _response_factory(stdout=stdout, stderr=stderr))
         response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
@@ -235,7 +235,7 @@ def publish_module(environ, start_response,
             result = response.body
         else:
             # If somebody used response.write, that data will be in the
-            # stdout StringIO, so we put that before the body.
+            # stdout BytesIO, so we put that before the body.
             result = (stdout.getvalue(), response.body)
 
         for func in response.after_list:

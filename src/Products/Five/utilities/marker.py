@@ -24,7 +24,7 @@ from zope.interface.interfaces import IInterface
 from zope.component.interface import getInterface, interfaceToName
 from zope.component.interface import searchInterface
 
-from interfaces import IMarkerInterfaces
+from .interfaces import IMarkerInterfaces
 
 
 def interfaceStringCheck(f):

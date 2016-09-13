@@ -123,7 +123,7 @@ def startup():
     Zope2.DB = DB
     Zope2.opened.append(DB)
 
-    import ClassFactory
+    from . import ClassFactory
     DB.classFactory = ClassFactory.ClassFactory
 
     # "Log on" as system user

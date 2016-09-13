@@ -29,7 +29,7 @@ class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet):
 
 class simple(zope.viewlet.viewlet.simple):
     # We need to ensure that the proper __init__ is called.
-    __init__ = ViewletBase.__init__.im_func
+    __init__ = ViewletBase.__init__.__func__
 
 
 def SimpleViewletClass(template, bases=(), attributes=None, name=u''):

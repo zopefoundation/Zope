@@ -15,7 +15,7 @@ class DummyItem(FindSupport):
 class DummyFolder(DummyItem, dict):
 
     def objectItems(self):
-        return self.items()
+        return list(self.items())
 
 
 class TestFindSupport(unittest.TestCase):

@@ -26,15 +26,15 @@ def createBigFile():
     # Create a file that is several 1<<16 blocks of data big, to force the
     # use of chained Pdata objects.
     # Make sure we create a file that isn't of x * 1<<16 length! Coll #671
-    import cStringIO
+    import io
     import random
     import string
     size = (1 << 16) * 5 + 12345
-    file = cStringIO.StringIO()
+    file = io.BytesIO()
 
     def addLetter(x, add=file.write, l=string.letters, c=random.choice):
         add(c(l))
-    filter(addLetter, range(size))
+    filter(addLetter, list(range(size)))
 
     return file
 
@@ -45,14 +45,14 @@ BIGFILE = createBigFile()
 class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
     def setUp(self):
-        import cStringIO
+        import io
         import string
         import transaction
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
         from OFS.Image import manage_addFile
         from Testing.makerequest import makerequest
-        self.responseOut = cStringIO.StringIO()
+        self.responseOut = io.BytesIO()
         self.connection = makeConnection()
         try:
             r = self.connection.root()
@@ -166,7 +166,7 @@ class TestRequestRange(unittest.TestCase):
         self.assertEqual(body, self.data[start:end])
 
     def expectMultipleRanges(self, range, sets, draft=0):
-        import cStringIO
+        import io
         import re
         import email
         rangeParse = re.compile('bytes\s*(\d+)-(\d+)/(\d+)')
@@ -191,7 +191,7 @@ class TestRequestRange(unittest.TestCase):
             self.assertFalse(rsp.getHeader('content-length') != str(len(body)))
 
         # Decode the multipart message
-        bodyfile = cStringIO.StringIO('Content-Type: %s\n\n%s' % (
+        bodyfile = io.BytesIO('Content-Type: %s\n\n%s' % (
             rsp.getHeader('content-type'), body))
         partmessages = [part
                         for part in email.message_from_file(bodyfile).walk()]

@@ -51,7 +51,7 @@ def processInputValue(value, charsets):
     elif isinstance(value, tuple):
         return tuple([processInputValue(v, charsets) for v in value])
     elif isinstance(value, dict):
-        for k, v in value.items():
+        for k, v in list(value.items()):
             value[k] = processInputValue(v, charsets)
         return value
     elif isinstance(value, str):
@@ -77,7 +77,7 @@ def processInputs(request, charsets=None):
         else:
             charsets = envadapter.getPreferredCharsets() or ['utf-8']
 
-    for name, value in request.form.items():
+    for name, value in list(request.form.items()):
         if not (name in isCGI_NAMEs or name.startswith('HTTP_')):
             request.form[name] = processInputValue(value, charsets)
 

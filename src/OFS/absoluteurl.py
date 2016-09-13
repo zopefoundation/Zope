@@ -12,10 +12,9 @@
 #
 ##############################################################################
 
-import urllib
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
-
+from six.moves.urllib.parse import quote, unquote
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.traversing.browser.interfaces import IAbsoluteURL
@@ -34,7 +33,7 @@ class AbsoluteURL(BrowserView):
     """
 
     def __unicode__(self):
-        return urllib.unquote(self.__str__()).decode('utf-8')
+        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         context = self.context
@@ -50,7 +49,7 @@ class AbsoluteURL(BrowserView):
             raise TypeError(_insufficientContext)
 
         if name:
-            url += '/' + urllib.quote(name.encode('utf-8'), _safe)
+            url += '/' + quote(name.encode('utf-8'), _safe)
 
         return url
 
@@ -80,8 +79,7 @@ class AbsoluteURL(BrowserView):
         if name:
             base += ({'name': name,
                       'url': ("%s/%s" % (base[-1]['url'],
-                                         urllib.quote(name.encode('utf-8'),
-                                                      _safe)))
+                                         quote(name.encode('utf-8'), _safe)))
                       }, )
 
         return base
@@ -93,7 +91,7 @@ class OFSTraversableAbsoluteURL(BrowserView):
     """
 
     def __unicode__(self):
-        return urllib.unquote(self.__str__()).decode('utf-8')
+        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         return self.context.absolute_url()

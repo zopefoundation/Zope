@@ -14,7 +14,6 @@
 """
 import re
 import sys
-from urllib import quote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -26,6 +25,7 @@ from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from six.moves.urllib.parse import quote
 from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -44,6 +44,11 @@ if sys.version_info >= (3, ):
 _marker = []  # Create a new marker object.
 
 
+class Code(object):
+    # Documents masquerade as functions:
+    pass
+
+
 class DTMLMethod(RestrictedDTML,
                  HTML,
                  Implicit,
@@ -58,13 +63,10 @@ class DTMLMethod(RestrictedDTML,
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    class func_code(object):
-        # Documents masquerade as functions:
-        pass
-
-    func_code = __code__ = func_code()
-    func_code.co_varnames = 'self', 'REQUEST', 'RESPONSE'
-    func_code.co_argcount = 3
+    __code__ = func_code = Code()
+    __code__.co_varnames = 'self', 'REQUEST', 'RESPONSE'
+    __code__.co_argcount = 3
+    __defaults__ = func_defaults = None
 
     manage_options = ((
         {'label': 'Edit', 'action': 'manage_main'},

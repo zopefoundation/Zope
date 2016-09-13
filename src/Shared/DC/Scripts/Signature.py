@@ -44,8 +44,8 @@ def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
     if argcount < 0 and varnames:
         argcount = len(varnames)
     # Generate a change only if we have to.
-    if self.func_defaults != defaults:
-        self.func_defaults = self.__defaults__ = defaults
+    if self.__defaults__ != defaults:
+        self.__defaults__ = self.__defaults__ = defaults
     code = FuncCode(varnames, argcount)
-    if self.func_code != code:
-        self.func_code = self.__code__ = code
+    if self.__code__ != code:
+        self.__code__ = self.__code__ = code

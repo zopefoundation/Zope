@@ -79,8 +79,8 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
     meta_type = 'Page Template'
     output_encoding = 'utf-8'  # provide default for old instances
 
-    func_defaults = __defaults__ = None
-    func_code = __code__ = FuncCode((), 0)
+    __code__ = func_code = FuncCode((), 0)
+    __defaults__ = func_defaults = None
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),

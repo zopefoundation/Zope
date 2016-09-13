@@ -13,7 +13,7 @@
 ##############################################################################
 """Datatypes for the Zope schema for use with ZConfig."""
 
-import cStringIO
+import io
 import os
 from UserDict import UserDict
 import traceback
@@ -84,7 +84,7 @@ def importable_name(name):
                 package = __import__(n, g, g, component)
         return package
     except ImportError:
-        IO = cStringIO.StringIO()
+        IO = io.StringIO()
         traceback.print_exc(file=IO)
         raise ValueError(
             'The object named by "%s" could not be imported\n%s' % (
@@ -222,12 +222,12 @@ class DBTab:
     def listMountPaths(self):
         """Returns a sequence of (virtual_mount_path, database_name).
         """
-        return self.mount_paths.items()
+        return list(self.mount_paths.items())
 
     def listDatabaseNames(self):
         """Returns a sequence of names.
         """
-        return self.db_factories.keys()
+        return list(self.db_factories.keys())
 
     def hasDatabase(self, name):
         """Returns true if name is the name of a configured database."""

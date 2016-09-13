@@ -99,11 +99,13 @@ class WSGIResponseTests(unittest.TestCase):
             data = "hello"
             done = 0
 
-            def next(self):
+            def __next__(self):
                 if not self.done:
                     self.done = 1
                     return self.data
                 raise StopIteration
+
+            next = __next__
 
         response = self._makeOne()
         response.setStatus(200)
@@ -122,11 +124,13 @@ class WSGIResponseTests(unittest.TestCase):
             data = "hello"
             done = 0
 
-            def next(self):
+            def __next__(self):
                 if not self.done:
                     self.done = 1
                     return self.data
                 raise StopIteration
+
+            next = __next__
 
             def __len__(self):
                 return len(self.data)
@@ -226,7 +230,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         provideAdapter(factory, requires, provides, name)
 
     def _makeEnviron(self, **kw):
-        from StringIO import StringIO
+        from io import BytesIO
         environ = {
             'SCRIPT_NAME': '',
             'REQUEST_METHOD': 'GET',
@@ -237,7 +241,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
             'SERVER_PORT': '8080',
             'HTTP_HOST': '127.0.0.1:8080',
             'SERVER_PROTOCOL': 'HTTP/1.1',
-            'wsgi.input': StringIO(''),
+            'wsgi.input': BytesIO(''),
             'CONTENT_LENGTH': '0',
             'HTTP_CONNECTION': 'keep-alive',
             'CONTENT_TYPE': ''
@@ -349,11 +353,13 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
             data = "hello"
             done = 0
 
-            def next(self):
+            def __next__(self):
                 if not self.done:
                     self.done = 1
                     return self.data
                 raise StopIteration
+
+            next = __next__
 
         _response = DummyResponse()
         _response._status = '200 OK'
@@ -375,11 +381,13 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
             data = "hello"
             done = 0
 
-            def next(self):
+            def __next__(self):
                 if not self.done:
                     self.done = 1
                     return self.data
                 raise StopIteration
+
+            next = __next__
 
         _response = DummyResponse()
         _response._status = '200 OK'

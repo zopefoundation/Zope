@@ -30,12 +30,10 @@ from tempfile import (
     _TemporaryFileWrapper,
 )
 import time
-from urllib import unquote
-from urllib import splittype
-from urllib import splitport
 
 from AccessControl.tainted import TaintedString
 import pkg_resources
+from six.moves.urllib.parse import unquote
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
 from zope.interface import directlyProvidedBy
@@ -47,9 +45,15 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
+import collections
 
 if sys.version_info >= (3, ):
     unicode = str
+    from urllib.parse import splitport
+    from urllib.parse import splittype
+else:
+    from urllib import splitport
+    from urllib import splittype
 
 xmlrpc = None
 try:
@@ -177,7 +181,7 @@ class HTTPRequest(BaseRequest):
     _file = None
     _urls = ()
 
-    retry_max_count = 3
+    retry_max_count = 0
 
     def supports_retry(self):
         if self.retry_count < self.retry_max_count:
@@ -233,7 +237,7 @@ class HTTPRequest(BaseRequest):
         other = self.other
         if isinstance(path, str) or isinstance(path, unicode):
             path = path.split('/')
-        self._script[:] = map(quote, filter(None, path))
+        self._script[:] = list(map(quote, [_p for _p in path if _p]))
         del self._steps[:]
         parents = other['PARENTS']
         if hard:
@@ -263,7 +267,8 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToURL(self, path, relative=0):
         """ Convert a physical path into a URL in the current context """
-        path = self._script + map(quote, self.physicalPathToVirtualPath(path))
+        path = self._script + list(
+            map(quote, self.physicalPathToVirtualPath(path)))
         if relative:
             path.insert(0, '')
         else:
@@ -275,7 +280,7 @@ class HTTPRequest(BaseRequest):
             If the URL makes no sense in light of the current virtual
             hosting context, a ValueError is raised."""
         other = self.other
-        path = filter(None, URL.split('/'))
+        path = [_p for _p in URL.split('/') if _p]
 
         if URL.find('://') >= 0:
             path = path[2:]
@@ -288,7 +293,7 @@ class HTTPRequest(BaseRequest):
         else:
             raise ValueError('Url does not match virtual hosting context')
         vrpp = other.get('VirtualRootPhysicalPath', ('',))
-        return list(vrpp) + map(unquote, path)
+        return list(vrpp) + list(map(unquote, path))
 
     def _resetURLS(self):
         other = self.other
@@ -377,7 +382,7 @@ class HTTPRequest(BaseRequest):
         b = script = get_env('SCRIPT_NAME', '').strip()
 
         # _script and the other _names are meant for URL construction
-        self._script = map(quote, filter(None, script.split('/')))
+        self._script = list(map(quote, [_s for _s in script.split('/') if _s]))
 
         while b and b[-1] == '/':
             b = b[:-1]
@@ -1159,7 +1164,7 @@ class HTTPRequest(BaseRequest):
     def postProcessInputs(self):
         """Process the values in request.form to decode strings to unicode.
         """
-        for name, value in self.form.iteritems():
+        for name, value in self.form.items():
             self.form[name] = _decode(value, default_encoding)
 
     def resolve_url(self, url):
@@ -1203,7 +1208,7 @@ class HTTPRequest(BaseRequest):
         # to ensure we are getting the actual object named by
         # the given url, and not some kind of default object.
         if hasattr(object, 'id'):
-            if callable(object.id):
+            if isinstance(object.id, collections.Callable):
                 name = object.id()
             else:
                 name = object.id
@@ -1342,7 +1347,7 @@ class HTTPRequest(BaseRequest):
         if self._lazies:
             v = self._lazies.get(key, _marker)
             if v is not _marker:
-                if callable(v):
+                if isinstance(v, collections.Callable):
                     v = v()
                 self[key] = v  # Promote lazy value
                 del self._lazies[key]
@@ -1445,7 +1450,7 @@ class HTTPRequest(BaseRequest):
         if returnTaints:
             keys.update(self.taintedform)
 
-        keys = keys.keys()
+        keys = list(keys.keys())
         keys.sort()
 
         return keys
@@ -1679,6 +1684,12 @@ class FileUpload:
         except Exception:
             pass
 
+    def __bool__(self):
+        """FileUpload objects are considered false if their
+           filename is empty.
+        """
+        return not not self.filename
+
     def __nonzero__(self):
         """FileUpload objects are considered false if their
            filename is empty.
@@ -1774,7 +1785,7 @@ class record(object):
     def __eq__(self, other):
         if not isinstance(other, record):
             return False
-        return self.__dict__.items() == other.__dict__.items()
+        return list(self.__dict__.items()) == list(other.__dict__.items())
 
 
 def _filterPasswordFields(items):
@@ -1800,7 +1811,7 @@ def _decode(value, charset):
     elif isinstance(value, tuple):
         return tuple(_decode(v, charset) for v in value)
     elif isinstance(value, dict):
-        return dict((k, _decode(v, charset)) for k, v in value.iteritems())
+        return dict((k, _decode(v, charset)) for k, v in value.items())
     elif isinstance(value, str):
         return unicode(value, charset, 'replace')
     return value

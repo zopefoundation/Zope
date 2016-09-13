@@ -13,8 +13,6 @@
 """Support for owned objects
 """
 
-import urlparse
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import ownableFilter
@@ -27,6 +25,7 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
+from six.moves.urllib import parse
 from zExceptions import Redirect
 
 from App.special_dtml import DTMLFile
@@ -55,7 +54,7 @@ class Owned(BaseOwned):
         security = getSecurityManager()
         want_referer = REQUEST['URL1'] + '/manage_owner'
         got_referer = ("%s://%s%s" %
-                       urlparse.urlparse(REQUEST['HTTP_REFERER'])[:3])
+                       parse.urlparse(REQUEST['HTTP_REFERER'])[:3])
         __traceback_info__ = want_referer, got_referer
         if (want_referer != got_referer or security.calledByExecutable()):
             raise Unauthorized(

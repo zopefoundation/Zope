@@ -53,7 +53,7 @@ class ProtectedMethodSecurityPolicy:
         # Bound method
         if name is None:
             raise Unauthorized
-        klass = value.im_self.__class__
+        klass = value.__self__.__class__
         roles = getattr(klass, name + '__roles__', object())
         if roles is None:  # ACCESS_PUBLIC
             return 1
@@ -64,7 +64,7 @@ class ProtectedMethodSecurityPolicy:
 class TestTraverse(unittest.TestCase):
 
     def setUp(self):
-        import cStringIO
+        import io
         import transaction
         from AccessControl import SecurityManager
         from AccessControl.SecurityManagement import newSecurityManager
@@ -83,7 +83,7 @@ class TestTraverse(unittest.TestCase):
             a = Application()
             r['Application'] = a
             self.root = a
-            responseOut = self.responseOut = cStringIO.StringIO()
+            responseOut = self.responseOut = io.BytesIO()
             self.app = makerequest(self.root, stdout=responseOut)
             manage_addFolder(self.app, 'folder1')
             folder1 = getattr(self.app, 'folder1')
@@ -251,7 +251,7 @@ class TestTraverse(unittest.TestCase):
         my.id = 'my'
         self._setupSecurity(ProtectedMethodSecurityPolicy())
         r = my.restrictedTraverse('getId')
-        self.assertEquals(r(), 'my')
+        self.assertEqual(r(), 'my')
         self.assertRaises(Unauthorized, my.restrictedTraverse, 'private')
         self.assertRaises(Unauthorized, my.restrictedTraverse, 'ohno')
 

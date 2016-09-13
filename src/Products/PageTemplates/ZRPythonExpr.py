@@ -47,7 +47,7 @@ class PythonExpr(PythonExpr):
             raise engine.getCompilerError()(
                 'Python expression error:\n%s' % '\n'.join(err))
 
-        self._varnames = use.keys()
+        self._varnames = list(use.keys())
         self._code = code
 
     def __call__(self, econtext):

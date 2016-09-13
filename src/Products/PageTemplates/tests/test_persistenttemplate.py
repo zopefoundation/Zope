@@ -150,7 +150,7 @@ class TestPersistent(ZopeTestCase):
         extra_context['capture'] = capture
         template.pt_render(extra_context=extra_context)
         del extra_context['capture']
-        self.assertEquals(extra_context, capture)
+        self.assertEqual(extra_context, capture)
         # pt_render is also used to retrieve the unrendered source for
         # TTW editing purposes.
         self.assertEqual(template.pt_render(source=True), source)
@@ -168,9 +168,9 @@ class TestPersistent(ZopeTestCase):
     def test_repeat_object_security(self):
         template = self._makeOne('foo', repeat_object)
         # this should not raise an Unauthorized error
-        self.assertEquals(template().strip(), u'012')
-        # XXX-leorochael: the rest of this test is not actually
-        # testing the security access, but I couldn't find a simpler
+        self.assertEqual(template().strip(), u'012')
+        # The rest of this test is not actually testing
+        # the security access, but I couldn't find a simpler
         # way to test if the RepeatItem instance itself allows public
         # access, and there are convoluted situations in production
         # that need RepeatItem to be declared public.
@@ -191,7 +191,7 @@ class TestPersistent(ZopeTestCase):
         # check that the "path" function inside a python expression works
         self.folder.method = 'post'
         template = self._makeOne('foo', python_path_source)
-        self.assertEquals(template(), u'<form method="post" />')
+        self.assertEqual(template(), u'<form method="post" />')
 
     def test_filename_attribute(self):
         # check that a persistent page template that happens to have

@@ -61,6 +61,7 @@ from OFS.CopySupport import CopySource
 from OFS.Lockable import LockableItem
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
+import collections
 
 if bbb.HAS_ZSERVER:
     from webdav.Resource import Resource
@@ -134,7 +135,7 @@ class Item(Base,
         """Return the title if it is not blank and the id otherwise.
         """
         title = self.title
-        if callable(title):
+        if isinstance(title, collections.Callable):
             title = title()
         if title:
             return title
@@ -146,7 +147,7 @@ class Item(Base,
         If the title is not blank, then the id is included in parens.
         """
         title = self.title
-        if callable(title):
+        if isinstance(title, collections.Callable):
             title = title()
         id = self.getId()
         return title and ("%s (%s)" % (title, id)) or id
@@ -231,7 +232,7 @@ class Item(Base,
 
                 if getattr(aq_base(s), 'isDocTemp', 0):
                     v = s(client, REQUEST, **kwargs)
-                elif callable(s):
+                elif isinstance(s, collections.Callable):
                     v = s(**kwargs)
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)

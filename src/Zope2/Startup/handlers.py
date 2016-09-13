@@ -87,9 +87,11 @@ def root_wsgi_handler(cfg):
         HTTPRequest.trusted_proxies = tuple(mapped)
 
     # set the maximum number of ConflictError retries
+    from ZPublisher import HTTPRequest
     if cfg.max_conflict_retries:
-        from ZPublisher import HTTPRequest
         HTTPRequest.retry_max_count = cfg.max_conflict_retries
+    else:
+        HTTPRequest.retry_max_count = 3
 
 
 def _name_to_ips(host, _is_ip=re.compile(r'(\d+\.){3}').match):

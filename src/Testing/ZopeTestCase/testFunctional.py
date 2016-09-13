@@ -16,17 +16,16 @@ Demonstrates how to use the publish() API to execute GET, POST, PUT, etc.
 requests against the ZPublisher and how to examine the response.
 """
 
-from Testing import ZopeTestCase
-
-from Testing.ZopeTestCase import user_name
-from Testing.ZopeTestCase import user_password
+from io import BytesIO
 
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
 from AccessControl.Permissions import manage_properties
+from six.moves.urllib.parse import urlencode
 
-from StringIO import StringIO
-from urllib import urlencode
+from Testing import ZopeTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
 
 REDIRECT_DTML = '''\
 <dtml-call "RESPONSE.redirect('%s')">'''
@@ -109,7 +108,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.setPermissions([manage_properties])
 
         form = {'title': 'Foo'}
-        post_data = StringIO(urlencode(form))
+        post_data = BytesIO(urlencode(form))
 
         response = self.publish(self.folder_path + '/index_html/change_title',
                                 request_method='POST', stdin=post_data,

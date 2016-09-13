@@ -18,11 +18,11 @@ class DTMLMethodTests(unittest.TestCase):
     def test_edit_taintedstring(self):
         from AccessControl.tainted import TaintedString
         doc = self._makeOne()
-        self.assertEquals(doc.read(), '')
+        self.assertEqual(doc.read(), '')
         data = TaintedString('hello<br/>')
 
         doc.manage_edit(data, 'title')
-        self.assertEquals(doc.read(), 'hello&lt;br/&gt;')
+        self.assertEqual(doc.read(), 'hello&lt;br/&gt;')
 
 
 class FactoryTests(unittest.TestCase):

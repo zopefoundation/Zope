@@ -37,10 +37,10 @@ from zExceptions import (
 )
 from zope.interface import implementer
 
-import Folder
-import misc_
-from interfaces import IApplication
-from misc_ import Misc_
+from . import Folder
+from . import misc_
+from .interfaces import IApplication
+from .misc_ import Misc_
 
 if bbb.HAS_ZSERVER:
     from webdav.NullResource import NullResource
@@ -221,7 +221,7 @@ class AppInitializer:
         app = self.getApp()
         app._p_activate()
 
-        if 'Control_Panel' in app.__dict__.keys():
+        if 'Control_Panel' in list(app.__dict__.keys()):
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects
                                  if i['id'] != 'Control_Panel')
@@ -344,7 +344,7 @@ def import_products():
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
-    return done.keys()
+    return list(done.keys())
 
 
 def import_product(product_dir, product_name, raise_exc=None):

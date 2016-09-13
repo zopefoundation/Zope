@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from io import BytesIO
 from sys import modules, exc_info
 from unittest import TestCase
 
@@ -88,13 +88,13 @@ class TestPubEvents(TestCase):
         r.action = 'succeed'
         self._publish(r, PUBMODULE)
         events = self.reporter.events
-        self.assert_(isinstance(events[0], PubStart))
+        self.assertTrue(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubAfterTraversal))
+        self.assertTrue(isinstance(events[1], PubAfterTraversal))
         self.assertEqual(events[1].request, r)
-        self.assert_(isinstance(events[2], PubBeforeCommit))
+        self.assertTrue(isinstance(events[2], PubBeforeCommit))
         self.assertEqual(events[2].request, r)
-        self.assert_(isinstance(events[3], PubSuccess))
+        self.assertTrue(isinstance(events[3], PubSuccess))
         self.assertEqual(events[3].request, r)
 
     def testFailureReturn(self):
@@ -102,11 +102,11 @@ class TestPubEvents(TestCase):
         r.action = 'fail_return'
         self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assert_(isinstance(events[0], PubStart))
+        self.assertTrue(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubBeforeAbort))
+        self.assertTrue(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
-        self.assert_(isinstance(events[2], PubFailure))
+        self.assertTrue(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
 
@@ -115,12 +115,12 @@ class TestPubEvents(TestCase):
         r.action = 'fail_exception'
         self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assert_(isinstance(events[0], PubStart))
+        self.assertTrue(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubBeforeAbort))
+        self.assertTrue(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
         self.assertEqual(len(events[1].exc_info), 3)
-        self.assert_(isinstance(events[2], PubFailure))
+        self.assertTrue(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
 
@@ -129,26 +129,26 @@ class TestPubEvents(TestCase):
         r.action = 'conflict'
         self.assertRaises(ConflictError, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assert_(isinstance(events[0], PubStart))
+        self.assertTrue(isinstance(events[0], PubStart))
         self.assertEqual(events[0].request, r)
-        self.assert_(isinstance(events[1], PubBeforeAbort))
+        self.assertTrue(isinstance(events[1], PubBeforeAbort))
         self.assertEqual(events[1].request, r)
         self.assertEqual(len(events[1].exc_info), 3)
-        self.assert_(isinstance(events[1].exc_info[1], ConflictError))
-        self.assert_(isinstance(events[2], PubFailure))
+        self.assertTrue(isinstance(events[1].exc_info[1], ConflictError))
+        self.assertTrue(isinstance(events[2], PubFailure))
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
-        self.assert_(isinstance(events[2].exc_info[1], ConflictError))
+        self.assertTrue(isinstance(events[2].exc_info[1], ConflictError))
 
     def testStreaming(self):
-        out = StringIO()
+        out = BytesIO()
         response = WSGIResponse(stdout=out)
         response.write('datachunk1')
         response.write('datachunk2')
 
         events = self.reporter.events
         self.assertEqual(len(events), 1)
-        self.assert_(isinstance(events[0], PubBeforeStreaming))
+        self.assertTrue(isinstance(events[0], PubBeforeStreaming))
         self.assertEqual(events[0].response, response)
 
         self.assertTrue('datachunk1datachunk2' in out.getvalue())

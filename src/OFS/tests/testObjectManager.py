@@ -335,7 +335,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertFalse(om.hasObject('foo'))
         si = SimpleItem('foo')
         om._setObject('foo', si)
-        self.assert_(om.hasObject('foo'))
+        self.assertTrue(om.hasObject('foo'))
         om._delObject('foo')
         self.assertFalse(om.hasObject('foo'))
 
@@ -472,19 +472,19 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue(('1', si1) in om.items())
+        self.assertTrue(('1', si1) in list(om.items()))
 
     def test_keys(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue('1' in om.keys())
+        self.assertTrue('1' in list(om.keys()))
 
     def test_values(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue(si1 in om.values())
+        self.assertTrue(si1 in list(om.values()))
 
     def test_list_imports(self):
         om = self._makeOne()

@@ -13,7 +13,7 @@
 ##############################################################################
 
 
-import StringIO
+import io
 import logging
 import unittest
 
@@ -31,7 +31,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
         # deprecatedManageAddDeleteClasses list is special cased
         self.deprecatedManageAddDeleteClasses.append(int)
         # Pick up log messages
-        self.logfile = StringIO.StringIO()
+        self.logfile = io.BytesIO()
         self.log_handler = logging.StreamHandler(self.logfile)
         logging.root.addHandler(self.log_handler)
         self.old_log_level = logging.root.level
@@ -46,7 +46,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
     def assertLog(self, class_, expected):
         from OFS.subscribers import maybeWarnDeprecated
         maybeWarnDeprecated(class_(), 'manage_afterAdd')
-        self.assertEquals(expected, self.logfile.getvalue())
+        self.assertEqual(expected, self.logfile.getvalue())
 
     def test_method_deprecated(self):
         class Deprecated(object):

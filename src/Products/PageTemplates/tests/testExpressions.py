@@ -90,14 +90,14 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_evaluate_with_render_simple_callable(self):
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate('dummy'), 'dummy')
+        self.assertEqual(ec.evaluate('dummy'), 'dummy')
 
     def test_evaluate_with_render_DTML_template(self):
         # http://www.zope.org/Collectors/Zope/2232
         # DTML templates could not be called from a Page Template
         # due to an ImportError
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate('dummy2'), 'dummy')
+        self.assertEqual(ec.evaluate('dummy2'), 'dummy')
 
     def test_evaluate_alternative_first_missing(self):
         ec = self._makeContext()
@@ -152,19 +152,19 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_empty_path_expression_explicit(self):
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate('path:'), None)
+        self.assertEqual(ec.evaluate('path:'), None)
 
     def test_empty_path_expression_explicit_with_trailing_whitespace(self):
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate('path:  '), None)
+        self.assertEqual(ec.evaluate('path:  '), None)
 
     def test_empty_path_expression_implicit(self):
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate(''), None)
+        self.assertEqual(ec.evaluate(''), None)
 
     def test_empty_path_expression_implicit_with_trailing_whitespace(self):
         ec = self._makeContext()
-        self.assertEquals(ec.evaluate('  \n'), None)
+        self.assertEqual(ec.evaluate('  \n'), None)
 
     def test_unicode(self):
         # All our string expressions are unicode now

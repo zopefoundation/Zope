@@ -21,7 +21,7 @@ class BaseSequenceTest(object):
         self.assertEqual(list(lseq), seq)
 
     def test_actual_result_count(self):
-        lcat = self._createLSeq(range(10))
+        lcat = self._createLSeq(list(range(10)))
         self.assertEqual(len(lcat), 10)
         self.assertEqual(lcat.actual_result_count, 10)
 
@@ -47,37 +47,37 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
 
     def test_repr(self):
         lcat = self._createLSeq([0, 1])
-        self.assertEquals(repr(lcat), repr([0, 1]))
+        self.assertEqual(repr(lcat), repr([0, 1]))
 
     def test_init_single(self):
-        seq = range(10)
+        seq = list(range(10))
         lcat = self._createLSeq(seq)
         self._compare(lcat, seq)
         self.assertEqual(lcat.actual_result_count, 10)
 
     def test_add(self):
-        seq1 = range(10)
-        seq2 = range(10, 20)
+        seq1 = list(range(10))
+        seq2 = list(range(10, 20))
         lcat1 = self._createLSeq(seq1)
         lcat2 = self._createLSeq(seq2)
         lcat = lcat1 + lcat2
-        self._compare(lcat, range(20))
+        self._compare(lcat, list(range(20)))
         self.assertEqual(lcat.actual_result_count, 20)
 
     def test_add_after_getitem(self):
-        seq1 = range(10)
-        seq2 = range(10, 20)
+        seq1 = list(range(10))
+        seq2 = list(range(10, 20))
         lcat1 = self._createLSeq(seq1)
         lcat2 = self._createLSeq(seq2)
         # turning lcat1 into a list will flatten it into _data and remove _seq
         list(lcat1)
         lcat = lcat1 + lcat2
-        self._compare(lcat, range(20))
+        self._compare(lcat, list(range(20)))
         self.assertEqual(lcat.actual_result_count, 20)
 
     def test_init_multiple(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
         lcat = self._createLSeq(seq1, seq2, seq3)
@@ -85,7 +85,7 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
 
     def test_init_nested(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
         lcat = self._createLSeq(
@@ -94,7 +94,7 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
 
     def test_slicing(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
         lcat = self._createLSeq(
@@ -103,25 +103,25 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
 
     def test_length(self):
         # Unaccessed length
-        lcat = self._createLSeq(range(10))
+        lcat = self._createLSeq(list(range(10)))
         self.assertEqual(len(lcat), 10)
         self.assertEqual(lcat.actual_result_count, 10)
 
         # Accessed in the middle
-        lcat = self._createLSeq(range(10))
+        lcat = self._createLSeq(list(range(10)))
         lcat[4]
         self.assertEqual(len(lcat), 10)
         self.assertEqual(lcat.actual_result_count, 10)
 
         # Accessed after the lcat is accessed over the whole range
-        lcat = self._createLSeq(range(10))
+        lcat = self._createLSeq(list(range(10)))
         lcat[:]
         self.assertEqual(len(lcat), 10)
         self.assertEqual(lcat.actual_result_count, 10)
 
     def test_actual_result_count(self):
         # specify up-front
-        lcat = self._createLSeq(range(10))
+        lcat = self._createLSeq(list(range(10)))
         lcat.actual_result_count = 100
 
         self.assertEqual(len(lcat), 10)
@@ -153,7 +153,7 @@ class TestLazyMap(TestLazyCat):
 
     def test_map(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
 
@@ -164,7 +164,7 @@ class TestLazyMap(TestLazyCat):
         self._compare(lmap, [str(x).lower() for x in (seq1 + seq2 + seq3)])
 
     def testMapFuncIsOnlyCalledAsNecessary(self):
-        seq = range(10)
+        seq = list(range(10))
         count = [0]  # closure only works with list, and `nonlocal` in py3
 
         def func(x):
@@ -190,7 +190,7 @@ class TestLazyFilter(TestLazyCat):
 
     def test_filter(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
 
@@ -233,7 +233,7 @@ class TestLazyMop(TestLazyCat):
 
     def test_mop(self):
         from string import hexdigits, letters
-        seq1 = range(10)
+        seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(letters)
 
@@ -248,7 +248,7 @@ class TestLazyMop(TestLazyCat):
     def test_length_with_filter(self):
         from string import letters
         letter_length = len(letters)
-        seq = range(10) + list(letters)
+        seq = list(range(10)) + list(letters)
 
         def filter(x):
             if isinstance(x, int):
@@ -282,12 +282,12 @@ class TestLazyValues(unittest.TestCase, BaseSequenceTest):
 
     def test_values(self):
         from string import letters
-        seq = zip(letters, range(10))
+        seq = list(zip(letters, list(range(10))))
         lvals = self._createLSeq(seq)
-        self._compare(lvals, range(10))
+        self._compare(lvals, list(range(10)))
 
     def test_slicing(self):
         from string import letters
-        seq = zip(letters, range(10))
+        seq = list(zip(letters, list(range(10))))
         lvals = self._createLSeq(seq)
-        self._compare(lvals[2:-2], range(2, 8))
+        self._compare(lvals[2:-2], list(range(2, 8)))

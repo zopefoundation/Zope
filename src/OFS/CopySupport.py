@@ -17,8 +17,6 @@ from json import dumps
 from json import loads
 import re
 import tempfile
-from urllib import quote
-from urllib import unquote
 import warnings
 from zlib import compress
 from zlib import decompressobj
@@ -34,6 +32,7 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from ExtensionClass import Base
+from six.moves.urllib.parse import quote, unquote
 from zExceptions import Unauthorized, BadRequest, ResourceLockedError
 from ZODB.POSException import ConflictError
 from zope.interface import implementer
@@ -49,6 +48,7 @@ from OFS.interfaces import ICopySource
 from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
 from OFS.subscribers import compatibilityCall
+import collections
 
 
 class CopyError(Exception):
@@ -549,7 +549,7 @@ def sanity_check(c, ob):
 
 
 def absattr(attr):
-    if callable(attr):
+    if isinstance(attr, collections.Callable):
         return attr()
     return attr
 

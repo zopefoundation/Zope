@@ -115,4 +115,4 @@ class TestSimpleItem(unittest.TestCase):
             item.raise_standardErrorMessage(client=item,
                                             REQUEST=REQUEST())
 
-        self.assertEquals(sem.kw.get('error_type'), 'BadRequest')
+        self.assertEqual(sem.kw.get('error_type'), 'BadRequest')

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-import cStringIO
+import io
 import os
 import shutil
 import sys
@@ -53,7 +53,7 @@ class WSGIStarterTestCase(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        sio = cStringIO.StringIO(
+        sio = io.BytesIO(
             text.replace("<<INSTANCE_HOME>>", self.TEMPNAME))
         try:
             os.mkdir(self.TEMPNAME)

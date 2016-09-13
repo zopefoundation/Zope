@@ -22,6 +22,7 @@ from AccessControl.security import newInteraction
 
 # For convenience
 from Zope2.App import zcml  # NOQA
+import collections
 
 
 class PlacelessSetup(CAPlacelessSetup,
@@ -57,7 +58,7 @@ del ps
 
 
 def callZCML(zcml_callback):
-    if callable(zcml_callback):
+    if isinstance(zcml_callback, collections.Callable):
         zcml_callback()
     else:
         for func in zcml_callback:

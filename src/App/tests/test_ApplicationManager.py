@@ -19,7 +19,7 @@ class DummyDBTab(object):
         self._databases = databases or {}
 
     def listDatabaseNames(self):
-        return self._databases.keys()
+        return list(self._databases.keys())
 
     def hasDatabase(self, name):
         return name in self._databases

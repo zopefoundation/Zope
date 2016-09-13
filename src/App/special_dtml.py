@@ -37,6 +37,10 @@ PREFIX = os.path.realpath(
 )
 
 
+class Code(object):
+    pass
+
+
 class HTML(DocumentTemplate.HTML, Persistence.Persistent):
     "Persistent HTML Document Templates"
 
@@ -44,12 +48,11 @@ class HTML(DocumentTemplate.HTML, Persistence.Persistent):
 class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     "Persistent HTML Document Templates read from files"
 
-    class func_code:
-        pass
+    __code__ = func_code = Code()
+    __code__.co_varnames = 'trueself', 'self', 'REQUEST'
+    __code__.co_argcount = 3
+    __defaults__ = func_defaults = None
 
-    func_code = __code__ = func_code()
-    func_code.co_varnames = 'trueself', 'self', 'REQUEST'
-    func_code.co_argcount = 3
     _need__name__ = 1
     _v_last_read = 0
 
@@ -101,8 +104,8 @@ defaultBindings = {'name_context': 'context',
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
 
-    func_code = __code__ = None
-    func_defaults = __defaults__ = None
+    __code__ = func_code = None
+    __defaults__ = func_defaults = None
     _need__name__ = 1
 
     _Bindings_ns_class = TemplateDict
@@ -202,7 +205,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 except DTReturn as v:
                     result = v.v
                 except AttributeError:
-                    if (type(sys.exc_value) == InstanceType and
+                    if (type(sys.exc_info()[1]) == InstanceType and
                             sys.exc_value.args[0] == "_v_blocks"):
                         LOG.warn("DTML file '%s' could not be read" % self.raw)
                         raise ValueError(

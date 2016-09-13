@@ -160,8 +160,8 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         foo = Foo(context, request)
         bound = foo.bar
         self.assertTrue(isinstance(bound, BoundPageTemplate))
-        self.assertTrue(bound.im_func is template)
-        self.assertTrue(bound.im_self is foo)
+        self.assertTrue(bound.__func__ is template)
+        self.assertTrue(bound.__self__ is foo)
 
 
 class ViewMapperTests(unittest.TestCase):
@@ -221,8 +221,8 @@ class BoundPageTemplateTests(unittest.TestCase):
         pt = DummyTemplate({'foo': 'bar'})
         ob = DummyContext()
         bpt = self._makeOne(pt, ob)
-        self.assertTrue(bpt.im_func is pt)
-        self.assertTrue(bpt.im_self is ob)
+        self.assertTrue(bpt.__func__ is pt)
+        self.assertTrue(bpt.__self__ is ob)
         self.assertTrue(bpt.__parent__ is ob)
         self.assertEqual(bpt.macros['foo'], 'bar')
         self.assertEqual(bpt.filename, 'dummy.pt')

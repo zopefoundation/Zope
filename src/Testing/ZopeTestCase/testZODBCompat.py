@@ -228,14 +228,14 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
     def testTransactionAbort(self):
         folder = self._getfolder()
-        self.assert_(folder is not None)
-        self.assert_(folder._p_jar is None)
+        self.assertTrue(folder is not None)
+        self.assertTrue(folder._p_jar is None)
         transaction.savepoint()
-        self.assert_(folder._p_jar is not None)
+        self.assertTrue(folder._p_jar is not None)
         transaction.abort()
         del folder
         folder = self._getfolder()
-        self.assert_(folder is None)
+        self.assertTrue(folder is None)
 
 
 def test_suite():

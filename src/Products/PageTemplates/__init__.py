@@ -27,5 +27,5 @@ import ZTUtils  # NOQA
 
 def initialize(context):
     # Import lazily, and defer initialization to the module
-    import ZopePageTemplate
+    from . import ZopePageTemplate
     ZopePageTemplate.initialize(context)

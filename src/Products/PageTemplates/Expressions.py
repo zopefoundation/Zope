@@ -46,6 +46,7 @@ from zExceptions import Unauthorized
 from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+import collections
 
 if sys.version_info >= (3, ):
     basestring = str
@@ -117,7 +118,7 @@ def render(ob, ns):
         # item might be proxied (e.g. modules might have a deprecation
         # proxy)
         base = removeAllProxies(base)
-        if callable(base):
+        if isinstance(base, collections.Callable):
             try:
                 if getattr(base, 'isDocTemp', 0):
                     ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
@@ -347,6 +348,11 @@ class ZopeIterator(Iterator):
         return getattr(ob1, name, no) == getattr(ob2, name, no) is not no
 
     # 'first' needs to have access to the last item in the loop
+    def __next__(self):
+        if self._nextIndex > 0:
+            self._last_item = self.item
+        return next(super(ZopeIterator, self))
+
     def next(self):
         if self._nextIndex > 0:
             self._last_item = self.item

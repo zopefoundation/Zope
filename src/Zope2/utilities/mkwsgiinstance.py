@@ -29,10 +29,13 @@ necessary to create a Zope WSGI instance home.
 import getopt
 import os
 import sys
-import copyzopeskel
+from . import copyzopeskel
 
 if sys.version_info > (3, ):
     raw_input = input
+    from configparser import RawConfigParser
+else:
+    from ConfigParser import RawConfigParser
 
 
 def main():
@@ -153,7 +156,7 @@ def get_skeltarget():
     print('Please choose a directory in which you\'d like to install')
     print('Zope "instance home" files such as database files, configuration')
     print('files, etc.')
-    print
+    print()
     while 1:
         skeltarget = raw_input("Directory: ").strip()
         if skeltarget == '':
@@ -169,7 +172,7 @@ def get_inituser():
     print('Please choose a username and password for the initial user.')
     print('These will be the credentials you use to initially manage')
     print('your new Zope instance.')
-    print
+    print()
     user = raw_input("Username: ").strip()
     if user == '':
         return None, None
@@ -199,7 +202,6 @@ def check_buildout(script_path):
     """
     buildout_cfg = os.path.join(os.path.dirname(script_path), 'buildout.cfg')
     if os.path.exists(buildout_cfg):
-        from ConfigParser import RawConfigParser
         parser = RawConfigParser()
         parser.read(buildout_cfg)
         return 'zopepy' in parser.sections()

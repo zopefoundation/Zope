@@ -76,7 +76,7 @@ class argv(Base):
             args.append(arg(len(args) + 1, aa))
 
     def items(self):
-        return map(lambda a: ('spam%d' % a.num, a), self.args)
+        return [('spam%d' % a.num, a) for a in self.args]
 
     def values(self):
         return self.args

@@ -29,6 +29,7 @@ from ExtensionClass import Base
 from zope.interface import implementer
 
 from OFS.interfaces import IFindSupport
+import collections
 
 
 @implementer(IFindSupport)
@@ -172,16 +173,16 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
         if hasattr(ob, permission):
             p = getattr(ob, permission)
             if type(p) is lt:
-                map(fn, p)
+                list(map(fn, p))
                 if hasattr(ob, '__parent__'):
                     ob = aq_parent(ob)
                     continue
                 break
             if type(p) is tt:
-                map(fn, p)
+                list(map(fn, p))
                 break
             if p is None:
-                map(fn, ('Manager', 'Anonymous'))
+                list(map(fn, ('Manager', 'Anonymous')))
                 break
 
         if hasattr(ob, '__parent__'):
@@ -196,7 +197,7 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
 
 
 def absattr(attr):
-    if callable(attr):
+    if isinstance(attr, collections.Callable):
         return attr()
     return attr
 

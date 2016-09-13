@@ -42,7 +42,7 @@ def unregisterBeforeTraverse(container, app_handle):
     Returns a list of unregistered objects."""
     btr = getattr(container, '__before_traverse__', {})
     objects = []
-    for k in btr.keys():
+    for k in list(btr.keys()):
         if k[1] == app_handle:
             objects.append(btr[k])
             del btr[k]
@@ -74,7 +74,7 @@ def rewriteBeforeTraverse(container, btr):
     bpth = MultiHook(hookname, bpth, dic)
     setattr(container, hookname, bpth)
 
-    keys = btr.keys()
+    keys = list(btr.keys())
     keys.sort()
     for key in keys:
         bpth.add(btr[key])
@@ -129,12 +129,12 @@ class NameCaller:
         except AttributeError:
             return
 
-        # The code below can acquire "func_code" from an unrelated object
+        # The code below can acquire "__code__" from an unrelated object
         # on the acquisition chain.
         # This happens especially, if "meth" is a "CookieCrumber" instance,
         # i.e. in a CMF Portal, if a DTMLMethod (or a similar object
-        # with a fake "func_code" is in the acquisition context
-        args = getattr(getattr(aq_base(meth), 'func_code', None),
+        # with a fake "__code__" is in the acquisition context
+        args = getattr(getattr(aq_base(meth), '__code__', None),
                        'co_argcount', 2)
 
         try:

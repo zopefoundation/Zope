@@ -110,25 +110,25 @@ class ViewMapper(object):
 
 class BoundPageTemplate(object):
     def __init__(self, pt, ob):
-        object.__setattr__(self, 'im_func', pt)
-        object.__setattr__(self, 'im_self', ob)
+        object.__setattr__(self, '__func__', pt)
+        object.__setattr__(self, '__self__', ob)
 
-    macros = property(lambda self: self.im_func.macros)
-    filename = property(lambda self: self.im_func.filename)
-    __parent__ = property(lambda self: self.im_self)
+    macros = property(lambda self: self.__func__.macros)
+    filename = property(lambda self: self.__func__.filename)
+    __parent__ = property(lambda self: self.__self__)
 
     def __call__(self, *args, **kw):
-        if self.im_self is None:
+        if self.__self__ is None:
             im_self, args = args[0], args[1:]
         else:
-            im_self = self.im_self
-        return self.im_func(im_self, *args, **kw)
+            im_self = self.__self__
+        return self.__func__(im_self, *args, **kw)
 
     def __setattr__(self, name, v):
         raise AttributeError("Can't set attribute", name)
 
     def __repr__(self):
-        return "<BoundPageTemplateFile of %r>" % self.im_self
+        return "<BoundPageTemplateFile of %r>" % self.__self__
 
 
 # BBB

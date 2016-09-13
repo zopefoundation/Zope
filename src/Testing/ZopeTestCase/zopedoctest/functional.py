@@ -125,9 +125,9 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    import urllib
     import rfc822
-    from cStringIO import StringIO
+    from io import BytesIO
+    from six.moves.urllib.parse import unquote
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module
@@ -143,9 +143,9 @@ def http(request_string, handle_errors=True):
     command_line = request_string[:l].rstrip()
     request_string = request_string[l + 1:]
     method, path, protocol = command_line.split()
-    path = urllib.unquote(path)
+    path = unquote(path)
 
-    instream = StringIO(request_string)
+    instream = BytesIO(request_string)
 
     env = {
         'HTTP_HOST': 'localhost',
@@ -171,7 +171,7 @@ def http(request_string, handle_errors=True):
                for header in rfc822.Message(instream).headers]
 
     # Store request body without headers
-    instream = StringIO(instream.read())
+    instream = BytesIO(instream.read())
 
     for name, value in headers:
         name = ('_'.join(name.upper().split('-')))
@@ -182,13 +182,12 @@ def http(request_string, handle_errors=True):
     if 'HTTP_AUTHORIZATION' in env:
         env['HTTP_AUTHORIZATION'] = auth_header(env['HTTP_AUTHORIZATION'])
 
-    outstream = StringIO()
+    outstream = BytesIO()
     response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
     request = Request(instream, env, response)
-    request.retry_max_count = 0
 
     env['wsgi.input'] = instream
-    wsgi_headers = StringIO()
+    wsgi_headers = BytesIO()
 
     def start_response(status, headers):
         wsgi_headers.write('HTTP/1.1 %s\r\n' % status)

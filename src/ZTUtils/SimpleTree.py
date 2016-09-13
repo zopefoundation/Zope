@@ -14,7 +14,7 @@
 """
 
 from Acquisition import aq_acquire
-from Tree import TreeMaker, TreeNode, b2a
+from .Tree import TreeMaker, TreeNode, b2a
 
 
 class SimpleTreeNode(TreeNode):

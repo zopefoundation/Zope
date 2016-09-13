@@ -156,9 +156,9 @@ def test_default_method_args_marshalling():
     method's signature. They both should yield the four parameters.
 
       >>> def args(method):
-      ...     f = method.im_func
-      ...     c = f.func_code
-      ...     defaults = f.func_defaults
+      ...     f = method.__func__
+      ...     c = f.__code__
+      ...     defaults = f.__defaults__
       ...     names = c.co_varnames[1:c.co_argcount]
       ...     return names
       >>> args(view.my_method)

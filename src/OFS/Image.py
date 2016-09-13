@@ -14,7 +14,7 @@
 """
 
 from cgi import escape
-from cStringIO import StringIO
+from io import BytesIO
 from mimetools import choose_boundary
 import struct
 import sys
@@ -500,7 +500,7 @@ class File(Persistent, Implicit, PropertyManager,
             if size < n:
                 return (file, size)
             # Big string: cut it into smaller chunks
-            file = StringIO(file)
+            file = BytesIO(file)
 
         if isinstance(file, FileUpload) and not file:
             raise ValueError('File not specified')
@@ -534,7 +534,7 @@ class File(Persistent, Implicit, PropertyManager,
         # to front to minimize the number of database updates
         # and to allow us to get things out of memory as soon as
         # possible.
-        next = None
+        _next = None
         while end > 0:
             pos = end - n
             if pos < n:
@@ -546,7 +546,7 @@ class File(Persistent, Implicit, PropertyManager,
             # a single database update for it.
             data = Pdata(read(end - pos))
             self._p_jar.add(data)
-            data.next = next
+            data.next = _next
 
             # Save the object so that we can release its memory.
             transaction.savepoint(optimistic=True)
@@ -555,10 +555,10 @@ class File(Persistent, Implicit, PropertyManager,
             assert data._p_oid is not None
             assert data._p_state == -1
 
-            next = data
+            _next = data
             end = pos
 
-        return next, size
+        return (_next, size)
 
     security.declareProtected(View, 'get_size')
     def get_size(self):
@@ -703,7 +703,7 @@ def getImageInfo(data):
     # handle JPEGs
     elif (size >= 2) and (data[:2] == '\377\330'):
         content_type = 'image/jpeg'
-        jpeg = StringIO(data)
+        jpeg = BytesIO(data)
         jpeg.read(2)
         b = jpeg.read(1)
         try:
@@ -857,7 +857,7 @@ class Image(File):
         if css_class is not None:
             result = '%s class="%s"' % (result, css_class)
 
-        for key in args.keys():
+        for key in list(args.keys()):
             value = args.get(key)
             if value:
                 result = '%s %s="%s"' % (result, key, value)
@@ -894,14 +894,14 @@ class Pdata(Persistent, Implicit):
         return len(data)
 
     def __str__(self):
-        next = self.next
-        if next is None:
+        _next = self.next
+        if _next is None:
             return self.data
 
         r = [self.data]
-        while next is not None:
-            self = next
+        while _next is not None:
+            self = _next
             r.append(self.data)
-            next = self.next
+            _next = self.next
 
         return ''.join(r)

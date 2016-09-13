@@ -13,11 +13,11 @@
 
 import os
 import sys
-import urllib
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
+from six.moves.urllib import parse
 from zExceptions import Redirect
 
 from App.config import getConfiguration
@@ -61,7 +61,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
         names = configuration.dbtab.listDatabaseNames()
         names.sort()
         if quote:
-            return [(name, urllib.quote(name)) for name in names]
+            return [(name, parse.quote(name)) for name in names]
         return names
 
     def __getitem__(self, name):

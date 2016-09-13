@@ -28,8 +28,8 @@ from zExceptions import NotFound
 class FuncCode(object):
 
     def __init__(self, f, im=0):
-        self.co_varnames = f.func_code.co_varnames[im:]
-        self.co_argcount = f.func_code.co_argcount - im
+        self.co_varnames = f.__code__.co_varnames[im:]
+        self.co_argcount = f.__code__.co_argcount - im
 
     def __eq__(self, other):
         if not isinstance(other, FuncCode):

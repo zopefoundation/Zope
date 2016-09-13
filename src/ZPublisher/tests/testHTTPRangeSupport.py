@@ -77,7 +77,7 @@ class TestRangeHeaderParse(unittest.TestCase):
         self.expectSets('bytes=0-0', [(0, 1)])
 
     def testNegativeZero(self):
-        self.expectSets('bytes=-0', [(sys.maxint, None)])
+        self.expectSets('bytes=-0', [(sys.maxsize, None)])
 
 
 class TestExpandRanges(unittest.TestCase):
@@ -127,4 +127,4 @@ class TestExpandRanges(unittest.TestCase):
         self.expectSets([(-5, None), (40, 100)], 50, [(45, 50), (40, 50)])
 
     def testRemoveUnsatisfiable(self):
-        self.expectSets([(sys.maxint, None), (10, 20)], 50, [(10, 20)])
+        self.expectSets([(sys.maxsize, None), (10, 20)], 50, [(10, 20)])

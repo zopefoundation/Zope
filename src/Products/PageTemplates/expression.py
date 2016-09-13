@@ -26,6 +26,7 @@ from chameleon.codegen import template
 from sourcecodegen import generate_code
 
 from z3c.pt import expressions
+import collections
 
 _marker = object()
 
@@ -81,7 +82,8 @@ class BoboAwareZopeTraverse(object):
         if call is False:
             return base
 
-        if getattr(base, '__call__', _marker) is not _marker or callable(base):
+        if (getattr(base, '__call__', _marker) is not _marker or
+                isinstance(base, collections.Callable)):
             base = render(base, econtext)
 
         return base

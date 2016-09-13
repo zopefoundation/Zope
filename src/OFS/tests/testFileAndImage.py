@@ -5,7 +5,7 @@ import Zope2
 import os
 import sys
 import time
-from cStringIO import StringIO
+from io import BytesIO
 
 from Acquisition import aq_base
 
@@ -95,7 +95,7 @@ class FileTests(unittest.TestCase):
             a = Application()
             r['Application'] = a
             self.root = a
-            responseOut = self.responseOut = StringIO()
+            responseOut = self.responseOut = BytesIO()
             self.app = makerequest(self.root, stdout=responseOut)
             factory = getattr(self.app, self.factory)
             factory('file',
@@ -110,11 +110,11 @@ class FileTests(unittest.TestCase):
         self.file = getattr(self.app, 'file')
 
         # Since we do the create here, let's test the events here too
-        self.assertEquals(1, len(self.eventCatcher.created))
+        self.assertEqual(1, len(self.eventCatcher.created))
         self.assertTrue(
             aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
 
-        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(
             aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
 
@@ -140,7 +140,7 @@ class FileTests(unittest.TestCase):
 
     def testReadData(self):
         s = "a" * (2 << 16)
-        f = StringIO(s)
+        f = BytesIO(s)
         data, size = self.file._read_data(f)
         self.assertTrue(isinstance(data, Pdata))
         self.assertEqual(str(data), s)
@@ -151,7 +151,7 @@ class FileTests(unittest.TestCase):
         # Test that a big enough string is split into several Pdata
         # From a file
         s = "a" * (1 << 16) * 3
-        data, size = self.file._read_data(StringIO(s))
+        data, size = self.file._read_data(BytesIO(s))
         self.assertNotEqual(data.next, None)
         # From a string
         data, size = self.file._read_data(s)
@@ -161,22 +161,22 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain', filedata='ASD')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testManageEditWithoutFileData(self):
         self.file.manage_edit('foobar', 'text/plain')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
-        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testManageUpload(self):
-        f = StringIO('jammyjohnson')
+        f = BytesIO('jammyjohnson')
         self.file.manage_upload(f)
         self.assertEqual(self.file.data, 'jammyjohnson')
         self.assertEqual(self.file.content_type, 'application/octet-stream')
-        self.assertEquals(1, len(self.eventCatcher.modified))
+        self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testIfModSince(self):
@@ -188,7 +188,7 @@ class FileTests(unittest.TestCase):
         # not modified since
         t_notmod = rfc1123_date(now)
         e['HTTP_IF_MODIFIED_SINCE'] = t_notmod
-        out = StringIO()
+        out = BytesIO()
         resp = HTTPResponse(stdout=out)
         req = HTTPRequest(sys.stdin, e, resp)
         data = self.file.index_html(req, resp)
@@ -198,7 +198,7 @@ class FileTests(unittest.TestCase):
         # modified since
         t_mod = rfc1123_date(now - 100)
         e['HTTP_IF_MODIFIED_SINCE'] = t_mod
-        out = StringIO()
+        out = BytesIO()
         resp = HTTPResponse(stdout=out)
         req = HTTPRequest(sys.stdin, e, resp)
         data = self.file.index_html(req, resp)
@@ -208,12 +208,12 @@ class FileTests(unittest.TestCase):
     def testIndexHtmlWithPdata(self):
         self.file.manage_upload('a' * (2 << 16))  # 128K
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
-        self.assert_(self.app.REQUEST.RESPONSE._wrote)
+        self.assertTrue(self.app.REQUEST.RESPONSE._wrote)
 
     def testIndexHtmlWithString(self):
         self.file.manage_upload('a' * 100)  # 100 bytes
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
-        self.assert_(not self.app.REQUEST.RESPONSE._wrote)
+        self.assertTrue(not self.app.REQUEST.RESPONSE._wrote)
 
     def testStr(self):
         self.assertEqual(str(self.file), self.data)

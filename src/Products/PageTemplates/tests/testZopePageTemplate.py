@@ -195,12 +195,12 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
     def test_bug_198274(self):
         # See https://bugs.launchpad.net/bugs/198274
         # ZPT w/ '_text' not assigned can't be unpickled.
-        import cPickle
+        import pickle
         empty = ZopePageTemplate(id='empty', text=' ',
                                  content_type='text/html',
                                  output_encoding='ascii')
-        state = cPickle.dumps(empty, protocol=1)
-        cPickle.loads(state)
+        state = pickle.dumps(empty, protocol=1)
+        pickle.loads(state)
 
     def testBug246983(self):
         # See https://bugs.launchpad.net/bugs/246983
@@ -213,14 +213,14 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         """.strip()
         manage_addPageTemplate(self.app, 'test', text=textDirect)
         zpt = self.app['test']
-        self.assertEquals(zpt.pt_render(), u'üצה')
+        self.assertEqual(zpt.pt_render(), u'üצה')
         # Indirect inclusion of encoded strings through String Expressions
         # should be resolved as well.
         textIndirect = """
         <tal:block content="string:x ${request/data}" />
         """.strip()
         zpt.pt_edit(textIndirect, zpt.content_type)
-        self.assertEquals(zpt.pt_render(), u'x üצה')
+        self.assertEqual(zpt.pt_render(), u'x üצה')
 
     def testDebugFlags(self):
         # Test for bug 229549

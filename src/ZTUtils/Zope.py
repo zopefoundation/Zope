@@ -14,12 +14,12 @@
 """
 
 import cgi
-import urllib
 
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getitem
 from DateTime.DateTime import DateTime
+from six.moves.urllib.parse import quote, unquote
 
 from ZTUtils.Batch import Batch
 from ZTUtils.Lazy import Lazy
@@ -185,11 +185,10 @@ def make_query(*args, **kwargs):
         d.update(arg)
     d.update(kwargs)
 
-    uq = urllib.quote
-    qlist = complex_marshal(d.items())
+    qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        qlist[i] = '%s%s=%s' % (uq(k), m, uq(str(v)))
+        qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
     return '&'.join(qlist)
 
@@ -215,7 +214,7 @@ def make_hidden_input(*args, **kwargs):
     def hq(x):
         return cgi.escape(x, quote=True)
 
-    qlist = complex_marshal(d.items())
+    qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
         qlist[i] = ('<input type="hidden" name="%s%s" value="%s">'
@@ -310,9 +309,8 @@ def url_query(request, req_name="URL", omit=None):
             for name in omit:
                 omits[name] = None
 
-        unq = urllib.unquote
         for i in range(len(qsparts)):
-            name = unq(qsparts[i].split('=', 1)[0])
+            name = unquote(qsparts[i].split('=', 1)[0])
             if name in omits:
                 qsparts[i] = ''
             name = name.split(':', 1)[0]
@@ -322,7 +320,7 @@ def url_query(request, req_name="URL", omit=None):
             if name in omits:
                 qsparts[i] = ''
 
-        qs = '&'.join(filter(None, qsparts))
+        qs = '&'.join([part for part in qsparts if part])
 
     # We alway append '?' since arguments will be appended to the URL
     return '%s?%s' % (base, qs)

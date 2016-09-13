@@ -58,7 +58,7 @@ class LockableItem(EtagSupport):
             return locks
         elif killinvalids:
             # Delete invalid locks
-            for token, lock in locks.items():
+            for token, lock in list(locks.items()):
                 if not lock.isValid():
                     del locks[token]
             if (not locks) and hasattr(aq_base(self),
@@ -69,18 +69,18 @@ class LockableItem(EtagSupport):
             return locks
 
     def wl_lockItems(self, killinvalids=0):
-        return self.wl_lockmapping(killinvalids).items()
+        return list(self.wl_lockmapping(killinvalids).items())
 
     def wl_lockValues(self, killinvalids=0):
-        return self.wl_lockmapping(killinvalids).values()
+        return list(self.wl_lockmapping(killinvalids).values())
 
     def wl_lockTokens(self, killinvalids=0):
-        return self.wl_lockmapping(killinvalids).keys()
+        return list(self.wl_lockmapping(killinvalids).keys())
 
     def wl_hasLock(self, token, killinvalids=0):
         if not token:
             return 0
-        return token in self.wl_lockmapping(killinvalids).keys()
+        return token in list(self.wl_lockmapping(killinvalids).keys())
 
     def wl_isLocked(self):
         # returns true if 'self' is locked at all
@@ -88,7 +88,7 @@ class LockableItem(EtagSupport):
         # valid (timeout has been exceeded)
         locks = self.wl_lockmapping(killinvalids=1)
 
-        if locks.keys():
+        if list(locks.keys()):
             return 1
         else:
             return 0

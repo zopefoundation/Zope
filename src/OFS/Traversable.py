@@ -13,8 +13,6 @@
 """This module implements a mix-in for traversable objects.
 """
 
-from urllib import quote
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -28,6 +26,7 @@ from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
 from OFS import bbb
 from OFS.interfaces import ITraversable, IApplication
+from six.moves.urllib.parse import quote
 from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
@@ -128,9 +127,9 @@ class Traversable:
         if p is None:
             return path
 
-        func = self.getPhysicalPath.im_func
+        func = self.getPhysicalPath.__func__
         while p is not None:
-            if func is p.getPhysicalPath.im_func:
+            if func is p.getPhysicalPath.__func__:
                 try:
                     pid = p.id or p.getId()
                 except AttributeError:
@@ -251,7 +250,7 @@ class Traversable:
                                             next, 'im_self', None) is not None:
                                         # Bound method, the bound instance
                                         # is the container
-                                        container = next.im_self
+                                        container = next.__self__
                                     elif getattr(
                                             aq_base(obj),
                                             name, _marker) is next:

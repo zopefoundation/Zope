@@ -55,7 +55,7 @@ def parseRange(header):
     # The sets are delimited by commas.
     sets = sets.split(',')
     # Filter out empty values, things like ',,' are allowed in the spec
-    sets = filter(None, sets)
+    sets = [_set for _set in sets if _set]
     # We need at least one set
     if not sets:
         return None
@@ -87,12 +87,12 @@ def parseRange(header):
         # Special case: No start means the suffix format was used, which
         # means the end value is actually a negative start value.
         # Convert this by making it absolute.
-        # A -0 range is converted to sys.maxint, which will result in a
+        # A -0 range is converted to sys.maxsize, which will result in a
         # Unsatisfiable response if no other ranges can by satisfied either.
         if start is None:
             start, end = -end, None
             if not start:
-                start = sys.maxint
+                start = sys.maxsize
         elif end is not None:
             end = end + 1  # Make the end of the range exclusive
 

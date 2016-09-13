@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from StringIO import StringIO
+from io import BytesIO
 import sys
 import unittest
 
@@ -1235,7 +1235,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(lines[5], 'BLAH')
 
     def test_write_already_wrote(self):
-        stdout = StringIO()
+        stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
         response.write('Kilroy was here!')
         self.assertTrue(response._wrote)
@@ -1249,7 +1249,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(lines[4], 'Kilroy was here!')
 
     def test_write_not_already_wrote(self):
-        stdout = StringIO()
+        stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
         response._wrote = True
         response.write('Kilroy was here!')

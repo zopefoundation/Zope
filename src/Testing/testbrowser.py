@@ -16,15 +16,21 @@
 Mostly just copy and paste from zope.testbrowser.testing.
 """
 
-import cStringIO
-import httplib
-import urllib2
+import io
 
 import mechanize
+from six.moves.urllib.request import HTTPHandler
 from zExceptions import status_reasons
 from zope.testbrowser import browser
 
 from Testing.ZopeTestCase.zopedoctest import functional
+
+try:
+    from http.client import HTTPMessage
+    from urllib.request import AbstractHTTPHandler
+except ImportError:
+    from httplib import HTTPMessage
+    from urllib2 import AbstractHTTPHandler
 
 
 class PublisherConnection(object):
@@ -78,10 +84,10 @@ class PublisherConnection(object):
         self.response = self.caller(request_string, handle_errors)
 
     def getresponse(self):
-        """Return a ``urllib2`` compatible response.
+        """Return a ``urllib`` compatible response.
 
         The goal of ths method is to convert the Zope Publisher's response to
-        a ``urllib2`` compatible response, which is also understood by
+        a ``urllib`` compatible response, which is also understood by
         mechanize.
         """
         real_response = self.response._response
@@ -104,8 +110,8 @@ class PublisherResponse(object):
         self.content = content
         self.status = status
         self.reason = reason
-        self.msg = httplib.HTTPMessage(cStringIO.StringIO(headers), 0)
-        self.content_as_file = cStringIO.StringIO(self.content)
+        self.msg = HTTPMessage(io.BytesIO(headers), 0)
+        self.content_as_file = io.BytesIO(self.content)
 
     def read(self, amt=None):
         return self.content_as_file.read(amt)
@@ -115,13 +121,13 @@ class PublisherResponse(object):
         pass
 
 
-class PublisherHTTPHandler(urllib2.HTTPHandler):
+class PublisherHTTPHandler(HTTPHandler):
     """Special HTTP handler to use the Zope Publisher."""
 
-    http_request = urllib2.AbstractHTTPHandler.do_request_
+    http_request = AbstractHTTPHandler.do_request_
 
     def http_open(self, req):
-        """Open an HTTP connection having a ``urllib2`` request."""
+        """Open an HTTP connection having a ``urllib`` request."""
         # Here we connect to the publisher.
         return self.do_open(PublisherConnection, req)
 

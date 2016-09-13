@@ -13,7 +13,7 @@
 ##############################################################################
 
 import os
-import cStringIO
+import io
 import tempfile
 import unittest
 
@@ -41,7 +41,7 @@ class WSGIStartupTestCase(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        sio = cStringIO.StringIO(
+        sio = io.BytesIO(
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         os.mkdir(TEMPNAME)
         os.mkdir(TEMPVAR)
@@ -71,7 +71,7 @@ class WSGIStartupTestCase(unittest.TestCase):
               NSYNC doesnt
             </environment>
             """)
-        items = conf.environment.items()
+        items = list(conf.environment.items())
         items.sort()
         self.assertEqual(
             items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])

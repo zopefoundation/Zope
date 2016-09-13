@@ -64,7 +64,7 @@ def field2required(v):
 
 def field2int(v):
     if isinstance(v, (list, tuple)):
-        return map(field2int, v)
+        return list(map(field2int, v))
     v = field2string(v)
     if v:
         try:
@@ -78,7 +78,7 @@ def field2int(v):
 
 def field2float(v):
     if isinstance(v, (list, tuple)):
-        return map(field2float, v)
+        return list(map(field2float, v))
     v = field2string(v)
     if v:
         try:
@@ -94,7 +94,7 @@ def field2float(v):
 
 def field2long(v):
     if isinstance(v, (list, tuple)):
-        return map(field2long, v)
+        return list(map(field2long, v))
     v = field2string(v)
     # handle trailing 'L' if present.
     if v[-1:] in ('L', 'l'):

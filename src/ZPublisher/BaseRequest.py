@@ -13,7 +13,6 @@
 """ Basic ZPublisher request management.
 """
 
-from urllib import quote as urllib_quote
 import types
 
 from AccessControl.ZopeSecurityPolicy import getRoles
@@ -21,6 +20,7 @@ from Acquisition import aq_base, aq_inner
 from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
 import pkg_resources
+from six.moves.urllib.parse import quote as urllib_quote
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
@@ -67,7 +67,7 @@ class RequestContainer(Base):
             self.__dict__[k] = v
 
     def manage_property_types(self):
-        return type_converters.keys()
+        return list(type_converters.keys())
 
 
 @implementer(IBrowserPublisher)
@@ -307,7 +307,7 @@ class BaseRequest(object):
         keys = {}
         keys.update(self.common)
         keys.update(self.other)
-        return keys.keys()
+        return list(keys.keys())
 
     def items(self):
         result = []
@@ -322,7 +322,7 @@ class BaseRequest(object):
         return result
 
     def __str__(self):
-        L1 = self.items()
+        L1 = list(self.items())
         L1.sort()
         return '\n'.join("%s:\t%s" % item for item in L1)
 
@@ -434,7 +434,7 @@ class BaseRequest(object):
         parents.append(object)
 
         steps = self.steps
-        self._steps = _steps = map(quote, steps)
+        self._steps = _steps = list(map(quote, steps))
         path.reverse()
 
         request['TraversalRequestNameStack'] = request.path = path
@@ -610,14 +610,14 @@ class BaseRequest(object):
                     # No roles, so if we have a named group, get roles from
                     # group keys
                     if hasattr(groups, 'keys'):
-                        self.roles = groups.keys()
+                        self.roles = list(groups.keys())
                     else:
                         try:
                             groups = groups()
                         except Exception:
                             pass
                         try:
-                            self.roles = groups.keys()
+                            self.roles = list(groups.keys())
                         except Exception:
                             pass
 

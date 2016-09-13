@@ -31,7 +31,7 @@ deprecated(
 
 def appcall(func, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''
-    from base import app, close
+    from .base import app, close
     app = app()
     args = (app,) + args
     try:
@@ -50,5 +50,5 @@ def makelist(arg):
     if isinstance(arg, tuple):
         return list(arg)
     if isinstance(arg, str):
-        return filter(None, [arg])
+        return [a for a in [arg] if a]
     raise ValueError('Argument must be list, tuple, or string')

@@ -59,6 +59,7 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
+import collections
 
 if bbb.HAS_ZSERVER:
     from webdav.Collection import Collection
@@ -265,7 +266,7 @@ class ObjectManager(CopyContainer,
         # adequate permission to add that type of object.
         sm = getSecurityManager()
         meta_types = []
-        if callable(self.all_meta_types):
+        if isinstance(self.all_meta_types, collections.Callable):
             all = self.all_meta_types()
         else:
             all = self.all_meta_types
@@ -451,7 +452,7 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'objectValues_d')
     def objectValues_d(self, t=None):
-        return map(self._getOb, self.objectIds_d(t))
+        return list(map(self._getOb, self.objectIds_d(t)))
 
     security.declareProtected(access_contents_information, 'objectItems_d')
     def objectItems_d(self, t=None):
@@ -720,6 +721,9 @@ class ObjectManager(CopyContainer,
         return len(self.objectIds())
 
     def __nonzero__(self):
+        return True
+
+    def __bool__(self):
         return True
 
     security.declareProtected(access_contents_information, 'get')

@@ -15,7 +15,6 @@ Objects for packages that have been uninstalled.
 """
 from cgi import escape
 from logging import getLogger
-from thread import allocate_lock
 
 from Acquisition import Acquired
 from Acquisition import Explicit
@@ -23,6 +22,7 @@ from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Overridable
 from six import exec_
+from six.moves._thread import allocate_lock
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
 

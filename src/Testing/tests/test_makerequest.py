@@ -44,8 +44,8 @@ class MakerequestTests(unittest.TestCase):
 
     def test_stdout(self):
         # You can pass a stdout arg and it's used by the response.
-        import cStringIO
-        out = cStringIO.StringIO()
+        import io
+        out = io.BytesIO()
         item = makerequest(SimpleItem(), stdout=out)
         item.REQUEST.RESPONSE.write('aaa')
         out.seek(0)

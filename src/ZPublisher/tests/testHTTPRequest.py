@@ -1,5 +1,5 @@
 import base64
-from StringIO import StringIO
+from io import BytesIO
 import sys
 import unittest
 
@@ -41,7 +41,7 @@ class HTTPRequestFactoryMixin(object):
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
         from ZPublisher.HTTPResponse import HTTPResponse
         if stdin is None:
-            stdin = StringIO()
+            stdin = BytesIO()
 
         if environ is None:
             environ = {}
@@ -56,7 +56,7 @@ class HTTPRequestFactoryMixin(object):
             environ['SERVER_PORT'] = '8080'
 
         if response is None:
-            response = HTTPResponse(stdout=StringIO())
+            response = HTTPResponse(stdout=BytesIO())
 
         return self._getTargetClass()(stdin, environ, response, clean)
 
@@ -64,7 +64,7 @@ class HTTPRequestFactoryMixin(object):
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
-        from urllib import quote_plus
+        from six.moves.urllib.parse import quote_plus
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -84,7 +84,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         return req
 
     def _noTaintedValues(self, req):
-        self.assertFalse(req.taintedform.keys())
+        self.assertFalse(list(req.taintedform.keys()))
 
     def _valueIsOrHoldsTainted(self, val):
         # Recursively searches a structure for a TaintedString and returns 1
@@ -103,7 +103,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             retval = 1
 
         elif isinstance(val, record):
-            for attr, value in val.__dict__.items():
+            for attr, value in list(val.__dict__.items()):
                 rval = self._valueIsOrHoldsTainted(attr)
                 if rval:
                     retval = 1
@@ -125,24 +125,24 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         return retval
 
     def _noFormValuesInOther(self, req):
-        for key in req.taintedform.keys():
+        for key in list(req.taintedform.keys()):
             self.assertFalse(
                 key in req.other,
                 'REQUEST.other should not hold tainted values at first!')
 
-        for key in req.form.keys():
+        for key in list(req.form.keys()):
             self.assertFalse(
                 key in req.other,
                 'REQUEST.other should not hold form values at first!')
 
     def _onlyTaintedformHoldsTaintedStrings(self, req):
-        for key, val in req.taintedform.items():
-            self.assert_(
+        for key, val in list(req.taintedform.items()):
+            self.assertTrue(
                 self._valueIsOrHoldsTainted(key) or
                 self._valueIsOrHoldsTainted(val),
                 'Tainted form holds item %s that is not tainted' % key)
 
-        for key, val in req.form.items():
+        for key, val in list(req.form.items()):
             if key in req.taintedform:
                 continue
             self.assertFalse(
@@ -151,8 +151,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 'Normal form holds item %s that is tainted' % key)
 
     def _taintedKeysAlsoInForm(self, req):
-        for key in req.taintedform.keys():
-            self.assert_(
+        for key in list(req.taintedform.keys()):
+            self.assertTrue(
                 key in req.form,
                 "Found tainted %s not in form" % key)
             self.assertEqual(
@@ -630,7 +630,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # returned should be HTML safe
         from DateTime.interfaces import SyntaxError
         from ZPublisher.Converters import type_converters
-        for type, convert in type_converters.items():
+        for type, convert in list(type_converters.items()):
             try:
                 convert('<html garbage>')
             except Exception as e:
@@ -722,7 +722,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
         # request.close().  Otherwise a tempfile may stick around.
-        s = StringIO(TEST_FILE_DATA)
+        s = BytesIO(TEST_FILE_DATA)
         start_count = sys.getrefcount(s)
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
@@ -733,26 +733,24 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def test_processInputs_w_large_input_gets_tempfile(self):
         # checks fileupload object supports the filename
-        s = StringIO(TEST_LARGEFILE_DATA)
+        s = BytesIO(TEST_LARGEFILE_DATA)
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
         req.processInputs()
         f = req.form.get('file')
-        self.assert_(f.name)
+        self.assertTrue(f.name)
 
     def test_processInputs_with_file_upload_gets_iterator(self):
         # checks fileupload object supports the iterator protocol
         # collector entry 1837
-        s = StringIO(TEST_FILE_DATA)
+        s = BytesIO(TEST_FILE_DATA)
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
         req.processInputs()
         f = req.form.get('file')
         self.assertEqual(list(f), ['test\n'])
         f.seek(0)
-        self.assertEqual(f.next(), 'test\n')
-        f.seek(0)
-        self.assertEqual(f.xreadlines(), f)
+        self.assertEqual(next(f), 'test\n')
 
     def test__authUserPW_simple(self):
         user_id = 'user'
@@ -787,9 +785,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         from zope.publisher.base import DebugFlags
         # when accessing request.debug we will see the DebugFlags instance
         request = self._makeOne()
-        self.assert_(isinstance(request.debug, DebugFlags))
+        self.assertTrue(isinstance(request.debug, DebugFlags))
         # It won't be available through dictonary lookup, though
-        self.assert_(request.get('debug') is None)
+        self.assertTrue(request.get('debug') is None)
 
     def test_debug_in_qs_gets_form_var(self):
         env = {'QUERY_STRING': 'debug=1'}
@@ -823,16 +821,16 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         # before accessing request.locale for the first time, request._locale
         # is still a marker
-        self.assert_(request._locale is _marker)
+        self.assertTrue(request._locale is _marker)
 
         # when accessing request.locale we will see an ILocale
-        self.assert_(ILocale.providedBy(request.locale))
+        self.assertTrue(ILocale.providedBy(request.locale))
 
         # and request._locale has been set
-        self.assert_(request._locale is request.locale)
+        self.assertTrue(request._locale is request.locale)
 
         # It won't be available through dictonary lookup, though
-        self.assert_(request.get('locale') is None)
+        self.assertTrue(request.get('locale') is None)
 
     def test_locale_in_qs(self):
         provideAdapter(BrowserLanguages, [IHTTPRequest],
@@ -857,7 +855,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         request = self._makeOne(environ=env)
         request.processInputs()
 
-        self.assert_(ILocale.providedBy(request.locale))
+        self.assertTrue(ILocale.providedBy(request.locale))
 
         request.form['locale'] = '1'
         self.assertEqual(request.locale, '1')
@@ -876,7 +874,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             env['HTTP_ACCEPT_LANGUAGE'] = httplang
             request = self._makeOne(environ=env)
             locale = request.locale
-            self.assert_(ILocale.providedBy(locale))
+            self.assertTrue(ILocale.providedBy(locale))
             parts = httplang.split('-')
             lang = parts.pop(0).lower()
             territory = variant = None
@@ -898,10 +896,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         request = self._makeOne(environ=env)
         locale = request.locale
 
-        self.assert_(ILocale.providedBy(locale))
-        self.assert_(locale.id.language is None)
-        self.assert_(locale.id.territory is None)
-        self.assert_(locale.id.variant is None)
+        self.assertTrue(ILocale.providedBy(locale))
+        self.assertTrue(locale.id.language is None)
+        self.assertTrue(locale.id.territory is None)
+        self.assertTrue(locale.id.variant is None)
 
     def test_method_GET(self):
         env = {'REQUEST_METHOD': 'GET'}
