@@ -3,8 +3,9 @@ import unittest
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
+from OFS.interfaces import IWriteLock
 from zExceptions import Forbidden
-from zope.interface import implements
+from zope.interface import implementer
 
 
 class _DummySecurityPolicy(object):
@@ -13,10 +14,8 @@ class _DummySecurityPolicy(object):
         return False
 
 
+@implementer(IWriteLock)
 class _DummyContent(object):
-
-    from OFS.interfaces import IWriteLock
-    implements(IWriteLock)
 
     def __init__(self, token=None):
         self.token = token
@@ -49,7 +48,7 @@ class TestUnlock(unittest.TestCase):
         Prior to Zope 2.11, we returned a 204 under this circumstance.
         We choose do what mod_dav does, which is return a '400 Bad
         Request' error.
-        
+
         This was caught by litmus locks.notowner_lock test #10.
         """
         inst = self._makeOne()
@@ -91,7 +90,7 @@ class TestPropPatch(unittest.TestCase):
                      </set>
                      </propertyupdate>"""
 
-        request = {'BODY':reqbody}
+        request = {'BODY': reqbody}
 
         inst = self._makeOne(request)
         self.assertEqual(len(inst.values), 1)
@@ -142,4 +141,4 @@ def test_suite():
         unittest.makeSuite(TestUnlock),
         unittest.makeSuite(TestPropPatch),
         unittest.makeSuite(TestDeleteCollection),
-        ))
+    ))

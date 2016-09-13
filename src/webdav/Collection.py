@@ -23,7 +23,7 @@ from App.Common import rfc1123_date
 from OFS.Lockable import wl_isLocked
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
-from zope.interface import implements
+from zope.interface import implementer
 
 from webdav.common import Locked
 from webdav.common import PreconditionFailed
@@ -32,6 +32,7 @@ from webdav.interfaces import IDAVCollection
 from webdav.Resource import Resource
 
 
+@implementer(IDAVCollection)
 class Collection(Resource):
 
     """The Collection class provides basic WebDAV support for
@@ -39,8 +40,6 @@ class Collection(Resource):
     for all supported WebDAV HTTP methods. The behaviors of some
     WebDAV HTTP methods for collections are slightly different
     than those for non-collection resources."""
-
-    implements(IDAVCollection)
     security = ClassSecurityInfo()
 
     __dav_collection__=1

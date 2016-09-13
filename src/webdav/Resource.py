@@ -48,7 +48,7 @@ from zExceptions import Unauthorized
 import ZServer.Zope2.Startup.config
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
@@ -67,6 +67,7 @@ from webdav.interfaces import IDAVResource
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
+@implementer(IDAVResource)
 class Resource(Base, LockableItem):
 
     """The Resource mixin class provides basic WebDAV support for
@@ -74,8 +75,6 @@ class Resource(Base, LockableItem):
     for most supported WebDAV HTTP methods, however certain methods
     such as PUT should be overridden to ensure correct behavior in
     the context of the object type."""
-
-    implements(IDAVResource)
 
     __dav_resource__=1
 
