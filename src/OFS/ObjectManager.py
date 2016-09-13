@@ -46,7 +46,7 @@ from Persistence import Persistent
 from zExceptions import BadRequest, ResourceLockedError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
@@ -142,6 +142,7 @@ class BreakoutException(Exception):
 _marker = []
 
 
+@implementer(IObjectManager)
 class ObjectManager(CopyContainer,
                     Navigation,
                     Tabs,
@@ -155,8 +156,6 @@ class ObjectManager(CopyContainer,
 
     This class provides core behavior for collections of heterogeneous objects.
     """
-
-    implements(IObjectManager)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)

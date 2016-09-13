@@ -7,7 +7,7 @@ Subscriptions can be used for all kinds of request supervision,
 e.g. request and error rate determination, writing high resolution logfiles
 for detailed time related analysis, inline request monitoring.
 '''
-from zope.interface import implements
+from zope.interface import implementer
 
 from ZPublisher.interfaces import (
     IPubStart, IPubSuccess, IPubFailure,
@@ -23,46 +23,46 @@ class _Base(object):
         self.request = request
 
 
+@implementer(IPubStart)
 class PubStart(_Base):
     '''notified at the beginning of 'ZPublisher.Publish.publish'.'''
-    implements(IPubStart)
 
 
+@implementer(IPubSuccess)
 class PubSuccess(_Base):
     '''notified at successful request end.'''
-    implements(IPubSuccess)
 
 
+@implementer(IPubFailure)
 class PubFailure(object):
     '''notified at failed request end.'''
-    implements(IPubFailure)
 
     def __init__(self, request, exc_info, retry):
         self.request, self.exc_info, self.retry = request, exc_info, retry
 
 
+@implementer(IPubAfterTraversal)
 class PubAfterTraversal(_Base):
     """notified after traversal and an (optional) authentication."""
-    implements(IPubAfterTraversal)
 
 
+@implementer(IPubBeforeCommit)
 class PubBeforeCommit(_Base):
     """notified immediately before the commit."""
-    implements(IPubBeforeCommit)
 
 
+@implementer(IPubBeforeAbort)
 class PubBeforeAbort(_Base):
     """notified immediately before an abort."""
-    implements(IPubBeforeAbort)
 
     def __init__(self, request, exc_info, retry):
         self.request, self.exc_info, self.retry = request, exc_info, retry
 
 
+@implementer(IPubBeforeStreaming)
 class PubBeforeStreaming(object):
     """Notified immediately before streaming via response.write() commences
     """
-    implements(IPubBeforeStreaming)
 
     def __init__(self, response):
         self.response = response

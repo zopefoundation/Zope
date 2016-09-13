@@ -31,8 +31,7 @@ from Persistence import Persistent
 from zExceptions import Redirect, ResourceLockedError
 from zope.contenttype import guess_content_type
 from zope.event import notify
-from zope.interface import implementedBy
-from zope.interface import implements
+from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
 
@@ -87,17 +86,11 @@ def manage_addFile(self, id, file='', title='', precondition='',
         raise Redirect(self.absolute_url() + '/manage_main')
 
 
+@implementer(IWriteLock,
+             HTTPRangeSupport.HTTPRangeInterface)
 class File(Persistent, Implicit, PropertyManager,
            RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
-
-    implements(implementedBy(Persistent),
-               implementedBy(Implicit),
-               implementedBy(PropertyManager),
-               implementedBy(RoleManager),
-               implementedBy(Item_w__name__),
-               IWriteLock,
-               HTTPRangeSupport.HTTPRangeInterface)
 
     meta_type = 'File'
 

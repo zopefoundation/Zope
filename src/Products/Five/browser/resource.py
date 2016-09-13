@@ -20,7 +20,7 @@ import urllib
 import zope.browserresource.directory
 import zope.browserresource.file
 from zope.browserresource.file import File
-from zope.interface import implements
+from zope.interface import implementer
 from zope.traversing.browser import absoluteURL
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
@@ -54,8 +54,8 @@ class Resource(object):
         return "%s/%s" % (url, name)
 
 
+@implementer(IBrowserPublisher)
 class PageTemplateResource(Resource, BrowserView):
-    implements(IBrowserPublisher)
 
     def browserDefault(self, request):
         return self.render, ()

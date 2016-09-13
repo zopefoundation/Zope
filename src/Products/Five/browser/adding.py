@@ -37,7 +37,7 @@ from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
 from zope.event import notify
 from zope.exceptions.interfaces import UserError
-from zope.interface import implements
+from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -47,8 +47,8 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
+@implementer(IAdding, IPublishTraverse)
 class Adding(BrowserView):
-    implements(IAdding, IPublishTraverse)
 
     def add(self, content):
         """See zope.browser.interfaces.IAdding
@@ -199,11 +199,10 @@ class ContentAdding(Adding, SimpleItem):
     menu_id = "add_content"
 
 
+@implementer(INameChooser)
 class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
     """
-
-    implements(INameChooser)
 
     def __init__(self, context):
         self.context = context

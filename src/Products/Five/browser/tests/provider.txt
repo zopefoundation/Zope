@@ -28,11 +28,13 @@ So let's create a simple content provider:
   >>> import zope.component
   >>> from zope.publisher.interfaces import browser
 
-  >>> class MessageBox(object):
-  ...     zope.interface.implements(interfaces.IContentProvider)
-  ...     zope.component.adapts(zope.interface.Interface,
-  ...                           browser.IDefaultBrowserLayer,
-  ...                           zope.interface.Interface)
+  >>> @zope.interface.implementer(interfaces.IContentProvider)
+  ... @zope.component.adapter(
+  ...     zope.interface.Interface,
+  ...     browser.IDefaultBrowserLayer,
+  ...     zope.interface.Interface
+  ... )
+  ... class MessageBox(object):
   ...     message = u'My Message'
   ...
   ...     def __init__(self, context, request, view):
@@ -121,8 +123,9 @@ provider implement an interface that specifies the attributes and provides
 
 Now the message box can receive its text from the TAL environment:
 
-  >>> class DynamicMessageBox(MessageBox):
-  ...     zope.interface.implements(IMessageText)
+  >>> @zope.interface.implementer(IMessageText)
+  ... class DynamicMessageBox(MessageBox):
+  ...     pass
 
   >>> zope.component.provideAdapter(
   ...     DynamicMessageBox, provides=interfaces.IContentProvider,
@@ -159,8 +162,8 @@ Finally, a content provider can also implement several ``ITALNamespaceData``:
 We'll change our message box content provider implementation a bit, so the new
 information is used:
 
-  >>> class BetterDynamicMessageBox(DynamicMessageBox):
-  ...     zope.interface.implements(IMessageType)
+  >>> @zope.interface.implementer(IMessageType)
+  ... class BetterDynamicMessageBox(DynamicMessageBox):
   ...     type = None
   ...
   ...     def render(self):
@@ -196,10 +199,11 @@ Now we test a provider using a PageTemplateFile to render itself:
   >>> open(dynTemplate, 'w').write(
   ...   'A simple template: <tal:simple replace="python:view.my_property" />')
   >>> from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-  >>> class TemplateProvider(object):
-  ...     zope.component.adapts(zope.interface.Interface,
-  ...                           browser.IDefaultBrowserLayer,
-  ...                           zope.interface.Interface)
+  >>> @zope.component.adapter(
+  ...     zope.interface.Interface,
+  ...     browser.IDefaultBrowserLayer,
+  ...     zope.interface.Interface)
+  ... class TemplateProvider(object):
   ...
   ...     def __init__(self, context, request, view):
   ...         self.__parent__ = view

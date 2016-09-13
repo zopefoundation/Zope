@@ -1,7 +1,7 @@
 import io
 
 from zope.interface import Interface
-from zope.interface import implements
+from zope.interface import implementer
 
 
 class IUnboundStreamIterator(Interface):
@@ -38,13 +38,12 @@ class IStreamIterator(IUnboundStreamIterator):
         """
 
 
+@implementer(IStreamIterator)
 class filestream_iterator(io.FileIO):
     """
     A FileIO subclass which implements an iterator that returns a
     fixed-sized sequence of bytes.
     """
-
-    implements(IStreamIterator)
 
     def __init__(self, name, mode='rb', bufsize=-1, streamsize=1 << 16):
         super(filestream_iterator, self).__init__(name, mode)

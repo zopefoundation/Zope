@@ -40,7 +40,7 @@ from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
 from zope.interface import directlyProvidedBy
 from zope.interface import directlyProvides
-from zope.interface import implements
+from zope.interface import implementer
 from zope.publisher.base import DebugFlags
 from zope.publisher.interfaces.browser import IBrowserRequest
 
@@ -119,6 +119,7 @@ class NestedLoopExit(Exception):
     pass
 
 
+@implementer(IBrowserRequest)
 class HTTPRequest(BaseRequest):
     """ Model HTTP request data.
 
@@ -170,11 +171,6 @@ class HTTPRequest(BaseRequest):
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.
     """
-
-    # The claim to implement IBrowserRequest has been made during the Zope3
-    # integration project called Five but hasn't been completed in full.
-
-    implements(IBrowserRequest)
 
     _hacked_path = None
     args = ()

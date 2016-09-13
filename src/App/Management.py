@@ -16,7 +16,7 @@
 from cgi import escape
 import urllib
 
-from zope.interface import implements
+from zope.interface import implementer
 from AccessControl import Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -132,10 +132,9 @@ class Tabs(Base):
 InitializeClass(Tabs)
 
 
+@implementer(INavigation)
 class Navigation(Base):
     """Basic navigation UI support"""
-
-    implements(INavigation)
 
     security = ClassSecurityInfo()
 

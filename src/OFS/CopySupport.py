@@ -36,7 +36,7 @@ from Acquisition import aq_parent
 from ExtensionClass import Base
 from zExceptions import Unauthorized, BadRequest, ResourceLockedError
 from ZODB.POSException import ConflictError
-from zope.interface import implements
+from zope.interface import implementer
 from zope.event import notify
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
@@ -59,11 +59,10 @@ copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 _marker = []
 
 
+@implementer(ICopyContainer)
 class CopyContainer(Base):
 
     """Interface for containerish objects which allow cut/copy/paste"""
-
-    implements(ICopyContainer)
 
     security = ClassSecurityInfo()
 
@@ -448,11 +447,10 @@ class CopyContainer(Base):
 InitializeClass(CopyContainer)
 
 
+@implementer(ICopySource)
 class CopySource(Base):
 
     """Interface for objects which allow themselves to be copied."""
-
-    implements(ICopySource)
 
     # declare a dummy permission for Copy or Move here that we check
     # in cb_isCopyable.

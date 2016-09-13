@@ -14,8 +14,8 @@
 """Adapter test fixtures
 """
 
-from zope.interface import implements, Interface
-from zope.component import adapts
+from zope.component import adapter
+from zope.interface import implementer, Interface
 
 
 class IAdaptable(Interface):
@@ -46,16 +46,16 @@ class IDestination(Interface):
         """Do something"""
 
 
+@implementer(IAdaptable)
 class Adaptable(object):
-    implements(IAdaptable)
 
     def method(self):
         return "The method"
 
 
+@implementer(IAdapted)
+@adapter(IAdaptable)
 class Adapter(object):
-    implements(IAdapted)
-    adapts(IAdaptable)
 
     def __init__(self, context):
         self.context = context
@@ -64,12 +64,13 @@ class Adapter(object):
         return "Adapted: %s" % self.context.method()
 
 
+@implementer(IOrigin)
 class Origin(object):
-    implements(IOrigin)
+    pass
 
 
+@implementer(IDestination)
 class OriginalAdapter(object):
-    implements(IDestination)
 
     def __init__(self, context):
         self.context = context
@@ -78,8 +79,8 @@ class OriginalAdapter(object):
         return "Original"
 
 
+@implementer(IDestination)
 class OverrideAdapter(object):
-    implements(IDestination)
 
     def __init__(self, context):
         self.context = context

@@ -18,7 +18,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.owner import ownerInfo
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Persistence import Persistent
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS.interfaces import ILockItem
 
@@ -50,9 +50,8 @@ def validateTimeout(timeout):
     return timeout, errors
 
 
+@implementer(ILockItem)
 class LockItem(Persistent):
-
-    implements(ILockItem)
 
     security = ClassSecurityInfo()
     security.declarePublic('getOwner', 'getLockToken', 'getDepth',

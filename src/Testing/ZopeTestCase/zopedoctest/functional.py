@@ -39,9 +39,8 @@ if sys.version_info >= (3, ):
     basestring = str
 
 
-class HTTPHeaderOutput:
+class HTTPHeaderOutput(object):
 
-    # zope.interface.implements(zope.server.interfaces.IHeaderOutput)
     status = '200'
     reason = 'OK'
 
@@ -214,7 +213,7 @@ def http(request_string, handle_errors=True):
         response, outstream, path, header_output, wsgi_result, wsgi_headers)
 
 
-class ZopeSuiteFactory:
+class ZopeSuiteFactory(object):
 
     def __init__(self, *args, **kw):
         self._args = args

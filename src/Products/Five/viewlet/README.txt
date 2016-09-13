@@ -64,8 +64,9 @@ Now we have to instantiate it in the context of an actual zope object:
 
   >>> import zope.interface
   >>> from OFS import SimpleItem, Folder
-  >>> class Content(SimpleItem.SimpleItem):
-  ...     zope.interface.implements(zope.interface.Interface)
+  >>> @zope.interface.implementer(zope.interface.Interface)
+  ... class Content(SimpleItem.SimpleItem):
+  ...     pass
   >>> obj_id = self.folder._setObject('content1', Content())
   >>> content = self.folder[obj_id]
 
@@ -89,8 +90,8 @@ But now we register some viewlets for the manager
   >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
   >>> from zope.browser.interfaces import IBrowserView
 
-  >>> class WeatherBox(object):
-  ...     zope.interface.implements(interfaces.IViewlet)
+  >>> @zope.interface.implementer(interfaces.IViewlet)
+  ... class WeatherBox(object):
   ...
   ...     def __init__(self, context, request, view, manager):
   ...         self.__parent__ = view
@@ -108,8 +109,8 @@ But now we register some viewlets for the manager
   ...     IBrowserView, ILeftColumn),
   ...     interfaces.IViewlet, name='weather')
 
-  >>> class SportBox(object):
-  ...     zope.interface.implements(interfaces.IViewlet)
+  >>> @zope.interface.implementer(interfaces.IViewlet)
+  ... class SportBox(object):
   ...
   ...     def __init__(self, context, request, view, manager):
   ...         self.__parent__ = view
@@ -426,8 +427,8 @@ generic contents view for files. The step is to create a file component:
   >>> class IFile(zope.interface.Interface):
   ...     data = zope.interface.Attribute('Data of file.')
 
-  >>> class File(SimpleItem.SimpleItem):
-  ...     zope.interface.implements(IFile)
+  >>> @zope.interface.implementer(IFile)
+  ... class File(SimpleItem.SimpleItem):
   ...     def __init__(self, data=''):
   ...         self.__name__ = ''
   ...         self.data = data
@@ -436,9 +437,9 @@ Since we want to also provide the size of a file, here a simple implementation
 of the ``ISized`` interface:
 
   >>> from zope import size
-  >>> class FileSized(object):
-  ...     zope.interface.implements(size.interfaces.ISized)
-  ...     zope.component.adapts(IFile)
+  >>> @zope.interface.implementer(size.interfaces.ISized)
+  ... @zope.component.adapter(IFile)
+  ... class FileSized(object):
   ...
   ...     def __init__(self, file):
   ...         self.file = file
@@ -497,8 +498,8 @@ different item:
 
   >>> shownColumns = []
 
-  >>> class ContentsViewletManager(object):
-  ...     zope.interface.implements(interfaces.IViewletManager)
+  >>> @zope.interface.implementer(interfaces.IViewletManager)
+  ... class ContentsViewletManager(object):
   ...     index = None
   ...
   ...     def __init__(self, context, request, view):
@@ -761,16 +762,16 @@ sorting using a simple utility:
   ...     def sort(values):
   ...         """Sort the values."""
 
-  >>> class SortByName(object):
-  ...     zope.interface.implements(ISorter)
+  >>> @zope.interface.implementer(ISorter)
+  ... class SortByName(object):
   ...
   ...     def sort(self, values):
   ...         return sorted(values, key=attrgetter('__name__'))
 
   >>> zope.component.provideUtility(SortByName(), name='name')
 
-  >>> class SortBySize(object):
-  ...     zope.interface.implements(ISorter)
+  >>> @zope.interface.implementer(ISorter)
+  ... class SortBySize(object):
   ...
   ...     def sort(self, values):
   ...         def _key(value):
@@ -785,8 +786,8 @@ viewlet manager much simpler:
 
   >>> sortByColumn = ''
 
-  >>> class SortedContentsViewletManager(manager.ViewletManagerBase):
-  ...     zope.interface.implements(interfaces.IViewletManager)
+  >>> @zope.interface.implementer(interfaces.IViewletManager)
+  ... class SortedContentsViewletManager(manager.ViewletManagerBase):
   ...     index = None
   ...
   ...     def __init__(self, context, request, view):

@@ -18,7 +18,7 @@ Allows for arbitrary application of marker interfaces to objects.
 
 from sets import Set
 
-from zope.interface import implements, implementedBy, providedBy
+from zope.interface import implementer, implementedBy, providedBy
 from zope.interface import directlyProvides, directlyProvidedBy
 from zope.interface.interfaces import IInterface
 from zope.component.interface import getInterface, interfaceToName
@@ -46,9 +46,8 @@ mark = interfaceStringCheck(mark)
 erase = interfaceStringCheck(erase)
 
 
+@implementer(IMarkerInterfaces)
 class MarkerInterfacesAdapter(object):
-
-    implements(IMarkerInterfaces)
 
     mark = staticmethod(mark)
     erase = staticmethod(erase)

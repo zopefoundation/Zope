@@ -1,12 +1,12 @@
 import unittest
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS.interfaces import IWriteLock
 
 
+@implementer(IWriteLock)
 class LockableResource(object):
-    implements(IWriteLock)
 
     def __init__(self, locked):
         self.locked = locked

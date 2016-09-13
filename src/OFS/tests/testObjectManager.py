@@ -11,7 +11,7 @@ from App.config import getConfiguration
 from logging import getLogger
 from zExceptions import BadRequest
 from zope.component.testing import PlacelessSetup
-from zope.interface import implements
+from zope.interface import implementer
 from Zope2.App import zcml
 
 from OFS.interfaces import IItem
@@ -68,9 +68,9 @@ class ItemForDeletion(SimpleItem):
         pass
 
 
+@implementer(IItem)
 class ObjectManagerWithIItem(ObjectManager):
     """The event subscribers work on IItem."""
-    implements(IItem)
 
 
 class ObjectManagerTests(PlacelessSetup, unittest.TestCase):

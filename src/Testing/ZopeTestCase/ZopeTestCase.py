@@ -22,7 +22,7 @@ The default user is logged in and has the 'Access contents information'
 and 'View' permissions given to his role.
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -44,10 +44,9 @@ user_role = 'test_role_1_'
 standard_permissions = [access_contents_information, view]
 
 
+@implementer(interfaces.IZopeSecurity)
 class ZopeTestCase(base.TestCase):
     '''Base test case for Zope testing'''
-
-    implements(interfaces.IZopeSecurity)
 
     _setup_fixture = 1
 

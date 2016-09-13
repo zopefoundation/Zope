@@ -117,10 +117,10 @@ product's ``interfaces.py``::
 
 Then the class CoolDocument is marked with this interface::
 
-    from zope.interface import implements
+    from zope.interface import implementer
     from Products.CoolProduct.interfaces import ICoolDocument
+    @implementer(ICoolDocument)
     class CoolDocument(...):
-        implements(ICoolDocument)
         ...
 
 Finally we must link the event and the interface to the subscriber using

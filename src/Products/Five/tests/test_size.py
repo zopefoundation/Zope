@@ -14,13 +14,13 @@
 """Size adapters for testing
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.size.interfaces import ISized
 
 
+@implementer(ISized)
 class SimpleContentSize(object):
     """Size for ``SimpleContent`` objects."""
-    implements(ISized)
 
     def __init__(self, context):
         self.context = context
@@ -32,9 +32,9 @@ class SimpleContentSize(object):
         return "What is the meaning of life?"
 
 
+@implementer(ISized)
 class FancyContentSize(object):
     """Size for ``SimpleContent`` objects."""
-    implements(ISized)
 
     def __init__(self, context):
         self.context = context

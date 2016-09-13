@@ -13,8 +13,8 @@
 """Placeless setup tests
 """
 
-from zope.component import adapts
-from zope.interface import implements, Interface
+from zope.component import adapter
+from zope.interface import implementer, Interface
 
 from Testing import ZopeTestCase
 
@@ -48,16 +48,16 @@ class IAdapted(Interface):
         """
 
 
+@implementer(IAdaptable)
 class Adaptable:
-    implements(IAdaptable)
 
     def method(self):
         return "The method"
 
 
+@implementer(IAdapted)
+@adapter(IAdaptable)
 class Adapter:
-    implements(IAdapted)
-    adapts(IAdaptable)
 
     def __init__(self, context):
         self.context = context

@@ -38,8 +38,8 @@ class ITestItem(interface.Interface):
     pass
 
 
+@interface.implementer(ITestItem)
 class TestItem(SimpleItem):
-    interface.implements(ITestItem)
 
     def __init__(self, id):
         self.id = id
@@ -49,8 +49,8 @@ class ITestFolder(interface.Interface):
     pass
 
 
+@interface.implementer(ITestFolder)
 class TestFolder(Folder):
-    interface.implements(ITestFolder)
 
     def __init__(self, id):
         self.id = id

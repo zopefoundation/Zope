@@ -17,7 +17,7 @@ import sys
 
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from zope.interface import implements
+from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
 
 if sys.version_info >= (3, ):
@@ -26,13 +26,12 @@ if sys.version_info >= (3, ):
 default_encoding = sys.getdefaultencoding()
 
 
+@implementer(IUnicodeEncodingConflictResolver)
 class DefaultUnicodeEncodingConflictResolver(object):
     """ This resolver implements the old-style behavior and will
         raise an exception in case of the string 'text' can't be converted
         properly to unicode.
     """
-
-    implements(IUnicodeEncodingConflictResolver)
 
     def resolve(self, context, text, expression):
         return unicode(text)
@@ -41,13 +40,12 @@ DefaultUnicodeEncodingConflictResolver = \
     DefaultUnicodeEncodingConflictResolver()
 
 
+@implementer(IUnicodeEncodingConflictResolver)
 class Z2UnicodeEncodingConflictResolver(object):
     """ This resolver tries to lookup the encoding from the
         'management_page_charset' property and defaults to
         sys.getdefaultencoding().
     """
-
-    implements(IUnicodeEncodingConflictResolver)
 
     def __init__(self, mode='strict'):
         self.mode = mode
@@ -66,12 +64,11 @@ class Z2UnicodeEncodingConflictResolver(object):
                 return unicode(text, 'iso-8859-15', self.mode)
 
 
+@implementer(IUnicodeEncodingConflictResolver)
 class PreferredCharsetResolver(object):
     """ A resolver that tries use the encoding information
         from the HTTP_ACCEPT_CHARSET header.
     """
-
-    implements(IUnicodeEncodingConflictResolver)
 
     def resolve(self, context, text, expression):
 

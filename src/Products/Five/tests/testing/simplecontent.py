@@ -18,7 +18,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 
@@ -34,8 +34,8 @@ class IIndexSimpleContent(ISimpleContent):
     pass
 
 
+@implementer(ISimpleContent)
 class SimpleContent(SimpleItem):
-    implements(ISimpleContent)
 
     meta_type = 'Five SimpleContent'
     security = ClassSecurityInfo()
@@ -57,9 +57,9 @@ class SimpleContent(SimpleItem):
 InitializeClass(SimpleContent)
 
 
+@implementer(ICallableSimpleContent)
 class CallableSimpleContent(SimpleItem):
     """A Viewable piece of content"""
-    implements(ICallableSimpleContent)
 
     meta_type = "Five CallableSimpleContent"
 
@@ -70,9 +70,9 @@ class CallableSimpleContent(SimpleItem):
 InitializeClass(CallableSimpleContent)
 
 
+@implementer(IIndexSimpleContent)
 class IndexSimpleContent(SimpleItem):
     """A Viewable piece of content"""
-    implements(IIndexSimpleContent)
 
     meta_type = 'Five IndexSimpleContent'
 

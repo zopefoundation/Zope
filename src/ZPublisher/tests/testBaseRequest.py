@@ -1,14 +1,13 @@
 import unittest
 
 from zExceptions import NotFound
-from zope.interface import implements
+from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
 
 
+@implementer(IPublishTraverse)
 class DummyTraverser(object):
-
-    implements(IPublishTraverse)
 
     def publishTraverse(self, request, name):
         if name == 'dummy':
@@ -515,10 +514,10 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
         return IDummy
 
     def _makeDummyObject(self, name='dummy'):
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(self._dummyInterface())
         class DummyObjectZ3(self._makeBasicObjectClass()):
-            implements(self._dummyInterface())
 
             def __init__(self, name):
                 self.name = name
@@ -526,10 +525,10 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
         return DummyObjectZ3(name)
 
     def _makeDummyObjectWithAttr(self, name):
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(self._dummyInterface())
         class DummyObjectZ3WithAttr(self._makeBasicObjectClass()):
-            implements(self._dummyInterface())
 
             def __init__(self, name):
                 self.name = name

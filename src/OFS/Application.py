@@ -35,7 +35,7 @@ from zExceptions import (
     Forbidden,
     Redirect as RedirectException,
 )
-from zope.interface import implements
+from zope.interface import implementer
 
 import Folder
 import misc_
@@ -52,10 +52,9 @@ LOG = getLogger('Application')
 APP_MANAGER = None
 
 
+@implementer(IApplication)
 class Application(ApplicationDefaultPermissions, Folder.Folder):
     """Top-level system object"""
-
-    implements(IApplication)
 
     security = ClassSecurityInfo()
 

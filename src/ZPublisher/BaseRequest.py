@@ -25,7 +25,7 @@ from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 from zope.location.interfaces import LocationError
 from zope.publisher.defaultview import queryDefaultViewName
@@ -70,9 +70,8 @@ class RequestContainer(Base):
         return type_converters.keys()
 
 
+@implementer(IBrowserPublisher)
 class DefaultPublishTraverse(object):
-
-    implements(IBrowserPublisher)
 
     def __init__(self, context, request):
         self.context = context

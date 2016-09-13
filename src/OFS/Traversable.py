@@ -32,7 +32,7 @@ from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
 from zope.location.interfaces import LocationError
@@ -42,8 +42,8 @@ from zope.traversing.namespace import nsParse
 _marker = object()
 
 
+@implementer(ITraversable)
 class Traversable:
-    implements(ITraversable)
 
     security = ClassSecurityInfo()
 

@@ -45,19 +45,20 @@ class TestRegisterClass(unittest.TestCase):
             class Dummy(object):
                 pass
         else:
-            from zope.interface import implements
+            from zope.interface import implementer
 
+            @implementer(ifaces)
             class Dummy(object):
-                implements(ifaces)
+                pass
         return Dummy
 
     def _registerPermission(self, name, title=None):
         from zope.component import provideUtility
-        from zope.interface import implements
+        from zope.interface import implementer
         from zope.security.interfaces import IPermission
 
+        @implementer(IPermission)
         class Perm:
-            implements(IPermission)
 
             def __init__(self, title):
                 self. title = title

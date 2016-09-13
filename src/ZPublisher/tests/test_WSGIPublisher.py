@@ -92,10 +92,10 @@ class WSGIResponseTests(unittest.TestCase):
 
     def test_setBody_IUnboundStreamIterator(self):
         from ZPublisher.Iterators import IUnboundStreamIterator
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(IUnboundStreamIterator)
         class TestStreamIterator(object):
-            implements(IUnboundStreamIterator)
             data = "hello"
             done = 0
 
@@ -115,10 +115,10 @@ class WSGIResponseTests(unittest.TestCase):
 
     def test_setBody_IStreamIterator(self):
         from ZPublisher.Iterators import IStreamIterator
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(IStreamIterator)
         class TestStreamIterator(object):
-            implements(IStreamIterator)
             data = "hello"
             done = 0
 
@@ -342,10 +342,10 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
 
     def test_response_is_stream(self):
         from ZPublisher.Iterators import IStreamIterator
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(IStreamIterator)
         class TestStreamIterator(object):
-            implements(IStreamIterator)
             data = "hello"
             done = 0
 
@@ -368,10 +368,10 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
 
     def test_response_is_unboundstream(self):
         from ZPublisher.Iterators import IUnboundStreamIterator
-        from zope.interface import implements
+        from zope.interface import implementer
 
+        @implementer(IUnboundStreamIterator)
         class TestUnboundStreamIterator(object):
-            implements(IUnboundStreamIterator)
             data = "hello"
             done = 0
 

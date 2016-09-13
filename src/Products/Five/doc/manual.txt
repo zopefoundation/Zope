@@ -44,9 +44,8 @@ a class, but contains no implementation::
 A concrete class somewhere can now claim that it implements the
 interface (i.e. its instance will provide the interface)::
 
+  @implementer(IElephant)
   class PinkElephant:
-      # this says all instances of this class provide IElephant
-      implements(IElephant)
 
       def getAngerLevel(self):
           return 0 # this elephant is peaceful
@@ -100,13 +99,13 @@ to subclass it from ``zope.interface.Interface``. Here is an example::
           """
 
 Now to make some class declare that it implements this interface, you
-need to use the ``implements()`` function in the class::
+need to use the ``implementer()`` decorator on the class::
 
-  from zope.interface import implements
+  from zope.interface import implementer
   from interfaces import IMyInterface
 
-  class MyClass:
-      implements(IMyInterface)
+  @implementer(IMyInterface)
+  class MyClass(object):
 
       def someMethod(self):
            return "I am alive! Alive!"
@@ -126,11 +125,11 @@ requirement to make a class that is an adapter is very simple; you
 only need to take a context object as the constructor. The context
 object is the object being adapted. An example::
 
-  from zope.interface import implements
+  from zope.interface import implementer
   from interfaces import INewInterface
 
+  @implementer(INewInterface)
   class MyAdapter:
-      implements(INewInterface)
  
       def __init__(self, context):
           self.context = context
@@ -162,7 +161,7 @@ can now be adapted to ``INewInterface``, like this::
 
   object = MyClass()
   adapted = INewInterface(object)
-  print adapted.anotherMethod()
+  print(adapted.anotherMethod())
 
 Views
 -----
@@ -177,11 +176,12 @@ Zope objects, as long as two things are the case:
 * The object (typically its class) is made traversable. This allows Zope
   views, resources and other things to be attached to a Zope object.
 
-Typically you give your classes an interface using the ``implements``
-directive in the class body::
+Typically you give your classes an interface using the ``implementer``
+decorator on the class::
 
-  class MyClass:
-      implements(ISomeInterface)
+  @implementer(ISomeInterface)
+  class MyClass(object):
+      pass
 
 For existing objects that you cannot modify this is not
 possible. Instead, we provide a ZCML directive to accomplish this. As

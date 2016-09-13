@@ -69,11 +69,11 @@ def maybeWarnDeprecated(ob, method_name):
         (class_.__module__, class_.__name__, method_name))
 
 
+@zope.interface.implementer(zope.location.interfaces.ISublocations)
+@zope.component.adapter(OFS.interfaces.IObjectManager)
 class ObjectManagerSublocations(object):
     """Get the sublocations for an ObjectManager.
     """
-    zope.component.adapts(OFS.interfaces.IObjectManager)
-    zope.interface.implements(zope.location.interfaces.ISublocations)
 
     def __init__(self, container):
         self.container = container

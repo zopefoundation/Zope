@@ -17,7 +17,7 @@ Folders are the basic container objects and are analogous to directories.
 
 from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS import bbb
 from OFS.interfaces import IFolder
@@ -50,6 +50,7 @@ def manage_addFolder(self, id, title='',
         return self.manage_main(self, REQUEST)
 
 
+@implementer(IFolder)
 class Folder(
         ObjectManager,
         PropertyManager,
@@ -62,8 +63,6 @@ class Folder(
     interface for object management. Folder objects also implement
     a management interface and can have arbitrary properties.
     """
-
-    implements(IFolder)
     meta_type = 'Folder'
 
     _properties = (

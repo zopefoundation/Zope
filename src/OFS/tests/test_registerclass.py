@@ -18,7 +18,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 
@@ -26,8 +26,8 @@ class ISimpleContent(Interface):
     pass
 
 
+@implementer(ISimpleContent)
 class SimpleContent(SimpleItem):
-    implements(ISimpleContent)
 
     meta_type = 'SimpleContent'
     security = ClassSecurityInfo()

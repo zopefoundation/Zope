@@ -19,7 +19,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
 from OFS.SimpleItem import SimpleItem
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 
@@ -43,13 +43,13 @@ class FancyAttribute(Explicit):
 InitializeClass(FancyAttribute)
 
 
+@implementer(IFancyContent)
 class FancyContent(SimpleItem):
     """A class that already comes with its own __bobo_traverse__ handler.
     Quite fancy indeed.
 
     It also comes with its own get_size method.
     """
-    implements(IFancyContent)
 
     meta_type = "Fancy Content"
     security = ClassSecurityInfo()
@@ -69,14 +69,13 @@ class FancyContent(SimpleItem):
 InitializeClass(FancyContent)
 
 
+@implementer(IFancyContent)
 class NonTraversableFancyContent(SimpleItem):
     """A class that already comes with its own __bobo_traverse__ handler.
     Quite fancy indeed.
 
     It also comes with its own get_size method.
     """
-    # A copy of the above class used to demonstrate some baseline behavior.
-    implements(IFancyContent)
 
     meta_type = "Fancy Content"
     security = ClassSecurityInfo()

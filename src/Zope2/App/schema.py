@@ -13,17 +13,16 @@
 ##############################################################################
 
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.interfaces import IVocabularyRegistry
 from zope.schema.vocabulary import setVocabularyRegistry
 
 
+@implementer(IVocabularyRegistry)
 class Zope2VocabularyRegistry(object):
     """IVocabularyRegistry that supports global and local utilities.
     """
-
-    implements(IVocabularyRegistry)
     __slots__ = ()
 
     def get(self, context, name):

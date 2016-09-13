@@ -19,6 +19,7 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Use `@implementer` and `@adapter` class decorators.
 
 4.0a2 (2016-09-09)
 ------------------

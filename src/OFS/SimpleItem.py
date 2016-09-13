@@ -50,7 +50,7 @@ from ExtensionClass import Base
 from Persistence import Persistent
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS import bbb
 from OFS.interfaces import IItem
@@ -70,6 +70,7 @@ else:
 logger = logging.getLogger()
 
 
+@implementer(IItem)
 class Item(Base,
            Resource,
            LockableItem,
@@ -78,8 +79,6 @@ class Item(Base,
            Traversable,
            Owned):
     """A common base class for simple, non-container objects."""
-
-    implements(IItem)
 
     security = ClassSecurityInfo()
 
@@ -386,10 +385,9 @@ class Item(Base,
 InitializeClass(Item)
 
 
+@implementer(IItemWithName)
 class Item_w__name__(Item):
     """Mixin class to support common name/id functions"""
-
-    implements(IItemWithName)
 
     def getId(self):
         """Return the id of the object as a string.
@@ -433,6 +431,7 @@ def pretty_tb(t, v, tb, as_html=1):
     return tb
 
 
+@implementer(ISimpleItem)
 class SimpleItem(Item,
                  Persistent,
                  Implicit,
@@ -440,8 +439,6 @@ class SimpleItem(Item,
                  ):
     """Mix-in class combining the most common set of basic mix-ins
     """
-
-    implements(ISimpleItem)
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(View, ('Manager',))

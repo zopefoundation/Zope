@@ -21,7 +21,7 @@ import sys
 
 from zope.component import queryUtility
 from zope.i18n import translate
-from zope.interface import implements
+from zope.interface import implementer
 from zope.pagetemplate.engine import ZopeEngine as Z3Engine
 from zope.proxy import removeAllProxies
 from zope.tales.expressions import DeferExpr
@@ -353,12 +353,10 @@ class ZopeIterator(Iterator):
         return super(ZopeIterator, self).next()
 
 
+@implementer(ITraversable)
 class PathIterator(ZopeIterator):
     """A TALES Iterator with the ability to use first() and last() on
     subpaths of elements."""
-    # we want to control our own traversal so that we can deal with
-    # 'first' and 'last' when they appear in path expressions
-    implements(ITraversable)
 
     def traverse(self, name, furtherPath):
         if name in ('first', 'last'):

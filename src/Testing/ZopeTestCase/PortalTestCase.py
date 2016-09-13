@@ -29,7 +29,7 @@ import base
 import interfaces
 import utils
 
-from zope.interface import implements
+from zope.interface import implementer
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -41,11 +41,10 @@ from ZopeTestCase import user_password
 portal_name = 'portal'
 
 
+@implementer(interfaces.IPortalTestCase,
+             interfaces.IPortalSecurity)
 class PortalTestCase(base.TestCase):
     '''Base test case for testing CMF-style portals'''
-
-    implements(interfaces.IPortalTestCase,
-               interfaces.IPortalSecurity)
 
     _configure_portal = 1
 

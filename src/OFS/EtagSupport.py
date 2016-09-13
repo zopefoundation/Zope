@@ -15,7 +15,7 @@ import time
 
 from Acquisition import aq_acquire
 from zExceptions import HTTPPreconditionFailed
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 
@@ -56,6 +56,7 @@ class EtagBaseInterface(Interface):
         """
 
 
+@implementer(EtagBaseInterface)
 class EtagSupport(object):
     """
     This class is the basis for supporting Etags in Zope.  It's main
@@ -68,7 +69,6 @@ class EtagSupport(object):
     can be rejected according to the type of header (If-Match,
     If-None-Match).
     """
-    implements(EtagBaseInterface)
 
     def http__etag(self, readonly=0):
         try:

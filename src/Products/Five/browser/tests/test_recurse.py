@@ -22,7 +22,7 @@ def test_recursion():
     This test makes sure that recursion is avoided for view lookup.
     First, we need to set up a stub interface...
 
-      >>> from zope.interface import Interface, implements
+      >>> from zope.interface import Interface, implementer
       >>> class IRecurse(Interface):
       ...     pass
       ...
@@ -30,8 +30,8 @@ def test_recursion():
     and a class that is callable and has a view method:
 
       >>> from OFS.Traversable import Traversable
-      >>> class Recurse(Traversable):
-      ...     implements(IRecurse)
+      >>> @implementer(IRecurse)
+      ... class Recurse(Traversable):
       ...     def view(self):
       ...         return self()
       ...     def __call__(self):

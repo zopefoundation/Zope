@@ -27,10 +27,11 @@ def test_view_with_unwrapped_context():
     >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
     >>> from Products.Five.tests.testing import simplecontent as sc
     >>> from zope.interface import Interface
-    >>> from zope.interface import implements
+    >>> from zope.interface import implementer
     >>> from zope.component import queryMultiAdapter
-    >>> class Unwrapped:
-    ...     implements(sc.ISimpleContent)
+    >>> @implementer(sc.ISimpleContent)
+    ... class Unwrapped:
+    ...     pass
     >>> unwrapped = Unwrapped()
 
     Simple views should work fine without having their contexts wrapped:

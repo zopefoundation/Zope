@@ -16,7 +16,7 @@
 
 from OFS.Folder import Folder
 from OFS.interfaces import IFolder
-from zope.interface import implements
+from zope.interface import implementer
 
 
 class NoVerifyPasteFolder(Folder):
@@ -34,10 +34,10 @@ def manage_addNoVerifyPasteFolder(container, id, title=''):
     folder.title = title
 
 
+@implementer(IFolder)
 class FiveTraversableFolder(Folder):
     """Folder that is five-traversable
     """
-    implements(IFolder)
 
 
 def manage_addFiveTraversableFolder(container, id, title=''):

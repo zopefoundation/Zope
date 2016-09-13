@@ -22,7 +22,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from ExtensionClass import Base
 from zExceptions import BadRequest
-from zope.interface import implements
+from zope.interface import implementer
 from ZPublisher.Converters import type_converters
 
 from OFS.interfaces import IPropertyManager
@@ -30,6 +30,7 @@ from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
 
 
+@implementer(IPropertyManager)
 class PropertyManager(Base):
     """
     The PropertyManager mixin class provides an object with
@@ -76,8 +77,6 @@ class PropertyManager(Base):
     Entries in the _properties structure which do not have a 'mode' key
     are assumed to have the mode 'wd' (writeable and deleteable).
     """
-
-    implements(IPropertyManager)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(access_contents_information)

@@ -17,12 +17,13 @@ from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
 
 from zope.component import getMultiAdapter
-from zope.interface import implements
+from zope.interface import implementer
 from zope.traversing.browser.interfaces import IAbsoluteURL
 from zope.traversing.browser.absoluteurl import _insufficientContext, _safe
 from zope.publisher.browser import BrowserView
 
 
+@implementer(IAbsoluteURL)
 class AbsoluteURL(BrowserView):
     """An absolute_url adapter for generic objects in Zope 2 that
     aren't OFS.Traversable (e.g. views, resources, etc.).
@@ -31,7 +32,6 @@ class AbsoluteURL(BrowserView):
     zope.traversing.browser, but the Zope 2 request doesn't support
     all the methods that it uses yet.
     """
-    implements(IAbsoluteURL)
 
     def __unicode__(self):
         return urllib.unquote(self.__str__()).decode('utf-8')
@@ -87,10 +87,10 @@ class AbsoluteURL(BrowserView):
         return base
 
 
+@implementer(IAbsoluteURL)
 class OFSTraversableAbsoluteURL(BrowserView):
     """An absolute_url adapter for OFS.Traversable subclasses
     """
-    implements(IAbsoluteURL)
 
     def __unicode__(self):
         return urllib.unquote(self.__str__()).decode('utf-8')

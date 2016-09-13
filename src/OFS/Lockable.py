@@ -15,16 +15,16 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Persistence import PersistentMapping
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS.EtagSupport import EtagSupport
 from OFS.interfaces import ILockItem, IWriteLock
 
 
+@implementer(IWriteLock)
 class LockableItem(EtagSupport):
     """Implements the WriteLock interface.
     """
-    implements(IWriteLock)
 
     # Protect methods using declarative security
     security = ClassSecurityInfo()

@@ -14,7 +14,7 @@
 """
 
 from App.special_dtml import DTMLFile
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS.Folder import Folder
 from OFS.interfaces import IOrderedFolder
@@ -35,11 +35,11 @@ def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
         return self.manage_main(self, REQUEST)
 
 
+@implementer(IOrderedFolder)
 class OrderedFolder(OrderSupport, Folder):
 
     """ Extends the default Folder by order support.
     """
-    implements(IOrderedFolder)
     meta_type = 'Folder (Ordered)'
 
     manage_options = (

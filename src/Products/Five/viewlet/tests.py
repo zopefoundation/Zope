@@ -17,13 +17,14 @@
 import unittest
 from Testing.ZopeTestCase import FunctionalDocFileSuite
 from zope.interface import Interface
-from zope.interface import implements
+from zope.interface import implementer
 from zope.viewlet import interfaces
 from OFS.SimpleItem import SimpleItem
 
 
+@implementer(Interface)
 class Content(SimpleItem):
-    implements(Interface)
+    pass
 
 
 class UnitTestSecurityPolicy:

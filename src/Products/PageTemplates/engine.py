@@ -1,8 +1,8 @@
 import re
 import logging
 
-from zope.interface import implements
-from zope.interface import classProvides
+from zope.interface import implementer
+from zope.interface import provider
 
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
@@ -37,9 +37,9 @@ re_match_pi = re.compile(r'<\?python([^\w].*?)\?>', re.DOTALL)
 logger = logging.getLogger('Products.PageTemplates')
 
 
+@implementer(IPageTemplateProgram)
+@provider(IPageTemplateEngine)
 class Program(object):
-    implements(IPageTemplateProgram)
-    classProvides(IPageTemplateEngine)
 
     # Zope 2 Page Template expressions
     secure_expression_types = {

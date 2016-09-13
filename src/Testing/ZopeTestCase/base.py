@@ -16,7 +16,7 @@
 import unittest
 import transaction
 
-from zope.interface import implements
+from zope.interface import implementer
 from AccessControl.SecurityManagement import noSecurityManager
 
 from Testing.makerequest import makerequest
@@ -39,11 +39,10 @@ def close(app):
     connections.close(app)
 
 
+@implementer(interfaces.IZopeTestCase)
 class TestCase(unittest.TestCase, object):
     '''Base test case for Zope testing
     '''
-
-    implements(interfaces.IZopeTestCase)
 
     layer = layer.ZopeLite
 

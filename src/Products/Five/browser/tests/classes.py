@@ -14,7 +14,7 @@
 """Test fixtures
 """
 
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 from Products.Five import BrowserView
 
 
@@ -23,9 +23,9 @@ class IOne(Interface):
     """
 
 
+@implementer(IOne)
 class One(object):
     'A class'
-    implements(IOne)
 
 
 class ViewOne(BrowserView):

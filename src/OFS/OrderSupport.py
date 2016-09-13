@@ -21,7 +21,7 @@ from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
-from zope.interface import implements
+from zope.interface import implementer
 from zope.container.contained import notifyContainerModified
 
 from OFS.interfaces import IOrderedContainer as IOrderedContainer
@@ -31,6 +31,7 @@ if sys.version_info >= (3, ):
     basestring = str
 
 
+@implementer(IOrderedContainer)
 class OrderSupport(object):
 
     """ Ordered container mixin class.
@@ -40,8 +41,6 @@ class OrderSupport(object):
     particular helpful, if the order does not depend on object attributes, but
     is totally user-specific.
     """
-
-    implements(IOrderedContainer)
     security = ClassSecurityInfo()
 
     has_order_support = 1
