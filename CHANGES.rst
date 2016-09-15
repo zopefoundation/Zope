@@ -15,6 +15,8 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Add support to SameSite cookie in ``ZPublisher.HTTPBaseResponse``:
+  https://tools.ietf.org/html/draft-west-first-party-cookies-07
 
 Restructuring
 +++++++++++++

@@ -642,6 +642,10 @@ class HTTPBaseResponse(BaseResponse):
                 # and block read/write access via JavaScript
                 elif name == 'http_only' and v:
                     cookie = '%s; HTTPOnly' % cookie
+                # Some browsers recognize the SameSite cookie attribute
+                # and do not send the cookie along with cross-site requests
+                # providing some protection against CSRF attacks
+                # https://tools.ietf.org/html/draft-west-first-party-cookies-07
                 elif name == 'same_site' and v:
                     cookie = '%s; SameSite=%s' % (cookie, v)
             cookie_list.append(('Set-Cookie', cookie))
