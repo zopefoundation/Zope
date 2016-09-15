@@ -18,6 +18,9 @@ http://docs.zope.org/zope2/
 - Removed docstrings from some methods to avoid publishing them.  From
   Products.PloneHotfix20160419.  [maurits]
 
+- Add support to SameSite cookie in ``ZPublisher.HTTPResponse``:
+  https://tools.ietf.org/html/draft-west-first-party-cookies-07
+
 
 2.13.24 (2016-02-29)
 --------------------
