@@ -319,6 +319,19 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(cookie_list), 1)
         self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
 
+    def test_setCookie_w_same_site(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar', same_site='Strict')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 3)
+        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(cookie.get('same_site'), 'Strict')
+        self.assertEqual(cookie.get('quoted'), True)
+        cookies = response._cookie_list()
+        self.assertEqual(len(cookies), 1)
+        self.assertEqual(cookies[0],
+                         ('Set-Cookie', 'foo="bar"; SameSite=Strict'))
+
     def test_setCookie_unquoted(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', quoted=False)
