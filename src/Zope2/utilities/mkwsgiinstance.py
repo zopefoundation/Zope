@@ -155,8 +155,7 @@ def usage(stream, msg=None):
 def get_skeltarget():
     print('Please choose a directory in which you\'d like to install')
     print('Zope "instance home" files such as database files, configuration')
-    print('files, etc.')
-    print()
+    print('files, etc.\n')
     while 1:
         skeltarget = raw_input("Directory: ").strip()
         if skeltarget == '':
@@ -171,8 +170,7 @@ def get_inituser():
     import getpass
     print('Please choose a username and password for the initial user.')
     print('These will be the credentials you use to initially manage')
-    print('your new Zope instance.')
-    print()
+    print('your new Zope instance.\n')
     user = raw_input("Username: ").strip()
     if user == '':
         return None, None
