@@ -61,6 +61,8 @@ The runwsgi commands takes a PasteDeploy configuration file as its
 argument. You can configure different WSGI capable servers,
 the WSGI pipeline or logging configuration in this file.
 
+Now you are able to log in using a browser, as described in
+`Logging In To Zope`_.
 
 Running Zope as a Daemon
 ------------------------
