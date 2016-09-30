@@ -121,6 +121,9 @@ can navigate between Zope objects and on the right you can edit them
 by selecting different management functions with the tabs at the top
 of the frame.
 
+To create content to be rendered at http://yourhost:8080/ create a `Page
+Template` or `DTML Document` named ``index_html``.
+
 
 Troubleshooting
 ---------------
