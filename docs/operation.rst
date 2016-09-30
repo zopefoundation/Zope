@@ -61,6 +61,8 @@ The runwsgi commands takes a PasteDeploy configuration file as its
 argument. You can configure different WSGI capable servers,
 the WSGI pipeline or logging configuration in this file.
 
+Now you are able to log in using a browser, as described in
+`Logging In To Zope`_.
 
 Running Zope as a Daemon
 ------------------------
@@ -119,11 +121,14 @@ can navigate between Zope objects and on the right you can edit them
 by selecting different management functions with the tabs at the top
 of the frame.
 
+To create content to be rendered at http://yourhost:8080/ create a `Page
+Template` or `DTML Document` named ``index_html``.
+
 
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 2.7 or better.
+- This version of Zope requires Python 2.7.x.
   It will *not* run with Python 3.x.
 
 - To build Python extensions you need to have Python configuration
