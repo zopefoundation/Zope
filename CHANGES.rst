@@ -18,6 +18,11 @@ Features Added
 - Add support to SameSite cookie in ``ZPublisher.HTTPBaseResponse``:
   https://tools.ietf.org/html/draft-west-first-party-cookies-07
 
+- Updated distributions:
+
+    - zope.globalrequest = 1.3
+    - zope.testing = 4.6.0
+
 Restructuring
 +++++++++++++
 
