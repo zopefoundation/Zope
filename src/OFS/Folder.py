@@ -20,6 +20,7 @@ from App.special_dtml import DTMLFile
 from zope.interface import implementer
 
 from OFS import bbb
+from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
 from OFS.Lockable import LockableItem
 from OFS.ObjectManager import ObjectManager
@@ -57,7 +58,8 @@ class Folder(
         RoleManager,
         Collection,
         LockableItem,
-        Item):
+        Item,
+        FindSupport):
 
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement

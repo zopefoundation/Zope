@@ -922,7 +922,8 @@ class IPropertyManager(Interface):
         """Delete one or more properties specified by 'ids'."""
 
 
-class IFolder(IObjectManager, IPropertyManager, IRoleManager, IItem):
+class IFolder(IObjectManager, IPropertyManager, IRoleManager,
+              IItem, IFindSupport):
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement a
     management interface and can have arbitrary properties.

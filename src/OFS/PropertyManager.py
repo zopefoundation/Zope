@@ -83,7 +83,7 @@ class PropertyManager(Base):
     security.setPermissionDefault(access_contents_information,
                                   ('Anonymous', 'Manager'))
 
-    manage_options = tuple()
+    manage_options = ()
 
     title = ''
     _properties = (

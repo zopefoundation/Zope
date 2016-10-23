@@ -28,6 +28,7 @@ from App import FactoryDispatcher
 from App.ProductContext import ProductContext
 from DateTime import DateTime
 from OFS import bbb
+from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
@@ -53,7 +54,7 @@ APP_MANAGER = None
 
 
 @implementer(IApplication)
-class Application(ApplicationDefaultPermissions, Folder.Folder):
+class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     """Top-level system object"""
 
     security = ClassSecurityInfo()

@@ -36,6 +36,7 @@ import collections
 class FindSupport(Base):
     """Find support for Zope Folders"""
 
+    manage_options = ()
     security = ClassSecurityInfo()
 
     security.declareProtected(view_management_screens, 'ZopeFind')
