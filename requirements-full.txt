@@ -26,7 +26,6 @@ ZODB==5.0.0
 ZServer==4.0a1
 five.globalrequest==1.0
 funcsigs==1.0.2
-mechanize==0.2.5
 mock==2.0.0
 pbr==1.10.0
 persistent==4.2.1
@@ -80,7 +79,7 @@ zope.size==4.1.0
 zope.structuredtext==4.1.0
 zope.tal==4.2.0
 zope.tales==4.1.1
-zope.testbrowser==4.0.4
+zope.testbrowser==5.0.0
 zope.testing==4.6.0
 zope.testrunner==4.5.1
 zope.traversing==4.1.0

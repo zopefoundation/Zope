@@ -11,12 +11,20 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests for the testbrowser module.
+"""Tests for the testbrowser module.
 """
 
-import unittest
-from Testing.ZopeTestCase import FunctionalDocTestSuite
+from AccessControl.Permissions import view
+from six.moves.urllib.error import HTTPError
+from zExceptions import NotFound
+
 from OFS.SimpleItem import Item
+from Testing.testbrowser import Browser
+from Testing.ZopeTestCase import (
+    FunctionalTestCase,
+    user_name,
+    user_password,
+)
 
 
 class CookieStub(Item):
@@ -27,57 +35,102 @@ class CookieStub(Item):
         return 'Stub'
 
 
-def doctest_cookies():
-    """
-    We want to make sure that our testbrowser correctly understands
-    cookies.  We'll add a stub to ``self.folder`` that sets a cookie.
+class ExceptionStub(Item):
+    """This is a stub, raising an exception."""
 
-        >>> from Testing.tests.test_testbrowser import CookieStub
-        >>> self.folder._setObject('stub', CookieStub())
-        'stub'
-
-    This response looks alright:
-
-        >>> response = self.publish('/test_folder_1_/stub')
-        >>> print(str(response)) #doctest: +ELLIPSIS
-        HTTP/1.1 200 OK
-        ...
-        Set-Cookie: evil="cookie"
-        ...
-
-    Let's try to look at the same folder with testbrowser:
-
-        >>> from Testing.testbrowser import Browser
-        >>> browser = Browser()
-        >>> browser.open('http://localhost/test_folder_1_/stub')
-        >>> 'Set-Cookie: evil="cookie"' in str(browser.headers)
-        True
-    """
+    def __call__(self, REQUEST):
+        raise ValueError('dummy')
 
 
-def doctest_camel_case_headers():
-    """Make sure that the headers come out in camel case.
+class TestTestbrowser(FunctionalTestCase):
 
-    Some setup:
+    def test_auth(self):
+        # Based on Testing.ZopeTestCase.testFunctional
+        basic_auth = '%s:%s' % (user_name, user_password)
+        self.folder.addDTMLDocument('secret_html', file='secret')
+        self.folder.secret_html.manage_permission(view, ['Owner'])
+        path = '/' + self.folder.absolute_url(1) + '/secret_html'
 
-        >>> from Testing.tests.test_testbrowser import CookieStub
-        >>> self.folder._setObject('stub', CookieStub())
-        'stub'
+        # Test direct publishing
+        response = self.publish(path + '/secret_html')
+        self.assertEqual(response.getStatus(), 401)
+        response = self.publish(path + '/secret_html', basic_auth)
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response.getBody(), 'secret')
 
-    The Zope2 response mungs headers so they come out in camel case we should
-    do the same. We will test a few:
+        # Test browser
+        url = 'http://localhost' + path
+        browser = Browser()
+        browser.raiseHttpErrors = False
+        browser.open(url)
+        self.assertTrue(browser.headers['status'].startswith('401'))
 
-        >>> from Testing.testbrowser import Browser
-        >>> browser = Browser()
-        >>> browser.open('http://localhost/test_folder_1_/stub')
-        >>> 'Content-Length: ' in str(browser.headers)
-        True
-        >>> 'Content-Type: ' in str(browser.headers)
-        True
-    """
+        browser.addHeader('Authorization', 'Basic ' + basic_auth)
+        browser.open(url)
+        self.assertTrue(browser.headers['status'].startswith('200'))
+        self.assertEqual(browser.contents, 'secret')
+
+    def test_cookies(self):
+        # We want to make sure that our testbrowser correctly
+        # understands cookies.
+        self.folder._setObject('stub', CookieStub())
+
+        # Test direct publishing
+        response = self.publish('/test_folder_1_/stub')
+        self.assertEqual(response.getCookie('evil')['value'], 'cookie')
+
+        browser = Browser()
+        browser.open('http://localhost/test_folder_1_/stub')
+        self.assertEqual(browser.cookies.get('evil'), '"cookie"')
+
+    def test_handle_errors_true(self):
+        self.folder._setObject('stub', ExceptionStub())
+        browser = Browser()
+        with self.assertRaises(HTTPError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertTrue(browser.headers['status'].startswith('500'))
+
+        with self.assertRaises(HTTPError):
+            browser.open('http://localhost/nothing-is-here')
+        self.assertTrue(browser.headers['status'].startswith('404'))
+
+    def test_handle_errors_false(self):
+        self.folder._setObject('stub', ExceptionStub())
+        browser = Browser()
+        browser.handleErrors = False
+        with self.assertRaises(ValueError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertTrue(browser.contents is None)
+
+        with self.assertRaises(NotFound):
+            browser.open('http://localhost/nothing-is-here')
+        self.assertTrue(browser.contents is None)
+
+    def test_raise_http_errors_false(self):
+        self.folder._setObject('stub', ExceptionStub())
+        browser = Browser()
+        browser.raiseHttpErrors = False
+
+        browser.open('http://localhost/test_folder_1_/stub')
+        self.assertTrue(browser.headers['status'].startswith('500'))
+
+        browser.open('http://localhost/nothing-is-here')
+        self.assertTrue(browser.headers['status'].startswith('404'))
+
+    def test_headers_camel_case(self):
+        # The Zope2 response mungs headers so they come out
+        # in camel case. We should do the same.
+        self.folder._setObject('stub', CookieStub())
+
+        browser = Browser()
+        browser.open('http://localhost/test_folder_1_/stub')
+        header_text = str(browser.headers)
+        self.assertTrue('Content-Length: ' in header_text)
+        self.assertTrue('Content-Type: ' in header_text)
 
 
 def test_suite():
-    return unittest.TestSuite((
-        FunctionalDocTestSuite(),
-    ))
+    from unittest import TestSuite, makeSuite
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestTestbrowser))
+    return suite

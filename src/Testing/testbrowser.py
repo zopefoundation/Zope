@@ -12,148 +12,54 @@
 #
 ##############################################################################
 """Support for using zope.testbrowser from Zope2.
-
-Mostly just copy and paste from zope.testbrowser.testing.
 """
 
-import io
-
-import mechanize
-from six.moves.urllib.request import HTTPHandler
-from zExceptions import status_reasons
+import transaction
 from zope.testbrowser import browser
 
-from Testing.ZopeTestCase.zopedoctest import functional
-
-try:
-    from http.client import HTTPMessage
-    from urllib.request import AbstractHTTPHandler
-except ImportError:
-    from httplib import HTTPMessage
-    from urllib2 import AbstractHTTPHandler
+from Testing.ZopeTestCase.functional import savestate
+from Testing.ZopeTestCase.sandbox import AppZapper
+from Testing.ZopeTestCase.zopedoctest.functional import auth_header
+from ZPublisher.httpexceptions import HTTPExceptionHandler
+from ZPublisher.WSGIPublisher import publish_module
 
 
-class PublisherConnection(object):
+class WSGITestApp(object):
 
-    def __init__(self, host, timeout=None):
-        self.caller = functional.http
-        self.host = host
-        self.response = None
+    def __init__(self, browser):
+        self.browser = browser
 
-    def set_debuglevel(self, level):
-        pass
+    @savestate
+    def __call__(self, environ, start_response):
+        # This is similar to
+        # Testing.ZopeTestCase.zopedoctest.functional.http
 
-    def _quote(self, url):
-        # the publisher expects to be able to split on whitespace, so we have
-        # to make sure there is none in the URL
-        return url.replace(' ', '%20')
+        # Commit previously done work
+        transaction.commit()
 
-    def request(self, method, url, body=None, headers=None):
-        """Send a request to the publisher.
+        # Base64 encode auth header
+        http_auth = 'HTTP_AUTHORIZATION'
+        if http_auth in environ:
+            environ[http_auth] = auth_header(environ[http_auth])
 
-        The response will be stored in ``self.response``.
-        """
-        if body is None:
-            body = ''
+        publish = publish_module
+        if self.browser.handleErrors:
+            publish = HTTPExceptionHandler(publish)
+        wsgi_result = publish(environ, start_response)
 
-        if url == '':
-            url = '/'
+        # Sync transaction
+        AppZapper().app()._p_jar.sync()
 
-        url = self._quote(url)
-        # Extract the handle_error option header
-        handle_errors_key = 'X-Zope-Handle-Errors'
-        handle_errors_header = headers.get(handle_errors_key, True)
-        if handle_errors_key in headers:
-            del headers[handle_errors_key]
-        # Translate string to boolean.
-        handle_errors = {'False': False}.get(handle_errors_header, True)
-
-        # Construct the headers.
-        header_chunks = []
-        if headers is not None:
-            for header in headers.items():
-                header_chunks.append('%s: %s' % header)
-            headers = '\n'.join(header_chunks) + '\n'
-        else:
-            headers = ''
-
-        # Construct the full HTTP request string, since that is what the
-        # ``HTTPCaller`` wants.
-        request_string = (method + ' ' + url + ' HTTP/1.1\n' +
-                          headers + '\n' + body)
-        self.response = self.caller(request_string, handle_errors)
-
-    def getresponse(self):
-        """Return a ``urllib`` compatible response.
-
-        The goal of ths method is to convert the Zope Publisher's response to
-        a ``urllib`` compatible response, which is also understood by
-        mechanize.
-        """
-        real_response = self.response._response
-        status = real_response.getStatus()
-        reason = status_reasons[real_response.status]
-
-        # Replace HTTP/1.1 200 OK with Status: 200 OK line.
-        headers = ['Status: %s %s' % (status, reason)]
-        wsgi_headers = self.response._wsgi_headers.getvalue().split('\r\n')
-        headers += [line for line in wsgi_headers[1:]]
-        headers = '\r\n'.join(headers)
-        content = self.response.getBody()
-        return PublisherResponse(content, headers, status, reason)
-
-
-class PublisherResponse(object):
-    """``mechanize`` compatible response object."""
-
-    def __init__(self, content, headers, status, reason):
-        self.content = content
-        self.status = status
-        self.reason = reason
-        self.msg = HTTPMessage(io.BytesIO(headers), 0)
-        self.content_as_file = io.BytesIO(self.content)
-
-    def read(self, amt=None):
-        return self.content_as_file.read(amt)
-
-    def close(self):
-        """To overcome changes in mechanize and socket in python2.5"""
-        pass
-
-
-class PublisherHTTPHandler(HTTPHandler):
-    """Special HTTP handler to use the Zope Publisher."""
-
-    http_request = AbstractHTTPHandler.do_request_
-
-    def http_open(self, req):
-        """Open an HTTP connection having a ``urllib`` request."""
-        # Here we connect to the publisher.
-        return self.do_open(PublisherConnection, req)
-
-
-class PublisherMechanizeBrowser(mechanize.Browser):
-    """Special ``mechanize`` browser using the Zope Publisher HTTP handler."""
-
-    default_schemes = ['http']
-    default_others = ['_http_error', '_http_request_upgrade',
-                      '_http_default_error']
-    default_features = ['_redirect', '_cookies', '_referer', '_refresh',
-                        '_equiv', '_basicauth', '_digestauth']
-
-    def __init__(self, *args, **kws):
-        self.handler_classes = mechanize.Browser.handler_classes.copy()
-        self.handler_classes["http"] = PublisherHTTPHandler
-        self.default_others = [cls for cls in self.default_others
-                               if cls in mechanize.Browser.handler_classes]
-        mechanize.Browser.__init__(self, *args, **kws)
+        return wsgi_result
 
 
 class Browser(browser.Browser):
     """A Zope ``testbrowser` Browser that uses the Zope Publisher."""
 
-    def __init__(self, url=None):
-        mech_browser = PublisherMechanizeBrowser()
-        # override the http handler class
-        mech_browser.handler_classes["http"] = PublisherHTTPHandler
-        super(Browser, self).__init__(url=url, mech_browser=mech_browser)
+    handleErrors = True
+    raiseHttpErrors = True
+
+    def __init__(self, url=None, wsgi_app=None):
+        if wsgi_app is None:
+            wsgi_app = WSGITestApp(self)
+        super(Browser, self).__init__(url=url, wsgi_app=wsgi_app)

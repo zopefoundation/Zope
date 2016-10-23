@@ -20,11 +20,14 @@ Features Added
 
 - Updated distributions:
 
+    - zope.testbrowser = 5.0
     - zope.globalrequest = 1.3
     - zope.testing = 4.6.0
 
 Restructuring
 +++++++++++++
+
+- Update to zope.testbrowser 5.0 and its WebTest based implementation.
 
 - Use `@implementer` and `@adapter` class decorators.
 
