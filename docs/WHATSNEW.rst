@@ -7,8 +7,6 @@ version of Zope.
 You can have a look at the `detailed change log <CHANGES.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
-Note: This is currently work-in-progress!
-
 
 Version numbering increase
 --------------------------
@@ -19,10 +17,21 @@ a separate project was launched using the name Zope 3. Zope 3 wasn't a new
 version of the original Zope project and in hindsight should have used a
 different project name. These days this effort is known as BlueBream.
 
-In order to avoid confusion between the separate Zope 3 project and a new
-version of this project, it was decided to skip ahead and use Zope 4.0 as the
-next version number. The increase in the major part of the version also
-indicates the clear intention to allow backwards incompatible changes.
+In order to avoid confusion between the separate Zope 3 project and a
+new version of this project, it was decided to skip ahead and use
+Zope 4.0 as the next version number. The increase in the major part of
+the version also indicates the number of backwards incompatible changes
+found in this release.
+
+
+Python versions
+---------------
+
+Zope 4 exclusively supports Python 2.7. A large number of its dependencies
+have been ported to Python 3, so there is reasonable hope that Python 3
+support can be added to Zope in the future. It is most likely that this
+support will not extend to optional dependencies like the ZServer project
+or projects supporting TTW development.
 
 
 Recommended WSGI setup
@@ -39,6 +48,11 @@ The ZServer based publisher got moved into its own optional project.
 So if you rely on ZServer features, like Webdav, FTP, zdaemon or zopectl
 support, please make sure to install ZServer and use its ``mkzopeinstance``
 script to create a Zope instance.
+
+The ZServer project also includes limited functional testing support
+in the `ZServer.Testing` sub-package. testbrowser support is exclusively
+available based on the WSGI publisher, as a result of a switch from
+the unmaintained mechanize project to WebTest.
 
 By default Zope only ships with a new ``mkwsgiinstance`` script which
 creates a Zope instance configured to run as a WSGI application. The
@@ -79,8 +93,8 @@ for example firewalls and VPN access to not expose it to the public.
 
 In Zope 4 the functionality of the ZMI is starting to be reduced and
 development support and general content editing are being removed.
-This trend is going to continue and the ZMI might be removed completely
-in Zope 5.
+If you relied on those features before, you will need to write your own
+content editing UI or move development to the file system.
 
 
 View components without Acquisition
@@ -107,16 +121,6 @@ So far it was available via the `five.pt` project. In Zope 4 the code
 from `five.pt` has been merged into Zope core and the Chameleon based
 engine is now the default, removing the need to install `five.pt`
 manually.
-
-
-Python versions
----------------
-
-Zope 4 exclusively supports Python 2.7. A large number of its dependencies
-have been ported to Python 3, so there is reasonable hope that Python 3
-support can be added to Zope in the future. It is most likely that this
-support will not extend to optional dependencies like the ZServer project
-or projects supporting TTW development.
 
 
 Memory use
