@@ -27,6 +27,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Add back ZCacheable support.
+
 - Update to zope.testbrowser 5.0 and its WebTest based implementation.
 
 - Use `@implementer` and `@adapter` class decorators.

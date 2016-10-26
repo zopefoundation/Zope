@@ -88,7 +88,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     manage_options = (
         {'label': 'Edit', 'action': 'pt_editForm'},
-    ) + SimpleItem.manage_options
+    ) + SimpleItem.manage_options + Cacheable.manage_options
 
     _properties = (
         {'id': 'title', 'type': 'ustring', 'mode': 'w'},
@@ -164,6 +164,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         if not is_unicode:
             text = unicode(text, encoding)
 
+        self.ZCacheable_invalidate()
         super(ZopePageTemplate, self).pt_edit(text, content_type)
 
     pt_editForm = PageTemplateFile('www/ptEdit', globals(),
@@ -202,6 +203,11 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         if not isinstance(title, unicode):
             title = unicode(title, encoding)
         self._setPropValue('title', title)
+
+    def _setPropValue(self, id, value):
+        """ set a property and invalidate the cache """
+        PropertyManager._setPropValue(self, id, value)
+        self.ZCacheable_invalidate()
 
     security.declareProtected(change_page_templates, 'pt_upload')
     def pt_upload(self, REQUEST, file='', encoding='utf-8'):
@@ -248,6 +254,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
                                               preferred_encodings)
             self.output_encoding = encoding
 
+        self.ZCacheable_invalidate()
         ZopePageTemplate.inheritedAttribute('write')(self, text)
 
     def _exec(self, bound_names, args, kw):
@@ -265,11 +272,25 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         security = getSecurityManager()
         bound_names['user'] = security.getUser()
 
+        # Retrieve the value from the cache.
+        keyset = None
+        if self.ZCacheable_isCachingEnabled():
+            # Prepare a cache key.
+            keyset = {'here': self._getContext(),
+                      'bound_names': bound_names}
+            result = self.ZCacheable_get(keywords=keyset)
+            if result is not None:
+                # Got a cached value.
+                return result
+
         # Execute the template in a new security context.
         security.addContext(self)
 
         try:
             result = self.pt_render(extra_context=bound_names)
+            if keyset is not None:
+                # Store the result in the cache.
+                self.ZCacheable_set(result, keywords=keyset)
             return result
         finally:
             security.removeContext(self)

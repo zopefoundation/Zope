@@ -4,4 +4,7 @@
   <five:deprecatedManageAddDelete
       class="OFS.userfolder.BasicUserFolder"/>
 
+  <five:deprecatedManageAddDelete
+      class="OFS.Cache.CacheManager"/>
+
 </configure>
