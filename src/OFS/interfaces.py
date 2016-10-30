@@ -597,6 +597,8 @@ class ICopyContainer(Interface):
         argument.
         """
 
+    manage_renameForm = Attribute("""Rename management view""")
+
     def manage_renameObjects(ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
 

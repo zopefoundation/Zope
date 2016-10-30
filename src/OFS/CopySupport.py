@@ -31,6 +31,7 @@ from AccessControl.Permissions import delete_objects
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Unauthorized, BadRequest, ResourceLockedError
@@ -114,6 +115,7 @@ class CopyContainer(Base):
             resp = REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
+            return self.manage_main(self, REQUEST)
         return cp
 
     security.declareProtected(view_management_screens, 'manage_copyObjects')
@@ -139,6 +141,7 @@ class CopyContainer(Base):
             resp = REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
+            return self.manage_main(self, REQUEST)
         return cp
 
     def _get_id(self, id):
@@ -226,6 +229,9 @@ class CopyContainer(Base):
 
                 notify(ObjectClonedEvent(ob))
 
+            if REQUEST is not None:
+                return self.manage_main(self, REQUEST)
+
         elif op == 1:
             # Move operation
             for ob in oblist:
@@ -292,8 +298,12 @@ class CopyContainer(Base):
                     path='%s' % cookie_path(REQUEST),
                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
+                return self.manage_main(self, REQUEST)
 
         return result
+
+    security.declareProtected(view_management_screens, 'manage_renameForm')
+    manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
     security.declareProtected(view_management_screens, 'manage_renameObjects')
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
@@ -303,6 +313,8 @@ class CopyContainer(Base):
         for i in range(len(ids)):
             if ids[i] != new_ids[i]:
                 self.manage_renameObject(ids[i], new_ids[i], REQUEST)
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST)
 
     security.declareProtected(view_management_screens, 'manage_renameObject')
     def manage_renameObject(self, id, new_id, REQUEST=None):
@@ -355,6 +367,9 @@ class CopyContainer(Base):
         notifyContainerModified(self)
 
         ob._postCopy(self, op=1)
+
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST)
 
     security.declarePublic('manage_clone')
     def manage_clone(self, ob, id, REQUEST=None):
