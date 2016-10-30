@@ -230,7 +230,7 @@ class CopyContainer(Base):
                 notify(ObjectClonedEvent(ob))
 
             if REQUEST is not None:
-                return self.manage_main(self, REQUEST)
+                return self.manage_main(self, REQUEST, cb_dataValid=1)
 
         elif op == 1:
             # Move operation
@@ -298,7 +298,7 @@ class CopyContainer(Base):
                     path='%s' % cookie_path(REQUEST),
                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
-                return self.manage_main(self, REQUEST)
+                return self.manage_main(self, REQUEST, cb_dataValid=0)
 
         return result
 
@@ -406,6 +406,30 @@ class CopyContainer(Base):
         notify(ObjectClonedEvent(ob))
 
         return ob
+
+    def cb_dataValid(self):
+        # Return true if clipboard data seems valid.
+        try:
+            _cb_decode(self.REQUEST['__cp'])
+        except Exception:
+            return 0
+        return 1
+
+    def cb_dataItems(self):
+        # List of objects in the clip board
+        try:
+            cp = _cb_decode(self.REQUEST['__cp'])
+        except Exception:
+            return []
+        oblist = []
+
+        app = self.getPhysicalRoot()
+        for mdata in cp[1]:
+            m = loadMoniker(mdata)
+            oblist.append(m.bind(app))
+        return oblist
+
+    validClipData = cb_dataValid
 
     def _verifyObjectPaste(self, object, validate_src=1):
         # Verify whether the current user is allowed to paste the

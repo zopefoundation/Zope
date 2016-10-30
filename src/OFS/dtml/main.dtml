@@ -109,6 +109,20 @@
   <td align="left" valign="top" width="16"></td>
   <td align="left" valign="top">
   <div class="form-element">
+  <dtml-unless dontAllowCopyAndPaste>
+  <input class="form-element" type="submit" name="manage_renameForm:method"
+   value="Rename" />
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-element" type="submit" name="manage_cutObjects:method"
+   value="Cut" />
+  </dtml-if>
+  <input class="form-element" type="submit" name="manage_copyObjects:method"
+   value="Copy" />
+  <dtml-if cb_dataValid>
+  <input class="form-element" type="submit" name="manage_pasteObjects:method"
+   value="Paste" />
+  </dtml-if>
+  </dtml-unless>
   <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
   <input class="form-element" type="submit" name="manage_delObjects:method"
    value="Delete" />
@@ -126,6 +140,14 @@
 There are currently no items in <em>&dtml-title_or_id;</em>
 <br /><br />
 </div>
+<dtml-unless dontAllowCopyAndPaste>
+<dtml-if cb_dataValid>
+<div class="form-element">
+<input class="form-element" type="submit" name="manage_pasteObjects:method"
+ value="Paste" />
+</div>
+</dtml-if>
+</dtml-unless>
 </td>
 </tr>
 </table>
