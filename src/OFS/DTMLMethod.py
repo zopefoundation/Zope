@@ -19,13 +19,16 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import change_proxy_roles
 from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
+from AccessControl.requestmethod import requestmethod
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
 from six.moves.urllib.parse import quote
+from zExceptions import Forbidden
 from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -59,6 +62,7 @@ class DTMLMethod(RestrictedDTML,
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
+    _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
 
@@ -72,6 +76,7 @@ class DTMLMethod(RestrictedDTML,
 
     manage_options = ((
         {'label': 'Edit', 'action': 'manage_main'},
+        {'label': 'Proxy', 'action': 'manage_proxyForm'},
     ) +
         RoleManager.manage_options +
         Item_w__name__.manage_options +
@@ -229,10 +234,14 @@ class DTMLMethod(RestrictedDTML,
     security.declareProtected(change_dtml_methods, 'manage_main')
     manage = manage_main = manage_editDocument = manage_editForm
 
+    security.declareProtected(change_proxy_roles, 'manage_proxyForm')
+    manage_proxyForm = DTMLFile('dtml/documentProxy', globals())
+
     security.declareProtected(change_dtml_methods, 'manage_edit')
     def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
         """ Replace contents with 'data', title with 'title'.
         """
+        self._validateProxy(REQUEST)
         if self.wl_isLocked():
             raise ResourceLockedError('This item is locked.')
 
@@ -251,6 +260,7 @@ class DTMLMethod(RestrictedDTML,
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
         """
+        self._validateProxy(REQUEST)
         if self.wl_isLocked():
             raise ResourceLockedError('This DTML Method is locked.')
 
@@ -264,6 +274,41 @@ class DTMLMethod(RestrictedDTML,
         if REQUEST:
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
+
+    def manage_haveProxy(self, r):
+        return r in self._proxy_roles
+
+    def _validateProxy(self, request, roles=None):
+        if roles is None:
+            roles = self._proxy_roles
+        if not roles:
+            return
+        user = u = getSecurityManager().getUser()
+        user = user.allowed
+        for r in roles:
+            if r and not user(self, (r,)):
+                user = None
+                break
+
+        if user is not None:
+            return
+
+        raise Forbidden(
+            'You are not authorized to change <em>%s</em> because you '
+            'do not have proxy roles.\n<!--%s, %s-->' % (
+                self.__name__, u, roles))
+
+    security.declareProtected(change_proxy_roles, 'manage_proxy')
+    @requestmethod('POST')
+    def manage_proxy(self, roles=(), REQUEST=None):
+        "Change Proxy Roles"
+        self._validateProxy(REQUEST, roles)
+        self._validateProxy(REQUEST)
+        self._proxy_roles = tuple(roles)
+        if REQUEST:
+            message = "Saved changes."
+            return self.manage_proxyForm(self, REQUEST,
+                                         manage_tabs_message=message)
 
     security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
     def PrincipiaSearchSource(self):
@@ -285,6 +330,7 @@ class DTMLMethod(RestrictedDTML,
             self.dav__init(REQUEST, RESPONSE)
             self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
             body = REQUEST.get('BODY', '')
+            self._validateProxy(REQUEST)
             self.munge(body)
             self.ZCacheable_invalidate()
             RESPONSE.setStatus(204)

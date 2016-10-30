@@ -51,6 +51,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
         """
+        self._validateProxy(REQUEST)
         if self.wl_isLocked():
             raise ResourceLockedError('This document has been locked.')
 

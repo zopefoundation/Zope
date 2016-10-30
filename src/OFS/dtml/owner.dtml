@@ -4,7 +4,8 @@
 <p class="form-help">
 Almost all Zope objects can be owned. When you create an object you
 become its owner. Ownership matters for method objects since
-it determines what roles they have when they are executed.
+it determines what roles they have when they are executed. See the
+<em>Proxy Roles</em> view of method objects for more information.
 </p>
 
 <p>
