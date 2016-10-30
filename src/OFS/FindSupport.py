@@ -20,6 +20,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import name_trans
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base, aq_parent
+from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.DT_Util import InstanceDict
@@ -38,6 +39,22 @@ class FindSupport(Base):
 
     manage_options = ()
     security = ClassSecurityInfo()
+
+    security.declareProtected(view_management_screens, 'manage_findForm')
+    manage_findForm = DTMLFile('dtml/findForm', globals(),
+                               management_view='Find')
+
+    security.declareProtected(view_management_screens, 'manage_findAdv')
+    manage_findAdv = DTMLFile('dtml/findAdv', globals(),
+                              management_view='Find')
+
+    security.declareProtected(view_management_screens, 'manage_findResult')
+    manage_findResult = DTMLFile('dtml/findResult', globals(),
+                                 management_view='Find')
+
+    manage_options = (
+        {'label': 'Find', 'action': 'manage_findForm'},
+    )
 
     security.declareProtected(view_management_screens, 'ZopeFind')
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,

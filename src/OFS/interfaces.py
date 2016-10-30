@@ -729,6 +729,10 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
 class IFindSupport(Interface):
     """Find support for Zope Folders"""
 
+    manage_findForm = Attribute(""" """)
+    manage_findAdv = Attribute(""" """)
+    manage_findResult = Attribute(""" """)
+
     def ZopeFind(obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
