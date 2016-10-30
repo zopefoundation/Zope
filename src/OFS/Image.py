@@ -111,6 +111,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     manage_options = (
         ({'label': 'Edit', 'action': 'manage_main'}, ) +
+        PropertyManager.manage_options +
         RoleManager.manage_options +
         Item_w__name__.manage_options +
         Cacheable.manage_options

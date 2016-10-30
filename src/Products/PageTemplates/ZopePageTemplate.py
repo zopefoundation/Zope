@@ -88,7 +88,9 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     manage_options = (
         {'label': 'Edit', 'action': 'pt_editForm'},
-    ) + SimpleItem.manage_options + Cacheable.manage_options
+    ) + PropertyManager.manage_options + \
+        SimpleItem.manage_options + \
+        Cacheable.manage_options
 
     _properties = (
         {'id': 'title', 'type': 'ustring', 'mode': 'w'},

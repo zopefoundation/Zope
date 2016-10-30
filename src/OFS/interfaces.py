@@ -810,7 +810,26 @@ class IPropertyManager(Interface):
 
     Entries in the _properties structure which do not have a 'mode' key
     are assumed to have the mode 'wd' (writeable and deleteable).
+
+    To fully support property management, including the system-provided
+    tabs and user interfaces for working with properties, an object which
+    inherits from PropertyManager should include the following entry in
+    its manage_options structure::
+
+      {'label':'Properties', 'action':'manage_propertiesForm',}
+
+    to ensure that a 'Properties' tab is displayed in its management
+    interface. Objects that inherit from PropertyManager should also
+    include the following entry in its __ac_permissions__ structure::
+
+      ('Manage properties', ('manage_addProperty',
+                             'manage_editProperties',
+                             'manage_delProperties',
+                             'manage_changeProperties',)),
     """
+
+    manage_propertiesForm = Attribute(""" """)
+    manage_propertyTypeForm = Attribute(""" """)
 
     title = BytesLine(title=u"Title")
 

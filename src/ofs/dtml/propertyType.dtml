@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Change Property Types</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<dtml-var manage_tabs>
+
+<dtml-unless props>
+  <dtml-if ids>
+    <dtml-call expr="REQUEST.set('props', [])">
+    <dtml-call expr="REQUEST.set('old_ids', ids)">
+    <dtml-in propertyMap mapping>
+      <dtml-if expr="id in ids">
+        <dtml-call expr="props.append({'new_id': propertyLabel(id),
+          'new_type': type, 'new_value': getProperty(id),
+          'was_seq': type in ('tokens', 'lines', 'multiple selection')})">
+      </dtml-if>
+    </dtml-in>
+  </dtml-if>
+</dtml-unless>
+
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="POST">
+<dtml-if old_ids>
+<p>
+To change property names and values, edit them and click
+&quot;Save Changes&quot;. To edit properties using their new type,
+select the new types and click &quot;Edit with new Types&quot;
+</p>
+<table border="0" cellspacing="0" cellpadding="2">
+<tr>
+  <td><b>Property Name</b></td>
+  <td><b>Value</b></td>
+  <td><b>New Type</b></td>
+</tr>
+
+<dtml-in old_ids>
+<input type="hidden" name="old_ids:list" value="&dtml-sequence-item;">
+</dtml-in>
+
+<dtml-in props mapping>
+
+<dtml-if expr="new_type in ('tokens', 'lines', 'multiple selection')">
+<input type="hidden" name="props.was_seq:records" value="1">
+<dtml-else>
+<input type="hidden" name="props.was_seq:records" value="">
+</dtml-if>
+
+<dtml-let value_name="'props.new_value:' + {'multiple selection': 'list',
+   'selection': 'string'}.get(new_type, new_type) + ':records'">
+<tr>
+  <td align="left" valign="top">
+    <input type="text" name="props.new_id:records" value="&dtml-new_id;">
+  </td>
+  <td align="left" valign="top">
+  <dtml-if expr="new_type in ('int', 'long', 'float', 'date', 'string', 'tokens')">
+  <input type="text" name="&dtml-value_name;" size="35"
+    <dtml-if was_seq>
+    value="<dtml-in new_value>&dtml-sequence-item; </dtml-in>"
+    <dtml-elif expr="new_type=='long'">
+    value="<dtml-var expr="_.str(getProperty(id))[:-1]" html_quote>"
+    <dtml-else>
+    value="&dtml-new_value;"
+    </dtml-if>>
+  <dtml-elif "new_type=='boolean'">
+  <input type="checkbox" name="&dtml-value_name;" size="35"
+   <dtml-if new_value>CHECKED</dtml-if>>
+  <dtml-elif "new_type in ('text', 'lines')">
+  <textarea name="&dtml-value_name;" rows="6" cols="35"><dtml-if was_seq><dtml-in
+  new_value>&dtml-sequence-item;<dtml-unless
+   sequence-end><dtml-var expr="'\n'"></dtml-unless></dtml-in><dtml-else>&dtml-new_value;</dtml-if></textarea>
+  <dtml-elif "new_type=='selection'">
+    <dtml-if "_.has_key(select_variable)">
+    <select name="&dtml-value_name;">
+      <dtml-in "_[select_variable]">
+         <option
+          <dtml-if "_['sequence-item']==new_value">SELECTED</dtml-if>
+          >&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    <dtml-else>
+       No value for &dtml-select_variable;.
+    </dtml-if>
+  <dtml-elif "new_type=='multiple selection'">
+    <dtml-if "_.has_key(select_variable)">
+    <select name="&dtml-value_name;" multiple
+      size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
+      <dtml-in "_[select_variable]">
+         <option<dtml-if
+         "_['sequence-item'] in new_value"> SELECTED</dtml-if
+         >>&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+    <dtml-else>
+    No value for &dtml-select_variable;.
+    </dtml-if>
+  <dtml-else>
+  <em>Unknown property type</em>
+  </dtml-if>
+</td>
+<td>
+  <select name="props.new_type:records">
+<dtml-in expr="('boolean', 'date', 'float', 'int', 'lines', 'long', 'string'
+               , 'text', 'tokens', 'selection', 'multiple selection')">
+  <dtml-let SELECTED="('', 'SELECTED')[new_type==_['sequence-item']]">
+    <option &dtml-SELECTED;>&dtml-sequence-item;</option>
+  </dtml-let>
+</dtml-in>
+  </select>
+  </dtml-let>
+</td>
+</tr>
+</dtml-in>
+<tr>
+  <td align="left" valign="top" width="16">
+  </td>
+  <td align="left" valign="top" colspan="2">
+  <input type="submit" name="manage_changePropertyTypes:method"
+   value="Save Changes">
+  <input type="submit" name="manage_propertyTypeForm:method"
+   value="Edit with new Types">
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<p>
+No properties were selected for this item.
+</p>
+
+</dtml-if>
+</form>
+
+</body>
+</html>

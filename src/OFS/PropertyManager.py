@@ -25,6 +25,7 @@ from zExceptions import BadRequest
 from zope.interface import implementer
 from ZPublisher.Converters import type_converters
 
+from App.special_dtml import DTMLFile
 from OFS.interfaces import IPropertyManager
 from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
@@ -76,6 +77,22 @@ class PropertyManager(Base):
 
     Entries in the _properties structure which do not have a 'mode' key
     are assumed to have the mode 'wd' (writeable and deleteable).
+
+    To fully support property management, including the system-provided
+    tabs and user interfaces for working with properties, an object which
+    inherits from PropertyManager should include the following entry in
+    its manage_options structure::
+
+      {'label':'Properties', 'action':'manage_propertiesForm',}
+
+    to ensure that a 'Properties' tab is displayed in its management
+    interface. Objects that inherit from PropertyManager should also
+    include the following entry in its __ac_permissions__ structure::
+
+      ('Manage properties', ('manage_addProperty',
+                             'manage_editProperties',
+                             'manage_delProperties',
+                             'manage_changeProperties',)),
     """
 
     security = ClassSecurityInfo()
@@ -83,7 +100,15 @@ class PropertyManager(Base):
     security.setPermissionDefault(access_contents_information,
                                   ('Anonymous', 'Manager'))
 
-    manage_options = ()
+    manage_options = (
+        {'label': 'Properties', 'action': 'manage_propertiesForm'},
+    )
+
+    security.declareProtected(manage_properties, 'manage_propertiesForm')
+    manage_propertiesForm = DTMLFile(
+        'dtml/properties', globals(), property_extensible_schema__=1)
+    security.declareProtected(manage_properties, 'manage_propertyTypeForm')
+    manage_propertyTypeForm = DTMLFile('dtml/propertyType', globals())
 
     title = ''
     _properties = (
@@ -253,6 +278,8 @@ class PropertyManager(Base):
         if type in type_converters:
             value = type_converters[type](value)
         self._setProperty(id.strip(), value, type)
+        if REQUEST is not None:
+            return self.manage_propertiesForm(self, REQUEST)
 
     security.declareProtected(manage_properties, 'manage_editProperties')
     def manage_editProperties(self, REQUEST):
@@ -271,6 +298,10 @@ class PropertyManager(Base):
                 else:
                     value = REQUEST.form.get(name, '')
                 self._updateProperty(name, value)
+        if REQUEST:
+            message = "Saved changes."
+            return self.manage_propertiesForm(self, REQUEST,
+                                              manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_changeProperties')
     def manage_changeProperties(self, REQUEST=None, **kw):
@@ -294,6 +325,10 @@ class PropertyManager(Base):
                 if 'w' not in propdict[name].get('mode', 'wd'):
                     raise BadRequest('%s cannot be changed' % escape(name))
                 self._updateProperty(name, value)
+        if REQUEST:
+            message = "Saved changes."
+            return self.manage_propertiesForm(self, REQUEST,
+                                              manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_changePropertyTypes')
     def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
@@ -311,6 +346,8 @@ class PropertyManager(Base):
             return
         for prop in props:
             self._setProperty(prop.new_id, prop.new_value, prop.new_type)
+        if REQUEST is not None:
+            return self.manage_propertiesForm(self, REQUEST)
 
     security.declareProtected(manage_properties, 'manage_delProperties')
     def manage_delProperties(self, ids=None, REQUEST=None):
@@ -321,7 +358,7 @@ class PropertyManager(Base):
                 ids = None
             ids = REQUEST.get('_ids', ids)
         if ids is None:
-            raise BadRequest('No propery specified.')
+            raise BadRequest('No property specified.')
         propdict = self.propdict()
         nd = self._reserved_names
         for id in ids:
@@ -331,5 +368,8 @@ class PropertyManager(Base):
             if ('d' not in propdict[id].get('mode', 'wd')) or (id in nd):
                 raise BadRequest('Cannot delete %s' % id)
             self._delProperty(id)
+
+        if REQUEST is not None:
+            return self.manage_propertiesForm(self, REQUEST)
 
 InitializeClass(PropertyManager)

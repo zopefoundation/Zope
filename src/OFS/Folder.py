@@ -73,6 +73,7 @@ class Folder(
 
     manage_options = (
         ObjectManager.manage_options +
+        PropertyManager.manage_options +
         RoleManager.manage_options +
         Item.manage_options +
         FindSupport.manage_options
