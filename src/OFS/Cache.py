@@ -27,6 +27,7 @@ from Acquisition import aq_base
 from Acquisition import aq_get
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.special_dtml import DTMLFile
 
 ZCM_MANAGERS = '__ZCacheManager_ids__'
 
@@ -84,10 +85,17 @@ class Cacheable(object):
     '''Mix-in for cacheable objects.
     '''
 
-    manage_options = ()
+    manage_options = (
+        {'label': 'Cache', 'action': 'ZCacheable_manage',
+         'filter': filterCacheTab},
+    )
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(ChangeCacheSettingsPermission, ('Manager',))
+
+    security.declareProtected(ViewManagementScreensPermission,
+                              'ZCacheable_manage')
+    ZCacheable_manage = DTMLFile('dtml/cacheable', globals())
 
     _v_ZCacheable_cache = None
     _v_ZCacheable_manager_timestamp = 0
@@ -199,6 +207,11 @@ class Cacheable(object):
                     exc = None
         else:
             message = 'This object is not associated with a cache manager.'
+
+        if REQUEST is not None:
+            return self.ZCacheable_manage(
+                self, REQUEST, management_view='Cache',
+                manage_tabs_message=message)
         return message
 
     security.declarePrivate('ZCacheable_getModTime')
@@ -270,6 +283,11 @@ class Cacheable(object):
         self.__manager_id = manager_id
         self._v_ZCacheable_cache = None
 
+        if REQUEST is not None:
+            return self.ZCacheable_manage(
+                self, REQUEST, management_view='Cache',
+                manage_tabs_message='Cache settings changed.')
+
     security.declareProtected(ViewManagementScreensPermission,
                               'ZCacheable_enabled')
     def ZCacheable_enabled(self):
@@ -283,6 +301,18 @@ class Cacheable(object):
         '''Changes the enabled flag.'''
         self.__enabled = enabled and 1 or 0
 
+        if REQUEST is not None:
+            return self.ZCacheable_manage(
+                self, REQUEST, management_view='Cache',
+                manage_tabs_message='Cache settings changed.')
+
+    security.declareProtected(ViewManagementScreensPermission,
+                              'ZCacheable_configHTML')
+    def ZCacheable_configHTML(self):
+        '''Override to provide configuration of caching
+        behavior that can only be specific to the cacheable object.
+        '''
+        return ''
 
 InitializeClass(Cacheable)
 
@@ -385,7 +415,9 @@ class CacheManager(object):
 
     _isCacheManager = 1
 
-    manage_options = ()
+    manage_options = (
+        {'label': 'Associate', 'action': 'ZCacheManager_associate'},
+    )
 
     def manage_afterAdd(self, item, container):
         # Adds self to the list of cache managers in the container.
@@ -412,6 +444,10 @@ class CacheManager(object):
                 manager_timestamp = time.time()
 
     security.declareProtected(ChangeCacheSettingsPermission,
+                              'ZCacheManager_associate')
+    ZCacheManager_associate = DTMLFile('dtml/cmassoc', globals())
+
+    security.declareProtected(ChangeCacheSettingsPermission,
                               'ZCacheManager_locate')
     def ZCacheManager_locate(self, require_assoc, subfolders,
                              meta_types=[], REQUEST=None):
@@ -425,6 +461,11 @@ class CacheManager(object):
             meta_types = []
         findCacheables(ob, manager_id, require_assoc, subfolders,
                        meta_types, rval, ())
+
+        if REQUEST is not None:
+            return self.ZCacheManager_associate(
+                self, REQUEST, show_results=1, results=rval,
+                management_view="Associate")
         return rval
 
     security.declareProtected(ChangeCacheSettingsPermission,
@@ -458,5 +499,12 @@ class CacheManager(object):
                     if manager_id == my_id:
                         ob.ZCacheable_setManagerId(None)
                         remcount = remcount + 1
+
+        if REQUEST is not None:
+            return self.ZCacheManager_associate(
+                self, REQUEST, management_view="Associate",
+                manage_tabs_message='%d association(s) made, %d removed.' %
+                (addcount, remcount)
+            )
 
 InitializeClass(CacheManager)

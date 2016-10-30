@@ -39,7 +39,6 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher.Iterators import IStreamIterator
 
-
 if sys.version_info >= (3, ):
     basestring = str
 
@@ -55,8 +54,8 @@ class DTMLMethod(RestrictedDTML,
                  HTML,
                  Implicit,
                  RoleManager,
-                 Cacheable,
-                 Item_w__name__):
+                 Item_w__name__,
+                 Cacheable):
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
@@ -190,6 +189,9 @@ class DTMLMethod(RestrictedDTML,
                 kw[key] = val
             self.ZCacheable_set(result, keywords=kw)
 
+    security.declareProtected(change_dtml_methods, 'ZCacheable_configHTML')
+    ZCacheable_configHTML = DTMLFile('dtml/cacheNamespaceKeys', globals())
+
     security.declareProtected(change_dtml_methods, 'getCacheNamespaceKeys')
     def getCacheNamespaceKeys(self):
         # Return the cacheNamespaceKeys.
@@ -204,6 +206,9 @@ class DTMLMethod(RestrictedDTML,
             if key:
                 ks.append(key)
         self._cache_namespace_keys = tuple(ks)
+
+        if REQUEST is not None:
+            return self.ZCacheable_manage(self, REQUEST)
 
     security.declareProtected(View, 'get_size')
     def get_size(self):

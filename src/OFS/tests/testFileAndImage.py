@@ -53,6 +53,7 @@ def aputrequest(file, content_type):
 
 
 class DummyCache(object):
+
     def __init__(self):
         self.clear()
 
