@@ -166,6 +166,15 @@ class Batch(Batch):
 # "make_query(bstart=batch.end)" to the other.
 
 
+_DEFAULT_ENCODING = None
+def _default_encoding():
+    ''' Retreive default encoding from config '''
+    from App.config import getConfiguration
+    global _DEFAULT_ENCODING
+    if _DEFAULT_ENCODING is None:
+        config = getConfiguration()
+        _DEFAULT_ENCODING = config.zpublisher_default_encoding
+
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
 
@@ -275,6 +284,11 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
+    if isinstance(v, unicode):
+        encoding = _DEFAULT_ENCODING
+        if encoding is None:
+            encoding = 'utf8'
+        return ':%s:ustring' % (encoding,)
     if isinstance(v, bool):
         return ':boolean'
     if isinstance(v, int):
