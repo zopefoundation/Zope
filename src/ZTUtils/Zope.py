@@ -166,12 +166,15 @@ class Batch(Batch):
 # "make_query(bstart=batch.end)" to the other.
 
 
+#Do not do this at import time.
+#Call '_default_encoding()' at run time to retrieve it from config, if present
+#If not configured, will be 'utf8' by default.
 _DEFAULT_ENCODING = None
 def _default_encoding():
     ''' Retreive default encoding from config '''
-    from App.config import getConfiguration
     global _DEFAULT_ENCODING
     if _DEFAULT_ENCODING is None:
+        from App.config import getConfiguration
         config = getConfiguration()
         try:
             _DEFAULT_ENCODING = config.zpublisher_default_encoding
