@@ -36,11 +36,10 @@ class QueryTests(unittest.TestCase):
         test_date = DateTime()
         list_ = [1, test_date, 'str', u'unic\xF3de']
         result = complex_marshal([('list', list_), ])
-        expect = [('list', ':int:list', 1),
-                  ('list', ':date:list', test_date),
-                  ('list', ':list', 'str'),
-                  ('list', ':utf8:ustring:list', u'unic\xF3de')]
-        self.assertEqual(expect, result)
+        assert result == [('list', ':int:list', 1),
+                          ('list', ':date:list', test_date),
+                          ('list', ':list', 'str'),
+                          ('list', ':utf8:ustring:list', u'unic\xF3de')]
 
     def testMarshallRecords(self):
         '''Test marshalling records'''
