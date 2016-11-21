@@ -34,29 +34,33 @@ class QueryTests(unittest.TestCase):
     def testMarshallLists(self):
         '''Test marshalling lists'''
         test_date = DateTime()
-        list_ = [1, test_date, 'str']
+        list_ = [1, test_date, 'str', u'unic\xF3de']
         result = complex_marshal([('list', list_), ])
-        assert result == [('list', ':int:list', 1),
-                          ('list', ':date:list', test_date),
-                          ('list', ':list', 'str')]
+        expect = [('list', ':int:list', 1),
+                  ('list', ':date:list', test_date),
+                  ('list', ':list', 'str'),
+                  ('list', ':utf8:ustring:list', u'unic\xF3de')]
+        self.assertEqual(expect, result)
 
     def testMarshallRecords(self):
         '''Test marshalling records'''
         test_date = DateTime()
-        record = {'arg1': 1, 'arg2': test_date, 'arg3': 'str'}
+        record = {'arg1': 1, 'arg2': test_date, 'arg3': 'str', 'arg4': u'unic\xF3de'}
         result = complex_marshal([('record', record), ])
         assert result == [('record.arg1', ':int:record', 1),
                           ('record.arg2', ':date:record', test_date),
-                          ('record.arg3', ':record', 'str')]
+                          ('record.arg3', ':record', 'str'),
+                          ('record.arg4', ':utf8:ustring:record', u'unic\xF3de' )]
 
     def testMarshallListsInRecords(self):
         '''Test marshalling lists inside of records'''
         test_date = DateTime()
-        record = {'arg1': [1, test_date, 'str'], 'arg2': 1}
+        record = {'arg1': [1, test_date, 'str', u'unic\xF3de'], 'arg2': 1}
         result = complex_marshal([('record', record), ])
         assert result == [('record.arg1', ':int:list:record', 1),
                           ('record.arg1', ':date:list:record', test_date),
                           ('record.arg1', ':list:record', 'str'),
+                          ('record.arg1', ':utf8:ustring:list:record', u'unic\xF3de'),
                           ('record.arg2', ':int:record', 1)]
 
     def testMakeComplexQuery(self):
@@ -75,6 +79,13 @@ class QueryTests(unittest.TestCase):
             'record.arg1:int:list:record=1&record.arg1:date:list:record=%s&'
             'record.arg1:list:record=str&record.arg2:int:record=1' % (
                 quote_date, quote_date, quote_date))
+        
+    def testMakeQueryUnicode(self):
+        ''' Test makequery against Github issue 15 
+           https://github.com/zopefoundation/Zope/issues/15
+        '''
+        query = make_query(unistring=u'unic\xF3de')
+        self.assertEqual('utf8:ustring:unic\xc3\xb3de', query)
 
     def testMakeHiddenInput(self):
         tag = make_hidden_input(foo='bar')
