@@ -83,8 +83,8 @@ class QueryTests(unittest.TestCase):
         ''' Test makequery against Github issue 15 
            https://github.com/zopefoundation/Zope/issues/15
         '''
-        query = make_query(unistring=u'unic\xF3de')
-        self.assertEqual('utf8:ustring:unic\xc3\xb3de', query)
+        query = make_query(search_text=u'unic\xF3de')
+        self.assertEqual('search_text:utf8:ustring=unic%C3%B3de', query)
 
     def testMakeHiddenInput(self):
         tag = make_hidden_input(foo='bar')
