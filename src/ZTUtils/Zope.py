@@ -180,6 +180,7 @@ def _default_encoding():
             _DEFAULT_ENCODING = config.zpublisher_default_encoding
         except AttributeError:
             _DEFAULT_ENCODING = 'utf8'
+    return _DEFAULT_ENCODING
 
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
@@ -204,8 +205,7 @@ def make_query(*args, **kwargs):
     for i in range(len(qlist)):
         k, m, v = qlist[i]
         if type(v) == unicode:
-            _default_encoding()
-            v = v.encode(_DEFAULT_ENCODING)
+            v = v.encode(_default_encoding())
         qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
     return '&'.join(qlist)
@@ -294,8 +294,7 @@ def simple_marshal(v):
     if isinstance(v, str):
         return ''
     if isinstance(v, unicode):
-        _default_encoding()
-        encoding = _DEFAULT_ENCODING
+        encoding = _default_encoding()
         return ':%s:ustring' % (encoding,)
     if isinstance(v, bool):
         return ':boolean'
