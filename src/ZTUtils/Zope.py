@@ -204,7 +204,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        if type(v) == unicode:
+        if isinstance(v, unicode):
             v = v.encode(_default_encoding())
         qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
