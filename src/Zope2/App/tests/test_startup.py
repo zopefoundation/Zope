@@ -63,6 +63,15 @@ class StartupTests(ZopeTestCase):
         startup()
         self.assertEqual(str(handler), logged)
 
+    def test_interface(self):
+        # We don't want Interface methods to be publishable.
+        # So they should not have a docstring.
+        # This is done in Zope2.App.patches.publishing.
+        from zope.interface import Interface
+        self.assertFalse(Interface.names.__doc__)
+        self.assertFalse(Interface.getTaggedValue.__doc__)
+        self.assertFalse(Interface.setTaggedValue.__doc__)
+
 
 def test_suite():
     suite = unittest.TestSuite()
