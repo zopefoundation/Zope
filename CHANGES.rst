@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Don't copy items the user is not allowed to view.
+  From Products.PloneHotfix20161129.  [maurits]
 
 Features Added
 ++++++++++++++

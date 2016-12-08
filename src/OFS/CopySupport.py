@@ -531,7 +531,35 @@ class CopySource(Base):
         f.seek(0)
         ob = container._p_jar.importFile(f)
         f.close()
-        return ob
+        # Cleanup the copy.  It may contain private objects that the current
+        # user is not allowed to see.
+        sm = getSecurityManager()
+        if not sm.checkPermission('View', self):
+            # The user is not allowed to view the object that is currently
+            # being copied, so it makes no sense to check any of its sub
+            # objects.  It probably means we are in a test.
+            return ob
+        return self._cleanupCopy(ob)
+
+    def _cleanupCopy(self, cp):
+        sm = getSecurityManager()
+        ob = aq_base(self)
+        if hasattr(ob, 'objectIds'):
+            for k in self.objectIds():
+                v = self._getOb(k)
+                if not sm.checkPermission('View', v):
+                    # We do not use cp._delObject, because this would fire
+                    # events that are needless for objects that are not even in
+                    # an Acquisition chain yet.
+                    cp._delOb(k)
+                    # We need to cleanup the internal objects list, even when
+                    # in some implementations this is always an empty tuple.
+                    cp._objects = tuple([
+                        i for i in cp._objects if i['id'] != k])
+                else:
+                    # recursively check
+                    v._cleanupCopy(cp._getOb(k))
+        return cp
 
     def _postCopy(self, container, op=0):
         # Called after the copy is finished to accomodate special cases.
