@@ -15,6 +15,7 @@
 
 from json import dumps
 from json import loads
+import logging
 import re
 import tempfile
 import warnings
@@ -56,7 +57,7 @@ class CopyError(Exception):
     pass
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
-
+logger = logging.getLogger('OFS')
 _marker = []
 
 
@@ -551,6 +552,12 @@ class CopySource(Base):
                     # We do not use cp._delObject, because this would fire
                     # events that are needless for objects that are not even in
                     # an Acquisition chain yet.
+                    logger.warn(
+                        'While copying %s, removed %s from copy '
+                        'because user is not allowed to view the original.',
+                        '/'.join(self.getPhysicalPath()),
+                        '/'.join(v.getPhysicalPath())
+                    )
                     cp._delOb(k)
                     # We need to cleanup the internal objects list, even when
                     # in some implementations this is always an empty tuple.
