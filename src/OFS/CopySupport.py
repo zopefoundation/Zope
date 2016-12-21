@@ -596,9 +596,9 @@ class CopySource(Base):
             # being copied, so it makes no sense to check any of its sub
             # objects.  It probably means we are in a test.
             return ob
-        return self._cleanupCopy(ob)
+        return self._cleanupCopy(ob, container)
 
-    def _cleanupCopy(self, cp):
+    def _cleanupCopy(self, cp, container):
         sm = getSecurityManager()
         ob = aq_base(self)
         if hasattr(ob, 'objectIds'):
@@ -609,9 +609,10 @@ class CopySource(Base):
                     # events that are needless for objects that are not even in
                     # an Acquisition chain yet.
                     logger.warn(
-                        'While copying %s, removed %s from copy '
+                        'While copying %s to %s, removed %s from copy '
                         'because user is not allowed to view the original.',
                         '/'.join(self.getPhysicalPath()),
+                        '/'.join(container.getPhysicalPath()),
                         '/'.join(v.getPhysicalPath())
                     )
                     cp._delOb(k)
@@ -621,7 +622,7 @@ class CopySource(Base):
                         i for i in cp._objects if i['id'] != k])
                 else:
                     # recursively check
-                    v._cleanupCopy(cp._getOb(k))
+                    v._cleanupCopy(cp._getOb(k), container)
         return cp
 
     def _postCopy(self, container, op=0):
