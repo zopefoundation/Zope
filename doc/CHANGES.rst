@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
+- Don't copy items the user is not allowed to view.
+  From Products.PloneHotfix20161129.  [maurits]
+
 - Quote variables in manage_tabs and manage_container to avoid XSS.
   From Products.PloneHotfix20160830.  [maurits]
 

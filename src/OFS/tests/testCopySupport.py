@@ -428,6 +428,34 @@ class TestCopySupportSecurity( CopySupportTestBase ):
                                    , ce_regex='Not Supported'
                                    )
 
+    def test_copy_cant_copy_invisible_items(self):
+        # User can view folder1.
+        # User cannot view private file in folder1.
+        # When user copies folder1, the private file should not be copied,
+        # because the user would get the Owner role on the copy,
+        # and be able to view it anyway.
+        from AccessControl.Permissions import add_folders
+        from AccessControl.Permissions import view
+
+        folder1, folder2 = self._initFolders()
+        manage_addFile(folder1, 'private',
+                       file='', content_type='text/plain')
+        manage_addFile(folder1, 'public',
+                       file='', content_type='text/plain')
+        folder1.private.manage_permission(view, roles=(), acquire=0)
+        folder2.manage_permission(add_folders, roles=('Anonymous',), acquire=1)
+
+        copy_info = folder2.manage_pasteObjects(
+            self.app.manage_copyObjects('folder1')
+        )
+
+        new_id = copy_info[0]['new_id']
+        new_folder = folder2[new_id]
+        # The private item should not be in the copy.
+        self.assertTrue('private' not in new_folder.objectIds())
+        # There is nothing wrong with copying the public item.
+        self.assertTrue('public' in new_folder.objectIds())
+
     def test_move_baseline( self ):
 
         folder1, folder2 = self._initFolders()
