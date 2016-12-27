@@ -60,6 +60,8 @@ def startup():
     from App.PersistentExtra import patchPersistent
     import Globals  # to set / fetch data
     patchPersistent()
+    from Zope2.App import patches
+    patches.apply_patches()
 
     global app
 
