@@ -1,0 +1,16 @@
+# Import all patches.
+import persistence
+import publishing
+
+# Have the patches been applied yet?
+_patched = False
+
+
+def apply_patches():
+    global _patched
+    if _patched:
+        return
+    _patched = True
+
+    persistence.apply_patches()
+    publishing.apply_patches()

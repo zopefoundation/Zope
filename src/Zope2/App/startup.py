@@ -47,7 +47,6 @@ deprecated(
 
 app = None
 startup_time = asctime()
-_patched = False
 
 
 def load_zcml():
@@ -60,19 +59,9 @@ def load_zcml():
     configure_vocabulary_registry()
 
 
-def patch_persistent():
-    global _patched
-    if _patched:
-        return
-    _patched = True
-
-    from Persistence import Persistent
-    from AccessControl.class_init import InitializeClass
-    Persistent.__class_init__ = InitializeClass
-
-
 def startup():
-    patch_persistent()
+    from Zope2.App import patches
+    patches.apply_patches()
 
     global app
 

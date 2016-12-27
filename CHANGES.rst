@@ -11,8 +11,12 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Patch zope.interface to remove docstrings and avoid publishing.
+  From Products.PloneHotfix20161129.   [maurits]
+
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
+
 
 Features Added
 ++++++++++++++
