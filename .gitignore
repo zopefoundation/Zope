@@ -12,7 +12,10 @@ develop/
 develop-eggs/
 dist/
 eggs/
+etc/
 include/
 lib/
+log/
 parts/
+var/
 doc/_build/
