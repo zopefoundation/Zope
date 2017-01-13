@@ -13,4 +13,9 @@ install:
     - bin/buildout
 
 script:
-    - bin/test
+    - bin/alltests
+
+cache:
+  pip: true
+  directories:
+    - eggs/
