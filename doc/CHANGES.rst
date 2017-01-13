@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.25 (unreleased)
 --------------------
 
+- Add a dependency on the empty `ZServer` project.
+
 - Patch zope.interface to remove docstrings and avoid publishing.
   From Products.PloneHotfix20161129.  [maurits]
 

@@ -117,6 +117,7 @@ setup(
         'Products.ZCatalog',
         'Products.ZCTextIndex',
         'Record',
+        'ZServer',
     ] + additional_install_requires,
 
     include_package_data=True,
