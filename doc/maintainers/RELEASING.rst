@@ -77,7 +77,7 @@ without buildout (be sure to add the new ``Zope2`` release version to
 
    $ vim requirements.txt
    $ git add requirements.txt
-   $ git commit -m "Pin versoins for 2.13.23 release" buildout.cfg requirements.txt
+   $ git commit -m "Pin versions for 2.13.23 release" buildout.cfg requirements.txt
 
 Review / update the changelog
 -----------------------------
@@ -110,7 +110,7 @@ Register and upload the release to PyPI
 
 .. code-block:: bash
 
-   $ bin/python sdist register upload --sign
+   $ bin/python setup.py sdist upload --sign
 
 .. note::
 
