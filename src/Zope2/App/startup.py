@@ -63,6 +63,10 @@ def startup():
     from Zope2.App import patches
     patches.apply_patches()
 
+    # Load some security settings.
+    from Zope2.App.safe_formatter import _load_allow_type_for_string_types
+    _load_allow_type_for_string_types()
+
     global app
 
     # Import products

@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.26 (unreleased)
 --------------------
 
+- In ``str.format``, check the security for attributes that are accessed.
+  Part of PloneHotfix20170117.  [maurits]
 
 
 2.13.25 (2017-01-13)

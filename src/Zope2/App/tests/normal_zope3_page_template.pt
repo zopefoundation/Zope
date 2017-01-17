@@ -1,0 +1,2 @@
+<p tal:content="python:('%s' % context).lower()" />
+<p tal:content="python:(u'%s' % context).upper()" />
