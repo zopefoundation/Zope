@@ -128,7 +128,7 @@ your search terms below.
   </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])">">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])" html_quote>">
   </TD>
 </TR>
 

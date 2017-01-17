@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.26 (unreleased)
 --------------------
 
+- Fixed reflective XSS in findResult.
+  This applies PloneHotfix20170117.  [maurits]
 
 
 2.13.25 (2017-01-13)
