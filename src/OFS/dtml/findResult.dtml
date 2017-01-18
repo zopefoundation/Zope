@@ -9,16 +9,16 @@
 
 <dtml-if btn_submit>
 <dtml-with "_.namespace(
-    results=PrincipiaFind(this(), 
-	obj_ids=obj_ids, 
-        obj_metatypes=obj_metatypes, 
-        obj_searchterm=obj_searchterm, 
-        obj_expr=obj_expr, 
-        obj_mtime=obj_mtime, 
-        obj_mspec=obj_mspec, 
-        obj_permission=obj_permission, 
-        obj_roles=obj_roles, 
-        search_sub=search_sub, 
+    results=PrincipiaFind(this(),
+	obj_ids=obj_ids,
+        obj_metatypes=obj_metatypes,
+        obj_searchterm=obj_searchterm,
+        obj_expr=obj_expr,
+        obj_mtime=obj_mtime,
+        obj_mspec=obj_mspec,
+        obj_permission=obj_permission,
+        obj_roles=obj_roles,
+        search_sub=search_sub,
         REQUEST=REQUEST))">
 
 <dtml-unless batch_size>
@@ -29,14 +29,14 @@
 <p class="std-text">
 Displaying items
 <dtml-in name="results" size=batch_size start=query_start>
-<dtml-if sequence-start>&dtml-sequence-number;</dtml-if><dtml-if 
- sequence-end>-&dtml-sequence-number; of <dtml-var 
- "_.len(results)"></dtml-if></dtml-in> items matching your query. You can 
+<dtml-if sequence-start>&dtml-sequence-number;</dtml-if><dtml-if
+ sequence-end>-&dtml-sequence-number; of <dtml-var
+ "_.len(results)"></dtml-if></dtml-in> items matching your query. You can
 <a href="#form">revise</a> your search terms below.
 </p>
 <dtml-else>
 <p class="std-text">
-No items were found matching your query. You can <a href="#form">revise</a> 
+No items were found matching your query. You can <a href="#form">revise</a>
 your search terms below.
 </p>
 </dtml-if>
@@ -128,7 +128,7 @@ your search terms below.
   </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])">">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-var "' '.join(obj_ids or [])" html_quote>">
   </TD>
 </TR>
 
@@ -168,7 +168,7 @@ your search terms below.
 
   <OPTION VALUE="&lt;" <dtml-if "REQUEST.obj_mspec == '<'">SELECTED</dtml-if>> before
   <OPTION VALUE="&gt;" <dtml-if "REQUEST.obj_mspec == '>'">SELECTED</dtml-if>> after
-  </SELECT> 
+  </SELECT>
   </div>
   <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22" VALUE="&dtml-obj_mtime;">
   </TD>
@@ -192,7 +192,7 @@ your search terms below.
 <dtml-else>
  <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
 </dtml-if>
- 
+
 </dtml-in>
   </SELECT>
   </div>
@@ -230,7 +230,7 @@ your search terms below.
   <OPTION VALUE="id">Id
   <OPTION VALUE="meta_type">Type
   <OPTION VALUE="bobobase_modification_time">Last Modified
-  </SELECT> 
+  </SELECT>
   <span class="form-label">
   <INPUT TYPE="checkbox" NAME="rkey" VALUE="reverse"> Reverse?
   </span>
@@ -244,10 +244,10 @@ your search terms below.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-text">
-  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="0" <dtml-if "REQUEST.search_sub == 0">CHECKED</dtml-if>> 
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="0" <dtml-if "REQUEST.search_sub == 0">CHECKED</dtml-if>>
   Search only in this folder
   <BR>
-  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="1" <dtml-if "REQUEST.search_sub == 1">CHECKED</dtml-if>> 
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="1" <dtml-if "REQUEST.search_sub == 1">CHECKED</dtml-if>>
   Search all subfolders
   </div>
   </TD>
@@ -258,7 +258,7 @@ your search terms below.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">
   <span class="form-text">
  <dtml-if "searchtype == 'advanced'">
  <a href="manage_findForm">Simple...<a>
