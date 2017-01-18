@@ -237,8 +237,9 @@ class ZopeSuiteFactory:
 
         # If the test_class does not have a runTest method, we add
         # a dummy attribute so that TestCase construction works.
+        # runTest may get called, so set it to something that works.
         if not hasattr(test_class, 'runTest'):
-            setattr(test_class, 'runTest', None)
+            setattr(test_class, 'runTest', lambda x: None)
 
         # Create a TestCase instance which will be used to execute
         # the setUp and tearDown methods, as well as be passed into
@@ -336,4 +337,3 @@ __all__ = [
     'FunctionalDocTestSuite',
     'FunctionalDocFileSuite',
     ]
-
