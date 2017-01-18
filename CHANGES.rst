@@ -11,6 +11,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Fixed reflective XSS in findResult.
+  This applies PloneHotfix20170117.  [maurits]
+
 - Patch zope.interface to remove docstrings and avoid publishing.
   From Products.PloneHotfix20161129.   [maurits]
 
