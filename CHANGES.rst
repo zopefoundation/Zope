@@ -33,6 +33,7 @@ Features Added
     - zope.testbrowser = 5.0
     - zope.globalrequest = 1.3
     - zope.testing = 4.6.0
+    - ZServer = 4.0a2
 
 Restructuring
 +++++++++++++
