@@ -20,7 +20,6 @@ Bugs Fixed
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
 
-
 Features Added
 ++++++++++++++
 
@@ -29,6 +28,7 @@ Features Added
 
 - Updated distributions:
 
+    - Acquisition = 4.3.0
     - DocumentTemplate = 3.0a1
     - zope.testbrowser = 5.0
     - zope.globalrequest = 1.3
@@ -42,6 +42,7 @@ Restructuring
 - Update to zope.testbrowser 5.0 and its WebTest based implementation.
 
 - Use `@implementer` and `@adapter` class decorators.
+
 
 4.0a2 (2016-09-09)
 ------------------
