@@ -29,6 +29,7 @@ Features Added
 
 - Updated distributions:
 
+    - DocumentTemplate = 3.0a1
     - zope.testbrowser = 5.0
     - zope.globalrequest = 1.3
     - zope.testing = 4.6.0
