@@ -29,8 +29,18 @@ Features Added
 - Updated distributions:
 
     - Acquisition = 4.3.0
+    - BTrees = 4.4.0
     - DocumentTemplate = 3.0a1
+    - persistent = 4.2.2
+    - pytz = 2016.10
+    - WebOb = 1.7.1
+    - WebTest = 2.0.24
+    - zdaemon = 4.2.0
+    - zope.deprecation = 4.2.0
+    - zope.interface = 4.3.3
     - zope.testbrowser = 5.0
+    - zope.testing = 4.6.1
+    - zope.testrunner = 4.6.0
     - zope.globalrequest = 1.3
     - zope.testing = 4.6.0
     - ZServer = 4.0a2
