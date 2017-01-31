@@ -52,6 +52,10 @@ def mapply(object, positional=(), keyword={},
             raise
         code = f.__code__
         defaults = f.__defaults__
+        if code is None:
+            # RestrictedPython / templates
+            code = f.func_code
+            defaults = f.func_defaults
         names = code.co_varnames[count:code.co_argcount]
 
     nargs = len(names)
