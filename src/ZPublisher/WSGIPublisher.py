@@ -169,6 +169,9 @@ def _publish_response(request, response, module_info, _publish=publish):
         with transaction_pubevents(request):
             response = _publish(request, module_info)
     except Exception as exc:
+        if not request.environ.get('wsgi.handleErrors', True):
+            raise
+
         if isinstance(exc, HTTPRedirection):
             response._redirect(exc)
         elif isinstance(exc, Unauthorized):

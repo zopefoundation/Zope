@@ -1007,8 +1007,9 @@ class WSGIResponse(HTTPBaseResponse):
                            'basic realm="%s"' % self.realm, 1)
 
     def unauthorized(self):
-        exc = Unauthorized()
-        exc.title = 'You are not authorized to access this resource.'
+        message = 'You are not authorized to access this resource.'
+        exc = Unauthorized(message)
+        exc.title = message
         if self.debug_mode:
             if self._auth:
                 exc.detail = 'Username and password are not correct.'
