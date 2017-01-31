@@ -296,32 +296,27 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         self.assertEqual(_after1._called_with, ((), {}))
         self.assertEqual(_after2._called_with, ((), {}))
 
-    def test_swallows_Unauthorized(self):
+    def test_raises_annotated_Unauthorized(self):
         from zExceptions import Unauthorized
         environ = self._makeEnviron()
         start_response = DummyCallable()
         _publish = DummyCallable()
         _publish._raise = Unauthorized('TESTING')
-        app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertEqual(app_iter, ('', ''))
-        (status, headers), kw = start_response._called_with
-        self.assertEqual(status, '401 Unauthorized')
-        self.assertTrue(('Content-Length', '0') in headers)
-        self.assertEqual(kw, {})
+        try:
+            self._callFUT(environ, start_response, _publish)
+        except Exception as e:
+            self.assertEqual(e.headers['WWW-Authenticate'], 'basic realm="Zope"')
 
-    def test_swallows_Redirect(self):
+    def test_raises_annotated_Redirect(self):
         from zExceptions import Redirect
         environ = self._makeEnviron()
         start_response = DummyCallable()
         _publish = DummyCallable()
         _publish._raise = Redirect('/redirect_to')
-        app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertEqual(app_iter, ('', ''))
-        (status, headers), kw = start_response._called_with
-        self.assertEqual(status, '302 Found')
-        self.assertTrue(('Location', '/redirect_to') in headers)
-        self.assertTrue(('Content-Length', '0') in headers)
-        self.assertEqual(kw, {})
+        try:
+            self._callFUT(environ, start_response, _publish)
+        except Exception as e:
+            self.assertEqual(e.headers['Location'], '/redirect_to')
 
     def test_response_body_is_file(self):
         from io import BytesIO

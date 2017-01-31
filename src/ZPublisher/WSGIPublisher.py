@@ -174,17 +174,20 @@ def _publish_response(request, response, module_info, _publish=publish):
         elif isinstance(exc, Unauthorized):
             response._unauthorized(exc)
 
-        view = queryMultiAdapter((exc, request), name=u'index.html')
-        if view is not None:
-            parents = request.get('PARENTS')
-            if parents:
-                view.__parent__ = parents[0]
-            response.setStatus(exc.__class__)
-            response.setBody(view())
-            return response
-
-        if isinstance(exc, (HTTPRedirection, Unauthorized)):
-            return response
+        # Render exception views unless we are called by the test browser
+        # with handleErrors = False
+        if request.environ.get('wsgi.handleErrors', True):
+            view = queryMultiAdapter((exc, request), name=u'index.html')
+            if view is not None:
+                parents = request.get('PARENTS')
+                if parents:
+                    view.__parent__ = parents[0]
+                response.setStatus(exc.__class__)
+                if hasattr(exc, 'headers'):
+                    for name, value in exc.headers.items():
+                        response.setHeader(name, value)
+                response.setBody(view())
+                return response
 
         raise
 
