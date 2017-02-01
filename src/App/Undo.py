@@ -112,7 +112,7 @@ class UndoSupport(Tabs, Implicit):
                 descriptions.append(tid[-1])
 
         if tids:
-            transaction.get().note("Undo %s" % ' '.join(descriptions))
+            transaction.get().note(u"Undo %s" % ' '.join(descriptions))
             self._p_jar.db().undoMultiple(tids)
 
         if REQUEST is not None:
