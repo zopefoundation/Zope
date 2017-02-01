@@ -50,7 +50,7 @@ def recordMetaData(object, request):
             path = request.get('PATH_INFO')
 
     T = transaction.get()
-    T.note(path)
+    T.note(safe_unicode(path))
     auth_user = request.get('AUTHENTICATED_USER', None)
     if auth_user:
         auth_folder = aq_parent(auth_user)
@@ -61,5 +61,18 @@ def recordMetaData(object, request):
             auth_path = request.get('AUTHENTICATION_PATH')
         else:
             auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
+        T.setUser(safe_unicode(auth_user.getId()), safe_unicode(auth_path))
 
-        T.setUser(auth_user.getId(), auth_path)
+
+def safe_unicode(value, encoding='utf-8'):
+    """Converts a value to unicode, even it is already a unicode string.
+    stolen from Products.CMFPlone.utils.safe_unicode
+    """
+    if isinstance(value, unicode):
+        return value
+    elif isinstance(value, basestring):
+        try:
+            value = unicode(value, encoding)
+        except (UnicodeDecodeError):
+            value = value.decode('utf-8', 'replace')
+    return value

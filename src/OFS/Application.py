@@ -226,7 +226,7 @@ class AppInitializer:
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects
                                  if i['id'] != 'Control_Panel')
-            self.commit('Removed persistent Control_Panel')
+            self.commit(u'Removed persistent Control_Panel')
 
     def install_required_roles(self):
         app = self.getApp()
@@ -234,13 +234,13 @@ class AppInitializer:
         # Ensure that Owner role exists.
         if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
             app.__ac_roles__ = app.__ac_roles__ + ('Owner',)
-            self.commit('Added Owner role')
+            self.commit(u'Added Owner role')
 
         # ensure the Authenticated role exists.
         if hasattr(app, '__ac_roles__'):
             if 'Authenticated' not in app.__ac_roles__:
                 app.__ac_roles__ = app.__ac_roles__ + ('Authenticated',)
-                self.commit('Added Authenticated role')
+                self.commit(u'Added Authenticated role')
 
     def install_inituser(self):
         app = self.getApp()
@@ -249,7 +249,7 @@ class AppInitializer:
             users = app.acl_users
             if hasattr(users, '_createInitialUser'):
                 app.acl_users._createInitialUser()
-                self.commit('Created initial user')
+                self.commit(u'Created initial user')
             users = aq_base(users)
             migrated = getattr(users, '_ofs_migrated', False)
             if not migrated:
@@ -263,7 +263,7 @@ class AppInitializer:
                     users._ofs_migrated = True
                     users._p_changed = True
                     app._p_changed = True
-                    transaction.get().note('Migrated user folder')
+                    transaction.get().note(u'Migrated user folder')
                     transaction.commit()
 
     def install_products(self):
@@ -275,7 +275,7 @@ class AppInitializer:
             delattr(app, '_standard_objects_have_been_added')
         if getattr(app, '_initializer_registry', None) is not None:
             delattr(app, '_initializer_registry')
-        transaction.get().note('Removed unused application attributes.')
+        transaction.get().note(u'Removed unused application attributes.')
         transaction.commit()
 
 
