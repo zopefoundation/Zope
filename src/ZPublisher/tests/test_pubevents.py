@@ -180,6 +180,7 @@ class _Request(BaseRequest):
     response = WSGIResponse()
     _hacked_path = False
     args = ()
+    environ = {}
 
     def __init__(self, *args, **kw):
         BaseRequest.__init__(self, *args, **kw)

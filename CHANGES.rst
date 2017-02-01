@@ -20,6 +20,26 @@ Bugs Fixed
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
 
+- Fix WSGIPublisher's handling of Unauthorized exceptions and redirects
+  to be more backwards-compatible:
+
+  - Include an exception message when raising Unauthorized exceptions
+    from `WSGIResponse.unauthorized`.
+
+  - Call `WSGIResponse._unauthorized` without passing an exception,
+    for compatibility with PluggableAuthService which overrides this method
+    on response instances.
+
+  - Don't render exception views or call `WSGIResponse._unauthorized`
+    when published by a test browser with `handleErrors = False`.
+
+  - Don't raise an exception when `WSGIResponse.redirect` is called
+    (these redirects should be followed even when the test browser uses
+    `handleErrors = False`).
+
+  [davisagli]
+
+
 Features Added
 ++++++++++++++
 

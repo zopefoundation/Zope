@@ -169,22 +169,23 @@ def _publish_response(request, response, module_info, _publish=publish):
         with transaction_pubevents(request):
             response = _publish(request, module_info)
     except Exception as exc:
-        if isinstance(exc, HTTPRedirection):
-            response._redirect(exc)
-        elif isinstance(exc, Unauthorized):
-            response._unauthorized(exc)
-
-        view = queryMultiAdapter((exc, request), name=u'index.html')
-        if view is not None:
-            parents = request.get('PARENTS')
-            if parents:
-                view.__parent__ = parents[0]
+        if request.environ.get('wsgi.handleErrors', True):
             response.setStatus(exc.__class__)
-            response.setBody(view())
-            return response
+            if isinstance(exc, HTTPRedirection):
+                response._redirect(exc)
+            elif isinstance(exc, Unauthorized):
+                response._unauthorized()
 
-        if isinstance(exc, (HTTPRedirection, Unauthorized)):
-            return response
+            view = queryMultiAdapter((exc, request), name=u'index.html')
+            if view is not None:
+                parents = request.get('PARENTS')
+                if parents:
+                    view.__parent__ = parents[0]
+                response.setBody(view())
+                return response
+
+            if isinstance(exc, (HTTPRedirection, Unauthorized)):
+                return response
 
         raise
 
