@@ -1010,13 +1010,13 @@ class WSGIResponse(HTTPBaseResponse):
         raise exc
 
     def redirect(self, location, status=302, lock=0):
-        """Cause a redirection."""
+        """Cause a redirection without raising an error"""
         if isinstance(location, HTTPRedirection):
-            raise location
-
-        exc = Redirect(str(location))
-        exc.setStatus(status)
-        raise exc
+            status = location.getStatus()
+        location = str(location)
+        self.setStatus(status, lock=lock)
+        self.setHeader('Location', location)
+        return location
 
     def exception(self, fatal=0, info=None, abort=1):
         if isinstance(info, tuple) and len(info) == 3:

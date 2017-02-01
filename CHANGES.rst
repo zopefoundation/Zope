@@ -29,6 +29,12 @@ Bugs Fixed
 - Use unicode transaction-notes to support ZODB 5.
   [pbauer]
 
+- Don't raise an exception when `WSGIResponse.redirect` is called
+  (these redirects should be followed even when the test browser uses
+  `handleErrors = False`).
+  [davisagli]
+
+
 Features Added
 ++++++++++++++
 
@@ -70,6 +76,10 @@ Restructuring
 - Remove special handling of redirect and unauthorized exceptions from
   the WSGI publisher. These are now always raised as exceptions, to
   match the behavior of all other HTTPExceptions.
+
+- Move the WSGIPublisher's rendering of exception views to happen
+  inside the pubevents context manager so that publication events
+  are fired for exception view responses.
 
 - Removed xml-export.
   [maurits, pbauer]
