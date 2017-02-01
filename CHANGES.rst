@@ -28,6 +28,7 @@ Features Added
 
 - Updated distributions:
 
+    - AccessControl = 4.0a4
     - Acquisition = 4.3.0
     - BTrees = 4.4.0
     - DocumentTemplate = 3.0a1
