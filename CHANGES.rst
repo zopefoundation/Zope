@@ -46,6 +46,12 @@ Bugs Fixed
 - Use unicode transaction-notes to support ZODB 5.
   [pbauer]
 
+- Don't raise an exception when `WSGIResponse.redirect` is called
+  (these redirects should be followed even when the test browser uses
+  `handleErrors = False`).
+  [davisagli]
+
+
 Features Added
 ++++++++++++++
 
