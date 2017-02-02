@@ -33,6 +33,7 @@ Features Added
     - BTrees = 4.4.0
     - DocumentTemplate = 3.0a1
     - ExtensionClass = 4.2.1
+    - Persistence = 3.0a3
     - persistent = 4.2.2
     - Products.ZCatalog = 4.0a3
     - pytz = 2016.10
