@@ -674,6 +674,37 @@ class HTTPBaseResponse(BaseResponse):
         result.extend(self.accumulated_headers)
         return result
 
+    def _html(self, title, body):
+        return ("<html>\n"
+                "<head>\n<title>%s</title>\n</head>\n"
+                "<body>\n%s\n</body>\n"
+                "</html>\n" % (title, body))
+
+    def _error_html(self, title, body):
+        return ("""<!DOCTYPE html><html>
+  <head><title>Site Error</title><meta charset="utf-8" /></head>
+  <body bgcolor="#FFFFFF">
+  <h2>Site Error</h2>
+  <p>An error was encountered while publishing this resource.
+  </p>
+  <p><strong>%s</strong></p>
+
+  %s""" % (title, body) + """
+  <hr noshade="noshade"/>
+
+  <p>Troubleshooting Suggestions</p>
+
+  <ul>
+  <li>The URL may be incorrect.</li>
+  <li>The parameters passed to this resource may be incorrect.</li>
+  <li>A resource that this resource relies on may be
+      encountering an error.</li>
+  </ul>
+
+  <p>If the error persists please contact the site maintainer.
+  Thank you for your patience.
+  </p></body></html>""")
+
 
 class HTTPResponse(HTTPBaseResponse):
 
@@ -720,37 +751,6 @@ class HTTPResponse(HTTPBaseResponse):
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
         return '\n'.join(tb)
-
-    def _html(self, title, body):
-        return ("<html>\n"
-                "<head>\n<title>%s</title>\n</head>\n"
-                "<body>\n%s\n</body>\n"
-                "</html>\n" % (title, body))
-
-    def _error_html(self, title, body):
-        return ("""<!DOCTYPE html><html>
-  <head><title>Site Error</title><meta charset="utf-8" /></head>
-  <body bgcolor="#FFFFFF">
-  <h2>Site Error</h2>
-  <p>An error was encountered while publishing this resource.
-  </p>
-  <p><strong>%s</strong></p>
-
-  %s""" % (title, body) + """
-  <hr noshade="noshade"/>
-
-  <p>Troubleshooting Suggestions</p>
-
-  <ul>
-  <li>The URL may be incorrect.</li>
-  <li>The parameters passed to this resource may be incorrect.</li>
-  <li>A resource that this resource relies on may be
-      encountering an error.</li>
-  </ul>
-
-  <p>If the error persists please contact the site maintainer.
-  Thank you for your patience.
-  </p></body></html>""")
 
     def notFoundError(self, entry='Unknown'):
         self.setStatus(404)
