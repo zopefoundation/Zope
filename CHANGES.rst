@@ -32,6 +32,7 @@ Features Added
     - Acquisition = 4.3.0
     - BTrees = 4.4.0
     - DocumentTemplate = 3.0a1
+    - ExtensionClass = 4.2.1
     - persistent = 4.2.2
     - Products.ZCatalog = 4.0a3
     - pytz = 2016.10
