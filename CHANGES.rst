@@ -28,10 +28,12 @@ Features Added
 
 - Updated distributions:
 
+    - AccessControl = 4.0a4
     - Acquisition = 4.3.0
     - BTrees = 4.4.0
     - DocumentTemplate = 3.0a1
     - persistent = 4.2.2
+    - Products.ZCatalog = 4.0a3
     - pytz = 2016.10
     - WebOb = 1.7.1
     - WebTest = 2.0.24

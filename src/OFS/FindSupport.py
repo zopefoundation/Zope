@@ -12,12 +12,9 @@
 ##############################################################################
 """Find support
 """
-
-from string import translate
-
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permission import name_trans
+from AccessControl.Permission import getPermissionIdentifier
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base, aq_parent
 from App.special_dtml import DTMLFile
@@ -92,7 +89,7 @@ class FindSupport(Base):
                 obj_mtime = DateTime(obj_mtime).timeTime()
 
             if obj_permission:
-                obj_permission = p_name(obj_permission)
+                obj_permission = getPermissionIdentifier(obj_permission)
 
             if obj_roles and isinstance(obj_roles, str):
                 obj_roles = [obj_roles]
@@ -218,7 +215,3 @@ def absattr(attr):
     if isinstance(attr, collections.Callable):
         return attr()
     return attr
-
-
-def p_name(name):
-    return '_' + translate(name, name_trans) + '_Permission'
