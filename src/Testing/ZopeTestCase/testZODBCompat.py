@@ -16,6 +16,8 @@ Demonstrates that cut/copy/paste/clone/rename and import/export
 work if a savepoint is made before performing the respective operation.
 """
 
+import os
+
 from Testing import ZopeTestCase
 
 from Testing.ZopeTestCase import layer
@@ -25,6 +27,7 @@ from Testing.ZopeTestCase import transaction
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
 from OFS.SimpleItem import SimpleItem
+import tempfile
 
 folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]
@@ -87,6 +90,73 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         self.folder.manage_renameObjects(['doc'], ['new_doc'])
         self.assertFalse(hasattr(self.folder, 'doc'))
         self.assertTrue(hasattr(self.folder, 'new_doc'))
+
+
+class TestImportExport(ZopeTestCase.ZopeTestCase):
+
+    def afterSetUp(self):
+        self.setupLocalEnvironment()
+        self.folder.addDTMLMethod('doc', file='foo')
+        # _p_oids are None until we create a savepoint
+        self.assertEqual(self.folder._p_oid, None)
+        transaction.savepoint(optimistic=True)
+        self.assertNotEqual(self.folder._p_oid, None)
+
+    def testExport(self):
+        self.folder.manage_exportObject('doc')
+        self.assertTrue(os.path.exists(self.zexp_file))
+
+    def testImport(self):
+        self.folder.manage_exportObject('doc')
+        self.folder._delObject('doc')
+        self.folder.manage_importObject('doc.zexp')
+        self.assertTrue(hasattr(self.folder, 'doc'))
+
+    # To make export and import happy, we have to provide a file-
+    # system 'import' directory and adapt the configuration a bit:
+
+    local_home = tempfile.gettempdir()
+    import_dir = os.path.join(local_home, 'import')
+    zexp_file = os.path.join(import_dir, 'doc.zexp')
+
+    def setupLocalEnvironment(self):
+        # Create the 'import' directory
+        os.mkdir(self.import_dir)
+        import App.config
+        config = App.config.getConfiguration()
+        self._ih = config.instancehome
+        config.instancehome = self.local_home
+        self._ch = config.clienthome
+        config.clienthome = self.import_dir
+        App.config.setConfiguration(config)
+
+    def afterClear(self):
+        # Remove external resources
+        try:
+            os.remove(self.zexp_file)
+        except OSError:
+            pass
+        try:
+            os.rmdir(self.import_dir)
+        except OSError:
+            pass
+        try:
+            import App.config
+        except ImportError:
+            # Restore builtins
+            builtins = getattr(__builtins__, '__dict__', __builtins__)
+            if hasattr(self, '_ih'):
+                builtins['INSTANCE_HOME'] = self._ih
+            if hasattr(self, '_ch'):
+                builtins['CLIENT_HOME'] = self._ch
+        else:
+            # Zope >= 2.7
+            config = App.config.getConfiguration()
+            if hasattr(self, '_ih'):
+                config.instancehome = self._ih
+            if hasattr(self, '_ch'):
+                config.clienthome = self._ch
+            App.config.setConfiguration(config)
 
 
 class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
@@ -242,6 +312,7 @@ def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestCopyPaste))
+    suite.addTest(makeSuite(TestImportExport))
     suite.addTest(makeSuite(TestAttributesOfCleanObjects))
     suite.addTest(makeSuite(TestAttributesOfDirtyObjects))
     suite.addTest(makeSuite(TestTransactionAbort))

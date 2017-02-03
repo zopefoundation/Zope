@@ -1,0 +1,141 @@
+<dtml-var manage_page_header>
+<dtml-var "manage_tabs(this(), _, )">
+
+<p class="form-help">
+You can export Zope objects to a file in order to transfer
+them to a different Zope installation. You can either choose
+to download the export file to your local machine, or save it
+in the &quot;var&quot; directory of your Zope installation 
+on the server. 
+<br/>
+<br/>
+<b>Note:</b>
+Zope can export/import objects in two different formats: a binary format (called
+ZEXP) and as XML. The ZEXP format is the officially supported export/import
+format for moving data between <u>identical</u> Zope installations (it is not a migration tool).
+</p>
+
+<form action="manage_exportObject" method="post">
+<table cellspacing="2" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Export object id
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="id" size="25" value="<dtml-if ids><dtml-var "ids[0]" html_quote></dtml-if>" class="form-element"/>
+  </td>
+</tr>                                                                          
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Export to
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <label for="download_local">
+  <input type="radio" name="download:int" value="1" id="download_local" />
+  Download to local machine
+  </label>
+  <br />
+  <label for="download_server">
+  <input type="radio" name="download:int" value="0" id="download_server" checked />
+  Save to file on server
+  </label>
+  </div>
+  </td>
+</tr>  
+<tr>
+  <td align="left" valign="top">
+  &nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <label for="toxml">
+  <input type="checkbox" id="toxml" name="toxml" value="Y" />
+  XML format?
+  </label>
+  <em>(unsupported, see above)</em>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value="Export" />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<hr />
+
+<p class="form-help">
+You may import Zope objects which have been previously
+exported to a file, by placing the file in the &quot;import&quot;
+directory of your Zope installation on the server. You should create 
+the &quot;import&quot; directory in the root of your Zope installation 
+if it does not yet exist.
+</p>
+
+<p class="form-help">
+Note that by default, you will become the owner of the objects 
+that you are importing. If you wish the imported objects to retain 
+their existing ownership information, select "retain existing 
+ownership information".
+</p>
+
+<form action="manage_importObject" method="post">
+<table cellspacing="2" border="0">
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Import file name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <select name="file">
+  <dtml-in "list_imports()">
+    <option value="<dtml-var sequence-item>"><dtml-var sequence-item></option>
+  </dtml-in>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Ownership
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <label for="owner_take">
+  <input type="radio" name="set_owner:int" value="1" id="owner_take" checked />
+  Take ownership of imported objects
+  </label>
+  <br />
+  <label for="owner_retain">
+  <input type="radio" name="set_owner:int" value="0" id="owner_retain" /> 
+  Retain existing ownership information
+  </label>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value="Import" />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+
+<dtml-var manage_page_footer>
