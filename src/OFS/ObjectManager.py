@@ -61,9 +61,6 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
-from OFS.XMLExportImport import importXML
-from OFS.XMLExportImport import exportXML
-from OFS.XMLExportImport import magic
 
 import collections
 
@@ -86,10 +83,7 @@ LOG = getLogger('ObjectManager')
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
 
-customImporters={magic: importXML,
-                }
-
-bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
+bad_id = re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
 
 def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object
@@ -578,7 +572,7 @@ class ObjectManager(CopyContainer,
         return r
 
     security.declareProtected(import_export_objects, 'manage_exportObject')
-    def manage_exportObject(self, id='', download=None, toxml=None,
+    def manage_exportObject(self, id='', download=None,
                             RESPONSE=None,REQUEST=None):
         """Exports an object to a file and returns that file."""
         if not id:
@@ -588,14 +582,11 @@ class ObjectManager(CopyContainer,
             ob=self
         else: ob=self._getOb(id)
 
-        suffix=toxml and 'xml' or 'zexp'
+        suffix = 'zexp'
 
         if download:
             f=StringIO()
-            if toxml:
-                exportXML(ob._p_jar, ob._p_oid, f)
-            else:
-                ob._p_jar.exportFile(ob._p_oid, f)
+            ob._p_jar.exportFile(ob._p_oid, f)
             if RESPONSE is not None:
                 RESPONSE.setHeader('Content-type','application/data')
                 RESPONSE.setHeader('Content-Disposition',
@@ -604,10 +595,7 @@ class ObjectManager(CopyContainer,
 
         cfg = getConfiguration()
         f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
-        if toxml:
-            exportXML(ob._p_jar, ob._p_oid, f)
-        else:
-            ob._p_jar.exportFile(ob._p_oid, f)
+        ob._p_jar.exportFile(ob._p_oid, f)
 
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
@@ -651,8 +639,7 @@ class ObjectManager(CopyContainer,
         while connection is None:
             obj=obj.aq_parent
             connection=obj._p_jar
-        ob=connection.importFile(
-            filepath, customImporters=customImporters)
+        ob=connection.importFile(filepath)
         if verify: self._verifyObjectPaste(ob, validate_src=0)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()

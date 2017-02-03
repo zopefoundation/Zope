@@ -52,6 +52,9 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Removed xml-export.
+  [maurits, pbauer]
+
 - Add back ZCacheable support.
 
 - Update to zope.testbrowser 5.0 and its WebTest based implementation.

@@ -736,7 +736,7 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
         """Return a list of subobjects, used by tree tag.
         """
 
-    def manage_exportObject(id='', download=None, toxml=None,
+    def manage_exportObject(id='', download=None,
                             RESPONSE=None, REQUEST=None):
         """Exports an object to a file and returns that file."""
 
