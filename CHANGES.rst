@@ -20,6 +20,13 @@ Bugs Fixed
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
 
+- Make the WSGIPublisher normalize HTTP exception classes based on name
+  (for example, any exception named NotFound will be converted
+  into `zExceptions.NotFound`). This restores compatibility with
+  similar behavior of the old publisher.
+  [davisagli]
+
+
 Features Added
 ++++++++++++++
 
