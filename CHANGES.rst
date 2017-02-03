@@ -20,6 +20,11 @@ Bugs Fixed
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
 
+- Don't render exception views when WSGI publisher is called
+  by the test browser (when 'wsgi.handleErrors' in the request
+  environ is False). This makes it behave more similarly
+  to the ZServer publisher for compatibility with existing tests. [davisagli]
+
 Features Added
 ++++++++++++++
 
