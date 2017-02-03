@@ -20,6 +20,10 @@ Bugs Fixed
 - Don't copy items the user is not allowed to view.
   From Products.PloneHotfix20161129.  [maurits]
 
+- Remove ``ApplicationManager``, to facilitate migration of instances
+  that had a persistent Control Panel. [MatthewWilkes]
+
+
 Features Added
 ++++++++++++++
 
