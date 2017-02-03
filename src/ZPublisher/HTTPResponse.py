@@ -1064,7 +1064,9 @@ class WSGIResponse(HTTPBaseResponse):
 
         self.stdout.write(data)
 
-    def setBody(self, body, title='', is_error=0):
+    def setBody(self, body, title='', is_error=0, lock=None):
+        # lock is not used, but it may get passed in case of webdav,
+        # at least in tests that use the wsgi server.
         if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
