@@ -26,6 +26,7 @@ from zExceptions import (
     HTTPOk,
     HTTPRedirection,
     Unauthorized,
+    upgradeException,
 )
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
@@ -169,6 +170,12 @@ def _publish_response(request, response, module_info, _publish=publish):
         with transaction_pubevents(request):
             response = _publish(request, module_info)
     except Exception as exc:
+        # Normalize HTTP exceptions
+        # (For example turn zope.publisher NotFound into zExceptions NotFound)
+        t, v = upgradeException(exc.__class__, None)
+        if t is not exc.__class__:
+            exc = t(str(exc))
+
         if isinstance(exc, HTTPRedirection):
             response._redirect(exc)
         elif isinstance(exc, Unauthorized):
