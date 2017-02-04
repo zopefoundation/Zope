@@ -61,7 +61,9 @@ def recordMetaData(object, request):
             auth_path = request.get('AUTHENTICATION_PATH')
         else:
             auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
-        T.setUser(safe_unicode(auth_user.getId()), safe_unicode(auth_path))
+        user_id = auth_user.getId()
+        user_id = safe_unicode(user_id) if user_id else u'None'
+        T.setUser(user_id, safe_unicode(auth_path))
 
 
 def safe_unicode(value, encoding='utf-8'):
