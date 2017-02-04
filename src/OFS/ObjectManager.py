@@ -621,8 +621,11 @@ class ObjectManager(CopyContainer,
         else:
             raise BadRequest, 'File does not exist: %s' % escape(file)
 
-        self._importObjectFromFile(filepath, verify=not not REQUEST,
-                                   set_owner=set_owner)
+        imported = self._importObjectFromFile(
+            filepath, verify=bool(REQUEST), set_owner=set_owner)
+        id = imported.id
+        if hasattr(id, '__func__'):
+            id = id()
 
         if REQUEST is not None:
             return self.manage_main(
@@ -641,14 +644,16 @@ class ObjectManager(CopyContainer,
             connection=obj._p_jar
         ob=connection.importFile(filepath)
         if verify: self._verifyObjectPaste(ob, validate_src=0)
-        id=ob.id
-        if hasattr(id, 'im_func'): id=id()
+        id = ob.id
+        if hasattr(id, '__func__'):
+            id = id()
         self._setObject(id, ob, set_owner=set_owner)
 
         # try to make ownership implicit if possible in the context
         # that the object was imported into.
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
+        return ob
 
     def _getImportPaths(self):
         cfg = getConfiguration()
