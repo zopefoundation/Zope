@@ -110,6 +110,21 @@ form {
   font-weight: bold;
 }
 
+.object_item_checkbox_col{
+  width: 25px;
+  text-align: center;
+}
+
+.object_item_name_col{
+  width: auto;
+  text-align: left;
+}
+
+.object_item_size_col{
+  width: 15%;
+  text-align: left;
+}
+
 .row-normal {
   background-color: #ffffff;
   border: none;

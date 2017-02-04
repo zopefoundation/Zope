@@ -39,13 +39,12 @@
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class="list-header">
-  <td width="5%" align="right" colspan="2">
-    <div class="list-item">Type</div>
+  <td class="object_item_checkbox_col">
   </td>
-  <td width="50%" align="left">
+  <td class="object_item_name_col">
     <div class="list-item">Name</div>
   </td>
-  <td width="15%" align="left">
+  <td class="object_item_size_col">
     <div class="list-item">Size</div>
   </td>
 </tr>
@@ -58,9 +57,6 @@
 </dtml-if>
   <td align="left" valign="top" width="16">
   <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
-  </td>
-  <td align="left" valign="top" nowrap="nowrap">
-    <i>&dtml-meta_type;</i>
   </td>
 
   <td align="left" valign="top">
