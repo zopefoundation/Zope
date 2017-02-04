@@ -600,7 +600,7 @@ class ObjectManager(CopyContainer,
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
                 manage_tabs_message=
-                '<em>%s</em> successfully exported to <em>%s</em>' % (id,f),
+                '"%s" successfully exported to "%s"' % (id,f),
                 title = 'Object exported')
 
 
@@ -627,7 +627,7 @@ class ObjectManager(CopyContainer,
         if REQUEST is not None:
             return self.manage_main(
                 self, REQUEST,
-                manage_tabs_message='<em>%s</em> successfully imported' % id,
+                manage_tabs_message='"%s" successfully imported' % id,
                 title='Object imported',
                 update_menu=1)
 
