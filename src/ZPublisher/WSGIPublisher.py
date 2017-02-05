@@ -193,7 +193,7 @@ def _publish_response(request, response, module_info, _publish=publish):
         if isinstance(exc, (HTTPRedirection, Unauthorized)):
             return response
 
-        raise
+        raise exc
 
     return response
 
