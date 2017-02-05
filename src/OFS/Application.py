@@ -23,7 +23,6 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from Acquisition import aq_base
-from App.ApplicationManager import ApplicationManager
 from App import FactoryDispatcher
 from App.ProductContext import ProductContext
 from DateTime import DateTime
@@ -95,10 +94,6 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def __class_init__(self):
         InitializeClass(self)
 
-    @property
-    def Control_Panel(self):
-        return APP_MANAGER.__of__(self)
-
     def Redirect(self, destination, URL1):
         """Utility function to allow user-controlled redirects"""
         if destination.find('//') >= 0:
@@ -108,8 +103,6 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     ZopeRedirect = Redirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
-        if name == 'Control_Panel':
-            return APP_MANAGER.__of__(self)
         try:
             return getattr(self, name)
         except AttributeError:
@@ -208,15 +201,10 @@ class AppInitializer:
 
     def initialize(self):
         # make sure to preserve relative ordering of calls below.
-        self.install_app_manager()
         self.install_required_roles()
         self.install_inituser()
         self.install_products()
         self.install_standards()
-
-    def install_app_manager(self):
-        global APP_MANAGER
-        APP_MANAGER = ApplicationManager()
 
         # Remove persistent Control Panel.
         app = self.getApp()
