@@ -103,6 +103,10 @@ class Functional(sandbox.Sandboxed):
         wsgi_headers = BytesIO()
 
         def start_response(status, headers):
+            response.setStatus(status.split()[0])
+            for name, value in headers:
+                response.setHeader(name, value)
+
             wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
             headers = '\r\n'.join([': '.join(x) for x in headers])
             wsgi_headers.write(headers)
