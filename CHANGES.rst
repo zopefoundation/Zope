@@ -47,6 +47,7 @@ Features Added
     - WebOb = 1.7.1
     - WebTest = 2.0.24
     - zdaemon = 4.2.0
+    - zExceptions = 3.5
     - zope.deprecation = 4.2.0
     - zope.interface = 4.3.3
     - zope.testbrowser = 5.0

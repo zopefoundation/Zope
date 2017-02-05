@@ -323,6 +323,20 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         self.assertTrue(('Content-Length', '0') in headers)
         self.assertEqual(kw, {})
 
+    def test_upgrades_ztk_not_found(self):
+        from zExceptions import NotFound
+        from zope.publisher.interfaces import NotFound as ZTK_NotFound
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = ZTK_NotFound(object(), 'name_not_found')
+        try:
+            self._callFUT(environ, start_response, _publish)
+        except ZTK_NotFound:
+            self.fail('ZTK exception raised, expected zExceptions.')
+        except NotFound as exc:
+            self.assertTrue('name_not_found' in str(exc))
+
     def test_response_body_is_file(self):
         from io import BytesIO
 
@@ -448,6 +462,18 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         start_response = DummyCallable()
         _publish = DummyCallable()
         _publish._raise = NotFound('argh')
+        app_iter = self._callFUT(environ, start_response, _publish)
+        body = ''.join(app_iter)
+        self.assertEqual(start_response._called_with[0][0], '404 Not Found')
+        self.assertTrue('Exception View: NotFound' in body)
+
+    def testCustomExceptionViewZTKNotFound(self):
+        from zope.publisher.interfaces import NotFound as ZTK_NotFound
+        registerExceptionView(INotFound)
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = ZTK_NotFound(object(), 'argh')
         app_iter = self._callFUT(environ, start_response, _publish)
         body = ''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
