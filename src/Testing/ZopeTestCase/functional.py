@@ -103,6 +103,12 @@ class Functional(sandbox.Sandboxed):
         wsgi_headers = BytesIO()
 
         def start_response(status, headers):
+            # Keep the fake response in-sync with the actual values
+            # from the WSGI start_response call.
+            response.setStatus(status.split()[0])
+            for key, value in headers:
+                response.setHeader(key, value)
+
             wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
             headers = '\r\n'.join([': '.join(x) for x in headers])
             wsgi_headers.write(headers)
@@ -130,6 +136,10 @@ class ResponseWrapper(object):
         self._wsgi_headers = wsgi_headers
 
     def __getattr__(self, name):
+        # This delegates introspection like getStatus to the fake
+        # response class, though the actual values are part of the
+        # _wsgi_headers / _wsgi_result. Might be better to ignore
+        # the response and parse values out of the WSGI data instead.
         return getattr(self._response, name)
 
     def __str__(self):

@@ -998,28 +998,16 @@ class WSGIResponse(HTTPBaseResponse):
             'and try the request again.</p>' % name)
         raise exc
 
-    def _unauthorized(self, exc=None):
-        # This should be handled by zExceptions
-        status = exc.getStatus() if exc is not None else 401
-        self.setStatus(status)
-        if self.realm:
-            self.setHeader('WWW-Authenticate',
-                           'basic realm="%s"' % self.realm, 1)
-
     def unauthorized(self):
-        exc = Unauthorized()
-        exc.title = 'You are not authorized to access this resource.'
+        message = 'You are not authorized to access this resource.'
+        exc = Unauthorized(message)
+        exc.title = message
         if self.debug_mode:
             if self._auth:
                 exc.detail = 'Username and password are not correct.'
             else:
                 exc.detail = 'No Authorization header found.'
         raise exc
-
-    def _redirect(self, exc):
-        # This should be handled by zExceptions
-        self.setStatus(exc.getStatus())
-        self.setHeader('Location', str(exc))
 
     def redirect(self, location, status=302, lock=0):
         """Cause a redirection."""

@@ -47,7 +47,7 @@ Features Added
     - WebOb = 1.7.1
     - WebTest = 2.0.24
     - zdaemon = 4.2.0
-    - zExceptions = 3.5
+    - zExceptions = 3.6
     - zope.deprecation = 4.2.0
     - zope.interface = 4.3.3
     - zope.testbrowser = 5.0
@@ -59,6 +59,10 @@ Features Added
 
 Restructuring
 +++++++++++++
+
+- Remove special handling of redirect and unauthorized exceptions from
+  the WSGI publisher. These are now always raised as exceptions, to
+  match the behavior of all other HTTPExceptions.
 
 - Removed xml-export.
   [maurits, pbauer]

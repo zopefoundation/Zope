@@ -176,21 +176,29 @@ def _publish_response(request, response, module_info, _publish=publish):
         if t is not exc.__class__:
             exc = t(str(exc))
 
-        if isinstance(exc, HTTPRedirection):
-            response._redirect(exc)
-        elif isinstance(exc, Unauthorized):
-            response._unauthorized(exc)
+        # This should happen inside zExceptions, but the realm is only
+        # defined on the premade response or in the module_info and
+        # can be changed during publishing.
+        if isinstance(exc, Unauthorized):
+            exc.setRealm(response.realm)
 
         view = queryMultiAdapter((exc, request), name=u'index.html')
         if view is not None:
+            # Wrap the view in the context in which the exception happened.
             parents = request.get('PARENTS')
             if parents:
                 view.__parent__ = parents[0]
-            response.setStatus(exc.__class__)
-            response.setBody(view())
-            return response
 
-        if isinstance(exc, (HTTPRedirection, Unauthorized)):
+            # Set status and headers from the exception on the response,
+            # which would usually happen while calling the exception
+            # with the (environ, start_response) WSGI tuple.
+            response.setStatus(exc.__class__)
+            if hasattr(exc, 'headers'):
+                for key, value in exc.headers.items():
+                    response.setHeader(key, value)
+
+            # Set the response body to the result of calling the view.
+            response.setBody(view())
             return response
 
         raise exc
