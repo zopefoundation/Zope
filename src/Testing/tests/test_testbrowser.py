@@ -16,7 +16,6 @@
 
 from AccessControl.Permissions import view
 from six.moves.urllib.error import HTTPError
-from zExceptions import NotFound
 
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
@@ -98,13 +97,16 @@ class TestTestbrowser(FunctionalTestCase):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
         browser.handleErrors = False
+
+        # Custom exceptions get through
         with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
         self.assertTrue(browser.contents is None)
 
-        with self.assertRaises(NotFound):
+        # HTTPException subclasses are handled
+        with self.assertRaises(HTTPError):
             browser.open('http://localhost/nothing-is-here')
-        self.assertTrue(browser.contents is None)
+        self.assertTrue(browser.headers['status'].startswith('404'))
 
     def test_raise_http_errors_false(self):
         self.folder._setObject('stub', ExceptionStub())
@@ -114,6 +116,21 @@ class TestTestbrowser(FunctionalTestCase):
         browser.open('http://localhost/test_folder_1_/stub')
         self.assertTrue(browser.headers['status'].startswith('500'))
 
+        browser.open('http://localhost/nothing-is-here')
+        self.assertTrue(browser.headers['status'].startswith('404'))
+
+    def test_neither_raise_nor_handle_errors(self):
+        self.folder._setObject('stub', ExceptionStub())
+        browser = Browser()
+        browser.handleErrors = False
+        browser.raiseHttpErrors = False
+
+        # Custom exceptions get through
+        with self.assertRaises(ValueError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertTrue(browser.contents is None)
+
+        # HTTPException subclasses are handled
         browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
 

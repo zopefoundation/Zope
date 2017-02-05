@@ -42,9 +42,11 @@ class WSGITestApp(object):
         if http_auth in environ:
             environ[http_auth] = auth_header(environ[http_auth])
 
-        publish = publish_module
-        if self.browser.handleErrors:
-            publish = HTTPExceptionHandler(publish)
+        # If handleErrors, turn all exceptions into responses,
+        # otherwise only turn HTTPExceptions into responses.
+        publish = HTTPExceptionHandler(
+            publish_module, catch_all=self.browser.handleErrors)
+
         wsgi_result = publish(environ, start_response)
 
         # Sync transaction

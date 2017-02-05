@@ -20,8 +20,9 @@ from zExceptions import (
 
 class HTTPExceptionHandler(object):
 
-    def __init__(self, application):
+    def __init__(self, application, catch_all=True):
         self.application = application
+        self.catch_all = catch_all
 
     def __call__(self, environ, start_response):
         environ['Zope2.httpexceptions'] = self
@@ -30,7 +31,9 @@ class HTTPExceptionHandler(object):
         except HTTPException as exc:
             return exc(environ, start_response)
         except Exception as exc:
-            return self.catch_all_response(exc)(environ, start_response)
+            if self.catch_all:
+                return self.catch_all_response(exc)(environ, start_response)
+            raise exc
 
     def catch_all_response(self, exc):
         response = InternalError()
