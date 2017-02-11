@@ -230,6 +230,8 @@ def publish_module(environ, start_response,
                         response = _publish(request, module_info)
                     except Exception as exc:
                         response = _err_hook(exc, request)
+                        if response.status >= 400:
+                            transaction.manager.doom()
                 break
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():
