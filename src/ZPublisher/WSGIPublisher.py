@@ -166,50 +166,46 @@ def publish(request, module_info):
     return response
 
 
-def _publish_response(request, response, module_info, _publish=publish):
-    try:
-        with transaction_pubevents(request):
-            response = _publish(request, module_info)
-    except Exception as exc:
-        # Normalize HTTP exceptions
-        # (For example turn zope.publisher NotFound into zExceptions NotFound)
-        t, v = upgradeException(exc.__class__, None)
-        if not isinstance(exc, t):
-            exc = t(str(exc))
+def err_hook(exc, request):
+    response = request.response
 
-        # This should happen inside zExceptions, but the realm is only
-        # defined on the premade response or in the module_info and
-        # can be changed during publishing.
-        if isinstance(exc, Unauthorized):
-            exc.setRealm(response.realm)
+    # Normalize HTTP exceptions
+    # (For example turn zope.publisher NotFound into zExceptions NotFound)
+    t, v = upgradeException(exc.__class__, None)
+    if not isinstance(exc, t):
+        exc = t(str(exc))
 
-        view = queryMultiAdapter((exc, request), name=u'index.html')
-        if view is not None:
-            # Wrap the view in the context in which the exception happened.
-            parents = request.get('PARENTS')
-            if parents:
-                view.__parent__ = parents[0]
+    # This should happen inside zExceptions, but the realm is only
+    # defined on the premade response or in the module_info and
+    # can be changed during publishing.
+    if isinstance(exc, Unauthorized):
+        exc.setRealm(response.realm)
 
-            # Set status and headers from the exception on the response,
-            # which would usually happen while calling the exception
-            # with the (environ, start_response) WSGI tuple.
-            response.setStatus(exc.__class__)
-            if hasattr(exc, 'headers'):
-                for key, value in exc.headers.items():
-                    response.setHeader(key, value)
+    view = queryMultiAdapter((exc, request), name=u'index.html')
+    if view is not None:
+        # Wrap the view in the context in which the exception happened.
+        parents = request.get('PARENTS')
+        if parents:
+            view.__parent__ = parents[0]
 
-            # Set the response body to the result of calling the view.
-            response.setBody(view())
-            return response
+        # Set status and headers from the exception on the response,
+        # which would usually happen while calling the exception
+        # with the (environ, start_response) WSGI tuple.
+        response.setStatus(exc.__class__)
+        if hasattr(exc, 'headers'):
+            for key, value in exc.headers.items():
+                response.setHeader(key, value)
 
-        # Reraise the exception, preserving the original traceback
-        reraise(exc.__class__, exc, sys.exc_info()[2])
+        # Set the response body to the result of calling the view.
+        response.setBody(view())
+        return response
 
-    return response
+    reraise(type(exc), exc, sys.exc_info()[2])
 
 
 def publish_module(environ, start_response,
                    _publish=publish,  # only for testing
+                   _err_hook=err_hook,
                    _response=None,
                    _response_factory=WSGIResponse,
                    _request=None,
@@ -229,8 +225,11 @@ def publish_module(environ, start_response,
 
         for i in range(getattr(request, 'retry_max_count', 3) + 1):
             try:
-                response = _publish_response(
-                    request, response, module_info, _publish=_publish)
+                with transaction_pubevents(request):
+                    try:
+                        response = _publish(request, module_info)
+                    except Exception as exc:
+                        response = _err_hook(exc, request)
                 break
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():
