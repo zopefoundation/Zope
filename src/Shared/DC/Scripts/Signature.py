@@ -21,8 +21,8 @@ from functools import total_ordering
 @total_ordering
 class FuncCode(object):
 
-    def __init__(self, varnames, argcount):
-        self.co_varnames = varnames
+    def __init__(self, varnames=None, argcount=0):
+        self.co_varnames = varnames or ()
         self.co_argcount = argcount
 
     def __eq__(self, other):
