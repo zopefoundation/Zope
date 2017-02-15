@@ -1,0 +1,2 @@
+<p tal:content="python:'class of {0} is {0.__class__}'.format(context).lower()" />
+<p tal:content="python:u'class of {0} is {0.__class__}'.format(context).upper()" />

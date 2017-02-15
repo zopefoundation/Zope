@@ -8,6 +8,9 @@ http://docs.zope.org/zope2/
 2.13.26 (unreleased)
 --------------------
 
+- In ``str.format``, check the security for attributes that are accessed.
+  Part of PloneHotfix20170117.  [maurits]
+
 - Fixed reflective XSS in findResult.
   This applies PloneHotfix20170117.  [maurits]
 
