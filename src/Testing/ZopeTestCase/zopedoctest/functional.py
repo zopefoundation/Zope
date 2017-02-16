@@ -89,6 +89,12 @@ class DocResponseWrapper(ResponseWrapper):
                                  wsgi_result, wsgi_headers)
         self.header_output = header_output
 
+    def __str__(self):
+        body = self.getBody()
+        if body:
+            return "%s\n\n%s" % (self.header_output, body)
+        return "%s\n" % (self.header_output)
+
 
 basicre = re.compile('Basic (.+)?:(.+)?$')
 headerre = re.compile('(\S+): (.+)$')
