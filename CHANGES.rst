@@ -31,6 +31,10 @@ Bugfixes
 
 - Prevent UnicodeDecodeError when publishing image (bytes) responses without content-type
 
+- Fix regression in traversing to WebDAV NullResources if the final object
+  in the path is a proxy that provides access to aq_inner but is not itself
+  an acquisition wrapper.
+
 Changes
 +++++++
 
