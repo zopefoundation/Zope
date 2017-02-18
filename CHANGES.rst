@@ -59,6 +59,11 @@ Bugs Fixed
   [MrTango]
 
 
+- Fix regression in traversing to WebDAV NullResources if the final object
+  in the path is a proxy that provides access to aq_inner but is not itself
+  an acquisition wrapper.
+  [davisagli]
+
 Features Added
 ++++++++++++++
 

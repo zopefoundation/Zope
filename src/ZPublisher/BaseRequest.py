@@ -477,8 +477,7 @@ class BaseRequest(object):
                             hasattr(object, 'aq_base') and
                             not hasattr(object, '__bobo_traverse__')):
 
-                        if (object.__parent__ is not
-                                aq_inner(object).__parent__):
+                        if object.__parent__ is not object.aq_inner.__parent__:
                             object = NullResource(parents[-2], object.getId(),
                                                   self).__of__(parents[-2])
 
