@@ -12,9 +12,14 @@
 ##############################################################################
 
 import logging
+import sys
 
 from Acquisition import aq_inner, aq_parent
 import transaction
+
+if sys.version_info >= (3, ):
+    basestring = (bytes, str)
+    unicode = str
 
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
@@ -66,15 +71,12 @@ def recordMetaData(object, request):
         T.setUser(user_id, safe_unicode(auth_path))
 
 
-def safe_unicode(value, encoding='utf-8'):
-    """Converts a value to unicode, even it is already a unicode string.
-    stolen from Products.CMFPlone.utils.safe_unicode
-    """
+def safe_unicode(value):
     if isinstance(value, unicode):
         return value
     elif isinstance(value, basestring):
         try:
-            value = unicode(value, encoding)
-        except (UnicodeDecodeError):
+            value = unicode(value, 'utf-8')
+        except UnicodeDecodeError:
             value = value.decode('utf-8', 'replace')
     return value
