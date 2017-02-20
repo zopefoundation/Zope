@@ -2,7 +2,7 @@
 AccessControl==4.0a4
 Acquisition==4.3.0
 AuthEncoding==4.0.0
-BTrees==4.4.0
+BTrees==4.4.1
 Chameleon==2.25
 DateTime==4.1.1
 DocumentTemplate==3.0a1
@@ -21,8 +21,8 @@ WSGIProxy2==0.4.2
 WebOb==1.7.1
 WebTest==2.0.24
 ZConfig==3.1.0
-ZEO==5.0.1
-ZODB==5.0.0
+ZEO==5.0.4
+ZODB==5.2.0
 ZServer==4.0a2
 five.globalrequest==1.0
 funcsigs==1.0.2
@@ -32,7 +32,7 @@ persistent==4.2.2
 pytz==2016.10
 six==1.10.0
 sourcecodegen==0.6.14
-transaction==1.6.1
+transaction==2.1.0
 waitress==1.0.1
 z3c.pt==3.0
 zExceptions==3.6
