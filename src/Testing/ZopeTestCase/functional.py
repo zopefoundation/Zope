@@ -115,10 +115,8 @@ class Functional(sandbox.Sandboxed):
             wsgi_headers.write('\r\n\r\n')
 
         publish = partial(publish_module, _request=request, _response=response)
-
-        # If handleErrors, turn all exceptions into responses,
-        # otherwise only turn HTTPExceptions into responses.
-        publish = HTTPExceptionHandler(publish, catch_all=handle_errors)
+        if handle_errors:
+            publish = HTTPExceptionHandler(publish)
 
         wsgi_result = publish(env, start_response)
 

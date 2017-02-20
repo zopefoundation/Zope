@@ -60,8 +60,6 @@ Features Added
 Restructuring
 +++++++++++++
 
-- Testbrowser and functional tests turn HTTPExceptions into responses.
-
 - Remove special handling of redirect and unauthorized exceptions from
   the WSGI publisher. These are now always raised as exceptions, to
   match the behavior of all other HTTPExceptions.
