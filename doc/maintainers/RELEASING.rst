@@ -43,7 +43,8 @@ on standard output.  E.g.:
 
 Next, update the ``buildout.cfg`` settings as follows:
 
-- Copy the ``[versions]`` section from the buildout run at the bottom.
+- Copy the ``[versions]`` section from the buildout run and paste it
+  at the bottom of the ``buildout`` file.
 - In the ``[buildout]`` section, remove ``show-picked-verions = true``,
   add ``allow-picked-versions = false``, and remove the ``version_ranges``
   from the ``extends``.
@@ -66,7 +67,7 @@ Pin versions in a ``pip`` requirements file
 Copy the version pins from the ``[versions]`` section of ``buildout.cfg``
 into a ``requirements.txt`` file, to enable ``pip`` users to install
 without buildout (be sure to add the new ``Zope2`` release version to
-``requirements.txt``).
+``requirements.txt`` and the ``[versions]`` section).
 
 .. note::
 
@@ -147,3 +148,26 @@ date and a "TBD" bullet, and update the next development release in
    $ vim setup.py
    $ git commit -m svb doc/CHANGES.rst setup.py
    $ git push origin 2.13
+
+
+Create index on download.zope.org
+---------------------------------
+
+.. code-block:: bash
+
+   $ ssh download.zope.org
+   $ sudo -iu zope
+   $ cd ~/zope2index
+
+In the next line replace the two version numbers with the current release:
+
+.. code-block:: bash
+
+   $ bin/z2_kgs 2.13.23 /var/www/download.zope.org/Zope2/index/2.13.23/
+
+Visit ``http://download.zope.org/Zope2/index/2.13.23/`` and make sure
+a ``Zope2`` folder with an ``index.html`` was created.
+
+If this is missing, you forgot to add ``Zope2`` to the ``[versions]``
+section in the buildout file. Also double check ``requirements.txt``
+for the same mistake.
