@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.13.26 (unreleased)
+2.13.26 (2017-02-20)
 --------------------
 
 - In ``str.format``, check the security for attributes that are accessed.
