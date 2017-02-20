@@ -5,6 +5,11 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
+2.13.27 (unreleased)
+--------------------
+
+
+
 2.13.26 (2017-02-20)
 --------------------
 
@@ -13,7 +18,6 @@ http://docs.zope.org/zope2/
 
 - Fixed reflective XSS in findResult.
   This applies PloneHotfix20170117.  [maurits]
-
 
 2.13.25 (2017-01-13)
 --------------------
@@ -38,7 +42,6 @@ http://docs.zope.org/zope2/
 
 - Add support to SameSite cookie in ``ZPublisher.HTTPResponse``:
   https://tools.ietf.org/html/draft-west-first-party-cookies-07
-
 
 2.13.24 (2016-02-29)
 --------------------

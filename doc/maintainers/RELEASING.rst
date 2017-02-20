@@ -44,7 +44,7 @@ on standard output.  E.g.:
 Next, update the ``buildout.cfg`` settings as follows:
 
 - Copy the ``[versions]`` section from the buildout run at the bottom.
-- In the ``[buildout]`` secttion, remove ``show-picked-verions = true``,
+- In the ``[buildout]`` section, remove ``show-picked-verions = true``,
   add ``allow-picked-versions = false``, and remove the ``version_ranges``
   from the ``extends``.
 
