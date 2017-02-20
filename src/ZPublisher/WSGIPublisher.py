@@ -20,6 +20,7 @@ import sys
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from six.moves._thread import allocate_lock
+from six import reraise
 import transaction
 from transaction.interfaces import TransientError
 from zExceptions import (
@@ -173,7 +174,7 @@ def _publish_response(request, response, module_info, _publish=publish):
         # Normalize HTTP exceptions
         # (For example turn zope.publisher NotFound into zExceptions NotFound)
         t, v = upgradeException(exc.__class__, None)
-        if t is not exc.__class__:
+        if not isinstance(exc, t):
             exc = t(str(exc))
 
         # This should happen inside zExceptions, but the realm is only
@@ -201,7 +202,8 @@ def _publish_response(request, response, module_info, _publish=publish):
             response.setBody(view())
             return response
 
-        raise exc
+        # Reraise the exception, preserving the original traceback
+        reraise(exc.__class__, exc, sys.exc_info()[2])
 
     return response
 
