@@ -39,17 +39,20 @@ Features Added
 
     - AccessControl = 4.0a4
     - Acquisition = 4.3.0
-    - BTrees = 4.4.0
+    - BTrees = 4.4.1
     - DocumentTemplate = 3.0a1
     - ExtensionClass = 4.2.1
     - Persistence = 3.0a3
     - persistent = 4.2.2
     - Products.ZCatalog = 4.0a3
     - pytz = 2016.10
+    - transaction = 2.1.0
     - WebOb = 1.7.1
     - WebTest = 2.0.24
     - zdaemon = 4.2.0
+    - ZEO = 5.0.4
     - zExceptions = 3.6
+    - ZODB = 5.2.0
     - zope.deprecation = 4.2.0
     - zope.interface = 4.3.3
     - zope.testbrowser = 5.0
