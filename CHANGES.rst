@@ -41,7 +41,7 @@ Features Added
     - Acquisition = 4.3.0
     - BTrees = 4.4.1
     - DocumentTemplate = 3.0a1
-    - ExtensionClass = 4.2.1
+    - ExtensionClass = 4.3.0
     - Persistence = 3.0a3
     - persistent = 4.2.2
     - Products.ZCatalog = 4.0a3

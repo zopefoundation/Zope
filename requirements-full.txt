@@ -6,7 +6,7 @@ BTrees==4.4.1
 Chameleon==2.25
 DateTime==4.1.1
 DocumentTemplate==3.0a1
-ExtensionClass==4.2.1
+ExtensionClass==4.3.0
 Missing==3.1
 MultiMapping==3.0
 PasteDeploy==1.5.2
