@@ -46,10 +46,10 @@ Features Added
     - persistent = 4.2.2
     - Products.ZCatalog = 4.0a3
     - pytz = 2016.10
-    - transaction = 2.1.0
+    - transaction = 2.1.1
     - waitress = 1.0.2
     - WebOb = 1.7.1
-    - WebTest = 2.0.24
+    - WebTest = 2.0.26
     - WSGIProxy2 = 0.4.3
     - zdaemon = 4.2.0
     - ZEO = 5.0.4
@@ -57,7 +57,7 @@ Features Added
     - ZODB = 5.2.0
     - zope.deprecation = 4.2.0
     - zope.interface = 4.3.3
-    - zope.testbrowser = 5.1.0
+    - zope.testbrowser = 5.2
     - zope.testing = 4.6.1
     - zope.testrunner = 4.6.0
     - zope.globalrequest = 1.3

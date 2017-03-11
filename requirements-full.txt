@@ -19,7 +19,7 @@ Record==3.1
 RestrictedPython==3.6.0
 WSGIProxy2==0.4.3
 WebOb==1.7.1
-WebTest==2.0.25
+WebTest==2.0.26
 ZConfig==3.1.0
 ZEO==5.0.4
 ZODB==5.2.0
@@ -27,12 +27,12 @@ ZServer==4.0a2
 five.globalrequest==1.0
 funcsigs==1.0.2
 mock==2.0.0
-pbr==1.10.0
+pbr==2.0.0
 persistent==4.2.2
 pytz==2016.10
 six==1.10.0
 sourcecodegen==0.6.14
-transaction==2.1.0
+transaction==2.1.1
 waitress==1.0.2
 z3c.pt==3.0
 zExceptions==3.6
@@ -79,7 +79,7 @@ zope.size==4.1.0
 zope.structuredtext==4.1.0
 zope.tal==4.2.0
 zope.tales==4.1.1
-zope.testbrowser==5.1.0
+zope.testbrowser==5.2
 zope.testing==4.6.1
 zope.testrunner==4.6.0
 zope.traversing==4.1.0
