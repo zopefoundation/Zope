@@ -4,11 +4,11 @@ Acquisition==4.3.0
 AuthEncoding==4.0.0
 BTrees==4.4.1
 Chameleon==2.25
-DateTime==4.1.1
+DateTime==4.2
 DocumentTemplate==3.0a1
 ExtensionClass==4.3.0
-Missing==3.1
-MultiMapping==3.0
+Missing==3.2
+MultiMapping==3.1
 PasteDeploy==1.5.2
 Persistence==3.0a3
 Products.BTreeFolder2==3.0
@@ -47,7 +47,7 @@ zope.browserresource==4.1.0
 zope.cachedescriptors==4.2.0
 zope.component==4.3.0
 zope.componentvocabulary==2.0.0
-zope.configuration==4.0.3
+zope.configuration==4.1.0
 zope.container==4.1.0
 zope.contentprovider==4.0.0
 zope.contenttype==4.2.0
