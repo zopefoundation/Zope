@@ -10,7 +10,6 @@
   <include file="traversing.zcml" />
   <include package="OFS "/>
   <include package="ZPublisher" />
-  <include package="five.globalrequest"/>
 
   <include package="Products.Five" />
   <meta:redefinePermission from="zope2.Public" to="zope.Public" />

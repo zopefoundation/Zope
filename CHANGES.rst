@@ -67,6 +67,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Integrate code from and drop dependency on `five.globalrequest`.
+
 - Remove special handling of redirect and unauthorized exceptions from
   the WSGI publisher. These are now always raised as exceptions, to
   match the behavior of all other HTTPExceptions.
