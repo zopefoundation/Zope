@@ -15,7 +15,7 @@ Products.BTreeFolder2==3.0
 Products.MailHost==3.0
 Products.ZCTextIndex==4.0.1
 Products.ZCatalog==4.0a3
-Record==3.1
+Record==3.2
 RestrictedPython==3.6.0
 WSGIProxy2==0.4.3
 WebOb==1.7.2
