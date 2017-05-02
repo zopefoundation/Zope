@@ -63,7 +63,6 @@ setup(
         'ZODB',
         'setuptools',
         'six',
-        'sourcecodegen',
         'transaction',
         'waitress',
         'zExceptions >= 3.4',

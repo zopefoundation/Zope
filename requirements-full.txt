@@ -31,7 +31,6 @@ pbr==3.0.0
 persistent==4.2.2
 pytz==2017.2
 six==1.10.0
-sourcecodegen==0.6.14
 transaction==2.1.2
 waitress==1.0.2
 z3c.pt==3.0
