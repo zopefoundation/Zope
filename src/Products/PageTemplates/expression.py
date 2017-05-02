@@ -1,6 +1,5 @@
-from ast import NodeTransformer
+from ast import NodeTransformer, parse
 from types import ClassType
-from compiler import parse as ast24_parse
 
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound, Unauthorized
@@ -23,7 +22,6 @@ from AccessControl.ZopeGuards import protected_inplacevar
 from chameleon.astutil import Symbol
 from chameleon.astutil import Static
 from chameleon.codegen import template
-from sourcecodegen import generate_code
 
 from z3c.pt import expressions
 import collections
@@ -170,13 +168,10 @@ class UntrustedPythonExpr(expressions.PythonExpr):
 
     def parse(self, string):
         encoded = string.encode('utf-8')
-        node = ast24_parse(encoded, 'eval').node
+        node = parse(encoded, mode='eval')
         MutatingWalker.walk(node, self.rm)
-        string = generate_code(node)
-        decoded = string.decode('utf-8')
-        value = super(UntrustedPythonExpr, self).parse(decoded)
 
         # Run restricted python transform
-        self.rt.visit(value)
+        self.rt.visit(node)
 
-        return value
+        return node
