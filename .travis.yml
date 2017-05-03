@@ -4,13 +4,17 @@ dist: trusty
 python:
     - 2.7
     - 3.4
+    - 3.5
+    - 3.6
+    - pypy
+    - pypy3.3-5.2-alpha1
 install:
     - pip install -U setuptools==`grep setuptools versions.cfg | awk '{print $3}'`
     - pip install zc.buildout
     - buildout bootstrap
-    - buildout
+    - buildout tox:env=travis install alltests
 script:
-    - bin/alltests -v
+    - bin/alltests-travis -v
 notifications:
     email: false
 cache:
