@@ -14,12 +14,10 @@
 """
 
 import base64
-from string import translate, maketrans
 import zlib
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
-from types import ListType, TupleType
 
 
 class TreeNode(Explicit):
@@ -214,8 +212,8 @@ class TreeMaker:
             return self._values_function(object)
 
         children = getattr(object, self._values)
-        if not (isinstance(children, ListType) or
-                isinstance(children, TupleType)):
+        if not (isinstance(children, list) or
+                isinstance(children, tuple)):
             # Assume callable; result not useful anyway otherwise.
             children = children()
 
@@ -233,8 +231,8 @@ def simple_type(ob,
     return is_simple(type(ob))
 
 
-a2u_map = maketrans('+/=', '-._')
-u2a_map = maketrans('-._', '+/=')
+a2u_map = str.maketrans('+/=', '-._')
+u2a_map = str.maketrans('-._', '+/=')
 
 
 def b2a(s):
@@ -242,12 +240,12 @@ def b2a(s):
 
     Encoded string use only alpahnumeric characters, and "._-".
     '''
-    return translate(base64.encodestring(str(s)), a2u_map).replace('\n', '')
+    return base64.encodestring(str(s).translate(a2u_map)).replace('\n', '')
 
 
 def a2b(s):
     '''Decode a b2a-encoded string.'''
-    return base64.decodestring(translate(s, u2a_map))
+    return base64.decodestring(s.translate(u2a_map))
 
 
 def encodeExpansion(nodes, compress=1):
