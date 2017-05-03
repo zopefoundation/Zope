@@ -214,10 +214,16 @@ class ProductContext:
         return DummyHelp()
 
 
-class AttrDict:
+class AttrDict(object):
 
     def __init__(self, ob):
         self.ob = ob
+
+    def __contains__(self, name):
+        return hasattr(self.ob, name)
+
+    def __getitem__(self, name):
+        return getattr(self.ob, name)
 
     def __setitem__(self, name, v):
         setattr(self.ob, name, v)
