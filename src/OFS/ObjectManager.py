@@ -810,7 +810,8 @@ class ObjectManager(CopyContainer,
         return len(self.objectIds())
 
     def __nonzero__(self):
-        return True
+        # Py2
+        return self.__bool__()
 
     def __bool__(self):
         return True
