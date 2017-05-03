@@ -96,7 +96,7 @@ isCGI_NAMEs = {
     'SERVER_URL': 1,
 }
 
-isCGI_NAME = isCGI_NAMEs.has_key
+isCGI_NAME = isCGI_NAMEs.__contains__
 
 hide_key = {'HTTP_AUTHORIZATION': 1, 'HTTP_CGI_AUTHORIZATION': 1}
 

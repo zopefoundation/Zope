@@ -62,7 +62,7 @@ class ApplicationTests(unittest.TestCase):
         self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
 
     def test_bobo_traverse_attribute_key_miss_R_M_default_real_request(self):
-        from UserDict import UserDict
+        from six.moves import UserDict
         request = UserDict()
 
         class _Response:
