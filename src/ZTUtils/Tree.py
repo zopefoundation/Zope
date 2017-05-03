@@ -227,7 +227,7 @@ class TreeMaker:
 
 def simple_type(ob,
                 is_simple={type(''): 1, type(0): 1, type(0.0): 1,
-                           type(None): 1}.has_key):
+                           type(None): 1}.__contains__):
     return is_simple(type(ob))
 
 

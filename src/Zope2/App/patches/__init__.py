@@ -1,6 +1,6 @@
 # Import all patches.
-import persistence
-import publishing
+from . import persistence
+from . import publishing
 
 # Have the patches been applied yet?
 _patched = False
