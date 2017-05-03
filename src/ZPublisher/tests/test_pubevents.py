@@ -143,15 +143,15 @@ class TestPubEvents(TestCase):
     def testStreaming(self):
         out = BytesIO()
         response = WSGIResponse(stdout=out)
-        response.write('datachunk1')
-        response.write('datachunk2')
+        response.write(b'datachunk1')
+        response.write(b'datachunk2')
 
         events = self.reporter.events
         self.assertEqual(len(events), 1)
         self.assertTrue(isinstance(events[0], PubBeforeStreaming))
         self.assertEqual(events[0].response, response)
 
-        self.assertTrue('datachunk1datachunk2' in out.getvalue())
+        self.assertTrue(b'datachunk1datachunk2' in out.getvalue())
 
 
 def _succeed():
