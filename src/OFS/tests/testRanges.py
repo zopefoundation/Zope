@@ -32,9 +32,10 @@ def createBigFile():
     size = (1 << 16) * 5 + 12345
     file = io.BytesIO()
 
-    def addLetter(x, add=file.write, l=string.letters, c=random.choice):
+    def addLetter(x, add=file.write, l=string.ascii_letters, c=random.choice):
         add(c(l))
-    filter(addLetter, list(range(size)))
+    for letter in range(size):
+        addLetter(letter)
 
     return file
 
@@ -67,7 +68,7 @@ class TestRequestRange(unittest.TestCase):
             manage_addFolder(self.app, TESTFOLDER_NAME)
             folder = getattr(self.app, TESTFOLDER_NAME)
 
-            data = string.letters
+            data = string.ascii_letters
             manage_addFile(
                 folder, 'file', file=data, content_type='text/plain')
 

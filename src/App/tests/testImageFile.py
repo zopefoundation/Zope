@@ -63,7 +63,7 @@ class TestImageFileFunctional(unittest.TestCase):
                             'www', 'zopelogo.png')
         image = App.ImageFile.ImageFile(path)
         result = image.index_html(request, response)
-        self.assertEqual(stdout.getvalue(), '')
+        self.assertEqual(stdout.getvalue(), b'')
         self.assertTrue(isinstance(result, io.FileIO))
         self.assertTrue(b''.join(result).startswith(b'\x89PNG\r\n'))
         self.assertEqual(len(result), image.size)

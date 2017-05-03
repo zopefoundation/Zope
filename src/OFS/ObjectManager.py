@@ -23,7 +23,6 @@ import os
 import re
 import sys
 import time
-from types import NoneType
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -782,7 +781,7 @@ class ObjectManager(CopyContainer,
         if key in self:
             return self._getOb(key, None)
         request = getattr(self, 'REQUEST', None)
-        if not isinstance(request, (str, NoneType)):
+        if not (isinstance(request, str) or request is None):
             method = request.get('REQUEST_METHOD', 'GET')
             if (request.maybe_webdav_client and
                     method not in ('GET', 'POST')):
@@ -811,7 +810,8 @@ class ObjectManager(CopyContainer,
         return len(self.objectIds())
 
     def __nonzero__(self):
-        return True
+        # Py2
+        return self.__bool__()
 
     def __bool__(self):
         return True

@@ -96,7 +96,7 @@ isCGI_NAMEs = {
     'SERVER_URL': 1,
 }
 
-isCGI_NAME = isCGI_NAMEs.has_key
+isCGI_NAME = isCGI_NAMEs.__contains__
 
 hide_key = {'HTTP_AUTHORIZATION': 1, 'HTTP_CGI_AUTHORIZATION': 1}
 
@@ -1432,14 +1432,14 @@ class HTTPRequest(BaseRequest):
         while 1:
             n = n + 1
             key = "URL%s" % n
-            if not self.has_key(key):  # NOQA
+            if key not in self:  # NOQA
                 break
 
         n = 0
         while 1:
             n = n + 1
             key = "BASE%s" % n
-            if not self.has_key(key):  # NOQA
+            if key not in self:  # NOQA
                 break
 
         keys.update(self.other)
@@ -1691,10 +1691,8 @@ class FileUpload:
         return not not self.filename
 
     def __nonzero__(self):
-        """FileUpload objects are considered false if their
-           filename is empty.
-        """
-        return not not self.filename
+        # Py2
+        return self.__bool__()
 
     def xreadlines(self):
         return self
