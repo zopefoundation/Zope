@@ -18,6 +18,7 @@ import zlib
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
+import six
 
 try:
     maketrans = str.maketrans
@@ -245,7 +246,10 @@ def b2a(s):
 
     Encoded string use only alpahnumeric characters, and "._-".
     '''
-    return base64.encodestring(str(s).translate(a2u_map)).replace('\n', '')
+    text = str(s).translate(a2u_map)
+    if six.PY3:
+        text = text.encode('utf-8')
+    return base64.encodestring(text).replace(b'\n', b'')
 
 
 def a2b(s):

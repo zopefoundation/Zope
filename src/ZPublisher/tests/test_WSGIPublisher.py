@@ -250,7 +250,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
             'SERVER_PORT': '8080',
             'HTTP_HOST': '127.0.0.1:8080',
             'SERVER_PROTOCOL': 'HTTP/1.1',
-            'wsgi.input': BytesIO(''),
+            'wsgi.input': BytesIO(b''),
             'CONTENT_LENGTH': '0',
             'HTTP_CONNECTION': 'keep-alive',
             'CONTENT_TYPE': ''
@@ -284,7 +284,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
     def test_publish_can_return_new_response(self):
         from ZPublisher.HTTPRequest import HTTPRequest
         _response = DummyResponse()
-        _response.body = 'BODY'
+        _response.body = b'BODY'
         _after1 = DummyCallable()
         _after2 = DummyCallable()
         _response.after_list = (_after1, _after2)
@@ -293,7 +293,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertEqual(app_iter, ('', 'BODY'))
+        self.assertEqual(app_iter, (b'', b'BODY'))
         (status, headers), kw = start_response._called_with
         self.assertEqual(status, '204 No Content')
         self.assertEqual(headers, [('Content-Length', '0')])
@@ -446,9 +446,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = Unauthorized('argg')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '401 Unauthorized')
-        self.assertTrue('Exception View: Unauthorized' in body)
+        self.assertTrue(b'Exception View: Unauthorized' in body)
 
     def testCustomExceptionViewForbidden(self):
         from zExceptions import Forbidden
@@ -458,9 +458,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = Forbidden('argh')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '403 Forbidden')
-        self.assertTrue('Exception View: Forbidden' in body)
+        self.assertTrue(b'Exception View: Forbidden' in body)
 
     def testCustomExceptionViewNotFound(self):
         from zExceptions import NotFound
@@ -470,9 +470,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = NotFound('argh')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
-        self.assertTrue('Exception View: NotFound' in body)
+        self.assertTrue(b'Exception View: NotFound' in body)
 
     def testCustomExceptionViewZTKNotFound(self):
         from zope.publisher.interfaces import NotFound as ZTK_NotFound
@@ -482,9 +482,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = ZTK_NotFound(object(), 'argh')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
-        self.assertTrue('Exception View: NotFound' in body)
+        self.assertTrue(b'Exception View: NotFound' in body)
 
     def testCustomExceptionViewBadRequest(self):
         from zExceptions import BadRequest
@@ -494,9 +494,9 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = BadRequest('argh')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '400 Bad Request')
-        self.assertTrue('Exception View: BadRequest' in body)
+        self.assertTrue(b'Exception View: BadRequest' in body)
 
     def testCustomExceptionViewInternalError(self):
         from zExceptions import InternalError
@@ -506,10 +506,10 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = InternalError('argh')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         self.assertEqual(
             start_response._called_with[0][0], '500 Internal Server Error')
-        self.assertTrue('Exception View: InternalError' in body)
+        self.assertTrue(b'Exception View: InternalError' in body)
 
     def testRedirectExceptionView(self):
         from zExceptions import Redirect
@@ -519,10 +519,10 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         _publish = DummyCallable()
         _publish._raise = Redirect('http://localhost:9/')
         app_iter = self._callFUT(environ, start_response, _publish)
-        body = ''.join(app_iter)
+        body = b''.join(app_iter)
         status, headers = start_response._called_with[0]
         self.assertEqual(status, '302 Found')
-        self.assertTrue('Exception View: Redirect' in body)
+        self.assertTrue(b'Exception View: Redirect' in body)
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
 
