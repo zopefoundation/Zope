@@ -1408,6 +1408,9 @@ class HTTPRequest(BaseRequest):
     def set_lazy(self, key, callable):
         self._lazies[key] = callable
 
+    def __contains__(self, key):
+        return self.has_key(key)  # NOQA
+
     def has_key(self, key, returnTaints=0):
         try:
             self.__getitem__(key, returnTaints=returnTaints)
