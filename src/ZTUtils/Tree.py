@@ -19,6 +19,11 @@ import zlib
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
 
+try:
+    maketrans = str.maketrans
+except AttributeError:  # Py2
+    from string import maketrans
+
 
 class TreeNode(Explicit):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -231,8 +236,8 @@ def simple_type(ob,
     return is_simple(type(ob))
 
 
-a2u_map = str.maketrans('+/=', '-._')
-u2a_map = str.maketrans('-._', '+/=')
+a2u_map = maketrans('+/=', '-._')
+u2a_map = maketrans('-._', '+/=')
 
 
 def b2a(s):
