@@ -12,7 +12,6 @@
 ##############################################################################
 
 import re
-import string
 
 from six import exec_
 
@@ -58,7 +57,7 @@ class NameAssignments:
         _isLegalName = self._isLegalName
         for name, expr in self._exprs:
             if name in mapping:
-                assigned_name = string.strip(mapping[name])
+                assigned_name = mapping[name].strip()
                 if not assigned_name:
                     continue
                 if not _isLegalName(assigned_name):
@@ -104,7 +103,7 @@ class NameAssignments:
         for assigned_name in assigned_names:
             text.append('if kw.has_key("%s"):\n' % assigned_name)
             text.append('    del kw["%s"]\n' % assigned_name)
-        codetext = string.join(text, '')
+        codetext = ''.join(text)
         return (compile(codetext, '<string>', 'exec'), len(assigned_names))
 
     def _createCodeBlockForMapping(self):
@@ -120,7 +119,7 @@ class NameAssignments:
                 assigned_name = asgns[name]
                 assigned_names.append(assigned_name)
                 exprtext.append('"%s":%s,' % (assigned_name, expr))
-        text = '{%s}' % string.join(exprtext, '')
+        text = '{%s}' % ''.join(exprtext)
         return self._generateCodeBlock(text, assigned_names)
 
     def _createCodeBlockForTuple(self, argNames):
@@ -146,7 +145,7 @@ class NameAssignments:
             if passedLastBoundArg:
                 # Found last of bound args.
                 break
-        text = '(%s)' % string.join(exprtext, '')
+        text = '(%s)' % ''.join(exprtext)
         return self._generateCodeBlock(text, assigned_names)
 
 
