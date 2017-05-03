@@ -14,7 +14,6 @@
 import os
 import sys
 from logging import getLogger
-from types import InstanceType
 
 import DocumentTemplate
 import MethodObject
@@ -204,14 +203,6 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                     result = render_blocks(self._v_blocks, ns)
                 except DTReturn as v:
                     result = v.v
-                except AttributeError:
-                    if (type(sys.exc_info()[1]) == InstanceType and
-                            sys.exc_value.args[0] == "_v_blocks"):
-                        LOG.warn("DTML file '%s' could not be read" % self.raw)
-                        raise ValueError(
-                            "DTML file error: Check logfile for details")
-                    else:
-                        raise
 
                 self.ZDocumentTemplate_afterRender(ns, result)
                 return result
