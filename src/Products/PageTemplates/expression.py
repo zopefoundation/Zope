@@ -1,5 +1,5 @@
 from ast import NodeTransformer, parse
-from types import ClassType
+from six import class_types
 
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound, Unauthorized
@@ -101,7 +101,7 @@ class TrustedBoboAwareZopeTraverse(BoboAwareZopeTraverse):
             return base
 
         if (getattr(base, '__call__', _marker) is not _marker or
-                isinstance(base, ClassType)):
+                isinstance(base, class_types)):
             return base()
 
         return base

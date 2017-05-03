@@ -382,9 +382,9 @@ class HTTPBaseResponse(BaseResponse):
         s = s.lstrip()
         # Note that the string can be big, so s.lower().startswith() is more
         # expensive than s[:n].lower().
-        if (s[:6].lower() == '<html>' or s[:14].lower() == '<!doctype html'):
+        if (s[:6].lower() == b'<html>' or s[:14].lower() == b'<!doctype html'):
             return 1
-        if s.find('</') > 0:
+        if s.find(b'</') > 0:
             return 1
         return 0
 
@@ -582,9 +582,9 @@ class HTTPBaseResponse(BaseResponse):
                 to the charset specified in the content-type header.
             """
 
-            if body.startswith('<?xml'):
-                pos_right = body.find('?>')  # right end of the XML preamble
-                body = ('<?xml version="1.0" encoding="%s" ?>' %
+            if body.startswith(b'<?xml'):
+                pos_right = body.find(b'?>')  # right end of the XML preamble
+                body = (b'<?xml version="1.0" encoding="%s" ?>' %
                         encoding) + body[pos_right + 2:]
             return body
 
