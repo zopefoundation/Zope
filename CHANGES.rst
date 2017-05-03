@@ -5,7 +5,7 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
-4.0a3 (unreleased)
+4.0a3 (2017-05-03)
 ------------------
 
 Bugs Fixed
