@@ -16,8 +16,6 @@
 Allows for arbitrary application of marker interfaces to objects.
 """
 
-from sets import Set
-
 from zope.interface import implementer, implementedBy, providedBy
 from zope.interface import directlyProvides, directlyProvidedBy
 from zope.interface.interfaces import IInterface
@@ -105,12 +103,12 @@ class MarkerInterfacesAdapter(object):
         marker_ifaces = self.getAvailableInterfaces()
         if len(add):
             [mark(self.context, interface)
-             for interface in Set(marker_ifaces) & Set(add)]
+             for interface in set(marker_ifaces) & set(add)]
 
         direct_ifaces = self.getDirectlyProvided()
         if len(remove):
             [erase(self.context, interface)
-             for interface in Set(direct_ifaces) & Set(remove)]
+             for interface in set(direct_ifaces) & set(remove)]
 
     def _getInterfaceNames(self, interfaces):
         return [interfaceToName(self, iface) for iface in interfaces]

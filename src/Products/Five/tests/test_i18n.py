@@ -46,10 +46,10 @@ def test_directive():
     As you can see, both the default functionality and translation to
     German work:
 
-      >>> translate(msg)
-      u'This is an explicit message'
-      >>> translate(msg, target_language='de')
-      u'Dies ist eine explizite Nachricht'
+      >>> translate(msg) == u'This is an explicit message'
+      True
+      >>> translate(msg, target_language='de') == u'Dies ist eine explizite Nachricht'
+      True
     """
 
 
