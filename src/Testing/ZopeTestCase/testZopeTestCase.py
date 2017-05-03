@@ -25,7 +25,6 @@ import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
 from OFS.userfolder import UserFolder
-from types import ListType
 
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import folder_name
@@ -91,7 +90,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         acl_user = self.folder.acl_users.getUserById(user_name)
         self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), (user_role, 'Authenticated'))
-        self.assertEqual(type(acl_user.roles), ListType)
+        self.assertEqual(type(acl_user.roles), list)
 
     def test_setRoles(self):
         # Roles should be set for user
@@ -253,7 +252,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         acl_user = self.folder.acl_users.getUserById(user_name)
         self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), (user_role, 'Authenticated'))
-        self.assertEqual(type(acl_user.roles), ListType)
+        self.assertEqual(type(acl_user.roles), list)
         auth_name = getSecurityManager().getUser().getId()
         self.assertEqual(auth_name, user_name)
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])

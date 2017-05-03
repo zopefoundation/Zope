@@ -15,8 +15,6 @@
 from cgi import escape
 import os
 import re
-from string import maketrans
-from string import translate
 import struct
 import sys
 import time
@@ -44,8 +42,6 @@ if sys.version_info >= (3, ):
     unicode = str
 else:
     IOBase = file  # NOQA
-
-nl2sp = maketrans('\n', ' ')
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -810,7 +806,7 @@ class HTTPResponse(HTTPBaseResponse):
     def _setBCIHeaders(self, t, tb):
         try:
             # Try to capture exception info for bci calls
-            et = translate(str(t), nl2sp)
+            et = str(t).replace('\n', ' ')
             self.setHeader('bobo-exception-type', et)
 
             ev = 'See the server error log for details'

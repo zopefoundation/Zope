@@ -356,7 +356,7 @@ class ZopeIterator(Iterator):
     def next(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return super(ZopeIterator, self).next()
+        return next(super(ZopeIterator, self))
 
 
 @implementer(ITraversable)

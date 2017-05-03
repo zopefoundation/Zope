@@ -14,8 +14,8 @@
 """
 
 from cgi import escape
+from email.generator import _make_boundary
 from io import BytesIO
-from mimetools import choose_boundary
 import struct
 import sys
 
@@ -272,7 +272,7 @@ class File(Persistent, Implicit, PropertyManager,
                     return True
 
                 else:
-                    boundary = choose_boundary()
+                    boundary = _make_boundary()
 
                     # Calculate the content length
                     size = (8 + len(boundary) +  # End marker length

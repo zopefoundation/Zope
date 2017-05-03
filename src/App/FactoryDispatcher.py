@@ -146,7 +146,7 @@ class FactoryDispatcher(Implicit):
 
         # Waaa
         m = 'Products.%s' % p.id
-        if m in sys.modules and sys.modules[m]._m.has_key(name):  # NOQA
+        if m in sys.modules and name in sys.modules[m]._m:  # NOQA
             return sys.modules[m]._m[name]
 
         raise AttributeError(name)

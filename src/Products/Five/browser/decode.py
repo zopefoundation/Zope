@@ -21,8 +21,7 @@ from warnings import warn
 from ZPublisher.HTTPRequest import isCGI_NAMEs
 from zope.i18n.interfaces import IUserPreferredCharsets
 
-if sys.version_info >= (3, ):
-    unicode = str
+from six import text_type, binary_type
 
 
 def _decode(text, charsets):
@@ -31,7 +30,7 @@ def _decode(text, charsets):
     # taken and adapted from zope.publisher.browser.BrowserRequest
     for charset in charsets:
         try:
-            text = unicode(text, charset)
+            text = text_type(text, charset)
             break
         except UnicodeError:
             pass
@@ -54,16 +53,16 @@ def processInputValue(value, charsets):
         for k, v in list(value.items()):
             value[k] = processInputValue(v, charsets)
         return value
-    elif isinstance(value, str):
+    elif isinstance(value, binary_type):
         return _decode(value, charsets)
     else:
         return value
 
 
 def processInputs(request, charsets=None):
-    """Process the values in request.form to decode strings to unicode, using
-    the passed-in list of charsets. If none are passed in, look up the user's
-    preferred charsets. The default is to use utf-8.
+    """Process the values in request.form to decode binary_type to text_type,
+    using the passed-in list of charsets. If none are passed in, look up the
+    user's preferred charsets. The default is to use utf-8.
     """
     warn(u'processInputs() is deprecated and will be removed in Zope 5.0. If '
          u'your view implements IBrowserPage, similar processing is now '

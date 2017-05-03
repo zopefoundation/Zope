@@ -305,8 +305,8 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
         globs['http'] = http
         globs['getRootFolder'] = getRootFolder
         globs['sync'] = sync
-        globs['user_auth'] = base64.encodestring(
-            '%s:%s' % (user_name, user_password))
+        unencoded_user_auth = ('%s:%s' % (user_name, user_password)).encode('utf-8')
+        globs['user_auth'] = base64.encodestring(unencoded_user_auth)
 
     def setup_test_class(self):
         test_class = self._kw.get('test_class', FunctionalTestCase)
