@@ -6,9 +6,14 @@ def delete_method_docstring(klass, method_name):
     # Objects must have a docstring to be published.
     # So this avoids them getting published.
     method = getattr(klass, method_name, None)
-    if (method is not None and hasattr(method, 'im_func') and
-            hasattr(method.im_func, '__doc__')):
+    if method is None:
+        return
+    # Try to remove __doc__ from both attributes so we don't need to rely
+    # on what attribute Publisher checks first.
+    if (hasattr(method, 'im_func') and hasattr(method.im_func, '__doc__')):
         del method.im_func.__doc__
+    if (hasattr(method, '__func__') and hasattr(method.__func__, '__doc__')):
+        del method.__func__.__doc__
 
 
 element_methods = [

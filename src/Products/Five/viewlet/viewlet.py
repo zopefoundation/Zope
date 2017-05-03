@@ -15,6 +15,7 @@
 """
 
 import os
+import six
 import zope.viewlet.viewlet
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -26,10 +27,12 @@ class ViewletBase(zope.viewlet.viewlet.ViewletBase):
 class SimpleAttributeViewlet(zope.viewlet.viewlet.SimpleAttributeViewlet):
     pass
 
-
 class simple(zope.viewlet.viewlet.simple):
     # We need to ensure that the proper __init__ is called.
-    __init__ = ViewletBase.__init__.__func__
+    if six.PY2:
+        __init__ = ViewletBase.__init__.__func__
+    else:
+        __init__ = ViewletBase.__init__
 
 
 def SimpleViewletClass(template, bases=(), attributes=None, name=u''):
