@@ -26,23 +26,22 @@ from Products.PageTemplates.unicodeconflictresolver \
     import PreferredCharsetResolver
 import Zope2
 
-if sys.version_info >= (3, ):
-    unicode = str
+from six import text_type, binary_type
 
-ascii_str = '<html><body>hello world</body></html>'
-iso885915_str = '<html><body>üצהÜײִß</body></html>'
-utf8_str = unicode(iso885915_str, 'iso-8859-15').encode('utf-8')
+ascii_binary = b'<html><body>hello world</body></html>'
+iso885915_binary = u'<html><body>üצהÜײִß</body></html>'.encode('iso-8859-15')
+utf8_text = iso885915_binary.decode('iso-8859-15').encode('utf-8')
 
-xml_template = '''<?xml version="1.0" encoding="%s"?>
+xml_template = u'''<?xml version="1.0" encoding="%s"?>
 <foo>
 üצהÜײִß
 </foo>
 '''
 
-xml_iso_8859_15 = xml_template % 'iso-8859-15'
-xml_utf8 = unicode(xml_template, 'iso-8859-15').encode('utf-8') % 'utf-8'
+xml_binary_iso_8859_15 = (xml_template % 'iso-8859-15').encode('iso-8859-15')
+xml_binary_utf8 = (xml_template % 'utf-8').encode('utf-8') 
 
-html_template_w_header = '''
+html_template_w_header = u'''
 <html>
     <head>
         <META http-equiv="content-type" content="text/html; charset=%s">
@@ -53,9 +52,8 @@ html_template_w_header = '''
 </html>
 '''
 
-html_iso_8859_15_w_header = html_template_w_header % 'iso-8859-15'
-html_utf8_w_header = unicode(html_template_w_header,
-                             'iso-8859-15').encode('utf-8') % 'utf-8'
+html_binary_iso_8859_15_w_header = (html_template_w_header % 'iso-8859-15').encode('iso-8859-15')
+html_binary_utf8_w_header = (html_template_w_header % 'utf-8').encode('utf-8')
 
 html_template_wo_header = '''
 <html>
@@ -65,17 +63,16 @@ html_template_wo_header = '''
 </html>
 '''
 
-html_iso_8859_15_wo_header = html_template_wo_header
-html_utf8_wo_header = unicode(html_template_wo_header,
-                              'iso-8859-15').encode('utf-8')
+# html_iso_8859_15_wo_header = html_template_wo_header
+html_binary_utf8_wo_header = html_template_wo_header.encode('utf-8')
 
-xml_with_upper_attr = '''<?xml version="1.0"?>
+xml_with_upper_attr = b'''<?xml version="1.0"?>
 <foo>
    <bar ATTR="1" />
 </foo>
 '''
 
-html_with_upper_attr = '''<html><body>
+html_with_upper_attr = b'''<html><body>
 <foo>
    <bar ATTR="1" />
 </foo>
@@ -89,34 +86,34 @@ class ZPTUtilsTests(unittest.TestCase):
 
     def testExtractEncodingFromXMLPreamble(self):
         extract = encodingFromXMLPreamble
-        self.assertEqual(extract('<?xml version="1.0" ?>'), 'utf-8')
-        self.assertEqual(extract('<?xml encoding="utf-8" '
-                                 'version="1.0" ?>'),
+        self.assertEqual(extract(b'<?xml version="1.0" ?>'), 'utf-8')
+        self.assertEqual(extract(b'<?xml encoding="utf-8" '
+                                 b'version="1.0" ?>'),
                          'utf-8')
-        self.assertEqual(extract('<?xml encoding="UTF-8" '
-                                 'version="1.0" ?>'),
+        self.assertEqual(extract(b'<?xml encoding="UTF-8" '
+                                 b'version="1.0" ?>'),
                          'utf-8')
-        self.assertEqual(extract('<?xml encoding="ISO-8859-15" '
-                                 'version="1.0" ?>'),
+        self.assertEqual(extract(b'<?xml encoding="ISO-8859-15" '
+                                 b'version="1.0" ?>'),
                          'iso-8859-15')
-        self.assertEqual(extract('<?xml encoding="iso-8859-15" '
-                                 'version="1.0" ?>'),
+        self.assertEqual(extract(b'<?xml encoding="iso-8859-15" '
+                                 b'version="1.0" ?>'),
                          'iso-8859-15')
 
     def testExtractCharsetFromMetaHTTPEquivTag(self):
         extract = charsetFromMetaEquiv
-        self.assertEqual(extract('<html><META http-equiv="content-type" '
-                                 'content="text/html; '
-                                 'charset=UTF-8"></html>'),
+        self.assertEqual(extract(b'<html><META http-equiv="content-type" '
+                                 b'content="text/html; '
+                                 b'charset=UTF-8"></html>'),
                          'utf-8')
-        self.assertEqual(extract('<html><META http-equiv="content-type" '
-                                 'content="text/html; '
-                                 'charset=iso-8859-15"></html>'),
+        self.assertEqual(extract(b'<html><META http-equiv="content-type" '
+                                 b'content="text/html; '
+                                 b'charset=iso-8859-15"></html>'),
                          'iso-8859-15')
-        self.assertEqual(extract('<html><META http-equiv="content-type" '
-                                 'content="text/html"></html>'),
+        self.assertEqual(extract(b'<html><META http-equiv="content-type" '
+                                 b'content="text/html"></html>'),
                          None)
-        self.assertEqual(extract('<html>...<html>'), None)
+        self.assertEqual(extract(b'<html>...<html>'), None)
 
 
 class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
@@ -129,41 +126,36 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
     def testISO_8859_15(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=('<div tal:content="python: '
-                                     'request.get(\'data\')" />'),
+                               text=(b'<div tal:content="python: '
+                                     b'request.get(\'data\')" />'),
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
-        self.app.REQUEST.set('data', 'üצה')
+        self.app.REQUEST.set('data', u'üצה'.encode('iso-8859-15'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
-                                                  'iso-8859-15')))
+        self.assertTrue(result.startswith(u'<div>üצה</div>'))
 
     def testUTF8(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=('<div tal:content="python: '
-                                     'request.get(\'data\')" />'),
+                               text=(b'<div tal:content="python: '
+                                     b'request.get(\'data\')" />'),
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
-                                                  'iso-8859-15')))
+        self.assertTrue(result.startswith(u'<div>üצה</div>'))
 
     def testUTF8WrongPreferredCharset(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=('<div tal:content="python: '
-                                     'request.get(\'data\')" />'),
+                               text=(b'<div tal:content="python: '
+                                     b'request.get(\'data\')" />'),
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertFalse(
-            result.startswith(unicode('<div>üצה</div>', 'iso-8859-15')))
+        self.assertFalse(result.startswith('<div>üצה</div>'))
 
     def testStructureWithAccentedChars(self):
         manage_addPageTemplate(self.app, 'test',
@@ -172,31 +164,28 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
-        self.app.REQUEST.set('data', unicode('üצה',
-                                             'iso-8859-15').encode('utf-8'))
+        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
         self.assertTrue(result.startswith(unicode('<div>üצה</div>',
                                                   'iso-8859-15')))
 
     def testBug151020(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=('<div tal:content="structure '
-                                     'python: %s" />' % "'üצה'"),
+                               text=(b'<div tal:content="structure '
+                                     b'python: %s" />' % "'üצה'"),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
                              'x-user-defined, iso-8859-15,utf-8')
-        self.app.REQUEST.set('data',
-                             unicode('üצה', 'iso-8859-15').encode('utf-8'))
+        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
-                        'iso-8859-15')))
+        self.assertTrue(result.startswith('<div>üצה</div>'))
 
     def test_bug_198274(self):
         # See https://bugs.launchpad.net/bugs/198274
         # ZPT w/ '_text' not assigned can't be unpickled.
         import pickle
-        empty = ZopePageTemplate(id='empty', text=' ',
+        empty = ZopePageTemplate(id='empty', text=b' ',
                                  content_type='text/html',
                                  output_encoding='ascii')
         state = pickle.dumps(empty, protocol=1)
@@ -208,7 +197,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         # Direct inclusion of encoded strings is hadled normally by the unicode
         # conflict resolver
-        textDirect = """
+        textDirect = b"""
         <tal:block content="request/data" />
         """.strip()
         manage_addPageTemplate(self.app, 'test', text=textDirect)
@@ -216,7 +205,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.assertEqual(zpt.pt_render(), u'üצה')
         # Indirect inclusion of encoded strings through String Expressions
         # should be resolved as well.
-        textIndirect = """
+        textIndirect = b"""
         <tal:block content="string:x ${request/data}" />
         """.strip()
         zpt.pt_edit(textIndirect, zpt.content_type)
@@ -225,17 +214,17 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
     def testDebugFlags(self):
         # Test for bug 229549
         manage_addPageTemplate(self.app, 'test',
-                               text='<div tal:content="string:foo">bar</div>',
+                               text=b'<div tal:content="string:foo">bar</div>',
                                encoding='ascii')
         zpt = self.app['test']
         from zope.publisher.base import DebugFlags
         self.app.REQUEST.debug = DebugFlags()
-        self.assertEqual(zpt.pt_render(), unicode('<div>foo</div>'))
+        self.assertEqual(zpt.pt_render(), u'<div>foo</div>')
         self.app.REQUEST.debug.showTAL = True
         self.assertEqual(zpt.pt_render(),
-                         unicode('<div tal:content="string:foo">foo</div>'))
+                         u'<div tal:content="string:foo">foo</div>')
         self.app.REQUEST.debug.sourceAnnotations = True
-        self.assertEqual(zpt.pt_render().startswith(unicode('<!--')), True)
+        self.assertEqual(zpt.pt_render().startswith(u'<!--'), True)
 
 
 class ZopePageTemplateFileTests(ZopeTestCase):
@@ -247,39 +236,39 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def testPT_RenderWithAscii(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=ascii_str, encoding='ascii')
+                               text=ascii_binary, encoding='ascii')
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertEqual(result.encode('ascii').startswith(ascii_str), True)
+        self.assertEqual(result.encode('ascii').startswith(ascii_binary), True)
         self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testPT_RenderUnicodeExpr(self):
         # Check workaround for unicode incompatibility of ZRPythonExpr.
         # See http://mail.zope.org/pipermail/zope/2007-February/170537.html
         manage_addPageTemplate(self.app, 'test',
-                               text=('<span tal:content="python: '
-                                     'unicode(\'\xfe\', \'iso-8859-15\')" />'),
+                               text=(u'<span tal:content="python: '
+                                     u'u\'\xfe\'" />'),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         zpt.pt_render()  # should not raise a UnicodeDecodeError
 
     def testPT_RenderWithISO885915(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=iso885915_str, encoding='iso-8859-15')
+                               text=iso885915_binary, encoding='iso-8859-15')
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertTrue(result.encode('iso-8859-15').startswith(iso885915_str))
+        self.assertTrue(result.encode('iso-8859-15').startswith(iso885915_binary))
         self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testPT_RenderWithUTF8(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=utf8_str, encoding='utf-8')
+                               text=utf8_text, encoding='utf-8')
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertEqual(result.encode('utf-8').startswith(utf8_str), True)
+        self.assertEqual(result.encode('utf-8').startswith(utf8_text), True)
         self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testWriteAcceptsUnicode(self):
@@ -288,19 +277,19 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         s = u'this is unicode'
         zpt.write(s)
         self.assertEqual(zpt.read(), s)
-        self.assertEqual(isinstance(zpt.read(), unicode), True)
+        self.assertEqual(isinstance(zpt.read(), text_type), True)
 
     def testEditWithContentTypeCharset(self):
-        manage_addPageTemplate(self.app, 'test', xml_utf8, encoding='utf-8')
+        manage_addPageTemplate(self.app, 'test', xml_binary_utf8, encoding='utf-8')
         zpt = self.app['test']
-        xml_unicode = unicode(xml_utf8, 'utf-8').strip()
+        xml_unicode = xml_binary_utf8.decode('utf-8').strip()
         zpt.pt_edit(xml_unicode, 'text/xml')
         zpt.pt_edit(xml_unicode, 'text/xml; charset=utf-8')
         self.assertEqual(zpt.read(), xml_unicode)
 
     def _createZPT(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=utf8_str, encoding='utf-8')
+                               text=utf8_text, encoding='utf-8')
         zpt = self.app['test']
         return zpt
 
@@ -314,30 +303,28 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         return zpt
 
     def testPutHTMLIso8859_15WithCharsetInfo(self):
-        zpt = self._put(html_iso_8859_15_w_header)
+        zpt = self._put(html_binary_iso_8859_15_w_header)
         self.assertEqual(zpt.output_encoding, 'iso-8859-15')
         self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutHTMLUTF8_WithCharsetInfo(self):
-        zpt = self._put(html_utf8_w_header)
+        zpt = self._put(html_binary_utf8_w_header)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutHTMLUTF8_WithoutCharsetInfo(self):
-        zpt = self._put(html_utf8_wo_header)
+        zpt = self._put(html_binary_utf8_wo_header)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/html')
 
     def testPutXMLIso8859_15(self):
-        """ XML: use always UTF-8 als output encoding """
-        zpt = self._put(xml_iso_8859_15)
-        self.assertEqual(zpt.output_encoding, 'utf-8')
+        zpt = self._put(xml_binary_iso_8859_15)
+        self.assertEqual(zpt.output_encoding, 'iso-8859-15')
         self.assertEqual(zpt.content_type, 'text/xml')
         zpt.pt_render()  # should not raise an exception
 
     def testPutXMLUTF8(self):
-        """ XML: use always UTF-8 als output encoding """
-        zpt = self._put(xml_utf8)
+        zpt = self._put(xml_binary_utf8)
         self.assertEqual(zpt.output_encoding, 'utf-8')
         self.assertEqual(zpt.content_type, 'text/xml')
         zpt.pt_render()  # should not raise an exception

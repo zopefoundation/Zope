@@ -36,18 +36,18 @@ from zope.pagetemplate.pagetemplatefile import (
 LOG = getLogger('PageTemplateFile')
 
 
-def guess_type(filename, text):
+def guess_type(filename, body):
     # check for XML ourself since guess_content_type can't
     # detect text/xml  if 'filename' won't end with .xml
     # XXX: fix this in zope.contenttype
 
-    if text.startswith('<?xml'):
+    if body.startswith(b'<?xml'):
         return 'text/xml'
 
-    content_type, dummy = guess_content_type(filename, text)
+    content_type, dummy = guess_content_type(filename, body)
     if content_type in ('text/html', 'text/xml'):
         return content_type
-    return sniff_type(text) or 'text/html'
+    return sniff_type(body) or 'text/html'
 
 
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
