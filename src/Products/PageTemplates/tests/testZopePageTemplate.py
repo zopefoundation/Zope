@@ -155,31 +155,28 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
         self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertFalse(result.startswith('<div>üצה</div>'))
+        self.assertFalse(result.startswith(u'<div>üצה</div>'))
 
     def testStructureWithAccentedChars(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=('<div tal:content="structure '
-                                     'python: %s" />' % "'üצה'"),
+                               text=((u'<div tal:content="structure '
+                                     'python: \'üצה\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
-        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(unicode('<div>üצה</div>',
-                                                  'iso-8859-15')))
+        self.assertTrue(result.startswith(u'<div>üצה</div>'))
 
     def testBug151020(self):
         manage_addPageTemplate(self.app, 'test',
-                               text=(b'<div tal:content="structure '
-                                     b'python: %s" />' % "'üצה'"),
+                               text=((u'<div tal:content="structure '
+                                     'python: \'üצה\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
                              'x-user-defined, iso-8859-15,utf-8')
-        self.app.REQUEST.set('data', u'üצה'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith('<div>üצה</div>'))
+        self.assertTrue(result.startswith(u'<div>üצה</div>'))
 
     def test_bug_198274(self):
         # See https://bugs.launchpad.net/bugs/198274
