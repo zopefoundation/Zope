@@ -24,9 +24,6 @@ from DocumentTemplate.security import RestrictedDTML
 from RestrictedPython import compile_restricted_eval
 from zope.tales.pythonexpr import PythonExpr
 
-if sys.version_info >= (3, ):
-    unicode = str
-
 
 class PythonExpr(PythonExpr):
     _globals = get_safe_globals()
@@ -35,11 +32,6 @@ class PythonExpr(PythonExpr):
 
     def __init__(self, name, expr, engine):
         self.text = self.expr = text = expr.strip().replace('\n', ' ')
-
-        # Unicode expression are not handled properly by RestrictedPython
-        # We convert the expression to UTF-8 (ajung)
-        if isinstance(text, unicode):
-            text = text.encode('utf-8')
         code, err, warn, use = compile_restricted_eval(
             text, self.__class__.__name__)
 

@@ -44,8 +44,7 @@ from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import convertToUnicode
 
-if sys.version_info >= (3, ):
-    unicode = str
+from six import text_type, binary_type
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if 'ZPT_PREFERRED_ENCODING' in os.environ:
@@ -118,55 +117,24 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_edit')
     def pt_edit(self, text, content_type, keep_output_encoding=False):
-        text = text.strip()
-
-        is_unicode = isinstance(text, unicode)
-        encoding = None
-        output_encoding = None
-
-        if content_type.startswith('text/xml'):
-
-            if is_unicode:
-                encoding = None
-                output_encoding = 'utf-8'
-            else:
-                encoding = encodingFromXMLPreamble(text)
-                output_encoding = 'utf-8'
-
-        elif content_type.startswith('text/html'):
-
-            charset = charsetFromMetaEquiv(text)
-
-            if is_unicode:
-                if charset:
-                    encoding = None
-                    output_encoding = charset
-                else:
-                    encoding = None
-                    output_encoding = 'utf-8'
-            else:
-                if charset:
-                    encoding = charset
-                    output_encoding = charset
-                else:
-                    encoding = 'utf-8'
-                    output_encoding = 'utf-8'
-
-        else:
-            utext, encoding = convertToUnicode(text,
+        if not isinstance(text, text_type):
+            text_decoded, source_encoding = convertToUnicode(text,
                                                content_type,
                                                preferred_encodings)
-            output_encoding = encoding
+            output_encoding = source_encoding
+        else:
+            text_decoded = text
+            source_encoding = None
+            output_encoding = 'utf-8'
 
         # for content updated through WebDAV, FTP
         if not keep_output_encoding:
             self.output_encoding = output_encoding
 
-        if not is_unicode:
-            text = unicode(text, encoding)
-
+        text_decoded = text_decoded.strip()
+        
         self.ZCacheable_invalidate()
-        super(ZopePageTemplate, self).pt_edit(text, content_type)
+        super(ZopePageTemplate, self).pt_edit(text_decoded, content_type)
 
     pt_editForm = PageTemplateFile('www/ptEdit', globals(),
                                    __name__='pt_editForm')
@@ -188,8 +156,6 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         # that 'title' and 'text' are utf-8 encoded strings - hopefully
 
         self.pt_setTitle(title, 'utf-8')
-        text = unicode(text, 'utf-8')
-
         self.pt_edit(text, content_type, True)
         REQUEST.set('text', self.read())  # May not equal 'text'!
         REQUEST.set('title', self.title)
@@ -201,8 +167,8 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     security.declareProtected(change_page_templates, 'pt_setTitle')
     def pt_setTitle(self, title, encoding='utf-8'):
-        if not isinstance(title, unicode):
-            title = unicode(title, encoding)
+        if not isinstance(title, text_type):
+            title = title.decode(encoding)
         self._setPropValue('title', title)
 
     def _setPropValue(self, id, value):
@@ -217,16 +183,23 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
-        if isinstance(file, str):
+        if not file:
+            raise ValueError('File not specified')
+        if hasattr(file, 'read'):
+            text = file.read()
+            filename = file.filename
+        else:
             filename = None
             text = file
-        else:
-            if not file:
-                raise ValueError('File not specified')
-            filename = file.filename
-            text = file.read()
 
-        content_type = guess_type(filename, text)
+        if isinstance(text, binary_type):
+            content_type = guess_type(filename, text)
+            text, source_encoding = convertToUnicode(text,
+                                               content_type,
+                                               preferred_encodings)
+        elif isinstance(text, text_type):
+            content_type = guess_type(filename, text.encode('utf-8'))
+
         self.pt_edit(text, content_type)
         return self.pt_editForm(manage_tabs_message='Saved changes')
 
@@ -249,7 +222,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         return c
 
     def write(self, text):
-        if not isinstance(text, unicode):
+        if not isinstance(text, text_type):
             text, encoding = convertToUnicode(text,
                                               self.content_type,
                                               preferred_encodings)
@@ -356,11 +329,11 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             return None
 
     def __setstate__(self, state):
-        # Perform on-the-fly migration to unicode.
+        # Perform on-the-fly migration to text_type.
         # Perhaps it might be better to work with the 'generation' module
         # here?
         _text = state.get('_text')
-        if _text is not None and not isinstance(state['_text'], unicode):
+        if _text is not None and not isinstance(state['_text'], text_type):
             text, encoding = convertToUnicode(
                 state['_text'],
                 state.get('content_type', 'text/html'),
@@ -371,7 +344,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     def pt_render(self, source=False, extra_context={}):
         result = PageTemplate.pt_render(self, source, extra_context)
-        assert isinstance(result, unicode)
+        assert isinstance(result, text_type)
         return result
 
     def wl_isLocked(self):
@@ -414,11 +387,11 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
             else:
                 content_type = guess_type(filename, text)
 
-    # ensure that we pass unicode to the constructor to
+    # ensure that we pass text_type to the constructor to
     # avoid further hassles with pt_edit()
 
-    if not isinstance(text, unicode):
-        text = unicode(text, encoding)
+    if not isinstance(text, text_type):
+        text = text.decode(encoding)
 
     zpt = ZopePageTemplate(id, text, content_type, output_encoding=encoding)
     zpt.pt_setTitle(title, encoding)

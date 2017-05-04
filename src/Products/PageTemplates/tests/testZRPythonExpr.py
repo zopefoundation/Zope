@@ -4,7 +4,7 @@
 import unittest
 
 
-class MiscTests(unittest.TestCase):
+class ZRPPythonExprTest(unittest.TestCase):
 
     def test_call_with_ns_prefer_context_to_here(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
