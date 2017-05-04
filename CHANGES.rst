@@ -14,6 +14,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated distributions:
+
+    - Acquisition = 4.4.1
+
 Restructuring
 +++++++++++++
 
