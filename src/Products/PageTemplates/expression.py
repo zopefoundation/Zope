@@ -1,15 +1,18 @@
-from ast import NodeTransformer, parse
+from ast import NodeTransformer
+from ast import parse
 from six import class_types
 
 from OFS.interfaces import ITraversable
-from zExceptions import NotFound, Unauthorized
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from RestrictedPython.RestrictionMutator import RestrictionMutator
+from RestrictedPython.RestrictionMutator import RestrictionMutator  # TODO:
 from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython import MutatingWalker
+from RestrictedPython import MutatingWalker  # TODO:
+from RestrictedPython import RestrictingNodeTransformer
 
 from Products.PageTemplates.Expressions import render
 
@@ -147,8 +150,9 @@ class RestrictionTransform(NodeTransformer):
 
 
 class UntrustedPythonExpr(expressions.PythonExpr):
-    rm = RestrictionMutator()
-    rt = RestrictionTransform()
+    # TODO: adapt new RestrictedPython Impl.
+    #rm = RestrictionMutator()
+    #rt = RestrictionTransform()
 
     # Make copy of parent expression builtins
     builtins = expressions.PythonExpr.builtins.copy()
@@ -169,9 +173,14 @@ class UntrustedPythonExpr(expressions.PythonExpr):
     def parse(self, string):
         encoded = string.encode('utf-8')
         node = parse(encoded, mode='eval')
-        MutatingWalker.walk(node, self.rm)
 
-        # Run restricted python transform
-        self.rt.visit(node)
+        # Run Node Transformation from RestrictedPython:
+        # MutatingWalker.walk(node, self.rm)
+        RestrictingNodeTransformer().visit(node)
+
+        # Run RestrictedPython Transform:
+        # --> RestrictionTransfrom is defined in line 135
+        #self.rt.visit(node)
+        RestrictionTransform().visit(node)
 
         return node
