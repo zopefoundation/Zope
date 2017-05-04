@@ -66,7 +66,7 @@ class TestPageTemplateFile(ZopeTestCase):
         self.assertTrue('here==container:True' in result)
         self.assertTrue("root:(\'\',)" in result)
         self.assertTrue("nothing:" in result)
-        self.assertTrue("rfc822" in result)
+        self.assertTrue("parse" in result) # this tests for the existence of the cgi.parse function
 
     def test_options(self):
         view = OptionsView(self.folder, self.folder.REQUEST)
