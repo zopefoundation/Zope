@@ -9,9 +9,7 @@ from zExceptions import Unauthorized
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from RestrictedPython.RestrictionMutator import RestrictionMutator  # TODO:
 from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython import MutatingWalker  # TODO:
 from RestrictedPython import RestrictingNodeTransformer
 
 from Products.PageTemplates.Expressions import render
@@ -150,9 +148,8 @@ class RestrictionTransform(NodeTransformer):
 
 
 class UntrustedPythonExpr(expressions.PythonExpr):
-    # TODO: adapt new RestrictedPython Impl.
-    #rm = RestrictionMutator()
-    #rt = RestrictionTransform()
+    restricted_python_transformer = RestrictingNodeTransformer()
+    page_templates_expression_transformer = RestrictionTransform()
 
     # Make copy of parent expression builtins
     builtins = expressions.PythonExpr.builtins.copy()
@@ -175,12 +172,9 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         node = parse(encoded, mode='eval')
 
         # Run Node Transformation from RestrictedPython:
-        # MutatingWalker.walk(node, self.rm)
-        RestrictingNodeTransformer().visit(node)
+        self.restricted_python_transformer.visit(node)
 
-        # Run RestrictedPython Transform:
-        # --> RestrictionTransfrom is defined in line 135
-        #self.rt.visit(node)
-        RestrictionTransform().visit(node)
+        # Run PageTemplate.expression RestrictedPython Transform:
+        self.page_templates_expression_transformer.visit(node)
 
         return node
