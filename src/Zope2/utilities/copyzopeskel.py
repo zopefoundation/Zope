@@ -65,8 +65,6 @@ import shutil
 import sys
 import getopt
 
-CVS_DIRS = [os.path.normcase("CVS"), os.path.normcase(".svn")]
-
 
 def main():
     try:
@@ -180,8 +178,8 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
     os.chdir(sourcedir)
     try:
         try:
-            os.path.walk(os.curdir, copydir,
-                         (targetdir, replacements, uid, gid))
+            for root, dirs, files in os.walk(os.curdir):
+                copydir(root, dirs, files, targetdir, replacements, uid, gid)
         finally:
             os.chdir(pwd)
     except (IOError, OSError) as msg:
@@ -189,40 +187,34 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
         sys.exit(1)
 
 
-def copydir(args, sourcedir, names):
-    targetdir, replacements, uid, gid = args
-    # Don't recurse into CVS directories:
-    for name in names[:]:
-        if os.path.normcase(name) in CVS_DIRS:
-            names.remove(name)
-        elif os.path.isfile(os.path.join(sourcedir, name)):
-            # Copy the file:
-            sn, ext = os.path.splitext(name)
-            if os.path.normcase(ext) == ".in":
-                dst = os.path.join(targetdir, sourcedir, sn)
-                if os.path.exists(dst):
-                    continue
-                copyin(os.path.join(sourcedir, name), dst, replacements, uid,
-                       gid)
-                if uid is not None:
-                    os.chown(dst, uid, gid)
-            else:
-                src = os.path.join(sourcedir, name)
-                dst = os.path.join(targetdir, src)
-                if os.path.exists(dst):
-                    continue
-                shutil.copyfile(src, dst)
-                shutil.copymode(src, dst)
-                if uid is not None:
-                    os.chown(dst, uid, gid)
+def copydir(sourcedir, dirs, files, targetdir, replacements, uid, gid):
+    for name in dirs:
+        dn = os.path.abspath(os.path.join(targetdir, sourcedir, name))
+        if not os.path.exists(dn):
+            os.mkdir(dn)
+            shutil.copymode(os.path.join(sourcedir, name), dn)
+            if uid is not None:
+                os.chown(dn, uid, gid)
+
+    for name in files:
+        sn, ext = os.path.splitext(name)
+        if os.path.normcase(ext) == ".in":
+            dst = os.path.join(targetdir, sourcedir, sn)
+            if os.path.exists(dst):
+                continue
+            copyin(os.path.join(sourcedir, name), dst, replacements, uid,
+                   gid)
+            if uid is not None:
+                os.chown(dst, uid, gid)
         else:
-            # Directory:
-            dn = os.path.join(targetdir, sourcedir, name)
-            if not os.path.exists(dn):
-                os.mkdir(dn)
-                shutil.copymode(os.path.join(sourcedir, name), dn)
-                if uid is not None:
-                    os.chown(dn, uid, gid)
+            src = os.path.join(sourcedir, name)
+            dst = os.path.abspath(os.path.join(targetdir, src))
+            if os.path.exists(dst):
+                continue
+            shutil.copyfile(src, dst)
+            shutil.copymode(src, dst)
+            if uid is not None:
+                os.chown(dst, uid, gid)
 
 
 def copyin(src, dst, replacements, uid, gid):
@@ -245,6 +237,7 @@ def usage(stream, msg=None):
         stream.write('\n')
     program = os.path.basename(sys.argv[0])
     stream.write(__doc__ % {"program": program})
+
 
 if __name__ == '__main__':
     main()

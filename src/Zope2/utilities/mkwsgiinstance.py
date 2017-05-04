@@ -189,7 +189,7 @@ def write_inituser(fn, user, password):
     import binascii
     from hashlib import sha1 as sha
     fp = open(fn, "w")
-    pw = binascii.b2a_base64(sha(password).digest())[:-1]
+    pw = binascii.b2a_base64(sha(password.encode('utf-8')).digest())[:-1]
     fp.write('%s:{SHA}%s\n' % (user, pw))
     fp.close()
     os.chmod(fn, 0o644)
@@ -209,7 +209,7 @@ def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
     zope2file = ''
-    p = os.popen('"%s" -c"import Zope2; print Zope2.__file__"' % python)
+    p = os.popen('"%s" -c"import Zope2; print(Zope2.__file__)"' % python)
     try:
         zope2file = p.readline()[:-1]
     finally:
@@ -219,6 +219,7 @@ def get_zope2path(python):
         import Zope2
         zope2file = Zope2.__file__
     return os.path.abspath(os.path.dirname(os.path.dirname(zope2file)))
+
 
 if __name__ == "__main__":
     main()

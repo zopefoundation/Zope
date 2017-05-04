@@ -1,5 +1,9 @@
-from ConfigParser import RawConfigParser
 import os
+
+try:
+    from configparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -31,7 +35,7 @@ def generate(in_, out):
             continue
         requirements.append('%s==%s\n' % (name, pin))
 
-    with open(out_file, 'wb') as fd:
+    with open(out_file, 'w') as fd:
         fd.write(zope_requirement)
         for req in sorted(requirements):
             fd.write(req)
