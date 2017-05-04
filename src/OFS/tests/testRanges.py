@@ -32,10 +32,9 @@ def createBigFile():
     size = (1 << 16) * 5 + 12345
     file = io.BytesIO()
 
-    def addLetter(x, add=file.write, l=string.ascii_letters, c=random.choice):
-        add(c(l))
-    for letter in range(size):
-        addLetter(letter)
+    for byte in range(size):
+        letter = random.choice(string.ascii_letters)
+        file.write(letter.encode('utf-8'))
 
     return file
 
