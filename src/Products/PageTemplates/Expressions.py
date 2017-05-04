@@ -18,6 +18,7 @@ for Python expressions, string literals, and paths.
 
 import logging
 import sys
+from six import text_type, binary_type
 
 from zope.component import queryUtility
 from zope.i18n import translate
@@ -48,9 +49,6 @@ from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 import collections
 
-if sys.version_info >= (3, ):
-    basestring = str
-    unicode = str
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
 
@@ -119,14 +117,10 @@ def render(ob, ns):
         # proxy)
         base = removeAllProxies(base)
         if isinstance(base, collections.Callable):
-            try:
-                if getattr(base, 'isDocTemp', 0):
-                    ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
-                else:
-                    ob = ob()
-            except AttributeError as n:
-                if str(n) != '__call__':
-                    raise
+            if getattr(base, 'isDocTemp', 0):
+                ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
+            else:
+                ob = ob()
     return ob
 
 
@@ -244,11 +238,11 @@ class ZopeContext(Context):
             # XXX: should be unicode???
             return text
 
-        if isinstance(text, unicode):
+        if isinstance(text, text_type):
             # we love unicode, nothing to do
             return text
 
-        elif isinstance(text, str):
+        elif isinstance(text, binary_type):
             # bahh...non-unicode string..we need to convert it to unicode
 
             # catch ComponentLookupError in order to make tests shut-up.
@@ -257,7 +251,7 @@ class ZopeContext(Context):
 
             resolver = queryUtility(IUnicodeEncodingConflictResolver)
             if resolver is None:
-                return unicode(text)
+                return text.decode('ascii')
 
             try:
                 return resolver.resolve(self.contexts['context'], text, expr)
@@ -271,9 +265,9 @@ class ZopeContext(Context):
                            self.contexts['template'].absolute_url(1), text))
                 raise
         else:
-            # This is a weird culprit ...calling unicode() on non-string
+            # This is a weird culprit ...calling text_type() on non-string
             # objects
-            return unicode(text)
+            return text_type(text)
 
     def createErrorInfo(self, err, position):
         # Override, returning an object accessible to untrusted code.
@@ -380,8 +374,10 @@ class PathIterator(ZopeIterator):
     def same_part(self, name, ob1, ob2):
         if name is None:
             return ob1 == ob2
-        if isinstance(name, basestring):
-            name = name.split('/')
+        if isinstance(name, text_type):
+            name = name.split(u'/')
+        elif isinstance(name, binary_type):
+            name = name.split(b'/')
         try:
             ob1 = boboAwareZopeTraverse(ob1, name, None)
             ob2 = boboAwareZopeTraverse(ob2, name, None)
@@ -394,7 +390,7 @@ class UnicodeAwareStringExpr(StringExpr):
 
     def __call__(self, econtext):
         vvals = []
-        if isinstance(self._expr, unicode):
+        if isinstance(self._expr, text_type):
             # coerce values through the Unicode Conflict Resolver
             evaluate = econtext.evaluateText
         else:
