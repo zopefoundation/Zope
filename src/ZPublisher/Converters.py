@@ -204,7 +204,7 @@ type_converters = {
     'float': field2float,
     'int': field2int,
     'long': field2long,
-    'string': field2string,
+    'string': field2string, # to native str
     'date': field2date,
     'date_international': field2date_international,
     'required': field2required,
