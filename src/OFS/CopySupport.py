@@ -22,6 +22,7 @@ import warnings
 from zlib import compress
 from zlib import decompressobj
 import transaction
+import six
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
@@ -181,8 +182,8 @@ class CopyContainer(Base):
 
         try:
             op, mdatas = _cb_decode(cp)
-        except Exception:
-            raise CopyError('Clipboard Error')
+        except Exception as e:
+            six.raise_from(CopyError('Clipboard Error'), e)
 
         oblist = []
         app = self.getPhysicalRoot()
