@@ -1,4 +1,4 @@
-# -*- encoding: iso-8859-15 -*-
+# -*- encoding: utf-8 -*-
 """
 ZopePageTemplate regression tests.
 
@@ -29,12 +29,12 @@ import Zope2
 from six import text_type, binary_type
 
 ascii_binary = b'<html><body>hello world</body></html>'
-iso885915_binary = u'<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
+iso885915_binary = u'<html><body>Ã¼Ã¶Ã¤ÃœÃ–Ã„ÃŸ</body></html>'.encode('iso-8859-15')
 utf8_text = iso885915_binary.decode('iso-8859-15').encode('utf-8')
 
 xml_template = u'''<?xml version="1.0" encoding="%s"?>
 <foo>
-üöäÜÖÄß
+Ã¼Ã¶Ã¤ÃœÃ–Ã„ÃŸ
 </foo>
 '''
 
@@ -47,7 +47,7 @@ html_template_w_header = u'''
         <META http-equiv="content-type" content="text/html; charset=%s">
     </hed>
     <body>
-    test üöäÜÖÄß
+    test Ã¼Ã¶Ã¤ÃœÃ–Ã„ÃŸ
     </body>
 </html>
 '''
@@ -58,7 +58,7 @@ html_binary_utf8_w_header = (html_template_w_header % 'utf-8').encode('utf-8')
 html_template_wo_header = '''
 <html>
     <body>
-    test üöäÜÖÄß
+    test Ã¼Ã¶Ã¤ÃœÃ–Ã„ÃŸ
     </body>
 </html>
 '''
@@ -131,9 +131,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
-        self.app.REQUEST.set('data', u'üöä'.encode('iso-8859-15'))
+        self.app.REQUEST.set('data', u'Ã¼Ã¶Ã¤'.encode('iso-8859-15'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(u'<div>üöä</div>'))
+        self.assertTrue(result.startswith(u'<div>Ã¼Ã¶Ã¤</div>'))
 
     def testUTF8(self):
         manage_addPageTemplate(self.app, 'test',
@@ -142,9 +142,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
-        self.app.REQUEST.set('data', u'üöä'.encode('utf-8'))
+        self.app.REQUEST.set('data', u'Ã¼Ã¶Ã¤'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(u'<div>üöä</div>'))
+        self.assertTrue(result.startswith(u'<div>Ã¼Ã¶Ã¤</div>'))
 
     def testUTF8WrongPreferredCharset(self):
         manage_addPageTemplate(self.app, 'test',
@@ -153,30 +153,30 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                                encoding='ascii')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
-        self.app.REQUEST.set('data', u'üöä'.encode('utf-8'))
+        self.app.REQUEST.set('data', u'Ã¼Ã¶Ã¤'.encode('utf-8'))
         result = zpt.pt_render()
-        self.assertFalse(result.startswith(u'<div>üöä</div>'))
+        self.assertFalse(result.startswith(u'<div>Ã¼Ã¶Ã¤</div>'))
 
     def testStructureWithAccentedChars(self):
         manage_addPageTemplate(self.app, 'test',
                                text=((u'<div tal:content="structure '
-                                     'python: \'üöä\'" />').encode('iso-8859-15')),
+                                     'python: \'Ã¼Ã¶Ã¤\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(u'<div>üöä</div>'))
+        self.assertTrue(result.startswith(u'<div>Ã¼Ã¶Ã¤</div>'))
 
     def testBug151020(self):
         manage_addPageTemplate(self.app, 'test',
                                text=((u'<div tal:content="structure '
-                                     'python: \'üöä\'" />').encode('iso-8859-15')),
+                                     'python: \'Ã¼Ã¶Ã¤\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
                              'x-user-defined, iso-8859-15,utf-8')
         result = zpt.pt_render()
-        self.assertTrue(result.startswith(u'<div>üöä</div>'))
+        self.assertTrue(result.startswith(u'<div>Ã¼Ã¶Ã¤</div>'))
 
     def test_bug_198274(self):
         # See https://bugs.launchpad.net/bugs/198274
@@ -191,7 +191,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
     def testBug246983(self):
         # See https://bugs.launchpad.net/bugs/246983
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8')
-        self.app.REQUEST.set('data', u'üöä'.encode('utf-8'))
+        self.app.REQUEST.set('data', u'Ã¼Ã¶Ã¤'.encode('utf-8'))
         # Direct inclusion of encoded strings is hadled normally by the unicode
         # conflict resolver
         textDirect = b"""
@@ -199,14 +199,14 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         """.strip()
         manage_addPageTemplate(self.app, 'test', text=textDirect)
         zpt = self.app['test']
-        self.assertEqual(zpt.pt_render(), u'üöä')
+        self.assertEqual(zpt.pt_render(), u'Ã¼Ã¶Ã¤')
         # Indirect inclusion of encoded strings through String Expressions
         # should be resolved as well.
         textIndirect = b"""
         <tal:block content="string:x ${request/data}" />
         """.strip()
         zpt.pt_edit(textIndirect, zpt.content_type)
-        self.assertEqual(zpt.pt_render(), u'x üöä')
+        self.assertEqual(zpt.pt_render(), u'x Ã¼Ã¶Ã¤')
 
     def testDebugFlags(self):
         # Test for bug 229549
@@ -345,16 +345,16 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
         context = object()
-        result = PreferredCharsetResolver.resolve(context, 'üöä', None)
-        self.assertEqual(result, 'üöä')
+        result = PreferredCharsetResolver.resolve(context, 'Ã¼Ã¶Ã¤', None)
+        self.assertEqual(result, 'Ã¼Ã¶Ã¤')
 
     def testPreferredCharsetResolverWithoutRequestAndWithEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
         class ContextMock:
             management_page_charset = 'utf-8'
-        result = PreferredCharsetResolver.resolve(ContextMock(), 'üöä', None)
-        self.assertEqual(result, 'üöä')
+        result = PreferredCharsetResolver.resolve(ContextMock(), 'Ã¼Ã¶Ã¤', None)
+        self.assertEqual(result, 'Ã¼Ã¶Ã¤')
 
 
 class ZPTRegressions(unittest.TestCase):
