@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Restore `HTTPResponse.redirect` behaviour of not raising an exception.
+
 Features Added
 ++++++++++++++
 
