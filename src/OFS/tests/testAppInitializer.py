@@ -77,7 +77,7 @@ class TestInitialization(unittest.TestCase):
         # of the directory is checked.  This handles this in a
         # platform-independent way.
         schema = self.schema
-        sio = io.BytesIO(text.replace("<<INSTANCE_HOME>>", TEMPNAME))
+        sio = io.StringIO(text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         conf, handler = ZConfig.loadConfigFile(schema, sio)
         self.assertEqual(conf.instancehome, TEMPNAME)
         setConfiguration(conf)
