@@ -683,6 +683,11 @@ class HTTPBaseResponse(BaseResponse):
         result.extend(self.accumulated_headers)
         return result
 
+    def _unauthorized(self):
+        realm = self.realm
+        if realm:
+            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+
 
 class HTTPResponse(HTTPBaseResponse):
 
@@ -792,11 +797,6 @@ class HTTPResponse(HTTPBaseResponse):
             "Make sure to specify all required parameters, " +
             "and try the request again.</p>"
         ))
-
-    def _unauthorized(self):
-        realm = self.realm
-        if realm:
-            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
     def unauthorized(self):
         m = "You are not authorized to access this resource."
@@ -1014,6 +1014,9 @@ class WSGIResponse(HTTPBaseResponse):
             t, v, tb = info
         else:
             t, v, tb = sys.exc_info()
+
+        if issubclass(t, Unauthorized):
+            self._unauthorized()
 
         reraise(t, v, tb)
 

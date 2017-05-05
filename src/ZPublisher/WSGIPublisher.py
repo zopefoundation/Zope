@@ -177,11 +177,13 @@ def _publish_response(request, response, module_info, _publish=publish):
         if not isinstance(exc, t):
             exc = t(str(exc))
 
-        # This should happen inside zExceptions, but the realm is only
-        # defined on the premade response or in the module_info and
-        # can be changed during publishing.
         if isinstance(exc, Unauthorized):
-            exc.setRealm(response.realm)
+            # _unauthorized modifies the response in-place in unknown
+            # ways, so we have to trust and return it, and ignore
+            # the exception instance.
+            response._unauthorized()
+            response.setStatus(exc.getStatus())
+            return response
 
         view = queryMultiAdapter((exc, request), name=u'index.html')
         if view is not None:
