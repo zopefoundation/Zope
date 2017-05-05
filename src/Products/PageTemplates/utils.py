@@ -17,11 +17,11 @@ import re
 import sys
 
 xml_preamble_reg = re.compile(
-    rb'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+    br'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 http_equiv_reg = re.compile(
-    rb'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I | re.M | re.S)
+    br'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I | re.M | re.S)
 http_equiv_reg2 = re.compile(
-    rb'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
+    br'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
 
 
 def encodingFromXMLPreamble(xml):
