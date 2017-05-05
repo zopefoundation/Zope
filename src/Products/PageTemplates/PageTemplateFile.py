@@ -31,6 +31,8 @@ from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplatefile import (
     sniff_type,
     XML_PREFIX_MAX_LENGTH,
+    DEFAULT_ENCODING,
+    meta_pattern,
 )
 
 LOG = getLogger('PageTemplateFile')
@@ -44,12 +46,15 @@ def guess_type(filename, body):
     if body.startswith(b'<?xml'):
         return 'text/xml'
 
-    content_type, dummy = guess_content_type(filename, body)
+    content_type, ignored_encoding = guess_content_type(filename, body)
     if content_type in ('text/html', 'text/xml'):
         return content_type
     return sniff_type(body) or 'text/html'
 
 
+# REFACT: Make this a subclass of zope.pagetemplate.pagetemplatefile.PageTemplateFile
+# That class has been forked off of this code and now we have duplication. They already
+# share a common superclass (zope.pagetemplate.pagetemplate.PageTemplate).
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
 
@@ -151,26 +156,43 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
             mtime = 0
         if self._v_program is not None and mtime == self._v_last_read:
             return
-        f = open(self.filename, "rb")
-        try:
-            text = f.read(XML_PREFIX_MAX_LENGTH)
-        except Exception:
-            f.close()
-            raise
-        t = sniff_type(text)
-        if t != "text/xml":
-            # For HTML, we really want the file read in text mode:
-            f.close()
-            f = open(self.filename, 'U')
-            text = ''
-        text += f.read()
-        f.close()
-        self.pt_edit(text, t)
+        text, type_ = self._read_file()
+        # FIXME: text is a binary_type when it's XML.
+        self.pt_edit(text, type_)
         self._cook()
         if self._v_errors:
             LOG.error('Error in template %s' % '\n'.join(self._v_errors))
             return
         self._v_last_read = mtime
+
+    def _prepare_html(self, text):
+        match = meta_pattern.search(text)
+        if match is not None:
+            type_, encoding = (x.decode('utf-8') for x in match.groups())
+            # TODO: Shouldn't <meta>/<?xml?> stripping
+            # be in PageTemplate.__call__()?
+            text = meta_pattern.sub(b"", text)
+        else:
+            type_ = None
+            encoding = DEFAULT_ENCODING
+        text = text.decode(encoding)
+        return text, type_
+
+    def _read_file(self):
+        __traceback_info__ = self.filename
+        f = open(self.filename, "rb")
+        try:
+            text = f.read(XML_PREFIX_MAX_LENGTH)
+        except:
+            f.close()
+            raise
+        type_ = sniff_type(text)
+        text += f.read()
+        if type_ != "text/xml":
+            text, type_ = self._prepare_html(text)
+        f.close()
+        return text, type_
+
 
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
