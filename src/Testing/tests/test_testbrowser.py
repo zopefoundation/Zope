@@ -42,6 +42,13 @@ class ExceptionStub(Item):
         raise ValueError('dummy')
 
 
+class RedirectStub(Item):
+    """This is a stub, causing a redirect."""
+
+    def __call__(self, REQUEST):
+        return REQUEST.RESPONSE.redirect('/redirected')
+
+
 class TestTestbrowser(FunctionalTestCase):
 
     def test_auth(self):
@@ -86,6 +93,7 @@ class TestTestbrowser(FunctionalTestCase):
     def test_handle_errors_true(self):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
+
         with self.assertRaises(HTTPError):
             browser.open('http://localhost/test_folder_1_/stub')
         self.assertTrue(browser.headers['status'].startswith('500'))
@@ -94,16 +102,35 @@ class TestTestbrowser(FunctionalTestCase):
             browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
 
+    def test_handle_errors_true_redirect(self):
+        self.folder._setObject('redirect', RedirectStub())
+        browser = Browser()
+
+        with self.assertRaises(HTTPError):
+            browser.open('http://localhost/test_folder_1_/redirect')
+        self.assertTrue(browser.headers['status'].startswith('404'))
+        self.assertEqual(browser.url, 'http://localhost/redirected')
+
     def test_handle_errors_false(self):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
         browser.handleErrors = False
+
         with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
         self.assertTrue(browser.contents is None)
 
         with self.assertRaises(NotFound):
             browser.open('http://localhost/nothing-is-here')
+        self.assertTrue(browser.contents is None)
+
+    def test_handle_errors_false_redirect(self):
+        self.folder._setObject('redirect', RedirectStub())
+        browser = Browser()
+        browser.handleErrors = False
+
+        with self.assertRaises(NotFound):
+            browser.open('http://localhost/test_folder_1_/redirect')
         self.assertTrue(browser.contents is None)
 
     def test_raise_http_errors_false(self):
@@ -116,6 +143,15 @@ class TestTestbrowser(FunctionalTestCase):
 
         browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
+
+    def test_raise_http_errors_false_redirect(self):
+        self.folder._setObject('redirect', RedirectStub())
+        browser = Browser()
+        browser.raiseHttpErrors = False
+
+        browser.open('http://localhost/test_folder_1_/redirect')
+        self.assertTrue(browser.headers['status'].startswith('404'))
+        self.assertEqual(browser.url, 'http://localhost/redirected')
 
     def test_headers_camel_case(self):
         # The Zope2 response mungs headers so they come out

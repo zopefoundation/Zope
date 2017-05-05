@@ -150,6 +150,15 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody('TESTING')
         self.assertRaises(NotImplementedError, lambda: str(response))
 
+    def test_exception_calls_unauthorized(self):
+        from zExceptions import Unauthorized
+        response = self._makeOne()
+        _unauthorized = DummyCallable()
+        response._unauthorized = _unauthorized
+        with self.assertRaises(Unauthorized):
+            response.exception(info=(Unauthorized, Unauthorized('fail'), None))
+        self.assertEqual(_unauthorized._called_with, ((), {}))
+
 
 class TestPublish(unittest.TestCase):
 
@@ -439,7 +448,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '401 Unauthorized')
-        self.assertTrue(b'Exception View: Unauthorized' in body)
+        self.assertFalse(b'Exception View' in body)
 
     def testCustomExceptionViewForbidden(self):
         from zExceptions import Forbidden

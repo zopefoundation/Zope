@@ -170,6 +170,15 @@ class HTTPBaseResponse(BaseResponse):
         self.stdout = stdout
         self.stderr = stderr
 
+    def redirect(self, location, status=302, lock=0):
+        """Cause a redirection without raising an error"""
+        if isinstance(location, HTTPRedirection):
+            status = location.getStatus()
+        location = str(location)
+        self.setStatus(status, lock=lock)
+        self.setHeader('Location', location)
+        return location
+
     def retry(self):
         """ Return a cloned response object to be used in a retry attempt.
         """
@@ -670,6 +679,11 @@ class HTTPBaseResponse(BaseResponse):
         result.extend(self.accumulated_headers)
         return result
 
+    def _unauthorized(self):
+        realm = self.realm
+        if realm:
+            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+
 
 class HTTPResponse(HTTPBaseResponse):
 
@@ -780,11 +794,6 @@ class HTTPResponse(HTTPBaseResponse):
             "and try the request again.</p>"
         ))
 
-    def _unauthorized(self):
-        realm = self.realm
-        if realm:
-            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
-
     def unauthorized(self):
         m = "You are not authorized to access this resource."
         if self.debug_mode:
@@ -793,15 +802,6 @@ class HTTPResponse(HTTPBaseResponse):
             else:
                 m = m + '\nNo Authorization header found.'
         raise Unauthorized(m)
-
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection without raising an error"""
-        if isinstance(location, HTTPRedirection):
-            status = location.getStatus()
-        location = str(location)
-        self.setStatus(status, lock=lock)
-        self.setHeader('Location', location)
-        return location
 
     def _setBCIHeaders(self, t, tb):
         try:
@@ -1005,20 +1005,14 @@ class WSGIResponse(HTTPBaseResponse):
                 exc.detail = 'No Authorization header found.'
         raise exc
 
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection."""
-        if isinstance(location, HTTPRedirection):
-            raise location
-
-        exc = Redirect(str(location))
-        exc.setStatus(status)
-        raise exc
-
     def exception(self, fatal=0, info=None, abort=1):
         if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
         else:
             t, v, tb = sys.exc_info()
+
+        if issubclass(t, Unauthorized):
+            self._unauthorized()
 
         reraise(t, v, tb)
 
