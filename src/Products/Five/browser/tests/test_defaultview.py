@@ -52,10 +52,10 @@ def test_default_view():
       ...     for="Products.Five.tests.testing.simplecontent.ISimpleContent"
       ...     name="eagledefaultview.txt" />
       ... </configure>''')
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/testoid HTTP/1.1
       ... Authorization: Basic manager:r00t
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       The mouse has been eaten by the eagle
@@ -63,18 +63,18 @@ def test_default_view():
     In Five 1.5 ``index_html`` you can no longer set default views to anything
     else than views:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/testindex HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 404 Not Found
       ...
 
     Disabled __call__ overriding for now.  Causes more trouble than it
     fixes.  Thus, no test here:
 
-      #>>> print http(r'''
+      #>>> print(http(r'''
       #... GET /test_folder_1_/testcall HTTP/1.1
-      #... ''')
+      #... '''))
       #HTTP/1.1 200 OK
       #...
       #Default __call__ called
