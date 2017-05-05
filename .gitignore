@@ -2,6 +2,7 @@
 *.py?
 .installed.cfg
 .mr.developer.cfg
+.plone.versioncheck*
 .tox
 /bin/
 /build/
