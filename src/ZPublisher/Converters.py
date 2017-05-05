@@ -16,18 +16,18 @@ import sys
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
 from cgi import escape
-
-if sys.version_info >= (3, ):
-    unicode = str
+import six
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
 
 
 def field2string(v):
+    """Converts value to native strings (so always to `str` no matter which
+    python version you are on)"""
     if hasattr(v, 'read'):
         return v.read()
-    elif isinstance(v, unicode):
+    elif six.PY2 and isinstance(v, six.text_type):
         return v.encode(default_encoding)
     else:
         return str(v)
