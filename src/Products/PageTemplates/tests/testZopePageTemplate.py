@@ -55,7 +55,7 @@ html_template_w_header = u'''
 html_binary_iso_8859_15_w_header = (html_template_w_header % 'iso-8859-15').encode('iso-8859-15')
 html_binary_utf8_w_header = (html_template_w_header % 'utf-8').encode('utf-8')
 
-html_template_wo_header = '''
+html_template_wo_header = u'''
 <html>
     <body>
     test üöäÜÖÄß
@@ -160,7 +160,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
     def testStructureWithAccentedChars(self):
         manage_addPageTemplate(self.app, 'test',
                                text=((u'<div tal:content="structure '
-                                     'python: \'üöä\'" />').encode('iso-8859-15')),
+                                     u'python: \'üöä\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
@@ -170,7 +170,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
     def testBug151020(self):
         manage_addPageTemplate(self.app, 'test',
                                text=((u'<div tal:content="structure '
-                                     'python: \'üöä\'" />').encode('iso-8859-15')),
+                                     u'python: \'üöä\'" />').encode('iso-8859-15')),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
@@ -354,7 +354,7 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
         class ContextMock:
             management_page_charset = 'utf-8'
         result = PreferredCharsetResolver.resolve(ContextMock(), 'üöä', None)
-        self.assertEqual(result, 'üöä')
+        self.assertEqual(result, u'üöä')
 
 
 class ZPTRegressions(unittest.TestCase):
