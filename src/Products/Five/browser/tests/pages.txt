@@ -103,7 +103,7 @@ ZPT-based browser pages
 Test access to ``context`` from ZPTs:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/flamingo.html')
-  >>> print view()
+  >>> print(view())
   <p>Hello world</p>
   <p>Hello world</p>
 
@@ -116,7 +116,7 @@ Test macro access from ZPT pages:
 test_zpt_things:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/condor.html')
-  >>> print view()
+  >>> print(view())
   <p>Hello world</p>
   <p>The eagle has landed</p>
   <p>Hello world</p>
@@ -125,7 +125,7 @@ test_zpt_things:
 Make sure that tal:repeat works in ZPT browser pages:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/ostrich.html')
-  >>> print view()
+  >>> print(view())
   <ul>
   <li>Alpha</li>
   <li>Beta</li>
@@ -140,14 +140,14 @@ Make sure that tal:repeat works in ZPT browser pages:
 Test TALES traversal in ZPT pages:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/tales_traversal.html')
-  >>> print view()
+  >>> print(view())
   <p>testoid</p>
   <p>test_folder_1_</p>
 
 Make sure that global template variables in ZPT pages are correct:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/template_variables.html')
-  >>> print view()
+  >>> print(view())
   View is a view: True
   Context is testoid: True
   Context.__parent__ is test_folder_1_: True
@@ -174,7 +174,7 @@ of course:
   >>> allow_module('smtpd')
   >>> self.logout()
   >>> view = self.folder.unrestrictedTraverse('testoid/security.html')
-  >>> print view()
+  >>> print(view())
   <div>NoneType</div>
   <div>smtpd</div>
   >>> self.login('manager')
@@ -182,13 +182,13 @@ of course:
 Test pages registered through the <five:pagesFromDirectory /> directive:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/dirpage1')
-  >>> print view()
+  >>> print(view())
   <html>
   <p>This is page 1</p>
   </html>
 
   >>> view = self.folder.unrestrictedTraverse('testoid/dirpage2')
-  >>> print view()
+  >>> print(view())
   <html>
   <p>This is page 2</p>
   </html>
@@ -315,7 +315,7 @@ Test traversal to resources from within ZPT pages:
 
   >>> zcml.load_config('resource.zcml', package=Products.Five.browser.tests)
   >>> view = self.folder.unrestrictedTraverse('testoid/parakeet.html')
-  >>> print view()
+  >>> print(view())
   <html><body><img alt=""
                    src="http://nohost/test_folder_1_/testoid/++resource++pattern.png" /></body></html>
 

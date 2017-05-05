@@ -131,7 +131,7 @@ But now we register some viewlets for the manager
 and thus the left column is filled:
 
   >>> leftColumn.update()
-  >>> print leftColumn.render()
+  >>> print(leftColumn.render())
   <div class="box">Patriots (23) : Steelers (7)</div>
   <div class="box">It is sunny today!</div>
 
@@ -161,7 +161,7 @@ variable that is an iterable of all the avialable viewlets in the correct
 order:
 
   >>> leftColumn.update()
-  >>> print leftColumn.render().strip()
+  >>> print(leftColumn.render().strip())
   <div class="left-column">
     <div class="box">Patriots (23) : Steelers (7)</div>
     <div class="box">It is sunny today!</div>
@@ -221,7 +221,7 @@ Let's now create a new viewlet manager:
 So we get the weather box first and the sport box second:
 
   >>> leftColumn.update()
-  >>> print leftColumn.render().strip()
+  >>> print(leftColumn.render().strip())
   <div class="left-column">
     <div class="box">It is sunny today!</div>
     <div class="box">Patriots (23) : Steelers (7)</div>
@@ -234,7 +234,7 @@ Now let's change the order...
 and the order should switch as well:
 
   >>> leftColumn.update()
-  >>> print leftColumn.render().strip()
+  >>> print(leftColumn.render().strip())
   <div class="left-column">
     <div class="box">Patriots (23) : Steelers (7)</div>
     <div class="box">It is sunny today!</div>
@@ -244,7 +244,7 @@ Of course, we also can remove a shown viewlet:
 
   >>> weather = shown.pop()
   >>> leftColumn.update()
-  >>> print leftColumn.render().strip()
+  >>> print(leftColumn.render().strip())
   <div class="left-column">
     <div class="box">Patriots (23) : Steelers (7)</div>
   </div>
@@ -323,7 +323,7 @@ simply specifying a template only:
   >>> open(template, 'w').write('''<div>contents</div>''')
 
   >>> Demo = viewlet.SimpleViewletClass(template)
-  >>> print Demo(content, request, view, manager).render()
+  >>> print(Demo(content, request, view, manager).render())
   <div>contents</div>
 
 Now let's additionally specify a class that can provide additional features:
@@ -386,7 +386,7 @@ absolute URL for it:
 
   >>> registerResource('resource.js', JSResource)
   >>> JSViewlet = viewlet.JavaScriptViewlet('resource.js')
-  >>> print JSViewlet(content, request, view, manager).render().strip()
+  >>> print(JSViewlet(content, request, view, manager).render().strip())
   <script type="text/javascript" src="/@@/resource.js">
   </script>
 
@@ -402,14 +402,14 @@ The same works for the CSS resource viewlet:
   >>> registerResource('resource.css', CSSResource)
 
   >>> CSSViewlet = viewlet.CSSViewlet('resource.css')
-  >>> print CSSViewlet(content, request, view, manager).render().strip()
+  >>> print(CSSViewlet(content, request, view, manager).render().strip())
   <link type="text/css" rel="stylesheet"
         href="/@@/resource.css" media="all" />
 
 You can also change the media type and the rel attribute:
 
   >>> CSSViewlet = viewlet.CSSViewlet('resource.css', media='print', rel='css')
-  >>> print CSSViewlet(content, request, view, manager).render().strip()
+  >>> print(CSSViewlet(content, request, view, manager).render().strip())
   <link type="text/css" rel="css" href="/@@/resource.css"
         media="print" />
 
@@ -550,7 +550,7 @@ register it (it's a bit tedious, I know):
 Since we have not defined any viewlets yet, the table is totally empty:
 
   >>> contents = Contents(container, request)
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -596,7 +596,7 @@ and register it:
 Note how you register the viewlet on ``IFile`` and not on the container. Now
 we should be able to see the name for each file in the container:
 
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -617,7 +617,7 @@ Waaa, nothing there! What happened? Well, we have to tell our user preferences
 that we want to see the name as a column in the table:
 
   >>> shownColumns = ['name']
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -670,7 +670,7 @@ After we added it to the list of shown columns,
 
 we can see an entry for it:
 
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -711,7 +711,7 @@ If we switch the two columns around,
 
 the result will be
 
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -835,7 +835,7 @@ Finally we sort the contents by name:
   >>> shownColumns = ['name', 'size']
   >>> sortByColumn = 'name'
 
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>
@@ -874,7 +874,7 @@ Now let's sort by size:
 
   >>> sortByColumn = 'size'
 
-  >>> print contents().strip()
+  >>> print(contents().strip())
   <html>
     <body>
       <h1>Cotnents</h1>

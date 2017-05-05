@@ -43,12 +43,12 @@ def test_check_permission():
       >>> browser.open(
       ...     'http://localhost/test_folder_1_/testoid/'
       ...     '@@zope3security.html?permission=zope2.View')
-      >>> print browser.contents
+      >>> print(browser.contents)
       Yes, you have the 'zope2.View' permission.
       >>> browser.open(
       ...     'http://localhost/test_folder_1_/testoid/'
       ...     '@@zope3security.html?permission=zope2.DeleteObjects')
-      >>> print browser.contents
+      >>> print(browser.contents)
       No, you don't have the 'zope2.DeleteObjects' permission.
 
     Clean up:

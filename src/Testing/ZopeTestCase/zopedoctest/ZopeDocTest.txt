@@ -75,11 +75,11 @@ testZopeDocTest.py for its definition.
 Now let's manipulate our test objects a bit:
 
   >>> ob = self.folder.object
-  >>> print ob.title_or_id()
+  >>> print(ob.title_or_id())
   object
 
   >>> ob.manage_changeProperties(title='Foo')
-  >>> print ob.title_or_id()
+  >>> print(ob.title_or_id())
   Foo
 
   >>> self.folder.manage_delObjects('object')

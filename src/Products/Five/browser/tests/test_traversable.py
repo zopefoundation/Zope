@@ -36,9 +36,9 @@ def test_traversable():
       >>> from Products.Five.tests.testing.simplecontent import (
       ... manage_addSimpleContent)
       >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/testoid/doesntexist HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 404 Not Found
       ...
 
@@ -87,9 +87,9 @@ def test_traversable():
     In the following test we let the original __bobo_traverse__ method
     kick in:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/something-else HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       something-else
@@ -98,9 +98,9 @@ def test_traversable():
     takes over.  Therefore, unless it raises AttributeError or
     KeyError, it will be the only way traversal is done.
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/fancyview HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       fancyview
@@ -109,23 +109,23 @@ def test_traversable():
     AttributeError or KeyError, we can get normal view look-up.  Other
     exceptions are passed through just fine:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/raise-attributeerror HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       Fancy, fancy
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/raise-keyerror HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       Fancy, fancy
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/raise-valueerror HTTP/1.1
-      ... ''', handle_errors=False)
+      ... ''', handle_errors=False))
       Traceback (most recent call last):
         ...
       ValueError: ...
@@ -142,9 +142,9 @@ def test_traversable():
       >>> info = manage_addNonTraversableFancyContent(
       ...     self.folder, 'fancy_zope2', '')
       >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy_zope2/an_attribute HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       an_attribute
@@ -154,9 +154,9 @@ def test_traversable():
     an object that has been marked traversable by Five:
 
       >>> self.folder.fancy.an_attribute = 'This is an attribute'
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/fancy/an_attribute HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       an_attribute
@@ -234,18 +234,18 @@ def test_view_doesnt_shadow_attribute():
     When we publish the ``ftf/eagle`` now, we expect the attribute to
     take precedence over the view during traversal:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/ftf/eagle HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       Default index_html called
 
     Of course, unless we explicitly want to lookup the view using @@:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/ftf/@@eagle HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       The eagle has landed
@@ -255,18 +255,18 @@ def test_view_doesnt_shadow_attribute():
     found in OFS.Application, raise NotFound.  Five still knows how to
     deal with this, hence views work there too:
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /eagle HTTP/1.1
       ...
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       The eagle has landed
 
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /@@eagle HTTP/1.1
       ...
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       The eagle has landed
@@ -275,9 +275,9 @@ def test_view_doesnt_shadow_attribute():
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
       >>> manage_addIndexSimpleContent(self.folder, 'mouse', 'Mouse')
-      >>> print http(r'''
+      >>> print(http(r'''
       ... GET /test_folder_1_/ftf/mouse HTTP/1.1
-      ... ''')
+      ... '''))
       HTTP/1.1 200 OK
       ...
       The mouse has been eaten by the eagle
