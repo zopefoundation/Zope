@@ -33,26 +33,26 @@ def field2string(v):
         return str(v)
 
 
-def field2text(v, nl=re.compile('\r\n|\n\r').search):
-    v = field2string(v)
-    mo = nl(v)
-    if mo is None:
-        return v
-    l = mo.start(0)
-    r = []
-    s = 0
-    while l >= s:
-        r.append(v[s:l])
-        s = l + 2
-        mo = nl(v, s)
-        if mo is None:
-            l = -1
+def field2text(value, nl=re.compile('\r\n|\n\r').search):
+    value = field2string(value)
+    match_object = nl(value)
+    if match_object is None:
+        return value
+    length = match_object.start(0)
+    result = []
+    start = 0
+    while length >= start:
+        result.append(value[start:length])
+        start = length + 2
+        match_object = nl(value, start)
+        if match_object is None:
+            length = -1
         else:
-            l = mo.start(0)
+            length = match_object.start(0)
 
-    r.append(v[s:])
+    result.append(value[start:])
 
-    return '\n'.join(r)
+    return '\n'.join(result)
 
 
 def field2required(v):
