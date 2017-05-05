@@ -56,7 +56,7 @@ def test_view_with_unwrapped_context():
     >>> from Products.Five.browser.tests.pages import SimpleView
     >>> isinstance(falcon, SimpleView)
     True
-    >>> print falcon()
+    >>> print(falcon())
     <p>The falcon has taken flight</p>
 
     Clean up:

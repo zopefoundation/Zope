@@ -58,7 +58,7 @@ def testBeforeTraverse(self):
     ...    'broken_hook')
 
     >>> container.__before_publishing_traverse__
-    <ZPublisher.BeforeTraverse.MultiHook instance at ...>
+    <ZPublisher.BeforeTraverse.MultiHook ...>
 
     >>> container.__before_traverse__
     {(99, 'broken_hook'): <ZPublisher.tests.testBeforeTraverse.BrokenHook ...>}
@@ -93,7 +93,7 @@ def testBeforeTraverse(self):
     But the 'MultiHook' is not removed:
 
     >>> container.__before_publishing_traverse__
-    <ZPublisher.BeforeTraverse.MultiHook instance at ...>
+    <ZPublisher.BeforeTraverse.MultiHook ...>
 
     If you have an object in the same container that you want to call
     during traversal you can register a 'NameCaller' as the hook
@@ -130,7 +130,7 @@ def testBeforeTraverse(self):
     But the 'MultiHook' is not removed:
 
     >>> container.__before_publishing_traverse__
-    <ZPublisher.BeforeTraverse.MultiHook instance at ...>
+    <ZPublisher.BeforeTraverse.MultiHook ...>
 
     Finally, restore the logger state:
 
