@@ -998,6 +998,9 @@ class WSGIResponse(HTTPBaseResponse):
             'and try the request again.</p>' % name)
         raise exc
 
+    def _unauthorized(self):
+        pass
+
     def unauthorized(self):
         message = 'You are not authorized to access this resource.'
         exc = Unauthorized(message)
@@ -1023,6 +1026,9 @@ class WSGIResponse(HTTPBaseResponse):
             t, v, tb = info
         else:
             t, v, tb = sys.exc_info()
+
+        if issubclass(t, Unauthorized):
+            self._unauthorized()
 
         reraise(t, v, tb)
 

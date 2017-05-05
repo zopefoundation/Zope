@@ -150,6 +150,15 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody('TESTING')
         self.assertRaises(NotImplementedError, lambda: str(response))
 
+    def test_exception_calls_unauthorized(self):
+        from zExceptions import Unauthorized
+        response = self._makeOne()
+        _unauthorized = DummyCallable()
+        response._unauthorized = _unauthorized
+        with self.assertRaises(Unauthorized):
+            response.exception(info=(Unauthorized, Unauthorized('fail'), None))
+        self.assertEqual(_unauthorized._called_with, ((), {}))
+
 
 class TestPublish(unittest.TestCase):
 
