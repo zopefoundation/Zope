@@ -13,6 +13,8 @@ Bugs Fixed
 
 - Restore a `_unauthorized` hook on the response object.
 
+- Restore `HTTPResponse.redirect` behaviour of not raising an exception.
+
 Features Added
 ++++++++++++++
 

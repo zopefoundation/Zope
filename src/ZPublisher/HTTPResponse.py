@@ -174,6 +174,15 @@ class HTTPBaseResponse(BaseResponse):
         self.stdout = stdout
         self.stderr = stderr
 
+    def redirect(self, location, status=302, lock=0):
+        """Cause a redirection without raising an error"""
+        if isinstance(location, HTTPRedirection):
+            status = location.getStatus()
+        location = str(location)
+        self.setStatus(status, lock=lock)
+        self.setHeader('Location', location)
+        return location
+
     def retry(self):
         """ Return a cloned response object to be used in a retry attempt.
         """
@@ -798,15 +807,6 @@ class HTTPResponse(HTTPBaseResponse):
                 m = m + '\nNo Authorization header found.'
         raise Unauthorized(m)
 
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection without raising an error"""
-        if isinstance(location, HTTPRedirection):
-            status = location.getStatus()
-        location = str(location)
-        self.setStatus(status, lock=lock)
-        self.setHeader('Location', location)
-        return location
-
     def _setBCIHeaders(self, t, tb):
         try:
             # Try to capture exception info for bci calls
@@ -1007,15 +1007,6 @@ class WSGIResponse(HTTPBaseResponse):
                 exc.detail = 'Username and password are not correct.'
             else:
                 exc.detail = 'No Authorization header found.'
-        raise exc
-
-    def redirect(self, location, status=302, lock=0):
-        """Cause a redirection."""
-        if isinstance(location, HTTPRedirection):
-            raise location
-
-        exc = Redirect(str(location))
-        exc.setStatus(status)
         raise exc
 
     def exception(self, fatal=0, info=None, abort=1):
