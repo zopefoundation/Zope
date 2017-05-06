@@ -21,7 +21,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import undo_changes
 from DateTime.DateTime import DateTime
 import transaction
-from zExceptions import Redirect
 
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
@@ -116,7 +115,8 @@ class UndoSupport(Tabs, Implicit):
             self._p_jar.db().undoMultiple(tids)
 
         if REQUEST is not None:
-            raise Redirect('%s/manage_UndoForm' % REQUEST['URL1'])
+            REQUEST.RESPONSE.redirect("%s/manage_UndoForm" % REQUEST['URL1'])
+
 
 InitializeClass(UndoSupport)
 

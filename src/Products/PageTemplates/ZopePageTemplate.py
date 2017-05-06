@@ -26,7 +26,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import aq_get
 from Acquisition import Explicit
-from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 
 from App.Common import package_home
@@ -428,9 +427,9 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
 
     if RESPONSE:
         if submit == " Add and Edit ":
-            raise Redirect(zpt.absolute_url() + '/pt_editForm')
+            RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
         else:
-            raise Redirect(self.absolute_url() + '/manage_main')
+            RESPONSE.redirect(self.absolute_url() + '/manage_main')
     else:
         return zpt
 

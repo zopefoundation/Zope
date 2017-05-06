@@ -26,7 +26,6 @@ from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
 from six.moves.urllib import parse
-from zExceptions import Redirect
 
 from App.special_dtml import DTMLFile
 
@@ -62,7 +61,8 @@ class Owned(BaseOwned):
 
         self.changeOwnership(security.getUser(), recursive)
 
-        raise Redirect(REQUEST['HTTP_REFERER'])
+        if RESPONSE is not None:
+            RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
     security.declareProtected(take_ownership, 'manage_changeOwnershipType')
     @requestmethod('POST')
@@ -86,6 +86,6 @@ class Owned(BaseOwned):
                 del self._owner
 
         if RESPONSE is not None:
-            raise Redirect(REQUEST['HTTP_REFERER'])
+            RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
 InitializeClass(Owned)

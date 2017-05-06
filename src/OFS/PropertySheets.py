@@ -61,7 +61,7 @@ class View(Tabs, Base):
     def manage_workspace(self, URL1, RESPONSE):
         '''Implement a "management" interface
         '''
-        raise Redirect(URL1 + '/manage')
+        RESPONSE.redirect(URL1 + '/manage')
 
     def tpURL(self):
         return self.getId()

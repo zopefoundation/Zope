@@ -27,7 +27,6 @@ from AccessControl.users import readUserAccessFile
 from AccessControl.users import reqattr
 from Acquisition import aq_base
 from zExceptions import BadRequest
-from zExceptions import Redirect
 
 from App.Management import Navigation
 from App.Management import Tabs
@@ -306,4 +305,4 @@ def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
         raise BadRequest('This object already contains a User Folder')
     self.__allow_groups__ = f
     if REQUEST is not None:
-        raise Redirect(self.absolute_url() + '/manage_main')
+        REQUEST.RESPONSE.redirect(self.absolute_url() + '/manage_main')
