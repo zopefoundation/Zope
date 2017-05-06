@@ -22,7 +22,6 @@ factory screen.
 import operator
 
 from zExceptions import BadRequest
-from zExceptions import Redirect
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
 from zope.component import getMultiAdapter
@@ -136,7 +135,8 @@ class Adding(BrowserView):
                              name=view_name) is not None:
             url = "%s/%s=%s" % (
                 absoluteURL(self, self.request), type_name, id)
-            raise Redirect(url)
+            self.request.response.redirect(url)
+            return
 
         if not self.contentName:
             self.contentName = id
@@ -147,7 +147,7 @@ class Adding(BrowserView):
         notify(ObjectCreatedEvent(content))
 
         self.add(content)
-        raise Redirect(self.nextURL())
+        self.request.response.redirect(self.nextURL())
 
     def nameAllowed(self):
         """Return whether names can be input by the user."""

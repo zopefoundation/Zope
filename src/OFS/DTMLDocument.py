@@ -18,7 +18,6 @@ from AccessControl.class_init import InitializeClass
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.permissions import change_dtml_documents
 from six.moves.urllib.parse import quote
-from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
@@ -164,5 +163,5 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
             u = REQUEST['URL1']
         if submit == " Add and Edit ":
             u = "%s/%s" % (u, quote(id))
-        raise Redirect(u + '/manage_main')
+        REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

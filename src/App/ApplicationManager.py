@@ -18,7 +18,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
 from six.moves.urllib import parse
-from zExceptions import Redirect
 
 from App.config import getConfiguration
 from App.Management import Tabs
@@ -180,6 +179,7 @@ class AltDatabaseManager(Traversable, UndoSupport):
         self._getDB().cacheMinimize()
 
         if REQUEST is not None:
-            raise Redirect(REQUEST['URL1'] + '/manage_main')
+            REQUEST.RESPONSE.redirect(REQUEST['URL1'] + '/manage_main')
+
 
 InitializeClass(AltDatabaseManager)

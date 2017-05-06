@@ -83,7 +83,7 @@ def manage_addFile(self, id, file='', title='', precondition='',
     notify(ObjectCreatedEvent(newFile))
 
     if REQUEST is not None:
-        raise Redirect(self.absolute_url() + '/manage_main')
+        REQUEST.RESPONSE.redirect(self.absolute_url() + '/manage_main')
 
 
 @implementer(IWriteLock,
@@ -699,7 +699,7 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
             url = self.DestinationURL()
         except Exception:
             url = REQUEST['URL1']
-        raise Redirect('%s/manage_main' % url)
+        REQUEST.RESPONSE.redirect('%s/manage_main' % url)
     return id
 
 
