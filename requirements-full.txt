@@ -15,7 +15,7 @@ Products.BTreeFolder2==3.0
 Products.MailHost==3.0
 Products.ZCTextIndex==4.0.1
 Products.ZCatalog==4.0a3
-Record==3.2
+Record==3.3
 RestrictedPython==4.0a1
 WSGIProxy2==0.4.3
 WebOb==1.7.2
@@ -59,7 +59,7 @@ zope.filerepresentation==4.1.0
 zope.formlib==4.3.0
 zope.globalrequest==1.3
 zope.i18n==4.1.0
-zope.i18nmessageid==4.0.3
+zope.i18nmessageid==4.1.0
 zope.interface==4.4.0
 zope.lifecycleevent==4.1.0
 zope.location==4.0.3

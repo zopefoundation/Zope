@@ -21,6 +21,8 @@ Features Added
 - Updated distributions:
 
     - Acquisition = 4.4.1
+    - Record = 3.3
+    - zope.i18nmessageid = 4.1.0
 
 Restructuring
 +++++++++++++
