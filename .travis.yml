@@ -10,7 +10,7 @@ notifications:
 
 install:
     - python bootstrap.py
-    - bin/buildout
+    - bin/buildout -n
 
 script:
     - bin/alltests
