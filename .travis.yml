@@ -10,7 +10,7 @@ notifications:
 
 install:
     - pip install zc.buildout==2.3.1
-    - bin/buildout
+    - buildout
 
 script:
     - bin/alltests
