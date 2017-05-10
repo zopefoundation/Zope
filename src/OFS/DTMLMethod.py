@@ -68,10 +68,10 @@ class DTMLMethod(RestrictedDTML,
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
 
-    __code__ = func_code = Code()
+    __code__ = Code()
     __code__.co_varnames = 'self', 'REQUEST', 'RESPONSE'
     __code__.co_argcount = 3
-    __defaults__ = func_defaults = None
+    __defaults__ = None
 
     manage_options = ((
         {'label': 'Edit', 'action': 'manage_main'},
