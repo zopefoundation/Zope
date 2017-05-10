@@ -48,10 +48,10 @@ class HTML(DocumentTemplate.HTML, Persistence.Persistent):
 class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     "Persistent HTML Document Templates read from files"
 
-    __code__ = func_code = Code()
+    __code__ = Code()
     __code__.co_varnames = 'trueself', 'self', 'REQUEST'
     __code__.co_argcount = 3
-    __defaults__ = func_defaults = None
+    __defaults__ = None
 
     _need__name__ = 1
     _v_last_read = 0
@@ -104,8 +104,8 @@ defaultBindings = {'name_context': 'context',
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
 
-    __code__ = func_code = None
-    __defaults__ = func_defaults = None
+    __code__ = None
+    __defaults__ = None
     _need__name__ = 1
 
     _Bindings_ns_class = TemplateDict
