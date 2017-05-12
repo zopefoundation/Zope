@@ -67,7 +67,7 @@ class TestRequestRange(unittest.TestCase):
             manage_addFolder(self.app, TESTFOLDER_NAME)
             folder = getattr(self.app, TESTFOLDER_NAME)
 
-            data = string.ascii_letters
+            data = string.ascii_letters.encode('ascii')
             manage_addFile(
                 folder, 'file', file=data, content_type='text/plain')
 
