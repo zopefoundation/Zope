@@ -77,6 +77,7 @@ class CopySupportTestBase(unittest.TestCase):
             # later and pretend we didn't touch the ZODB.
             transaction.commit()
         except Exception:
+            transaction.abort()
             self.connection.close()
             raise
         transaction.begin()
