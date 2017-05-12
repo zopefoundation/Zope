@@ -97,7 +97,7 @@ class TestTraverse(unittest.TestCase):
             )
 
             manage_addFile(folder1, 'file',
-                           file='', content_type='text/plain')
+                           file=b'', content_type='text/plain')
 
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
