@@ -22,12 +22,15 @@ def _read_file(filename):
     with open(os.path.join(HERE, filename)) as f:
         return f.read()
 
+
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
+__version__ = '4.0a5.dev0'
+
 setup(
     name='Zope2',
-    version='4.0a4.dev0',
+    version=__version__,
     url='https://zope.readthedocs.io/en/latest/',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',

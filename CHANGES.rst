@@ -5,11 +5,29 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
-4.0a4 (unreleased)
+4.0a5 (unreleased)
 ------------------
 
 Bugs Fixed
 ++++++++++
+
+
+Features Added
+++++++++++++++
+
+
+Restructuring
++++++++++++++
+
+
+
+4.0a4 (2017-05-12)
+------------------
+
+Bugs Fixed
+++++++++++
+
+- #116: Restore exception views for unauthorized.
 
 - Restore a `_unauthorized` hook on the response object.
 
@@ -20,12 +38,11 @@ Features Added
 
 - Updated distributions:
 
-    - Acquisition = 4.4.1
+    - AccessControl = 4.0a6
+    - Acquisition = 4.4.2
     - Record = 3.3
+    - zope.dottedname = 4.2.0
     - zope.i18nmessageid = 4.1.0
-
-Restructuring
-+++++++++++++
 
 
 4.0a3 (2017-05-03)

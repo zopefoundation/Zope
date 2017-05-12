@@ -448,7 +448,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '401 Unauthorized')
-        self.assertFalse(b'Exception View' in body)
+        self.assertTrue(b'Exception View: Unauthorized' in body)
 
     def testCustomExceptionViewForbidden(self):
         from zExceptions import Forbidden

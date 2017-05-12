@@ -33,8 +33,8 @@ class Script(SimpleItem, BindingsUI):
     security = ClassSecurityInfo()
 
     index_html = None
-    __code__ = func_code = None
-    __defaults__ = func_defaults = ()
+    __code__ = None
+    __defaults__ = ()
 
     _Bindings_ns_class = TemplateDict
     from .Signature import _setFuncSignature
