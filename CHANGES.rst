@@ -23,6 +23,7 @@ Features Added
     - AccessControl = 4.0a6
     - Acquisition = 4.4.2
     - Record = 3.3
+    - zope.dottedname = 4.2.0
     - zope.i18nmessageid = 4.1.0
 
 Restructuring
