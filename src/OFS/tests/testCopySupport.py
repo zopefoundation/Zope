@@ -70,7 +70,7 @@ class CopySupportTestBase(unittest.TestCase):
             folder1 = getattr(self.app, 'folder1')
 
             manage_addFile(
-                folder1, 'file', file='', content_type='text/plain')
+                folder1, 'file', file=b'', content_type='text/plain')
 
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
@@ -152,7 +152,7 @@ class TestCopySupport(CopySupportTestBase):
     def testCopyNewObject(self):
         self.assertFalse('newfile' in self.folder1.objectIds())
         manage_addFile(self.folder1, 'newfile',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(ids=('newfile',))
         self.folder2.manage_pasteObjects(cookie)
         self.assertTrue('newfile' in self.folder1.objectIds())
@@ -171,7 +171,7 @@ class TestCopySupport(CopySupportTestBase):
         self.assertTrue('file' in self.folder1.objectIds())
         self.assertFalse('file' in self.folder2.objectIds())
         manage_addFile(self.folder2, 'file',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(ids=('file',))
         result = self.folder2.manage_pasteObjects(cookie)
         self.assertTrue('file' in self.folder1.objectIds())
@@ -209,7 +209,7 @@ class TestCopySupport(CopySupportTestBase):
 
     def testPasteSpecialName(self):
         manage_addFile(self.folder1, 'copy_of_',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(ids=('copy_of_',))
         result = self.folder1.manage_pasteObjects(cookie)
         self.assertEqual(self.folder1.objectIds(),
@@ -220,10 +220,10 @@ class TestCopySupport(CopySupportTestBase):
         self.assertTrue('file' in self.folder1.objectIds())
         self.assertFalse('file1' in self.folder1.objectIds())
         manage_addFile(self.folder1, 'file1',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file2' in self.folder1.objectIds())
         manage_addFile(self.folder1, 'file2',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file' in self.folder2.objectIds())
         self.assertFalse('file1' in self.folder2.objectIds())
         self.assertFalse('file2' in self.folder2.objectIds())
@@ -246,19 +246,19 @@ class TestCopySupport(CopySupportTestBase):
         self.assertTrue('file' in self.folder1.objectIds())
         self.assertFalse('file1' in self.folder1.objectIds())
         manage_addFile(self.folder1, 'file1',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file2' in self.folder1.objectIds())
         manage_addFile(self.folder1, 'file2',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file' in self.folder2.objectIds())
         manage_addFile(self.folder2, 'file',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file1' in self.folder2.objectIds())
         manage_addFile(self.folder2, 'file1',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         self.assertFalse('file2' in self.folder2.objectIds())
         manage_addFile(self.folder2, 'file2',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(
             ids=('file', 'file1', 'file2',))
         result = self.folder2.manage_pasteObjects(cookie)
@@ -417,9 +417,9 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         folder1, folder2 = self._initFolders()
         manage_addFile(folder1, 'private',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         manage_addFile(folder1, 'public',
-                       file='', content_type='text/plain')
+                       file=b'', content_type='text/plain')
         folder1.private.manage_permission(view, roles=(), acquire=0)
         folder2.manage_permission(add_folders, roles=('Anonymous',), acquire=1)
 
