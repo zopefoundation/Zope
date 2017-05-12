@@ -2,14 +2,17 @@ language: python
 sudo: false
 dist: trusty
 python:
-    - "2.7"
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
 install:
     - pip install -U setuptools==`grep setuptools versions.cfg | awk '{print $3}'`
     - pip install zc.buildout
     - buildout bootstrap
-    - buildout
+    - buildout tox:env=travis install test alltests
 script:
-    - bin/alltests -v
+    - bin/test-travis -v
 notifications:
     email: false
 cache:

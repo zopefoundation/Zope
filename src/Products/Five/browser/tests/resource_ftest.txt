@@ -26,57 +26,57 @@ Set up the test fixtures:
 Image resource
 ~~~~~~~~~~~~~~
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++pattern.png HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
 
 Image resources can't be traversed further:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++pattern.png/more HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 404 Not Found
   ...
 
 File resource
 ~~~~~~~~~~~~~
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++style.css HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
 
 File resources can't be traversed further:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++style.css/more HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 404 Not Found
   ...
 
 Template resource
 ~~~~~~~~~~~~~~~~~
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++cockatiel.html HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
 
 Template resources can't be traversed further:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++cockatiel.html/more HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 404 Not Found
   ...
 
@@ -92,10 +92,10 @@ Page templates aren't guaranteed to render, so exclude them from the test:
   ...     response = self.publish(base_url % r, basic='manager:r00t')
   ...     self.assertEquals(200, response.getStatus())
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.htm HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <html>
@@ -110,19 +110,19 @@ Page templates aren't guaranteed to render, so exclude them from the test:
 
 We also can traverse into sub-directories:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.txt HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   This is a resource in a subdirectory of a normal resource to test traversal.
   <BLANKLINE>
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/resource.html HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <html>
@@ -135,10 +135,10 @@ We also can traverse into sub-directories:
   </html>
   <BLANKLINE>
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/++resource++fivetest_resources/resource_subdir/not-existant HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... ''')
+  ... '''))
   HTTP/1.1 404 Not Found
   ...
 

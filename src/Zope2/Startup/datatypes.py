@@ -15,11 +15,11 @@
 
 import io
 import os
-from UserDict import UserDict
 import traceback
 
-from ZODB.config import ZODBDatabase
+from six.moves import UserDict
 
+from ZODB.config import ZODBDatabase
 from zope.deferredimport import deprecated
 
 # BBB Zope 5.0

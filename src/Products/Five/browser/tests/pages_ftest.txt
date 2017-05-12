@@ -26,23 +26,23 @@ still published through ZPublisher.
 We see that even though the callables have no docstring, they are
 published nevertheless:
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/testoid/nodoc-function HTTP/1.1
-  ... """)
+  ... """))
   HTTP/1.1 200 OK
   ...
   No docstring
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/testoid/nodoc-method HTTP/1.1
-  ... """)
+  ... """))
   HTTP/1.1 200 OK
   ...
   No docstring
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/testoid/nodoc-object HTTP/1.1
-  ... """)
+  ... """))
   HTTP/1.1 200 OK
   ...
   No docstring
@@ -137,18 +137,18 @@ Zope 2 always wants objects in the traversal graph to have a __name__.
 That is also true for views, e.g. a view constructed from a simple
 class bearing only a __call__ method:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/callview.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   I was __call__()'ed
 
 or a __call__ object that's callable, such as a ViewPageTemplateFile:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/testoid/calltemplate.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <p>The falcon has taken flight</p>

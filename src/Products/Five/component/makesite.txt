@@ -80,7 +80,7 @@ Browse to our local view and check that it works:
 
     >>> browser.handleErrors = False
     >>> browser.open('http://localhost/folder/testview.html')
-    >>> print browser.contents
+    >>> print(browser.contents)
     Hello World!
 
 Unmaking a site

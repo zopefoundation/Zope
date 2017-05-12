@@ -16,43 +16,43 @@ import sys
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
 from cgi import escape
-
-if sys.version_info >= (3, ):
-    unicode = str
+import six
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
 
 
 def field2string(v):
+    """Converts value to native strings (so always to `str` no matter which
+    python version you are on)"""
     if hasattr(v, 'read'):
         return v.read()
-    elif isinstance(v, unicode):
+    elif six.PY2 and isinstance(v, six.text_type):
         return v.encode(default_encoding)
     else:
         return str(v)
 
 
-def field2text(v, nl=re.compile('\r\n|\n\r').search):
-    v = field2string(v)
-    mo = nl(v)
-    if mo is None:
-        return v
-    l = mo.start(0)
-    r = []
-    s = 0
-    while l >= s:
-        r.append(v[s:l])
-        s = l + 2
-        mo = nl(v, s)
-        if mo is None:
-            l = -1
+def field2text(value, nl=re.compile('\r\n|\n\r').search):
+    value = field2string(value)
+    match_object = nl(value)
+    if match_object is None:
+        return value
+    length = match_object.start(0)
+    result = []
+    start = 0
+    while length >= start:
+        result.append(value[start:length])
+        start = length + 2
+        match_object = nl(value, start)
+        if match_object is None:
+            length = -1
         else:
-            l = mo.start(0)
+            length = match_object.start(0)
 
-    r.append(v[s:])
+    result.append(value[start:])
 
-    return '\n'.join(r)
+    return '\n'.join(result)
 
 
 def field2required(v):
@@ -204,7 +204,7 @@ type_converters = {
     'float': field2float,
     'int': field2int,
     'long': field2long,
-    'string': field2string,
+    'string': field2string, # to native str
     'date': field2date,
     'date_international': field2date_international,
     'required': field2required,

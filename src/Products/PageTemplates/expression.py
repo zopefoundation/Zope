@@ -1,15 +1,16 @@
-from ast import NodeTransformer, parse
-from types import ClassType
+from ast import NodeTransformer
+from ast import parse
+from six import class_types
 
 from OFS.interfaces import ITraversable
-from zExceptions import NotFound, Unauthorized
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from RestrictedPython.RestrictionMutator import RestrictionMutator
 from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython import MutatingWalker
+from RestrictedPython import RestrictingNodeTransformer
 
 from Products.PageTemplates.Expressions import render
 
@@ -101,7 +102,7 @@ class TrustedBoboAwareZopeTraverse(BoboAwareZopeTraverse):
             return base
 
         if (getattr(base, '__call__', _marker) is not _marker or
-                isinstance(base, ClassType)):
+                isinstance(base, class_types)):
             return base()
 
         return base
@@ -147,8 +148,8 @@ class RestrictionTransform(NodeTransformer):
 
 
 class UntrustedPythonExpr(expressions.PythonExpr):
-    rm = RestrictionMutator()
-    rt = RestrictionTransform()
+    restricted_python_transformer = RestrictingNodeTransformer()
+    page_templates_expression_transformer = RestrictionTransform()
 
     # Make copy of parent expression builtins
     builtins = expressions.PythonExpr.builtins.copy()
@@ -169,9 +170,11 @@ class UntrustedPythonExpr(expressions.PythonExpr):
     def parse(self, string):
         encoded = string.encode('utf-8')
         node = parse(encoded, mode='eval')
-        MutatingWalker.walk(node, self.rm)
 
-        # Run restricted python transform
-        self.rt.visit(node)
+        # Run Node Transformation from RestrictedPython:
+        self.restricted_python_transformer.visit(node)
+
+        # Run PageTemplate.expression RestrictedPython Transform:
+        self.page_templates_expression_transformer.visit(node)
 
         return node

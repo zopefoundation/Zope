@@ -79,9 +79,9 @@ uses the name to look up the provider at run time.
 
 Finally we publish the view:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/content_obj/main.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <html>
@@ -99,9 +99,9 @@ Finally we publish the view:
 Failure to lookup a Content Provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/content_obj/error.html HTTP/1.1
-  ... ''', handle_errors=False)
+  ... ''', handle_errors=False))
   Traceback (most recent call last):
     ...
   ContentProviderLookupError: ...mypage.UnknownName...
@@ -133,9 +133,9 @@ Now the message box can receive its text from the TAL environment:
 
 Now we should get two message boxes with different text:
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/content_obj/namespace.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <html>
@@ -173,9 +173,9 @@ information is used:
   ...     BetterDynamicMessageBox, provides=interfaces.IContentProvider,
   ...     name='mypage.MessageBox')
 
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/content_obj/namespace2.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   <html>
@@ -218,9 +218,9 @@ Now we test a provider using a PageTemplateFile to render itself:
   ...     my_property = 'A string for you'
 
   >>> zope.component.provideAdapter(TemplateProvider, name='mypage.TemplateProvider', provides=interfaces.IContentProvider)
-  >>> print http(r'''
+  >>> print(http(r'''
   ... GET /test_folder_1_/content_obj/template_based.html HTTP/1.1
-  ... ''')
+  ... '''))
   HTTP/1.1 200 OK
   ...
   A simple template: A string for you

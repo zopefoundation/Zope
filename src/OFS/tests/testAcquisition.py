@@ -21,8 +21,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.Permissions import view_management_screens
-from AccessControl.ImplPython import guarded_getattr as guarded_getattr_py
-from AccessControl.ImplC import guarded_getattr as guarded_getattr_c
+from AccessControl.ZopeGuards import guarded_getattr
 
 import Zope2
 Zope2.startup_wsgi()
@@ -56,7 +55,7 @@ class TestGetAttr(unittest.TestCase):
 
     def setUp(self):
         import transaction
-        self.guarded_getattr = guarded_getattr_py
+        self.guarded_getattr = guarded_getattr
         transaction.manager.begin()
         self.app = makerequest(Zope2.app())
         try:
@@ -145,17 +144,3 @@ class TestGetAttrAnonymous(TestGetAttr):
         TestGetAttr.setUp(self)
         # Log out
         noSecurityManager()
-
-
-class TestGetAttrC(TestGetAttr):
-
-    def setUp(self):
-        TestGetAttr.setUp(self)
-        self.guarded_getattr = guarded_getattr_c
-
-
-class TestGetAttrAnonymousC(TestGetAttrAnonymous):
-
-    def setUp(self):
-        TestGetAttrAnonymous.setUp(self)
-        self.guarded_getattr = guarded_getattr_c

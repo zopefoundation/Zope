@@ -17,6 +17,7 @@ import io
 import tempfile
 import unittest
 
+import six
 import ZConfig
 
 from Zope2.Startup.options import ZopeWSGIOptions
@@ -41,8 +42,12 @@ class WSGIStartupTestCase(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        sio = io.BytesIO(
-            text.replace("<<INSTANCE_HOME>>", TEMPNAME))
+        text = text.replace("<<INSTANCE_HOME>>", TEMPNAME)
+        if six.PY2:
+            sio = io.BytesIO(text)
+        else:
+            sio = io.StringIO(text)
+
         os.mkdir(TEMPNAME)
         os.mkdir(TEMPVAR)
         try:

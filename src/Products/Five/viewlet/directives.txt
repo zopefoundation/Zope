@@ -130,7 +130,7 @@ Next let's see what happens, if we specify a template for the viewlet manager:
   >>> ILeftColumn.providedBy(manager)
   True
   >>> manager.update()
-  >>> print manager.render().strip()
+  >>> print(manager.render().strip())
   <div class="column">
   </div>
 
@@ -162,7 +162,7 @@ weight attribute in the viewlet:
   >>> ILeftColumn.providedBy(manager)
   True
   >>> manager.update()
-  >>> print manager.render().strip()
+  >>> print(manager.render().strip())
   <div class="column">
   </div>
 
@@ -222,7 +222,7 @@ If we look into the adapter registry, we will find the viewlet:
 The manager now also gives us the output of the one and only viewlet:
 
   >>> manager.update()
-  >>> print manager.render().strip()
+  >>> print(manager.render().strip())
   <div class="column">
     <div class="entry">
       <div>sunny</div>
@@ -455,10 +455,10 @@ We now register some viewlets with different permissions:
 
 If we make the request as a manager, we should see both viewlets:
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/ftf/@@securitytest_view HTTP/1.1
   ... Authorization: Basic manager:r00t
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.1 200 OK
   ...
        <h1>Weather</h1>
@@ -470,9 +470,9 @@ If we make the request as a manager, we should see both viewlets:
 
 But when we make an anonymous request, we will only see the public viewlet:
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/ftf/@@securitytest_view HTTP/1.1
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.1 200 OK
   ...
        <h1>Weather</h1>
@@ -508,9 +508,9 @@ that works:
 Now we request the view to ensure that we can see the dynamic template
 rendered as expected:
 
-  >>> print http(r"""
+  >>> print(http(r"""
   ... GET /test_folder_1_/ftf/@@securitytest_view HTTP/1.1
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.1 200 OK
   ...
        <h1>Weather</h1>

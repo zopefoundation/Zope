@@ -39,7 +39,14 @@ Steps for creating a new Zope release
 
 - Run all tests::
 
-   bin/alltests
+   bin/tox
+
+- Run all tests for all dependencies::
+
+   bin/alltests-py27
+   bin/alltests-py34
+   ...
+   bin/alltests-pypy3
 
 - Tag the release.
 

@@ -2,11 +2,9 @@
 
 import sys
 import unittest
+from six import text_type, binary_type
 
 from zope.component.testing import PlacelessSetup
-
-if sys.version_info >= (3, ):
-    unicode = str
 
 
 class EngineTestsBase(PlacelessSetup):
@@ -52,7 +50,7 @@ class EngineTestsBase(PlacelessSetup):
             blank='',
             dummy=Dummy(),
             dummy2=DummyDocumentTemplate(),
-            eightbit='äüö',
+            eightbit=b'\xe4\xfc\xf6',
             # ZopeContext needs 'context' and 'template' keys for unicode
             # conflict resolution, and 'context' needs a
             # 'management_page_charset'
@@ -174,7 +172,7 @@ class EngineTestsBase(PlacelessSetup):
         # only bothers compiling true strings, not unicode strings
         result = ec.evaluate(eng.compile(u'string:x'))
         self.assertEqual(result, u'x')
-        self.assertTrue(isinstance(result, unicode))
+        self.assertTrue(isinstance(result, text_type))
 
     def test_mixed(self):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors
@@ -226,7 +224,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertRaises(UnicodeDecodeError,
-                          resolver.resolve, None, 'äüö', None)
+                          resolver.resolve, None, b'\xe4\xfc\xf6', None)
 
     def testStrictResolver(self):
         from zope.component import getUtility
@@ -251,7 +249,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         provideUtility(IgnoringUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
-        self.assertEqual(resolver.resolve(None, 'äüö', None), '')
+        self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None), '')
 
     def testReplacingResolver(self):
         from zope.component import getUtility
@@ -263,7 +261,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         provideUtility(ReplacingUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
-        self.assertEqual(resolver.resolve(None, 'äüö', None),
+        self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None),
                          u'\ufffd\ufffd\ufffd')
 
 

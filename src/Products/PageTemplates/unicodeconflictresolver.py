@@ -20,8 +20,7 @@ from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
 
-if sys.version_info >= (3, ):
-    unicode = str
+from six import text_type, binary_type
 
 default_encoding = sys.getdefaultencoding()
 
@@ -34,7 +33,9 @@ class DefaultUnicodeEncodingConflictResolver(object):
     """
 
     def resolve(self, context, text, expression):
-        return unicode(text)
+        if isinstance(text, text_type):
+            return text
+        return text.decode('ascii')
 
 DefaultUnicodeEncodingConflictResolver = \
     DefaultUnicodeEncodingConflictResolver()
@@ -51,17 +52,19 @@ class Z2UnicodeEncodingConflictResolver(object):
         self.mode = mode
 
     def resolve(self, context, text, expression):
+        if isinstance(text, text_type):
+            return text
 
         try:
-            return unicode(text)
+            return text.decode('ascii')
         except UnicodeDecodeError:
             encoding = getattr(
                 context, 'management_page_charset', default_encoding)
             try:
-                return unicode(text, encoding, self.mode)
+                return text.decode(encoding, errors=self.mode)
             except UnicodeDecodeError:
                 # finally try the old management_page_charset default
-                return unicode(text, 'iso-8859-15', self.mode)
+                return text.decode('iso-8859-15', errors=self.mode)
 
 
 @implementer(IUnicodeEncodingConflictResolver)
@@ -71,6 +74,8 @@ class PreferredCharsetResolver(object):
     """
 
     def resolve(self, context, text, expression):
+        if isinstance(text, text_type):
+            return text
 
         request = aq_get(context, 'REQUEST', None)
 
@@ -112,10 +117,11 @@ class PreferredCharsetResolver(object):
                 continue
 
             try:
-                return unicode(text, enc)
+                return text.decode(enc)
             except (LookupError, UnicodeDecodeError):
                 pass
 
+        # FIXME: Shouldn't this raise an Exception or signal an error somehow?
         return text
 
 

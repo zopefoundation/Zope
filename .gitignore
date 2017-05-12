@@ -1,6 +1,6 @@
 *.egg-info
 *.py?
-.installed.cfg
+.installed*.cfg
 .mr.developer.cfg
 .tox
 /bin/

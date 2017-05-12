@@ -22,6 +22,7 @@ import warnings
 from zlib import compress
 from zlib import decompressobj
 import transaction
+import six
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
@@ -181,8 +182,8 @@ class CopyContainer(Base):
 
         try:
             op, mdatas = _cb_decode(cp)
-        except Exception:
-            raise CopyError('Clipboard Error')
+        except Exception as e:
+            six.raise_from(CopyError('Clipboard Error'), e)
 
         oblist = []
         app = self.getPhysicalRoot()
@@ -630,15 +631,33 @@ def absattr(attr):
 
 
 def _cb_encode(d):
-    return quote(compress(dumps(d), 2))
+    """Encode a list of IDs for storage in a cookie.
+
+    ``d`` must be a list or tuple of text IDs.
+
+    Return text.
+    """
+    json_bytes = dumps(d).encode('utf-8')
+    squashed_bytes = compress(json_bytes, 2)    # -> bytes w/ useful encoding
+    squashed = squashed_bytes.decode('latin1')  # tunnel those bytes to text
+    return quote(squashed)                      # quote for embeding in cookie
 
 
 def _cb_decode(s, maxsize=8192):
+    """Decode a list of IDs from storage in a cookie.
+
+    ``s`` is text as encoded by ``_cb_encode``.
+
+    Return a list of text IDs.
+    """
     dec = decompressobj()
-    data = dec.decompress(unquote(s), maxsize)
+    squashed = unquote(s)
+    squashed_bytes = squashed.encode('latin1')
+    data = dec.decompress(squashed_bytes, maxsize)
     if dec.unconsumed_tail:
         raise ValueError
-    return loads(data)
+    json_bytes = data.decode('utf-8')
+    return loads(json_bytes)
 
 
 def cookie_path(request):

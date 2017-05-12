@@ -16,65 +16,64 @@
 import re
 import sys
 
-if sys.version_info >= (3, ):
-    unicode = str
-
 xml_preamble_reg = re.compile(
-    r'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
+    br'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
 http_equiv_reg = re.compile(
-    r'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I | re.M | re.S)
+    br'(<meta\s+[^>]*?http\-equiv[^>]*?content-type.*?>)', re.I | re.M | re.S)
 http_equiv_reg2 = re.compile(
-    r'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
+    br'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
 
 
 def encodingFromXMLPreamble(xml):
     """ Extract the encoding from a xml preamble.
+        Expects XML content is binary (encoded), otherwise a previous
+        transport encoding is meaningless.
         Return 'utf-8' if not available
     """
 
-    mo = xml_preamble_reg.match(xml)
+    match = xml_preamble_reg.match(xml)
 
-    if not mo:
+    if not match:
         return 'utf-8'
-    else:
-        return mo.group(1).lower()
+    encoding = match.group(1).lower()
+    return encoding.decode('ascii')
 
 
 def charsetFromMetaEquiv(html):
-    """
-    Return the value of the 'charset' from a html document containing
-    <meta http-equiv="content-type" content="text/html; charset=utf8>.
-    Returns None, if not available.
+    """ Return the value of the 'charset' from a html document containing
+        <meta http-equiv="content-type" content="text/html; charset=utf8>.
+        Expects HTML content is binary (encoded), otherwise a previous
+        transport encoding is meaningless.
+        Returns None, if not available.
     """
 
-    # first check for the <meta...> tag
-    mo = http_equiv_reg.search(html)
-    if mo:
-        # extract the meta tag
-        meta = mo.group(1)
+    meta_tag_match = http_equiv_reg.search(html)
+    if meta_tag_match:
+        meta_tag = meta_tag_match.group(1)
 
-        # search for the charset value
-        mo = http_equiv_reg2.search(meta)
-        if mo:
-            # return charset
-            return mo.group(1).lower()
+        charset_match = http_equiv_reg2.search(meta_tag)
+        if charset_match:
+            charset = charset_match.group(1).lower()
+            return charset.decode('ascii')
 
     return None
 
 
 def convertToUnicode(source, content_type, preferred_encodings):
-    """ Convert 'source' to unicode.
+    """ Convert a binary 'source' to the unicode (text) type.
+        Attempts to detect transport encoding from XML and html
+        documents, falling back to preferred_encodings.
         Returns (unicode_str, source_encoding).
     """
 
     if content_type.startswith('text/xml'):
         encoding = encodingFromXMLPreamble(source)
-        return unicode(source, encoding), encoding
+        return source.decode(encoding), encoding
 
     elif content_type.startswith('text/html'):
         encoding = charsetFromMetaEquiv(source)
         if encoding:
-            return unicode(source, encoding), encoding
+            return source.decode(encoding), encoding
 
     # Try to detect the encoding by converting it unicode without raising
     # exceptions. There are some smarter Python-based sniffer methods
@@ -83,8 +82,9 @@ def convertToUnicode(source, content_type, preferred_encodings):
 
     for enc in preferred_encodings:
         try:
-            return unicode(source, enc), enc
+            return source.decode(enc), enc
         except UnicodeDecodeError:
-                continue
-
-    return unicode(source), None
+            continue
+    
+    # trigger a UnicodeDecodeError so we fail loudly
+    return source.decode('utf-8'), 'utf-8'
