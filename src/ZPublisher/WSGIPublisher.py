@@ -178,12 +178,12 @@ def _publish_response(request, response, module_info, _publish=publish):
             exc = t(str(exc))
 
         if isinstance(exc, Unauthorized):
-            # _unauthorized modifies the response in-place in unknown
-            # ways, so we have to trust and return it, and ignore
-            # the exception instance.
+            # _unauthorized modifies the response in-place. If this hook
+            # is used, an exception view for Unauthorized has to merge
+            # the state of the response and the exception instance.
+            exc.setRealm(response.realm)
             response._unauthorized()
             response.setStatus(exc.getStatus())
-            return response
 
         view = queryMultiAdapter((exc, request), name=u'index.html')
         if view is not None:
@@ -202,6 +202,9 @@ def _publish_response(request, response, module_info, _publish=publish):
 
             # Set the response body to the result of calling the view.
             response.setBody(view())
+            return response
+
+        if isinstance(exc, Unauthorized):
             return response
 
         # Reraise the exception, preserving the original traceback
