@@ -53,7 +53,7 @@ manage_addFileForm = DTMLFile(
     'dtml/imageAdd', globals(), Kind='File', kind='file')
 
 
-def manage_addFile(self, id, file='', title='', precondition='',
+def manage_addFile(self, id, file=b'', title='', precondition='',
                    content_type='', REQUEST=None):
     """Add a new File object.
 
@@ -69,7 +69,7 @@ def manage_addFile(self, id, file='', title='', precondition='',
     self = self.this()
 
     # First, we create the file without data:
-    self._setObject(id, File(id, title, '', content_type, precondition))
+    self._setObject(id, File(id, title, b'', content_type, precondition))
 
     newFile = self._getOb(id)
 
@@ -508,7 +508,7 @@ class File(Persistent, Implicit, PropertyManager,
         if headers and 'content-type' in headers:
             content_type = headers['content-type']
         else:
-            if not isinstance(body, str):
+            if not isinstance(body, bytes):
                 body = body.data
             content_type, enc = guess_content_type(
                 getattr(file, 'filename', id), body, content_type)
@@ -520,6 +520,9 @@ class File(Persistent, Implicit, PropertyManager,
         n = 1 << 16
 
         if isinstance(file, str):
+            raise ValueError("Must be bytes")
+
+        if isinstance(file, bytes):
             size = len(file)
             if size < n:
                 return (file, size)
