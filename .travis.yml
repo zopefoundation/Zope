@@ -10,7 +10,7 @@ install:
     - pip install -U setuptools==`grep setuptools versions.cfg | awk '{print $3}'`
     - pip install zc.buildout
     - buildout bootstrap
-    - buildout tox:env=travis install alltests
+    - buildout tox:env=travis install test alltests
 script:
     - bin/test-travis -v
 notifications:
