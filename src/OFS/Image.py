@@ -17,7 +17,6 @@ from cgi import escape
 from email.generator import _make_boundary
 from io import BytesIO
 import struct
-import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files
@@ -28,6 +27,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
+from six import text_type
 from zExceptions import Redirect, ResourceLockedError
 from zope.contenttype import guess_content_type
 from zope.event import notify
@@ -46,8 +46,6 @@ from OFS.SimpleItem import Item_w__name__
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 
-if sys.version_info >= (3, ):
-    unicode = str
 
 manage_addFileForm = DTMLFile(
     'dtml/imageAdd', globals(), Kind='File', kind='file')
@@ -440,8 +438,8 @@ class File(Persistent, Implicit, PropertyManager,
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, unicode):
-            raise TypeError('Data can only be str or file-like.  '
+        if isinstance(data, text_type):
+            raise TypeError('Data can only be bytes or file-like.  '
                             'Unicode objects are expressly forbidden.')
 
         if content_type is not None:
@@ -519,7 +517,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         n = 1 << 16
 
-        if isinstance(file, str):
+        if isinstance(file, text_type):
             raise ValueError("Must be bytes")
 
         if isinstance(file, bytes):
@@ -822,8 +820,8 @@ class Image(File):
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, unicode):
-            raise TypeError('Data can only be str or file-like.  '
+        if isinstance(data, text_type):
+            raise TypeError('Data can only be bytes or file-like.  '
                             'Unicode objects are expressly forbidden.')
 
         if size is None:
