@@ -40,14 +40,14 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.status, 200)
         self.assertEqual(response.errmsg, 'OK')
         self.assertEqual(response.base, '')
-        self.assertEqual(response.body, '')
+        self.assertEqual(response.body, b'')
         self.assertEqual(response.cookies, {})
         self.assertTrue(response.stdout is sys.stdout)
         self.assertTrue(response.stderr is sys.stderr)
 
     def test_ctor_w_body(self):
-        response = self._makeOne(body='ABC')
-        self.assertEqual(response.body, 'ABC')
+        response = self._makeOne(body=b'ABC')
+        self.assertEqual(response.body, b'ABC')
 
     def test_ctor_w_headers(self):
         response = self._makeOne(headers={'foo': 'bar'})
@@ -72,25 +72,25 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.headers, {})
 
     def test_ctor_charset_no_content_type_header(self):
-        response = self._makeOne(body='foo')
+        response = self._makeOne(body=b'foo')
         self.assertEqual(response.headers.get('content-type'),
                          'text/plain; charset=utf-8')
 
     def test_ctor_charset_text_header_no_charset_defaults_latin1(self):
-        response = self._makeOne(body='foo',
+        response = self._makeOne(body=b'foo',
                                  headers={'content-type': 'text/plain'})
         self.assertEqual(response.headers.get('content-type'),
                          'text/plain; charset=utf-8')
 
     def test_ctor_charset_application_header_no_header(self):
-        response = self._makeOne(body='foo',
+        response = self._makeOne(body=b'foo',
                                  headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
                          'application/foo')
 
     def test_ctor_charset_application_header_with_header(self):
         response = self._makeOne(
-            body='foo',
+            body=b'foo',
             headers={'content-type': 'application/foo; charset: something'})
         self.assertEqual(response.headers.get('content-type'),
                          'application/foo; charset: something')
@@ -497,13 +497,13 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('Content-Type', 'application/pdf')
         response.setHeader('Content-Length', 8)
-        response.body = 'BLAHBLAH'
+        response.body = b'BLAHBLAH'
         response.insertBase()
-        self.assertEqual(response.body, 'BLAHBLAH')
+        self.assertEqual(response.body, b'BLAHBLAH')
         self.assertEqual(response.getHeader('Content-Length'), '8')
 
     def test_insertBase_HTML_no_base_w_head_not_munged(self):
-        HTML = '<html><head></head><body></body></html>'
+        HTML = b'<html><head></head><body></body></html>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
         response.setHeader('Content-Length', len(HTML))
@@ -513,7 +513,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_insertBase_HTML_w_base_no_head_not_munged(self):
-        HTML = '<html><body></body></html>'
+        HTML = b'<html><body></body></html>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
         response.setHeader('Content-Length', len(HTML))
@@ -523,10 +523,10 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_insertBase_HTML_w_base_w_head_munged(self):
-        HTML = '<html><head></head><body></body></html>'
-        MUNGED = ('<html><head>\n'
-                  '<base href="http://example.com/base/" />\n'
-                  '</head><body></body></html>')
+        HTML = b'<html><head></head><body></body></html>'
+        MUNGED = (b'<html><head>\n'
+                  b'<base href="http://example.com/base/" />\n'
+                  b'</head><body></body></html>')
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
         response.setHeader('Content-Length', 8)
@@ -539,28 +539,28 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setBody_w_locking(self):
         response = self._makeOne()
-        response.setBody('BEFORE', lock=True)
-        result = response.setBody('AFTER')
+        response.setBody(b'BEFORE', lock=True)
+        result = response.setBody(b'AFTER')
         self.assertFalse(result)
-        self.assertEqual(response.body, 'BEFORE')
+        self.assertEqual(response.body, b'BEFORE')
 
     def test_setBody_empty_unchanged(self):
         response = self._makeOne()
-        response.body = 'BEFORE'
-        result = response.setBody('')
+        response.body = b'BEFORE'
+        result = response.setBody(b'')
         self.assertTrue(result)
-        self.assertEqual(response.body, 'BEFORE')
+        self.assertEqual(response.body, b'BEFORE')
         self.assertEqual(response.getHeader('Content-Type'), None)
         self.assertEqual(response.getHeader('Content-Length'), None)
 
     def test_setBody_2_tuple_wo_is_error_converted_to_HTML(self):
-        EXPECTED = ("<html>\n"
-                    "<head>\n<title>TITLE</title>\n</head>\n"
-                    "<body>\nBODY\n</body>\n"
-                    "</html>\n")
+        EXPECTED = (b"<html>\n"
+                    b"<head>\n<title>TITLE</title>\n</head>\n"
+                    b"<body>\nBODY\n</body>\n"
+                    b"</html>\n")
         response = self._makeOne()
         response.body = 'BEFORE'
-        result = response.setBody(('TITLE', 'BODY'))
+        result = response.setBody(('TITLE', b'BODY'))
         self.assertTrue(result)
         self.assertEqual(response.body, EXPECTED)
         self.assertEqual(response.getHeader('Content-Type'),
@@ -570,27 +570,27 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setBody_2_tuple_w_is_error_converted_to_Site_Error(self):
         response = self._makeOne()
-        response.body = 'BEFORE'
-        result = response.setBody(('TITLE', 'BODY'), is_error=True)
+        response.body = b'BEFORE'
+        result = response.setBody(('TITLE', b'BODY'), is_error=True)
         self.assertTrue(result)
-        self.assertFalse('BEFORE' in response.body)
-        self.assertTrue('<h2>Site Error</h2>' in response.body)
-        self.assertTrue('TITLE' in response.body)
-        self.assertTrue('BODY' in response.body)
+        self.assertFalse(b'BEFORE' in response.body)
+        self.assertTrue(b'<h2>Site Error</h2>' in response.body)
+        self.assertTrue(b'TITLE' in response.body)
+        self.assertTrue(b'BODY' in response.body)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=utf-8')
 
     def test_setBody_string_not_HTML(self):
         response = self._makeOne()
-        result = response.setBody('BODY')
+        result = response.setBody(b'BODY')
         self.assertTrue(result)
-        self.assertEqual(response.body, 'BODY')
+        self.assertEqual(response.body, b'BODY')
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/plain; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), '4')
 
     def test_setBody_string_HTML(self):
-        HTML = '<html><head></head><body></body></html>'
+        HTML = b'<html><head></head><body></body></html>'
         response = self._makeOne()
         result = response.setBody(HTML)
         self.assertTrue(result)
@@ -600,7 +600,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_asHTML(self):
-        HTML = '<html><head></head><body></body></html>'
+        HTML = b'<html><head></head><body></body></html>'
 
         class Dummy:
             def asHTML(self):
@@ -631,16 +631,16 @@ class HTTPResponseTests(unittest.TestCase):
         # (r19315): "merged content type on error fixes from 2.3
         # If the str of the object returs a Python "pointer" looking mess,
         # don't let it get treated as HTML.
-        BOGUS = '<Bogus a39d53d>'
+        BOGUS = b'<Bogus a39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
 
     def test_setBody_html_no_charset_escapes_latin1_gt_lt(self):
         response = self._makeOne()
-        BEFORE = ('<html><head></head><body><p>LT: \213</p>'
-                  '<p>GT: \233</p></body></html>')
-        AFTER = ('<html><head></head><body><p>LT: &lt;</p>'
-                 '<p>GT: &gt;</p></body></html>')
+        BEFORE = (b'<html><head></head><body><p>LT: \213</p>'
+                  b'<p>GT: \233</p></body></html>')
+        AFTER = (b'<html><head></head><body><p>LT: &lt;</p>'
+                 b'<p>GT: &gt;</p></body></html>')
         response.setHeader('Content-Type', 'text/html')
         result = response.setBody(BEFORE)
         self.assertTrue(result)
@@ -649,10 +649,10 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setBody_latin_alias_escapes_latin1_gt_lt(self):
         response = self._makeOne()
-        BEFORE = ('<html><head></head><body><p>LT: \213</p>'
-                  '<p>GT: \233</p></body></html>')
-        AFTER = ('<html><head></head><body><p>LT: &lt;</p>'
-                 '<p>GT: &gt;</p></body></html>')
+        BEFORE = (b'<html><head></head><body><p>LT: \213</p>'
+                  b'<p>GT: \233</p></body></html>')
+        AFTER = (b'<html><head></head><body><p>LT: &lt;</p>'
+                 b'<p>GT: &gt;</p></body></html>')
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         result = response.setBody(BEFORE)
         self.assertTrue(result)
@@ -666,11 +666,11 @@ class HTTPResponseTests(unittest.TestCase):
         def _insertBase():
             lamb['flavor'] = 'CURRY'
         response.insertBase = _insertBase
-        response.setBody('Garlic Naan')
+        response.setBody(b'Garlic Naan')
         self.assertEqual(lamb['flavor'], 'CURRY')
 
     def test_setBody_compression_uncompressible_mimetype(self):
-        BEFORE = 'foo' * 100  # body must get smaller on compression
+        BEFORE = b'foo' * 100  # body must get smaller on compression
         response = self._makeOne()
         response.setHeader('Content-Type', 'image/jpeg')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
@@ -679,7 +679,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BEFORE)
 
     def test_setBody_compression_existing_encoding(self):
-        BEFORE = 'foo' * 100  # body must get smaller on compression
+        BEFORE = b'foo' * 100  # body must get smaller on compression
         response = self._makeOne()
         response.setHeader('Content-Encoding', 'piglatin')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
@@ -688,7 +688,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BEFORE)
 
     def test_setBody_compression_too_short_to_gzip(self):
-        BEFORE = 'foo'  # body must get smaller on compression
+        BEFORE = b'foo'  # body must get smaller on compression
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody(BEFORE)
@@ -699,7 +699,7 @@ class HTTPResponseTests(unittest.TestCase):
         # Vary header should be added here
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
-        response.setBody('foo' * 100)  # body must get smaller on compression
+        response.setBody(b'foo' * 100)  # body must get smaller on compression
         self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_wo_encoding(self):
@@ -707,7 +707,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('Vary', 'Cookie')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
-        response.setBody('foo' * 100)  # body must get smaller on compression
+        response.setBody(b'foo' * 100)  # body must get smaller on compression
         self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_incl_encoding(self):
@@ -716,7 +716,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setHeader('Vary', PRIOR)
-        response.setBody('foo' * 100)
+        response.setBody(b'foo' * 100)
         self.assertEqual(response.getHeader('Vary'), PRIOR)
 
     def test_setBody_compression_no_prior_vary_header_but_forced(self):
@@ -724,7 +724,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'},
                                        force=True)
-        response.setBody('foo' * 100)  # body must get smaller on compression
+        response.setBody(b'foo' * 100)  # body must get smaller on compression
         self.assertEqual(response.getHeader('Vary'), None)
 
     def test_redirect_defaults(self):
@@ -936,7 +936,7 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_finalize_w_body(self):
         response = self._makeOne()
-        response.body = 'TEST'
+        response.body = b'TEST'
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
@@ -1086,7 +1086,7 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_listHeaders_w_body(self):
         response = self._makeOne()
-        response.setBody('BLAH')
+        response.setBody(b'BLAH')
         headers = response.listHeaders()
         self.assertEqual(headers,
                          [('X-Powered-By', 'Zope (www.zope.org), '
@@ -1234,7 +1234,7 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test___str__w_body(self):
         response = self._makeOne()
-        response.setBody('BLAH')
+        response.setBody(b'BLAH')
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
@@ -1250,7 +1250,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_write_already_wrote(self):
         stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
-        response.write('Kilroy was here!')
+        response.write(b'Kilroy was here!')
         self.assertTrue(response._wrote)
         lines = stdout.getvalue().split('\r\n')
         self.assertEqual(len(lines), 5)
@@ -1265,7 +1265,7 @@ class HTTPResponseTests(unittest.TestCase):
         stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
         response._wrote = True
-        response.write('Kilroy was here!')
+        response.write(b'Kilroy was here!')
         lines = stdout.getvalue().split('\r\n')
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0], 'Kilroy was here!')
@@ -1293,7 +1293,7 @@ class HTTPResponseTests(unittest.TestCase):
             raise AttributeError('ERROR VALUE')
         except AttributeError:
             body = response.exception()
-            self.assertTrue('ERROR VALUE' in str(body))
+            self.assertTrue(b'ERROR VALUE' in str(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
             # required by Bobo Call Interface (BCI)

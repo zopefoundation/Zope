@@ -27,6 +27,7 @@ from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from six import binary_type
 from six.moves.urllib.parse import quote
 from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
@@ -141,7 +142,7 @@ class DTMLMethod(RestrictedDTML,
                 return result
 
             r = HTML.__call__(self, client, REQUEST, **kw)
-            if RESPONSE is None or not isinstance(r, str):
+            if RESPONSE is None or not isinstance(r, binary_type):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -151,7 +152,7 @@ class DTMLMethod(RestrictedDTML,
             if first_time_through:
                 del self.__dict__['validate']
 
-        have_key = RESPONSE.headers.has_key
+        have_key = RESPONSE.headers.__contains__
         if not (have_key('content-type') or have_key('Content-Type')):
             if 'content_type' in self.__dict__:
                 c = self.content_type
@@ -247,7 +248,8 @@ class DTMLMethod(RestrictedDTML,
         self.title = str(title)
         if isinstance(data, TaintedString):
             data = data.quoted()
-        if not isinstance(data, basestring):
+
+        if not isinstance(data, binary_type):
             data = data.read()
         self.munge(data)
         self.ZCacheable_invalidate()
@@ -263,7 +265,7 @@ class DTMLMethod(RestrictedDTML,
         if self.wl_isLocked():
             raise ResourceLockedError('This DTML Method is locked.')
 
-        if not isinstance(file, str):
+        if not isinstance(file, binary_type):
             if REQUEST and not file:
                 raise ValueError('No file specified')
             file = file.read()
@@ -385,7 +387,7 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
-default_dm_html = """\
+default_dm_html = b"""\
 <!DOCTYPE html>
 <html>
   <head>
@@ -404,11 +406,11 @@ default_dm_html = """\
 addForm = DTMLFile('dtml/methodAdd', globals())
 
 
-def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
+def addDTMLMethod(self, id, title='', file=b'', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if not isinstance(file, str):
+    if not isinstance(file, binary_type):
         file = file.read()
     if not file:
         file = default_dm_html

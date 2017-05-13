@@ -54,7 +54,7 @@ class TestTestbrowser(FunctionalTestCase):
     def test_auth(self):
         # Based on Testing.ZopeTestCase.testFunctional
         basic_auth = '%s:%s' % (user_name, user_password)
-        self.folder.addDTMLDocument('secret_html', file='secret')
+        self.folder.addDTMLDocument('secret_html', file=b'secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
         path = '/' + self.folder.absolute_url(1) + '/secret_html'
 

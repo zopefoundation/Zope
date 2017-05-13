@@ -1,3 +1,4 @@
+from logging import getLogger
 import unittest
 
 from AccessControl.owner import EmergencyUserCannotOwn
@@ -7,17 +8,17 @@ from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
 from AccessControl.User import User  # before SpecialUsers
 from Acquisition import aq_self, Implicit
-from App.config import getConfiguration
-from logging import getLogger
+from six import PY2
 from zExceptions import BadRequest
 from zope.component.testing import PlacelessSetup
 from zope.interface import implementer
-from Zope2.App import zcml
 
+from App.config import getConfiguration
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+from Zope2.App import zcml
 
 logger = getLogger('OFS.subscribers')
 
@@ -414,7 +415,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om['2'] = si2
         iterator = iter(om)
         self.assertTrue(hasattr(iterator, '__iter__'))
-        self.assertTrue(hasattr(iterator, 'next'))
+        if PY2:
+            self.assertTrue(hasattr(iterator, 'next'))
+        else:
+            self.assertTrue(hasattr(iterator, '__next__'))
         result = [i for i in iterator]
         self.assertTrue('1' in result)
         self.assertTrue('2' in result)

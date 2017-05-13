@@ -101,7 +101,7 @@ class NameAssignments:
         # and the number of names bound.
         text = ['bound_data.append(%s)\n' % bindtext]
         for assigned_name in assigned_names:
-            text.append('if kw.has_key("%s"):\n' % assigned_name)
+            text.append('if "%s" in kw:\n' % assigned_name)
             text.append('    del kw["%s"]\n' % assigned_name)
         codetext = ''.join(text)
         return (compile(codetext, '<string>', 'exec'), len(assigned_names))

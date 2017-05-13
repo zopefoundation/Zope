@@ -100,7 +100,7 @@ class RoleManager(BaseRoleManager):
         """Change all permissions settings, called by management screen.
         """
         valid_roles = self.valid_roles()
-        have = REQUEST.has_key
+        have = REQUEST.__contains__
         permissions = self.ac_inherited_permissions(1)
         fails = []
         for ip in range(len(permissions)):

@@ -8,6 +8,7 @@ import time
 from io import BytesIO
 
 from Acquisition import aq_base
+from six import PY3
 
 from OFS.Application import Application
 from OFS.SimpleItem import SimpleItem
@@ -27,7 +28,6 @@ from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 
 here = os.path.dirname(os.path.abspath(__file__))
-imagedata = os.path.join(here, 'test.gif')
 filedata = os.path.join(here, 'test.gif')
 
 Zope2.startup_wsgi()
@@ -121,11 +121,12 @@ class EventCatcher(object):
 
 
 class FileTests(unittest.TestCase):
-    data = open(filedata, 'rb').read()
     content_type = 'application/octet-stream'
     factory = 'manage_addFile'
 
     def setUp(self):
+        with open(filedata, 'rb') as fd:
+            self.data = fd.read()
         self.connection = makeConnection()
         self.eventCatcher = EventCatcher()
         try:
@@ -146,6 +147,7 @@ class FileTests(unittest.TestCase):
             # has one.
             transaction.commit()
         except Exception:
+            transaction.abort()
             self.connection.close()
             raise
         transaction.begin()
@@ -177,25 +179,24 @@ class FileTests(unittest.TestCase):
         self.assertRaises(Redirect, self.file.view_image_or_file, 'foo')
 
     def testUpdateData(self):
-        self.file.update_data('foo')
+        self.file.update_data(b'foo')
         self.assertEqual(self.file.size, 3)
-        self.assertEqual(self.file.data, 'foo')
+        self.assertEqual(self.file.data, b'foo')
         self.assertTrue(ADummyCache.invalidated)
         self.assertTrue(ADummyCache.set)
 
     def testReadData(self):
-        s = "a" * (2 << 16)
-        f = BytesIO(s)
-        data, size = self.file._read_data(f)
+        s = b'a' * (2 << 16)
+        data, size = self.file._read_data(BytesIO(s))
         self.assertTrue(isinstance(data, Pdata))
-        self.assertEqual(str(data), s)
-        self.assertEqual(len(s), len(str(data)))
+        self.assertEqual(bytes(data), s)
+        self.assertEqual(len(s), len(bytes(data)))
         self.assertEqual(len(s), size)
 
     def testBigPdata(self):
         # Test that a big enough string is split into several Pdata
         # From a file
-        s = "a" * (1 << 16) * 3
+        s = b'a' * (1 << 16) * 3
         data, size = self.file._read_data(BytesIO(s))
         self.assertNotEqual(data.next, None)
         # From a string
@@ -203,7 +204,7 @@ class FileTests(unittest.TestCase):
         self.assertNotEqual(data.next, None)
 
     def testManageEditWithFileData(self):
-        self.file.manage_edit('foobar', 'text/plain', filedata='ASD')
+        self.file.manage_edit('foobar', 'text/plain', filedata=b'ASD')
         self.assertEqual(self.file.title, 'foobar')
         self.assertEqual(self.file.content_type, 'text/plain')
         self.assertTrue(ADummyCache.invalidated)
@@ -220,9 +221,9 @@ class FileTests(unittest.TestCase):
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
     def testManageUpload(self):
-        f = BytesIO('jammyjohnson')
+        f = BytesIO(b'jammyjohnson')
         self.file.manage_upload(f)
-        self.assertEqual(self.file.data, 'jammyjohnson')
+        self.assertEqual(self.file.data, b'jammyjohnson')
         self.assertEqual(self.file.content_type, 'application/octet-stream')
         self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
@@ -241,7 +242,7 @@ class FileTests(unittest.TestCase):
         req = HTTPRequest(sys.stdin, e, resp)
         data = self.file.index_html(req, resp)
         self.assertEqual(resp.getStatus(), 304)
-        self.assertEqual(data, '')
+        self.assertEqual(data, b'')
 
         # modified since
         t_mod = rfc1123_date(now - 100)
@@ -251,31 +252,31 @@ class FileTests(unittest.TestCase):
         req = HTTPRequest(sys.stdin, e, resp)
         data = self.file.index_html(req, resp)
         self.assertEqual(resp.getStatus(), 200)
-        self.assertEqual(data, str(self.file.data))
+        self.assertEqual(data, bytes(self.file.data))
 
     def testIndexHtmlWithPdata(self):
-        self.file.manage_upload('a' * (2 << 16))  # 128K
+        self.file.manage_upload(b'a' * (2 << 16))  # 128K
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
         self.assertTrue(self.app.REQUEST.RESPONSE._wrote)
 
     def testIndexHtmlWithString(self):
-        self.file.manage_upload('a' * 100)  # 100 bytes
+        self.file.manage_upload(b'a' * 100)  # 100 bytes
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
         self.assertTrue(not self.app.REQUEST.RESPONSE._wrote)
 
-    def testStr(self):
-        self.assertEqual(str(self.file), self.data)
-
     def testPrincipiaSearchSource_not_text(self):
+        data = ''.join([chr(x) for x in range(256)])
+        if PY3:
+            data = data.encode('utf-8')
         self.file.manage_edit('foobar', 'application/octet-stream',
-                              filedata=''.join([chr(x) for x in range(256)]))
-        self.assertEqual(self.file.PrincipiaSearchSource(), '')
+                              filedata=data)
+        self.assertEqual(self.file.PrincipiaSearchSource(), b'')
 
     def testPrincipiaSearchSource_text(self):
         self.file.manage_edit('foobar', 'text/plain',
-                              filedata='Now is the time for all good men to '
-                                       'come to the aid of the Party.')
-        self.assertTrue('Party' in self.file.PrincipiaSearchSource())
+                              filedata=b'Now is the time for all good men to '
+                                       b'come to the aid of the Party.')
+        self.assertTrue(b'Party' in self.file.PrincipiaSearchSource())
 
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
@@ -294,7 +295,6 @@ class FileTests(unittest.TestCase):
 
 
 class ImageTests(FileTests):
-    data = open(filedata, 'rb').read()
     content_type = 'image/gif'
     factory = 'manage_addImage'
 
@@ -306,12 +306,6 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.height, 16)
         self.assertTrue(ADummyCache.invalidated)
         self.assertTrue(ADummyCache.set)
-
-    def testStr(self):
-        self.assertEqual(
-            str(self.file),
-            ('<img src="http://nohost/file" '
-             'alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
         tag_fmt = ('<img src="http://nohost/file" '
