@@ -9,8 +9,8 @@ notifications:
     - tseaver@palladion.com
 
 install:
-    - python bootstrap.py
-    - bin/buildout
+    - pip install zc.buildout==2.3.1
+    - buildout
 
 script:
     - bin/alltests

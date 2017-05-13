@@ -8,6 +8,7 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Explicitly require Manager role for ``AltDatabaseManager``.  [maurits]
 
 
 2.13.26 (2017-02-20)

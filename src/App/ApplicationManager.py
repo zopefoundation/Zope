@@ -482,6 +482,7 @@ class ApplicationManager(Folder,CacheManager):
 class AltDatabaseManager(DatabaseManager, CacheManager):
     """ Database management DBTab-style
     """
+    __roles__ = ('Manager', )
     db_name = ApplicationManager.db_name.im_func
     db_size = ApplicationManager.db_size.im_func
     manage_pack = ApplicationManager.manage_pack.im_func
