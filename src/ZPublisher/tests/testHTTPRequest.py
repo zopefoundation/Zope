@@ -1112,6 +1112,7 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
             self._makeOne(root).traverse, 'folder/@@meth/request'
         )
 
+
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'REQUEST_METHOD': 'POST',
@@ -1119,7 +1120,7 @@ TEST_ENVIRON = {
     'SERVER_PORT': '80',
 }
 
-TEST_FILE_DATA = '''
+TEST_FILE_DATA = b'''
 --12345
 Content-Disposition: form-data; name="file"; filename="file"
 Content-Type: application/octet-stream
@@ -1129,11 +1130,9 @@ test
 --12345--
 '''
 
-TEST_LARGEFILE_DATA = '''
+TEST_LARGEFILE_DATA = b'''
 --12345
 Content-Disposition: form-data; name="file"; filename="file"
 Content-Type: application/octet-stream
 
-test %s
-
-''' % ('test' * 1000)
+test ''' + (b'test' * 1000) + b'\n\n'

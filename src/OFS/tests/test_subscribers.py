@@ -53,14 +53,14 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             def manage_afterAdd(self):
                 pass
             manage_afterAdd.__five_method__ = True
-        self.assertLog(Deprecated, '')
+        self.assertLog(Deprecated, b'')
 
     def test_class_deprecated(self):
         class Deprecated(object):
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
-        self.assertLog(Deprecated, '')
+        self.assertLog(Deprecated, b'')
 
     def test_subclass_deprecated(self):
         class Deprecated(object):
@@ -71,7 +71,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             pass
 
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
-        self.assertLog(ASubClass, '')
+        self.assertLog(ASubClass, b'')
 
     def test_not_deprecated(self):
         class Deprecated(object):
@@ -79,12 +79,12 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
                 pass
         self.assertLog(
             Deprecated,
-            'OFS.tests.test_subscribers.Deprecated.manage_afterAdd is '
-            'discouraged. You should use event subscribers instead.\n')
+            b'OFS.tests.test_subscribers.Deprecated.manage_afterAdd is '
+            b'discouraged. You should use event subscribers instead.\n')
 
     def test_not_deprecated_when_there_are_no_classes(self):
         class Deprecated(object):
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses[:] = []
-        self.assertLog(Deprecated, '')
+        self.assertLog(Deprecated, b'')

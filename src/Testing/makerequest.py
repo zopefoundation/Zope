@@ -15,13 +15,14 @@ Facilitates unit tests which requires an acquirable REQUEST from
 ZODB objects
 """
 
-from sys import stdin, stdout
+from io import BytesIO
+
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
 
-def makerequest(app, stdout=stdout, environ=None):
+def makerequest(app, stdout=None, environ=None):
     """
     Adds an HTTPRequest at app.REQUEST, and returns
     app.__of__(app.REQUEST). Useful for tests that need to acquire
@@ -47,13 +48,15 @@ def makerequest(app, stdout=stdout, environ=None):
     Default is a fresh dictionary. Passing os.environ is not
     recommended; tests should not pollute the real os.environ.
     """
+    if stdout is None:
+        stdout = BytesIO()
     if environ is None:
         environ = {}
     resp = HTTPResponse(stdout=stdout)
     environ.setdefault('SERVER_NAME', 'nohost')
     environ.setdefault('SERVER_PORT', '80')
     environ.setdefault('REQUEST_METHOD', 'GET')
-    req = HTTPRequest(stdin, environ, resp)
+    req = HTTPRequest(BytesIO(), environ, resp)
     req._steps = ['noobject']  # Fake a published object.
     req['ACTUAL_URL'] = req.get('URL')  # Zope 2.7.4
 

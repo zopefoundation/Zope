@@ -47,11 +47,11 @@ class MakerequestTests(unittest.TestCase):
         import io
         out = io.BytesIO()
         item = makerequest(SimpleItem(), stdout=out)
-        item.REQUEST.RESPONSE.write('aaa')
+        item.REQUEST.RESPONSE.write(b'aaa')
         out.seek(0)
         written = out.read()
-        self.assertTrue(written.startswith('Status: 200 OK\r\n'))
-        self.assertTrue(written.endswith('\naaa'))
+        self.assertTrue(written.startswith(b'Status: 200 OK\r\n'))
+        self.assertTrue(written.endswith(b'\naaa'))
 
     def test_environ(self):
         # You can pass an environ argument to use in the request.

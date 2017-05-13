@@ -18,11 +18,11 @@ class DTMLMethodTests(unittest.TestCase):
     def test_edit_taintedstring(self):
         from AccessControl.tainted import TaintedString
         doc = self._makeOne()
-        self.assertEqual(doc.read(), '')
+        self.assertEqual(doc.read(), b'')
         data = TaintedString('hello<br/>')
 
         doc.manage_edit(data, 'title')
-        self.assertEqual(doc.read(), 'hello&lt;br/&gt;')
+        self.assertEqual(doc.read(), b'hello&lt;br/&gt;')
 
 
 class FactoryTests(unittest.TestCase):
@@ -35,8 +35,8 @@ class FactoryTests(unittest.TestCase):
         addDTMLMethod(dispatcher, 'id')
         method = dispatcher._set['id']
         self.assertTrue(isinstance(method, DTMLMethod))
-        self.assertFalse('standard_html_header' in method.read())
-        self.assertFalse('standard_html_footer' in method.read())
+        self.assertFalse(b'standard_html_header' in method.read())
+        self.assertFalse(b'standard_html_footer' in method.read())
 
 
 class DummyDispatcher:

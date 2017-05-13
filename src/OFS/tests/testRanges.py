@@ -108,7 +108,7 @@ class TestRequestRange(unittest.TestCase):
 
         # Chop off any printed headers (only when response.write was used)
         if body:
-            body = body.split('\r\n\r\n', 1)[1]
+            body = body.split(b'\r\n\r\n', 1)[1]
 
         return body + rv
 
@@ -131,7 +131,7 @@ class TestRequestRange(unittest.TestCase):
         content_range = rsp.getHeader('content-range')
         self.assertFalse(content_range is None)
         self.assertEqual(content_range, expect_content_range)
-        self.assertEqual(body, '')
+        self.assertEqual(body, b'')
 
     def expectOK(self, rangeHeader, if_range=None):
         req = self.app.REQUEST

@@ -13,6 +13,8 @@
 '''CGI Response Output formatter
 '''
 
+from six import PY2
+from six import text_type
 from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 
 
@@ -27,7 +29,7 @@ class BaseResponse(object):
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, stdout, stderr,
-                 body='', headers=None, status=None, cookies=None):
+                 body=b'', headers=None, status=None, cookies=None):
         self.stdout = stdout
         self.stderr = stderr
         self.body = body
@@ -49,9 +51,11 @@ class BaseResponse(object):
 
     def outputBody(self):
         """Output the response body"""
-        self.stdout.write(str(self))
+        self.stdout.write(bytes(self))
 
     def setBody(self, body):
+        if isinstance(body, text_type):
+            raise ValueError('Body must be binary.')
         self.body = body
 
     def getStatus(self):
@@ -97,8 +101,12 @@ class BaseResponse(object):
         'Returns a string representing the currently set body. '
         return self.body
 
-    def __str__(self):
-        return str(self.body)
+    def __bytes__(self):
+        return bytes(self.body)
+
+    if PY2:
+        def __str__(self):
+            return str(self.body)
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.body)

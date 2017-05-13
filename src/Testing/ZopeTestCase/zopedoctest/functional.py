@@ -190,10 +190,12 @@ def http(request_string, handle_errors=True):
     wsgi_headers = BytesIO()
 
     def start_response(status, headers):
-        wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
-        headers = '\r\n'.join([': '.join(x) for x in headers])
+        wsgi_headers.write(
+            b'HTTP/1.1 ' + status.encode('ascii') + b'\r\n')
+        headers = b'\r\n'.join([
+            (k + ': ' + v).encode('ascii') for k, v in headers])
         wsgi_headers.write(headers)
-        wsgi_headers.write('\r\n\r\n')
+        wsgi_headers.write(b'\r\n\r\n')
 
     publish = partial(publish_module, _request=request, _response=response)
     if handle_errors:

@@ -12,7 +12,6 @@
 ##############################################################################
 """ CGI Response Output formatter
 """
-from cgi import escape
 import os
 import re
 import struct
@@ -20,7 +19,11 @@ import sys
 import time
 import zlib
 
-from six import class_types, reraise
+from six import binary_type
+from six import class_types
+from six import PY2
+from six import reraise
+from six import text_type
 from six.moves.urllib.parse import quote
 from zope.event import notify
 from zExceptions import (
@@ -36,6 +39,11 @@ from zExceptions.ExceptionFormatter import format_exception
 from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
 from ZPublisher import pubevents
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 if sys.version_info >= (3, ):
     from io import IOBase
@@ -67,7 +75,7 @@ status_codes['redirect'] = 302
 status_codes['resourcelockederror'] = 423
 
 
-start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
+start_of_header_search = re.compile(b'(<head[^>]*>)', re.IGNORECASE).search
 
 _gzip_header = ("\037\213"  # magic
                 "\010"  # compression method
@@ -131,7 +139,7 @@ class HTTPBaseResponse(BaseResponse):
     passed into the object must be used.
     """
 
-    body = ''
+    body = b''
     base = ''
     realm = 'Zope'
     _error_format = 'text/html'
@@ -367,7 +375,7 @@ class HTTPBaseResponse(BaseResponse):
         self.base = str(base)
 
     def insertBase(self,
-                   base_re_search=re.compile('(<base.*?>)', re.I).search):
+                   base_re_search=re.compile(b'(<base.*?>)', re.I).search):
 
         # Only insert a base tag if content appears to be html.
         content_type = self.headers.get('content-type', '').split(';')[0]
@@ -382,7 +390,7 @@ class HTTPBaseResponse(BaseResponse):
                     index = match.start(0) + len(match.group(0))
                     ibase = base_re_search(body)
                     if ibase is None:
-                        self.body = ('%s\n<base href="%s" />\n%s' %
+                        self.body = (b'%s\n<base href="%s" />\n%s' %
                                      (body[:index], escape(self.base, 1),
                                       body[index:]))
                         self.setHeader('content-length', len(self.body))
@@ -441,17 +449,17 @@ class HTTPBaseResponse(BaseResponse):
         if isinstance(body, tuple) and len(body) == 2:
             title, body = body
 
-        if not isinstance(body, str):
+        if not isinstance(body, binary_type):
             if hasattr(body, 'asHTML'):
                 body = body.asHTML()
 
-        if isinstance(body, unicode):
+        if isinstance(body, text_type):
             body = self._encode_unicode(body)
-        elif isinstance(body, str):
+        elif isinstance(body, bytes):
             pass
         else:
             try:
-                body = str(body)
+                body = bytes(body)
             except UnicodeError:
                 body = self._encode_unicode(unicode(body))
 
@@ -476,8 +484,8 @@ class HTTPBaseResponse(BaseResponse):
         # because this is not the case for all encodings.
         if (content_type == 'text/html' or
                 content_type and latin1_alias_match(content_type) is not None):
-            body = '&lt;'.join(body.split('\213'))
-            body = '&gt;'.join(body.split('\233'))
+            body = b'&lt;'.join(body.split(b'\213'))
+            body = b'&gt;'.join(body.split(b'\233'))
             self.body = body
 
         if content_type is None:
@@ -510,7 +518,7 @@ class HTTPBaseResponse(BaseResponse):
                 chunks = [_gzip_header, co.compress(body),
                           co.flush(),
                           struct.pack("<ll", zlib.crc32(body), startlen)]
-                z = "".join(chunks)
+                z = b''.join(chunks)
                 newlen = len(z)
                 if newlen < startlen:
                     self.body = z
@@ -689,9 +697,9 @@ class HTTPResponse(HTTPBaseResponse):
 
     _wrote = None
 
-    def __str__(self, html_search=re.compile('<html>', re.I).search):
+    def __bytes__(self, html_search=re.compile('<html>', re.I).search):
         if self._wrote:
-            return ''  # Streaming output was used.
+            return b''  # Streaming output was used.
 
         status, headers = self.finalize()
         body = self.body
@@ -699,14 +707,17 @@ class HTTPResponse(HTTPBaseResponse):
         chunks = []
 
         # status header must come first.
-        chunks.append("Status: %s" % status)
+        chunks.append(b"Status: " + status.encode('ascii'))
 
         for key, value in headers:
-            chunks.append("%s: %s" % (key, value))
+            chunks.append(key.encode('ascii') + b': ' + value.encode('ascii'))
         # RFC 2616 mandates empty line between headers and payload
-        chunks.append('')
+        chunks.append(b'')
         chunks.append(body)
-        return '\r\n'.join(chunks)
+        return b'\r\n'.join(chunks)
+
+    if PY2:
+        __str__ = __bytes__
 
     # The following two methods are part of a private protocol with
     # ZServer for handling fatal import errors.
@@ -732,13 +743,13 @@ class HTTPResponse(HTTPBaseResponse):
         return '\n'.join(tb)
 
     def _html(self, title, body):
-        return ("<html>\n"
-                "<head>\n<title>%s</title>\n</head>\n"
-                "<body>\n%s\n</body>\n"
-                "</html>\n" % (title, body))
+        return (b"<html>\n"
+                b"<head>\n<title>%s</title>\n</head>\n"
+                b"<body>\n%s\n</body>\n"
+                b"</html>\n" % (title, body))
 
     def _error_html(self, title, body):
-        return ("""<!DOCTYPE html><html>
+        return (b"""<!DOCTYPE html><html>
   <head><title>Site Error</title><meta charset="utf-8" /></head>
   <body bgcolor="#FFFFFF">
   <h2>Site Error</h2>
@@ -746,7 +757,7 @@ class HTTPResponse(HTTPBaseResponse):
   </p>
   <p><strong>%s</strong></p>
 
-  %s""" % (title, body) + """
+  %s""" % (title, body) + b"""
   <hr noshade="noshade"/>
 
   <p>Troubleshooting Suggestions</p>
@@ -765,33 +776,33 @@ class HTTPResponse(HTTPBaseResponse):
     def notFoundError(self, entry='Unknown'):
         self.setStatus(404)
         raise NotFound(self._error_html(
-            "Resource not found",
-            "Sorry, the requested resource does not exist." +
-            "<p>Check the URL and try again.</p>" +
-            "<p><b>Resource:</b> %s</p>" % escape(entry)))
+            b"Resource not found",
+            b"Sorry, the requested resource does not exist." +
+            b"<p>Check the URL and try again.</p>" +
+            b"<p><b>Resource:</b> %s</p>" % escape(entry)))
 
     # If a resource is forbidden, why reveal that it exists?
     forbiddenError = notFoundError
 
     def debugError(self, entry):
         raise NotFound(self._error_html(
-            "Debugging Notice",
-            "Zope has encountered a problem publishing your object.<p>"
-            "\n%s</p>" % entry))
+            b"Debugging Notice",
+            b"Zope has encountered a problem publishing your object.<p>"
+            b"\n%s</p>" % entry))
 
     def badRequestError(self, name):
         self.setStatus(400)
         if re.match('^[A-Z_0-9]+$', name):
             raise InternalError(self._error_html(
-                "Internal Error",
-                "Sorry, an internal error occurred in this resource."))
+                b"Internal Error",
+                b"Sorry, an internal error occurred in this resource."))
 
         raise BadRequest(self._error_html(
-            "Invalid request",
-            "The parameter, <em>%s</em>, " % name +
-            "was omitted from the request.<p>" +
-            "Make sure to specify all required parameters, " +
-            "and try the request again.</p>"
+            b"Invalid request",
+            b"The parameter, <em>%s</em>, " % name +
+            b"was omitted from the request.<p>" +
+            b"Make sure to specify all required parameters, " +
+            b"and try the request again.</p>"
         ))
 
     def unauthorized(self):
@@ -1071,5 +1082,9 @@ class WSGIResponse(HTTPBaseResponse):
         else:
             super(WSGIResponse, self).setBody(body, title, is_error)
 
-    def __str__(self):
+    def __bytes__(self):
         raise NotImplementedError
+
+    if PY2:
+        def __str__(self):
+            raise NotImplementedError

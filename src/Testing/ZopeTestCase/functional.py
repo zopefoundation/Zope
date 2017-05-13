@@ -18,8 +18,9 @@ After Marius Gedminas' functional.py module for Zope3.
 import base64
 from functools import partial
 import sys
-import transaction
 
+from six import PY2
+import transaction
 from zope.interface import implementer
 
 from Testing.ZopeTestCase import interfaces
@@ -109,10 +110,12 @@ class Functional(sandbox.Sandboxed):
             for key, value in headers:
                 response.setHeader(key, value)
 
-            wsgi_headers.write('HTTP/1.1 %s\r\n' % status)
-            headers = '\r\n'.join([': '.join(x) for x in headers])
+            wsgi_headers.write(
+                b'HTTP/1.1 ' + status.encode('ascii') + b'\r\n')
+            headers = b'\r\n'.join([
+                (k + ': ' + v).encode('ascii') for k, v in headers])
             wsgi_headers.write(headers)
-            wsgi_headers.write('\r\n\r\n')
+            wsgi_headers.write(b'\r\n\r\n')
 
         publish = partial(publish_module, _request=request, _response=response)
         if handle_errors:
@@ -142,8 +145,11 @@ class ResponseWrapper(object):
         # the response and parse values out of the WSGI data instead.
         return getattr(self._response, name)
 
-    def __str__(self):
+    def __bytes__(self):
         return self.getOutput()
+
+    if PY2:
+        __str__ = __bytes__
 
     def getOutput(self):
         '''Returns the complete output, headers and all.'''
@@ -151,7 +157,7 @@ class ResponseWrapper(object):
 
     def getBody(self):
         '''Returns the page body, i.e. the output par headers.'''
-        return ''.join(self._wsgi_result)
+        return b''.join(self._wsgi_result)
 
     def getPath(self):
         '''Returns the path used by the request.'''

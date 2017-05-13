@@ -17,6 +17,7 @@ from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.permissions import change_dtml_documents
+from six import binary_type
 from six.moves.urllib.parse import quote
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -54,7 +55,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         if self.wl_isLocked():
             raise ResourceLockedError('This document has been locked.')
 
-        if not isinstance(file, str):
+        if not isinstance(file, binary_type):
             if REQUEST and not file:
                 raise ValueError('No file specified')
             file = file.read()
@@ -101,7 +102,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
             r = HTML.__call__(self, (client, bself), REQUEST, **kw)
 
-            if RESPONSE is None or not isinstance(r, str):
+            if RESPONSE is None or not isinstance(r, binary_type):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -109,7 +110,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         finally:
             security.removeContext(self)
 
-        have_key = RESPONSE.headers.has_key
+        have_key = RESPONSE.headers.__contains__
         if not (have_key('content-type') or have_key('Content-Type')):
             if 'content_type' in self.__dict__:
                 c = self.content_type
@@ -125,7 +126,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 InitializeClass(DTMLDocument)
 
 
-default_dd_html = """\
+default_dd_html = b"""\
 <!DOCTYPE html>
 <html>
   <head>
@@ -143,11 +144,11 @@ default_dd_html = """\
 addForm = DTMLFile('dtml/documentAdd', globals())
 
 
-def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
+def addDTMLDocument(self, id, title='', file=b'', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if not isinstance(file, str):
+    if not isinstance(file, binary_type):
         file = file.read()
     if not file:
         file = default_dd_html

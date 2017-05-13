@@ -13,7 +13,6 @@
 """Image object
 """
 
-from cgi import escape
 from email.generator import _make_boundary
 from io import BytesIO
 import struct
@@ -27,6 +26,8 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from DateTime.DateTime import DateTime
 from Persistence import Persistent
+from six import binary_type
+from six import PY2
 from six import text_type
 from zExceptions import Redirect, ResourceLockedError
 from zope.contenttype import guess_content_type
@@ -45,6 +46,11 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 
 manage_addFileForm = DTMLFile(
@@ -238,7 +244,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
-                    if isinstance(data, str):
+                    if isinstance(data, binary_type):
                         RESPONSE.write(data[start:end])
                         return True
 
@@ -303,14 +309,17 @@ class File(Persistent, Implicit, PropertyManager,
                     pdata_map[0] = data
 
                     for start, end in ranges:
-                        RESPONSE.write('\r\n--%s\r\n' % boundary)
                         RESPONSE.write(
-                            'Content-Type: %s\r\n' % self.content_type)
+                            b'\r\n--' + boundary.encode('ascii') + b'\r\n')
                         RESPONSE.write(
-                            'Content-Range: bytes %d-%d/%d\r\n\r\n' % (
-                                start, end - 1, self.size))
+                            b'Content-Type: ' +
+                            self.content_type.encode('ascii') + b'\r\n')
+                        RESPONSE.write(
+                            b'Content-Range: bytes ' + bytes(start) +
+                            b'-' + bytes(end - 1) +
+                            b'/' + bytes(self.size) + b'\r\n\r\n')
 
-                        if isinstance(data, str):
+                        if isinstance(data, binary_type):
                             RESPONSE.write(data[start:end])
 
                         else:
@@ -359,7 +368,8 @@ class File(Persistent, Implicit, PropertyManager,
                     # Do not keep the link references around.
                     del pdata_map
 
-                    RESPONSE.write('\r\n--%s--\r\n' % boundary)
+                    RESPONSE.write(
+                        b'\r\n--' + boundary.encode('ascii') + b'--\r\n')
                     return True
 
     security.declareProtected(View, 'index_html')
@@ -379,7 +389,7 @@ class File(Persistent, Implicit, PropertyManager,
             # This is nonsensical for caches other than the HTTP cache manager
             # unfortunately.
             self.ZCacheable_set(None)
-            return ''
+            return b''
 
         if self.precondition and hasattr(self, str(self.precondition)):
             # Grab whatever precondition was defined and then
@@ -393,7 +403,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         if self._range_request_handler(REQUEST, RESPONSE):
             # we served a chunk of content in response to a range request.
-            return ''
+            return b''
 
         RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         RESPONSE.setHeader('Content-Type', self.content_type)
@@ -412,7 +422,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
 
         data = self.data
-        if isinstance(data, str):
+        if isinstance(data, binary_type):
             RESPONSE.setBase(None)
             return data
 
@@ -420,7 +430,7 @@ class File(Persistent, Implicit, PropertyManager,
             RESPONSE.write(data.data)
             data = data.next
 
-        return ''
+        return b''
 
     security.declareProtected(View, 'view_image_or_file')
     def view_image_or_file(self, URL1):
@@ -433,8 +443,8 @@ class File(Persistent, Implicit, PropertyManager,
     def PrincipiaSearchSource(self):
         # Allow file objects to be searched.
         if self.content_type.startswith('text/'):
-            return str(self.data)
-        return ''
+            return bytes(self.data)
+        return b''
 
     security.declarePrivate('update_data')
     def update_data(self, data, content_type=None, size=None):
@@ -603,11 +613,21 @@ class File(Persistent, Implicit, PropertyManager,
         # Returns the content type (MIME type) of a file or image.
         return self.content_type
 
-    def __str__(self):
-        return str(self.data)
+    def __bytes__(self):
+        return bytes(self.data)
+
+    if PY2:
+        def __str__(self):
+            return str(self.data)
+
+    def __bool__(self):
+        return True
+
+    __nonzero__ = __bool__
 
     def __len__(self):
-        return 1
+        data = bytes(self.data)
+        return len(data)
 
     if bbb.HAS_ZSERVER:
         security.declareProtected(change_images_and_files, 'PUT')
@@ -647,7 +667,7 @@ class File(Persistent, Implicit, PropertyManager,
                     return result
 
             data = self.data
-            if isinstance(data, str):
+            if isinstance(data, binary_type):
                 RESPONSE.setBase(None)
                 return data
 
@@ -655,7 +675,7 @@ class File(Persistent, Implicit, PropertyManager,
                 RESPONSE.write(data.data)
                 data = data.next
 
-            return ''
+            return b''
 
 InitializeClass(File)
 
@@ -682,7 +702,7 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
     self = self.this()
 
     # First, we create the image without data:
-    self._setObject(id, Image(id, title, '', content_type, precondition))
+    self._setObject(id, Image(id, title, b'', content_type, precondition))
 
     newFile = self._getOb(id)
 
@@ -705,14 +725,14 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
 
 def getImageInfo(data):
-    data = str(data)
+    data = bytes(data)
     size = len(data)
     height = -1
     width = -1
     content_type = ''
 
     # handle GIFs
-    if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+    if (size >= 10) and data[:6] in (b'GIF87a', b'GIF89a'):
         # Check to see if content_type is correct
         content_type = 'image/gif'
         w, h = struct.unpack("<HH", data[6:10])
@@ -722,15 +742,15 @@ def getImageInfo(data):
     # See PNG v1.2 spec (http://www.cdrom.com/pub/png/spec/)
     # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
     # and finally the 4-byte width, height
-    elif ((size >= 24) and (data[:8] == '\211PNG\r\n\032\n') and
-          (data[12:16] == 'IHDR')):
+    elif ((size >= 24) and (data[:8] == b'\211PNG\r\n\032\n') and
+          (data[12:16] == b'IHDR')):
         content_type = 'image/png'
         w, h = struct.unpack(">LL", data[16:24])
         width = int(w)
         height = int(h)
 
     # Maybe this is for an older PNG version.
-    elif (size >= 16) and (data[:8] == '\211PNG\r\n\032\n'):
+    elif (size >= 16) and (data[:8] == b'\211PNG\r\n\032\n'):
         # Check to see if we have the right content type
         content_type = 'image/png'
         w, h = struct.unpack(">LL", data[8:16])
@@ -738,7 +758,7 @@ def getImageInfo(data):
         height = int(h)
 
     # handle JPEGs
-    elif (size >= 2) and (data[:2] == '\377\330'):
+    elif (size >= 2) and (data[:2] == b'\377\330'):
         content_type = 'image/jpeg'
         jpeg = BytesIO(data)
         jpeg.read(2)
@@ -845,8 +865,12 @@ class Image(File):
         self.ZCacheable_set(None)
         self.http__refreshEtag()
 
-    def __str__(self):
-        return self.tag()
+    def __bytes__(self):
+        return self.tag().encode('utf-8')
+
+    if PY2:
+        def __str__(self):
+            return self.tag()
 
     security.declareProtected(View, 'tag')
     def tag(self, height=None, width=None, alt=None,
@@ -926,14 +950,18 @@ class Pdata(Persistent, Implicit):
     def __init__(self, data):
         self.data = data
 
-    def __getslice__(self, i, j):
-        return self.data[i:j]
+    if PY2:
+        def __getslice__(self, i, j):
+            return self.data[i:j]
+
+    def __getitem__(self, key):
+        return self.data[key]
 
     def __len__(self):
-        data = str(self)
+        data = bytes(self)
         return len(data)
 
-    def __str__(self):
+    def __bytes__(self):
         _next = self.next
         if _next is None:
             return self.data
@@ -944,4 +972,7 @@ class Pdata(Persistent, Implicit):
             r.append(self.data)
             _next = self.next
 
-        return ''.join(r)
+        return b''.join(r)
+
+    if PY2:
+        __str__ = __bytes__
