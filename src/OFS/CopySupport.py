@@ -13,6 +13,7 @@
 """Copy interface
 """
 
+import collections
 from json import dumps
 from json import loads
 import logging
@@ -21,8 +22,6 @@ import tempfile
 import warnings
 from zlib import compress
 from zlib import decompressobj
-import transaction
-import six
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
@@ -35,7 +34,9 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+import six
 from six.moves.urllib.parse import quote, unquote
+import transaction
 from zExceptions import Unauthorized, BadRequest, ResourceLockedError
 from ZODB.POSException import ConflictError
 from zope.interface import implementer
@@ -51,7 +52,6 @@ from OFS.interfaces import ICopySource
 from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
 from OFS.subscribers import compatibilityCall
-import collections
 
 
 class CopyError(Exception):
@@ -638,9 +638,12 @@ def _cb_encode(d):
     Return text.
     """
     json_bytes = dumps(d).encode('utf-8')
-    squashed_bytes = compress(json_bytes, 2)    # -> bytes w/ useful encoding
-    squashed = squashed_bytes.decode('latin1')  # tunnel those bytes to text
-    return quote(squashed)                      # quote for embeding in cookie
+    squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
+    # quote for embeding in cookie
+    if six.PY2:
+        return quote(squashed_bytes)
+    else:
+        return quote(squashed_bytes.decode('latin-1'))
 
 
 def _cb_decode(s, maxsize=8192):
@@ -651,9 +654,11 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
-    squashed = unquote(s)
-    squashed_bytes = squashed.encode('latin1')
-    data = dec.decompress(squashed_bytes, maxsize)
+    if six.PY2:
+        squashed = unquote(s)
+    else:
+        squashed = unquote(s).encode('latin-1')
+    data = dec.decompress(squashed, maxsize)
     if dec.unconsumed_tail:
         raise ValueError
     json_bytes = data.decode('utf-8')
