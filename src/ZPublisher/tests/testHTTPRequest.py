@@ -1,4 +1,16 @@
-import base64
+##############################################################################
+#
+# Copyright (c) 2002 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+
 from io import BytesIO
 import sys
 import unittest
@@ -12,6 +24,7 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
+from ZPublisher.utils import basic_auth_encode
 
 if sys.version_info >= (3, ):
     unicode = str
@@ -755,8 +768,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test__authUserPW_simple(self):
         user_id = 'user'
         password = 'password'
-        encoded = base64.encodestring('%s:%s' % (user_id, password))
-        auth_header = 'basic %s' % encoded
+        auth_header = basic_auth_encode(user_id, password)
 
         environ = {'HTTP_AUTHORIZATION': auth_header}
         request = self._makeOne(environ=environ)
@@ -770,8 +782,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # http://www.zope.org/Collectors/Zope/2039
         user_id = 'user'
         password = 'embedded:colon'
-        encoded = base64.encodestring('%s:%s' % (user_id, password))
-        auth_header = 'basic %s' % encoded
+        auth_header = basic_auth_encode(user_id, password)
 
         environ = {'HTTP_AUTHORIZATION': auth_header}
         request = self._makeOne(environ=environ)

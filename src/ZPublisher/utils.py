@@ -11,10 +11,12 @@
 #
 ##############################################################################
 
+import base64
 import logging
 import sys
 
 from Acquisition import aq_inner, aq_parent
+from six import PY3
 import transaction
 
 if sys.version_info >= (3, ):
@@ -80,3 +82,28 @@ def safe_unicode(value):
         except UnicodeDecodeError:
             value = value.decode('utf-8', 'replace')
     return value
+
+
+def basic_auth_encode(user, password=None):
+    # user / password and the return value are of type str
+    value = user
+    if password is not None:
+        value = value + ':' + password
+    header = b'Basic ' + base64.b64encode(value.encode('latin-1'))
+    if PY3:
+        header = header.decode('latin-1')
+    return header
+
+
+def basic_auth_decode(token):
+    # token and the return values are of type str
+    if not token:
+        return None
+    if not token[:6].lower() == 'basic ':
+        return None
+    value = token.split()[-1]  # Strip 'Basic '
+    plain = base64.b64decode(value)
+    if PY3:
+        plain = plain.decode('latin-1')
+    user, password = plain.split(':', 1)  # Split at most once
+    return (user, password)
