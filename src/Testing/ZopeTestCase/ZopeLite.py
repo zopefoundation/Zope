@@ -28,6 +28,7 @@ import sys
 import time
 
 from six import exec_
+from six import PY2
 
 from Testing.ZopeTestCase import layer
 
@@ -35,7 +36,8 @@ from Testing.ZopeTestCase import layer
 os.environ['ZOPETESTCASE'] = '1'
 
 # Increase performance on MP hardware
-sys.setcheckinterval(2500)
+if PY2:
+    sys.setcheckinterval(2500)
 
 # Always shut up
 _quiet = True

@@ -186,15 +186,20 @@ class TestRequestRange(unittest.TestCase):
 
         ct = rsp.getHeader('content-type').split(';')[0]
         draftprefix = draft and 'x-' or ''
-        self.assertFalse(ct != 'multipart/%sbyteranges' % draftprefix)
+        self.assertEqual(ct, 'multipart/%sbyteranges' % draftprefix)
         if rsp.getHeader('content-length'):
-            self.assertFalse(rsp.getHeader('content-length') != str(len(body)))
+            self.assertEqual(rsp.getHeader('content-length'), str(len(body)))
 
-        # Decode the multipart message
-        bodyfile = io.BytesIO('Content-Type: %s\n\n%s' % (
-            rsp.getHeader('content-type'), body))
-        partmessages = [part
-                        for part in email.message_from_file(bodyfile).walk()]
+        # Decode the multipart message and force a latin-1 encoding,
+        # revert that later after the email was parsed
+        bodyfile = io.StringIO(
+            'Content-Type: ' +
+            rsp.getHeader('content-type') +
+            '\n\n' + body.decode('latin-1'))
+
+        # This needs text, hence the forced latin-1 decoding.
+        msg = email.message_from_file(bodyfile)
+        partmessages = [part for part in msg.walk()]
 
         # Check the different parts
         returnedRanges = []
@@ -207,16 +212,17 @@ class TestRequestRange(unittest.TestCase):
             start, end, size = int(start), int(end), int(size)
             end = end + 1
 
-            self.assertFalse(size != len(self.data))
-            body = part.get_payload()
+            self.assertEqual(size, len(self.data))
+            # revert earlier fake latin-1 encoding
+            body = part.get_payload().encode('latin-1')
 
-            self.assertFalse(len(body) != end - start)
-            self.assertFalse(body != self.data[start:end])
+            self.assertEqual(len(body), end - start)
+            self.assertEqual(body, self.data[start:end])
 
             add((start, end))
 
         # Compare the ranges used with the expected range sets.
-        self.assertFalse(returnedRanges != sets)
+        self.assertEqual(returnedRanges, sets)
 
     # Unsatisfiable requests
     def testNegativeZero(self):

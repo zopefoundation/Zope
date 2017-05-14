@@ -111,7 +111,8 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         self.output_encoding = output_encoding
         # default content
         if not text:
-            text = open(self._default_content_fn).read()
+            with open(self._default_content_fn) as fd:
+                text = fd.read()
             content_type = 'text/html'
         self.pt_edit(text, content_type)
 

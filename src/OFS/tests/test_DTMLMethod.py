@@ -22,7 +22,7 @@ class DTMLMethodTests(unittest.TestCase):
         data = TaintedString('hello<br/>')
 
         doc.manage_edit(data, 'title')
-        self.assertEqual(doc.read(), b'hello&lt;br/&gt;')
+        self.assertEqual(doc.read(), 'hello&lt;br/&gt;')
 
 
 class FactoryTests(unittest.TestCase):

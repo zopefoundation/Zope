@@ -553,7 +553,7 @@ class CopySource(Base):
                     # We do not use cp._delObject, because this would fire
                     # events that are needless for objects that are not even in
                     # an Acquisition chain yet.
-                    logger.warn(
+                    logger.warning(
                         'While copying %s to %s, removed %s from copy '
                         'because user is not allowed to view the original.',
                         '/'.join(self.getPhysicalPath()),

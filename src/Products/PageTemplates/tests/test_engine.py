@@ -19,11 +19,15 @@ class TestPatches(Sandboxed, ZopeTestCase):
         template = PageTemplate()
 
         # test rendering engine
-        template.write(open(os.path.join(path, "simple.pt")).read())
+        with open(os.path.join(path, "simple.pt")) as fd:
+            data = fd.read()
+        template.write(data)
         self.assertTrue('world' in template())
 
         # test arguments
-        template.write(open(os.path.join(path, "options.pt")).read())
+        with open(os.path.join(path, "options.pt")) as fd:
+            data = fd.read()
+        template.write(data)
         self.assertTrue('Hello world' in template(greeting='Hello world'))
 
     def test_pagetemplatefile(self):
@@ -51,11 +55,15 @@ class TestPatches(Sandboxed, ZopeTestCase):
         template = template.__of__(self.folder)
 
         # test rendering engine
-        template.write(open(os.path.join(path, "simple.pt")).read())
+        with open(os.path.join(path, "simple.pt")) as fd:
+            data = fd.read()
+        template.write(data)
         self.assertTrue('world' in template())
 
         # test arguments
-        template.write(open(os.path.join(path, "options.pt")).read())
+        with open(os.path.join(path, "options.pt")) as fd:
+            data = fd.read()
+        template.write(data)
         self.assertTrue('Hello world' in template(
             greeting='Hello world'))
 
@@ -72,7 +80,9 @@ class TestPatches(Sandboxed, ZopeTestCase):
         template = template.__of__(self.folder)
 
         # test rendering engine
-        template.write(open(os.path.join(path, "pi.pt")).read())
+        with open(os.path.join(path, "pi.pt")) as fd:
+            data = fd.read()
+        template.write(data)
         self.assertIn('world', template())
 
 

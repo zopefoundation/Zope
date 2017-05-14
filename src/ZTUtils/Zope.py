@@ -19,6 +19,7 @@ from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getitem
 from DateTime.DateTime import DateTime
+from six import text_type
 from six.moves.urllib.parse import quote, unquote
 
 from ZTUtils.Batch import Batch
@@ -204,7 +205,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        if isinstance(v, unicode):
+        if isinstance(v, text_type):
             v = v.encode(_default_encoding())
         qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
@@ -293,7 +294,7 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
-    if isinstance(v, unicode):
+    if isinstance(v, text_type):
         encoding = _default_encoding()
         return ':%s:ustring' % (encoding,)
     if isinstance(v, bool):
