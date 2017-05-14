@@ -249,7 +249,7 @@ class DTMLMethod(RestrictedDTML,
         if isinstance(data, TaintedString):
             data = data.quoted()
 
-        if not isinstance(data, binary_type):
+        if hasattr(data, 'read'):
             data = data.read()
         self.munge(data)
         self.ZCacheable_invalidate()

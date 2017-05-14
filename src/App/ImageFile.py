@@ -69,9 +69,8 @@ class ImageFile(Explicit):
 
         if content_type == 'failed':
             # This failed, lets look into the file content
-            img = open(path, 'rb')
-            data = img.read(1024)  # 1k should be enough
-            img.close()
+            with open(path, 'rb') as img:
+                data = img.read(1024)  # 1k should be enough
 
             content_type, enc = guess_content_type(path, data)
 

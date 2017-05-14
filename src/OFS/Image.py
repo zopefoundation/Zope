@@ -315,9 +315,13 @@ class File(Persistent, Implicit, PropertyManager,
                             b'Content-Type: ' +
                             self.content_type.encode('ascii') + b'\r\n')
                         RESPONSE.write(
-                            b'Content-Range: bytes ' + bytes(start) +
-                            b'-' + bytes(end - 1) +
-                            b'/' + bytes(self.size) + b'\r\n\r\n')
+                            b'Content-Range: bytes ' +
+                            str(start).encode('ascii') +
+                            b'-' +
+                            str(end - 1).encode('ascii') +
+                            b'/' +
+                            str(self.size).encode('ascii') +
+                            b'\r\n\r\n')
 
                         if isinstance(data, binary_type):
                             RESPONSE.write(data[start:end])

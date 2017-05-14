@@ -378,7 +378,8 @@ class ZPTRegressions(unittest.TestCase):
 
     def testAddWithoutParams(self):
         pt = self._addPT('pt1')
-        default_text = open(pt._default_content_fn).read()
+        with open(pt._default_content_fn) as fd:
+            default_text = fd.read()
         self.assertEqual(pt.title, '')
         self.assertEqual(pt.document_src().strip(), default_text.strip())
 

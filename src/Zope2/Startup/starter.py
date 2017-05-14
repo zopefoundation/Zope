@@ -17,6 +17,7 @@ import sys
 import re
 from socket import gethostbyaddr
 
+from six import PY2
 from ZConfig import ConfigurationError
 from zope.event import notify
 from zope.processlifetime import ProcessStarting
@@ -45,7 +46,9 @@ class WSGIStarter(object):
 
     def setupInterpreter(self):
         # make changes to the python interpreter environment
-        sys.setcheckinterval(self.cfg.python_check_interval)
+        if PY2:
+            # Check interval is gone in supported Python 3 versions.
+            sys.setcheckinterval(self.cfg.python_check_interval)
 
     def setupLocale(self):
         # set a locale if one has been specified in the config
