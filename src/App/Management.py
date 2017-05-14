@@ -13,8 +13,6 @@
 """Standard management interface support
 """
 
-from cgi import escape
-
 from AccessControl import Unauthorized
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -25,6 +23,11 @@ from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 
 class Tabs(Base):

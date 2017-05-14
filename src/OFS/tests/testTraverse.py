@@ -522,11 +522,13 @@ def test_traversable():
     *does* raise AttributeError or KeyError, we can get normal view look-up.
     In unrestrictedTraverse, we don't. Maybe we should? Needs discussing.
 
-      >>> self.folder.fancy.unrestrictedTraverse('raise-attributeerror')()
-      u'Fancy, fancy'
+      >>> self.folder.fancy.unrestrictedTraverse(
+      ...     'raise-attributeerror')() == 'Fancy, fancy'
+      True
 
-      >>> self.folder.fancy.unrestrictedTraverse('raise-keyerror')()
-      u'Fancy, fancy'
+      >>> self.folder.fancy.unrestrictedTraverse(
+      ...     'raise-keyerror')() == 'Fancy, fancy'
+      True
 
       >>> try:
       ...     self.folder.fancy.unrestrictedTraverse('raise-valueerror')
@@ -639,24 +641,26 @@ def test_view_doesnt_shadow_attribute():
 
     Of course, unless we explicitly want to lookup the view using @@:
 
-      >>> self.folder.ftf.unrestrictedTraverse('@@eagle')()
-      u'The eagle has landed'
-
+      >>> self.folder.ftf.unrestrictedTraverse(
+      ...     '@@eagle')() == 'The eagle has landed'
+      True
 
     Some weird implementations of __bobo_traverse__, like the one
     found in OFS.Application, raise NotFound.  Five still knows how to
     deal with this, hence views work there too:
 
-      >>> self.app.unrestrictedTraverse('@@eagle')()
-      u'The eagle has landed'
+      >>> self.app.unrestrictedTraverse(
+      ...     '@@eagle')() == 'The eagle has landed'
+      True
 
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
       >>> simplecontent.manage_addIndexSimpleContent(self.folder,
       ...                                            'mouse', 'Mouse')
-      >>> self.folder.ftf.unrestrictedTraverse('mouse')()
-      u'The mouse has been eaten by the eagle'
+      >>> self.folder.ftf.unrestrictedTraverse(
+      ...     'mouse')() == 'The mouse has been eaten by the eagle'
+      True
 
     Clean up:
 

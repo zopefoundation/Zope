@@ -148,8 +148,18 @@ class ResponseWrapper(object):
     def __bytes__(self):
         return self.getOutput()
 
-    if PY2:
-        __str__ = __bytes__
+    def __str__(self):
+        out = self.getOutput()
+        if PY2:
+            return out
+        # This is a hack. This method is called to print a response
+        # as part of a doctest. But if that response contains an
+        # actual binary body, like a GIF image, there's no good
+        # way to print that into the doctest output.
+        try:
+            return out.decode('utf-8')
+        except UnicodeDecodeError:
+            return out.decode('latin-1')
 
     def getOutput(self):
         '''Returns the complete output, headers and all.'''

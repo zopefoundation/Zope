@@ -14,8 +14,6 @@
 """ HTTP request management.
 """
 
-import base64
-from cgi import escape
 from cgi import FieldStorage
 import codecs
 import collections
@@ -34,6 +32,9 @@ import time
 
 from AccessControl.tainted import TaintedString
 import pkg_resources
+from six import binary_type
+from six import PY3
+from six import text_type
 from six.moves.urllib.parse import unquote
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
@@ -48,11 +49,12 @@ from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.utils import basic_auth_decode
 
-if sys.version_info >= (3, ):
-    unicode = str
+if PY3:
+    from html import escape
     from urllib.parse import splitport
     from urllib.parse import splittype
 else:
+    from cgi import escape
     from urllib import splitport
     from urllib import splittype
 
@@ -236,7 +238,7 @@ class HTTPRequest(BaseRequest):
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if isinstance(path, str) or isinstance(path, unicode):
+        if isinstance(path, str) or isinstance(path, text_type):
             path = path.split('/')
         self._script[:] = list(map(quote, [_p for _p in path if _p]))
         del self._steps[:]
@@ -535,6 +537,9 @@ class HTTPRequest(BaseRequest):
 
                 isFileUpload = 0
                 key = item.name
+                if key is None:
+                    continue
+
                 if (hasattr(item, 'file') and hasattr(item, 'filename') and
                         hasattr(item, 'headers')):
                     if (item.file and
@@ -655,7 +660,8 @@ class HTTPRequest(BaseRequest):
                                 # encoding.  This gets passed to the converter
                                 # either as unicode, if it can handle it, or
                                 # crunched back down to utf-8 if it can not.
-                                item = unicode(item, character_encoding)
+                                if isinstance(item, binary_type):
+                                    item = text_type(item, character_encoding)
                                 if hasattr(converter, 'convert_unicode'):
                                     item = converter.convert_unicode(item)
                                 else:
@@ -1811,5 +1817,5 @@ def _decode(value, charset):
     elif isinstance(value, dict):
         return dict((k, _decode(v, charset)) for k, v in value.items())
     elif isinstance(value, str):
-        return unicode(value, charset, 'replace')
+        return text_type(value, charset, 'replace')
     return value

@@ -117,9 +117,13 @@ output_dir = os.path.join(HERE, 'output')
 
 def read_input(filename):
     filename = os.path.join(input_dir, filename)
-    return open(filename, 'r').read()
+    with open(filename, 'r') as fd:
+        data = fd.read()
+    return data
 
 
 def read_output(filename):
     filename = os.path.join(output_dir, filename)
-    return open(filename, 'r').read()
+    with open(filename, 'r') as fd:
+        data = fd.read()
+    return data

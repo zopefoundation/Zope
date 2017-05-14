@@ -390,9 +390,13 @@ class HTTPBaseResponse(BaseResponse):
                     index = match.start(0) + len(match.group(0))
                     ibase = base_re_search(body)
                     if ibase is None:
-                        self.body = (b'%s\n<base href="%s" />\n%s' %
-                                     (body[:index], escape(self.base, 1),
-                                      body[index:]))
+                        self.body = (
+                            body[:index] +
+                            b'\n<base href="' +
+                            escape(self.base, 1).encode('utf-8') +
+                            b'" />\n' +
+                            body[index:]
+                        )
                         self.setHeader('content-length', len(self.body))
 
     def isHTML(self, s):
@@ -601,8 +605,10 @@ class HTTPBaseResponse(BaseResponse):
 
             if body.startswith(b'<?xml'):
                 pos_right = body.find(b'?>')  # right end of the XML preamble
-                body = (b'<?xml version="1.0" encoding="%s" ?>' %
-                        encoding) + body[pos_right + 2:]
+                body = (b'<?xml version="1.0" encoding="' +
+                        encoding.encode(encoding) +
+                        b'" ?>' +
+                        body[pos_right + 2:])
             return body
 
         # Encode the Unicode data as requested
@@ -755,9 +761,9 @@ class HTTPResponse(HTTPBaseResponse):
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
-  <p><strong>%s</strong></p>
+  <p><strong>""" + title + b"""</strong></p>
 
-  %s""" % (title, body) + b"""
+  """ + body + b"""
   <hr noshade="noshade"/>
 
   <p>Troubleshooting Suggestions</p>
@@ -779,7 +785,10 @@ class HTTPResponse(HTTPBaseResponse):
             b"Resource not found",
             b"Sorry, the requested resource does not exist." +
             b"<p>Check the URL and try again.</p>" +
-            b"<p><b>Resource:</b> %s</p>" % escape(entry)))
+            b"<p><b>Resource:</b> " +
+            escape(entry).encode('utf-8') +
+            b"</p>"
+        ))
 
     # If a resource is forbidden, why reveal that it exists?
     forbiddenError = notFoundError
@@ -788,7 +797,9 @@ class HTTPResponse(HTTPBaseResponse):
         raise NotFound(self._error_html(
             b"Debugging Notice",
             b"Zope has encountered a problem publishing your object.<p>"
-            b"\n%s</p>" % entry))
+            b"\n" +
+            entry.encode('utf-8') +
+            b"</p>"))
 
     def badRequestError(self, name):
         self.setStatus(400)
@@ -799,7 +810,9 @@ class HTTPResponse(HTTPBaseResponse):
 
         raise BadRequest(self._error_html(
             b"Invalid request",
-            b"The parameter, <em>%s</em>, " % name +
+            b"The parameter, <em>" +
+            name.encode('utf-8') +
+            b"</em>, " +
             b"was omitted from the request.<p>" +
             b"Make sure to specify all required parameters, " +
             b"and try the request again.</p>"

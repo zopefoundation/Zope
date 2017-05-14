@@ -78,8 +78,8 @@ def test_allowed_interface():
 
     Now we provide some ZCML declarations for ``Dummy1``:
 
-      >>> from StringIO import StringIO
-      >>> configure_zcml = StringIO('''
+      >>> from io import StringIO
+      >>> configure_zcml = StringIO(u'''
       ... <configure xmlns="http://namespaces.zope.org/zope"
       ...            xmlns:browser="http://namespaces.zope.org/browser">
       ...   <browser:page

@@ -39,7 +39,7 @@ def test_absoluteurl():
     simple Python structure:
 
       >>> for crumb in view.breadcrumbs():
-      ...     info = crumb.items()
+      ...     info = list(crumb.items())
       ...     info.sort()
       ...     info
       [('name', ''), ('url', 'http://nohost')]
@@ -55,7 +55,7 @@ def test_absoluteurl():
       >>> alsoProvides(self.folder, IApplication)
 
       >>> for crumb in view.breadcrumbs():
-      ...     info = crumb.items()
+      ...     info = list(crumb.items())
       ...     info.sort()
       ...     info
       [('name', 'test_folder_1_'), ('url', 'http://nohost/test_folder_1_')]
@@ -72,7 +72,7 @@ def test_absoluteurl():
       >>> request.setVirtualRoot('')
 
       >>> for crumb in view.breadcrumbs():
-      ...     info = crumb.items()
+      ...     info = list(crumb.items())
       ...     info.sort()
       ...     info
       [('name', 'test_folder_1_'), ('url', 'http://foo.bar.com')]

@@ -14,6 +14,8 @@
 """Viewlet manager.
 """
 
+from operator import itemgetter
+
 from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface
 import zope.security
@@ -74,10 +76,12 @@ class ViewletManagerBase(origManagerBase):
         # objects first so that they are sorted as expected.  This is dumb
         # but it allows the tests to have deterministic results.
 
-        def _key(info):
-            return info[1]
-
-        return sorted(viewlets, key=_key)
+        try:
+            # Try to sort by viewlet instances
+            return sorted(viewlets, key=itemgetter(1))
+        except TypeError:
+            # Fall back to viewlet names
+            return sorted(viewlets, key=itemgetter(0))
 
 
 def ViewletManager(name, interface, template=None, bases=()):

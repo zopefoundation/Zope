@@ -60,8 +60,8 @@ Now let's lookup the manager. This particular registration is pretty boring:
   >>> manager.template is None
   True
   >>> manager.update()
-  >>> manager.render()
-  u''
+  >>> manager.render() == ''
+  True
 
 However, this registration is not very useful, since we did specify a specific
 viewlet manager interface, a specific content interface, specific view or
@@ -94,8 +94,8 @@ Now we can register register a manager providing this interface:
   >>> manager.template is None
   True
   >>> manager.update()
-  >>> manager.render()
-  u''
+  >>> manager.render() == ''
+  True
 
 Next let's see what happens, if we specify a template for the viewlet manager:
 
@@ -103,7 +103,8 @@ Next let's see what happens, if we specify a template for the viewlet manager:
   >>> temp_dir = tempfile.mkdtemp()
 
   >>> leftColumnTemplate = os.path.join(temp_dir, 'leftcolumn.pt')
-  >>> open(leftColumnTemplate, 'w').write('''
+  >>> with open(leftColumnTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <div class="column">
   ...    <div class="entry"
   ...         tal:repeat="viewlet options/viewlets"
@@ -168,7 +169,8 @@ weight attribute in the viewlet:
 
 Finally, if a non-existent template is specified, an error is raised:
 
-  >>> context = zcml.load_string('''
+  >>> from zope.configuration.xmlconfig import ZopeXMLConfigurationError
+  >>> zcml_string = ('''
   ... <configure xmlns="http://namespaces.zope.org/browser" i18n_domain="zope">
   ...   <viewletManager
   ...       name="leftcolumn"
@@ -177,10 +179,16 @@ Finally, if a non-existent template is specified, an error is raised:
   ...       />
   ... </configure>
   ... ''')
-  Traceback (most recent call last):
-  ...
-  ZopeXMLConfigurationError: File "<string>", line 3.2-7.8
-      ConfigurationError: ('No such file', '...foo.pt')
+  >>> try:
+  ...     context = zcml.load_string(zcml_string)
+  ... except ZopeXMLConfigurationError as exc:
+  ...     msg = str(exc)
+  ...     print('No such file' in msg)
+  ...     print('foo.pt' in msg)
+  ... else:
+  ...     print('ZopeXMLConfigurationError not raised.')
+  True
+  True
 
 
 =========================
@@ -193,7 +201,8 @@ except that the viewlet is also registered for a particular manager interface,
 as seen below:
 
   >>> weatherTemplate = os.path.join(temp_dir, 'weather.pt')
-  >>> open(weatherTemplate, 'w').write('''
+  >>> with open(weatherTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <div>sunny</div>
   ... ''')
 
@@ -214,10 +223,10 @@ If we look into the adapter registry, we will find the viewlet:
   >>> viewlet = zope.component.getMultiAdapter(
   ...     (content, request, view, manager), interfaces.IViewlet,
   ...     name='weather')
-  >>> viewlet.render().strip()
-  u'<div>sunny</div>'
-  >>> viewlet.extra_string_attributes
-  u'can be specified'
+  >>> viewlet.render().strip() == '<div>sunny</div>'
+  True
+  >>> viewlet.extra_string_attributes == 'can be specified'
+  True
 
 The manager now also gives us the output of the one and only viewlet:
 
@@ -247,8 +256,8 @@ Let's now ensure that we can also specify a viewlet class:
   >>> viewlet = zope.component.getMultiAdapter(
   ...     (content, request, view, manager), interfaces.IViewlet,
   ...     name='weather2')
-  >>> viewlet().strip()
-  u'<div>sunny</div>'
+  >>> viewlet().strip() == '<div>sunny</div>'
+  True
 
 Okay, so the template-driven cases work. But just specifying a class should
 also work:
@@ -267,8 +276,8 @@ also work:
 
   >>> viewlet = zope.component.getMultiAdapter(
   ...     (content, request, view, manager), interfaces.IViewlet, name='sport')
-  >>> viewlet()
-  u'Red Sox vs. White Sox'
+  >>> viewlet() == 'Red Sox vs. White Sox'
+  True
 
 It should also be possible to specify an alternative attribute of the class to
 be rendered upon calling the viewlet:
@@ -289,8 +298,8 @@ be rendered upon calling the viewlet:
   >>> viewlet = zope.component.getMultiAdapter(
   ...     (content, request, view, manager), interfaces.IViewlet,
   ...     name='stock')
-  >>> viewlet.render()
-  u'SRC $5.19'
+  >>> viewlet.render() == 'SRC $5.19'
+  True
 
 A final feature the ``viewlet`` directive supports is the additional
 specification of any amount keyword arguments:
@@ -310,8 +319,8 @@ specification of any amount keyword arguments:
   >>> viewlet = zope.component.getMultiAdapter(
   ...     (content, request, view, manager), interfaces.IViewlet,
   ...     name='stock2')
-  >>> viewlet.weight
-  u'8'
+  >>> viewlet.weight == '8'
+  True
 
 
 Error Scenarios
@@ -319,7 +328,7 @@ Error Scenarios
 
 Neither the class or template have been specified:
 
-  >>> context = zcml.load_string('''
+  >>> zcml_string = ('''
   ... <configure xmlns="http://namespaces.zope.org/browser" i18n_domain="zope">
   ...   <viewlet
   ...       name="testviewlet"
@@ -328,15 +337,19 @@ Neither the class or template have been specified:
   ...       />
   ... </configure>
   ... ''')
-  Traceback (most recent call last):
-  ...
-  ZopeXMLConfigurationError: File "<string>", line 3.2-7.8
-      ConfigurationError: Must specify a class or template
+
+  >>> try:
+  ...     zcml.load_string(zcml_string)
+  ... except ZopeXMLConfigurationError as exc:
+  ...     print('Must specify a class or template' in str(exc))
+  ... else:
+  ...     print('ZopeXMLConfigurationError not raised.')
+  True
 
 The specified attribute is not ``__call__``, but also a template has been
 specified:
 
-  >>> context = zcml.load_string('''
+  >>> zcml_string = ('''
   ... <configure xmlns="http://namespaces.zope.org/browser" i18n_domain="zope">
   ...   <viewlet
   ...       name="testviewlet"
@@ -347,15 +360,19 @@ specified:
   ...       />
   ... </configure>
   ... ''')
-  Traceback (most recent call last):
-  ...
-  ZopeXMLConfigurationError: File "<string>", line 3.2-9.8
-      ConfigurationError: Attribute and template cannot be used together.
+
+  >>> try:
+  ...     zcml.load_string(zcml_string)
+  ... except ZopeXMLConfigurationError as exc:
+  ...     print('Attribute and template cannot be used together.' in str(exc))
+  ... else:
+  ...     print('ZopeXMLConfigurationError not raised.')
+  True
 
 Now, we are not specifying a template, but a class that does not have the
 specified attribute:
 
-  >>> context = zcml.load_string('''
+  >>> zcml_string = ('''
   ... <configure xmlns="http://namespaces.zope.org/browser" i18n_domain="zope">
   ...   <viewlet
   ...       name="testviewlet"
@@ -366,10 +383,16 @@ specified attribute:
   ...       />
   ... </configure>
   ... ''')
-  Traceback (most recent call last):
-  ...
-  ZopeXMLConfigurationError: File "<string>", line 3.2-9.8
-    ConfigurationError: The provided class doesn't have the specified attribute.
+
+  >>> try:
+  ...     zcml.load_string(zcml_string)
+  ... except ZopeXMLConfigurationError as exc:
+  ...     print("The provided class doesn't have "
+  ...           "the specified attribute." in str(exc))
+  ... else:
+  ...     print('ZopeXMLConfigurationError not raised.')
+  True
+
 
 ================================
 Viewlet Directive Security
@@ -404,7 +427,8 @@ Now we can register another simple viewlet manager:
 And a view to call our new content provider:
 
   >>> testTemplate = os.path.join(temp_dir, 'test.pt')
-  >>> open(testTemplate, 'w').write('''
+  >>> with open(testTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <html>
   ...   <body>
   ...     <h1>Weather</h1>
@@ -427,7 +451,8 @@ And a view to call our new content provider:
 We now register some viewlets with different permissions:
 
   >>> weatherTemplate = os.path.join(temp_dir, 'weather2.pt')
-  >>> open(weatherTemplate, 'w').write('''
+  >>> with open(weatherTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <div>sunny</div>
   ... ''')
 
@@ -488,7 +513,8 @@ A viewlet template can of course contain some dynamic code, let's see how
 that works:
 
   >>> dynWeatherTemplate = os.path.join(temp_dir, 'dynamic_weather.pt')
-  >>> open(dynWeatherTemplate, 'w').write(u'''
+  >>> with open(dynWeatherTemplate, 'w') as fd:
+  ...     _ = fd.write(u'''
   ... <div tal:define="city view/city;"><span tal:replace="string:${city/name}: ${city/temp} F" /></div>'''
   ... )
 
