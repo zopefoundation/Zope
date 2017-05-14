@@ -12,7 +12,10 @@
 ##############################################################################
 """ Unit tests for OFS.userfolder
 """
+
 import unittest
+
+from ZPublisher.utils import basic_auth_encode
 
 # TODO class Test_readUserAccessFile(unittest.TestCase)
 
@@ -68,8 +71,7 @@ class UserFolderTests(unittest.TestCase):
         return app
 
     def _makeBasicAuthToken(self, creds='user1:secret'):
-        import base64
-        return 'Basic %s' % base64.encodestring(creds)
+        return basic_auth_encode(creds)
 
     def _login(self, uf, name):
         from AccessControl.SecurityManagement import newSecurityManager

@@ -18,6 +18,7 @@ import base64
 from cgi import escape
 from cgi import FieldStorage
 import codecs
+import collections
 from copy import deepcopy
 import os
 from os import unlink
@@ -45,7 +46,7 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
-import collections
+from ZPublisher.utils import basic_auth_decode
 
 if sys.version_info >= (3, ):
     unicode = str
@@ -1534,12 +1535,8 @@ class HTTPRequest(BaseRequest):
         return result
 
     def _authUserPW(self):
-        auth = self._auth
-        if auth:
-            if auth[:6].lower() == 'basic ':
-                [name, password] = \
-                    base64.decodestring(auth.split()[-1]).split(':', 1)
-                return name, password
+        # Can return None
+        return basic_auth_decode(self._auth)
 
     def taintWrapper(self, enabled=TAINTING_ENABLED):
         return enabled and TaintRequestWrapper(self) or self

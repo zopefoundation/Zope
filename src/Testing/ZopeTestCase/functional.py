@@ -15,7 +15,6 @@
 After Marius Gedminas' functional.py module for Zope3.
 """
 
-import base64
 from functools import partial
 import sys
 
@@ -26,6 +25,7 @@ from zope.interface import implementer
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
 from ZPublisher.httpexceptions import HTTPExceptionHandler
+from ZPublisher.utils import basic_auth_encode
 
 
 def savestate(func):
@@ -90,7 +90,7 @@ class Functional(sandbox.Sandboxed):
             raise TypeError('')
 
         if basic:
-            env['HTTP_AUTHORIZATION'] = "Basic %s" % base64.encodestring(basic)
+            env['HTTP_AUTHORIZATION'] = basic_auth_encode(basic)
 
         if stdin is None:
             stdin = BytesIO()

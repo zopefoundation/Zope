@@ -249,12 +249,12 @@ def b2a(s):
     text = str(s).translate(a2u_map)
     if six.PY3:
         text = text.encode('utf-8')
-    return base64.encodestring(text).replace(b'\n', b'')
+    return base64.b64encode(text)
 
 
 def a2b(s):
     '''Decode a b2a-encoded string.'''
-    return base64.decodestring(s.translate(u2a_map))
+    return base64.b64decode(s.translate(u2a_map))
 
 
 def encodeExpansion(nodes, compress=1):

@@ -13,7 +13,6 @@
 """Support for (functional) doc tests
 """
 
-import base64
 import doctest
 from functools import partial
 import re
@@ -34,6 +33,8 @@ from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
 from ZPublisher.httpexceptions import HTTPExceptionHandler
+from ZPublisher.utils import basic_auth_encode
+
 
 if sys.version_info >= (3, ):
     basestring = str
@@ -106,8 +107,7 @@ def auth_header(header):
             u = ''
         if p is None:
             p = ''
-        auth = base64.encodestring('%s:%s' % (u, p))
-        return 'Basic %s' % auth[:-1]
+        return basic_auth_encode(u, p)
     return header
 
 
@@ -307,8 +307,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
         globs['http'] = http
         globs['getRootFolder'] = getRootFolder
         globs['sync'] = sync
-        unencoded_user_auth = ('%s:%s' % (user_name, user_password)).encode('utf-8')
-        globs['user_auth'] = base64.encodestring(unencoded_user_auth)
+        globs['user_auth'] = basic_auth_encode(user_name, user_password)
 
     def setup_test_class(self):
         test_class = self._kw.get('test_class', FunctionalTestCase)
