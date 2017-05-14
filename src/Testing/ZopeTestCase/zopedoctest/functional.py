@@ -14,7 +14,9 @@
 """
 
 import doctest
+import email
 from functools import partial
+from io import BytesIO
 import re
 import sys
 import warnings
@@ -125,8 +127,6 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    import rfc822
-    from io import BytesIO
     from six.moves.urllib.parse import unquote
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
@@ -144,8 +144,6 @@ def http(request_string, handle_errors=True):
     request_string = request_string[l + 1:]
     method, path, protocol = command_line.split()
     path = unquote(path)
-
-    instream = BytesIO(request_string)
 
     env = {
         'HTTP_HOST': 'localhost',
@@ -167,11 +165,12 @@ def http(request_string, handle_errors=True):
                    'bobo-exception-type', 'bobo-exception-file',
                    'bobo-exception-value', 'bobo-exception-line'))
 
-    headers = [split_header(header)
-               for header in rfc822.Message(instream).headers]
+    msg = email.message_from_string(request_string)
+    headers = msg.items()
+    body = msg.get_payload()
 
     # Store request body without headers
-    instream = BytesIO(instream.read())
+    instream = BytesIO(body.encode('utf-8'))
 
     for name, value in headers:
         name = ('_'.join(name.upper().split('-')))

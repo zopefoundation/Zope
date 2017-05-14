@@ -531,15 +531,24 @@ class TestCheckValidId(unittest.TestCase):
                          "('Empty or invalid id specified', '')")
 
     def test_unicode(self):
-        e = self.assertBadRequest(u'abc')
-        self.assertEqual(str(e),
-                         "('Empty or invalid id specified', u'abc')")
+        if PY2:
+            e = self.assertBadRequest(u'abc')
+            self.assertEqual(str(e),
+                             "('Empty or invalid id specified', u'abc')")
+        else:
+            # Does not raise
+            self._callFUT(self._makeContainer(), u'abc')
 
     def test_unicode_escaped(self):
         e = self.assertBadRequest(u'<abc>&def')
-        self.assertEqual(str(e),
-                         "('Empty or invalid id specified', "
-                         "u'&lt;abc&gt;&amp;def')")
+        if PY2:
+            self.assertEqual(str(e),
+                             "('Empty or invalid id specified', "
+                             "u'&lt;abc&gt;&amp;def')")
+        else:
+            self.assertEqual(str(e),
+                             'The id "&lt;abc&gt;&amp;def" contains '
+                             'characters illegal in URLs.')
 
     def test_badid_XSS(self):
         e = self.assertBadRequest('<abc>&def')

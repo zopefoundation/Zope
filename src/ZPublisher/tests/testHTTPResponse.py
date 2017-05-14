@@ -119,7 +119,8 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=utf-8'})
-        self.assertEqual(response.body, xml.replace('iso-8859-15', 'utf-8'))
+        self.assertEqual(response.body,
+                         xml.replace('iso-8859-15', 'utf-8').encode('utf-8'))
 
     def test_ctor_body_already_matches_charset_unchanged(self):
         xml = (u'<?xml version="1.0" encoding="iso-8859-15" ?>\n'
@@ -127,7 +128,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=iso-8859-15'})
-        self.assertEqual(response.body, xml)
+        self.assertEqual(response.body, xml.encode('iso-8859-15'))
 
     def test_retry(self):
         STDOUT, STDERR = object(), object()

@@ -189,18 +189,20 @@ For a move::
   ContainerModifiedEvent folder
   'blueberry'
   >>> cp = folder.manage_cutObjects('blueberry')
-  >>> folder.manage_pasteObjects(cp)
+  >>> result = folder.manage_pasteObjects(cp)
   ObjectWillBeMovedEvent blueberry
   old manage_beforeDelete blueberry blueberry folder
   ObjectMovedEvent blueberry
   old manage_afterAdd blueberry blueberry folder
   ContainerModifiedEvent folder
-  [{'new_id': 'blueberry', 'id': 'blueberry'}]
+
+  >>> result == [{'new_id': 'blueberry', 'id': 'blueberry'}]
+  True
 
 Old behavior with events for a copy::
 
   >>> cp = folder.manage_copyObjects('blueberry')
-  >>> folder.manage_pasteObjects(cp)
+  >>> result = folder.manage_pasteObjects(cp)
   ObjectCopiedEvent copy_of_blueberry
   ObjectWillBeAddedEvent copy_of_blueberry
   ObjectAddedEvent copy_of_blueberry
@@ -208,7 +210,9 @@ Old behavior with events for a copy::
   ContainerModifiedEvent folder
   ObjectClonedEvent copy_of_blueberry
   old manage_afterClone copy_of_blueberry copy_of_blueberry
-  [{'new_id': 'copy_of_blueberry', 'id': 'blueberry'}]
+
+  >>> result == [{'new_id': 'copy_of_blueberry', 'id': 'blueberry'}]
+  True
 
 Old behavior with events for a renaming::
 
@@ -320,22 +324,26 @@ Now move::
   ContainerModifiedEvent folder
   'dilbert'
   >>> cp = folder.manage_cutObjects('dilbert')
-  >>> folder.manage_pasteObjects(cp)
+  >>> result = folder.manage_pasteObjects(cp)
   ObjectWillBeMovedEvent dilbert
   ObjectMovedEvent dilbert
   ContainerModifiedEvent folder
-  [{'new_id': 'dilbert', 'id': 'dilbert'}]
+
+  >>> result == [{'new_id': 'dilbert', 'id': 'dilbert'}]
+  True
 
 And copy::
 
   >>> cp = folder.manage_copyObjects('dilbert')
-  >>> folder.manage_pasteObjects(cp)
+  >>> result = folder.manage_pasteObjects(cp)
   ObjectCopiedEvent copy_of_dilbert
   ObjectWillBeAddedEvent copy_of_dilbert
   ObjectAddedEvent copy_of_dilbert
   ContainerModifiedEvent folder
   ObjectClonedEvent copy_of_dilbert
-  [{'new_id': 'copy_of_dilbert', 'id': 'dilbert'}]
+
+  >>> result == [{'new_id': 'copy_of_dilbert', 'id': 'dilbert'}]
+  True
 
 Then rename::
 

@@ -21,15 +21,22 @@ and don't contain invalid characters.
 
   >>> chooser.checkName('abc', object())
 
-  >>> chooser.checkName('testoid', object())
-  Traceback (most recent call last):
-  ...
-  UserError: The id "testoid" is invalid - it is already in use.
+  >>> from zope.exceptions.interfaces import UserError
+  >>> try:
+  ...     chooser.checkName('testoid', object())
+  ... except UserError as exc:
+  ...     print(exc.args)
+  ... else:
+  ...     print('UserError not raised.')
+  ('The id "testoid" is invalid - it is already in use.',)
 
-  >>> chooser.checkName('slash/slash', object())
-  Traceback (most recent call last):
-  ...
-  UserError: The id "slash/slash" contains characters illegal in URLs.
+  >>> try:
+  ...     chooser.checkName('slash/slash', object())
+  ... except UserError as exc:
+  ...     print(exc.args)
+  ... else:
+  ...     print('UserError not raised.')
+  ('The id "slash/slash" contains characters illegal in URLs.',)
 
 ``INameChooser`` also promises us a ``chooseName()`` method that
 chooses a name for us in case we don't have one or that chooses a
@@ -47,7 +54,10 @@ different name in case the one we chose was invalid.
 Of course, if we start out with something bad, it isn't going to
 become good automagically:
 
-  >>> chooser.chooseName('slash/slash', object())
-  Traceback (most recent call last):
-  ...
-  UserError: The id "slash/slash" contains characters illegal in URLs.
+  >>> try:
+  ...     chooser.chooseName('slash/slash', object())
+  ... except UserError as exc:
+  ...     print(exc.args)
+  ... else:
+  ...     print('UserError not raised.')
+  ('The id "slash/slash" contains characters illegal in URLs.',)

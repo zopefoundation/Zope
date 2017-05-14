@@ -13,9 +13,9 @@
 """Object Manager
 """
 
-from cgi import escape
 from io import BytesIO
 from logging import getLogger
+import collections
 import copy
 import fnmatch
 import marshal
@@ -36,14 +36,10 @@ from AccessControl import getSecurityManager
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_acquire, aq_parent
 from Acquisition import Implicit
-from App.Common import is_acquired
-from App.config import getConfiguration
-from App.FactoryDispatcher import ProductDispatcher
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from Persistence import Persistent
+from six import string_types
+from six import text_type
 from zExceptions import BadRequest, ResourceLockedError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
@@ -52,6 +48,12 @@ from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
 
+from App.Common import is_acquired
+from App.config import getConfiguration
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
 from OFS import bbb
 from OFS.CopySupport import CopyContainer
 from OFS.interfaces import IObjectManager
@@ -61,16 +63,15 @@ from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
 
-import collections
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 if bbb.HAS_ZSERVER:
     from webdav.Collection import Collection
 else:
     Collection = bbb.Collection
-
-if sys.version_info >= (3, ):
-    basestring = str
-    unicode = str
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -92,7 +93,7 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
     if not id or not isinstance(id, str):
-        if isinstance(id, unicode):
+        if isinstance(id, text_type):
             id = escape(id)
         raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
@@ -520,7 +521,7 @@ class ObjectManager(CopyContainer,
 
         The objects specified in 'ids' get deleted.
         """
-        if isinstance(ids, basestring):
+        if isinstance(ids, string_types):
             ids = [ids]
         if not ids:
             raise BadRequest('No items specified')

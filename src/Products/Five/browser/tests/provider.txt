@@ -52,8 +52,8 @@ an empty implementation. The ``render()`` method implements phase 2 of the
 process. We can now instantiate the content provider (manually) and render it:
 
   >>> box = MessageBox(None, None, None)
-  >>> box.render()
-  u'<div class="box">My Message</div>'
+  >>> box.render() == '<div class="box">My Message</div>'
+  True
 
 Since our content provider did not require the context, request or view to
 create its HTML content, we were able to pass trivial dummy values into the
@@ -99,12 +99,16 @@ Finally we publish the view:
 Failure to lookup a Content Provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  >>> print(http(r'''
-  ... GET /test_folder_1_/content_obj/error.html HTTP/1.1
-  ... ''', handle_errors=False))
-  Traceback (most recent call last):
-    ...
-  ContentProviderLookupError: ...mypage.UnknownName...
+  >>> from zope.contentprovider.interfaces import ContentProviderLookupError
+  >>> try:
+  ...     http(r'''
+  ...          GET /test_folder_1_/content_obj/error.html HTTP/1.1
+  ...          ''', handle_errors=False)
+  ... except ContentProviderLookupError as exc:
+  ...     print(exc.args == ('mypage.UnknownName',))
+  ... else:
+  ...     print('ContentProviderLookupError not raised')
+  True
 
 Additional Data from TAL
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -196,8 +200,9 @@ Now we test a provider using a PageTemplateFile to render itself:
   >>> import os, tempfile
   >>> temp_dir = tempfile.mkdtemp()
   >>> dynTemplate = os.path.join(temp_dir, 'dynamic_template.pt')
-  >>> open(dynTemplate, 'w').write(
-  ...   'A simple template: <tal:simple replace="python:view.my_property" />')
+  >>> with open(dynTemplate, 'w') as fd:
+  ...     _ = fd.write('A simple template: '
+  ...                  '<tal:simple replace="python:view.my_property" />')
   >>> from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
   >>> @zope.component.adapter(
   ...     zope.interface.Interface,

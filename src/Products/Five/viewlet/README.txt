@@ -81,8 +81,8 @@ Now we have to instantiate it in the context of an actual zope object:
 So initially nothing gets rendered:
 
   >>> leftColumn.update()
-  >>> leftColumn.render()
-  u''
+  >>> leftColumn.render() == ''
+  True
 
 But now we register some viewlets for the manager
 
@@ -143,7 +143,8 @@ viewlets are put together:
   >>> import os, tempfile
   >>> temp_dir = tempfile.mkdtemp()
   >>> leftColTemplate = os.path.join(temp_dir, 'leftCol.pt')
-  >>> open(leftColTemplate, 'w').write('''
+  >>> with open(leftColTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <div class="left-column">
   ...   <tal:block repeat="viewlet options/viewlets"
   ...              replace="structure viewlet/render" />
@@ -176,10 +177,14 @@ You can also lookup the viewlets directly for management purposes:
 
 If the viewlet is not found, then the expected behavior is provided:
 
-  >>> leftColumn['stock']
-  Traceback (most recent call last):
-  ...
-  ComponentLookupError: No provider with name `stock` found.
+  >>> from zope.interface.interfaces import ComponentLookupError
+  >>> try:
+  ...     leftColumn['stock']
+  ... except ComponentLookupError as exc:
+  ...     print('No provider with name `stock` found.' in str(exc))
+  ... else:
+  ...     print('ComponentLookupError not raised.')
+  True
 
   >>> leftColumn.get('stock') is None
   True
@@ -320,7 +325,8 @@ of this function call will be a fully functional viewlet class. Let's start by
 simply specifying a template only:
 
   >>> template = os.path.join(temp_dir, 'demoTemplate.pt')
-  >>> open(template, 'w').write('''<div>contents</div>''')
+  >>> with open(template, 'w') as fd:
+  ...     _ = fd.write('''<div>contents</div>''')
 
   >>> Demo = viewlet.SimpleViewletClass(template)
   >>> print(Demo(content, request, view, manager).render())
@@ -476,7 +482,8 @@ The contents view of the container should iterate through the container and
 represent the files in a table:
 
   >>> contentsTemplate = os.path.join(temp_dir, 'contents.pt')
-  >>> open(contentsTemplate, 'w').write('''
+  >>> with open(contentsTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <html>
   ...   <body>
   ...     <h1>Cotnents</h1>
@@ -524,7 +531,8 @@ different item:
 Now we need a template to produce the contents table:
 
   >>> tableTemplate = os.path.join(temp_dir, 'table.pt')
-  >>> open(tableTemplate, 'w').write('''
+  >>> with open(tableTemplate, 'w') as fd:
+  ...     _ = fd.write('''
   ... <table>
   ...   <tr tal:repeat="row view/rows">
   ...     <td tal:repeat="column row">

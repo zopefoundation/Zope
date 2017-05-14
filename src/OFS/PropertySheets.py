@@ -13,9 +13,6 @@
 """Property sheets
 """
 
-from cgi import escape
-import sys
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -34,6 +31,11 @@ from App.special_dtml import DTMLFile
 from OFS import bbb
 from OFS.Traversable import Traversable
 from ZPublisher.Converters import type_converters
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 if bbb.HAS_ZSERVER:
     from webdav.PropertySheet import DAVPropertySheetMixin
@@ -230,8 +232,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             else:
                 value = []
 
-        # bleah - can't change kw name in api, so use ugly workaround.
-        if sys.modules['__builtin__'].type(value) == list:
+        if isinstance(value, list):
             value = tuple(value)
         setattr(self, id, value)
 

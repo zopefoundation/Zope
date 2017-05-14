@@ -345,7 +345,7 @@ class ZopeIterator(Iterator):
     def __next__(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return next(super(ZopeIterator, self))
+        return super(ZopeIterator, self).__next__()
 
     def next(self):
         if self._nextIndex > 0:

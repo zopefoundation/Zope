@@ -12,11 +12,16 @@
 ##############################################################################
 
 import re
-import sys
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
-from cgi import escape
 import six
+from six import binary_type
+from six import text_type
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -27,7 +32,7 @@ def field2string(v):
     python version you are on)"""
     if hasattr(v, 'read'):
         return v.read()
-    elif six.PY2 and isinstance(v, six.text_type):
+    elif six.PY2 and isinstance(v, text_type):
         return v.encode(default_encoding)
     else:
         return str(v)
@@ -159,7 +164,7 @@ class _unicode_converter:
         #       <input name="description:ustring" .....
         if hasattr(v, 'read'):
             v = v.read()
-        v = unicode(v)
+        v = text_type(v)
         return self.convert_unicode(v)
 
     def convert_unicode(self, v):
@@ -170,6 +175,7 @@ class field2ustring(_unicode_converter):
     def convert_unicode(self, v):
         return v
 
+
 field2ustring = field2ustring()
 
 
@@ -177,12 +183,17 @@ class field2utokens(_unicode_converter):
     def convert_unicode(self, v):
         return v.split()
 
+
 field2utokens = field2utokens()
 
 
 class field2utext(_unicode_converter):
     def convert_unicode(self, v):
-        return unicode(field2text(v.encode('utf8')), 'utf8')
+        if isinstance(v, binary_type):
+            return text_type(field2text(v.encode('utf8')), 'utf8')
+        return v
+
+
 field2utext = field2utext()
 
 
@@ -192,11 +203,12 @@ class field2ulines:
             v = v.read()
         if isinstance(v, (list, tuple)):
             return [field2ustring(x) for x in v]
-        v = unicode(v)
+        v = text_type(v)
         return self.convert_unicode(v)
 
     def convert_unicode(self, v):
         return field2utext.convert_unicode(v).splitlines()
+
 
 field2ulines = field2ulines()
 
@@ -204,7 +216,7 @@ type_converters = {
     'float': field2float,
     'int': field2int,
     'long': field2long,
-    'string': field2string, # to native str
+    'string': field2string,  # to native str
     'date': field2date,
     'date_international': field2date_international,
     'required': field2required,

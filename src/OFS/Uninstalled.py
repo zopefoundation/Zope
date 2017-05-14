@@ -13,7 +13,6 @@
 """
 Objects for packages that have been uninstalled.
 """
-from cgi import escape
 from logging import getLogger
 
 from Acquisition import Acquired
@@ -25,6 +24,11 @@ from six import exec_
 from six.moves._thread import allocate_lock
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 broken_klasses = {}
 broken_klasses_lock = allocate_lock()

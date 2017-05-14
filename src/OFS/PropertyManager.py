@@ -13,8 +13,6 @@
 """Property management
 """
 
-from cgi import escape
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -29,6 +27,11 @@ from App.special_dtml import DTMLFile
 from OFS.interfaces import IPropertyManager
 from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 
 @implementer(IPropertyManager)

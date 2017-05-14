@@ -21,6 +21,7 @@ factory screen.
 
 import operator
 
+from six import PY2
 from zExceptions import BadRequest
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
@@ -208,12 +209,13 @@ class ObjectManagerNameChooser:
         self.context = context
 
     def checkName(self, name, object):
-        # ObjectManager can only deal with ASCII names. Specially
-        # ObjectManager._checkId can only deal with strings.
-        try:
-            name = name.encode('ascii')
-        except UnicodeDecodeError:
-            raise UserError("Id must contain only ASCII characters.")
+        if PY2:
+            # ObjectManager can only deal with ASCII names. Specially
+            # ObjectManager._checkId can only deal with strings.
+            try:
+                name = name.encode('ascii')
+            except UnicodeDecodeError:
+                raise UserError("Id must contain only ASCII characters.")
 
         try:
             self.context._checkId(name, allow_dup=False)
@@ -225,10 +227,11 @@ class ObjectManagerNameChooser:
         if not name:
             name = object.__class__.__name__
         else:
-            try:
-                name = name.encode('ascii')
-            except UnicodeDecodeError:
-                raise UserError("Id must contain only ASCII characters.")
+            if PY2:
+                try:
+                    name = name.encode('ascii')
+                except UnicodeDecodeError:
+                    raise UserError("Id must contain only ASCII characters.")
 
         dot = name.rfind('.')
         if dot >= 0:

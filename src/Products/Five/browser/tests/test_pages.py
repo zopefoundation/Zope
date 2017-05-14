@@ -43,8 +43,8 @@ def test_view_with_unwrapped_context():
     >>> from Products.Five.browser.tests.pages import SimpleView
     >>> isinstance(eagle, SimpleView)
     True
-    >>> eagle()
-    u'The eagle has landed'
+    >>> eagle() == 'The eagle has landed'
+    True
 
     We also want to be able to render the file-based ZPT without requiring
     that the context be wrapped:
