@@ -70,27 +70,31 @@ Examples
 
 Test Publish Document
 
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_/index_html HTTP/1.1
-  ... """, handle_errors=False))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 5
-  Content-Type: text/plain; charset=...
-  <BLANKLINE>
-  index
+  ... """, handle_errors=False)
+
+  >>> response.status
+  200
+  >>> response.headers == {
+  ...     'content-length': '5', 'content-type': 'text/plain; charset=utf-8'}
+  True
+  >>> response.getBody() == b'index'
+  True
 
 Test parameter containing an additional '?'
 
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_?foo=bla%3Fbaz HTTP/1.1
-  ... """))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 5
-  Content-Type: text/plain; charset=utf-8
-  <BLANKLINE>
-  index
+  ... """)
+
+  >>> response.status
+  200
+  >>> response.headers == {
+  ...     'content-length': '5', 'content-type': 'text/plain; charset=utf-8'}
+  True
+  >>> response.getBody() == b'index'
+  True
               
 Test Unauthorized
 
@@ -107,14 +111,13 @@ Test Basic Authentication
   >>> from AccessControl.Permissions import manage_properties
   >>> self.setPermissions([manage_properties])
 
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_/index_html/change_title?title=Foo HTTP/1.1
   ... Authorization: Basic %s
-  ... """ % user_auth, handle_errors=False))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 0
-  ...
+  ... """ % user_auth, handle_errors=False)
+
+  >>> response.status
+  200
 
   >>> self.folder.index_html.title_or_id()
   'Foo'
@@ -122,41 +125,41 @@ Test Basic Authentication
 Test passing in non-base64-encoded login/pass
 
   >>> from Testing.ZopeTestCase import user_name, user_password
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_/index_html/change_title?title=Baz HTTP/1.1
   ... Authorization: Basic %s:%s
-  ... """ % (user_name, user_password), handle_errors=False))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 0
-  ...
+  ... """ % (user_name, user_password), handle_errors=False)
+
+  >>> response.status
+  200
 
   >>> self.folder.index_html.title_or_id()
   'Baz'
 
 Test setting cookies
 
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_/index_html/set_cookie HTTP/1.1
-  ... """, handle_errors=False))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 0
-  ...
-  Set-Cookie: foo="Bar"; Path=/
-  <BLANKLINE>
+  ... """, handle_errors=False)
+
+  >>> response.status
+  200
+
+  >>> b'Set-Cookie: foo="Bar"; Path=/' in response.getOutput()
+  True
 
 Test reading cookies
 
-  >>> print(http(r"""
+  >>> response = http(r"""
   ... GET /test_folder_1_/index_html/show_cookies HTTP/1.1
   ... Cookie: foo=bar; baz="oki doki"
-  ... """, handle_errors=False))
-  HTTP/1.1 200 OK
-  ...
-  Content-Length: 23
-  Content-Type: text/plain; charset=...
-  <BLANKLINE>
-  foo: bar
-  baz: oki doki
-  <BLANKLINE>
+  ... """, handle_errors=False)
+
+  >>> response.status
+  200
+
+  >>> b'foo: bar' in response.getBody()
+  True
+
+  >>> b'baz: oki doki' in response.getBody()
+  True

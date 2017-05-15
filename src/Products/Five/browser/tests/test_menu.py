@@ -49,42 +49,45 @@ def test_menu():
 
       >>> from operator import itemgetter
       >>> menu.sort(key=itemgetter('title'))
-      >>> from pprint import pprint
-      >>> pprint(menu[0])
-      {'action': '@@cockatiel_menu_public.html',
-       'description': u'',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Page in a menu (public)'}
+      >>> menu[0] == {
+      ...     'action': '@@cockatiel_menu_public.html',
+      ...     'description': u'',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Page in a menu (public)'}
+      True
 
-      >>> pprint(menu[1])
-      {'action': u'seagull.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item'}
+      >>> menu[1] == {
+      ...     'action': u'seagull.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item'}
+      True
 
-      >>> pprint(menu[2])
-      {'action': u'parakeet.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item 2'}
+      >>> menu[2] == {
+      ...     'action': u'parakeet.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item 2'}
+      True
 
-      >>> pprint(menu[3])
-      {'action': u'falcon.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item 3'}
+      >>> menu[3] == {
+      ...     'action': u'falcon.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item 3'}
+      True
 
     Let's create a manager user account and log in.
 
@@ -101,68 +104,75 @@ def test_menu():
       7
 
       >>> menu.sort(key=itemgetter('title'))
-      >>> pprint(menu[0])
-      {'action': '@@cockatiel_menu_protected.html',
-       'description': u'',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Page in a menu (protected)'}
+      >>> menu[0] == {
+      ...     'action': '@@cockatiel_menu_protected.html',
+      ...     'description': u'',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Page in a menu (protected)'}
+      True
 
-      >>> pprint(menu[1])
-      {'action': '@@cockatiel_menu_public.html',
-       'description': u'',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Page in a menu (public)'}
+      >>> menu[1] == {
+      ...     'action': '@@cockatiel_menu_public.html',
+      ...     'description': u'',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Page in a menu (public)'}
+      True
 
-      >>> pprint(menu[2])
-      {'action': u'seagull.html',
-       'description': u'This is a protected test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Protected Test Menu Item'}
+      >>> menu[2] == {
+      ...     'action': u'seagull.html',
+      ...     'description': u'This is a protected test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Protected Test Menu Item'}
+      True
 
-      >>> pprint(menu[3])
-      {'action': u'falcon.html',
-       'description': u'This is a protected test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Protected Test Menu Item 2'}
+      >>> menu[3] == {
+      ...     'action': u'falcon.html',
+      ...     'description': u'This is a protected test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Protected Test Menu Item 2'}
+      True
 
-      >>> pprint(menu[4])
-      {'action': u'seagull.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item'}
+      >>> menu[4] == {
+      ...     'action': u'seagull.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item'}
+      True
 
-      >>> pprint(menu[5])
-      {'action': u'parakeet.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item 2'}
+      >>> menu[5] == {
+      ...     'action': u'parakeet.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item 2'}
+      True
 
-      >>> pprint(menu[6])
-      {'action': u'falcon.html',
-       'description': u'This is a test menu item',
-       'extra': None,
-       'icon': None,
-       'selected': u'',
-       'submenu': None,
-       'title': u'Test Menu Item 3'}
+      >>> menu[6] == {
+      ...     'action': u'falcon.html',
+      ...     'description': u'This is a test menu item',
+      ...     'extra': None,
+      ...     'icon': None,
+      ...     'selected': u'',
+      ...     'submenu': None,
+      ...     'title': u'Test Menu Item 3'}
+      True
 
 
     Clean up:

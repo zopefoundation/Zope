@@ -44,23 +44,30 @@ class QueryTests(unittest.TestCase):
     def testMarshallRecords(self):
         '''Test marshalling records'''
         test_date = DateTime()
-        record = {'arg1': 1, 'arg2': test_date, 'arg3': 'str', 'arg4': u'unic\xF3de'}
+        record = {
+            'arg1': 1, 'arg2': test_date,
+            'arg3': 'str', 'arg4': u'unic\xF3de',
+        }
         result = complex_marshal([('record', record), ])
-        assert result == [('record.arg1', ':int:record', 1),
-                          ('record.arg2', ':date:record', test_date),
-                          ('record.arg3', ':record', 'str'),
-                          ('record.arg4', ':utf8:ustring:record', u'unic\xF3de' )]
+        self.assertEqual(
+            set(result),
+            set([('record.arg1', ':int:record', 1),
+                 ('record.arg2', ':date:record', test_date),
+                 ('record.arg3', ':record', 'str'),
+                 ('record.arg4', ':utf8:ustring:record', u'unic\xF3de')]))
 
     def testMarshallListsInRecords(self):
         '''Test marshalling lists inside of records'''
         test_date = DateTime()
         record = {'arg1': [1, test_date, 'str', u'unic\xF3de'], 'arg2': 1}
         result = complex_marshal([('record', record), ])
-        assert result == [('record.arg1', ':int:list:record', 1),
-                          ('record.arg1', ':date:list:record', test_date),
-                          ('record.arg1', ':list:record', 'str'),
-                          ('record.arg1', ':utf8:ustring:list:record', u'unic\xF3de'),
-                          ('record.arg2', ':int:record', 1)]
+        self.assertEqual(
+            set(result),
+            set([('record.arg1', ':int:list:record', 1),
+                 ('record.arg1', ':date:list:record', test_date),
+                 ('record.arg1', ':list:record', 'str'),
+                 ('record.arg1', ':utf8:ustring:list:record', u'unic\xF3de'),
+                 ('record.arg2', ':int:record', 1)]))
 
     def testMakeComplexQuery(self):
         '''Test that make_query returns sane results'''
@@ -72,15 +79,24 @@ class QueryTests(unittest.TestCase):
         str_ = 'str'
         query = make_query(date=test_date, integer=int_, listing=list_,
                            record=record, string=str_)
-        assert query == (
-            'date:date=%s&integer:int=1&listing:int:list=1&'
-            'listing:date:list=%s&listing:list=str&string=str&'
-            'record.arg1:int:list:record=1&record.arg1:date:list:record=%s&'
-            'record.arg1:list:record=str&record.arg2:int:record=1' % (
-                quote_date, quote_date, quote_date))
-        
+
+        self.assertEqual(
+            set(query.split('&')),
+            set([
+                'date:date=%s' % quote_date,
+                'integer:int=1',
+                'listing:int:list=1',
+                'listing:date:list=%s' % quote_date,
+                'listing:list=str',
+                'string=str',
+                'record.arg1:int:list:record=1',
+                'record.arg1:date:list:record=%s' % quote_date,
+                'record.arg1:list:record=str',
+                'record.arg2:int:record=1',
+            ]))
+
     def testMakeQueryUnicode(self):
-        ''' Test makequery against Github issue 15 
+        ''' Test makequery against Github issue 15
            https://github.com/zopefoundation/Zope/issues/15
         '''
         query = make_query(search_text=u'unic\xF3de')
