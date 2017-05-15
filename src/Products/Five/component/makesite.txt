@@ -96,10 +96,15 @@ Ensure that its local components are no longer available:
 
     >>> ISite.providedBy(app.folder)
     False
-    >>> browser.open('http://localhost/folder/@@testview.html')
-    Traceback (most recent call last):
-    ...
-    NotFound: ...
+
+    >>> from zExceptions import NotFound
+    >>> try:
+    ...     browser.open('http://localhost/folder/@@testview.html')
+    ... except NotFound as exc:
+    ...     print(exc.args)
+    ... else:
+    ...     print('NotFound not raised.')
+    ('http://localhost/folder/@@testview.html',)
 
 Clean up:
 ---------

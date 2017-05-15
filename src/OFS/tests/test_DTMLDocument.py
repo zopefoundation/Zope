@@ -26,8 +26,8 @@ class FactoryTests(unittest.TestCase):
         addDTMLDocument(dispatcher, 'id')
         method = dispatcher._set['id']
         self.assertTrue(isinstance(method, DTMLDocument))
-        self.assertFalse(b'standard_html_header' in method.read())
-        self.assertFalse(b'standard_html_footer' in method.read())
+        self.assertFalse('standard_html_header' in method.read())
+        self.assertFalse('standard_html_footer' in method.read())
 
 
 class DummyDispatcher:

@@ -34,7 +34,7 @@ class TestItem(unittest.TestCase):
         try:
             item.raise_standardErrorMessage(
                 error_type=OverflowError,
-                error_value='simple',
+                error_value=OverflowError('simple'),
                 REQUEST=REQUEST(),
             )
         except Exception:
@@ -58,7 +58,7 @@ class TestItem(unittest.TestCase):
         try:
             item.raise_standardErrorMessage(
                 error_type=OverflowError,
-                error_value=TaintedString('<simple>'),
+                error_value=OverflowError(TaintedString('<simple>')),
                 REQUEST=REQUEST(),
             )
         except Exception:

@@ -279,7 +279,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
 
         environ = self._makeEnviron(PATH_INFO='/@@testing')
         self.assertEqual(self._callFUT(environ, noopStartResponse),
-                         ('', 'foobar'))
+                         (b'', b'foobar'))
 
     def test_publish_can_return_new_response(self):
         from ZPublisher.HTTPRequest import HTTPRequest

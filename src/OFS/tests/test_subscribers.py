@@ -13,9 +13,10 @@
 ##############################################################################
 
 
-import io
 import logging
 import unittest
+
+from six import StringIO
 
 
 class TestMaybeWarnDeprecated(unittest.TestCase):
@@ -31,7 +32,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
         # deprecatedManageAddDeleteClasses list is special cased
         self.deprecatedManageAddDeleteClasses.append(int)
         # Pick up log messages
-        self.logfile = io.BytesIO()
+        self.logfile = StringIO()
         self.log_handler = logging.StreamHandler(self.logfile)
         logging.root.addHandler(self.log_handler)
         self.old_log_level = logging.root.level
@@ -53,14 +54,14 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             def manage_afterAdd(self):
                 pass
             manage_afterAdd.__five_method__ = True
-        self.assertLog(Deprecated, b'')
+        self.assertLog(Deprecated, '')
 
     def test_class_deprecated(self):
         class Deprecated(object):
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
-        self.assertLog(Deprecated, b'')
+        self.assertLog(Deprecated, '')
 
     def test_subclass_deprecated(self):
         class Deprecated(object):
@@ -71,7 +72,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             pass
 
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
-        self.assertLog(ASubClass, b'')
+        self.assertLog(ASubClass, '')
 
     def test_not_deprecated(self):
         class Deprecated(object):
@@ -79,12 +80,12 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
                 pass
         self.assertLog(
             Deprecated,
-            b'OFS.tests.test_subscribers.Deprecated.manage_afterAdd is '
-            b'discouraged. You should use event subscribers instead.\n')
+            'OFS.tests.test_subscribers.Deprecated.manage_afterAdd is '
+            'discouraged. You should use event subscribers instead.\n')
 
     def test_not_deprecated_when_there_are_no_classes(self):
         class Deprecated(object):
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses[:] = []
-        self.assertLog(Deprecated, b'')
+        self.assertLog(Deprecated, '')
