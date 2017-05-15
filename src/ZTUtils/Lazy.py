@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-from itertools import islice, count
+from six.moves import xrange
 
 _marker = object()
 
@@ -56,16 +56,20 @@ class Lazy(object):
                 "Can not concatenate objects. Both must be lazy sequences.")
         return LazyCat([self, other])
 
-    def __getslice__(self, i1, i2):
-        r = []
-        for i in islice(count(i1), i2 - i1):
-            try:
-                r.append(self[i])
-            except IndexError:
-                return r
-        return r
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            r = []
+            start, stop, step = index.indices(len(self))
+            for i in xrange(start, stop, step):
+                try:
+                    r.append(self[i])
+                except IndexError:
+                    return r
+            return r
 
-    slice = __getslice__
+        # The single key lookup is implemented in the subclasses.
+        raise NotImplementedError(
+            'Lazy subclasses must implement __getitem__.')
 
 
 class LazyCat(Lazy):
@@ -108,6 +112,9 @@ class LazyCat(Lazy):
             self.actual_result_count = flattened_count
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return super(LazyCat, self).__getitem__(index)
+
         data = self._data
         try:
             seq = self._seq
@@ -184,6 +191,9 @@ class LazyMap(Lazy):
             self.actual_result_count = self._len
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return super(LazyMap, self).__getitem__(index)
+
         data = self._data
         if index in data:
             return data[index]
@@ -204,6 +214,9 @@ class LazyFilter(Lazy):
         self._test = test
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return super(LazyFilter, self).__getitem__(index)
+
         data = self._data
         try:
             s = self._seq
@@ -252,6 +265,9 @@ class LazyMop(Lazy):
         self._test = test
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return super(LazyMop, self).__getitem__(index)
+
         data = self._data
         try:
             s = self._seq
@@ -304,9 +320,6 @@ class LazyValues(Lazy):
         return self._len
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.__class__(self._seq[index])
         return self._seq[index][1]
-
-    def __getslice__(self, start, end):
-        return self.__class__(self._seq[start:end])
-
-    slice = __getslice__
