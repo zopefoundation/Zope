@@ -74,7 +74,7 @@ class TestsOfBroken(unittest.TestCase):
 
         inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
 
-        self.assertTrue(isinstance(inst, BrokenClass))
+        self.assertIsInstance(inst, BrokenClass)
         self.assertTrue(inst._p_jar is self)
         self.assertEqual(inst._p_oid, OID)
 
@@ -127,7 +127,7 @@ class TestsIntegratedBroken(base.TestCase):
         # get new connection that will give access to broken object
         app = base.app()
         inst = aq_base(app.tr)
-        self.assertTrue(isinstance(inst, BrokenClass))
+        self.assertIsInstance(inst, BrokenClass)
         state = inst.__getstate__()
         self.assertEqual(state, {'id': 'tr'})
 

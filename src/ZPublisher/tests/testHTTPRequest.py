@@ -714,22 +714,22 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                     'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
                     'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
         req.postProcessInputs()
-        self.assertTrue(isinstance(req.form['foo'], unicode))
+        self.assertIsInstance(req.form['foo'], unicode)
         self.assertEqual(req.form['foo'], _NON_ASCII)
-        self.assertTrue(isinstance(req.form['foo_list'], list))
-        self.assertTrue(isinstance(req.form['foo_list'][0], unicode))
+        self.assertIsInstance(req.form['foo_list'], list)
+        self.assertIsInstance(req.form['foo_list'][0], unicode)
         self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
-        self.assertTrue(isinstance(req.form['foo_list'][1], unicode))
+        self.assertIsInstance(req.form['foo_list'][1], unicode)
         self.assertEqual(req.form['foo_list'][1], u'SPAM')
-        self.assertTrue(isinstance(req.form['foo_tuple'], tuple))
-        self.assertTrue(isinstance(req.form['foo_tuple'][0], unicode))
+        self.assertIsInstance(req.form['foo_tuple'], tuple)
+        self.assertIsInstance(req.form['foo_tuple'][0], unicode)
         self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
-        self.assertTrue(isinstance(req.form['foo_tuple'][1], unicode))
+        self.assertIsInstance(req.form['foo_tuple'][1], unicode)
         self.assertEqual(req.form['foo_tuple'][1], u'HAM')
-        self.assertTrue(isinstance(req.form['foo_dict'], dict))
-        self.assertTrue(isinstance(req.form['foo_dict']['foo'], unicode))
+        self.assertIsInstance(req.form['foo_dict'], dict)
+        self.assertIsInstance(req.form['foo_dict']['foo'], unicode)
         self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
-        self.assertTrue(isinstance(req.form['foo_dict']['bar'], unicode))
+        self.assertIsInstance(req.form['foo_dict']['bar'], unicode)
         self.assertEqual(req.form['foo_dict']['bar'], u'EGGS')
 
     def test_close_removes_stdin_references(self):
@@ -796,7 +796,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         from zope.publisher.base import DebugFlags
         # when accessing request.debug we will see the DebugFlags instance
         request = self._makeOne()
-        self.assertTrue(isinstance(request.debug, DebugFlags))
+        self.assertIsInstance(request.debug, DebugFlags)
         # It won't be available through dictonary lookup, though
         self.assertTrue(request.get('debug') is None)
 
@@ -1027,7 +1027,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         request = self._makeOne(None, TEST_ENVIRON.copy(), DummyResponse())
         request['PARENTS'] = [object()]
         clone = request.clone()
-        self.assertTrue(isinstance(clone.response, DummyResponse))
+        self.assertIsInstance(clone.response, DummyResponse)
 
     def test_clone_preserves_request_subclass(self):
         class SubRequest(self._getTargetClass()):
@@ -1035,7 +1035,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         request = SubRequest(None, TEST_ENVIRON.copy(), None)
         request['PARENTS'] = [object()]
         clone = request.clone()
-        self.assertTrue(isinstance(clone, SubRequest))
+        self.assertIsInstance(clone, SubRequest)
 
     def test_clone_preserves_direct_interfaces(self):
         from zope.interface import directlyProvides

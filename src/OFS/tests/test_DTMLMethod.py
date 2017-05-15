@@ -34,7 +34,7 @@ class FactoryTests(unittest.TestCase):
         dispatcher = DummyDispatcher()
         addDTMLMethod(dispatcher, 'id')
         method = dispatcher._set['id']
-        self.assertTrue(isinstance(method, DTMLMethod))
+        self.assertIsInstance(method, DTMLMethod)
         self.assertFalse('standard_html_header' in method.read())
         self.assertFalse('standard_html_footer' in method.read())
 

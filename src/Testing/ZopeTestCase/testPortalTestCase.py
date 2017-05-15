@@ -138,7 +138,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         acl_user = self.portal.acl_users.getUserById(user_name)
         self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), ('Member', 'Authenticated'))
-        self.assertTrue(isinstance(acl_user.roles, list))
+        self.assertIsInstance(acl_user.roles, list)
 
     def test_setupHomeFolder(self):
         # User's home folder should be set up
@@ -324,7 +324,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         acl_user = self.portal.acl_users.getUserById(user_name)
         self.assertTrue(acl_user)
         self.assertEqual(acl_user.getRoles(), ('Member', 'Authenticated'))
-        self.assertTrue(isinstance(acl_user.roles, list))
+        self.assertIsInstance(acl_user.roles, list)
         auth_name = getSecurityManager().getUser().getId()
         self.assertEqual(auth_name, user_name)
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])

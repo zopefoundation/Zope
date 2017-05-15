@@ -495,7 +495,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # This must work whether we've done "make instance" or not.
         # So list_imports() may return an empty list, or whatever's
         # in skel/import. Tolerate both cases.
-        self.assertTrue(isinstance(om.list_imports(), list))
+        self.assertIsInstance(om.list_imports(), list)
         for filename in om.list_imports():
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))

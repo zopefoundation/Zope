@@ -88,13 +88,13 @@ class TestPubEvents(TestCase):
         r.action = 'succeed'
         self._publish(r, PUBMODULE)
         events = self.reporter.events
-        self.assertTrue(isinstance(events[0], PubStart))
+        self.assertIsInstance(events[0], PubStart)
         self.assertEqual(events[0].request, r)
-        self.assertTrue(isinstance(events[1], PubAfterTraversal))
+        self.assertIsInstance(events[1], PubAfterTraversal)
         self.assertEqual(events[1].request, r)
-        self.assertTrue(isinstance(events[2], PubBeforeCommit))
+        self.assertIsInstance(events[2], PubBeforeCommit)
         self.assertEqual(events[2].request, r)
-        self.assertTrue(isinstance(events[3], PubSuccess))
+        self.assertIsInstance(events[3], PubSuccess)
         self.assertEqual(events[3].request, r)
 
     def testFailureReturn(self):
@@ -102,11 +102,11 @@ class TestPubEvents(TestCase):
         r.action = 'fail_return'
         self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertTrue(isinstance(events[0], PubStart))
+        self.assertIsInstance(events[0], PubStart)
         self.assertEqual(events[0].request, r)
-        self.assertTrue(isinstance(events[1], PubBeforeAbort))
+        self.assertIsInstance(events[1], PubBeforeAbort)
         self.assertEqual(events[1].request, r)
-        self.assertTrue(isinstance(events[2], PubFailure))
+        self.assertIsInstance(events[2], PubFailure)
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
 
@@ -115,12 +115,12 @@ class TestPubEvents(TestCase):
         r.action = 'fail_exception'
         self.assertRaises(Exception, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertTrue(isinstance(events[0], PubStart))
+        self.assertIsInstance(events[0], PubStart)
         self.assertEqual(events[0].request, r)
-        self.assertTrue(isinstance(events[1], PubBeforeAbort))
+        self.assertIsInstance(events[1], PubBeforeAbort)
         self.assertEqual(events[1].request, r)
         self.assertEqual(len(events[1].exc_info), 3)
-        self.assertTrue(isinstance(events[2], PubFailure))
+        self.assertIsInstance(events[2], PubFailure)
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
 
@@ -129,16 +129,16 @@ class TestPubEvents(TestCase):
         r.action = 'conflict'
         self.assertRaises(ConflictError, self._publish, r, PUBMODULE)
         events = self.reporter.events
-        self.assertTrue(isinstance(events[0], PubStart))
+        self.assertIsInstance(events[0], PubStart)
         self.assertEqual(events[0].request, r)
-        self.assertTrue(isinstance(events[1], PubBeforeAbort))
+        self.assertIsInstance(events[1], PubBeforeAbort)
         self.assertEqual(events[1].request, r)
         self.assertEqual(len(events[1].exc_info), 3)
-        self.assertTrue(isinstance(events[1].exc_info[1], ConflictError))
-        self.assertTrue(isinstance(events[2], PubFailure))
+        self.assertIsInstance(events[1].exc_info[1], ConflictError)
+        self.assertIsInstance(events[2], PubFailure)
         self.assertEqual(events[2].request, r)
         self.assertEqual(len(events[2].exc_info), 3)
-        self.assertTrue(isinstance(events[2].exc_info[1], ConflictError))
+        self.assertIsInstance(events[2].exc_info[1], ConflictError)
 
     def testStreaming(self):
         out = BytesIO()
@@ -148,7 +148,7 @@ class TestPubEvents(TestCase):
 
         events = self.reporter.events
         self.assertEqual(len(events), 1)
-        self.assertTrue(isinstance(events[0], PubBeforeStreaming))
+        self.assertIsInstance(events[0], PubBeforeStreaming)
         self.assertEqual(events[0].response, response)
 
         self.assertTrue(b'datachunk1datachunk2' in out.getvalue())

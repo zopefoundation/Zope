@@ -36,20 +36,20 @@ class TestPropertyManager(unittest.TestCase):
         inst = self._makeOne()
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
-        self.assertTrue(isinstance(inst.prop, tuple))
+        self.assertIsInstance(inst.getProperty('prop'), tuple)
+        self.assertIsInstance(inst.prop, tuple)
 
         inst._setPropValue('prop', ['xxx', 'yyy'])
-        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
-        self.assertTrue(isinstance(inst.prop, tuple))
+        self.assertIsInstance(inst.getProperty('prop'), tuple)
+        self.assertIsInstance(inst.prop, tuple)
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
-        self.assertTrue(isinstance(inst.prop, tuple))
+        self.assertIsInstance(inst.getProperty('prop'), tuple)
+        self.assertIsInstance(inst.prop, tuple)
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(isinstance(inst.getProperty('prop2'), tuple))
-        self.assertTrue(isinstance(inst.prop2, tuple))
+        self.assertIsInstance(inst.getProperty('prop2'), tuple)
+        self.assertIsInstance(inst.prop2, tuple)
 
     def test_propertyLabel_no_label_falls_back_to_id(self):
         class NoLabel(self._getTargetClass()):
@@ -96,13 +96,13 @@ class TestPropertySheet(unittest.TestCase):
         inst = self._makeOne('foo')
 
         inst._setProperty('prop', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
-        self.assertTrue(isinstance(inst.prop, tuple))
+        self.assertIsInstance(inst.getProperty('prop'), tuple)
+        self.assertIsInstance(inst.prop, tuple)
 
         inst._updateProperty('prop', ['xxx', 'yyy'])
-        self.assertTrue(isinstance(inst.getProperty('prop'), tuple))
-        self.assertTrue(isinstance(inst.prop, tuple))
+        self.assertIsInstance(inst.getProperty('prop'), tuple)
+        self.assertIsInstance(inst.prop, tuple)
 
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
-        self.assertTrue(isinstance(inst.getProperty('prop2'), tuple))
-        self.assertTrue(isinstance(inst.prop2, tuple))
+        self.assertIsInstance(inst.getProperty('prop2'), tuple)
+        self.assertIsInstance(inst.prop2, tuple)

@@ -188,7 +188,7 @@ class FileTests(unittest.TestCase):
     def testReadData(self):
         s = b'a' * (2 << 16)
         data, size = self.file._read_data(BytesIO(s))
-        self.assertTrue(isinstance(data, Pdata))
+        self.assertIsInstance(data, Pdata)
         self.assertEqual(bytes(data), s)
         self.assertEqual(len(s), len(bytes(data)))
         self.assertEqual(len(s), size)

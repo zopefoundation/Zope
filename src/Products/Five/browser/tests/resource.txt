@@ -65,7 +65,7 @@ PageTemplateResource's __call__ renders the template
 
   >>> for r in dir_resource_names:
   ...     resource = self.folder.unrestrictedTraverse(base % r)
-  ...     self.assertTrue(isinstance(resource, Resource))
+  ...     self.assertIsInstance(resource, Resource)
   ...     if not isinstance(resource, PageTemplateResource):
   ...         self.assertEquals(resource(), base_url % r)
 
