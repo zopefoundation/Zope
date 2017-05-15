@@ -142,7 +142,7 @@ class DTMLMethod(RestrictedDTML,
                 return result
 
             r = HTML.__call__(self, client, REQUEST, **kw)
-            if RESPONSE is None or not isinstance(r, binary_type):
+            if RESPONSE is None or not isinstance(r, str):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -157,7 +157,7 @@ class DTMLMethod(RestrictedDTML,
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
-                c, e = guess_content_type(self.getId(), r)
+                c, e = guess_content_type(self.getId(), r.encode('utf-8'))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:

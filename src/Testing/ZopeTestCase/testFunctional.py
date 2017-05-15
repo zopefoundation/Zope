@@ -62,12 +62,12 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
     def testPublishFolder(self):
         response = self.publish(self.folder_path)
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), 'index')
+        self.assertEqual(response.getBody(), b'index')
 
     def testPublishDocument(self):
         response = self.publish(self.folder_path + '/index_html')
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), 'index')
+        self.assertEqual(response.getBody(), b'index')
 
     def testUnauthorized(self):
         response = self.publish(self.folder_path + '/secret_html')
@@ -77,7 +77,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         response = self.publish(self.folder_path + '/secret_html',
                                 self.basic_auth)
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), 'secret')
+        self.assertEqual(response.getBody(), b'secret')
 
     def testRedirect(self):
         response = self.publish(self.folder_path + '/redirect')
@@ -107,7 +107,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.setPermissions([manage_properties])
 
         form = {'title': 'Foo'}
-        post_data = BytesIO(urlencode(form))
+        post_data = BytesIO(urlencode(form).encode('utf-8'))
 
         response = self.publish(self.folder_path + '/index_html/change_title',
                                 request_method='POST', stdin=post_data,

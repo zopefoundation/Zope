@@ -115,7 +115,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
-                c, e = guess_content_type(self.__name__, r)
+                c, e = guess_content_type(self.__name__, r.encode('utf-8'))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:

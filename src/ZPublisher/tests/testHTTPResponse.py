@@ -1303,8 +1303,8 @@ class HTTPResponseTests(unittest.TestCase):
             t, v, tb = sys.exc_info()
             response._setBCIHeaders(t, tb)
             # required by Bobo Call Interface (BCI)
-            self.assertEqual(response.headers['bobo-exception-type'],
-                             "<type 'exceptions.AttributeError'>")
+            self.assertIn('AttributeError',
+                          response.headers['bobo-exception-type'])
             self.assertEqual(response.headers['bobo-exception-value'],
                              'See the server error log for details')
             self.assertTrue('bobo-exception-file' in response.headers)
@@ -1322,8 +1322,8 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
             # required by Bobo Call Interface (BCI)
-            self.assertEqual(response.headers['bobo-exception-type'],
-                             "<type 'exceptions.AttributeError'>")
+            self.assertIn('AttributeError',
+                          response.headers['bobo-exception-type'])
             self.assertEqual(response.headers['bobo-exception-value'],
                              'See the server error log for details')
             self.assertTrue('bobo-exception-file' in response.headers)
