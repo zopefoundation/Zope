@@ -89,7 +89,7 @@ class HTTPHeaderOutputTests(unittest.TestCase):
 
 
 SHOW_COOKIES_DTML = '''\
-<dtml-in "REQUEST.cookies.keys()">
+<dtml-in "list(REQUEST.cookies.keys())">
 <dtml-var sequence-item>: <dtml-var "REQUEST.cookies[_['sequence-item']]">
 </dtml-in>'''
 
@@ -97,15 +97,16 @@ SHOW_COOKIES_DTML = '''\
 def setUp(self):
     '''This method will run after the test_class' setUp.
 
-    >>> print(http(r"""
+    >>> response = http(r"""
     ... GET /test_folder_1_/index_html HTTP/1.1
-    ... """))
-    HTTP/1.1 200 OK
-    ...
-    Content-Length: 5
-    Content-Type: text/plain; charset=...
-    <BLANKLINE>
-    index
+    ... """)
+    >>> response.status
+    200
+    >>> response.headers == {
+    ...     'content-length': '5', 'content-type': 'text/plain; charset=utf-8'}
+    True
+    >>> response.getBody() == b'index'
+    True
 
     >>> foo
     1

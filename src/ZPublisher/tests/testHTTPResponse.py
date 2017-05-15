@@ -973,12 +973,12 @@ class HTTPResponseTests(unittest.TestCase):
         response.redirect('http://example.com/')
         status, headers = response.finalize()
         self.assertEqual(status, '302 Found')
-        self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
-                                           'Python (www.python.org)'),
-                          ('Content-Length', '0'),
-                          ('Location', 'http://example.com/'),
-                          ])
+        expected = set([
+            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+            ('Content-Length', '0'),
+            ('Location', 'http://example.com/'),
+        ])
+        self.assertEqual(set(headers), expected)
 
     def test_listHeaders_empty(self):
         response = self._makeOne()
@@ -1063,15 +1063,18 @@ class HTTPResponseTests(unittest.TestCase):
     def test_listHeaders_after_expireCookie(self):
         response = self._makeOne()
         response.expireCookie('qux', path='/')
-        headers = response.listHeaders()
+        headers = dict(response.listHeaders())
+        cookie_header = headers.pop('Set-Cookie')
+        headers = list(headers.items())
+        expected = set([
+            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+        ])
+        self.assertEqual(set(headers), expected)
         self.assertEqual(
-            headers,
-            [('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
-             ('Set-Cookie', 'qux="deleted"; '
-                            'Path=/; '
-                            'Expires=Wed, 31-Dec-97 23:59:59 GMT; '
-                            'Max-Age=0'),
-             ])
+            set(cookie_header.split('; ')),
+            set(['qux="deleted"', 'Path=/', 'Max-Age=0',
+                 'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+        )
 
     def test_listHeaders_after_addHeader(self):
         response = self._makeOne()
@@ -1089,12 +1092,12 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setBody(b'BLAH')
         headers = response.listHeaders()
-        self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
-                                           'Python (www.python.org)'),
-                          ('Content-Length', '4'),
-                          ('Content-Type', 'text/plain; charset=utf-8'),
-                          ])
+        expected = set([
+            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+            ('Content-Length', '4'),
+            ('Content-Type', 'text/plain; charset=utf-8'),
+        ])
+        self.assertEqual(set(headers), expected)
 
     def test___str__already_wrote(self):
         response = self._makeOne()
@@ -1106,12 +1109,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 5)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], '')
-        self.assertEqual(lines[4], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__existing_content_length(self):
         # The application can break clients by setting a bogus length;  we
@@ -1121,12 +1125,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 5)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 42')
-        self.assertEqual(lines[3], '')
-        self.assertEqual(lines[4], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 42',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__existing_transfer_encoding(self):
         # If 'Transfer-Encoding' is set, don't force 'Content-Length'.
@@ -1135,12 +1140,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 5)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Transfer-Encoding: slurry')
-        self.assertEqual(lines[3], '')
-        self.assertEqual(lines[4], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Transfer-Encoding: slurry',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader(self):
         response = self._makeOne()
@@ -1148,13 +1154,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'X-Consistency: Foolish')
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'X-Consistency: Foolish',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader_literal(self):
         response = self._makeOne()
@@ -1162,13 +1169,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'X-consistency: Foolish')
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'X-consistency: Foolish',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__after_redirect(self):
         response = self._makeOne()
@@ -1176,13 +1184,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 302 Found')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'Location: http://example.com/')
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], '')
+        expected = set([
+            'Status: 302 Found',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'Location: http://example.com/',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__after_setCookie_appendCookie(self):
         response = self._makeOne()
@@ -1191,31 +1200,36 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'Set-Cookie: foo="bar%3Abaz"; '
-                                   'Path=/')
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'Set-Cookie: foo="bar%3Abaz"; Path=/',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__after_expireCookie(self):
         response = self._makeOne()
         response.expireCookie('qux', path='/')
         result = str(response)
         lines = result.split('\r\n')
+        cookie_line = [l for l in lines if 'Set-Cookie' in l][0]
+        other_lines = [l for l in lines if 'Set-Cookie' not in l]
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'Set-Cookie: qux="deleted"; '
-                                   'Path=/; '
-                                   'Expires=Wed, 31-Dec-97 23:59:59 GMT; '
-                                   'Max-Age=0')
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            '',
+        ])
+        self.assertEqual(set(other_lines), expected)
+        cookie_value = cookie_line.split(': ', 1)[-1]
+        self.assertEqual(
+            set(cookie_value.split('; ')),
+            set(['qux="deleted"', 'Path=/', 'Max-Age=0',
+                 'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+        )
 
     def test___str__after_addHeader(self):
         response = self._makeOne()
@@ -1224,14 +1238,15 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 7)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
-        self.assertEqual(lines[3], 'X-Consistency: Foolish')
-        self.assertEqual(lines[4], 'X-Consistency: Oatmeal')
-        self.assertEqual(lines[5], '')
-        self.assertEqual(lines[6], '')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'X-Consistency: Foolish',
+            'X-Consistency: Oatmeal',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
 
     def test___str__w_body(self):
         response = self._makeOne()
@@ -1239,12 +1254,16 @@ class HTTPResponseTests(unittest.TestCase):
         result = str(response)
         lines = result.split('\r\n')
         self.assertEqual(len(lines), 6)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 4')
-        self.assertEqual(lines[3],
-                         'Content-Type: text/plain; charset=utf-8')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 4',
+            'Content-Type: text/plain; charset=utf-8',
+            'BLAH',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
+        # Body is separated by a newline
         self.assertEqual(lines[4], '')
         self.assertEqual(lines[5], 'BLAH')
 
@@ -1255,10 +1274,15 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(response._wrote)
         lines = stdout.getvalue().split('\r\n')
         self.assertEqual(len(lines), 5)
-        self.assertEqual(lines[0], 'Status: 200 OK')
-        self.assertEqual(lines[1], 'X-Powered-By: Zope (www.zope.org), '
-                                   'Python (www.python.org)')
-        self.assertEqual(lines[2], 'Content-Length: 0')
+        expected = set([
+            'Status: 200 OK',
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            'Content-Length: 0',
+            'Kilroy was here!',
+            '',
+        ])
+        self.assertEqual(set(lines), expected)
+        # Body is separated by a newline
         self.assertEqual(lines[3], '')
         self.assertEqual(lines[4], 'Kilroy was here!')
 
