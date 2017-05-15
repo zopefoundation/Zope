@@ -140,13 +140,13 @@ class EngineTestsBase(PlacelessSetup):
         from zope.tales.expressions import DeferWrapper
         ec = self._makeContext()
         defer = ec.evaluate('defer: b')
-        self.assertTrue(isinstance(defer, DeferWrapper))
+        self.assertIsInstance(defer, DeferWrapper)
 
     def test_lazy_expression_returns_wrapper(self):
         from zope.tales.expressions import LazyWrapper
         ec = self._makeContext()
         lazy = ec.evaluate('lazy: b')
-        self.assertTrue(isinstance(lazy, LazyWrapper))
+        self.assertIsInstance(lazy, LazyWrapper)
 
     def test_empty_path_expression_explicit(self):
         ec = self._makeContext()
@@ -172,7 +172,7 @@ class EngineTestsBase(PlacelessSetup):
         # only bothers compiling true strings, not unicode strings
         result = ec.evaluate(eng.compile(u'string:x'))
         self.assertEqual(result, u'x')
-        self.assertTrue(isinstance(result, text_type))
+        self.assertIsInstance(result, text_type)
 
     def test_mixed(self):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors

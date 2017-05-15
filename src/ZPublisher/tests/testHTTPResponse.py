@@ -134,7 +134,7 @@ class HTTPResponseTests(unittest.TestCase):
         STDOUT, STDERR = object(), object()
         response = self._makeOne(stdout=STDOUT, stderr=STDERR)
         cloned = response.retry()
-        self.assertTrue(isinstance(cloned, self._getTargetClass()))
+        self.assertIsInstance(cloned, self._getTargetClass())
         self.assertTrue(cloned.stdout is STDOUT)
         self.assertTrue(cloned.stderr is STDERR)
 

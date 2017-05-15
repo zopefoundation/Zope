@@ -71,7 +71,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertTrue(namespace['context'] is context)
         self.assertTrue(namespace['request'] is request)
         views = namespace['views']
-        self.assertTrue(isinstance(views, ViewMapper))
+        self.assertIsInstance(views, ViewMapper)
         self.assertEqual(views.ob, context)
         self.assertEqual(views.request, request)
         self.assertTrue(namespace['here'] is context)
@@ -159,7 +159,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         request = DummyRequest()
         foo = Foo(context, request)
         bound = foo.bar
-        self.assertTrue(isinstance(bound, BoundPageTemplate))
+        self.assertIsInstance(bound, BoundPageTemplate)
         self.assertTrue(bound.__func__ is template)
         self.assertTrue(bound.__self__ is foo)
 

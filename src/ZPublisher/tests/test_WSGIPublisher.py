@@ -299,7 +299,7 @@ class TestPublishModule(unittest.TestCase, PlacelessSetup):
         self.assertEqual(headers, [('Content-Length', '0')])
         self.assertEqual(kw, {})
         (request, module_info), kw = _publish._called_with
-        self.assertTrue(isinstance(request, HTTPRequest))
+        self.assertIsInstance(request, HTTPRequest)
         self.assertEqual(kw, {})
         self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))

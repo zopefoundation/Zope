@@ -125,11 +125,11 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         root = self._makeRoot()
         dc = self._makeOne().__of__(root)
         found = dc['foo']
-        self.assertTrue(isinstance(found, AltDatabaseManager))
+        self.assertIsInstance(found, AltDatabaseManager)
         self.assertEqual(found.id, 'foo')
         self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
-        self.assertTrue(isinstance(conn, FakeConnection))
+        self.assertIsInstance(conn, FakeConnection)
         self.assertTrue(conn.db() is foo)
 
     def test___bobo_traverse___miss(self):
@@ -148,11 +148,11 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         root = self._makeRoot()
         dc = self._makeOne().__of__(root)
         found = dc.__bobo_traverse__(None, 'foo')
-        self.assertTrue(isinstance(found, AltDatabaseManager))
+        self.assertIsInstance(found, AltDatabaseManager)
         self.assertEqual(found.id, 'foo')
         self.assertTrue(found.__parent__ is dc)
         conn = found._p_jar
-        self.assertTrue(isinstance(conn, FakeConnection))
+        self.assertIsInstance(conn, FakeConnection)
         self.assertTrue(conn.db() is foo)
 
     def test___bobo_traverse___miss_db_hit_attr(self):

@@ -108,7 +108,7 @@ class ApplicationTests(unittest.TestCase):
 
         result = app.__bobo_traverse__(request, 'OTHER')
 
-        self.assertTrue(isinstance(result, NullResource))
+        self.assertIsInstance(result, NullResource)
         self.assertTrue(aq_parent(aq_inner(result)) is app)
 
 
