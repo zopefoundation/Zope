@@ -15,6 +15,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated distributions:
+
+    - Record = 3.4
+
 
 Restructuring
 +++++++++++++
