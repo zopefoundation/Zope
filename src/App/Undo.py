@@ -125,12 +125,12 @@ InitializeClass(UndoSupport)
 
 def encode64(s, b2a=binascii.b2a_base64):
     if len(s) < 58:
-        return b2a(s)
+        return b2a(s).decode('ascii')
     r = []
     a = r.append
     for i in range(0, len(s), 57):
         a(b2a(s[i:i + 57])[:-1])
-    return ''.join(r)
+    return (b''.join(r)).decode('ascii')
 
 
 def decode64(s, a2b=binascii.a2b_base64):

@@ -387,7 +387,7 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
-default_dm_html = b"""\
+default_dm_html = """\
 <!DOCTYPE html>
 <html>
   <head>
@@ -406,11 +406,11 @@ default_dm_html = b"""\
 addForm = DTMLFile('dtml/methodAdd', globals())
 
 
-def addDTMLMethod(self, id, title='', file=b'', REQUEST=None, submit=None):
+def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if not isinstance(file, binary_type):
+    if hasattr(file, 'read'):
         file = file.read()
     if not file:
         file = default_dm_html

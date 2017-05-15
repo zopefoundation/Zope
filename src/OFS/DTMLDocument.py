@@ -126,7 +126,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 InitializeClass(DTMLDocument)
 
 
-default_dd_html = b"""\
+default_dd_html = """\
 <!DOCTYPE html>
 <html>
   <head>
@@ -144,11 +144,11 @@ default_dd_html = b"""\
 addForm = DTMLFile('dtml/documentAdd', globals())
 
 
-def addDTMLDocument(self, id, title='', file=b'', REQUEST=None, submit=None):
+def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if not isinstance(file, binary_type):
+    if hasattr(file, 'read'):
         file = file.read()
     if not file:
         file = default_dd_html
