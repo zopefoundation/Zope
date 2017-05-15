@@ -3,7 +3,7 @@
 
 <dtml-in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')">
 <dtml-else expr="_.hasattr(REQUEST, _['sequence-item'])">
-<dtml-call expr="REQUEST.set(_['sequence-item'], _.None)">
+<dtml-call expr="REQUEST.set(_['sequence-item'], None)">
 </dtml-else>
 </dtml-in>
 

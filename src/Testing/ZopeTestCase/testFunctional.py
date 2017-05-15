@@ -27,10 +27,10 @@ from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 
-SET_COOKIE_DTML = b'''\
+SET_COOKIE_DTML = '''\
 <dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
 
-CHANGE_TITLE_DTML = b'''\
+CHANGE_TITLE_DTML = '''\
 <dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
 
 
@@ -41,17 +41,17 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.basic_auth = '%s:%s' % (user_name, user_password)
 
         # A simple document
-        self.folder.addDTMLDocument('index_html', file=b'index')
+        self.folder.addDTMLDocument('index_html', file='index')
 
         # A document accessible only to its owner
-        self.folder.addDTMLDocument('secret_html', file=b'secret')
+        self.folder.addDTMLDocument('secret_html', file='secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
         # A method redirecting to the Zope root
-        url = self.app.absolute_url().encode('utf-8')
+        url = self.app.absolute_url()
         self.folder.addDTMLMethod(
             'redirect',
-            file=b'<dtml-call "RESPONSE.redirect(\'' + url + b'\')">')
+            file='<dtml-call "RESPONSE.redirect(\'' + url + '\')">')
 
         # A method setting a cookie
         self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)

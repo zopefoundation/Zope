@@ -1415,8 +1415,8 @@ class HTTPRequest(BaseRequest):
     def set_lazy(self, key, callable):
         self._lazies[key] = callable
 
-    def __contains__(self, key):
-        return self.has_key(key)  # NOQA
+    def __contains__(self, key, returnTaints=0):
+        return self.has_key(key, returnTaints=returnTaints)  # NOQA
 
     def has_key(self, key, returnTaints=0):
         try:
@@ -1567,21 +1567,39 @@ class WSGIRequest(HTTPRequest):
     pass
 
 
-class TaintRequestWrapper:
+class TaintRequestWrapper(object):
+
     def __init__(self, req):
         self._req = req
 
-    def __getattr__(self, key):
-        if key in ('get', '__getitem__', '__getattr__', 'has_key', 'keys'):
-            return TaintMethodWrapper(getattr(self._req, key))
+    def __contains__(self, *args, **kw):
+        return TaintMethodWrapper(self._req.__contains__)(*args, **kw)
+
+    def __getattr__(self, key, *args, **kw):
         if key not in self._req.keys():
             item = getattr(self._req, key, _marker)
             if item is not _marker:
                 return item
-        return self._req.__getattr__(key, returnTaints=1)
+        return TaintMethodWrapper(self._req.__getattr__)(key, *args, **kw)
+
+    def __getitem__(self, *args, **kw):
+        return TaintMethodWrapper(self._req.__getitem__)(*args, **kw)
+
+    def __len__(self):
+        return len(self._req)
+
+    def get(self, *args, **kw):
+        return TaintMethodWrapper(self._req.get)(*args, **kw)
+
+    def has_key(self, *args, **kw):
+        return TaintMethodWrapper(self._req.has_key)(*args, **kw)
+
+    def keys(self, *args, **kw):
+        return TaintMethodWrapper(self._req.keys)(*args, **kw)
 
 
-class TaintMethodWrapper:
+class TaintMethodWrapper(object):
+
     def __init__(self, method):
         self._method = method
 
