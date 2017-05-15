@@ -126,7 +126,7 @@ class RoleManager(BaseRoleManager):
 
         if fails:
             raise BadRequest('Some permissions had errors: ' +
-                             escape(', '.join(fails)))
+                             escape(', '.join(fails), True))
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 

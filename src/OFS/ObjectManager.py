@@ -94,11 +94,12 @@ def checkValidId(self, id, allow_dup=0):
     # set to false before the object is added.
     if not id or not isinstance(id, str):
         if isinstance(id, text_type):
-            id = escape(id)
+            id = escape(id, True)
         raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequest(
-            'The id "%s" contains characters illegal in URLs.' % escape(id))
+            ('The id "%s" contains characters '
+             'illegal in URLs.' % escape(id, True)))
     if id in ('.', '..'):
         raise BadRequest(
             'The id "%s" is invalid because it is not traversable.' % id)
@@ -541,7 +542,7 @@ class ObjectManager(CopyContainer,
                     'Object "%s" is locked.' % v.getId())
 
             if v is self:
-                raise BadRequest('%s does not exist' % escape(ids[-1]))
+                raise BadRequest('%s does not exist' % escape(ids[-1], True))
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
@@ -615,14 +616,14 @@ class ObjectManager(CopyContainer,
         """Import an object from a file"""
         dirname, file = os.path.split(file)
         if dirname:
-            raise BadRequest('Invalid file name %s' % escape(file))
+            raise BadRequest('Invalid file name %s' % escape(file, True))
 
         for impath in self._getImportPaths():
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
         else:
-            raise BadRequest('File does not exist: %s' % escape(file))
+            raise BadRequest('File does not exist: %s' % escape(file, True))
 
         imported = self._importObjectFromFile(
             filepath, verify=bool(REQUEST), set_owner=set_owner)

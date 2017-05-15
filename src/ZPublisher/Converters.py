@@ -76,7 +76,7 @@ def field2int(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "An integer was expected in the value %r" % escape(v)
+                "An integer was expected in the value %r" % escape(v, True)
             )
     raise ValueError('Empty entry when <strong>integer</strong> expected')
 
@@ -91,7 +91,7 @@ def field2float(v):
         except ValueError:
             raise ValueError(
                 "A floating-point number was expected in the value %r" %
-                escape(v)
+                escape(v, True)
             )
     raise ValueError(
         'Empty entry when <strong>floating-point number</strong> expected')
@@ -109,7 +109,7 @@ def field2long(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "A long integer was expected in the value %r" % escape(v)
+                "A long integer was expected in the value %r" % escape(v, True)
             )
     raise ValueError('Empty entry when <strong>integer</strong> expected')
 
@@ -133,7 +133,7 @@ def field2date(v):
     try:
         v = DateTime(v)
     except SyntaxError:
-        raise SyntaxError("Invalid DateTime " + escape(repr(v)))
+        raise SyntaxError("Invalid DateTime " + escape(repr(v), True))
     return v
 
 

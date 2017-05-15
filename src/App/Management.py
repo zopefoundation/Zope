@@ -89,17 +89,17 @@ class Tabs(Base):
         script = REQUEST['BASEPATH1']
         linkpat = '<a href="%s/manage_workspace">%s</a>'
         out = []
-        url = linkpat % (escape(script, 1), '&nbsp;/')
+        url = linkpat % (escape(script, True), '&nbsp;/')
         if not steps:
             return url
         last = steps.pop()
         for step in steps:
             script = '%s/%s' % (script, step)
-            out.append(linkpat % (escape(script, 1), escape(unquote(step))))
+            out.append(linkpat % (escape(script, True), escape(unquote(step))))
         script = '%s/%s' % (script, last)
         out.append(
             '<a class="strong-link" href="%s/manage_workspace">%s</a>' %
-            (escape(script, 1), escape(unquote(last))))
+            (escape(script, True), escape(unquote(last), False)))
         return '%s%s' % (url, '/'.join(out))
 
     def tabs_path_info(self, script, path):

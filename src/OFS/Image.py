@@ -910,11 +910,11 @@ class Image(File):
 
         if alt is None:
             alt = getattr(self, 'alt', '')
-        result = '%s alt="%s"' % (result, escape(alt, 1))
+        result = '%s alt="%s"' % (result, escape(alt, True))
 
         if title is None:
             title = getattr(self, 'title', '')
-        result = '%s title="%s"' % (result, escape(title, 1))
+        result = '%s title="%s"' % (result, escape(title, True))
 
         if height:
             result = '%s height="%s"' % (result, height)
