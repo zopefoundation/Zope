@@ -1,9 +1,14 @@
-import cgi
 import re
 import unittest
 
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Testing.ZopeTestCase import ZopeTestCase
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
+
 
 macro_outer = """
 <metal:defm define-macro="master">
@@ -118,7 +123,7 @@ class TestPersistent(ZopeTestCase):
         result = template().strip()
         self.assertEqual(result, u'Hello, World')
         editable_text = get_editable_content(template)
-        self.assertEqual(editable_text, cgi.escape(simple_i18n))
+        self.assertEqual(editable_text, escape(simple_i18n, False))
 
     def test_escape_on_edit(self):
         # check that escapable chars can round-trip intact.
@@ -126,7 +131,7 @@ class TestPersistent(ZopeTestCase):
         template = self._makeOne('foo', source)
         self.assertEqual(template(), source)  # nothing to render
         editable_text = get_editable_content(template)
-        self.assertEqual(editable_text, cgi.escape(source))
+        self.assertEqual(editable_text, escape(source, False))
 
     def test_macro_with_i18n(self):
         self._makeOne('macro_outer', macro_outer)
@@ -208,9 +213,9 @@ class TestPersistent(ZopeTestCase):
         editable_text = get_editable_content(template)
         # and the errors should be in an xml comment at the start of
         # the editable text
-        error_prefix = cgi.escape(
+        error_prefix = escape(
             '<!-- Page Template Diagnostics\n {0}\n-->\n'.format(
-                '\n '.join(template._v_errors)
+                '\n '.join(template._v_errors), False
             )
         )
         self.assertTrue(editable_text.startswith(error_prefix))

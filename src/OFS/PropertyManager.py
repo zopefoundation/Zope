@@ -124,8 +124,10 @@ class PropertyManager(Base):
 
     security.declareProtected(access_contents_information, 'valid_property_id')
     def valid_property_id(self, id):
-        if not id or id[:1] == '_' or (id[:3] == 'aq_') \
-           or (' ' in id) or hasattr(aq_base(self), id) or escape(id) != id:
+        if (not id or id[:1] == '_' or (id[:3] == 'aq_') or
+                (' ' in id) or
+                hasattr(aq_base(self), id) or
+                escape(id, True) != id):
             return 0
         return 1
 
@@ -202,7 +204,8 @@ class PropertyManager(Base):
         # the value to the type of the existing property.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise BadRequest('The property %s does not exist' % escape(id))
+            raise BadRequest(
+                'The property %s does not exist' % escape(id, True))
         if isinstance(value, str):
             proptype = self.getPropertyType(id) or 'string'
             if proptype in type_converters:
@@ -211,7 +214,8 @@ class PropertyManager(Base):
 
     def _delProperty(self, id):
         if not self.hasProperty(id):
-            raise ValueError('The property %s does not exist' % escape(id))
+            raise ValueError(
+                'The property %s does not exist' % escape(id, True))
         self._delPropValue(id)
         self._properties = tuple(i for i in self._properties if i['id'] != id)
 
@@ -326,8 +330,10 @@ class PropertyManager(Base):
         for name, value in props.items():
             if self.hasProperty(name):
                 if 'w' not in propdict[name].get('mode', 'wd'):
-                    raise BadRequest('%s cannot be changed' % escape(name))
+                    raise BadRequest(
+                        '%s cannot be changed' % escape(name, True))
                 self._updateProperty(name, value)
+
         if REQUEST:
             message = "Saved changes."
             return self.manage_propertiesForm(self, REQUEST,
@@ -367,7 +373,8 @@ class PropertyManager(Base):
         for id in ids:
             if not hasattr(aq_base(self), id):
                 raise BadRequest(
-                    'The property <em>%s</em> does not exist' % escape(id))
+                    ('The property <em>%s</em> '
+                     'does not exist' % escape(id, True)))
             if ('d' not in propdict[id].get('mode', 'wd')) or (id in nd):
                 raise BadRequest('Cannot delete %s' % id)
             self._delProperty(id)

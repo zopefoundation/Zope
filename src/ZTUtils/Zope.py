@@ -13,8 +13,6 @@
 """Zope-specific versions of ZTUTils classes
 """
 
-import cgi
-
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getitem
@@ -28,6 +26,11 @@ from ZTUtils.SimpleTree import SimpleTreeMaker
 from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion
 from ZTUtils.Tree import TreeMaker
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 
 class LazyFilter(Lazy):
@@ -231,7 +234,7 @@ def make_hidden_input(*args, **kwargs):
     d.update(kwargs)
 
     def hq(x):
-        return cgi.escape(x, quote=True)
+        return escape(x, quote=True)
 
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):

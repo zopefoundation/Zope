@@ -650,7 +650,7 @@ class HTTPRequest(BaseRequest):
                         if '<' in attr:
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
-                                escape(attr))
+                                escape(attr, True))
 
                     # defer conversion
                     if flags & CONVERTED:
@@ -1469,36 +1469,37 @@ class HTTPRequest(BaseRequest):
         result = "<h3>form</h3><table>"
         row = '<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k, v in _filterPasswordFields(self.form.items()):
-            result = result + row % (escape(k), escape(repr(v)))
+            result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>cookies</h3><table>"
         for k, v in _filterPasswordFields(self.cookies.items()):
-            result = result + row % (escape(k), escape(repr(v)))
+            result = result + row % (escape(k, False), escape(repr(v, False)))
         result = result + "</table><h3>lazy items</h3><table>"
         for k, v in _filterPasswordFields(self._lazies.items()):
-            result = result + row % (escape(k), escape(repr(v)))
+            result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>other</h3><table>"
         for k, v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS', 'RESPONSE'):
                 continue
-            result = result + row % (escape(k), escape(repr(v)))
+            result = result + row % (escape(k, False), escape(repr(v), False))
 
         for n in "0123456789":
             key = "URL%s" % n
             try:
-                result = result + row % (key, escape(self[key]))
+                result = result + row % (key, escape(self[key], False))
             except KeyError:
                 pass
         for n in "0123456789":
             key = "BASE%s" % n
             try:
-                result = result + row % (key, escape(self[key]))
+                result = result + row % (key, escape(self[key], False))
             except KeyError:
                 pass
 
         result = result + "</table><h3>environ</h3><table>"
         for k, v in self.environ.items():
             if k not in hide_key:
-                result = result + row % (escape(k), escape(repr(v)))
+                result = result + row % (
+                    escape(k, False), escape(repr(v), False))
         return result + "</table>"
 
     def __repr__(self):

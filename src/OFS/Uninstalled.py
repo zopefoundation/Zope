@@ -48,7 +48,7 @@ class BrokenClass(ZODB_Broken, Explicit, Item, Overridable):
     def __getattr__(self, name):
         if name[:3] == '_p_':
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
-        raise AttributeError(escape(name))
+        raise AttributeError(escape(name, True))
 
     manage = DTMLFile('dtml/brokenEdit', globals())
     manage_main = DTMLFile('dtml/brokenEdit', globals())

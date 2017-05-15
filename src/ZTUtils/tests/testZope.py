@@ -12,25 +12,25 @@ from ZTUtils.Zope import (
 
 
 class QueryTests(unittest.TestCase):
-    
+
     def testMarshalString(self):
         self.assertEqual(simple_marshal('string'), '')
-        
+
     def testMarshalBool(self):
         self.assertEqual(simple_marshal(True), ':boolean')
-        
+
     def testMarshalInt(self):
         self.assertEqual(simple_marshal(42), ":int")
-        
+
     def testMarshalFloat(self):
         self.assertEqual(simple_marshal(3.1415), ":float")
-    
+
     def testMarshalDate(self):
         self.assertEqual(simple_marshal(DateTime()), ":date")
-        
+
     def testMarshalUnicode(self):
         self.assertEqual(simple_marshal(u'unic\xF3de'), ":utf8:ustring")
-    
+
     def testMarshallLists(self):
         '''Test marshalling lists'''
         test_date = DateTime()

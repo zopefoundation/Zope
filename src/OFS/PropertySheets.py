@@ -163,7 +163,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
     def valid_property_id(self, id):
         if not id or id[:1] == '_' or (id[:3] == 'aq_') \
-           or (' ' in id) or escape(id) != id:
+           or (' ' in id) or escape(id, True) != id:
             return 0
         return 1
 
@@ -205,7 +205,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         # systems.
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise BadRequest('Invalid property id, %s.' % escape(id))
+            raise BadRequest('Invalid property id, %s.' % escape(id, True))
 
         if not self.property_extensible_schema__():
             raise BadRequest(
@@ -216,7 +216,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             if not (id == 'title' and id not in self.__dict__):
                 raise BadRequest(
                     'Invalid property id, <em>%s</em>. It is in use.' %
-                    escape(id))
+                    escape(id, True))
         if meta is None:
             meta = {}
         prop = {'id': id, 'type': type, 'meta': meta}
@@ -243,10 +243,11 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         # it will used to _replace_ the properties meta data.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise BadRequest('The property %s does not exist.' % escape(id))
+            raise BadRequest('The property %s does not exist.' %
+                             escape(id, True))
         propinfo = self.propertyInfo(id)
         if 'w' not in propinfo.get('mode', 'wd'):
-            raise BadRequest('%s cannot be changed.' % escape(id))
+            raise BadRequest('%s cannot be changed.' % escape(id, True))
         if isinstance(value, str):
             proptype = propinfo.get('type', 'string')
             if proptype in type_converters:
@@ -268,14 +269,15 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
-            raise BadRequest('The property %s does not exist.' % escape(id))
+            raise BadRequest('The property %s does not exist.' %
+                             escape(id, True))
         vself = self.v_self()
         if hasattr(vself, '_reserved_names'):
             nd = vself._reserved_names
         else:
             nd = ()
         if ('d' not in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
-            raise BadRequest('%s cannot be deleted.' % escape(id))
+            raise BadRequest('%s cannot be deleted.' % escape(id, True))
         delattr(vself, id)
         pself = self.p_self()
         pself._properties = tuple(
@@ -303,7 +305,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         for p in self._propertyMap():
             if p['id'] == id:
                 return p
-        raise ValueError('The property %s does not exist.' % escape(id))
+        raise ValueError('The property %s does not exist.' % escape(id, True))
 
     def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
@@ -366,7 +368,8 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         for name, value in props.items():
             if self.hasProperty(name):
                 if 'w' not in propdict[name].get('mode', 'wd'):
-                    raise BadRequest('%s cannot be changed' % escape(name))
+                    raise BadRequest('%s cannot be changed' %
+                                     escape(name, True))
                 self._updateProperty(name, value)
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)

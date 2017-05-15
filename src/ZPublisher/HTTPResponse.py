@@ -393,7 +393,7 @@ class HTTPBaseResponse(BaseResponse):
                         self.body = (
                             body[:index] +
                             b'\n<base href="' +
-                            escape(self.base, 1).encode('utf-8') +
+                            escape(self.base, True).encode('utf-8') +
                             b'" />\n' +
                             body[index:]
                         )
@@ -985,7 +985,7 @@ class WSGIResponse(HTTPBaseResponse):
         exc.detail = (
             'Sorry, the requested resource does not exist.'
             '<p>Check the URL and try again.</p>'
-            '<p><b>Resource:</b> %s</p>' % escape(entry))
+            '<p><b>Resource:</b> %s</p>' % escape(entry, True))
         raise exc
 
     # If a resource is forbidden, why reveal that it exists?
