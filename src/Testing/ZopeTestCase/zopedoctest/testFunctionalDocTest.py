@@ -89,7 +89,7 @@ class HTTPHeaderOutputTests(unittest.TestCase):
 
 
 SHOW_COOKIES_DTML = '''\
-<dtml-in "list(REQUEST.cookies.keys())">
+<dtml-in "REQUEST.cookies.keys()">
 <dtml-var sequence-item>: <dtml-var "REQUEST.cookies[_['sequence-item']]">
 </dtml-in>'''
 

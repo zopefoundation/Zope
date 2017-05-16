@@ -5,8 +5,8 @@
     <div tal:replace="python:'here==container:'+str(here==container)" />
     <div tal:replace="string:root:${root/getPhysicalPath}" />
     <div tal:replace="string:nothing:${nothing}" />
-    <div tal:define="cgi python:modules['cgi']"
-         tal:replace="python: dir(cgi)"
+    <div tal:define="mod modules/html | modules/cgi"
+         tal:replace="python: dir(mod)"
          tal:on-error="nothing" />
     <tal:error on-error="nothing">
       <div tal:define="test python: test" tal:replace="python: test" />

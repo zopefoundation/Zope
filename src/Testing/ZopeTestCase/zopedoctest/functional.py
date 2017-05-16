@@ -93,8 +93,8 @@ class DocResponseWrapper(ResponseWrapper):
         self.header_output = header_output
 
 
-basicre = re.compile('Basic (.+)?:(.+)?$')
-headerre = re.compile('(\S+): (.+)$')
+basicre = re.compile(r'Basic (.+)?:(.+)?$')
+headerre = re.compile(r'(\S+): (.+)$')
 
 
 def split_header(header):

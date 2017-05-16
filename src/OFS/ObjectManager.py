@@ -589,17 +589,20 @@ class ObjectManager(CopyContainer,
         suffix = 'zexp'
 
         if download:
-            f = BytesIO()
-            ob._p_jar.exportFile(ob._p_oid, f)
+            with BytesIO() as f:
+                ob._p_jar.exportFile(ob._p_oid, f)
+                result = f.getvalue()
+
             if RESPONSE is not None:
                 RESPONSE.setHeader('Content-type', 'application/data')
                 RESPONSE.setHeader('Content-Disposition',
                                    'inline;filename=%s.%s' % (id, suffix))
-            return f.getvalue()
+            return result
 
         cfg = getConfiguration()
         f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
-        ob._p_jar.exportFile(ob._p_oid, f)
+        with open(f, 'w+b') as fd:
+            ob._p_jar.exportFile(ob._p_oid, fd)
 
         if REQUEST is not None:
             return self.manage_main(

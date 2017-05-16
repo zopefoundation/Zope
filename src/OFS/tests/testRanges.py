@@ -169,7 +169,7 @@ class TestRequestRange(unittest.TestCase):
         import io
         import re
         import email
-        rangeParse = re.compile('bytes\s*(\d+)-(\d+)/(\d+)')
+        rangeParse = re.compile(r'bytes\s*(\d+)-(\d+)/(\d+)')
         req = self.app.REQUEST
         rsp = req.RESPONSE
 
