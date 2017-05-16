@@ -21,6 +21,7 @@ from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 class BaseResponse(object):
     """Base Response Class
     """
+    body = b''
     debug_mode = None
     _auth = None
     _error_format = 'text/plain'
@@ -98,7 +99,7 @@ class BaseResponse(object):
         return self.headers[name]
 
     def getBody(self):
-        'Returns a string representing the currently set body. '
+        'Returns bytes representing the currently set body. '
         return self.body
 
     def __bytes__(self):
@@ -128,6 +129,8 @@ class BaseResponse(object):
         Note that published objects must not generate any errors
         after beginning stream-oriented output.
         """
+        if isinstance(data, text_type):
+            raise ValueError('Data must be binary.')
         self.body = self.body + data
 
     def exception(self, fatal=0, info=None):

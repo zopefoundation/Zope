@@ -206,7 +206,9 @@ def default_zpublisher_encoding(value):
     from ZPublisher import Converters, HTTPRequest, HTTPResponse
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
+    HTTPRequest.HTTPRequest.charset = value
     HTTPResponse.default_encoding = value
+    HTTPResponse.HTTPBaseResponse.charset = value
     return value
 
 
