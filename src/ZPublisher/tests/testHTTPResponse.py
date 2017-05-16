@@ -16,17 +16,6 @@ from zExceptions import (
 
 class HTTPResponseTests(unittest.TestCase):
 
-    _old_default_encoding = None
-
-    def tearDown(self):
-        if self._old_default_encoding is not None:
-            self._setDefaultEncoding(self._old_default_encoding)
-
-    def _setDefaultEncoding(self, value):
-        from ZPublisher import HTTPResponse
-        (HTTPResponse.default_encoding,
-         self._old_default_encoding) = (value, HTTPResponse.default_encoding)
-
     def _getTargetClass(self):
         from ZPublisher.HTTPResponse import HTTPResponse
         return HTTPResponse
@@ -41,9 +30,11 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.errmsg, 'OK')
         self.assertEqual(response.base, '')
         self.assertEqual(response.body, b'')
+        self.assertEqual(response.charset, 'utf-8')
         self.assertEqual(response.cookies, {})
-        self.assertTrue(response.stdout is sys.stdout)
-        self.assertTrue(response.stderr is sys.stderr)
+        self.assertEqual(response.headers, {})
+        self.assertIsInstance(response.stdout, BytesIO)
+        self.assertIsInstance(response.stderr, BytesIO)
 
     def test_ctor_w_body(self):
         response = self._makeOne(body=b'ABC')
@@ -100,7 +91,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne(body=BODY,
                                  headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
-                         'application/foo; charset=utf-8')
+                         'application/foo')
         self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_charset_unicode_body_application_header_diff_encoding(self):
@@ -394,10 +385,13 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_getHeader_existing_not_literal(self):
         response = self._makeOne(headers={'foo': 'bar'})
+        response.setHeader('spam', 'Eggs')
         self.assertEqual(response.getHeader('Foo'), 'bar')
+        self.assertEqual(response.getHeader('Spam'), 'Eggs')
 
     def test_getHeader_existing_w_literal(self):
-        response = self._makeOne(headers={'Foo': 'Bar'})
+        response = self._makeOne()
+        response.setHeader('Foo', 'Bar', literal=True)
         self.assertEqual(response.getHeader('Foo', literal=True), 'Bar')
 
     def test_setHeader(self):
@@ -560,7 +554,7 @@ class HTTPResponseTests(unittest.TestCase):
                     b"<body>\nBODY\n</body>\n"
                     b"</html>\n")
         response = self._makeOne()
-        response.body = 'BEFORE'
+        response.body = b'BEFORE'
         result = response.setBody(('TITLE', b'BODY'))
         self.assertTrue(result)
         self.assertEqual(response.body, EXPECTED)
@@ -591,17 +585,17 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), '4')
 
     def test_setBody_string_HTML(self):
-        HTML = b'<html><head></head><body></body></html>'
+        HTML = '<html><head></head><body></body></html>'
         response = self._makeOne()
         result = response.setBody(HTML)
         self.assertTrue(result)
-        self.assertEqual(response.body, HTML)
+        self.assertEqual(response.body, HTML.encode('utf-8'))
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_asHTML(self):
-        HTML = b'<html><head></head><body></body></html>'
+        HTML = '<html><head></head><body></body></html>'
 
         class Dummy:
             def asHTML(self):
@@ -609,7 +603,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         result = response.setBody(Dummy())
         self.assertTrue(result)
-        self.assertEqual(response.body, HTML)
+        self.assertEqual(response.body, HTML.encode('utf-8'))
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
@@ -635,30 +629,6 @@ class HTTPResponseTests(unittest.TestCase):
         BOGUS = b'<Bogus a39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
-
-    def test_setBody_html_no_charset_escapes_latin1_gt_lt(self):
-        response = self._makeOne()
-        BEFORE = (b'<html><head></head><body><p>LT: \213</p>'
-                  b'<p>GT: \233</p></body></html>')
-        AFTER = (b'<html><head></head><body><p>LT: &lt;</p>'
-                 b'<p>GT: &gt;</p></body></html>')
-        response.setHeader('Content-Type', 'text/html')
-        result = response.setBody(BEFORE)
-        self.assertTrue(result)
-        self.assertEqual(response.body, AFTER)
-        self.assertEqual(response.getHeader('Content-Length'), str(len(AFTER)))
-
-    def test_setBody_latin_alias_escapes_latin1_gt_lt(self):
-        response = self._makeOne()
-        BEFORE = (b'<html><head></head><body><p>LT: \213</p>'
-                  b'<p>GT: \233</p></body></html>')
-        AFTER = (b'<html><head></head><body><p>LT: &lt;</p>'
-                 b'<p>GT: &gt;</p></body></html>')
-        response.setHeader('Content-Type', 'text/html; charset=latin1')
-        result = response.setBody(BEFORE)
-        self.assertTrue(result)
-        self.assertEqual(response.body, AFTER)
-        self.assertEqual(response.getHeader('Content-Length'), str(len(AFTER)))
 
     def test_setBody_calls_insertBase(self):
         response = self._makeOne()
@@ -754,14 +724,12 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(response._locked_status)
 
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
-        self._setDefaultEncoding('UTF8')
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         self.assertEqual(response._encode_unicode(UNICODE),
                          UNICODE.encode('UTF8'))
 
     def test__encode_unicode_w_content_type_no_charset_updates_charset(self):
-        self._setDefaultEncoding('UTF8')
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
@@ -770,24 +738,22 @@ class HTTPResponseTests(unittest.TestCase):
         response.getHeader('Content-Type', 'text/html; charset=UTF8')
 
     def test__encode_unicode_w_content_type_w_charset(self):
-        self._setDefaultEncoding('UTF8')
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
-                         UNICODE.encode('latin1'))
+                         UNICODE.encode('latin-1'))
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test__encode_unicode_w_content_type_w_charset_xml_preamble(self):
-        self._setDefaultEncoding('UTF8')
         PREAMBLE = u'<?xml version="1.0" ?>'
         ELEMENT = u'<element>Tr\u0039s Bien</element>'
         UNICODE = u'\n'.join([PREAMBLE, ELEMENT])
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
-                         '<?xml version="1.0" encoding="latin1" ?>\n' +
-                         ELEMENT.encode('latin1'))
+                         b'<?xml version="1.0" encoding="latin1" ?>\n' +
+                         ELEMENT.encode('latin-1'))
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test_quoteHTML(self):
@@ -1102,18 +1068,18 @@ class HTTPResponseTests(unittest.TestCase):
     def test___str__already_wrote(self):
         response = self._makeOne()
         response._wrote = True
-        self.assertEqual(str(response), '')
+        self.assertEqual(bytes(response), b'')
 
     def test___str__empty(self):
         response = self._makeOne()
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
@@ -1122,14 +1088,14 @@ class HTTPResponseTests(unittest.TestCase):
         # don't do anything to stop that.
         response = self._makeOne()
         response.setHeader('Content-Length', 42)
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 42',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 42',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
@@ -1137,59 +1103,59 @@ class HTTPResponseTests(unittest.TestCase):
         # If 'Transfer-Encoding' is set, don't force 'Content-Length'.
         response = self._makeOne()
         response.setHeader('Transfer-Encoding', 'slurry')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Transfer-Encoding: slurry',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Transfer-Encoding: slurry',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader(self):
         response = self._makeOne()
         response.setHeader('x-consistency', 'Foolish')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'X-Consistency: Foolish',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'X-Consistency: Foolish',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader_literal(self):
         response = self._makeOne()
         response.setHeader('X-consistency', 'Foolish', literal=True)
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'X-consistency: Foolish',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'X-consistency: Foolish',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
     def test___str__after_redirect(self):
         response = self._makeOne()
         response.redirect('http://example.com/')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 302 Found',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'Location: http://example.com/',
-            '',
+            b'Status: 302 Found',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'Location: http://example.com/',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
@@ -1197,103 +1163,103 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setCookie('foo', 'bar', path='/')
         response.appendCookie('foo', 'baz')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'Set-Cookie: foo="bar%3Abaz"; Path=/',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'Set-Cookie: foo="bar%3Abaz"; Path=/',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
     def test___str__after_expireCookie(self):
         response = self._makeOne()
         response.expireCookie('qux', path='/')
-        result = str(response)
-        lines = result.split('\r\n')
-        cookie_line = [l for l in lines if 'Set-Cookie' in l][0]
-        other_lines = [l for l in lines if 'Set-Cookie' not in l]
+        result = bytes(response)
+        lines = result.split(b'\r\n')
+        cookie_line = [l for l in lines if b'Set-Cookie' in l][0]
+        other_lines = [l for l in lines if b'Set-Cookie' not in l]
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'',
         ])
         self.assertEqual(set(other_lines), expected)
-        cookie_value = cookie_line.split(': ', 1)[-1]
+        cookie_value = cookie_line.split(b': ', 1)[-1]
         self.assertEqual(
-            set(cookie_value.split('; ')),
-            set(['qux="deleted"', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+            set(cookie_value.split(b'; ')),
+            set([b'qux="deleted"', b'Path=/', b'Max-Age=0',
+                 b'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
         )
 
     def test___str__after_addHeader(self):
         response = self._makeOne()
         response.addHeader('X-Consistency', 'Foolish')
         response.addHeader('X-Consistency', 'Oatmeal')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 7)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'X-Consistency: Foolish',
-            'X-Consistency: Oatmeal',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'X-Consistency: Foolish',
+            b'X-Consistency: Oatmeal',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
 
     def test___str__w_body(self):
         response = self._makeOne()
         response.setBody(b'BLAH')
-        result = str(response)
-        lines = result.split('\r\n')
+        result = bytes(response)
+        lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 4',
-            'Content-Type: text/plain; charset=utf-8',
-            'BLAH',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 4',
+            b'Content-Type: text/plain; charset=utf-8',
+            b'BLAH',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
-        self.assertEqual(lines[4], '')
-        self.assertEqual(lines[5], 'BLAH')
+        self.assertEqual(lines[4], b'')
+        self.assertEqual(lines[5], b'BLAH')
 
     def test_write_already_wrote(self):
         stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
         response.write(b'Kilroy was here!')
         self.assertTrue(response._wrote)
-        lines = stdout.getvalue().split('\r\n')
+        lines = stdout.getvalue().split(b'\r\n')
         self.assertEqual(len(lines), 5)
         expected = set([
-            'Status: 200 OK',
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
-            'Content-Length: 0',
-            'Kilroy was here!',
-            '',
+            b'Status: 200 OK',
+            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'Content-Length: 0',
+            b'Kilroy was here!',
+            b'',
         ])
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
-        self.assertEqual(lines[3], '')
-        self.assertEqual(lines[4], 'Kilroy was here!')
+        self.assertEqual(lines[3], b'')
+        self.assertEqual(lines[4], b'Kilroy was here!')
 
     def test_write_not_already_wrote(self):
         stdout = BytesIO()
         response = self._makeOne(stdout=stdout)
         response._wrote = True
         response.write(b'Kilroy was here!')
-        lines = stdout.getvalue().split('\r\n')
+        lines = stdout.getvalue().split(b'\r\n')
         self.assertEqual(len(lines), 1)
-        self.assertEqual(lines[0], 'Kilroy was here!')
+        self.assertEqual(lines[0], b'Kilroy was here!')
 
     def test__setBCIHeaders(self):
         response = self._makeOne()
@@ -1318,7 +1284,7 @@ class HTTPResponseTests(unittest.TestCase):
             raise AttributeError('ERROR VALUE')
         except AttributeError:
             body = response.exception()
-            self.assertTrue(b'ERROR VALUE' in str(body))
+            self.assertTrue(b'ERROR VALUE' in bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
             # required by Bobo Call Interface (BCI)

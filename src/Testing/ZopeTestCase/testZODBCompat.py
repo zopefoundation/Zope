@@ -63,7 +63,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
 
     def afterSetUp(self):
         self.setPermissions(cutpaste_permissions)
-        self.folder.addDTMLMethod('doc', file=b'foo')
+        self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we create a savepoint
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
@@ -96,7 +96,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
 
     def afterSetUp(self):
         self.setupLocalEnvironment()
-        self.folder.addDTMLMethod('doc', file=b'foo')
+        self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we create a savepoint
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)

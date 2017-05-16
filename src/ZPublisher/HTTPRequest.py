@@ -184,6 +184,7 @@ class HTTPRequest(BaseRequest):
     _file = None
     _urls = ()
 
+    charset = default_encoding
     retry_max_count = 0
 
     def supports_retry(self):

@@ -12,6 +12,7 @@
 ##############################################################################
 """ CGI Response Output formatter
 """
+from io import BytesIO
 import os
 import re
 import struct
@@ -19,7 +20,6 @@ import sys
 import time
 import zlib
 
-from six import binary_type
 from six import class_types
 from six import PY2
 from six import reraise
@@ -47,7 +47,6 @@ except ImportError:  # PY2
 
 if sys.version_info >= (3, ):
     from io import IOBase
-    unicode = str
 else:
     IOBase = file  # NOQA
 
@@ -75,14 +74,26 @@ status_codes['redirect'] = 302
 status_codes['resourcelockederror'] = 423
 
 
-start_of_header_search = re.compile(b'(<head[^>]*>)', re.IGNORECASE).search
+start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
+base_re_search = re.compile('(<base.*?>)', re.I).search
+bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
+latin1_alias_match = re.compile(
+    r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
+    r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
+    r'(iso[-_]8859[-_]1(:1987)?)))?$', re.I).match
+charset_re_match = re.compile(
+    r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
+    r'charset=([-_0-9a-z]+' +
+    r')(?:(?:\s*;)|\Z)', re.IGNORECASE).match
+absuri_match = re.compile(r'\w+://[\w\.]+').match
+tag_search = re.compile('[a-zA-Z]>').search
 
-_gzip_header = ("\037\213"  # magic
-                "\010"  # compression method
-                "\000"  # flags
-                "\000\000\000\000"  # time
-                "\002"
-                "\377")
+_gzip_header = (b"\037\213"  # magic
+                b"\010"  # compression method
+                b"\000"  # flags
+                b"\000\000\000\000"  # time
+                b"\002"
+                b"\377")
 
 # these mime major types should not be gzip content encoded
 uncompressableMimeMajorTypes = ('image',)
@@ -141,6 +152,7 @@ class HTTPBaseResponse(BaseResponse):
 
     body = b''
     base = ''
+    charset = default_encoding
     realm = 'Zope'
     _error_format = 'text/html'
     _locked_status = 0
@@ -153,30 +165,41 @@ class HTTPBaseResponse(BaseResponse):
     use_HTTP_content_compression = 0
 
     def __init__(self,
-                 body='',
+                 body=b'',
                  status=200,
                  headers=None,
-                 stdout=sys.stdout,
-                 stderr=sys.stderr):
+                 stdout=None,
+                 stderr=None):
         """ Create a new response using the given values.
         """
-        if headers is None:
-            headers = {}
-        self.headers = headers
         self.accumulated_headers = []
+        self.cookies = {}
+        self.headers = {}
 
-        if status == 200:
-            self.status = 200
-            self.errmsg = 'OK'
-        else:
-            self.setStatus(status)
+        if headers is not None:
+            for key, value in headers.items():
+                self.setHeader(key, value)
+
+        self.setStatus(status)
+
+        if stdout is None:
+            stdout = BytesIO()
+        self.stdout = stdout
+
+        if stderr is None:
+            stderr = BytesIO()
+        self.stderr = stderr
 
         if body:
             self.setBody(body)
 
-        self.cookies = {}
-        self.stdout = stdout
-        self.stderr = stderr
+    @property
+    def text(self):
+        return self.body.decode(self.charset)
+
+    @text.setter
+    def text(self, value):
+        self.body = value.encode(self.charset)
 
     def redirect(self, location, status=302, lock=0):
         """Cause a redirection without raising an error"""
@@ -324,6 +347,18 @@ class HTTPBaseResponse(BaseResponse):
         if not scrubbed:
             name, value = _scrubHeader(name, value)
         key = name.lower()
+
+        if key == 'content-type':
+            if 'charset' in value:
+                # Update self.charset with the charset from the header
+                match = charset_re_match(value)
+                if match:
+                    self.charset = match.group(1)
+            else:
+                # Update the header value with self.charset
+                if value.startswith('text/'):
+                    value = value + '; charset=' + self.charset
+
         name = literal and name or key
         self.headers[name] = value
 
@@ -374,48 +409,41 @@ class HTTPBaseResponse(BaseResponse):
 
         self.base = str(base)
 
-    def insertBase(self,
-                   base_re_search=re.compile(b'(<base.*?>)', re.I).search):
-
+    def insertBase(self):
         # Only insert a base tag if content appears to be html.
         content_type = self.headers.get('content-type', '').split(';')[0]
         if content_type and (content_type != 'text/html'):
             return
 
-        if self.base:
-            body = self.body
-            if body:
-                match = start_of_header_search(body)
-                if match is not None:
-                    index = match.start(0) + len(match.group(0))
-                    ibase = base_re_search(body)
-                    if ibase is None:
-                        self.body = (
-                            body[:index] +
-                            b'\n<base href="' +
-                            escape(self.base, True).encode('utf-8') +
-                            b'" />\n' +
-                            body[index:]
-                        )
-                        self.setHeader('content-length', len(self.body))
+        if self.base and self.body:
+            text = self.text
+            match = start_of_header_search(text)
+            if match is not None:
+                index = match.start(0) + len(match.group(0))
+                ibase = base_re_search(text)
+                if ibase is None:
+                    text = (
+                        text[:index] +
+                        '\n<base href="' +
+                        escape(self.base, True) +
+                        '" />\n' +
+                        text[index:]
+                    )
+                    self.text = text
+                    self.setHeader('content-length', len(text))
 
-    def isHTML(self, s):
-        s = s.lstrip()
-        # Note that the string can be big, so s.lower().startswith() is more
-        # expensive than s[:n].lower().
-        if (s[:6].lower() == b'<html>' or s[:14].lower() == b'<!doctype html'):
-            return 1
-        if s.find(b'</') > 0:
-            return 1
-        return 0
+    def isHTML(self, text):
+        text = text.lstrip()
+        # Note that the string can be big, so text.lower().startswith()
+        # is more expensive than s[:n].lower().
+        if (text[:6].lower() == '<html>' or
+                text[:14].lower() == '<!doctype html'):
+            return True
+        if text.find('</') > 0:
+            return True
+        return False
 
-    def setBody(self, body, title='', is_error=0,
-                bogus_str_search=re.compile(" [a-fA-F0-9]+>$").search,
-                latin1_alias_match=re.compile(
-                    r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
-                    r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
-                    r'(iso[-_]8859[-_]1(:1987)?)))?$', re.I).match,
-                lock=None):
+    def setBody(self, body, title='', is_error=False, lock=None):
         """ Set the body of the response
 
         Sets the return body equal to the (string) argument "body". Also
@@ -453,9 +481,8 @@ class HTTPBaseResponse(BaseResponse):
         if isinstance(body, tuple) and len(body) == 2:
             title, body = body
 
-        if not isinstance(body, binary_type):
-            if hasattr(body, 'asHTML'):
-                body = body.asHTML()
+        if hasattr(body, 'asHTML'):
+            body = body.asHTML()
 
         if isinstance(body, text_type):
             body = self._encode_unicode(body)
@@ -465,44 +492,38 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 body = bytes(body)
             except UnicodeError:
-                body = self._encode_unicode(unicode(body))
+                body = self._encode_unicode(text_type(body))
 
+        # At this point body is always binary
         l = len(body)
-        if ((l < 200) and body[:1] == '<' and body.find('>') == l - 1 and
+        if ((l < 200) and body[:1] == b'<' and body.find(b'>') == l - 1 and
                 bogus_str_search(body) is not None):
-            self.notFoundError(body[1:-1])
+            self.notFoundError(body[1:-1].decode(self.charset))
         else:
             if title:
                 title = str(title)
                 if not is_error:
-                    self.body = self._html(title, body)
+                    self.body = body = self._html(
+                        title, body.decode(self.charset)).encode(self.charset)
                 else:
-                    self.body = self._error_html(title, body)
+                    self.body = body = self._error_html(
+                        title, body.decode(self.charset)).encode(self.charset)
             else:
                 self.body = body
 
         content_type = self.headers.get('content-type')
 
-        # Some browsers interpret certain characters in Latin 1 as html
-        # special characters. These cannot be removed by html_quote,
-        # because this is not the case for all encodings.
-        if (content_type == 'text/html' or
-                content_type and latin1_alias_match(content_type) is not None):
-            body = b'&lt;'.join(body.split(b'\213'))
-            body = b'&gt;'.join(body.split(b'\233'))
-            self.body = body
-
         if content_type is None:
-            if self.isHTML(self.body):
-                content_type = 'text/html; charset=%s' % default_encoding
+            if self.isHTML(body.decode(self.charset)):
+                content_type = 'text/html; charset=%s' % self.charset
             else:
-                content_type = 'text/plain; charset=%s' % default_encoding
+                content_type = 'text/plain; charset=%s' % self.charset
             self.setHeader('content-type', content_type)
         else:
             if (content_type.startswith('text/') and
                     'charset=' not in content_type):
                 content_type = '%s; charset=%s' % (content_type,
-                                                   default_encoding)
+                                                   self.charset)
                 self.setHeader('content-type', content_type)
 
         self.setHeader('content-length', len(self.body))
@@ -521,7 +542,9 @@ class HTTPBaseResponse(BaseResponse):
                                       zlib.DEF_MEM_LEVEL, 0)
                 chunks = [_gzip_header, co.compress(body),
                           co.flush(),
-                          struct.pack("<ll", zlib.crc32(body), startlen)]
+                          struct.pack("<LL",
+                                      zlib.crc32(body) & 0xffffffff,
+                                      startlen)]
                 z = b''.join(chunks)
                 newlen = len(z)
                 if newlen < startlen:
@@ -592,44 +615,19 @@ class HTTPBaseResponse(BaseResponse):
 
         return self.use_HTTP_content_compression
 
-    def _encode_unicode(self, body,
-                        charset_re=re.compile(
-                            r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
-                            r'charset=([-_0-9a-z]+' +
-                            r')(?:(?:\s*;)|\Z)', re.IGNORECASE)):
+    def _encode_unicode(self, text):
+        # Fixes the encoding in the XML preamble according
+        # to the charset specified in the content-type header.
+        if text.startswith('<?xml'):
+            pos_right = text.find('?>')  # right end of the XML preamble
+            text = ('<?xml version="1.0" encoding="' +
+                    self.charset +
+                    '" ?>' +
+                    text[pos_right + 2:])
 
-        def fix_xml_preamble(body, encoding):
-            """ fixes the encoding in the XML preamble according
-                to the charset specified in the content-type header.
-            """
-
-            if body.startswith(b'<?xml'):
-                pos_right = body.find(b'?>')  # right end of the XML preamble
-                body = (b'<?xml version="1.0" encoding="' +
-                        encoding.encode(encoding) +
-                        b'" ?>' +
-                        body[pos_right + 2:])
-            return body
-
-        # Encode the Unicode data as requested
-
-        ct = self.headers.get('content-type')
-        if ct:
-            match = charset_re.match(ct)
-            if match:
-                encoding = match.group(1)
-                body = body.encode(encoding)
-                body = fix_xml_preamble(body, encoding)
-                return body
-            else:
-                if ct.startswith('text/') or ct.startswith('application/'):
-                    self.headers['content-type'] = '%s; charset=%s' % (
-                        ct, default_encoding)
-
-        # Use the default character encoding
-        body = body.encode(default_encoding, 'replace')
-        body = fix_xml_preamble(body, default_encoding)
-        return body
+        # Encode the text data using the response charset
+        text = text.encode(self.charset, 'replace')
+        return text
 
     def _cookie_list(self):
         cookie_list = []
@@ -703,7 +701,7 @@ class HTTPResponse(HTTPBaseResponse):
 
     _wrote = None
 
-    def __bytes__(self, html_search=re.compile('<html>', re.I).search):
+    def __bytes__(self):
         if self._wrote:
             return b''  # Streaming output was used.
 
@@ -749,21 +747,21 @@ class HTTPResponse(HTTPBaseResponse):
         return '\n'.join(tb)
 
     def _html(self, title, body):
-        return (b"<html>\n"
-                b"<head>\n<title>%s</title>\n</head>\n"
-                b"<body>\n%s\n</body>\n"
-                b"</html>\n" % (title, body))
+        return ("<html>\n"
+                "<head>\n<title>%s</title>\n</head>\n"
+                "<body>\n%s\n</body>\n"
+                "</html>\n" % (title, body))
 
     def _error_html(self, title, body):
-        return (b"""<!DOCTYPE html><html>
+        return ("""<!DOCTYPE html><html>
   <head><title>Site Error</title><meta charset="utf-8" /></head>
   <body bgcolor="#FFFFFF">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
-  <p><strong>""" + title + b"""</strong></p>
+  <p><strong>""" + title + """</strong></p>
 
-  """ + body + b"""
+  """ + body + """
   <hr noshade="noshade"/>
 
   <p>Troubleshooting Suggestions</p>
@@ -782,12 +780,12 @@ class HTTPResponse(HTTPBaseResponse):
     def notFoundError(self, entry='Unknown'):
         self.setStatus(404)
         raise NotFound(self._error_html(
-            b"Resource not found",
-            b"Sorry, the requested resource does not exist." +
-            b"<p>Check the URL and try again.</p>" +
-            b"<p><b>Resource:</b> " +
-            escape(entry).encode('utf-8') +
-            b"</p>"
+            "Resource not found",
+            "Sorry, the requested resource does not exist." +
+            "<p>Check the URL and try again.</p>" +
+            "<p><b>Resource:</b> " +
+            escape(entry) +
+            "</p>"
         ))
 
     # If a resource is forbidden, why reveal that it exists?
@@ -795,27 +793,27 @@ class HTTPResponse(HTTPBaseResponse):
 
     def debugError(self, entry):
         raise NotFound(self._error_html(
-            b"Debugging Notice",
-            b"Zope has encountered a problem publishing your object.<p>"
-            b"\n" +
-            entry.encode('utf-8') +
-            b"</p>"))
+            "Debugging Notice",
+            "Zope has encountered a problem publishing your object.<p>"
+            "\n" +
+            entry +
+            "</p>"))
 
     def badRequestError(self, name):
         self.setStatus(400)
         if re.match('^[A-Z_0-9]+$', name):
             raise InternalError(self._error_html(
-                b"Internal Error",
-                b"Sorry, an internal error occurred in this resource."))
+                "Internal Error",
+                "Sorry, an internal error occurred in this resource."))
 
         raise BadRequest(self._error_html(
-            b"Invalid request",
-            b"The parameter, <em>" +
-            name.encode('utf-8') +
-            b"</em>, " +
-            b"was omitted from the request.<p>" +
-            b"Make sure to specify all required parameters, " +
-            b"and try the request again.</p>"
+            "Invalid request",
+            "The parameter, <em>" +
+            name +
+            "</em>, " +
+            "was omitted from the request.<p>" +
+            "Make sure to specify all required parameters, " +
+            "and try the request again.</p>"
         ))
 
     def unauthorized(self):
@@ -853,10 +851,7 @@ class HTTPResponse(HTTPBaseResponse):
 
         del tb
 
-    def exception(self, fatal=0, info=None,
-                  absuri_match=re.compile(r'\w+://[\w\.]+').match,
-                  tag_search=re.compile('[a-zA-Z]>').search,
-                  abort=1):
+    def exception(self, fatal=0, info=None, abort=1):
         if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
         else:
@@ -878,7 +873,7 @@ class HTTPResponse(HTTPBaseResponse):
                 if self.status == 300:
                     self.setStatus(302)
                 self.setHeader('location', v.args[0])
-                self.setBody('')
+                self.setBody(b'')
                 tb = None
                 return self
             else:
@@ -900,7 +895,7 @@ class HTTPResponse(HTTPBaseResponse):
                 try:
                     b = str(b)
                 except UnicodeEncodeError:
-                    b = self._encode_unicode(unicode(b))
+                    b = self._encode_unicode(text_type(b))
             except Exception:
                 b = '<unprintable %s object>' % type(b).__name__
 
@@ -909,7 +904,7 @@ class HTTPResponse(HTTPBaseResponse):
                 (str(t),
                  'Zope has exited normally.<p>' +
                  self._traceback(t, v, tb) + '</p>'),
-                is_error=1)
+                is_error=True)
         else:
             try:
                 match = tag_search(b)
@@ -920,18 +915,18 @@ class HTTPResponse(HTTPBaseResponse):
                     (str(t),
                      'Sorry, a site error occurred.<p>' +
                      self._traceback(t, v, tb) + '</p>'),
-                    is_error=1)
+                    is_error=True)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
                 if APPEND_TRACEBACKS:
                     body = self.setBody(b + self._traceback(
-                        t, '(see above)', tb), is_error=1)
+                        t, '(see above)', tb), is_error=True)
                 else:
-                    body = self.setBody(b, is_error=1)
+                    body = self.setBody(b, is_error=True)
             else:
                 body = self.setBody(
                     (str(t), b + self._traceback(t, '(see above)', tb, 0)),
-                    is_error=1)
+                    is_error=True)
         del tb
         return body
 
@@ -1078,7 +1073,7 @@ class WSGIResponse(HTTPBaseResponse):
 
         self.stdout.write(data)
 
-    def setBody(self, body, title='', is_error=0):
+    def setBody(self, body, title='', is_error=False):
         if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
@@ -1087,17 +1082,16 @@ class WSGIResponse(HTTPBaseResponse):
             self.body = body
         elif IStreamIterator.providedBy(body):
             self.body = body
-            super(WSGIResponse, self).setBody('', title, is_error)
+            super(WSGIResponse, self).setBody(b'', title, is_error)
         elif IUnboundStreamIterator.providedBy(body):
             self.body = body
             self._streaming = 1
-            super(WSGIResponse, self).setBody('', title, is_error)
+            super(WSGIResponse, self).setBody(b'', title, is_error)
         else:
             super(WSGIResponse, self).setBody(body, title, is_error)
 
     def __bytes__(self):
         raise NotImplementedError
 
-    if PY2:
-        def __str__(self):
-            raise NotImplementedError
+    def __str__(self):
+        raise NotImplementedError

@@ -13,8 +13,11 @@
 ##############################################################################
 
 import unittest
-import ExtensionClass
+
 import Acquisition
+import ExtensionClass
+from six import PY2
+
 from ZPublisher.mapply import mapply
 
 
@@ -51,13 +54,15 @@ class MapplyTests(unittest.TestCase):
         v = mapply(cc.compute, (), values)
         self.assertEqual(v, '334')
 
-        class c2:
-            """Must be a classic class."""
+        if PY2:
+            # Testing old-style class behavior.
+            class c2:
+                """Must be a classic class."""
 
-        c2inst = c2()
-        c2inst.__call__ = cc
-        v = mapply(c2inst, (), values)
-        self.assertEqual(v, '334')
+            c2inst = c2()
+            c2inst.__call__ = cc
+            v = mapply(c2inst, (), values)
+            self.assertEqual(v, '334')
 
     def testObjectWithCall(self):
         # Make sure that the __call__ of an object can also be another

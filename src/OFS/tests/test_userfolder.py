@@ -62,7 +62,7 @@ class UserFolderTests(unittest.TestCase):
         app._addRole('role1')
         app.manage_role('role1', ['View'])
         # Set up a published object accessible to user
-        app.addDTMLMethod('doc', file=b'')
+        app.addDTMLMethod('doc', file='')
         app.doc.manage_permission('View', ['role1'], acquire=0)
         # Rig the REQUEST so it looks like we traversed to doc
         app.REQUEST.set('PUBLISHED', app.doc)
