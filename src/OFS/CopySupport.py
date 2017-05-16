@@ -528,11 +528,11 @@ class CopySource(Base):
                 'Container "%r" needs to be in the database' % container)
 
         # Ask an object for a new copy of itself.
-        f = tempfile.TemporaryFile()
-        self._p_jar.exportFile(self._p_oid, f)
-        f.seek(0)
-        ob = container._p_jar.importFile(f)
-        f.close()
+        with tempfile.TemporaryFile() as f:
+            self._p_jar.exportFile(self._p_oid, f)
+            f.seek(0)
+            ob = container._p_jar.importFile(f)
+
         # Cleanup the copy.  It may contain private objects that the current
         # user is not allowed to see.
         sm = getSecurityManager()

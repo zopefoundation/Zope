@@ -11,12 +11,12 @@
 #
 ##############################################################################
 
-import sys
 import unittest
 
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import Implicit
+from six import text_type
 import zope.component.testing
 from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
@@ -26,9 +26,6 @@ from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
-
-if sys.version_info >= (3, ):
-    unicode = str
 
 
 class AqPageTemplate(Implicit, PageTemplate):
@@ -90,7 +87,8 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         t.write(util.read_input(fname))
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
         expect = util.read_output(fname)
-        expect = unicode(expect, 'utf8')
+        if not isinstance(expect, text_type):
+            expect = text_type(expect, 'utf-8')
         out = t(*args, **kwargs)
         util.check_html(expect, out)
 

@@ -215,8 +215,9 @@ class TestPersistent(ZopeTestCase):
         # the editable text
         error_prefix = escape(
             '<!-- Page Template Diagnostics\n {0}\n-->\n'.format(
-                '\n '.join(template._v_errors), False
-            )
+                '\n '.join(template._v_errors)
+            ),
+            False,
         )
         self.assertTrue(editable_text.startswith(error_prefix))
 

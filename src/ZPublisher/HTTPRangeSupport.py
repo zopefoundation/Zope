@@ -23,7 +23,7 @@ import re
 import sys
 from zope.interface import Interface
 
-WHITESPACE = re.compile('\s*', re.MULTILINE)
+WHITESPACE = re.compile(r'\s*', re.MULTILINE)
 
 
 def parseRange(header):

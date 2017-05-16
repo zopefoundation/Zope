@@ -1,5 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:tal="http://xml.zope.org/namespaces/tal">
-  <span tal:define="soup view/tagsoup | options/soup"
-        tal:replace="structure python: modules['cgi'].escape(soup, True)" />
+  <span tal:define="soup view/tagsoup | options/soup;
+                    mod modules/html | modules/cgi"
+        tal:replace="structure python: mod.escape(soup, True)" />
 </div>
