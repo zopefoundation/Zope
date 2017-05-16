@@ -7,7 +7,7 @@ Chameleon==2.25
 DateTime==4.2
 DocumentTemplate==3.0a2
 ExtensionClass==4.3.0
-Missing==3.2
+Missing==4.0
 MultiMapping==3.1
 PasteDeploy==1.5.2
 Persistence==3.0a3
