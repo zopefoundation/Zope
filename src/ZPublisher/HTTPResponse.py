@@ -501,7 +501,7 @@ class HTTPBaseResponse(BaseResponse):
             self.notFoundError(body[1:-1].decode(self.charset))
         else:
             if title:
-                title = str(title)
+                title = text_type(title)
                 if not is_error:
                     self.body = body = self._html(
                         title, body.decode(self.charset)).encode(self.charset)
@@ -893,15 +893,15 @@ class HTTPResponse(HTTPBaseResponse):
         if isinstance(b, Exception):
             try:
                 try:
-                    b = str(b)
-                except UnicodeEncodeError:
-                    b = self._encode_unicode(text_type(b))
+                    b = text_type(b)
+                except UnicodeDecodeError:
+                    b = self._encode_unicode(text_type(b)).decode(self.charset)
             except Exception:
                 b = '<unprintable %s object>' % type(b).__name__
 
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
-                (str(t),
+                (text_type(t),
                  'Zope has exited normally.<p>' +
                  self._traceback(t, v, tb) + '</p>'),
                 is_error=True)
@@ -910,9 +910,10 @@ class HTTPResponse(HTTPBaseResponse):
                 match = tag_search(b)
             except TypeError:
                 match = None
+
             if match is None:
                 body = self.setBody(
-                    (str(t),
+                    (text_type(t),
                      'Sorry, a site error occurred.<p>' +
                      self._traceback(t, v, tb) + '</p>'),
                     is_error=True)
@@ -925,7 +926,8 @@ class HTTPResponse(HTTPBaseResponse):
                     body = self.setBody(b, is_error=True)
             else:
                 body = self.setBody(
-                    (str(t), b + self._traceback(t, '(see above)', tb, 0)),
+                    (text_type(t),
+                     b + self._traceback(t, '(see above)', tb, 0)),
                     is_error=True)
         del tb
         return body
