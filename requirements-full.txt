@@ -8,7 +8,7 @@ DateTime==4.2
 DocumentTemplate==3.0a2
 ExtensionClass==4.3.0
 Missing==4.0
-MultiMapping==3.1
+MultiMapping==4.0
 PasteDeploy==1.5.2
 Persistence==3.0a3
 Products.BTreeFolder2==3.0

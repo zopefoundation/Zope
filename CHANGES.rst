@@ -18,6 +18,7 @@ Features Added
 - Updated distributions:
 
     - Missing = 4.0
+    - MultiMapping = 4.0
     - Record = 3.4
 
 
