@@ -1206,9 +1206,8 @@ class HTTPRequest(BaseRequest):
             object = req.traverse(path)
         except Exception as exc:
             rsp.exception()
-            if object is None:
-                req.clear()
-                raise exc.__class__(rsp.errmsg)
+            req.clear()
+            raise exc.__class__(rsp.errmsg)
 
         # The traversal machinery may return a "default object"
         # like an index_html document. This is not appropriate
