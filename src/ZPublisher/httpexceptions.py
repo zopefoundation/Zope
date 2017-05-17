@@ -20,8 +20,12 @@ from zExceptions import (
 
 class HTTPExceptionHandler(object):
 
-    def __init__(self, application):
+    def __init__(self, application, global_conf=None):
         self.application = application
+        debug_mode = False
+        if global_conf is not None:
+            debug_mode = global_conf.get('debug_mode', 'false') == 'true'
+        self.debug_mode = debug_mode
 
     def __call__(self, environ, start_response):
         environ['Zope2.httpexceptions'] = self
@@ -30,6 +34,10 @@ class HTTPExceptionHandler(object):
         except HTTPException as exc:
             return exc(environ, start_response)
         except Exception as exc:
+            if self.debug_mode:
+                # In debug mode, let the web server log a real
+                # traceback
+                raise
             return self.catch_all_response(exc)(environ, start_response)
 
     def catch_all_response(self, exc):
@@ -39,4 +47,4 @@ class HTTPExceptionHandler(object):
 
 
 def main(app, global_conf=None):
-    return HTTPExceptionHandler(app)
+    return HTTPExceptionHandler(app, global_conf=global_conf)
