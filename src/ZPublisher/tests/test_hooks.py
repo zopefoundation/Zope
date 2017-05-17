@@ -30,7 +30,7 @@ class TestHooks(unittest.TestCase):
         set_(event)
 
         from zope.globalrequest import getRequest
-        self.assertEquals(getRequest(), event.request)
+        self.assertEqual(getRequest(), event.request)
 
     def test_clear(self):
 
@@ -49,4 +49,4 @@ class TestHooks(unittest.TestCase):
         clear(event)
 
         from zope.globalrequest import getRequest
-        self.assertEquals(getRequest(), None)
+        self.assertEqual(getRequest(), None)

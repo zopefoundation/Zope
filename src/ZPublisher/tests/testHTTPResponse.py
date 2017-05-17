@@ -2,8 +2,10 @@
 
 from io import BytesIO
 import sys
+import traceback
 import unittest
 
+from six import PY3
 from zExceptions import (
     BadRequest,
     Forbidden,
@@ -1285,6 +1287,29 @@ class HTTPResponseTests(unittest.TestCase):
         except AttributeError:
             body = response.exception()
             self.assertTrue(b'ERROR VALUE' in bytes(body))
+            self.assertEqual(response.status, 500)
+            self.assertEqual(response.errmsg, 'Internal Server Error')
+            # required by Bobo Call Interface (BCI)
+            self.assertIn('AttributeError',
+                          response.headers['bobo-exception-type'])
+            self.assertEqual(response.headers['bobo-exception-value'],
+                             'See the server error log for details')
+            self.assertTrue('bobo-exception-file' in response.headers)
+            self.assertTrue('bobo-exception-line' in response.headers)
+
+    def test_exception_500_text(self):
+        message = u'ERROR \xe4 VALUE'
+        exc = AttributeError(message)
+        # This gets called deep down in the zExceptions.ExceptionFormatter
+        # and produces different results in Python 2/3.
+        expected = traceback.format_exception_only(
+            exc.__class__, exc)[0].encode('utf-8')
+        response = self._makeOne()
+        try:
+            raise exc
+        except AttributeError:
+            body = response.exception()
+            self.assertTrue(expected in bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
             # required by Bobo Call Interface (BCI)

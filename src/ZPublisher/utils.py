@@ -13,15 +13,12 @@
 
 import base64
 import logging
-import sys
 
 from Acquisition import aq_inner, aq_parent
 from six import PY3
+from six import binary_type
+from six import text_type
 import transaction
-
-if sys.version_info >= (3, ):
-    basestring = (bytes, str)
-    unicode = str
 
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
@@ -74,11 +71,11 @@ def recordMetaData(object, request):
 
 
 def safe_unicode(value):
-    if isinstance(value, unicode):
+    if isinstance(value, text_type):
         return value
-    elif isinstance(value, basestring):
+    elif isinstance(value, binary_type):
         try:
-            value = unicode(value, 'utf-8')
+            value = text_type(value, 'utf-8')
         except UnicodeDecodeError:
             value = value.decode('utf-8', 'replace')
     return value
