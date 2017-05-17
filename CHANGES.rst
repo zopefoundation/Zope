@@ -17,9 +17,12 @@ Features Added
 
 - Updated distributions:
 
+    - AccessControl = 4.0a7
+    - DocumentTemplate = 3.0a3
     - Missing = 4.0
     - MultiMapping = 4.0
     - Record = 3.4
+    - zExceptions = 3.6.1
 
 
 Restructuring
