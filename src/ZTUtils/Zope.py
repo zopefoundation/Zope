@@ -17,6 +17,8 @@ from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getitem
 from DateTime.DateTime import DateTime
+from six import binary_type
+from six import PY2
 from six import text_type
 from six.moves.urllib.parse import quote, unquote
 
@@ -151,6 +153,7 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
         req.RESPONSE.setCookie(state_name, encodeExpansion(rows))
         return tree, rows
 
+
 # Make the Batch class test security, and let it skip unauthorized.
 _Batch = Batch
 
@@ -170,10 +173,12 @@ class Batch(Batch):
 # "make_query(bstart=batch.end)" to the other.
 
 
-#Do not do this at import time.
-#Call '_default_encoding()' at run time to retrieve it from config, if present
-#If not configured, will be 'utf8' by default.
+# Do not do this at import time.
+# Call '_default_encoding()' at run time to retrieve it from config, if present
+# If not configured, will be 'utf8' by default.
 _DEFAULT_ENCODING = None
+
+
 def _default_encoding():
     ''' Retreive default encoding from config '''
     global _DEFAULT_ENCODING
@@ -185,6 +190,7 @@ def _default_encoding():
         except AttributeError:
             _DEFAULT_ENCODING = 'utf8'
     return _DEFAULT_ENCODING
+
 
 def make_query(*args, **kwargs):
     '''Construct a URL query string, with marshalling markup.
@@ -208,7 +214,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        if isinstance(v, text_type):
+        if PY2 and isinstance(v, text_type):
             v = v.encode(_default_encoding())
         qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
@@ -297,7 +303,11 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
+    if isinstance(v, binary_type):
+        # Py 3 only
+        return ':bytes'
     if isinstance(v, text_type):
+        # Py 2 only
         encoding = _default_encoding()
         return ':%s:ustring' % (encoding,)
     if isinstance(v, bool):

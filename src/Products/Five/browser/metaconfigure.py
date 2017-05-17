@@ -19,6 +19,7 @@ namespace in ZCML known from zope.app.
 
 import os
 import sys
+from inspect import isfunction
 from inspect import ismethod
 
 from zope.component import queryMultiAdapter
@@ -56,6 +57,11 @@ from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
+def is_method(func):
+    # Under Python 3, there are no unbound methods
+    return isfunction(func) or ismethod(func)
+
+
 def _configure_z2security(_context, new_class, required):
     _context.action(
         discriminator=('five:protectClass', new_class),
@@ -72,7 +78,7 @@ def _configure_z2security(_context, new_class, required):
     private_attrs = [name for name in dir(new_class)
                      if ((not name.startswith('_')) and
                          (name not in required) and
-                         ismethod(getattr(new_class, name)))]
+                         is_method(getattr(new_class, name)))]
     for attr in private_attrs:
         _context.action(
             discriminator=('five:protectName', new_class, attr),

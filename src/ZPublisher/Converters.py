@@ -38,6 +38,16 @@ def field2string(v):
         return str(v)
 
 
+def field2bytes(v):
+    # Converts value to bytes.
+    if hasattr(v, 'read'):
+        return v.read()
+    elif isinstance(v, text_type):
+        return v.encode(default_encoding)
+    else:
+        return bytes(v)
+
+
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
     value = field2string(value)
     match_object = nl(value)
@@ -212,11 +222,13 @@ class field2ulines:
 
 field2ulines = field2ulines()
 
+
 type_converters = {
     'float': field2float,
     'int': field2int,
     'long': field2long,
     'string': field2string,  # to native str
+    'bytes': field2bytes,
     'date': field2date,
     'date_international': field2date_international,
     'required': field2required,

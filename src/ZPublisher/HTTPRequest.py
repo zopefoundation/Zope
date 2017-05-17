@@ -23,7 +23,6 @@ from os import unlink
 from os.path import isfile
 import random
 import re
-import sys
 from tempfile import (
     mkstemp,
     _TemporaryFileWrapper,
@@ -34,6 +33,7 @@ from AccessControl.tainted import TaintedString
 import pkg_resources
 from six import binary_type
 from six import PY3
+from six import string_types
 from six import text_type
 from six.moves.urllib.parse import unquote
 from zope.i18n.interfaces import IUserPreferredLanguages
@@ -107,6 +107,8 @@ default_port = {'http': '80', 'https': '443'}
 
 tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
 TAINTING_ENABLED = tainting_env not in ('disabled', '0', 'no')
+
+search_type = re.compile(r'(:[a-zA-Z][-a-zA-Z0-9_]+|\\.[xy])$').search
 
 _marker = []
 
@@ -239,7 +241,7 @@ class HTTPRequest(BaseRequest):
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if isinstance(path, str) or isinstance(path, text_type):
+        if isinstance(path, string_types):
             path = path.split('/')
         self._script[:] = list(map(quote, [_p for _p in path if _p]))
         del self._steps[:]
@@ -258,7 +260,7 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
-        if isinstance(path, str):
+        if isinstance(path, string_types):
             path = path.split('/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
         i = 0
@@ -482,9 +484,7 @@ class HTTPRequest(BaseRequest):
             CONVERTED=32,
             hasattr=hasattr,
             getattr=getattr,
-            setattr=setattr,
-            search_type=re.compile(
-                '(:[a-zA-Z][-a-zA-Z0-9_]+|\\.[xy])$').search):
+            setattr=setattr):
         """Process request inputs
 
         We need to delay input parsing so that it is done under
@@ -1204,11 +1204,10 @@ class HTTPRequest(BaseRequest):
         # method is called on the response).
         try:
             object = req.traverse(path)
-        except Exception:
+        except Exception as exc:
             rsp.exception()
-        if object is None:
             req.clear()
-            raise sys.exc_info()[0](rsp.errmsg)
+            raise exc.__class__(rsp.errmsg)
 
         # The traversal machinery may return a "default object"
         # like an index_html document. This is not appropriate
@@ -1836,6 +1835,6 @@ def _decode(value, charset):
         return tuple(_decode(v, charset) for v in value)
     elif isinstance(value, dict):
         return dict((k, _decode(v, charset)) for k, v in value.items())
-    elif isinstance(value, str):
+    elif isinstance(value, binary_type):
         return text_type(value, charset, 'replace')
     return value
