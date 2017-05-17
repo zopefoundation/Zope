@@ -75,7 +75,6 @@ def _configure_z2security(_context, new_class, required):
             args=(new_class, attr, permission)
         )
     # Make everything else private
-    # if not _context:
     private_attrs = [name for name in dir(new_class)
                      if ((not name.startswith('_')) and
                          (name not in required) and
