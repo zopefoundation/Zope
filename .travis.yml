@@ -12,7 +12,7 @@ install:
     - buildout bootstrap
     - buildout tox:env=travis install test alltests
 script:
-    - bin/test-travis -v
+    - bin/alltests-travis -v
 notifications:
     email: false
 cache:
