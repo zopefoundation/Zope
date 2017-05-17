@@ -11,11 +11,9 @@
 #
 ##############################################################################
 
-import sys
 import unittest
 
-if sys.version_info >= (3, ):
-    unicode = str
+from six import text_type
 
 
 class ConvertersTests(unittest.TestCase):
@@ -28,8 +26,8 @@ class ConvertersTests(unittest.TestCase):
     def test_field2string_with_unicode_default_encoding(self):
         from ZPublisher.Converters import field2string
         to_convert = u'to_convert'
-        self.assertEqual(field2string(to_convert),
-                         to_convert.encode('utf-8'))
+        expected = 'to_convert'
+        self.assertEqual(field2string(to_convert), expected)
 
     def test_field2string_with_filelike_object(self):
         from ZPublisher.Converters import field2string
@@ -39,6 +37,17 @@ class ConvertersTests(unittest.TestCase):
             def read(self):
                 return to_convert
         self.assertEqual(field2string(Filelike()), to_convert)
+
+    def test_field2bytes_with_bytes(self):
+        from ZPublisher.Converters import field2bytes
+        to_convert = b'to_convert'
+        self.assertEqual(field2bytes(to_convert), to_convert)
+
+    def test_field2bytes_with_text(self):
+        from ZPublisher.Converters import field2bytes
+        to_convert = u'to_convert'
+        expected = b'to_convert'
+        self.assertEqual(field2bytes(to_convert), expected)
 
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
@@ -69,13 +78,13 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2ulines
         to_convert = [u'one', 'two']
         self.assertEqual(field2ulines(to_convert),
-                         [unicode(x) for x in to_convert])
+                         [text_type(x) for x in to_convert])
 
     def test_field2ulines_with_tuple(self):
         from ZPublisher.Converters import field2ulines
         to_convert = (u'one', 'two')
         self.assertEqual(field2ulines(to_convert),
-                         [unicode(x) for x in to_convert])
+                         [text_type(x) for x in to_convert])
 
     def test_field2ulines_with_empty_string(self):
         from ZPublisher.Converters import field2ulines
