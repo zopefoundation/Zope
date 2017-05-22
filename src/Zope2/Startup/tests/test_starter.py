@@ -91,7 +91,7 @@ class WSGIStarterTestCase(unittest.TestCase):
             # reset to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
 
-    @unittest.skipUnless(six.PY2, 'Python 2 specfiic checkinterval test.')
+    @unittest.skipUnless(six.PY2, 'Python 2 specfic checkinterval test.')
     def testConfigureInterpreter(self):
         oldcheckinterval = sys.getcheckinterval()
         newcheckinterval = oldcheckinterval + 1
