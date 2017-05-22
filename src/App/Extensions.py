@@ -15,7 +15,6 @@
 Extensions currently include external methods.
 """
 from functools import total_ordering
-import imp
 import os
 
 from six import exec_
@@ -150,54 +149,46 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
         pass
 
 
-def getObject(module, name, reload=0,
-              # The use of a mutable default is intentional here,
-              # because modules is a module cache.
-              modules={}
-              ):
-    # The use of modules here is not thread safe, however, there is
+_modules = {}  # cache
+
+def getObject(module, name, reload=0):
+    # The use of _modules here is not thread safe, however, there is
     # no real harm in a race condition here.  If two threads
     # update the cache, then one will have simply worked a little
     # harder than need be.  So, in this case, we won't incur
     # the expense of a lock.
-    old = modules.get(module)
+    old = _modules.get(module)
     if old is not None and name in old and not reload:
         return old[name]
 
     base, ext = os.path.splitext(module)
-    if ext in ('py', 'pyc'):
+    if ext == 'py':
         # XXX should never happen; splitext() keeps '.' with the extension
         prefix = base
     else:
         prefix = module
 
-    path = getPath('Extensions', prefix, suffixes=('', 'py', 'pyc'))
+    path = getPath('Extensions', prefix, suffixes=('', 'py'))
     if path is None:
         raise NotFound(
             "The specified module, '%s', couldn't be found." % module)
 
     __traceback_info__ = path, module
 
-    base, ext = os.path.splitext(path)
-    if ext == '.pyc':
-        file = open(path, 'rb')
-        binmod = imp.load_compiled('Extension', path, file)
-        file.close()
-        module_dict = binmod.__dict__
-    else:
-        try:
-            execsrc = open(path)
-        except Exception:
-            raise NotFound("The specified module, '%s', "
-                           "couldn't be opened." % module)
-        module_dict = {}
-        exec_(execsrc, module_dict)
+    try:
+        with open(path) as f:
+            execsrc = f.read()
+    except Exception:
+        raise NotFound("The specified module, '%s', "
+                        "couldn't be opened." % module)
+    module_dict = {}
+    exec_(execsrc, module_dict)
 
     if old is not None:
         # XXX Accretive??
         old.update(module_dict)
     else:
-        modules[module] = module_dict
+        _modules[module] = module_dict
 
     try:
         return module_dict[name]
