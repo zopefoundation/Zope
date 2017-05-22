@@ -31,7 +31,7 @@ def recordMetaData(object, request):
         # but there are many circumstances where that's not possible.
         to_append = ()
 
-        if hasattr(object, 'im_self') and hasattr(object, '__name__'):
+        if hasattr(object, '__self__') and hasattr(object, '__name__'):
             # object is a Python method.
             to_append = (object.__name__,)
             object = object.__self__

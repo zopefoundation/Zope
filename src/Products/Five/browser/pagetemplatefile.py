@@ -119,10 +119,10 @@ class BoundPageTemplate(object):
 
     def __call__(self, *args, **kw):
         if self.__self__ is None:
-            im_self, args = args[0], args[1:]
+            __self__, args = args[0], args[1:]
         else:
-            im_self = self.__self__
-        return self.__func__(im_self, *args, **kw)
+            __self__ = self.__self__
+        return self.__func__(__self__, *args, **kw)
 
     def __setattr__(self, name, v):
         raise AttributeError("Can't set attribute", name)

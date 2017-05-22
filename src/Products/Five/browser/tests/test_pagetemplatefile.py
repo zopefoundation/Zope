@@ -236,7 +236,7 @@ class BoundPageTemplateTests(unittest.TestCase):
         else:
             self.fail('Attribute assigned')
 
-    def test___call___w_real_im_self_no_args_no_kw(self):
+    def test___call___w_real_self_no_args_no_kw(self):
         pt = DummyTemplate()
         ob = DummyContext()
         bpt = self._makeOne(pt, ob)
@@ -244,7 +244,7 @@ class BoundPageTemplateTests(unittest.TestCase):
         self.assertEqual(rendered, '<h1>Dummy</h1>')
         self.assertEqual(pt._called_with, (ob, (), {}))
 
-    def test___call___w_real_im_self_w_args_w_kw(self):
+    def test___call___w_real_self_w_args_w_kw(self):
         pt = DummyTemplate()
         ob = DummyContext()
         bpt = self._makeOne(pt, ob)
@@ -252,7 +252,7 @@ class BoundPageTemplateTests(unittest.TestCase):
         self.assertEqual(rendered, '<h1>Dummy</h1>')
         self.assertEqual(pt._called_with, (ob, ('abc',), {'foo': 'bar'}))
 
-    def test___call___wo_real_im_self_w_args_w_kw(self):
+    def test___call___wo_real_self_w_args_w_kw(self):
         pt = DummyTemplate()
         bpt = self._makeOne(pt, None)
         rendered = bpt('abc', 'def', foo='bar')
@@ -295,8 +295,8 @@ class DummyTemplate(object):
             macros = {}
         self.macros = macros
 
-    def __call__(self, im_self, *args, **kw):
-        self._called_with = (im_self, args, kw)
+    def __call__(self, __self__, *args, **kw):
+        self._called_with = (__self__, args, kw)
         return '<h1>Dummy</h1>'
 
 

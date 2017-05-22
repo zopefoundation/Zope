@@ -246,8 +246,8 @@ class Traversable:
                                         # The object is wrapped, so the
                                         # acquisition context is the container.
                                         container = aq_parent(aq_inner(next))
-                                    elif getattr(
-                                            next, 'im_self', None) is not None:
+                                    elif getattr(next, '__self__',
+                                                 None) is not None:
                                         # Bound method, the bound instance
                                         # is the container
                                         container = next.__self__

@@ -47,7 +47,7 @@ class ProtectedMethodSecurityPolicy:
     def validate(self, accessed, container, name, value, *args):
         from Acquisition import aq_base
         from AccessControl import Unauthorized
-        if getattr(aq_base(value), 'im_self', None) is None:
+        if getattr(aq_base(value), '__self__', None) is None:
             return 1
 
         # Bound method
