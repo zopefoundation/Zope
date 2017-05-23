@@ -1701,6 +1701,7 @@ class FileUpload:
 
         self.headers = aFieldStorage.headers
         self.filename = aFieldStorage.filename
+        self.name = aFieldStorage.name
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.
