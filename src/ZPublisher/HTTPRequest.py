@@ -1809,7 +1809,7 @@ class record(object):
     def __eq__(self, other):
         if not isinstance(other, record):
             return False
-        return list(self.__dict__.items()) == list(other.__dict__.items())
+        return sorted(self.__dict__.items()) == sorted(other.__dict__.items())
 
 
 def _filterPasswordFields(items):
