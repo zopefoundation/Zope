@@ -18,6 +18,89 @@ class Item:
         return self.children
 
 
+class Test_TreeNode(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from ZTUtils.Tree import TreeNode
+        return TreeNode
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_ctor(self):
+        node = self._makeOne()
+        self.assertEqual(len(node), 0)
+        self.assertEqual(node.state, 0)
+        self.assertEqual(node.height, 1)
+        self.assertEqual(node.size, 1)
+
+    def test__add_child(self):
+        node = self._makeOne()
+        child = self._makeOne()
+        grand = self._makeOne()
+        child._add_child(grand)
+        node._add_child(child)
+        self.assertEqual(child.height, 2)
+        self.assertEqual(child.size, 2)
+        self.assertEqual(len(child), 1)
+        self.assertEqual(node.height, 3)
+        self.assertEqual(node.size, 3)
+        self.assertEqual(len(node), 1)
+
+    def test_flat_empty(self):
+        node = self._makeOne()
+        flat = node.flat()
+        self.assertEqual(flat, [node])
+
+    def test_flat_non_empty(self):
+        node = self._makeOne()
+        child = self._makeOne()
+        grand = self._makeOne()
+        child._add_child(grand)
+        node._add_child(child)
+        flat = node.flat()
+        self.assertEqual(len(flat), 3)
+        self.assertIs(flat[0], node)
+        self.assertIs(flat[1].aq_self, child)
+        self.assertIs(flat[2].aq_self, grand)
+
+    def test_walk_empty(self):
+        node = self._makeOne()
+        _called_with = []
+        datum = object()
+        def _func(a_node, data=None):
+            _called_with.append((a_node, data))
+        node.walk(_func)
+        self.assertEqual(_called_with, [(node, None)])
+
+    def test_walk_nonempty_w_data(self):
+        node = self._makeOne()
+        child = self._makeOne()
+        node._add_child(child)
+        grand = self._makeOne()
+        child._add_child(grand)
+        _called_with = []
+        datum = object()
+        def _func(a_node, data):
+            _called_with.append((a_node, data))
+        node.walk(_func, datum)
+        self.assertEqual(
+            _called_with,
+            [(node, datum), (child, datum), (grand, datum)])
+
+    def test___getitem___empty(self):
+        node = self._makeOne()
+        with self.assertRaises(IndexError):
+            node[0]
+
+    def test___getitem___non_empty(self):
+        node = self._makeOne()
+        child = self._makeOne()
+        node._add_child(child)
+        found = node[0]
+        self.assertIs(found.aq_self, child)
+
+
 class TreeTests(unittest.TestCase):
     def setUp(self):
         self.tm = Tree.TreeMaker()
