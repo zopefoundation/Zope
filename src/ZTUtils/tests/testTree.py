@@ -101,6 +101,139 @@ class Test_TreeNode(unittest.TestCase):
         self.assertIs(found.aq_self, child)
 
 
+class Test_TreeMaker(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from ZTUtils.Tree import TreeMaker
+        return TreeMaker
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_ctor(self):
+        maker = self._makeOne()
+        self.assertEqual(maker._id, 'tpId')
+        self.assertFalse(maker._assume_children)
+        self.assertTrue(maker._expand_root)
+        self.assertEqual(maker._values, 'tpValues')
+        self.assertIsNone(maker._values_filter)
+        self.assertIsNone(maker._values_function)
+        self.assertIsNone(maker._state_function)
+        self.assertIsNone(maker._cached_children)
+
+    def test_setIdAttr(self):
+        maker = self._makeOne()
+        maker.setIdAttr('foo')
+        self.assertEqual(maker._id, 'foo')
+
+    def test_setAssumeChildren(self):
+        maker = self._makeOne()
+        maker.setAssumeChildren(True)
+        self.assertTrue(maker._assume_children)
+
+    def test_setExpandRoot(self):
+        maker = self._makeOne()
+        maker.setExpandRoot(False)
+        self.assertFalse(maker._expand_root)
+
+    def test_setChildAccess_w_attrname(self):
+        maker = self._makeOne()
+        maker.setChildAccess(attrname='foo')
+        self.assertEqual(maker._values, 'foo')
+        self.assertIsNone(maker._values_filter)
+        self.assertIsNone(maker._values_function)
+
+    def test_setChildAccess_w_filter(self):
+
+        def _filter(obj):
+            pass
+
+        maker = self._makeOne()
+        maker.setChildAccess(filter=_filter)
+        self.assertEqual(maker._values, 'tpValues')
+        self.assertIs(maker._values_filter, _filter)
+        self.assertIsNone(maker._values_function)
+
+    def test_setChildAccess_w_attrname_and_filter(self):
+
+        def _filter(obj):
+            pass
+
+        maker = self._makeOne()
+        maker.setChildAccess(attrname='foo', filter=_filter)
+        self.assertEqual(maker._values, 'foo')
+        self.assertIs(maker._values_filter, _filter)
+        self.assertIsNone(maker._values_function)
+
+    def test_setChildAccess_w_func(self):
+
+        def _func(obj):
+            pass
+
+        maker = self._makeOne()
+        maker.setChildAccess(function=_func)
+        self.assertEqual(maker._values, 'tpValues')
+        self.assertIsNone(maker._values_filter)
+        self.assertIs(maker._values_function, _func)
+
+    def test_setStateFunction(self):
+        maker = self._makeOne()
+
+        def _func(obj):
+            pass
+
+        maker.setStateFunction(_func)
+        self.assertIs(maker._state_function, _func)
+
+    def test_getId_obj_has_simple_attr(self):
+
+        class Obj(object):
+            tpId = 'foo'
+
+        maker = self._makeOne()
+        self.assertEqual(maker.getId(Obj()), 'foo')
+
+    def test_getId_obj_has_method(self):
+
+        class Obj(object):
+
+            def tpId(self):
+                return 'foo'
+
+        maker = self._makeOne()
+        self.assertEqual(maker.getId(Obj()), 'foo')
+
+    def test_getId_obj_has__p_oid(self):
+
+        class Obj(object):
+            _p_oid = 123
+
+        maker = self._makeOne()
+        self.assertEqual(maker.getId(Obj()), '123')
+
+    def test_getId_obj_fallback_to_id(self):
+        obj = object()
+        maker = self._makeOne()
+        self.assertEqual(maker.getId(obj), id(obj))
+
+
+class Test_b2a(unittest.TestCase):
+
+    def _callFUT(self, value):
+        from ZTUtils.Tree import b2a
+        return b2a(value)
+
+    def test_w_native_str(self):
+        import base64
+        for value, expected in [
+            (b'', b''),
+            (b'abc', b'abc'),
+            (b'abc+def', b'abc+def'),
+        ]:
+            self.assertEqual(
+                self._callFUT(value), base64.urlsafe_b64encode(expected))
+
+
 class TreeTests(unittest.TestCase):
     def setUp(self):
         self.tm = Tree.TreeMaker()
@@ -284,7 +417,7 @@ class TreeTests(unittest.TestCase):
         treeroot1 = self.tm.tree(self.root, self.expansionmap)
 
         encoded = Tree.encodeExpansion(treeroot1.flat())
-        self.assertFalse(encoded.find('\n') != -1)
+        self.assertFalse(encoded.find(b'\n') != -1)
         decodedmap = Tree.decodeExpansion(encoded)
 
         treeroot2 = self.tm.tree(self.root, decodedmap)
@@ -307,11 +440,13 @@ class TreeTests(unittest.TestCase):
         self.assertEqual(len(treeroot1), len(treeroot2))
 
     def testDecodeInputSizeLimit(self):
-        self.assertRaises(ValueError, Tree.decodeExpansion, 'x' * 10000)
+        with self.assertRaises(ValueError):
+            Tree.decodeExpansion(b'x' * 10000)
 
     def testDecodeDecompressedSizeLimit(self):
         import zlib
         from ZTUtils.Tree import b2a
-        big = b2a(zlib.compress('x' * (1024 * 1100)))
+        big = b2a(zlib.compress(b'x' * (1024 * 1100)))
         self.assertTrue(len(big) < 8192)  # Must be under the input size limit
-        self.assertRaises(ValueError, Tree.decodeExpansion, ':' + big)
+        with self.assertRaises(ValueError):
+            Tree.decodeExpansion(b':' + big)
