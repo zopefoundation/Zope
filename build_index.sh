@@ -15,3 +15,13 @@ for tag in $(git tag -l "4*" | sort -r); do
     git show $tag:requirements.txt > releases/$tag/requirements.txt && printf "* [requirements.txt](releases/$tag/requirements.txt)\n" >> README.md || rm releases/$tag/requirements.txt
     printf "\n" >> README.md
 done
+
+# Select older versions
+for tag in "2.13.26"; do
+    echo $tag
+    mkdir -p releases/$tag
+    echo "[versions]" >releases/$tag/versions-prod.cfg
+    git show $tag:requirements.txt | sed -e 's/\=\=/ = /g' >>releases/$tag/versions-prod.cfg && printf "## $tag\n\n* [versions.cfg](releases/$tag/versions.cfg)\n" >> README.md
+    git show $tag:requirements.txt > releases/$tag/requirements.txt && printf "* [requirements.txt](releases/$tag/requirements.txt)\n" >> README.md || rm releases/$tag/requirements.txt
+    printf "\n" >> README.md
+done
