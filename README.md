@@ -30,3 +30,8 @@
 * [versions-prod.cfg](releases/4.0a1/versions-prod.cfg)
 * [requirements.txt](releases/4.0a1/requirements.txt)
 
+## 2.13.26
+
+* [versions.cfg](releases/2.13.26/versions.cfg)
+* [requirements.txt](releases/2.13.26/requirements.txt)
+
