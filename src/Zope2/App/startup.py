@@ -13,13 +13,15 @@
 """Initialize the Zope2 Package and provide a published module
 """
 
-import imp
+import os
 import sys
 from time import asctime
+import types
 
 import AccessControl.User
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+import six
 import ZODB
 from zope.deferredimport import deprecated
 from zope.event import notify
@@ -59,6 +61,20 @@ def load_zcml():
     configure_vocabulary_registry()
 
 
+def _load_custom_zodb(location):
+    """Return a module, or None."""
+    target = os.path.join(location, 'custom_zodb.py')
+    if os.path.exists(target):
+        with open(target) as f:
+            try:
+                code_obj = compile(f.read(), target, mode='exec')
+            except SyntaxError:
+                return None
+        module = types.ModuleType('Zope2.custom_zodb', 'Custom database')
+        six.exec_(code_obj, module.__dict__)
+        sys.modules['Zope2.custom_zodb'] = module
+        return module
+
 def startup():
     from Zope2.App import patches
     patches.apply_patches()
@@ -72,28 +88,29 @@ def startup():
 
     # Open the database
     dbtab = configuration.dbtab
-    try:
-        # Try to use custom storage
-        try:
-            m = imp.find_module('custom_zodb', [configuration.testinghome])
-        except Exception:
-            m = imp.find_module('custom_zodb', [configuration.instancehome])
-    except Exception:
+    DB = None
+
+    custom_locations = [
+        configuration.testinghome,
+        configuration.instancehome,
+    ]
+    for location in custom_locations:
+        module = _load_custom_zodb(location)
+        if module is not None:
+            # Get the database and join it to the dbtab multidatabase
+            # FIXME: this uses internal datastructures of dbtab
+            databases = getattr(dbtab, 'databases', {})
+            if hasattr(module, 'DB'):
+                DB = module.DB
+                databases.update(getattr(DB, 'databases', {}))
+                DB.databases = databases
+            else:
+                DB = ZODB.DB(module.Storage, databases=databases)
+
+            break
+    else:
         # if there is no custom_zodb, use the config file specified databases
         DB = dbtab.getDatabase('/', is_root=1)
-    else:
-        m = imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
-        sys.modules['Zope2.custom_zodb'] = m
-
-        # Get the database and join it to the dbtab multidatabase
-        # FIXME: this uses internal datastructures of dbtab
-        databases = getattr(dbtab, 'databases', {})
-        if hasattr(m, 'DB'):
-            DB = m.DB
-            databases.update(getattr(DB, 'databases', {}))
-            DB.databases = databases
-        else:
-            DB = ZODB.DB(m.Storage, databases=databases)
 
     # Force a connection to every configured database, to ensure all of them
     # can indeed be opened. This avoids surprises during runtime when traversal
