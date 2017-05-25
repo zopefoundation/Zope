@@ -750,7 +750,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
         req.processInputs()
-        f = req.form.get('file')
+        f = req.form.get('largefile')
         self.assertTrue(f.name)
 
     def test_processInputs_with_file_upload_gets_iterator(self):
@@ -1143,7 +1143,7 @@ test
 
 TEST_LARGEFILE_DATA = b'''
 --12345
-Content-Disposition: form-data; name="file"; filename="file"
+Content-Disposition: form-data; name="largefile"; filename="largefile"
 Content-Type: application/octet-stream
 
 test ''' + (b'test' * 1000) + b'\n\n'

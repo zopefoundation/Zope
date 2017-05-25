@@ -1701,6 +1701,7 @@ class FileUpload:
 
         self.headers = aFieldStorage.headers
         self.filename = aFieldStorage.filename
+        self.name = aFieldStorage.name
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.
@@ -1808,7 +1809,7 @@ class record(object):
     def __eq__(self, other):
         if not isinstance(other, record):
             return False
-        return list(self.__dict__.items()) == list(other.__dict__.items())
+        return sorted(self.__dict__.items()) == sorted(other.__dict__.items())
 
 
 def _filterPasswordFields(items):
