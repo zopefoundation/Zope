@@ -134,11 +134,3 @@ class TestDeleteCollection(unittest.TestCase):
         obj = _DummyContent('LOCKED')
         sm = getSecurityManager()
         self.assertRaises(Locked, cmd.apply, obj, None, sm, '/foo/DELETE')
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestUnlock),
-        unittest.makeSuite(TestPropPatch),
-        unittest.makeSuite(TestDeleteCollection),
-    ))

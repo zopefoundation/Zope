@@ -26,7 +26,7 @@ def make_request_response(environ=None):
     return req, resp
 
 
-class DummyLock:
+class DummyLock(object):
 
     def isValid(self):
         return True
@@ -44,7 +44,7 @@ class DummyContent(Implicit):
         return True
 
 
-class DummyRequest:
+class DummyRequest(object):
 
     def __init__(self, form, headers):
         self.form = form
@@ -63,7 +63,7 @@ class DummyRequest:
         return ['']
 
 
-class DummyResponse:
+class DummyResponse(object):
 
     def __init__(self):
         self.headers = {}
@@ -72,7 +72,7 @@ class DummyResponse:
         self.headers[name] = value
 
 
-class _DummySecurityPolicy:
+class _DummySecurityPolicy(object):
 
     def validate(self, *args, **kw):
         return True
@@ -113,21 +113,21 @@ class TestResource(unittest.TestCase):
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_(not resp.headers.has_key('public'))
+            self.assert_('public' not in resp.headers)
 
             config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_(not resp.headers.has_key('public'))
-            self.assert_(resp.headers.has_key('allow'))
+            self.assert_('public' not in resp.headers)
+            self.assert_('allow' in resp.headers)
 
             req, resp = make_request_response(
                 environ={'USER_AGENT': MS_DAV_AGENT})
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_(resp.headers.has_key('public'))
-            self.assert_(resp.headers.has_key('allow'))
+            self.assert_('public' in resp.headers)
+            self.assert_('allow' in resp.headers)
             self.assert_(resp.headers['public'] == resp.headers['allow'])
 
         finally:
@@ -148,7 +148,7 @@ class TestResource(unittest.TestCase):
         inst.cb_isMoveable = lambda *arg: True
         inst.restrictedTraverse = lambda *arg: app
         inst.getId = lambda *arg: '123'
-        inst._dav_writelocks = {'a':DummyLock()}
+        inst._dav_writelocks = {'a': DummyLock()}
         from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
         directlyProvides(inst, IWriteLock)
@@ -168,8 +168,8 @@ class TestResource(unittest.TestCase):
         the most important), so this test is not currently running.
         """
         ifhdr = 'If: (<locktoken:foo>)'
-        request = DummyRequest({'URL':'http://example.com/foo/PUT'},
-                               {'If':ifhdr})
+        request = DummyRequest({'URL': 'http://example.com/foo/PUT'},
+                               {'If': ifhdr})
         response = DummyResponse()
         inst = self._makeOne()
         from OFS.interfaces import IWriteLock
@@ -193,19 +193,13 @@ class TestResource(unittest.TestCase):
         the most important), so this test is not currently running.
         """
         ifhdr = 'If: (<locktoken:foo>) (Not <DAV:no-lock>)'
-        request = DummyRequest({'URL':'http://example.com/foo/PUT'},
-                               {'If':ifhdr})
+        request = DummyRequest({'URL': 'http://example.com/foo/PUT'},
+                               {'If': ifhdr})
         response = DummyResponse()
         inst = self._makeOne()
-        inst._dav_writelocks = {'a':DummyLock()}
+        inst._dav_writelocks = {'a': DummyLock()}
         from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.dav__simpleifhandler, request, response)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestResource),
-        ))

@@ -156,4 +156,5 @@ class DAVProperties(Virtual, PropertySheet, View):
 
         return out
 
+
 InitializeClass(DAVProperties)

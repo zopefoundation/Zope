@@ -13,9 +13,7 @@
 """
 WebDAV XML request parsing tool using xml.minidom as xml parser.
 Code contributed by Simon Eisenmann, struktur AG, Stuttgart, Germany
-"""
 
-"""
 TODO:
 
  - Check the methods Node.addNode
@@ -47,12 +45,14 @@ unescape_entities = {'&quot;': '"',
                      '&apos;': "'",
                      }
 
+
 def escape(value, entities=None):
     _ent = escape_entities
     if entities is not None:
         _ent = _ent.copy()
         _ent.update(entities)
     return _escape(value, entities)
+
 
 def unescape(value, entities=None):
     _ent = unescape_entities
@@ -61,13 +61,15 @@ def unescape(value, entities=None):
         _ent.update(entities)
     return _unescape(value, entities)
 
+
 # utf-8 is hardcoded on OFS.PropertySheets as the expected
 # encoding properties will be stored in. Optimally, we should use the
 # same encoding as the 'default_encoding' property that is used for
 # the ZMI.
 zope_encoding = 'utf-8'
 
-class Node:
+
+class Node(object):
     """ Our nodes no matter what type
     """
 
@@ -80,8 +82,8 @@ class Node:
         nodes = []
         for n in self.node.childNodes:
             if (n.nodeType == n.ELEMENT_NODE and
-                ((name is None) or ((n.localName.lower())==name)) and
-                ((ns is None) or (n.namespaceURI==ns))):
+                ((name is None) or ((n.localName.lower()) == name)) and
+                    ((ns is None) or (n.namespaceURI == ns))):
                 nodes.append(Element(n))
         return nodes
 
@@ -90,7 +92,7 @@ class Node:
 
     def addNode(self, node):
         # XXX: no support for adding nodes here
-        raise NotImplementedError, 'addNode not implemented'
+        raise NotImplementedError('addNode not implemented')
 
     def toxml(self):
         return self.node.toxml()
@@ -98,12 +100,20 @@ class Node:
     def strval(self):
         return self.toxml().encode(zope_encoding)
 
-    def name(self):  return self.node.localName
-    def value(self): return self.node.nodeValue
-    def nodes(self): return self.node.childNodes
-    def nskey(self): return self.node.namespaceURI
+    def name(self):
+        return self.node.localName
 
-    def namespace(self): return self.nskey()
+    def value(self):
+        return self.node.nodeValue
+
+    def nodes(self):
+        return self.node.childNodes
+
+    def nskey(self):
+        return self.node.namespaceURI
+
+    def namespace(self):
+        return self.nskey()
 
     def attrs(self):
         return [Node(n) for n in self.node.attributes.values()]
@@ -128,7 +138,7 @@ class Node:
 
         attr = name.split(':')[0]
         if (self.node.hasAttributes() and
-            self.node.attributes.has_key(attr)):
+                attr in self.node.attributes):
             # Only remove attributes if they exist
             return self.node.removeAttribute(attr)
 
@@ -143,12 +153,14 @@ class Node:
         #       we dont need any fancy remapping here and simply remove
         #       the attributes in del_attr
 
-        return {},0
+        return {}, 0
 
     def __repr__(self):
         if self.namespace():
             return "<Node %s (from %s)>" % (self.name(), self.namespace())
-        else: return "<Node %s>" % self.name()
+        else:
+            return "<Node %s>" % self.name()
+
 
 class Element(Node):
 
@@ -186,7 +198,8 @@ class ProtectedExpatParser(ExpatParser):
     def start_doctype_decl(self, name, sysid, pubid, has_internal_subset):
         raise ValueError("Inline DTD forbidden")
 
-    def entity_decl(self, entityName, is_parameter_entity, value, base, systemId, publicId, notationName):
+    def entity_decl(self, entityName, is_parameter_entity, value, base,
+                    systemId, publicId, notationName):
         raise ValueError("<!ENTITY> forbidden")
 
     def unparsed_entity_decl(self, name, base, sysid, pubid, notation_name):
@@ -202,7 +215,7 @@ class ProtectedExpatParser(ExpatParser):
             self._parser.UnparsedEntityDeclHandler = self.unparsed_entity_decl
 
 
-class XmlParser:
+class XmlParser(object):
     """ Simple wrapper around minidom to support the required
     interfaces for zope.webdav
     """

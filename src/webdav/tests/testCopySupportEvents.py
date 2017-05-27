@@ -31,6 +31,7 @@ class EventLogger(object):
     def called(self):
         return self._called
 
+
 eventlog = EventLogger()
 
 
@@ -59,7 +60,7 @@ class TestFolder(Folder):
         pass  # Always allow
 
 
-class EventLayer:
+class EventLayer(object):
 
     @classmethod
     def setUp(cls):

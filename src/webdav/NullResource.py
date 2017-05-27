@@ -27,7 +27,11 @@ from Acquisition import aq_parent
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
+from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from OFS.CopySupport import CopyError
+from OFS.DTMLDocument import DTMLDocument
+from OFS.Image import File
+from OFS.Image import Image
 from OFS.interfaces import IWriteLock
 from OFS.SimpleItem import Item_w__name__
 from zExceptions import BadRequest
@@ -55,50 +59,48 @@ class NullResource(Persistent, Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
-    __null_resource__=1
+    __null_resource__ = 1
 
     security = ClassSecurityInfo()
 
     def __init__(self, parent, name, request=None):
-        self.__name__=name
-        self.__parent__=parent
+        self.__name__ = name
+        self.__parent__ = parent
 
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
         # where a 409 Conflict must be returned instead of the normal
         # 404 Not Found, per [WebDAV 8.3.1].
-        try:    return getattr(self, name)
-        except: pass
-        method=REQUEST.get('REQUEST_METHOD', 'GET')
+        try:
+            return getattr(self, name)
+        except Exception:
+            pass
+        method = REQUEST.get('REQUEST_METHOD', 'GET')
         if method in ('PUT', 'MKCOL', 'LOCK'):
-            raise Conflict, 'Collection ancestors must already exist.'
-        raise NotFound, 'The requested resource was not found.'
+            raise Conflict('Collection ancestors must already exist.')
+        raise NotFound('The requested resource was not found.')
 
     security.declareProtected(View, 'HEAD')
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setBody('', lock=True)
-        raise NotFound, 'The requested resource does not exist.'
+        raise NotFound('The requested resource does not exist.')
 
     # Most methods return 404 (Not Found) for null resources.
-    DELETE=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
+    DELETE = TRACE = PROPFIND = PROPPATCH = COPY = MOVE = HEAD
     index_html = HEAD
 
-    def _default_PUT_factory( self, name, typ, body ):
+    def _default_PUT_factory(self, name, typ, body):
         # Return DTMLDoc/PageTemplate/Image/File, based on sniffing.
         if name and name.endswith('.pt'):
-            from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
             ob = ZopePageTemplate(name, body, content_type=typ)
         elif typ in ('text/html', 'text/xml', 'text/plain'):
-            from OFS.DTMLDocument import DTMLDocument
-            ob = DTMLDocument( '', __name__=name )
-        elif typ[:6]=='image/':
-            from OFS.Image import Image
-            ob=Image(name, '', body, content_type=typ)
+            ob = DTMLDocument('', __name__=name)
+        elif typ[:6] == 'image/':
+            ob = Image(name, '', body, content_type=typ)
         else:
-            from OFS.Image import File
-            ob=File(name, '', body, content_type=typ)
+            ob = File(name, '', body, content_type=typ)
         return ob
 
     security.declarePublic('PUT')
@@ -146,16 +148,16 @@ class NullResource(Persistent, Implicit, Resource):
         if (int(REQUEST.get('CONTENT_LENGTH') or 0) >
                 ZSERVER_LARGE_FILE_THRESHOLD):
             file = REQUEST['BODYFILE']
-            body = file.read(LARGE_FILE_THRESHOLD)
+            body = file.read(ZSERVER_LARGE_FILE_THRESHOLD)
             file.seek(0)
         else:
             body = REQUEST.get('BODY', '')
 
-        typ=REQUEST.get_header('content-type', None)
+        typ = REQUEST.get_header('content-type', None)
         if typ is None:
-            typ, enc=guess_content_type(name, body)
+            typ, enc = guess_content_type(name, body)
 
-        factory = getattr(parent, 'PUT_factory', self._default_PUT_factory )
+        factory = getattr(parent, 'PUT_factory', self._default_PUT_factory)
         ob = factory(name, typ, body)
         if ob is None:
             ob = self._default_PUT_factory(name, typ, body)
@@ -166,9 +168,9 @@ class NullResource(Persistent, Implicit, Resource):
         try:
             parent._verifyObjectPaste(ob.__of__(parent), 0)
         except CopyError:
-             sMsg = 'Unable to create object of class %s in %s: %s' % \
-                    (ob.__class__, repr(parent), sys.exc_info()[1],)
-             raise Unauthorized, sMsg
+            sMsg = 'Unable to create object of class %s in %s: %s' % \
+                   (ob.__class__, repr(parent), sys.exc_info()[1],)
+            raise Unauthorized(sMsg)
 
         # Delegate actual PUT handling to the new object,
         # SDS: But just *after* it has been stored.
@@ -185,15 +187,15 @@ class NullResource(Persistent, Implicit, Resource):
         """Create a new collection resource."""
         self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
-            raise UnsupportedMediaType, 'Unknown request body.'
+            raise UnsupportedMediaType('Unknown request body.')
 
-        name=self.__name__
+        name = self.__name__
         parent = self.__parent__
 
         if hasattr(aq_base(parent), name):
-            raise MethodNotAllowed, 'The name %s is in use.' % name
+            raise MethodNotAllowed('The name %s is in use.' % name)
         if not isDavCollection(parent):
-            raise Forbidden, 'Cannot create collection at this location.'
+            raise Forbidden('Cannot create collection at this location.')
 
         ifhdr = REQUEST.get_header('If', '')
         if IWriteLock.providedBy(parent) and parent.wl_isLocked():
@@ -206,8 +208,8 @@ class NullResource(Persistent, Implicit, Resource):
             raise PreconditionFailed
 
         # Add hook for webdav/FTP MKCOL (Collector #2254) (needed for CMF)
-#       parent.manage_addFolder(name)
-        mkcol_handler = getattr(parent,'MKCOL_handler' ,parent.manage_addFolder)
+        mkcol_handler = getattr(parent, 'MKCOL_handler',
+                                parent.manage_addFolder)
         mkcol_handler(name)
 
         RESPONSE.setStatus(201)
@@ -240,7 +242,7 @@ class NullResource(Persistent, Implicit, Resource):
         # a regular resource, since we know we're not already locked,
         # and the lock isn't being refreshed.
         if not body:
-            raise BadRequest, 'No body was in the request'
+            raise BadRequest('No body was in the request')
 
         locknull = LockNullResource(name)
         parent._setObject(name, locknull)
@@ -263,6 +265,7 @@ class NullResource(Persistent, Implicit, Resource):
             RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
             RESPONSE.setBody(lock.asXML())
+
 
 InitializeClass(NullResource)
 
@@ -292,7 +295,8 @@ class LockNullResource(NullResource, Item_w__name__):
         # valid locks left.  We have to delete ourselves from our container
         # now.
         parent = aq_parent(self)
-        if parent: parent._delObject(self.id)
+        if parent:
+            parent._delObject(self.id)
 
     def __init__(self, name):
         self.id = self.__name__ = name
@@ -330,32 +334,30 @@ class LockNullResource(NullResource, Item_w__name__):
                     if token and self.wl_hasLock(token):
                         lock = self.wl_getLock(token)
                         timeout = REQUEST.get_header('Timeout', 'infinite')
-                        lock.setTimeout(timeout) # Automatically refreshes
+                        lock.setTimeout(timeout)  # Automatically refreshes
                         found = 1
 
                         RESPONSE.setStatus(200)
                         RESPONSE.setHeader('Content-Type',
                                            'text/xml; charset="utf-8"')
                         RESPONSE.setBody(lock.asXML())
-                if found: break
+                if found:
+                    break
             if not found:
-                RESPONSE.setStatus(412) # Precondition failed
+                RESPONSE.setStatus(412)  # Precondition failed
 
         return RESPONSE
-
 
     security.declareProtected(webdav_unlock_items, 'UNLOCK')
     def UNLOCK(self, REQUEST, RESPONSE):
         """ Unlocking a Null Resource removes it from its parent """
         self.dav__init(REQUEST, RESPONSE)
-        security = getSecurityManager()
-        user = security.getUser()
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
         if token:
             token = tokenFinder(token)
         else:
-            raise BadRequest, 'No lock token was submitted in the request'
+            raise BadRequest('No lock token was submitted in the request')
 
         cmd = Unlock()
         result = cmd.apply(self, token, url)
@@ -386,7 +388,7 @@ class LockNullResource(NullResource, Item_w__name__):
         # operations done by an owner of the lock that affect the resource
         # MUST have the If header in the request
         if not ifhdr:
-            raise PreconditionFailed, 'No If-header'
+            raise PreconditionFailed('No If-header')
 
         # First we need to see if the parent of the locknull is locked, and
         # if the user owns that lock (checked by handling the information in
@@ -396,14 +398,14 @@ class LockNullResource(NullResource, Item_w__name__):
                                                 col=1, url=parenturl,
                                                 refresh=1)
             if not itrue:
-                raise PreconditionFailed, (
-                'Condition failed against resources parent')
+                raise PreconditionFailed(
+                    'Condition failed against resources parent')
 
         # Now we need to check the If header against our own lock state
         itrue = self.dav__simpleifhandler(REQUEST, RESPONSE, 'PUT', refresh=1)
         if not itrue:
-            raise PreconditionFailed, (
-            'Condition failed against locknull resource')
+            raise PreconditionFailed(
+                'Condition failed against locknull resource')
 
         # All of the If header tests succeeded, now we need to remove ourselves
         # from our parent.  We need to transfer lock state to the new object.
@@ -425,12 +427,12 @@ class LockNullResource(NullResource, Item_w__name__):
             parent._verifyObjectPaste(ob.__of__(parent), 0)
         except Unauthorized:
             raise
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except Exception:
+            raise Forbidden(sys.exc_info()[1])
 
         # Put the locks on the new object
         if not IWriteLock.providedBy(ob):
-            raise MethodNotAllowed, (
+            raise MethodNotAllowed(
                 'The target object type cannot be locked')
         for token, lock in locks:
             ob.wl_setLock(token, lock)
@@ -450,7 +452,7 @@ class LockNullResource(NullResource, Item_w__name__):
         object and transferring its locks to the newly created Folder """
         self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
-            raise UnsupportedMediaType, 'Unknown request body.'
+            raise UnsupportedMediaType('Unknown request body.')
 
         name = self.__name__
         parent = self.aq_parent
@@ -458,22 +460,22 @@ class LockNullResource(NullResource, Item_w__name__):
         ifhdr = REQUEST.get_header('If', '')
 
         if not ifhdr:
-            raise PreconditionFailed, 'No If-header'
+            raise PreconditionFailed('No If-header')
 
         # If the parent object is locked, that information should be in the
         # if-header if the user owns a lock on the parent
         if IWriteLock.providedBy(parent) and parent.wl_isLocked():
-            itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MKCOL',
-                                                col=1, url=parenturl,
-                                                refresh=1)
+            itrue = parent.dav__simpleifhandler(
+                REQUEST, RESPONSE, 'MKCOL', col=1, url=parenturl, refresh=1)
             if not itrue:
-                raise PreconditionFailed, (
-                'Condition failed against resources parent')
+                raise PreconditionFailed(
+                    'Condition failed against resources parent')
         # Now we need to check the If header against our own lock state
-        itrue = self.dav__simpleifhandler(REQUEST,RESPONSE,'MKCOL',refresh=1)
+        itrue = self.dav__simpleifhandler(
+            REQUEST, RESPONSE, 'MKCOL', refresh=1)
         if not itrue:
-            raise PreconditionFailed, (
-            'Condition failed against locknull resource')
+            raise PreconditionFailed(
+                'Condition failed against locknull resource')
 
         # All of the If header tests succeeded, now we need to remove ourselves
         # from our parent.  We need to transfer lock state to the new folder.
@@ -488,5 +490,6 @@ class LockNullResource(NullResource, Item_w__name__):
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
+
 
 InitializeClass(LockNullResource)

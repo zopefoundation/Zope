@@ -33,13 +33,11 @@ class IDAVResource(IWriteLock):
     """Provide basic WebDAV support for non-collection objects."""
 
     __dav_resource__ = Bool(
-        title=u"Is DAV resource"
-        )
+        title=u"Is DAV resource")
 
     __http_methods__ = Tuple(
         title=u"HTTP methods",
-        description=u"Sequence of valid HTTP methods"
-        )
+        description=u"Sequence of valid HTTP methods")
 
     def dav__init(request, response):
         """Init expected HTTP 1.1 / WebDAV headers which are not
@@ -134,8 +132,7 @@ class IDAVCollection(IDAVResource):
 
     __dav_collection__ = Bool(
         title=u"Is a DAV collection",
-        description=u"Should be true",
-        )
+        description=u"Should be true")
 
     def PUT(REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection

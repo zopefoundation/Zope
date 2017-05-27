@@ -28,13 +28,16 @@ class TestNullResource(unittest.TestCase):
 
     def test_HEAD_locks_empty_body_before_raising_NotFound(self):
         from zExceptions import NotFound
+
         # See https://bugs.launchpad.net/bugs/239636
-        class DummyResponse:
-            _server_version = 'Dummy' # emulate ZServer response
+        class DummyResponse(object):
+            _server_version = 'Dummy'  # emulate ZServer response
             locked = False
             body = None
+
             def setHeader(self, *args):
                 pass
+
             def setBody(self, body, lock=False):
                 self.body = body
                 self.locked = bool(lock)
@@ -53,18 +56,25 @@ class TestNullResource(unittest.TestCase):
         import ExtensionClass
         from OFS.CopySupport import CopyError
         from zExceptions import Unauthorized
-        class DummyRequest:
+
+        class DummyRequest(object):
             def get_header(self, header, default=''):
                 return default
+
             def get(self, name, default=None):
                 return default
-        class DummyResponse:
-            _server_version = 'Dummy' # emulate ZServer response
+
+        class DummyResponse(object):
+            _server_version = 'Dummy'  # emulate ZServer response
+
             def setHeader(self, *args):
                 pass
+
         class DummyParent(ExtensionClass.Base):
+
             def _verifyObjectPaste(self, *args, **kw):
                 raise CopyError('Bad Boy!')
+
         nonesuch = self._makeOne()
         nonesuch.__parent__ = DummyParent()
         request = DummyRequest()
@@ -72,12 +82,5 @@ class TestNullResource(unittest.TestCase):
 
         try:
             nonesuch.PUT(request, response)
-        except Unauthorized, e:
+        except Unauthorized as e:
             self.assertTrue(str(e).startswith('Unable to create object'))
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestLockNullResource),
-        unittest.makeSuite(TestNullResource),
-        ))

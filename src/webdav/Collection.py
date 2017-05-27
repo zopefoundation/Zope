@@ -42,16 +42,16 @@ class Collection(Resource):
     than those for non-collection resources."""
     security = ClassSecurityInfo()
 
-    __dav_collection__=1
+    __dav_collection__ = 1
 
     def dav__init(self, request, response):
         # We are allowed to accept a url w/o a trailing slash
         # for a collection, but are supposed to provide a
         # hint to the client that it should be using one.
         # [WebDAV, 5.2]
-        pathinfo=request.get('PATH_INFO','')
+        pathinfo = request.get('PATH_INFO', '')
         if pathinfo and pathinfo[-1] != '/':
-            location='%s/' % request['URL1']
+            location = '%s/' % request['URL1']
             response.setHeader('Content-Location', location)
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
@@ -65,10 +65,9 @@ class Collection(Resource):
         if hasattr(self, 'index_html'):
             if hasattr(self.index_html, 'HEAD'):
                 return self.index_html.HEAD(REQUEST, RESPONSE)
-            raise MethodNotAllowed, (
-                  'Method not supported for this resource.'
-                  )
-        raise NotFound, 'The requested resource does not exist.'
+            raise MethodNotAllowed(
+                'Method not supported for this resource.')
+        raise NotFound('The requested resource does not exist.')
 
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
@@ -76,7 +75,7 @@ class Collection(Resource):
         to handle PUT requests. The default response to a PUT request
         for collections is 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
-        raise MethodNotAllowed, 'Method not supported for collections.'
+        raise MethodNotAllowed('Method not supported for collections.')
 
     security.declareProtected(delete_objects, 'DELETE')
     def DELETE(self, REQUEST, RESPONSE):
@@ -90,15 +89,10 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
-        name = unquote(filter(None, url.split( '/'))[-1])
+        name = unquote(filter(None, url.split('/'))[-1])
         parent = self.aq_parent
         sm = getSecurityManager()
         token = None
-
-#        if re.match("/Control_Panel",REQUEST['PATH_INFO']):
-#            RESPONSE.setStatus(403)
-#            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
-#            return RESPONSE
 
         # Level 1 of lock checking (is the collection or its parent locked?)
         if wl_isLocked(self):
@@ -133,7 +127,7 @@ class Collection(Resource):
             # There were no conflicts, so we can go ahead and delete
             # ajung: additional check if we really could delete the collection
             # (Collector #2196)
-            if parent.manage_delObjects([name],REQUEST=None)  is None:
+            if parent.manage_delObjects([name], REQUEST=None) is None:
                 RESPONSE.setStatus(204)
             else:
                 RESPONSE.setStatus(403)
@@ -145,5 +139,6 @@ class Collection(Resource):
         if objectValues is not None:
             return objectValues()
         return []
+
 
 InitializeClass(Collection)

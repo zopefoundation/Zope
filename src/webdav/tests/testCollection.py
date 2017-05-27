@@ -9,9 +9,3 @@ class TestCollection(unittest.TestCase):
         from zope.interface.verify import verifyClass
 
         verifyClass(IDAVCollection, Collection)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestCollection),
-        ))

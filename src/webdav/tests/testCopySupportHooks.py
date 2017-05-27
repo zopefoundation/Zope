@@ -32,6 +32,7 @@ class EventLogger(object):
     def called(self):
         return self._called
 
+
 eventlog = EventLogger()
 
 
@@ -69,7 +70,7 @@ class TestFolder(Folder):
         Folder.manage_beforeDelete(self, item, container)
 
 
-class HookLayer:
+class HookLayer(object):
 
     @classmethod
     def setUp(cls):

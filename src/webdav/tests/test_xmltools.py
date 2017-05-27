@@ -1,5 +1,6 @@
 import unittest
 
+
 class NodeTests(unittest.TestCase):
 
     def _getTargetClass(self):
@@ -12,16 +13,22 @@ class NodeTests(unittest.TestCase):
     def test_remove_namespace_attrs(self):
         class DummyMinidomNode(object):
             def __init__(self):
-                self.attributes = {'xmlns:foo':'foo', 'xmlns':'bar', 'a':'b'}
+                self.attributes = {
+                    'xmlns:foo': 'foo',
+                    'xmlns': 'bar',
+                    'a': 'b',
+                }
+
             def hasAttributes(self):
                 return True
+
             def removeAttribute(self, name):
                 del self.attributes[name]
 
         wrapped = DummyMinidomNode()
         node = self._makeOne(wrapped)
         node.remove_namespace_attrs()
-        self.assertEqual(wrapped.attributes, {'a':'b'})
+        self.assertEqual(wrapped.attributes, {'a': 'b'})
 
 
 class XmlParserTests(unittest.TestCase):
@@ -50,10 +57,3 @@ class XmlParserTests(unittest.TestCase):
         ])
         parser = self._makeOne()
         self.assertRaises(ValueError, parser.parse, XML)
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(NodeTests),
-        unittest.makeSuite(XmlParserTests),
-    ))

@@ -51,130 +51,131 @@ class DAVProps(DAVProperties):
        PROPFIND requests."""
 
     def __init__(self, obj):
-        self.__obj__=obj
+        self.__obj__ = obj
 
     def v_self(self):
         return self.__obj__
 
-    p_self=v_self
+    p_self = v_self
 
 
-class PropFind:
+class PropFind(object):
     """Model a PROPFIND request."""
 
     def __init__(self, request):
-        self.request=request
-        self.depth='infinity'
-        self.allprop=0
-        self.propname=0
-        self.propnames=[]
+        self.request = request
+        self.depth = 'infinity'
+        self.allprop = 0
+        self.propname = 0
+        self.propnames = []
         self.parse(request)
 
     def parse(self, request, dav='DAV:'):
-        self.depth=request.get_header('Depth', 'infinity')
-        if not (self.depth in ('0','1','infinity')):
-            raise BadRequest, 'Invalid Depth header.'
-        body=request.get('BODY', '')
-        self.allprop=(not len(body))
+        self.depth = request.get_header('Depth', 'infinity')
+        if not (self.depth in ('0', '1', 'infinity')):
+            raise BadRequest('Invalid Depth header.')
+        body = request.get('BODY', '')
+        self.allprop = (not len(body))
         if not body:
             return
         try:
-            root=XmlParser().parse(body)
-        except:
-            raise BadRequest, sys.exc_info()[1]
-        e=root.elements('propfind', ns=dav)
+            root = XmlParser().parse(body)
+        except Exception:
+            raise BadRequest(sys.exc_info()[1])
+        e = root.elements('propfind', ns=dav)
         if not e:
-            raise BadRequest, 'Invalid xml request.'
-        e=e[0]
+            raise BadRequest('Invalid xml request.')
+        e = e[0]
         if e.elements('allprop', ns=dav):
-            self.allprop=1
+            self.allprop = 1
             return
         if e.elements('propname', ns=dav):
-            self.propname=1
+            self.propname = 1
             return
-        prop=e.elements('prop', ns=dav)
+        prop = e.elements('prop', ns=dav)
         if not prop:
-            raise BadRequest, 'Invalid xml request.'
-        prop=prop[0]
+            raise BadRequest('Invalid xml request.')
+        prop = prop[0]
         for val in prop.elements():
             self.propnames.append((val.name(), val.namespace()))
         if (not self.allprop) and (not self.propname) and \
            (not self.propnames):
-            raise BadRequest, 'Invalid xml request.'
+            raise BadRequest('Invalid xml request.')
         return
 
     def apply(self, obj, url=None, depth=0, result=None, top=1):
         if result is None:
-            result=StringIO()
-            depth=self.depth
-            url=urlfix(self.request['URL'], 'PROPFIND')
-            url=urlbase(url)
-            result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
+            result = StringIO()
+            depth = self.depth
+            url = urlfix(self.request['URL'], 'PROPFIND')
+            url = urlbase(url)
+            result.write('<?xml version="1.0" encoding="utf-8"?>\n'
                          '<d:multistatus xmlns:d="DAV:">\n')
-        iscol=isDavCollection(obj)
-        if iscol and url[-1] != '/': url=url+'/'
+        iscol = isDavCollection(obj)
+        if iscol and url[-1] != '/':
+            url = url + '/'
         result.write('<d:response>\n<d:href>%s</d:href>\n' % safe_quote(url))
         if hasattr(aq_base(obj), 'propertysheets'):
-            propsets=obj.propertysheets.values()
-            obsheets=obj.propertysheets
+            propsets = obj.propertysheets.values()
+            obsheets = obj.propertysheets
         else:
-            davprops=DAVProps(obj)
-            propsets=(davprops,)
-            obsheets={'DAV:': davprops}
+            davprops = DAVProps(obj)
+            propsets = (davprops,)
+            obsheets = {'DAV:': davprops}
         if self.allprop:
-            stats=[]
+            stats = []
             for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__allprop'):
                     stats.append(ps.dav__allprop())
-            stats=''.join(stats) or '<d:status>200 OK</d:status>\n'
+            stats = ''.join(stats) or '<d:status>200 OK</d:status>\n'
             result.write(stats)
         elif self.propname:
-            stats=[]
+            stats = []
             for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__propnames'):
                     stats.append(ps.dav__propnames())
-            stats=''.join(stats) or '<d:status>200 OK</d:status>\n'
+            stats = ''.join(stats) or '<d:status>200 OK</d:status>\n'
             result.write(stats)
         elif self.propnames:
-            rdict={}
+            rdict = {}
             for name, ns in self.propnames:
-                ps=obsheets.get(ns, None)
+                ps = obsheets.get(ns, None)
                 if ps is not None and hasattr(aq_base(ps), 'dav__propstat'):
-                    stat=ps.dav__propstat(name, rdict)
+                    ps.dav__propstat(name, rdict)
                 else:
-                    prop='<n:%s xmlns:n="%s"/>' % (name, ns)
-                    code='404 Not Found'
-                    if not rdict.has_key(code):
-                        rdict[code]=[prop]
+                    prop = '<n:%s xmlns:n="%s"/>' % (name, ns)
+                    code = '404 Not Found'
+                    if code not in rdict:
+                        rdict[code] = [prop]
                     else:
                         rdict[code].append(prop)
-            keys=rdict.keys()
+            keys = rdict.keys()
             keys.sort()
             for key in keys:
-                result.write('<d:propstat>\n' \
-                             '  <d:prop>\n' \
+                result.write('<d:propstat>\n'
+                             '  <d:prop>\n'
                              )
                 map(result.write, rdict[key])
-                result.write('  </d:prop>\n' \
-                             '  <d:status>HTTP/1.1 %s</d:status>\n' \
+                result.write('  </d:prop>\n'
+                             '  <d:status>HTTP/1.1 %s</d:status>\n'
                              '</d:propstat>\n' % key
                              )
         else:
-            raise BadRequest, 'Invalid request'
+            raise BadRequest('Invalid request')
         result.write('</d:response>\n')
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.listDAVObjects():
-                if hasattr(ob,"meta_type"):
-                    if ob.meta_type=="Broken Because Product is Gone":
+                if hasattr(ob, "meta_type"):
+                    if ob.meta_type == "Broken Because Product is Gone":
                         continue
-                dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
+                dflag = hasattr(ob, '_p_changed') and (ob._p_changed is None)
                 if hasattr(ob, '__locknull_resource__'):
                     # Do nothing, a null resource shouldn't show up to DAV
                     if dflag:
                         ob._p_deactivate()
                 elif hasattr(ob, '__dav_resource__'):
                     uri = urljoin(url, absattr(ob.getId()))
-                    depth = depth=='infinity' and depth or 0
+                    depth = depth == 'infinity' and depth or 0
                     self.apply(ob, uri, depth, result, top=0)
                     if dflag:
                         ob._p_deactivate()
@@ -185,126 +186,126 @@ class PropFind:
         return result.getvalue()
 
 
-class PropPatch:
+class PropPatch(object):
     """Model a PROPPATCH request."""
 
     def __init__(self, request):
-        self.request=request
-        self.values=[]
+        self.request = request
+        self.values = []
         self.parse(request)
 
     def parse(self, request, dav='DAV:'):
-        body=request.get('BODY', '')
+        body = request.get('BODY', '')
         try:
-            root=XmlParser().parse(body)
-        except:
-            raise BadRequest, sys.exc_info()[1]
-        vals=self.values
-        e=root.elements('propertyupdate', ns=dav)
+            root = XmlParser().parse(body)
+        except Exception:
+            raise BadRequest(sys.exc_info()[1])
+        vals = self.values
+        e = root.elements('propertyupdate', ns=dav)
         if not e:
-            raise BadRequest, 'Invalid xml request.'
-        e=e[0]
+            raise BadRequest('Invalid xml request.')
+        e = e[0]
         for ob in e.elements():
-            if ob.name()=='set' and ob.namespace()==dav:
-                proptag=ob.elements('prop', ns=dav)
+            if ob.name() == 'set' and ob.namespace() == dav:
+                proptag = ob.elements('prop', ns=dav)
                 if not proptag:
-                    raise BadRequest, 'Invalid xml request.'
-                proptag=proptag[0]
+                    raise BadRequest('Invalid xml request.')
+                proptag = proptag[0]
                 for prop in proptag.elements():
                     # We have to ensure that all tag attrs (including
                     # an xmlns attr for all xml namespaces used by the
                     # element and its children) are saved, per rfc2518.
-                    name, ns=prop.name(), prop.namespace()
-                    e, attrs=prop.elements(), prop.attrs()
+                    name, ns = prop.name(), prop.namespace()
+                    e, attrs = prop.elements(), prop.attrs()
                     if (not e) and (not attrs):
                         # simple property
-                        item=(name, ns, prop.strval(), {})
+                        item = (name, ns, prop.strval(), {})
                         vals.append(item)
                     else:
                         # xml property
-                        attrs={}
+                        attrs = {}
                         prop.remove_namespace_attrs()
                         for attr in prop.attrs():
-                            attrs[attr.qname()]=attr.value()
-                        md={'__xml_attrs__':attrs}
-                        item=(name, ns, prop.strval(), md)
+                            attrs[attr.qname()] = attr.value()
+                        md = {'__xml_attrs__': attrs}
+                        item = (name, ns, prop.strval(), md)
                         vals.append(item)
-            if ob.name()=='remove' and ob.namespace()==dav:
-                proptag=ob.elements('prop', ns=dav)
+            if ob.name() == 'remove' and ob.namespace() == dav:
+                proptag = ob.elements('prop', ns=dav)
                 if not proptag:
-                    raise BadRequest, 'Invalid xml request.'
-                proptag=proptag[0]
+                    raise BadRequest('Invalid xml request.')
+                proptag = proptag[0]
                 for prop in proptag.elements():
-                    item=(prop.name(), prop.namespace())
+                    item = (prop.name(), prop.namespace())
                     vals.append(item)
 
     def apply(self, obj):
-        url=urlfix(self.request['URL'], 'PROPPATCH')
+        url = urlfix(self.request['URL'], 'PROPPATCH')
         if isDavCollection(obj):
-            url=url+'/'
-        result=StringIO()
-        errors=[]
-        result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
-                     '<d:multistatus xmlns:d="DAV:">\n' \
-                     '<d:response>\n' \
+            url = url + '/'
+        result = StringIO()
+        errors = []
+        result.write('<?xml version="1.0" encoding="utf-8"?>\n'
+                     '<d:multistatus xmlns:d="DAV:">\n'
+                     '<d:response>\n'
                      '<d:href>%s</d:href>\n' % quote(url))
-        propsets=obj.propertysheets
+        propsets = obj.propertysheets
         for value in self.values:
-            status='200 OK'
+            status = '200 OK'
             if len(value) > 2:
-                name, ns, val, md=value
-                propset=propsets.get(ns, None)
+                name, ns, val, md = value
+                propset = propsets.get(ns, None)
                 if propset is None:
                     propsets.manage_addPropertySheet('', ns)
-                    propset=propsets.get(ns)
+                    propset = propsets.get(ns)
                 if propset.hasProperty(name):
                     try:
                         propset._updateProperty(name, val, meta=md)
-                    except:
+                    except Exception:
                         errors.append(str(sys.exc_info()[1]))
-                        status='409 Conflict'
+                        status = '409 Conflict'
                 else:
                     try:
                         propset._setProperty(name, val, meta=md)
-                    except:
+                    except Exception:
                         errors.append(str(sys.exc_info()[1]))
-                        status='409 Conflict'
+                        status = '409 Conflict'
             else:
-                name, ns=value
-                propset=propsets.get(ns, None)
+                name, ns = value
+                propset = propsets.get(ns, None)
                 if propset is None or not propset.hasProperty(name):
                     # removing a non-existing property is not an error!
                     # according to RFC 2518
-                    status='200 OK'
+                    status = '200 OK'
                 else:
                     try:
                         propset._delProperty(name)
-                    except:
+                    except Exception:
                         errors.append('%s cannot be deleted.' % name)
-                        status='409 Conflict'
-            result.write('<d:propstat xmlns:n="%s">\n' \
-                         '  <d:prop>\n' \
-                         '  <n:%s/>\n' \
-                         '  </d:prop>\n' \
-                         '  <d:status>HTTP/1.1 %s</d:status>\n' \
+                        status = '409 Conflict'
+            result.write('<d:propstat xmlns:n="%s">\n'
+                         '  <d:prop>\n'
+                         '  <n:%s/>\n'
+                         '  </d:prop>\n'
+                         '  <d:status>HTTP/1.1 %s</d:status>\n'
                          '</d:propstat>\n' % (ns, name, status))
-        errmsg='\n'.join(errors) or 'The operation succeded.'
-        result.write('<d:responsedescription>\n' \
-                     '%s\n' \
-                     '</d:responsedescription>\n' \
-                     '</d:response>\n' \
+        errmsg = '\n'.join(errors) or 'The operation succeded.'
+        result.write('<d:responsedescription>\n'
+                     '%s\n'
+                     '</d:responsedescription>\n'
+                     '</d:response>\n'
                      '</d:multistatus>' % errmsg)
-        result=result.getvalue()
+        result = result.getvalue()
         if not errors:
             return result
         # This is lame, but I cant find a way to keep ZPublisher
         # from sticking a traceback into my xml response :(
         transaction.abort()
-        result=result.replace( '200 OK', '424 Failed Dependency')
+        result = result.replace('200 OK', '424 Failed Dependency')
         return result
 
 
-class Lock:
+class Lock(object):
     """Model a LOCK request."""
 
     def __init__(self, request):
@@ -333,16 +334,17 @@ class Lock:
             # XML it sends.
             lockowner = lockowner[0]
             for el in lockowner.elements():
-                name, elns = el.name(), el.namespace()
+                # name = el.name()
+                elns = el.namespace()
                 if not elns:
                     # There's no namespace, so we have to add one
-                    lockowner.remap({dav:'ot'})
+                    lockowner.remap({dav: 'ot'})
                     el.__nskey__ = 'ot'
                     for subel in el.elements():
                         if not subel.namespace():
                             el.__nskey__ = 'ot'
                 else:
-                    el.remap({dav:'o'})
+                    el.remap({dav: 'o'})
             self.owner = lockowner.strval()
 
     def apply(self, obj, creator=None, depth='infinity', token=None,
@@ -368,7 +370,7 @@ class Lock:
 
         except ValueError:
             errmsg = "412 Precondition Failed"
-        except:
+        except Exception:
             errmsg = "403 Forbidden"
 
         try:
@@ -391,7 +393,7 @@ class Lock:
                     obj.wl_setLock(token, lock)
                 else:
                     errmsg = "403 Forbidden"
-        except:
+        except Exception:
             errmsg = "403 Forbidden"
 
         if errmsg:
@@ -401,7 +403,7 @@ class Lock:
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header
-                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n'
                              '<d:multistatus xmlns:d="DAV:">\n')
             result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
             result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
@@ -419,11 +421,11 @@ class Lock:
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful locks
             result.write('</d:multistatus>')
-            transaction.abort() # This *SHOULD* clear all succesful locks
+            transaction.abort()  # This *SHOULD* clear all succesful locks
         return token, result.getvalue()
 
 
-class Unlock:
+class Unlock(object):
     """ Model an Unlock request """
 
     def apply(self, obj, token, url=None, result=None, top=1):
@@ -441,8 +443,8 @@ class Unlock:
         if islockable:
             if obj.wl_hasLock(token):
                 method = getattr(obj, 'wl_delLock')
-                vld = getSecurityManager().validate(None,obj,
-                                                    'wl_delLock',method)
+                vld = getSecurityManager().validate(
+                    None, obj, 'wl_delLock', method)
                 if vld:
                     obj.wl_delLock(token)
                 else:
@@ -467,7 +469,7 @@ class Unlock:
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header
-                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n'
                              '<d:multistatus xmlns:d="DAV:">\n')
             result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
             result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
@@ -489,7 +491,7 @@ class Unlock:
         return result.getvalue()
 
 
-class DeleteCollection:
+class DeleteCollection(object):
     """ With WriteLocks in the picture, deleting a collection involves
     checking *all* descendents (deletes on collections are always of depth
     infinite) for locks and if the locks match. """
@@ -523,7 +525,7 @@ class DeleteCollection:
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header
-                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n'
                              '<d:multistatus xmlns:d="DAV:">\n')
             result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
             result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
@@ -531,7 +533,7 @@ class DeleteCollection:
 
         if iscol:
             for ob in obj.objectValues():
-                dflag = hasattr(ob,'_p_changed') and (ob._p_changed == None)
+                dflag = hasattr(ob, '_p_changed') and (ob._p_changed is None)
                 if hasattr(ob, '__dav_resource__'):
                     uri = urljoin(url, absattr(ob.getId()))
                     self.apply(ob, token, sm, uri, result, top=0)

@@ -15,7 +15,6 @@
 
 import mimetypes
 import sys
-import warnings
 import re
 from urllib import unquote
 
@@ -67,6 +66,7 @@ from webdav.interfaces import IDAVResource
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
+
 @implementer(IDAVResource)
 class Resource(Base, LockableItem):
 
@@ -76,12 +76,12 @@ class Resource(Base, LockableItem):
     such as PUT should be overridden to ensure correct behavior in
     the context of the object type."""
 
-    __dav_resource__=1
+    __dav_resource__ = 1
 
-    __http_methods__=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS',
-                      'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
-                      'MOVE', 'LOCK', 'UNLOCK',
-                      )
+    __http_methods__ = ('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS',
+                        'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
+                        'MOVE', 'LOCK', 'UNLOCK',
+                        )
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(webdav_access, ('Authenticated', 'Manager'))
@@ -104,22 +104,26 @@ class Resource(Base, LockableItem):
             response.setHeader('Accept-Ranges', 'none')
 
     def dav__validate(self, object, methodname, REQUEST):
-        msg='<strong>You are not authorized to access this resource.</strong>'
-        method=None
+        msg = ('<strong>You are not authorized '
+               'to access this resource.</strong>')
+        method = None
         if hasattr(object, methodname):
-            method=getattr(object, methodname)
+            method = getattr(object, methodname)
         else:
-            try:    method=object.aq_acquire(methodname)
-            except: method=None
+            try:
+                method = object.aq_acquire(methodname)
+            except Exception:
+                method = None
 
         if method is not None:
             try:
                 return getSecurityManager().validate(None, object,
                                                      methodname,
                                                      method)
-            except: pass
+            except Exception:
+                pass
 
-        raise Unauthorized, msg
+        raise Unauthorized(msg)
 
     def dav__simpleifhandler(self, request, response, method='PUT',
                              col=0, url=None, refresh=0):
@@ -141,15 +145,18 @@ class Resource(Base, LockableItem):
         # Since we're a simple if handler, and since some clients don't
         # pass in the port information in the resource part of an If
         # header, we're only going to worry about if the paths compare
-        if url is None: url = urlfix(request['URL'], method)
-        url = urlbase(url)              # Gets just the path information
+        if url is None:
+            url = urlfix(request['URL'], method)
+        url = urlbase(url)  # Gets just the path information
 
         # if 'col' is passed in, an operation is happening on a submember
         # of a collection, while the Lock may be on the parent.  Lob off
         # the final part of the URL  (ie '/a/b/foo.html' becomes '/a/b/')
-        if col: url = url[:url.rfind('/')+1]
+        if col:
+            url = url[:url.rfind('/') + 1]
 
-        found = 0; resourcetagged = 0
+        found = 0
+        resourcetagged = 0
         taglist = IfParser(ifhdr)
         for tag in taglist:
 
@@ -158,25 +165,33 @@ class Resource(Base, LockableItem):
                 tag_list = map(tokenFinder, tag.list)
                 wehave = [t for t in tag_list if self.wl_hasLock(t)]
 
-                if not wehave: continue
-                if tag.NOTTED: continue
+                if not wehave:
+                    continue
+                if tag.NOTTED:
+                    continue
                 if refresh:
-                    for token in wehave: self.wl_getLock(token).refresh()
+                    for token in wehave:
+                        self.wl_getLock(token).refresh()
                 resourcetagged = 1
-                found = 1; break
+                found = 1
+                break
             elif urlbase(tag.resource) == url:
                 resourcetagged = 1
                 tag_list = map(tokenFinder, tag.list)
                 wehave = [t for t in tag_list if self.wl_hasLock(t)]
 
-                if not wehave: continue
-                if tag.NOTTED: continue
+                if not wehave:
+                    continue
+                if tag.NOTTED:
+                    continue
                 if refresh:
-                    for token in wehave: self.wl_getLock(token).refresh()
-                found = 1; break
+                    for token in wehave:
+                        self.wl_getLock(token).refresh()
+                found = 1
+                break
 
         if resourcetagged and (not found):
-            raise PreconditionFailed, 'Condition failed.'
+            raise PreconditionFailed('Condition failed.')
         elif resourcetagged and found:
             return 1
         else:
@@ -188,16 +203,16 @@ class Resource(Base, LockableItem):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
 
-        content_type=None
+        content_type = None
         if hasattr(self, 'content_type'):
-            content_type=absattr(self.content_type)
+            content_type = absattr(self.content_type)
         if content_type is None:
-            url=urlfix(REQUEST['URL'], 'HEAD')
-            name=unquote(filter(None, url.split( '/')[-1]))
-            content_type, encoding=mimetypes.guess_type(name)
+            url = urlfix(REQUEST['URL'], 'HEAD')
+            name = unquote(filter(None, url.split('/')[-1]))
+            content_type, encoding = mimetypes.guess_type(name)
         if content_type is None:
             if hasattr(self, 'default_content_type'):
-                content_type=absattr(self.default_content_type)
+                content_type = absattr(self.default_content_type)
         if content_type is None:
             content_type = 'application/octet-stream'
         RESPONSE.setHeader('Content-Type', content_type.lower())
@@ -205,7 +220,7 @@ class Resource(Base, LockableItem):
         if hasattr(aq_base(self), 'get_size'):
             RESPONSE.setHeader('Content-Length', absattr(self.get_size))
         if hasattr(self, '_p_mtime'):
-            mtime=rfc1123_date(self._p_mtime)
+            mtime = rfc1123_date(self._p_mtime)
             RESPONSE.setHeader('Last-Modified', mtime)
         if hasattr(aq_base(self), 'http__etag'):
             etag = self.http__etag(readonly=1)
@@ -221,12 +236,11 @@ class Resource(Base, LockableItem):
         object-specific implementation. By default, PUT requests
         fail with a 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
-        raise MethodNotAllowed, 'Method not supported for this resource.'
+        raise MethodNotAllowed('Method not supported for this resource.')
 
     security.declarePublic('OPTIONS')
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
-        import webdav
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
@@ -250,7 +264,7 @@ class Resource(Base, LockableItem):
         is not often possible to reproduce the HTTP request verbatim
         from within the Zope environment."""
         self.dav__init(REQUEST, RESPONSE)
-        raise MethodNotAllowed, 'Method not supported for this resource.'
+        raise MethodNotAllowed('Method not supported for this resource.')
 
     security.declareProtected(delete_objects, 'DELETE')
     def DELETE(self, REQUEST, RESPONSE):
@@ -259,7 +273,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
-        name = unquote(filter(None, url.split( '/')[-1]))
+        name = unquote(filter(None, url.split('/')[-1]))
         parent = aq_parent(aq_inner(self))
         # Lock checking
         if wl_isLocked(self):
@@ -268,20 +282,20 @@ class Resource(Base, LockableItem):
             else:
                 # We're locked, and no if header was passed in, so
                 # the client doesn't own a lock.
-                raise Locked, 'Resource is locked.'
+                raise Locked('Resource is locked.')
         elif IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
                 # Our parent is locked, and no If header was passed in.
                 # When a parent is locked, members cannot be removed
-                raise PreconditionFailed, 'Resource is locked, and no '\
-                      'condition was passed in.'
+                raise PreconditionFailed(
+                    'Resource is locked, and no condition was passed in.')
         # Either we're not locked, or a succesful lock token was submitted
         # so we can delete the lock now.
         # ajung: Fix for Collector # 2196
 
-        if parent.manage_delObjects([name],REQUEST=None)  is None:
+        if parent.manage_delObjects([name], REQUEST=None) is None:
             RESPONSE.setStatus(204)
         else:
 
@@ -298,11 +312,11 @@ class Resource(Base, LockableItem):
         result = cmd.apply(self)
         # work around MSIE DAV bug for creation and modified date
         if (REQUEST.get_header('User-Agent') ==
-            'Microsoft Data Access Internet Publishing Provider DAV 1.1'):
+                'Microsoft Data Access Internet Publishing Provider DAV 1.1'):
             result = result.replace('<n:getlastmodified xmlns:n="DAV:">',
-                                    '<n:getlastmodified xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.rfc1123">')
+                                    '<n:getlastmodified xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.rfc1123">')  # NOQA
             result = result.replace('<n:creationdate xmlns:n="DAV:">',
-                                    '<n:creationdate xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.tz">')
+                                    '<n:creationdate xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.tz">')  # NOQA
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
         RESPONSE.setBody(result)
@@ -314,15 +328,15 @@ class Resource(Base, LockableItem):
         from webdav.davcmds import PropPatch
         self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'propertysheets'):
-            raise MethodNotAllowed, (
-                  'Method not supported for this resource.')
+            raise MethodNotAllowed(
+                'Method not supported for this resource.')
         # Lock checking
         ifhdr = REQUEST.get_header('If', '')
         if wl_isLocked(self):
             if ifhdr:
                 self.dav__simpleifhandler(REQUEST, RESPONSE, 'PROPPATCH')
             else:
-                raise Locked, 'Resource is locked.'
+                raise Locked('Resource is locked.')
 
         cmd = PropPatch(REQUEST)
         result = cmd.apply(self)
@@ -335,7 +349,7 @@ class Resource(Base, LockableItem):
         """Create a new collection resource. If called on an existing
         resource, MKCOL must fail with 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
-        raise MethodNotAllowed, 'The resource already exists.'
+        raise MethodNotAllowed('The resource already exists.')
 
     security.declarePublic('COPY')
     def COPY(self, REQUEST, RESPONSE):
@@ -347,51 +361,53 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
            not self.cb_isCopyable():
-            raise MethodNotAllowed, 'This object may not be copied.'
+            raise MethodNotAllowed('This object may not be copied.')
 
-        depth=REQUEST.get_header('Depth', 'infinity')
-        if not depth in ('0', 'infinity'):
-            raise BadRequest, 'Invalid Depth header.'
+        depth = REQUEST.get_header('Depth', 'infinity')
+        if depth not in ('0', 'infinity'):
+            raise BadRequest('Invalid Depth header.')
 
-        dest=REQUEST.get_header('Destination', '')
-        while dest and dest[-1]=='/':
-            dest=dest[:-1]
+        dest = REQUEST.get_header('Destination', '')
+        while dest and dest[-1] == '/':
+            dest = dest[:-1]
         if not dest:
-            raise BadRequest, 'Invalid Destination header.'
+            raise BadRequest('Invalid Destination header.')
 
-        try: path = REQUEST.physicalPathFromURL(dest)
+        try:
+            path = REQUEST.physicalPathFromURL(dest)
         except ValueError:
-            raise BadRequest, 'Invalid Destination header'
+            raise BadRequest('Invalid Destination header')
 
         name = path.pop()
 
-        oflag=REQUEST.get_header('Overwrite', 'F').upper()
-        if not oflag in ('T', 'F'):
-            raise BadRequest, 'Invalid Overwrite header.'
+        oflag = REQUEST.get_header('Overwrite', 'F').upper()
+        if oflag not in ('T', 'F'):
+            raise BadRequest('Invalid Overwrite header.')
 
-        try: parent=self.restrictedTraverse(path)
+        try:
+            parent = self.restrictedTraverse(path)
         except ValueError:
-            raise Conflict, 'Attempt to copy to an unknown namespace.'
+            raise Conflict('Attempt to copy to an unknown namespace.')
         except NotFound:
-            raise Conflict, 'Object ancestors must already exist.'
-        except:
-            t, v, tb=sys.exc_info()
-            raise t, v
+            raise Conflict('Object ancestors must already exist.')
+        except Exception:
+            raise
+
         if hasattr(parent, '__null_resource__'):
-            raise Conflict, 'Object ancestors must already exist.'
-        existing=hasattr(aq_base(parent), name)
-        if existing and oflag=='F':
-            raise PreconditionFailed, 'Destination resource exists.'
+            raise Conflict('Object ancestors must already exist.')
+        existing = hasattr(aq_base(parent), name)
+        if existing and oflag == 'F':
+            raise PreconditionFailed('Destination resource exists.')
         try:
             parent._checkId(name, allow_dup=1)
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except Exception:
+            raise Forbidden(sys.exc_info()[1])
         try:
             parent._verifyObjectPaste(self)
         except Unauthorized:
             raise
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except Exception:
+            raise Forbidden(sys.exc_info()[1])
 
         # Now check locks.  The If header on a copy only cares about the
         # lock on the destination, so we need to check out the destinations
@@ -405,28 +421,28 @@ class Resource(Base, LockableItem):
                     itrue = destob.dav__simpleifhandler(
                         REQUEST, RESPONSE, 'COPY', refresh=1)
                     if not itrue:
-                        raise PreconditonFailed
+                        raise PreconditionFailed()
                 else:
-                    raise Locked, 'Destination is locked.'
+                    raise Locked('Destination is locked.')
         elif IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'COPY',
                                             refresh=1)
             else:
-                raise Locked, 'Destination is locked.'
+                raise Locked('Destination is locked.')
 
         self._notifyOfCopyTo(parent, op=0)
         ob = self._getCopy(parent)
         ob._setId(name)
 
-        if depth=='0' and isDavCollection(ob):
+        if depth == '0' and isDavCollection(ob):
             for id in ob.objectIds():
                 ob._delObject(id)
 
         notify(ObjectCopiedEvent(ob, self))
 
         if existing:
-            object=getattr(parent, name)
+            object = getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
 
@@ -457,42 +473,45 @@ class Resource(Base, LockableItem):
         self.dav__validate(self, 'DELETE', REQUEST)
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
            not self.cb_isMoveable():
-            raise MethodNotAllowed, 'This object may not be moved.'
+            raise MethodNotAllowed('This object may not be moved.')
 
-        dest=REQUEST.get_header('Destination', '')
+        dest = REQUEST.get_header('Destination', '')
 
-        try: path = REQUEST.physicalPathFromURL(dest)
+        try:
+            path = REQUEST.physicalPathFromURL(dest)
         except ValueError:
-            raise BadRequest, 'No destination given'
+            raise BadRequest('No destination given')
 
-        flag=REQUEST.get_header('Overwrite', 'F')
-        flag=flag.upper()
+        flag = REQUEST.get_header('Overwrite', 'F')
+        flag = flag.upper()
 
         name = path.pop()
         parent_path = '/'.join(path)
 
-        try: parent = self.restrictedTraverse(path)
+        try:
+            parent = self.restrictedTraverse(path)
         except ValueError:
-            raise Conflict, 'Attempt to move to an unknown namespace.'
+            raise Conflict('Attempt to move to an unknown namespace.')
         except 'Not Found':
-            raise Conflict, 'The resource %s must exist.' % parent_path
-        except:
+            raise Conflict('The resource %s must exist.' % parent_path)
+        except Exception:
             raise
+
         if hasattr(parent, '__null_resource__'):
-            raise Conflict, 'The resource %s must exist.' % parent_path
-        existing=hasattr(aq_base(parent), name)
-        if existing and flag=='F':
-            raise PreconditionFailed, 'Resource %s exists.' % dest
+            raise Conflict('The resource %s must exist.' % parent_path)
+        existing = hasattr(aq_base(parent), name)
+        if existing and flag == 'F':
+            raise PreconditionFailed('Resource %s exists.' % dest)
         try:
             parent._checkId(name, allow_dup=1)
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except Exception:
+            raise Forbidden(sys.exc_info()[1])
         try:
             parent._verifyObjectPaste(self)
         except Unauthorized:
             raise
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except Exception:
+            raise Forbidden(sys.exc_info()[1])
 
         # Now check locks.  Since we're affecting the resource that we're
         # moving as well as the destination, we have to check both.
@@ -507,7 +526,7 @@ class Resource(Base, LockableItem):
                     if not itrue:
                         raise PreconditionFailed
                 else:
-                    raise Locked, 'Destination is locked.'
+                    raise Locked('Destination is locked.')
         elif IWriteLock.providedBy(parent) and parent.wl_isLocked():
             # There's no existing object in the destination folder, so
             # we need to check the folders locks since we're changing its
@@ -516,16 +535,16 @@ class Resource(Base, LockableItem):
                 itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MOVE',
                                                     col=1, url=dest, refresh=1)
                 if not itrue:
-                    raise PreconditionFailed, 'Condition failed.'
+                    raise PreconditionFailed('Condition failed.')
             else:
-                raise Locked, 'Destination is locked.'
+                raise Locked('Destination is locked.')
         if wl_isLocked(self):
             # Lastly, we check ourselves
             if ifhdr:
                 itrue = self.dav__simpleifhandler(REQUEST, RESPONSE, 'MOVE',
                                                   refresh=1)
                 if not itrue:
-                    raise PreconditionFailed, 'Condition failed.'
+                    raise PreconditionFailed('Condition failed.')
             else:
                 raise Locked('Source is locked and no condition was passed in')
 
@@ -547,7 +566,7 @@ class Resource(Base, LockableItem):
         orig_container._delObject(orig_id, suppress_events=True)
 
         if existing:
-            object=getattr(parent, name)
+            object = getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
 
@@ -569,7 +588,6 @@ class Resource(Base, LockableItem):
             RESPONSE.setHeader('Location', dest)
         RESPONSE.setBody('')
         return RESPONSE
-
 
     # WebDAV Class 2, Lock and Unlock
 
@@ -611,7 +629,7 @@ class Resource(Base, LockableItem):
         else:
             # There's no body, so this likely to be a refresh request
             if not ifhdr:
-                raise PreconditionFailed, 'If Header Missing'
+                raise PreconditionFailed('If Header Missing')
             taglist = IfParser(ifhdr)
             found = 0
             for tag in taglist:
@@ -620,7 +638,7 @@ class Resource(Base, LockableItem):
                     if token and self.wl_hasLock(token):
                         lock = self.wl_getLock(token)
                         timeout = REQUEST.get_header('Timeout', 'Infinite')
-                        lock.setTimeout(timeout) # automatically refreshes
+                        lock.setTimeout(timeout)  # automatically refreshes
                         found = 1
 
                         RESPONSE.setStatus(200)
@@ -628,9 +646,10 @@ class Resource(Base, LockableItem):
                                            'text/xml; charset="utf-8"')
                         RESPONSE.setBody(lock.asXML())
                         break
-                if found: break
+                if found:
+                    break
             if not found:
-                RESPONSE.setStatus(412) # Precondition failed
+                RESPONSE.setStatus(412)  # Precondition failed
 
         return RESPONSE
 
@@ -639,7 +658,6 @@ class Resource(Base, LockableItem):
         """Remove an existing lock on a resource."""
         from webdav.davcmds import Unlock
         self.dav__init(REQUEST, RESPONSE)
-        security = getSecurityManager()
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
         token = tokenFinder(token)
@@ -655,7 +673,6 @@ class Resource(Base, LockableItem):
             RESPONSE.setStatus(204)     # No Content response code
         return RESPONSE
 
-
     security.declareProtected(webdav_access, 'manage_DAVget')
     def manage_DAVget(self):
         """Gets the document source"""
@@ -665,5 +682,6 @@ class Resource(Base, LockableItem):
     security.declareProtected(webdav_access, 'listDAVObjects')
     def listDAVObjects(self):
         return []
+
 
 InitializeClass(Resource)
