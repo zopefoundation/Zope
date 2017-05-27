@@ -25,3 +25,7 @@ for tag in "2.13.26"; do
     git show $tag:requirements.txt > releases/$tag/requirements.txt && printf "* [requirements.txt](releases/$tag/requirements.txt)\n" >> README.md || rm releases/$tag/requirements.txt
     printf "\n" >> README.md
 done
+
+# Add a footer
+printf "\n_____\n\n" >> README.md
+printf "[How to maintain this page](HOWTO.md)\n" >> README.md
