@@ -15,6 +15,11 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated distributions:
+
+    - Products.BTreeFolder2 = 4.0.0
+    - Products.ZCatalog = 4.0.0
+
 
 Restructuring
 +++++++++++++
