@@ -25,6 +25,7 @@ ZEO==5.1
 ZODB==5.2.3
 ZServer==4.0a2
 five.globalrequest==1.0
+five.localsitemanager==3.0.1
 funcsigs==1.0.2
 mock==2.0.0
 pbr==3.0.0
