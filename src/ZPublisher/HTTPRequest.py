@@ -32,6 +32,7 @@ import time
 from AccessControl.tainted import TaintedString
 import pkg_resources
 from six import binary_type
+from six import PY2
 from six import PY3
 from six import string_types
 from six import text_type
@@ -528,8 +529,6 @@ class HTTPRequest(BaseRequest):
         else:
             fslist = fs.list
             tuple_items = {}
-            lt = type([])
-            CGI_name = isCGI_NAMEs
             defaults = {}
             tainteddefaults = {}
             converter = None
@@ -623,7 +622,7 @@ class HTTPRequest(BaseRequest):
                             l = -1
 
                 # Filter out special names from form:
-                if key in CGI_name or key[:5] == 'HTTP_':
+                if key in isCGI_NAMEs or key.startswith('HTTP_'):
                     continue
 
                 # If the key is tainted, mark it so as well.
@@ -841,7 +840,7 @@ class HTTPRequest(BaseRequest):
                                 # Store a tainted version if necessary
                                 if tainted_key not in tainted_mapping:
                                     copied = deepcopy(found)
-                                    if isinstance(copied, lt):
+                                    if isinstance(copied, list):
                                         tainted_mapping[tainted_key] = copied
                                     else:
                                         tainted_mapping[tainted_key] = [copied]
@@ -852,13 +851,13 @@ class HTTPRequest(BaseRequest):
                                 # value for this key, and the tainted_mapping
                                 # needs to hold all the values.
                                 tfound = tainted_mapping[tainted_key]
-                                if isinstance(tfound, lt):
+                                if isinstance(tfound, list):
                                     tainted_mapping[tainted_key].append(item)
                                 else:
                                     tainted_mapping[tainted_key] = [tfound,
                                                                     item]
 
-                            if type(found) is lt:
+                            if isinstance(found, list):
                                 found.append(item)
                             else:
                                 found = [found, item]
@@ -926,11 +925,12 @@ class HTTPRequest(BaseRequest):
                             # Store a tainted version if necessary
                             if tainted_key not in taintedform:
                                 copied = deepcopy(found)
-                                if isinstance(copied, lt):
+                                if isinstance(copied, list):
                                     taintedform[tainted_key] = copied
                                 else:
                                     taintedform[tainted_key] = [copied]
-                            elif not isinstance(taintedform[tainted_key], lt):
+                            elif not isinstance(
+                                    taintedform[tainted_key], list):
                                 taintedform[tainted_key] = [
                                     taintedform[tainted_key]]
                             taintedform[tainted_key].append(tainted)
@@ -940,12 +940,12 @@ class HTTPRequest(BaseRequest):
                             # for this key, and the taintedform needs to hold
                             # all the values.
                             tfound = taintedform[tainted_key]
-                            if isinstance(tfound, lt):
+                            if isinstance(tfound, list):
                                 taintedform[tainted_key].append(item)
                             else:
                                 taintedform[tainted_key] = [tfound, item]
 
-                        if type(found) is lt:
+                        if isinstance(found, list):
                             found.append(item)
                         else:
                             found = [found, item]
@@ -1009,16 +1009,16 @@ class HTTPRequest(BaseRequest):
                                     setattr(r, k, v)
                             form[key] = r
 
-                        elif isinstance(value, lt):
+                        elif isinstance(value, list):
                             # the default value is a list
                             l = form[key]
-                            if not isinstance(l, lt):
+                            if not isinstance(l, list):
                                 l = [l]
 
                             # First deal with tainted copies
                             if tainted_key in taintedform:
                                 tainted = taintedform[tainted_key]
-                                if not isinstance(tainted, lt):
+                                if not isinstance(tainted, list):
                                     tainted = [tainted]
                                 for defitem in tdefault:
                                     if isinstance(defitem, record):
@@ -1666,7 +1666,7 @@ class ZopeFieldStorage(FieldStorage):
 
 
 # Original version: zope.publisher.browser.FileUpload
-class FileUpload:
+class FileUpload(object):
     '''File upload objects
 
     File upload objects are used to represent file-uploaded data.
@@ -1683,22 +1683,7 @@ class FileUpload:
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, aFieldStorage):
-
-        file = aFieldStorage.file
-        if hasattr(file, '__methods__'):
-            methods = file.__methods__
-        else:
-            methods = [
-                'close', 'fileno', 'flush', 'isatty',
-                'read', 'readline', 'readlines', 'seek',
-                'tell', 'truncate', 'write', 'writelines',
-                '__iter__', 'next', 'name']  # see Collector 1837
-
-        d = self.__dict__
-        for m in methods:
-            if hasattr(file, m):
-                d[m] = getattr(file, m)
-
+        self.file = aFieldStorage.file
         self.headers = aFieldStorage.headers
         self.filename = aFieldStorage.filename
         self.name = aFieldStorage.name
@@ -1710,18 +1695,40 @@ class FileUpload:
         except Exception:
             pass
 
+    def __getattribute__(self, key):
+        if key in ('close', 'closed', 'detach', 'fileno', 'flush',
+                   'getbuffer', 'getvalue', 'isatty', 'read', 'read1',
+                   'readable', 'readinto', 'readline', 'readlines',
+                   'seek', 'seekable', 'tell', 'truncate', 'writable',
+                   'write', 'writelines', 'name'):
+            file = object.__getattribute__(self, 'file')
+            func = getattr(file, key, _marker)
+            if func is not _marker:
+                return func
+        # Always fall back to looking things up on self
+        return object.__getattribute__(self, key)
+
+    def __iter__(self):
+        return self.file.__iter__()
+
     def __bool__(self):
         """FileUpload objects are considered false if their
            filename is empty.
         """
-        return not not self.filename
+        return bool(self.filename)
 
-    def __nonzero__(self):
-        # Py2
-        return self.__bool__()
+    def __next__(self):
+        return self.file.__next__()
 
-    def xreadlines(self):
-        return self
+    if PY2:
+        def __nonzero__(self):
+            return self.__bool__()
+
+        def next(self):
+            return self.file.next()
+
+        def xreadlines(self):
+            return self
 
 
 QPARMRE = re.compile(

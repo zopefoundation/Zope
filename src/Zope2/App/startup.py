@@ -75,6 +75,7 @@ def _load_custom_zodb(location):
         sys.modules['Zope2.custom_zodb'] = module
         return module
 
+
 def startup():
     from Zope2.App import patches
     patches.apply_patches()
@@ -91,10 +92,12 @@ def startup():
     DB = None
 
     custom_locations = [
-        configuration.testinghome,
+        getattr(configuration, 'testinghome', None),
         configuration.instancehome,
     ]
     for location in custom_locations:
+        if not location:
+            continue
         module = _load_custom_zodb(location)
         if module is not None:
             # Get the database and join it to the dbtab multidatabase

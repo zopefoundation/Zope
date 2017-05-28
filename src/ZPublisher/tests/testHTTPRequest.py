@@ -15,6 +15,7 @@ from io import BytesIO
 import sys
 import unittest
 
+from six import PY2
 from zExceptions import NotFound
 from zope.component import provideAdapter
 from zope.i18n.interfaces import IUserPreferredLanguages
@@ -246,11 +247,21 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def test_processInputs_w_unicode_conversions(self):
-        inputs = (('ustring:ustring:utf8', 'test\xc2\xae'),
-                  ('utext:utext:utf8', 'test\xc2\xae\ntest\xc2\xae\n'),
-                  ('utokens:utokens:utf8', 'test\xc2\xae test\xc2\xae'),
-                  ('ulines:ulines:utf8', 'test\xc2\xae\ntest\xc2\xae'),
-                  ('nouconverter:string:utf8', 'test\xc2\xae'))
+        # This tests native strings, which mean something different
+        # under Python 2 / 3.
+        if PY2:
+            reg_char = '\xc2\xae'
+        else:
+            reg_char = '\xae'
+
+        inputs = (('ustring:ustring:utf8', 'test' + reg_char),
+                  ('utext:utext:utf8', 'test' + reg_char +
+                   '\ntest' + reg_char + '\n'),
+                  ('utokens:utokens:utf8', 'test' + reg_char +
+                   ' test' + reg_char),
+                  ('ulines:ulines:utf8', 'test' + reg_char +
+                   '\ntest' + reg_char),
+                  ('nouconverter:string:utf8', 'test' + reg_char))
         req = self._processInputs(inputs)
 
         formkeys = list(req.form.keys())
@@ -265,7 +276,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req['ulines'], [u'test\u00AE', u'test\u00AE'])
 
         # expect a utf-8 encoded version
-        self.assertEqual(req['nouconverter'], 'test\xc2\xae')
+        self.assertEqual(req['nouconverter'], 'test' + reg_char)
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)

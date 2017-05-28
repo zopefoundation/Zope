@@ -34,6 +34,8 @@ def field2string(v):
         return v.read()
     elif six.PY2 and isinstance(v, text_type):
         return v.encode(default_encoding)
+    elif six.PY3 and isinstance(v, binary_type):
+        return v.decode(default_encoding)
     else:
         return str(v)
 
