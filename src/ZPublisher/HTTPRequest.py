@@ -528,8 +528,6 @@ class HTTPRequest(BaseRequest):
         else:
             fslist = fs.list
             tuple_items = {}
-            lt = type([])
-            CGI_name = isCGI_NAMEs
             defaults = {}
             tainteddefaults = {}
             converter = None
@@ -623,7 +621,7 @@ class HTTPRequest(BaseRequest):
                             l = -1
 
                 # Filter out special names from form:
-                if key in CGI_name or key[:5] == 'HTTP_':
+                if key in isCGI_NAMEs or key.startswith('HTTP_'):
                     continue
 
                 # If the key is tainted, mark it so as well.
@@ -841,7 +839,7 @@ class HTTPRequest(BaseRequest):
                                 # Store a tainted version if necessary
                                 if tainted_key not in tainted_mapping:
                                     copied = deepcopy(found)
-                                    if isinstance(copied, lt):
+                                    if isinstance(copied, list):
                                         tainted_mapping[tainted_key] = copied
                                     else:
                                         tainted_mapping[tainted_key] = [copied]
@@ -852,13 +850,13 @@ class HTTPRequest(BaseRequest):
                                 # value for this key, and the tainted_mapping
                                 # needs to hold all the values.
                                 tfound = tainted_mapping[tainted_key]
-                                if isinstance(tfound, lt):
+                                if isinstance(tfound, list):
                                     tainted_mapping[tainted_key].append(item)
                                 else:
                                     tainted_mapping[tainted_key] = [tfound,
                                                                     item]
 
-                            if type(found) is lt:
+                            if isinstance(found, list):
                                 found.append(item)
                             else:
                                 found = [found, item]
@@ -926,11 +924,12 @@ class HTTPRequest(BaseRequest):
                             # Store a tainted version if necessary
                             if tainted_key not in taintedform:
                                 copied = deepcopy(found)
-                                if isinstance(copied, lt):
+                                if isinstance(copied, list):
                                     taintedform[tainted_key] = copied
                                 else:
                                     taintedform[tainted_key] = [copied]
-                            elif not isinstance(taintedform[tainted_key], lt):
+                            elif not isinstance(
+                                    taintedform[tainted_key], list):
                                 taintedform[tainted_key] = [
                                     taintedform[tainted_key]]
                             taintedform[tainted_key].append(tainted)
@@ -940,12 +939,12 @@ class HTTPRequest(BaseRequest):
                             # for this key, and the taintedform needs to hold
                             # all the values.
                             tfound = taintedform[tainted_key]
-                            if isinstance(tfound, lt):
+                            if isinstance(tfound, list):
                                 taintedform[tainted_key].append(item)
                             else:
                                 taintedform[tainted_key] = [tfound, item]
 
-                        if type(found) is lt:
+                        if isinstance(found, list):
                             found.append(item)
                         else:
                             found = [found, item]
@@ -1009,16 +1008,16 @@ class HTTPRequest(BaseRequest):
                                     setattr(r, k, v)
                             form[key] = r
 
-                        elif isinstance(value, lt):
+                        elif isinstance(value, list):
                             # the default value is a list
                             l = form[key]
-                            if not isinstance(l, lt):
+                            if not isinstance(l, list):
                                 l = [l]
 
                             # First deal with tainted copies
                             if tainted_key in taintedform:
                                 tainted = taintedform[tainted_key]
-                                if not isinstance(tainted, lt):
+                                if not isinstance(tainted, list):
                                     tainted = [tainted]
                                 for defitem in tdefault:
                                     if isinstance(defitem, record):
