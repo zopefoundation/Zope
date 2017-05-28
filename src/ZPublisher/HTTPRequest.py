@@ -32,6 +32,7 @@ import time
 from AccessControl.tainted import TaintedString
 import pkg_resources
 from six import binary_type
+from six import PY2
 from six import PY3
 from six import string_types
 from six import text_type
@@ -1665,7 +1666,7 @@ class ZopeFieldStorage(FieldStorage):
 
 
 # Original version: zope.publisher.browser.FileUpload
-class FileUpload:
+class FileUpload(object):
     '''File upload objects
 
     File upload objects are used to represent file-uploaded data.
@@ -1682,22 +1683,7 @@ class FileUpload:
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, aFieldStorage):
-
-        file = aFieldStorage.file
-        if hasattr(file, '__methods__'):
-            methods = file.__methods__
-        else:
-            methods = [
-                'close', 'fileno', 'flush', 'isatty',
-                'read', 'readline', 'readlines', 'seek',
-                'tell', 'truncate', 'write', 'writelines',
-                '__iter__', 'next', 'name']  # see Collector 1837
-
-        d = self.__dict__
-        for m in methods:
-            if hasattr(file, m):
-                d[m] = getattr(file, m)
-
+        self.file = aFieldStorage.file
         self.headers = aFieldStorage.headers
         self.filename = aFieldStorage.filename
         self.name = aFieldStorage.name
@@ -1709,18 +1695,40 @@ class FileUpload:
         except Exception:
             pass
 
+    def __getattribute__(self, key):
+        if key in ('close', 'closed', 'detach', 'fileno', 'flush',
+                   'getbuffer', 'getvalue', 'isatty', 'read', 'read1',
+                   'readable', 'readinto', 'readline', 'readlines',
+                   'seek', 'seekable' 'tell', 'truncate', 'writable',
+                   'write', 'writelines', 'name'):
+            file = object.__getattribute__(self, 'file')
+            func = getattr(file, key, _marker)
+            if func is not _marker:
+                return func
+        # Always fall back to looking things up on self
+        return object.__getattribute__(self, key)
+
+    def __iter__(self):
+        return self.file.__iter__()
+
     def __bool__(self):
         """FileUpload objects are considered false if their
            filename is empty.
         """
-        return not not self.filename
+        return bool(self.filename)
 
-    def __nonzero__(self):
-        # Py2
-        return self.__bool__()
+    def __next__(self):
+        return self.file.__next__()
 
-    def xreadlines(self):
-        return self
+    if PY2:
+        def __nonzero__(self):
+            return self.__bool__()
+
+        def next(self):
+            return self.file.next()
+
+        def xreadlines(self):
+            return self
 
 
 QPARMRE = re.compile(
