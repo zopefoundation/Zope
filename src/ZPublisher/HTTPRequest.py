@@ -1699,7 +1699,7 @@ class FileUpload(object):
         if key in ('close', 'closed', 'detach', 'fileno', 'flush',
                    'getbuffer', 'getvalue', 'isatty', 'read', 'read1',
                    'readable', 'readinto', 'readline', 'readlines',
-                   'seek', 'seekable' 'tell', 'truncate', 'writable',
+                   'seek', 'seekable', 'tell', 'truncate', 'writable',
                    'write', 'writelines', 'name'):
             file = object.__getattribute__(self, 'file')
             func = getattr(file, key, _marker)
