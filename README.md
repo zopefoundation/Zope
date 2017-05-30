@@ -1,5 +1,11 @@
 # Zope Releases
 
+## master
+
+* [versions.cfg](releases/master/versions.cfg)
+* [versions-prod.cfg](releases/master/versions-prod.cfg)
+* [requirements-full.txt](releases/master/requirements-full.txt)
+
 ## 4.0a5
 
 * [versions.cfg](releases/4.0a5/versions.cfg)

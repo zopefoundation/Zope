@@ -5,7 +5,7 @@ printf "# Zope Releases\n\n" > README.md
 rm -rf releases
 
 # 4.x: 'versions.cfg', 'versions-prod.cfg', and 'requirements-full.txt'
-for tag in $(git tag -l "4*" | sort -r); do
+for tag in "master" $(git tag -l "4*" | sort -r); do
     echo $tag
     mkdir -p releases/$tag
     git show $tag:versions.cfg > releases/$tag/versions.cfg
