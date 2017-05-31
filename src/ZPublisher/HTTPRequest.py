@@ -1644,18 +1644,19 @@ class TemporaryFileWrapper(_TemporaryFileWrapper):
     and doesn't complain about such a move either.
     """
 
-    unlink = staticmethod(unlink)
-    isfile = staticmethod(isfile)
+    if PY2:
+        unlink = staticmethod(unlink)
+        isfile = staticmethod(isfile)
 
-    def close(self):
-        if not self.close_called:
-            self.close_called = True
-            self.file.close()
+        def close(self):
+            if not self.close_called:
+                self.close_called = True
+                self.file.close()
 
-    def __del__(self):
-        self.close()
-        if self.isfile(self.name):
-            self.unlink(self.name)
+        def __del__(self):
+            self.close()
+            if self.isfile(self.name):
+                self.unlink(self.name)
 
 
 class ZopeFieldStorage(FieldStorage):
@@ -1663,6 +1664,13 @@ class ZopeFieldStorage(FieldStorage):
     def make_file(self, binary=None):
         handle, name = mkstemp()
         return TemporaryFileWrapper(os.fdopen(handle, 'w+b'), name)
+
+    def __del__(self):
+        # Only call close on file object, cStringIO/BytesIO objects
+        # would be closed too early.
+        if (self.file is not None and
+                isinstance(self.file, TemporaryFileWrapper)):
+            self.file.close()
 
 
 # Original version: zope.publisher.browser.FileUpload

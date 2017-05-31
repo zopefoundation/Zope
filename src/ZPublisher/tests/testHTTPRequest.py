@@ -749,7 +749,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         s = BytesIO(TEST_FILE_DATA)
         start_count = sys.getrefcount(s)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = TEST_ENVIRON.copy()
+        environ['CONTENT_LENGTH'] = str(len(TEST_FILE_DATA))
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
         req.close()
@@ -759,7 +761,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # checks fileupload object supports the filename
         s = BytesIO(TEST_LARGEFILE_DATA)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = TEST_ENVIRON.copy()
+        environ['CONTENT_LENGTH'] = str(len(TEST_LARGEFILE_DATA))
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         f = req.form.get('largefile')
         self.assertTrue(f.name)
@@ -769,12 +773,14 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # collector entry 1837
         s = BytesIO(TEST_FILE_DATA)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = TEST_ENVIRON.copy()
+        environ['CONTENT_LENGTH'] = str(len(TEST_FILE_DATA))
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
-        f = req.form.get('file')
-        self.assertEqual(list(f), ['test\n'])
+        f = req.form.get('smallfile')
+        self.assertEqual(list(f), [b'test\n'])
         f.seek(0)
-        self.assertEqual(next(f), 'test\n')
+        self.assertEqual(next(f), b'test\n')
 
     def test__authUserPW_simple(self):
         user_id = 'user'
@@ -1144,7 +1150,7 @@ TEST_ENVIRON = {
 
 TEST_FILE_DATA = b'''
 --12345
-Content-Disposition: form-data; name="file"; filename="file"
+Content-Disposition: form-data; name="smallfile"; filename="smallfile"
 Content-Type: application/octet-stream
 
 test
