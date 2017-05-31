@@ -113,6 +113,10 @@ class Program(object):
         if source_file is not None and source_file.startswith('file:'):
             source_file = source_file[5:]
 
+        if source_file is None:
+            # Default to '<string>'
+            source_file = ChameleonPageTemplate.filename
+
         template = ChameleonPageTemplate(
             text, filename=source_file, keep_body=True,
             expression_types=expression_types,
