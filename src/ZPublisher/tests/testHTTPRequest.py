@@ -52,6 +52,11 @@ class HTTPRequestFactoryMixin(object):
         from ZPublisher.HTTPRequest import HTTPRequest
         return HTTPRequest
 
+    def _makePostEnviron(self, body=b''):
+        environ = TEST_POST_ENVIRON.copy()
+        environ['CONTENT_LENGTH'] = str(len(body))
+        return environ
+
     def _makeOne(self, stdin=None, environ=None, response=None, clean=1):
         from ZPublisher.HTTPResponse import HTTPResponse
         if stdin is None:
@@ -749,7 +754,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         s = BytesIO(TEST_FILE_DATA)
         start_count = sys.getrefcount(s)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron(body=TEST_FILE_DATA)
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
         req.close()
@@ -759,7 +765,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # checks fileupload object supports the filename
         s = BytesIO(TEST_LARGEFILE_DATA)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron(body=TEST_LARGEFILE_DATA)
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         f = req.form.get('largefile')
         self.assertTrue(f.name)
@@ -769,12 +776,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # collector entry 1837
         s = BytesIO(TEST_FILE_DATA)
 
-        req = self._makeOne(stdin=s, environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron(body=TEST_FILE_DATA)
+        req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
-        f = req.form.get('file')
-        self.assertEqual(list(f), ['test\n'])
+        f = req.form.get('smallfile')
+        self.assertEqual(list(f), [b'test\n'])
         f.seek(0)
-        self.assertEqual(next(f), 'test\n')
+        self.assertEqual(next(f), b'test\n')
 
     def test__authUserPW_simple(self):
         user_id = 'user'
@@ -978,30 +986,36 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             trusted_proxies[:] = orig
 
     def test_getHeader_exact(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('content-type'),
                          'multipart/form-data; boundary=12345')
 
     def test_getHeader_case_insensitive(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('Content-Type'),
                          'multipart/form-data; boundary=12345')
 
     def test_getHeader_underscore_is_dash(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('content_type'),
                          'multipart/form-data; boundary=12345')
 
     def test_getHeader_literal_turns_off_case_normalization(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('Content-Type', literal=True), None)
 
     def test_getHeader_nonesuch(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('none-such'), None)
 
     def test_getHeader_nonesuch_with_default(self):
-        request = self._makeOne(environ=TEST_ENVIRON.copy())
+        environ = self._makePostEnviron()
+        request = self._makeOne(environ=environ)
         self.assertEqual(request.getHeader('Not-existant', default='Whatever'),
                          'Whatever')
 
@@ -1035,7 +1049,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_clone_preserves_response_class(self):
         class DummyResponse:
             pass
-        request = self._makeOne(None, TEST_ENVIRON.copy(), DummyResponse())
+        environ = self._makePostEnviron()
+        request = self._makeOne(None, environ, DummyResponse())
         request['PARENTS'] = [object()]
         clone = request.clone()
         self.assertIsInstance(clone.response, DummyResponse)
@@ -1043,7 +1058,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_clone_preserves_request_subclass(self):
         class SubRequest(self._getTargetClass()):
             pass
-        request = SubRequest(None, TEST_ENVIRON.copy(), None)
+        environ = self._makePostEnviron()
+        request = SubRequest(None, environ, None)
         request['PARENTS'] = [object()]
         clone = request.clone()
         self.assertIsInstance(clone, SubRequest)
@@ -1135,8 +1151,9 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
         )
 
 
-TEST_ENVIRON = {
+TEST_POST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
+    'CONTENT_LENGTH': None,
     'REQUEST_METHOD': 'POST',
     'SERVER_NAME': 'localhost',
     'SERVER_PORT': '80',
@@ -1144,7 +1161,7 @@ TEST_ENVIRON = {
 
 TEST_FILE_DATA = b'''
 --12345
-Content-Disposition: form-data; name="file"; filename="file"
+Content-Disposition: form-data; name="smallfile"; filename="smallfile"
 Content-Type: application/octet-stream
 
 test
