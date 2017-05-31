@@ -1668,8 +1668,7 @@ class ZopeFieldStorage(FieldStorage):
     def __del__(self):
         # Only call close on file object, cStringIO/BytesIO objects
         # would be closed too early.
-        if (self.file is not None and
-                isinstance(self.file, TemporaryFileWrapper)):
+        if isinstance(self.file, TemporaryFileWrapper):
             self.file.close()
 
 
