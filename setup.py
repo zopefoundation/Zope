@@ -26,7 +26,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-__version__ = '4.0a6'
+__version__ = '4.0a7.dev0'
 
 setup(
     name='Zope2',

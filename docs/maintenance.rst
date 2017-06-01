@@ -52,7 +52,7 @@ Steps for creating a new Zope release
 
 - Upload the tagged release to PyPI::
 
-    python2.7 setup.py egg_info -RDb '' sdist bdist_wheel upload
+    python2.7 setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
 
 - Update version information:
 
