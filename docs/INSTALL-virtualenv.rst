@@ -20,13 +20,14 @@ Create a Virtual Environment
 Install the Zope2 Software Packages
 -----------------------------------
 
-To install a specific version of Zope, use a tag specific URL instead of
-master as suggested in the below example:
+Look for the release you want to install on
+https://github.com/zopefoundation/Zope/releases. Than use the specific
+version in the URL, replacing 4.0a5 in the example below:
 
 .. code-block:: sh
 
    $ bin/pip install \
-   -r https://raw.githubusercontent.com/zopefoundation/Zope/master/requirements-full.txt
+   -r https://raw.githubusercontent.com/zopefoundation/Zope/4.0a5/requirements-full.txt
    Obtaining Zope2
    ...
    Successfully installed ...

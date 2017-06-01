@@ -24,6 +24,7 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Claim support for Python 3 and update the documentation.
 
 
 4.0a5 (2017-05-22)

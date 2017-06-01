@@ -48,7 +48,7 @@ detach from the terminal.
 By default this command does not enable Zope's debug mode, so it can
 be used for production.
 
-In order to enable debug_mode, you can add the additional `-d` or
+In order to enable debug mode, you can add the additional `-d` or
 ``--debug`` argument to the command:
 
 .. code-block:: sh
@@ -63,6 +63,7 @@ the WSGI pipeline or logging configuration in this file.
 
 Now you are able to log in using a browser, as described in
 `Logging In To Zope`_.
+
 
 Running Zope as a Daemon
 ------------------------
@@ -128,8 +129,8 @@ Template` or `DTML Document` named ``index_html``.
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 2.7.x.
-  It will *not* run with Python 3.x.
+- This version of Zope requires Python 2.7 or Python 3.4 and later.
+  It will *not* run with any version of PyPy.
 
 - To build Python extensions you need to have Python configuration
   information available. If your Python comes from an RPM you may

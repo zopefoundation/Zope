@@ -27,11 +27,18 @@ found in this release.
 Python versions
 ---------------
 
-Zope 4 exclusively supports Python 2.7. A large number of its dependencies
-have been ported to Python 3, so there is reasonable hope that Python 3
-support can be added to Zope in the future. It is most likely that this
-support will not extend to optional dependencies like the ZServer project
-or projects supporting TTW development.
+Zope 4 supports both Python 2.7 and Python 3.4, 3.5 or 3.6. While PyPy
+is supported by some of the underlying dependencies, it is incompatible
+with a couple of the foundational C extensions. As a result Zope as a
+whole is not compatible with PyPy.
+
+The Python 3 support currently covers the core dependencies shipped
+with Zope and is limited to the new WSGI based publisher. The new
+external ZServer project is currently limited to Python 2.7 compatibility
+and likely to stay that way.
+
+Python 3 support is also only offered for new installations of Zope,
+as there is so far no database migration tool in place.
 
 
 Recommended WSGI setup
@@ -40,8 +47,8 @@ Recommended WSGI setup
 Zope 2.13 first gained support for running Zope as a WSGI application,
 using any WSGI capable web server instead of the built-in ZServer.
 
-Zope 4.0 takes this one step further and recommends using WSGI as the
-default setup and functional testing (testbrowser) support uses the new
+Zope 4.0 takes this one step further and uses WSGI as the default
+setup. Functional testing (testbrowser) support also uses the new
 WSGI publisher.
 
 The ZServer based publisher got moved into its own optional project.
@@ -62,9 +69,18 @@ be run using any WSGI capable web server.
 To make running Zope easier, a new ``runwsgi`` command line script got
 added, which can read a PasteDeploy configuration and create and run
 the WSGI pipeline specified in it. By default such a configuration is
-created in the ``etc/zope.ini`` file. The WSGI support has no built-in
-support for running as a daemon. Your chosen WSGI server might support
-this or you can use external projects like supervisord.
+created in the ``etc/zope.ini`` file. The ``runwsgi`` script supports
+both `-v` / `--verbose` and `-d` / `--debug` arguments to print out
+more information on the console. The debug argument enables Zope's
+debug mode and disables the catch-all part of the httpexceptions
+WSGI middleware. This means unexpected and uncaught exceptions show
+their full traceback on the console and make it easier to debug them.
+Without debug mode, these exceptions result in a 500 Internal Server
+Error rendered as a normal HTML response.
+
+The WSGI support has no built-in support for running as a daemon.
+Your chosen WSGI server might support this or you can use external
+projects like supervisord or systemd.
 
 The WSGI support in Zope 4 has changed in a number of ways to make it
 more similar to its ZServer equivalent. In Zope 2.13 the WSGI support
@@ -75,26 +91,8 @@ code. This allows it to also add back full support for publication events
 and exception views. It does mean that the transaction is begun and
 committed or aborted inside the publisher code and you can no longer
 write WSGI middlewares that take part in the transaction cycle, but
-instead have to use Zope specific hooks like you do in the ZServer based
-publisher.
-
-
-Reduced ZMI functionality
--------------------------
-
-Zope traditionally came with a full-featured through-the-web development
-and administration environment called the Zope Management Interface (ZMI).
-
-Over time the ZMI has not been maintained or developed further and today
-is a large source of vulnerabilities like cross site scripting (XSS)
-or cross site request forgery (CSRF) attacks. Generally it is therefor
-recommended to restrict access to the ZMI via network level protections,
-for example firewalls and VPN access to not expose it to the public.
-
-In Zope 4 the functionality of the ZMI is starting to be reduced and
-development support and general content editing are being removed.
-If you relied on those features before, you will need to write your own
-content editing UI or move development to the file system.
+instead have to use Zope specific hooks like you do in the ZServer
+based publisher.
 
 
 View components without Acquisition
@@ -126,7 +124,7 @@ manually.
 Memory use
 ----------
 
-Zope 4 depends on the new DateTime version 3. DateTime 3 has been optimized
+Zope 4 depends on a new DateTime release. The new release has been optimized
 for better memory use. Applications using a lot of DateTime values like the
 Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
 to large deployments.

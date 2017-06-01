@@ -23,7 +23,10 @@ available:
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include:
 
-  * 2.7.x
+  * 2.7
+  * 3.4
+  * 3.5
+  * 3.6
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -55,8 +58,8 @@ steps:
 
 On Linux, this can be done as follows::
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.zip
-  $ unzip xfvz Zope2-<Zope version>.zip
+  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
+  $ tar xfvz Zope2-<Zope version>.tar.gz
   $ cd Zope2-<Zope version>
   $ /path/to/your/python bootstrap.py
   $ bin/buildout
