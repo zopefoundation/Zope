@@ -7,6 +7,11 @@ except ImportError:
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+PY2_ONLY = [
+    'Products.MailHost',
+    'ZServer',
+]
+
 
 class CaseSensitiveParser(RawConfigParser):
 
@@ -33,7 +38,11 @@ def generate(in_, out):
 
         if not pin:
             continue
-        requirements.append('%s==%s\n' % (name, pin))
+
+        spec = '%s==%s' % (name, pin)
+        if name in PY2_ONLY:
+            spec += " ; python_version < '3.0'"
+        requirements.append(spec + '\n')
 
     with open(out_file, 'w') as fd:
         fd.write(zope_requirement)
