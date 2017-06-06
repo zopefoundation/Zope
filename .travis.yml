@@ -13,6 +13,9 @@ install:
     - buildout install test alltests
 script:
     - bin/alltests -v
+after_success:
+    # Bails out for non-tags
+    - ./update_index.sh
 notifications:
     email: false
 cache:
