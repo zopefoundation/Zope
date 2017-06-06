@@ -15,6 +15,10 @@ Bugs Fixed
 Features Added
 ++++++++++++++
 
+- Updated distributions:
+
+    - DocumentTemplate = 3.0a4
+
 
 Restructuring
 +++++++++++++

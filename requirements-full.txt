@@ -5,7 +5,7 @@ AuthEncoding==4.0.0
 BTrees==4.4.1
 Chameleon==3.1
 DateTime==4.2
-DocumentTemplate==3.0a3
+DocumentTemplate==3.0a4
 ExtensionClass==4.3.0
 Missing==4.0
 MultiMapping==4.0
