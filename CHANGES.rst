@@ -18,6 +18,7 @@ Features Added
 - Updated distributions:
 
     - DocumentTemplate = 3.0a4
+    - five.globalrequest = 99.1
 
 
 Restructuring

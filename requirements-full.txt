@@ -24,7 +24,7 @@ ZConfig==3.1.0
 ZEO==5.1
 ZODB==5.2.4
 ZServer==4.0a2 ; python_version < '3.0'
-five.globalrequest==1.0
+five.globalrequest==99.1
 five.localsitemanager==3.0.1
 funcsigs==1.0.2
 mock==2.0.0
