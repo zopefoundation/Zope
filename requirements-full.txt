@@ -13,11 +13,11 @@ PasteDeploy==1.5.2
 Persistence==3.0a3
 Products.BTreeFolder2==4.0.0
 Products.MailHost==3.0 ; python_version < '3.0'
-Products.ZCTextIndex==4.0.1
+Products.ZCTextIndex==4.0.2
 Products.ZCatalog==4.0.0
 Record==3.4
 RestrictedPython==4.0a2
-WSGIProxy2==0.4.3
+WSGIProxy2==0.4.4
 WebOb==1.7.2
 WebTest==2.0.27
 ZConfig==3.1.0
@@ -39,7 +39,7 @@ zExceptions==3.6.1
 zc.lockfile==1.2.1
 zdaemon==4.2.0
 zodbpickle==0.6.0
-zope.annotation==4.4.1
+zope.annotation==4.5
 zope.browser==2.1.0
 zope.browsermenu==4.2
 zope.browserpage==4.1.0
