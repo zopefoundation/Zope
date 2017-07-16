@@ -512,6 +512,11 @@ class HTTPRequest(BaseRequest):
 
         meth = None
         fs = ZopeFieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+
+        # Keep a reference to the FieldStorage. Otherwise it's
+        # __del__ method is called too early and closing FieldStorage.file.
+        self._hold(fs)
+
         if not hasattr(fs, 'list') or fs.list is None:
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
@@ -1664,13 +1669,6 @@ class ZopeFieldStorage(FieldStorage):
     def make_file(self, binary=None):
         handle, name = mkstemp()
         return TemporaryFileWrapper(os.fdopen(handle, 'w+b'), name)
-
-    def __del__(self):
-        # Only call close on file object, cStringIO/BytesIO objects
-        # would be closed too early.
-        if isinstance(self.file, TemporaryFileWrapper):
-            self.file.close()
-
 
 # Original version: zope.publisher.browser.FileUpload
 class FileUpload(object):

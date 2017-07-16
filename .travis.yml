@@ -8,7 +8,7 @@ python:
     - 3.6
 install:
     - pip install -U setuptools==`grep setuptools versions.cfg | awk '{print $3}'`
-    - pip install zc.buildout
+    - pip install zc.buildout==`grep '^zc.buildout' versions.cfg | awk '{print $3}'`
     - buildout bootstrap
     - buildout install test alltests
 script:
