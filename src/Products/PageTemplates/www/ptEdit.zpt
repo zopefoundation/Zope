@@ -23,6 +23,19 @@
              tal:attributes="value request/content_type | context/content_type" />
     </td>
   </tr>
+  <tr>
+    <td align="left" valign="middle"></td>
+    <td align="left" valign="middle"></td>
+    <td align="left" valign="top" colspan="2">
+      <a href="source.html" tal:condition="context/html">Browse HTML source</a>
+      <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
+      <br />
+      <input type="hidden" name="expand:int:default" value="0" />
+      <input type="checkbox" value="1" name="expand:int"
+             tal:attributes="checked request/expand | context/expand" />
+      Expand macros when editing
+    </td>
+  </tr>
 
   <tr tal:define="errors context/pt_errors" tal:condition="errors">
     <td align="left" valign="middle" class="form-label">Errors</td>
