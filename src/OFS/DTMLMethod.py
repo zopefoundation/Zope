@@ -76,6 +76,7 @@ class DTMLMethod(RestrictedDTML,
 
     manage_options = ((
         {'label': 'Edit', 'action': 'manage_main'},
+        {'label': 'View', 'action': ''},
         {'label': 'Proxy', 'action': 'manage_proxyForm'},
     ) +
         RoleManager.manage_options +
