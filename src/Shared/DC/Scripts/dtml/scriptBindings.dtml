@@ -1,0 +1,136 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p class="form-help">
+Each of the following items describes a piece of information about 
+this script's calling environment.  If you supply a variable name for 
+an item, or accept the recommended name, the information will 
+automatically be provided under that name when the script is called.
+</p>
+
+<form action="ZBindingsHTML_editAction" method="POST">
+
+<dtml-with getBindingAssignments>
+<table cellpadding="2" cellspacing="0" border="0">
+<tr class="section-bar">
+  <td align="left" valign="top" colspan="2">
+  <div class="form-label">
+  Context
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  This is the object on which the script is being called, also known as the
+  &quot;acquisition parent&quot; of the script.  This <em>may</em> be the 
+  container, but varies according to the path through which the script is 
+  accessed.
+  <br /><br />
+  Recommended value: <code>context</code>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name_context" value="<dtml-var expr="getAssignedName('name_context', '')" html_quote>">
+  </td>
+</tr>
+
+<tr class="section-bar">
+  <td align="left" valign="top" colspan="2">
+  <div class="form-label">
+  Container
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  This is the <dtml-with expr="aq_inner.aq_parent">&dtml-meta_type;
+  "&dtml.missing.html_quote-title_or_id;"</dtml-with>, in which this
+  script is located.  This doesn't change unless you move the script.
+  <br /><br />
+  Recommended value: <code>container</code>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name_container" value="<dtml-var expr="getAssignedName('name_container', '')" html_quote>">
+  </td>
+</tr>
+
+<tr class="section-bar">
+  <td align="left" valign="top" colspan="2">
+  <div class="form-label">
+  Script
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  This is the script object &quot;&dtml-title_or_id;&quot; itself.
+  <br /><br />
+  Recommended value: <code>script</code>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name_m_self" value="<dtml-var expr="getAssignedName('name_m_self', '')" html_quote>">
+  </td>
+</tr>
+
+<tr class="section-bar">
+  <td align="left" valign="top" colspan="2">
+  <div class="form-label">
+  Namespace
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  When the script is called from DTML, this is the caller's DTML namespace,
+  otherwise it is an empty namespace.
+  <br /><br />
+  Recommended value: <code>_</code> (underscore character)
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name_ns" value="<dtml-var expr="getAssignedName('name_ns', '')" html_quote>">
+  </td>
+</tr>
+
+<tr class="section-bar">
+  <td align="left" valign="top" colspan="2">
+  <div class="form-label">
+  Subpath
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-text">
+  When the script is published directly from a URL, this is the
+  portion of the URL path after the script's name, split at slash separators
+  into a list of strings. Otherwise, it is an empty list.
+  <br /><br />
+  Recommended value: <code>traverse_subpath</code>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="name_subpath" value="<dtml-var expr="getAssignedName('name_subpath', '')" html_quote>">
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <br />
+  <input class="form-element" type="submit" name="submit" 
+   value="Save Changes" /> 
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+</dtml-with>
+
+<dtml-var manage_page_footer>
