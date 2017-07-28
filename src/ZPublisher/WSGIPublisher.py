@@ -213,6 +213,18 @@ def _publish_response(request, response, module_info, _publish=publish):
     return response
 
 
+@contextmanager
+def load_app(module_info):
+    app_wrapper, realm, debug_mode = module_info
+    # Loads the 'OFS.Application' from ZODB.
+    app = app_wrapper()
+
+    try:
+        yield (app, realm, debug_mode)
+    finally:
+        app._p_jar.close()
+
+
 def publish_module(environ, start_response,
                    _publish=publish,  # only for testing
                    _response=None,
@@ -234,8 +246,12 @@ def publish_module(environ, start_response,
 
         for i in range(getattr(request, 'retry_max_count', 3) + 1):
             try:
-                response = _publish_response(
-                    request, response, module_info, _publish=_publish)
+                with load_app(module_info) as new_mod_info:
+                    response = _publish_response(
+                        request,
+                        response,
+                        new_mod_info,
+                        _publish=_publish)
                 break
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():

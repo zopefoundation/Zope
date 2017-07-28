@@ -159,8 +159,13 @@ def _succeed():
     return 'success'
 
 
+# Poor man's mock.
 class _Application(object):
-    pass
+    def __getattr__(self, name):
+        return self
+
+    def __call__(self, *args, **kwargs):
+        return self
 
 
 class _Reporter(object):
