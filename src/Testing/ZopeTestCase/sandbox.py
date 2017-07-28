@@ -13,9 +13,10 @@
 """Support for ZODB sandboxes in ZTC
 """
 
+import contextlib
 import transaction
 
-from App.ZApplication import ZApplicationWrapper
+import ZPublisher.WSGIPublisher
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import ZopeLite as Zope2
@@ -62,15 +63,17 @@ class AppZapper:
         return self._app
 
 
-def __bobo_traverse__(self, REQUEST=None, name=None):
-    '''Makes ZPublisher.publish() use the current app object.'''
+@contextlib.contextmanager
+def load_app(module_info):
+    """Let the Publisher use the current app object."""
     app = AppZapper().app()
     if app is not None:
-        return app
-    return self.__old_bobo_traverse__(REQUEST, name)
+        yield app, module_info[1], module_info[2]
+    else:
+        with ZPublisher.WSGIPublisher.__old_load_app__(module_info) as ret:
+            yield ret
 
 
-if not hasattr(ZApplicationWrapper, '__old_bobo_traverse__'):
-    ZApplicationWrapper.__old_bobo_traverse__ = (
-        ZApplicationWrapper.__bobo_traverse__)
-    ZApplicationWrapper.__bobo_traverse__ = __bobo_traverse__
+if not hasattr(ZPublisher.WSGIPublisher, '__old_load_app__'):
+    ZPublisher.WSGIPublisher.__old_load_app__ = ZPublisher.WSGIPublisher.load_app
+    ZPublisher.WSGIPublisher.load_app = load_app
