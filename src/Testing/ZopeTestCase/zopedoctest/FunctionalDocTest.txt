@@ -163,3 +163,38 @@ Test reading cookies
 
   >>> b'baz: oki doki' in response.getBody()
   True
+
+Test parsing of multipart body with unicode
+
+  >>> ni_hao = '\xe4\xbd\xa0\xe5\xa5\xbd'  # utf-8 encoded
+  >>> response = http(r"""
+  ... GET /test_folder_1_/index_html/set_cookie HTTP/1.1
+  ... Authorization: %s:%s
+  ... Content-Type: multipart/form-data; boundary=---------------------------968064918930967154199105236
+  ... Content-Length: 418
+  ...
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.title"
+  ...
+  ... %s
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.description"
+  ...
+  ... Details
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="field.somenumber"
+  ...
+  ... 0
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ...
+  ... Add
+  ... -----------------------------968064918930967154199105236
+  ... Content-Disposition: form-data; name="add_input_name"
+  ...
+  ... unicodetest
+  ... -----------------------------968064918930967154199105236--
+  ... """ % (user_name, user_password, ni_hao))
+
+  >>> response.status
+  200

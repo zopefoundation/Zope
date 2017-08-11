@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- Allow handling of multipart requests in functional doctests using ``http``.
+
 
 Features Added
 ++++++++++++++

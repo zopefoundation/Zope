@@ -14,7 +14,7 @@
 """
 
 import doctest
-import email
+import email.parser
 from functools import partial
 from io import BytesIO
 import re
@@ -165,9 +165,15 @@ def http(request_string, handle_errors=True):
                    'bobo-exception-type', 'bobo-exception-file',
                    'bobo-exception-value', 'bobo-exception-line'))
 
-    msg = email.message_from_string(request_string)
+    # With a HeaderParser the payload is always a string, Parser would create a
+    # list of messages for multipart messages.
+    parser = email.parser.HeaderParser()
+    msg = parser.parsestr(request_string)
     headers = msg.items()
     body = msg.get_payload()
+
+    if isinstance(body, bytes):
+        body = body.decode('utf-8')
 
     # Store request body without headers
     instream = BytesIO(body.encode('utf-8'))
