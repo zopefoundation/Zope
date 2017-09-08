@@ -21,6 +21,10 @@ Features Added
 
     - DocumentTemplate = 3.0a4
     - five.globalrequest = 99.1
+    - Missing = 4.0.1
+    - RestrictedPython = 4.0a3
+    - ZConfig = 3.2.0
+    - ZODB = 5.3.0
 
 
 Restructuring
