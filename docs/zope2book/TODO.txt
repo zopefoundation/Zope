@@ -1,0 +1,30 @@
+####
+TODO
+####
+
+General
+=======
+
+- The various webserver related chapters should mention repoze/WSGI instead
+  of the FastCGI/PCGI stuff.
+
+- Some more clarification of Zope3 - Zope Components is required.
+
+InstallingZope
+==============
+
+- Rewrite the installation chapter to cover buildout, eggs, virtualenv and
+  the modern world (Since this is 2.12, we don't need to document the old
+  full tarball release anymore).
+
+  Tres has written something in the install.txt inside the Zope2/trunk
+
+- Refer to the plone.org/how-to/buildout-on-windows stuff for compiling from
+  source on Windows.
+
+AppendixB.rst
+=============
+
+- This was the manually maintained API documentation. Horribly outdated and
+  with all the formatting impossible to convert from stx in an automated way.
+

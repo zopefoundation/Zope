@@ -1,0 +1,169 @@
+Here is the place to add comments about "gotchas" related to Zope development.  We will try to work
+these in to the ZDG narrative from time to time.
+
+  % mcdonc - Jan. 17, 2002 6:23 pm - Methods declared in Product classes must
+    have docstrings to callable by visiting them "through the web" (by calling
+    them up by URL via a browser).
+
+  % Anonymous User - Feb. 27, 2002 10:52 pm - Volatile attributes are not shared
+    between threads, so using them for  page counters or holding state between
+    requests will not work (although it will sometimes appear to until your server
+    is under load)
+
+  % Anonymous User - May 22, 2002 7:18 am:
+   DTMLMethod with a name ending '_alpha' was not rendered at all
+
+  % Anonymous User - July 17, 2002 1:40 pm:
+   From Zope Maillist:
+   On Tue, 16 Jul 2002, Ross Boylan wrote:
+   > The Zope Developer's Guide and the API docs (Zope 2.5) present
+   > different stories about how to add things to object managers.  I don't
+   > really follow what the API stuff is doing.  This is a request for
+   > clarification.
+   >
+   > Devguide says do
+   > def addFunction(dispatcher, id):
+   >    "Create object and add to self"
+   >    p = SomeProduct(id)
+   >    dispatcher.Destination()._setObject(id, p)
+   >
+   > This makes sense, though, as commented at
+   > http://www.zope.org//Members/michel/Projects/Interfaces/ObjectManager,
+   > it relies on a private, undocumented method.  addFunction is in outer
+   > scope of a module, and is hooked up wtih various calls in ___init__.py.
+   Call this the "add function".  Defined by the product, it is passed
+   the dispatcher for the ObjectManager to which the object is being added.
+   As you say, it apparently uses a private function, however despite
+   it's (historical artifact of a) name, it is the proper way to do
+   this operation.  And it is documented, in the Dev Guide <wry grin>.
+   > On the other hand, the ObjectManager API says to do
+   > self.manage_addProduct['OFSP'].manage_addFolder(id, title).
+   This is the action that non-Product code uses to add an object from
+   the Product to an arbitrary object manager.  'self' being the object
+   manager in question (eg: when called from an External Method, self
+   will be the folder the External Method was called on).  This sequence
+   *calls* the "add function" defined above.  In this case, it is
+   calling the add function defined by the Folder object in the OFSP
+   Product.
+   > First, what scope should that be done in?  Second, this seems to
+   > create one product (OFSP) and then add a folder to it, so that it
+   > creates two, nested products.
+   Actually, it doesn't.  This syntax has bothered me since I first
+   encoutered it, and I'm sure I'm not alone.  But we are stuck with
+   it (for now).  "manage_addProduct[<someproductname>]" is, essentially,
+   a lookup in a registry keyed by product name.  So that part looks
+   up the Product from the registry, and then you have access to the
+   module level functions in that Product, such as the "add function"
+   defined above.
+   > The API for Folder mentions manage_addFolder as a constructor, but
+   > again the scope is unclear to me.  Presumably it needs to know what to
+   > add it to, but that is not passed in.
+   You are calling the method on 'self' in the API example, or on some
+   other reference to an ObjectManager in some other context.
+   (Literally 'context' if you were doing this from a pythonscript.)
+   'manage_addProduct' gets "acquired" (from where I'm not quite sure
+   <wry grin>), and some magic that I haven't had a need to look in
+   to arranges things so that your add function gets passed a dispatcher
+   that has that ObjectManager as its Destination() as its first
+   argument, followed by whatever arguments (id, title) in the API
+   example) you pass it explicitly.  This is an example of Zope2
+   "magic" that we are trying hard to eliminate from Zope3 <grin>.
+   > Finally, the use of id in two places in the first code snippet (one
+   > apparently associated with the container, the other with the object)
+   > seems like an invitation to trouble.  Why is it done that way?
+   Tell us about it.  This is an old Zope2 (or was it bobo?) design
+   decision that has been revisited in Zope3.  In Zope3, only containers
+   know about ids in the general case, not the objects referenced by
+   them.
+   > One reason I want to know this is that I'm considering having a
+   > container that would automatically label (or set id) of its contents
+   > (e.g., 'a' is first, 'b' is second....).
+   >
+   > Thanks for any light you can shed.
+   Hopefully I haven't told you anything untrue up above, but if I have
+   someone will doubtless correct me <grin>.
+   --RDM
+
+  % eckamm - Nov. 11, 2002 10:05 pm:
+   This one has bit me on more than one occassion:
+       manage_add_XYZ_form = DTMLFile('dtml/manage_add_XYZ_form')
+   instead of:
+       manage_add_XYZ_form = DTMLFile('dtml/manage_add_XYZ_form', globals())
+   The error message is tough to interpret; it looks like an attempt
+   is made to find manage_add_XYZ_form.dtml in {base}/lib/python/dtml/.
+   This may send you on a wild goose chase if you're like me.
+
+  % slinkp - Mar. 21, 2003 12:53 pm:
+   i just posted this to the zope list...
+   I find "Monkey patches" a useful way to expand or modify functionality provided by
+   zope or 3rd-party products, but I just discovered something very important:
+   it's apparently NOT safe to "refresh" a MonkeyPatch-style product.
+   I have a monkeypatch that works fine until I refresh it, then I get mysterious
+   errors like "Object of type 'None' is not callable" with no indication in the
+   traceback of what object is None or even what's trying to call it!
+   I've spent hours in a debugging session trying to find out what's None and
+   came up with nothing.
+   Then i discovered that if i restart zope, everything's fine. :-P
+
+  % Anonymous User - Mar. 29, 2003 12:43 am:
+   slinkp: Yes, that's right, you should never try to refresh monkey patch
+   products. However, I haven't found the right way to spread this warning
+   so that the people who need to know it will hear it. How do you suggest
+   this be documented?
+   Shane Hathaway
+
+  % Anonymous User - Aug. 5, 2003 4:51 pm:
+   Seems obvious to some, but wansn't obvious to me:
+   ZCatalog method searchResults' sort_limit argument only works when sort_on
+   argument is present as well. A "nice to have" would be to limit unsorted
+   results coming back from the catalog as opposed to doing it after the fact.
+
+  % slinkp - Dec. 8, 2003 3:32 pm:
+   Don't confuse paths and URLs. Specifically, avoid using absolute_url(1) or path variables from REQUEST when
+   constructing paths that will be fed to restrictedTraverse() or similar. Everything works fine until virtual
+   hosting comes into play, at which point some part of your path may be meaningful to the client but not
+   correspond to any object in Zope. This can lead to much hair-tearing when your working app suddenly breaks at
+   deployment time. Solution: if you need to fiddle with paths, use '/'.join(foo.getPhysicalPath()) instead.
+   This is unaffected by virtual hosting.
+   The behavior of absolute_url(1) *may* change in zope 2.7 or later, we're still arguing about it :-)
+
+  % slinkp - Jan. 24, 2004 6:26 pm:
+   Set self._p_changed=1  *before* mutating something, not after.
+   From Steve Alexander on the zodb-dev mailing list:
+   > The reason to set _p_changed before mutating the object is because if
+   > there is an exception raised after a mutation but before setting
+   > _p_changed, your persistnent object might stay around in the cache. That
+   > is, it would not be reloaded with fresh state.
+   >
+   > Consider this example:
+   >
+   >      def storeMany(self, keys, values):
+   >          for key, value in zip(keys, values):
+   >              self.bar[key] = value
+   >          self._p_changed = 1  # This is too late!
+   >
+   > What happens if I call the method as below?
+   >
+   >   obj.storeMany(['fish', {}, 'fluid'], [6, 28, 496])
+   >
+   > The method will raise a TypeError because dicts are unhashable. However,
+   > the entry 'fish': 6 will have been added to the dict. The ZODB will not
+   > realize that the object has effectively changed, so the object can stick
+   > around in the cache.
+   Personally, I now prefer to avoid directly touching self._p_changed when possible:
+   1) as the zdg says, it isn't necessary for immutables.
+   2) for mutables, many cases can be covered by BTrees, PersistentLists, and
+   PersistentMappings which are very kindly provided by ZODB, so we should
+   use them :-)
+
+  % slinkp - Apr. 18, 2005 9:59 am:
+   ComputedAttributes are not documented by the ZDG, and they should be.
+
+  % slinkp - Apr. 18, 2005 10:32 am:
+   I just added some ComputedAttribute doc at http://zopewiki.org/ComputedAttribute,
+   feel free to copy this for next version of ZDG.
+
+  % Anonymous User - Aug. 19, 2005 6:24 pm:
+   Make sure that your classes inherit from Acquisition.Implicit or Acquisition.Explicit. In mid-development I
+   thought that was probably unnecessary and deleted that base class, which later caused objects I added to not
+   acquire the security information needed, leaving me unable to manage those objects.
