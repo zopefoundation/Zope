@@ -108,6 +108,11 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     ZopeRedirect = Redirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
+        if name is None:
+            # Make this more explicit, otherwise getattr(self, name)
+            # would raise a TypeErorr getattr(): attribute name must be string
+            return None
+
         if name == 'Control_Panel':
             return APP_MANAGER.__of__(self)
         try:
