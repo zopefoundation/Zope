@@ -19,7 +19,6 @@ from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_inner
 from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
-import pkg_resources
 from six.moves.urllib.parse import quote as urllib_quote
 from zExceptions import Forbidden
 from zExceptions import NotFound
@@ -36,19 +35,15 @@ from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
 
+from App.bbb import HAS_ZSERVER
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 
-HAS_ZSERVER = True
-try:
-    dist = pkg_resources.get_distribution('ZServer')
-except pkg_resources.DistributionNotFound:
-    HAS_ZSERVER = False
-
+if HAS_ZSERVER:
+    from ZServer.ZPublisher.xmlrpc import is_xmlrpc_response
+else:
     def is_xmlrpc_response(response):
         return False
-else:
-    from ZServer.ZPublisher.xmlrpc import is_xmlrpc_response
 
 _marker = []
 UNSPECIFIED_ROLES = ''
@@ -418,8 +413,11 @@ class BaseRequest(object):
         # to possibly traverse to an alternate top-level object.
         if hasattr(object, '__bobo_traverse__'):
             try:
-                object = object.__bobo_traverse__(request)
-                self.roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
+                new_object = object.__bobo_traverse__(request)
+                if new_object is not None:
+                    object = new_object
+                    self.roles = getRoles(None, None, object,
+                                          UNSPECIFIED_ROLES)
             except Exception:
                 pass
 
@@ -444,9 +442,9 @@ class BaseRequest(object):
         self._post_traverse = post_traverse = []
 
         # import time ordering problem
-        try:
+        if HAS_ZSERVER:
             from webdav.NullResource import NullResource
-        except ImportError:
+        else:
             NullResource = None
 
         entry_name = ''

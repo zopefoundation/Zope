@@ -790,11 +790,8 @@ class ObjectManager(CopyContainer,
             method = request.get('REQUEST_METHOD', 'GET')
             if (request.maybe_webdav_client and
                     method not in ('GET', 'POST')):
-                try:
+                if bbb.HAS_ZSERVER:
                     from webdav.NullResource import NullResource
-                except ImportError:
-                    pass
-                else:
                     return NullResource(self, key, request).__of__(self)
         raise KeyError(key)
 
