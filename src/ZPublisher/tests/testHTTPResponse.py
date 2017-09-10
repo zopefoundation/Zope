@@ -520,19 +520,19 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_insertBase_HTML_w_base_w_head_munged(self):
-        HTML = b'<html><head></head><body></body></html>'
+        HTML = b'<html><head></head><body>\xc3\xa4scii</body></html>'
         MUNGED = (b'<html><head>\n'
                   b'<base href="http://example.com/base/" />\n'
-                  b'</head><body></body></html>')
+                  b'</head><body>\xc3\xa4scii</body></html>')
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
-        response.setHeader('Content-Length', 8)
+        response.setHeader('Content-Length', len(HTML))
         response.body = HTML
         response.setBase('http://example.com/base/')
         response.insertBase()
         self.assertEqual(response.body, MUNGED)
-        self.assertEqual(response.getHeader('Content-Length'),
-                         str(len(MUNGED)))
+        self.assertEqual(int(response.getHeader('Content-Length')),
+                         len(MUNGED))
 
     def test_setBody_w_locking(self):
         response = self._makeOne()

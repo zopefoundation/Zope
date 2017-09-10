@@ -430,7 +430,7 @@ class HTTPBaseResponse(BaseResponse):
                         text[index:]
                     )
                     self.text = text
-                    self.setHeader('content-length', len(text))
+                    self.setHeader('content-length', len(self.body))
 
     def isHTML(self, text):
         text = text.lstrip()

@@ -13,6 +13,8 @@ Bugs Fixed
 
 - Allow handling of multipart requests in functional doctests using ``http``.
 
+- Fix Content-Length header for non-ascii responses incl. a base tag.
+
 
 Features Added
 ++++++++++++++
