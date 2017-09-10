@@ -14,3 +14,5 @@ Contents:
    SECURITY
    maintenance
    changes
+   zope2book/index
+   zdgbook/index

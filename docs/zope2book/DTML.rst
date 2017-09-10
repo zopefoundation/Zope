@@ -101,14 +101,14 @@ confused when deciding to use one versus the other.  So what is
 the difference?
 
 DTML Methods are used to carry out actions. They are
-*presentation* objects (as used in the vernacular of the `Using
-Basic Zope Objects`_ chapter).  If you want to
-render the properties or attributes of another object like a DTML
+*presentation* objects (as used in the vernacular of the
+`Using Basic Zope Objects <BasicObjects.html>`_ chapter).  If you want
+to render the properties or attributes of another object like a DTML
 Document or a Folder, you will use a DTML Method.  DTML Methods do
 not have their own properties.
 
 DTML Documents are *content* objects (in the vernacular used in
-the chapter entitled `Using Basic Zope Objects`_).
+the chapter entitled `Using Basic Zope Objects <BasicObjects.html>`_).
 If you want to create a "stand-alone" text document, you
 might create a DTML Document object to hold the text.
 DTML Document objects have their own *properties* (attributes),
