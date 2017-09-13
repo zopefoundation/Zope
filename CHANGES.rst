@@ -32,6 +32,8 @@ Features Added
 Restructuring
 +++++++++++++
 
+- Made Products.MailHost an optional dependency.
+
 
 4.0a6 (2017-06-01)
 ------------------

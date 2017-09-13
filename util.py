@@ -8,7 +8,6 @@ except ImportError:
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 PY2_ONLY = [
-    'Products.MailHost',
     'ZServer',
 ]
 
