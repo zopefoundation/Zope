@@ -222,6 +222,7 @@ def load_app(module_info):
     try:
         yield (app, realm, debug_mode)
     finally:
+        transaction.abort()
         app._p_jar.close()
 
 
