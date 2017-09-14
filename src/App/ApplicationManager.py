@@ -25,6 +25,7 @@ from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
 from OFS.Traversable import Traversable
+from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 
@@ -80,7 +81,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
 InitializeClass(DatabaseChooser)
 
 
-class ApplicationManager(Tabs, Traversable, Implicit):
+class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
     """System management
     """
     __allow_access_to_unprotected_subobjects__ = 1

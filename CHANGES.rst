@@ -15,6 +15,8 @@ Bugs Fixed
 
 - Fix Content-Length header for non-ascii responses incl. a base tag.
 
+- Fix issue with ``Control_Panel`` on first startup of ZODB from Zope 2.13.
+
 
 Features Added
 ++++++++++++++
