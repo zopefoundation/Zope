@@ -327,9 +327,9 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
     manage = DTMLFile('dtml/properties', globals())
 
     security.declareProtected(manage_properties, 'manage_propertiesForm')
-    def manage_propertiesForm(self, URL1):
+    def manage_propertiesForm(self, URL1, RESPONSE):
         " "
-        raise Redirect(URL1 + '/manage')
+        RESPONSE.redirect(URL1 + '/manage')
 
     security.declareProtected(manage_properties, 'manage_addProperty')
     def manage_addProperty(self, id, value, type, REQUEST=None):
