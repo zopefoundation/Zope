@@ -161,6 +161,7 @@ class FactoryDispatcher(Implicit):
     def manage_main(trueself, self, REQUEST, update_menu=0):
         """Implement a contents view by redirecting to the true view
         """
-        raise Redirect(self.DestinationURL() + '/manage_main')
+        REQUEST.RESPONSE.redirect(self.DestinationURL() + '/manage_main')
+
 
 InitializeClass(FactoryDispatcher)

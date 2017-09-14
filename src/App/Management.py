@@ -80,7 +80,7 @@ class Tabs(Base):
                 'You are not authorized to view this object.')
 
         if m.find('/'):
-            raise Redirect("%s/%s" % (REQUEST['URL1'], m))
+            return REQUEST.RESPONSE.redirect("%s/%s" % (REQUEST['URL1'], m))
 
         return getattr(self, m)(self, REQUEST)
 
