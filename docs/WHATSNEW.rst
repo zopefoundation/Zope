@@ -78,6 +78,19 @@ their full traceback on the console and make it easier to debug them.
 Without debug mode, these exceptions result in a 500 Internal Server
 Error rendered as a normal HTML response.
 
+.. note::
+
+    In case you experience an ``HTTP 500: Internal Server Error``, where you
+    would expect a ``Redirect``, the following might help you.
+
+    Although the ``zope.ini`` created by ``mkwsgiinstance`` includes
+    ``egg:Zope2#httpexceptions`` as part of the pipeline, this might not be
+    sufficient for existing projects. In case your project has configured a
+    middleware handling and creating error views for HTTP exceptions, you need
+    to make sure that ``egg:Zope2#httpexceptions`` runs before that middleware.
+    Otherwise a ``Redirect`` might not be handled as such. This can result in a
+    non-functional ZMI.
+
 The WSGI support has no built-in support for running as a daemon.
 Your chosen WSGI server might support this or you can use external
 projects like supervisord or systemd.
