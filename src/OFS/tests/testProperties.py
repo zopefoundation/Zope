@@ -13,6 +13,7 @@
 """Properties unit tests.
 """
 
+import six
 import unittest
 
 
@@ -85,6 +86,21 @@ class TestPropertyManager(unittest.TestCase):
         self.assertEqual(inst.propertyDescription('with_description'),
                          'With Description')
 
+    def test_updateProperty_transforms(self):
+        pm = self._makeOne()
+        pm._setProperty('test_lines', [], type='lines')
+
+        pm._updateProperty('test_lines', 'foo\nbar')
+        self.assertEqual(pm.getProperty('test_lines'), ('foo', 'bar'))
+
+        # Under Python 3, bytes are decoded back to str
+        pm._updateProperty('test_lines', b'bar\nbaz')
+        self.assertEqual(pm.getProperty('test_lines'), ('bar', 'baz'))
+
+        pm._updateProperty('test_lines', six.u('uni\ncode'))
+        self.assertEqual(pm.getProperty('test_lines'), 
+                         (six.u('uni'), six.u('code')))
+
 
 class TestPropertySheet(unittest.TestCase):
 
@@ -106,3 +122,20 @@ class TestPropertySheet(unittest.TestCase):
         inst.manage_addProperty('prop2', ['xxx', 'yyy'], 'lines')
         self.assertIsInstance(inst.getProperty('prop2'), tuple)
         self.assertIsInstance(inst.prop2, tuple)
+
+    def test_updateProperty_transforms(self):
+        ps = self._makeOne('foo')
+        ps._setProperty('test_lines', [], type='lines')
+
+        ps._updateProperty('test_lines', 'foo\nbar')
+        self.assertEqual(ps.getProperty('test_lines'), ('foo', 'bar'))
+
+        # Under Python 3, bytes are decoded back to str
+        ps._updateProperty('test_lines', b'bar\nbaz')
+        self.assertEqual(ps.getProperty('test_lines'), ('bar', 'baz'))
+
+        ps._updateProperty('test_lines', six.u('uni\ncode'))
+        self.assertEqual(ps.getProperty('test_lines'), 
+                         (six.u('uni'), six.u('code')))
+
+
