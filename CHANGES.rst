@@ -11,6 +11,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 Bugs Fixed
 ++++++++++
 
+- PropertyManagers and PropertySheets now correctly accept all forms of
+  strings as property values.
+
 - Allow handling of multipart requests in functional doctests using ``http``.
 
 - Fix Content-Length header for non-ascii responses incl. a base tag.
