@@ -179,7 +179,7 @@ class ExceptionView(object):
             self.context.__class__.__name__, global_request))
 
 
-class TestGlobalRequestPubEvents(FunctionalTestCase):
+class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
 
     def afterSetUp(self):
         # Remember the handler, so we can unregister it and not
@@ -224,7 +224,7 @@ class TestGlobalRequestPubEvents(FunctionalTestCase):
             setattr(response, 'events', [])
         response.events.append(event.__class__.__name__)
 
-    def test_200(self):
+    def test_all_pub_events_have_access_to_valid_global_request(self):
         self.folder.addDTMLDocument('index_html', file='index')
         response = self.publish(
             self.folder.absolute_url_path(),
@@ -234,19 +234,19 @@ class TestGlobalRequestPubEvents(FunctionalTestCase):
                          ['PubStart', 'PubAfterTraversal',
                           'PubBeforeCommit', 'PubSuccess'])
 
-    def test_401(self):
+    def test_unauthorized_exception_is_handled_as_other_exceptions(self):
         response = self.publish('/manage_main')
         self.assertEqual(response.getStatus(), 401)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
-    def test_404(self):
+    def test_BeforeAbort_and_Failure_events_can_access_zope_globalRequest(self):
         response = self.publish('/')
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
-    def test_404_exc_view(self):
+    def test_BeforeAbort_and_Failure_events_are_called_after_exc_view(self):
         # zope.globalrequest works inside an exception view.
         self._registerExceptionView(INotFound)
         response = self.publish('/')
