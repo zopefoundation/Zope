@@ -2,6 +2,7 @@ from io import BytesIO
 from sys import modules, exc_info
 from unittest import TestCase
 
+import zExceptions
 from ZODB.POSException import ConflictError
 from zope.component import adapter
 from zope.component import getSiteManager
@@ -168,7 +169,7 @@ class TestPubEvents(TestCase):
 class ExceptionView(object):
 
     def __init__(self, context, request):
-        self.context = context
+        self.context = context # exception instance
         self.__parent__ = None
         self.request = request
 
@@ -176,7 +177,7 @@ class ExceptionView(object):
         global_request = getRequest()
         self.request.response.events.append('exc_view')
         return ('Exception: %s\nRequest: %r' % (
-            self.context.__class__.__name__, global_request))
+            self.context.__class__, global_request))
 
 
 class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
@@ -188,6 +189,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         sm = getSiteManager()
         sm.registerHandler(self.event_handler)
         self.exc_view_for = None
+        self.expected_exception_type = None
 
     def beforeTearDown(self):
         sm = getSiteManager()
@@ -224,6 +226,12 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             setattr(response, 'events', [])
         response.events.append(event.__class__.__name__)
 
+        if hasattr(event, 'exc_info'):
+            exception_type, exception_instance, traceback = event.exc_info
+            self.assertIsInstance(exception_instance, exception_type)
+            self.assertIsInstance(exception_instance,
+                 self.expected_exception_type)
+
     def test_all_pub_events_have_access_to_valid_global_request(self):
         self.folder.addDTMLDocument('index_html', file='index')
         response = self.publish(
@@ -235,18 +243,21 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
                           'PubBeforeCommit', 'PubSuccess'])
 
     def test_unauthorized_exception_is_handled_as_other_exceptions(self):
+        self.expected_exception_type = zExceptions.Unauthorized
         response = self.publish('/manage_main')
         self.assertEqual(response.getStatus(), 401)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
     def test_BeforeAbort_and_Failure_events_can_access_zope_globalRequest(self):
+        self.expected_exception_type = zExceptions.NotFound
         response = self.publish('/')
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
     def test_BeforeAbort_and_Failure_events_are_called_after_exc_view(self):
+        self.expected_exception_type = zExceptions.NotFound
         # zope.globalrequest works inside an exception view.
         self._registerExceptionView(INotFound)
         response = self.publish('/')
@@ -256,7 +267,23 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(
             response.getBody(),
-            b'Exception: NotFound\nRequest: <WSGIRequest, URL=http://nohost>')
+            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost>")
+
+    def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
+        self.expected_exception_type = zExceptions.NotFound
+        self.folder.addDTMLMethod('raising_object', file='''\
+        <dtml-call "raise "NotFound">
+        ''')
+
+        self._registerExceptionView(INotFound)
+        response = self.publish('/raising_object')
+        self.assertEqual(response._response.events,
+                         ['PubStart', 'exc_view',
+                          'PubBeforeAbort', 'PubFailure'])
+        self.assertEqual(response.getStatus(), 404)
+        self.assertEqual(
+            response.getBody(),
+            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost/raising_object>")
 
 
 def _succeed():
