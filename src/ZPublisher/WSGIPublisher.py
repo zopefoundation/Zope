@@ -19,19 +19,18 @@ import sys
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from six.moves._thread import allocate_lock
 from six import reraise
+from six.moves._thread import allocate_lock
 import transaction
 from transaction.interfaces import TransientError
 from zExceptions import (
-    HTTPOk,
-    HTTPRedirection,
     Unauthorized,
     upgradeException,
 )
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
 from zope.event import notify
+from zope.globalrequest import setRequest, clearRequest
 from zope.security.management import newInteraction, endInteraction
 from zope.publisher.skinnable import setDefaultSkin
 
@@ -95,18 +94,37 @@ def get_module_info(module_name='Zope2'):
     return info
 
 
+def _exc_view_created_response(exc, request, response):
+    view = queryMultiAdapter((exc, request), name=u'index.html')
+    if view is not None:
+        # Wrap the view in the context in which the exception happened.
+        parents = request.get('PARENTS')
+        if parents:
+            view.__parent__ = parents[0]
+
+        # Set status and headers from the exception on the response,
+        # which would usually happen while calling the exception
+        # with the (environ, start_response) WSGI tuple.
+        response.setStatus(exc.__class__)
+        if hasattr(exc, 'headers'):
+            for key, value in exc.headers.items():
+                response.setHeader(key, value)
+
+        # Set the response body to the result of calling the view.
+        response.setBody(view())
+        return True
+    return False
+
+
 @contextmanager
-def transaction_pubevents(request, tm=transaction.manager):
-    ok_exception = None
+def transaction_pubevents(request, response, tm=transaction.manager):
     try:
         setDefaultSkin(request)
         newInteraction()
         tm.begin()
         notify(pubevents.PubStart(request))
-        try:
-            yield None
-        except (HTTPOk, HTTPRedirection) as exc:
-            ok_exception = exc
+
+        yield
 
         notify(pubevents.PubBeforeCommit(request))
         if tm.isDoomed():
@@ -114,18 +132,42 @@ def transaction_pubevents(request, tm=transaction.manager):
         else:
             tm.commit()
         notify(pubevents.PubSuccess(request))
-    except Exception:
-        exc_info = sys.exc_info()
-        notify(pubevents.PubBeforeAbort(
-            request, exc_info, request.supports_retry()))
-        tm.abort()
-        notify(pubevents.PubFailure(
-            request, exc_info, request.supports_retry()))
-        raise
+    except Exception as exc:
+        # Normalize HTTP exceptions
+        # (For example turn zope.publisher NotFound into zExceptions NotFound)
+        exc_type, _ = upgradeException(exc.__class__, None)
+        if not isinstance(exc, exc_type):
+            exc = exc_type(str(exc))
+
+        # Create new exc_info with the upgraded exception.
+        exc_info = (exc_type, exc, sys.exc_info()[2])
+
+        if isinstance(exc, Unauthorized):
+            # _unauthorized modifies the response in-place. If this hook
+            # is used, an exception view for Unauthorized has to merge
+            # the state of the response and the exception instance.
+            exc.setRealm(response.realm)
+            response._unauthorized()
+            response.setStatus(exc.getStatus())
+
+        try:
+            # Handle exception view
+            exc_view_created = _exc_view_created_response(
+                exc, request, response)
+
+            notify(pubevents.PubBeforeAbort(
+                request, exc_info, request.supports_retry()))
+            tm.abort()
+            notify(pubevents.PubFailure(
+                request, exc_info, request.supports_retry()))
+
+            if not (exc_view_created or isinstance(exc, Unauthorized)):
+                reraise(*exc_info)
+        finally:
+            # Avoid traceback / exception reference cycle.
+            del exc, exc_info
     finally:
         endInteraction()
-        if ok_exception is not None:
-            raise ok_exception
 
 
 def publish(request, module_info):
@@ -166,53 +208,6 @@ def publish(request, module_info):
     return response
 
 
-def _publish_response(request, response, module_info, _publish=publish):
-    try:
-        with transaction_pubevents(request):
-            response = _publish(request, module_info)
-    except Exception as exc:
-        # Normalize HTTP exceptions
-        # (For example turn zope.publisher NotFound into zExceptions NotFound)
-        t, v = upgradeException(exc.__class__, None)
-        if not isinstance(exc, t):
-            exc = t(str(exc))
-
-        if isinstance(exc, Unauthorized):
-            # _unauthorized modifies the response in-place. If this hook
-            # is used, an exception view for Unauthorized has to merge
-            # the state of the response and the exception instance.
-            exc.setRealm(response.realm)
-            response._unauthorized()
-            response.setStatus(exc.getStatus())
-
-        view = queryMultiAdapter((exc, request), name=u'index.html')
-        if view is not None:
-            # Wrap the view in the context in which the exception happened.
-            parents = request.get('PARENTS')
-            if parents:
-                view.__parent__ = parents[0]
-
-            # Set status and headers from the exception on the response,
-            # which would usually happen while calling the exception
-            # with the (environ, start_response) WSGI tuple.
-            response.setStatus(exc.__class__)
-            if hasattr(exc, 'headers'):
-                for key, value in exc.headers.items():
-                    response.setHeader(key, value)
-
-            # Set the response body to the result of calling the view.
-            response.setBody(view())
-            return response
-
-        if isinstance(exc, Unauthorized):
-            return response
-
-        # Reraise the exception, preserving the original traceback
-        reraise(exc.__class__, exc, sys.exc_info()[2])
-
-    return response
-
-
 @contextmanager
 def load_app(module_info):
     app_wrapper, realm, debug_mode = module_info
@@ -246,13 +241,11 @@ def publish_module(environ, start_response,
                    _request_factory(environ['wsgi.input'], environ, response))
 
         for i in range(getattr(request, 'retry_max_count', 3) + 1):
+            setRequest(request)
             try:
                 with load_app(module_info) as new_mod_info:
-                    response = _publish_response(
-                        request,
-                        response,
-                        new_mod_info,
-                        _publish=_publish)
+                    with transaction_pubevents(request, response):
+                        response = _publish(request, new_mod_info)
                 break
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():
@@ -264,6 +257,7 @@ def publish_module(environ, start_response,
                     raise
             finally:
                 request.close()
+                clearRequest()
 
         # Start the WSGI server response
         status, headers = response.finalize()

@@ -3,13 +3,23 @@ from sys import modules, exc_info
 from unittest import TestCase
 
 from ZODB.POSException import ConflictError
-from zope.interface.verify import verifyObject
+from zope.component import adapter
+from zope.component import getSiteManager
 from zope.event import subscribers
+from zope.globalrequest import getRequest
+from zope.interface import Interface
+from zope.interface.verify import verifyObject
+from zope.publisher.interfaces import INotFound
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
 from ZPublisher.BaseRequest import BaseRequest
+from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
 from ZPublisher.interfaces import (
-    IPubStart, IPubEnd, IPubSuccess, IPubFailure,
+    IPubEvent, IPubStart, IPubEnd, IPubSuccess, IPubFailure,
     IPubAfterTraversal, IPubBeforeCommit,
     IPubBeforeStreaming,
 )
@@ -60,6 +70,7 @@ class TestInterface(TestCase):
 
 
 class TestPubEvents(TestCase):
+
     def setUp(self):
         self._saved_subscribers = subscribers[:]
         self.reporter = r = _Reporter()
@@ -152,6 +163,100 @@ class TestPubEvents(TestCase):
         self.assertEqual(events[0].response, response)
 
         self.assertTrue(b'datachunk1datachunk2' in out.getvalue())
+
+
+class ExceptionView(object):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.__parent__ = None
+        self.request = request
+
+    def __call__(self):
+        global_request = getRequest()
+        self.request.response.events.append('exc_view')
+        return ('Exception: %s\nRequest: %r' % (
+            self.context.__class__.__name__, global_request))
+
+
+class TestGlobalRequestPubEvents(FunctionalTestCase):
+
+    def afterSetUp(self):
+        # Remember the handler, so we can unregister it and not
+        # get a new bound method instance in beforeTearDown.
+        self.event_handler = self.pub_event
+        sm = getSiteManager()
+        sm.registerHandler(self.event_handler)
+        self.exc_view_for = None
+
+    def beforeTearDown(self):
+        sm = getSiteManager()
+        sm.unregisterHandler(self.event_handler)
+        if self.exc_view_for:
+            # If an exception view was registered, remove it.
+            sm.unregisterAdapter(
+                ExceptionView,
+                required=(self.exc_view_for, IDefaultBrowserLayer),
+                provided=Interface,
+                name=u'index.html',
+            )
+
+    def _registerExceptionView(self, for_):
+        self.exc_view_for = for_
+        sm = getSiteManager()
+        sm.registerAdapter(
+            ExceptionView,
+            required=(for_, IDefaultBrowserLayer),
+            provided=Interface,
+            name=u'index.html',
+        )
+
+    @adapter(IPubEvent)
+    def pub_event(self, event):
+        global_request = getRequest()
+        # The request is the exact same instance on the event and
+        # in the thread local.
+        self.assertIsInstance(global_request, WSGIRequest)
+        self.assertIs(global_request, event.request)
+        # Keep track of all the different pub events.
+        response = event.request.response
+        if not hasattr(response, 'events'):
+            setattr(response, 'events', [])
+        response.events.append(event.__class__.__name__)
+
+    def test_200(self):
+        self.folder.addDTMLDocument('index_html', file='index')
+        response = self.publish(
+            self.folder.absolute_url_path(),
+            basic='%s:%s' % (user_name, user_password))
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response._response.events,
+                         ['PubStart', 'PubAfterTraversal',
+                          'PubBeforeCommit', 'PubSuccess'])
+
+    def test_401(self):
+        response = self.publish('/manage_main')
+        self.assertEqual(response.getStatus(), 401)
+        self.assertEqual(response._response.events,
+                         ['PubStart', 'PubBeforeAbort', 'PubFailure'])
+
+    def test_404(self):
+        response = self.publish('/')
+        self.assertEqual(response.getStatus(), 404)
+        self.assertEqual(response._response.events,
+                         ['PubStart', 'PubBeforeAbort', 'PubFailure'])
+
+    def test_404_exc_view(self):
+        # zope.globalrequest works inside an exception view.
+        self._registerExceptionView(INotFound)
+        response = self.publish('/')
+        self.assertEqual(response._response.events,
+                         ['PubStart', 'exc_view',
+                          'PubBeforeAbort', 'PubFailure'])
+        self.assertEqual(response.getStatus(), 404)
+        self.assertEqual(
+            response.getBody(),
+            b'Exception: NotFound\nRequest: <WSGIRequest, URL=http://nohost>')
 
 
 def _succeed():

@@ -12,13 +12,13 @@
 ##############################################################################
 import unittest
 
-from zope.component.testing import PlacelessSetup
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
 
 from ZPublisher.WSGIPublisher import get_module_info
+from Testing.ZopeTestCase import ZopeTestCase
 
 
 class WSGIResponseTests(unittest.TestCase):
@@ -199,17 +199,7 @@ class TestPublish(unittest.TestCase):
         self.assertEqual(response.realm, None)
 
 
-class TestPublishModule(unittest.TestCase, PlacelessSetup):
-
-    def setUp(self):
-        from zope.testing.cleanup import cleanUp
-        cleanUp()
-        PlacelessSetup.setUp(self)
-
-    def tearDown(self):
-        PlacelessSetup.tearDown(self)
-        from zope.testing.cleanup import cleanUp
-        cleanUp()
+class TestPublishModule(ZopeTestCase):
 
     def _callFUT(self, environ, start_response,
                  _publish=None, _response_factory=None, _request_factory=None):
