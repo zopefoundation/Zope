@@ -8,7 +8,13 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b1 (unreleased)
+4.0b2 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+4.0b1 (2017-09-15)
 ------------------
 
 With this release the egg of the project is named `Zope` instead of `Zope2`.
