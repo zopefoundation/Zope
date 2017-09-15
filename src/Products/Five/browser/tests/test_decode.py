@@ -23,7 +23,7 @@ def test_processInputs():
       >>> from Products.Five.browser.decode import processInputs
 
       >>> charsets = ['iso-8859-1']
-      >>> class DummyRequest:
+      >>> class DummyRequest(object):
       ...     form = {}
       >>> request = DummyRequest()
 

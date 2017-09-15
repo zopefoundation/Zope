@@ -63,7 +63,7 @@ class CallTemplate(BrowserView):
     __call__ = ViewPageTemplateFile('falcon.pt')
 
 
-class CallableNoDocstring:
+class CallableNoDocstring(object):
 
     def __call__(self):
         return u"No docstring"

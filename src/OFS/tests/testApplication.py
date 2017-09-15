@@ -65,7 +65,7 @@ class ApplicationTests(unittest.TestCase):
         from six.moves import UserDict
         request = UserDict()
 
-        class _Response:
+        class _Response(object):
             def notFoundError(self, msg):
                 1 / 0
 

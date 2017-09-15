@@ -253,7 +253,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.traversing.interfaces import ITraversable
         from zope.traversing.namespace import view
 
-        class TestView:
+        class TestView(object):
             __name__ = 'testing'
 
             def __init__(self, context, request):

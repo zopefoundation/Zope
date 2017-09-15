@@ -33,7 +33,7 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
 
-        class Filelike:
+        class Filelike(object):
             def read(self):
                 return to_convert
         self.assertEqual(field2string(Filelike()), to_convert)

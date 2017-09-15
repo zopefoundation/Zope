@@ -50,7 +50,7 @@ def setConfiguration(cfg):
     os.environ["INSTANCE_HOME"] = cfg.instancehome
 
 
-class DefaultConfiguration:
+class DefaultConfiguration(object):
     """
     This configuration should be used effectively only during unit tests
     """

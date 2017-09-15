@@ -69,7 +69,7 @@ class TestFolder(Folder):
         Folder.manage_beforeDelete(self, item, container)
 
 
-class HookLayer:
+class HookLayer(object):
 
     @classmethod
     def setUp(cls):

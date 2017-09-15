@@ -27,7 +27,7 @@ class Content(SimpleItem):
     pass
 
 
-class UnitTestSecurityPolicy:
+class UnitTestSecurityPolicy(object):
     """
         Stub out the existing security policy for unit testing purposes.
     """

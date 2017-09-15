@@ -60,7 +60,7 @@ class FormatterTest(unittest.TestCase):
         self.assertEqual(pt.pt_render().strip(), '<p>none</p>')
 
 
-class UnauthorizedSecurityPolicy:
+class UnauthorizedSecurityPolicy(object):
     """Policy which denies every access."""
 
     def validate(self, *args, **kw):

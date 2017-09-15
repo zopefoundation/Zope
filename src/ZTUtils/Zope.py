@@ -97,7 +97,7 @@ class LazyFilter(Lazy):
         return data[i]
 
 
-class TreeSkipMixin:
+class TreeSkipMixin(object):
     '''Mixin class to make trees test security, and allow
     skipping of unauthorized objects. '''
     skip = None

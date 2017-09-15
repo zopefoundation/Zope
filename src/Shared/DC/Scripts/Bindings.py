@@ -34,7 +34,7 @@ defaultBindings = {'name_context': 'context',
 _marker = []  # Create a new marker
 
 
-class NameAssignments:
+class NameAssignments(object):
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
@@ -149,7 +149,7 @@ class NameAssignments:
         return self._generateCodeBlock(text, assigned_names)
 
 
-class UnauthorizedBinding:
+class UnauthorizedBinding(object):
     """Explanation: as of Zope 2.6.3 a security hole was closed - no
        security check was happening when 'context' and 'container'
        were bound to a script. Adding the check broke lots of sites
@@ -198,7 +198,7 @@ class UnauthorizedBinding:
     __str__ = __call__ = index_html = __you_lose
 
 
-class Bindings:
+class Bindings(object):
 
     security = ClassSecurityInfo()
 

@@ -65,7 +65,7 @@ class TreeNode(Explicit):
 _marker = []
 
 
-class TreeMaker:
+class TreeMaker(object):
     '''Class for mapping a hierarchy of objects into a tree of nodes.'''
 
     __allow_access_to_unprotected_subobjects__ = 1

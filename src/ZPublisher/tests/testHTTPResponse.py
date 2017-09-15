@@ -599,7 +599,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_setBody_object_with_asHTML(self):
         HTML = '<html><head></head><body></body></html>'
 
-        class Dummy:
+        class Dummy(object):
             def asHTML(self):
                 return HTML
         response = self._makeOne()

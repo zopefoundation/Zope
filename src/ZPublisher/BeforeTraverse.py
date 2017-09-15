@@ -80,7 +80,7 @@ def rewriteBeforeTraverse(container, btr):
         bpth.add(btr[key])
 
 
-class MultiHook:
+class MultiHook(object):
     """Class used to multiplex hook.
 
     MultiHook calls the named hook from the class of the container, then
@@ -110,7 +110,7 @@ class MultiHook:
         self._list.append(cob)
 
 
-class NameCaller:
+class NameCaller(object):
     """Class used to proxy sibling objects by name.
 
     When called with a container and request object, it gets the named

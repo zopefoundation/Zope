@@ -19,7 +19,7 @@ import App
 from App.ImageFile import ImageFile
 
 
-class misc_:
+class misc_(object):
     "Miscellaneous product information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -27,7 +27,7 @@ class misc_:
 InitializeClass(misc_)
 
 
-class p_:
+class p_(object):
     "Shared system information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -38,7 +38,7 @@ class p_:
 InitializeClass(p_)
 
 
-class Misc_:
+class Misc_(object):
     "Miscellaneous product information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()

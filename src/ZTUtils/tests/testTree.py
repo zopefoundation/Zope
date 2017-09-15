@@ -3,7 +3,7 @@ import unittest
 from ZTUtils import Tree
 
 
-class Item:
+class Item(object):
     children = ()
     id = ''
 
