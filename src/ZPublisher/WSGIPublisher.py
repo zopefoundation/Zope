@@ -19,6 +19,7 @@ import sys
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from six import PY3
 from six import reraise
 from six.moves._thread import allocate_lock
 import transaction
@@ -231,6 +232,19 @@ def publish_module(environ, start_response,
     module_info = get_module_info(_module_name)
     result = ()
 
+    path_info = environ.get('PATH_INFO')
+    if path_info:
+        # The WSGI server automatically treats the PATH_INFO as latin-1 encoded
+        # bytestrings. Typically this is a false assumption as the browser
+        # delivers utf-8 encoded PATH_INFO. We, therefore, need to encode it
+        # again with latin-1 to get a utf-8 encoded bytestring. This is
+        # sufficient for Python 2.
+        path_info = path_info.encode('latin-1')
+        if PY3:
+            # In Python 3 we need unicode here, so we decode the bytestring.
+            path_info = path_info.decode('utf-8')
+
+        environ['PATH_INFO'] = path_info
     with closing(BytesIO()) as stdout, closing(BytesIO()) as stderr:
         response = (_response if _response is not None else
                     _response_factory(stdout=stdout, stderr=stderr))
