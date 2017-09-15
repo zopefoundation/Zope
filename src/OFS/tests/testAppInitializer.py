@@ -12,15 +12,14 @@
 #
 ##############################################################################
 
-import io
 import os
+import shutil
 import tempfile
 import unittest
 
 from App.config import getConfiguration, setConfiguration
 from OFS.Application import Application, AppInitializer
-import ZConfig
-import Zope2.Startup
+from Zope2.Startup.options import ZopeWSGIOptions
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -36,19 +35,13 @@ instancehome <<INSTANCE_HOME>>
 </zodb_db>
 """
 
-
-def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
-    schemafile = os.path.join(startup, 'wsgischema.xml')
-    return ZConfig.loadSchema(schemafile)
+original_config = None
 
 
 def getApp():
     from App.ZApplication import ZApplicationWrapper
     DB = getConfiguration().dbtab.getDatabase('/')
     return ZApplicationWrapper(DB, 'Application', Application)()
-
-original_config = None
 
 
 class TestInitialization(unittest.TestCase):
@@ -58,16 +51,13 @@ class TestInitialization(unittest.TestCase):
         global original_config
         if original_config is None:
             original_config = getConfiguration()
-        self.schema = getSchema()
         os.makedirs(TEMPNAME)
         os.makedirs(TEMPPRODUCTS)
 
     def tearDown(self):
         import App.config
-        del self.schema
         App.config.setConfiguration(original_config)
-        os.rmdir(TEMPPRODUCTS)
-        os.rmdir(TEMPNAME)
+        shutil.rmtree(TEMPNAME)
         import Products
         Products.__path__ = [d for d in Products.__path__
                              if os.path.exists(d)]
@@ -76,11 +66,14 @@ class TestInitialization(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        schema = self.schema
-        sio = io.StringIO(text.replace(u"<<INSTANCE_HOME>>", TEMPNAME))
-        conf, handler = ZConfig.loadConfigFile(schema, sio)
-        self.assertEqual(conf.instancehome, TEMPNAME)
-        setConfiguration(conf)
+        config_path = os.path.join(TEMPNAME, 'zope.conf')
+        with open(config_path, 'w') as fd:
+            fd.write(text.replace(u"<<INSTANCE_HOME>>", TEMPNAME))
+
+        options = ZopeWSGIOptions(config_path)()
+        config = options.configroot
+        self.assertEqual(config.instancehome, TEMPNAME)
+        setConfiguration(config)
 
     def getOne(self):
         app = getApp()

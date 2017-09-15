@@ -18,6 +18,7 @@ The following persons have access to the ``Zope2`` package on PyPI
 - Hanno Schlichting
 - Michael Howitz
 - Tres Seaver
+- Jens Vagelpohl
 
 Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
@@ -40,13 +41,6 @@ Steps for creating a new Zope release
 - Run all tests::
 
    bin/tox
-
-- Run all tests for all dependencies::
-
-   bin/alltests-py27
-   bin/alltests-py34
-   ...
-   bin/alltests-pypy3
 
 - Tag the release.
 
