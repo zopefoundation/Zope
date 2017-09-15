@@ -275,6 +275,8 @@ Security fixes
 - LP #789863:  Ensure that Request objects cannot be published / traversed
   directly via a URL.
 
+- Port tests for ``str.format`` security fix from Zope 2.13.
+
 Bugfixes
 ++++++++
 
