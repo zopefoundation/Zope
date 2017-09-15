@@ -11,7 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes
+++++++++
+
+- Fix special double under methods on `HTTPRequest.record` class.
 
 
 4.0b1 (2017-09-15)
