@@ -26,11 +26,11 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-__version__ = '4.0b1.dev0'
+version = '4.0b1.dev0'
 
 setup(
-    name='Zope2',
-    version=__version__,
+    name='Zope',
+    version=version,
     url='https://zope.readthedocs.io/en/latest/',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',

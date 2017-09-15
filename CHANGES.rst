@@ -11,6 +11,12 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b1 (unreleased)
 ------------------
 
+With this release the egg of the project is named `Zope` instead of `Zope2`.
+There is a meta package named `Zope2` which depends on `Zope`.
+
+See https://zope.readthedocs.io/en/latest/WHATSNEW.html for a higher level
+description of the changes.
+
 Supported versions
 ++++++++++++++++++
 
