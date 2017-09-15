@@ -12,6 +12,7 @@
 ##############################################################################
 import unittest
 
+import transaction
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
@@ -515,6 +516,65 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(b'Exception View: Redirect' in body)
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
+
+
+class TestLoadApp(unittest.TestCase):
+
+    def _getTarget(self):
+        from ZPublisher.WSGIPublisher import load_app
+        return load_app
+
+    def _makeModuleInfo(self):
+        class Connection(object):
+            def close(self):
+                pass
+
+        class App(object):
+            _p_jar = Connection()
+
+        return (App, 'Zope', False)
+
+    def test_open_transaction_is_aborted(self):
+        load_app = self._getTarget()
+
+        transaction.begin()
+        self.assertIsNotNone(transaction.manager._txn)
+        with load_app(self._makeModuleInfo()):
+            pass
+        self.assertIsNone(transaction.manager._txn)
+
+    def test_no_second_transaction_is_created_if_closed(self):
+        load_app = self._getTarget()
+
+        class TransactionCounter(object):
+
+            after = 0
+            before = 0
+
+            def newTransaction(self, transaction):
+                pass
+
+            def beforeCompletion(self, transaction):
+                self.before += 1
+
+            def afterCompletion(self, transaction):
+                self.after += 1
+
+            def counts(self):
+                return (self.after, self.before)
+
+        counter = TransactionCounter()
+        self.addCleanup(lambda: transaction.manager.unregisterSynch(counter))
+
+        transaction.manager.registerSynch(counter)
+
+        transaction.begin()
+        self.assertIsNotNone(transaction.manager._txn)
+        with load_app(self._makeModuleInfo()):
+            transaction.abort()
+
+        self.assertIsNone(transaction.manager._txn)
+        self.assertEqual(counter.counts(), (1, 1))
 
 
 class CustomExceptionView(object):
