@@ -270,20 +270,28 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost>")
 
     def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
-        self.expected_exception_type = zExceptions.NotFound
-        self.folder.addDTMLMethod('raising_object', file='''\
-        <dtml-call "raise "NotFound">
-        ''')
+        self.expected_exception_type = zExceptions.HTTPVersionNotSupported
 
-        self._registerExceptionView(INotFound)
-        response = self.publish('/raising_object')
+        def raiser(*args, **kwargs):
+            "Allow publishing"
+            class HTTPVersionNotSupported(Exception):
+                pass
+            raise HTTPVersionNotSupported()
+        self.folder.__class__.index_html = raiser
+        def cleanup():
+            del self.folder.__class__.index_html
+        self.addCleanup(cleanup)
+
+        from zope.publisher.interfaces.http import IHTTPException
+        self._registerExceptionView(IHTTPException)
+        response = self.publish(self.folder.absolute_url_path())
         self.assertEqual(response._response.events,
-                         ['PubStart', 'exc_view',
+                         ['PubStart', 'PubAfterTraversal', 'exc_view',
                           'PubBeforeAbort', 'PubFailure'])
-        self.assertEqual(response.getStatus(), 404)
+        self.assertEqual(response.getStatus(), 505)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost/raising_object>")
+            b"Exception: <class 'zExceptions.HTTPVersionNotSupported'>\nRequest: <WSGIRequest, URL=http://nohost/test_folder_1_/index_html>")
 
 
 def _succeed():
