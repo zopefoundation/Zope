@@ -48,9 +48,9 @@ Installing the Zope software
 Installing the Zope software using ``zc.buildout`` involves the following
 steps:
 
-- Download the Zope 2 source distribution from `PyPI`__
+- Download the Zope source distribution from `PyPI`__
 
-  __ https://pypi.python.org/pypi/Zope2
+  __ https://pypi.python.org/pypi/Zope
 
 - Bootstrap the buildout
 
@@ -58,9 +58,9 @@ steps:
 
 On Linux, this can be done as follows::
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
-  $ tar xfvz Zope2-<Zope version>.tar.gz
-  $ cd Zope2-<Zope version>
+  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-<Zope version>.tar.gz
+  $ tar xfvz Zope-<Zope version>.tar.gz
+  $ cd Zope-<Zope version>
   $ /path/to/your/python bootstrap.py
   $ bin/buildout
 

@@ -33,7 +33,7 @@ setup(
     version=version,
     url='https://zope.readthedocs.io/en/latest/',
     license='ZPL 2.1',
-    description='Zope2 application server / web framework',
+    description='Zope application server / web framework',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     long_description="\n\n".join([README, CHANGES]),

@@ -84,10 +84,10 @@ Error rendered as a normal HTML response.
     would expect a ``Redirect``, the following might help you.
 
     Although the ``zope.ini`` created by ``mkwsgiinstance`` includes
-    ``egg:Zope2#httpexceptions`` as part of the pipeline, this might not be
+    ``egg:Zope#httpexceptions`` as part of the pipeline, this might not be
     sufficient for existing projects. In case your project has configured a
     middleware handling and creating error views for HTTP exceptions, you need
-    to make sure that ``egg:Zope2#httpexceptions`` runs before that middleware.
+    to make sure that ``egg:Zope#httpexceptions`` runs before that middleware.
     Otherwise a ``Redirect`` might not be handled as such. This can result in a
     non-functional ZMI.
 

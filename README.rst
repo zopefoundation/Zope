@@ -16,7 +16,7 @@ Installation
 Installation information can be found at
 https://zope.readthedocs.io/en/latest/INSTALL-buildout.html
 
-Note that you *cannot* simply do ``pip install Zope2``, because you need
+Note that you *cannot* simply do ``pip install Zope``, because you need
 specific versions of all dependencies. Follow the documentation to
 ensure you get the correct versions, or else installation is very
 likely to fail.

@@ -17,18 +17,18 @@ Create a Virtual Environment
    $ cd zope
 
 
-Install the Zope2 Software Packages
------------------------------------
+Install the Zope Software Packages
+----------------------------------
 
 Look for the release you want to install on
 https://github.com/zopefoundation/Zope/releases. Than use the specific
-version in the URL, replacing 4.0a5 in the example below:
+version in the URL, replacing 4.0b1 in the example below:
 
 .. code-block:: sh
 
    $ bin/pip install \
-   -r https://raw.githubusercontent.com/zopefoundation/Zope/4.0a5/requirements-full.txt
-   Obtaining Zope2
+   -r https://raw.githubusercontent.com/zopefoundation/Zope/4.0b1/requirements-full.txt
+   Obtaining Zope
    ...
    Successfully installed ...
 

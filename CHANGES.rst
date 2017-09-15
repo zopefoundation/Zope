@@ -127,7 +127,7 @@ WSGI
 
 - Include ``waitress`` as a default WSGI app server.
 
-- Add `egg:Zope2#httpexceptions` WSGI middleware.
+- Add `egg:Zope#httpexceptions` WSGI middleware.
 
 - Add a new `runwsgi` script to serve PasteDeploy files.
 
