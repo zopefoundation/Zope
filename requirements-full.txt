@@ -1,21 +1,21 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope2
-AccessControl==4.0a7
+AccessControl==4.0b1
 Acquisition==4.4.2
 AuthEncoding==4.0.0
 BTrees==4.4.1
 Chameleon==3.1
 DateTime==4.2
-DocumentTemplate==3.0a4
+DocumentTemplate==3.0b1
 ExtensionClass==4.3.0
 Missing==4.0.1
 MultiMapping==4.0
 PasteDeploy==1.5.2
-Persistence==3.0a3
+Persistence==3.0b1
 Products.BTreeFolder2==4.0.0
 Products.ZCTextIndex==4.0.2
 Products.ZCatalog==4.0.0
 Record==3.4
-RestrictedPython==4.0a3
+RestrictedPython==4.0b2
 WSGIProxy2==0.4.4
 WebOb==1.7.3
 WebTest==2.0.28
