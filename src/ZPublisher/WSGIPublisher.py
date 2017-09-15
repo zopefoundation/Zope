@@ -217,7 +217,10 @@ def load_app(module_info):
     try:
         yield (app, realm, debug_mode)
     finally:
-        transaction.abort()
+        if transaction.manager._txn is not None:
+            # Only abort a transaction, if one exists. Otherwise the
+            # abort creates a new transaction just to abort it.
+            transaction.abort()
         app._p_jar.close()
 
 
