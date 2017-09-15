@@ -39,6 +39,9 @@ Restructuring
 
 - Made Products.MailHost an optional dependency.
 
+- Stop setting `CLIENT_HOME` as a builtin, get it via
+  `App.config.getConfiguration().clienthome` instead.
+
 
 4.0a6 (2017-06-01)
 ------------------
