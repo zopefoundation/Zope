@@ -403,7 +403,7 @@ _sentinel3 = []
 class TestRequestGarbage1(base.TestCase):
     '''Make sure base.app + base.close does not leak REQUEST._held'''
 
-    class Held:
+    class Held(object):
         def __del__(self):
             _sentinel1.append('__del__')
 
@@ -421,7 +421,7 @@ class TestRequestGarbage1(base.TestCase):
 class TestRequestGarbage2(base.TestCase):
     '''Make sure self._app + self._clear does not leak REQUEST._held'''
 
-    class Held:
+    class Held(object):
         def __del__(self):
             _sentinel2.append('__del__')
 
@@ -438,7 +438,7 @@ class TestRequestGarbage2(base.TestCase):
 class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
     '''Make sure self._app + self._clear does not leak REQUEST._held'''
 
-    class Held:
+    class Held(object):
         def __del__(self):
             _sentinel3.append('__del__')
 

@@ -1093,7 +1093,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(clone['PARENTS'], PARENTS[1:])
 
     def test_clone_preserves_response_class(self):
-        class DummyResponse:
+        class DummyResponse(object):
             pass
         environ = self._makePostEnviron()
         request = self._makeOne(None, environ, DummyResponse())

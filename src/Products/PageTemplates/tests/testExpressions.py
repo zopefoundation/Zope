@@ -24,14 +24,14 @@ class EngineTestsBase(PlacelessSetup):
 
     def _makeContext(self, bindings=None):
 
-        class Dummy:
+        class Dummy(object):
             __allow_access_to_unprotected_subobjects__ = 1
             management_page_charset = 'utf-8'
 
             def __call__(self):
                 return 'dummy'
 
-        class DummyDocumentTemplate:
+        class DummyDocumentTemplate(object):
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
 
@@ -279,7 +279,7 @@ class ZopeContextTests(unittest.TestCase):
         return self._getTargetClass()(engine, contexts)
 
     def _makeEngine(self):
-        class DummyEngine:
+        class DummyEngine(object):
             pass
         return DummyEngine()
 

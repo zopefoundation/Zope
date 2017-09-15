@@ -39,7 +39,7 @@ class FactoryTests(unittest.TestCase):
         self.assertFalse('standard_html_footer' in method.read())
 
 
-class DummyDispatcher:
+class DummyDispatcher(object):
 
     def __init__(self):
         self._set = {}

@@ -42,7 +42,7 @@ _marker = object()
 
 
 @implementer(ITraversable)
-class Traversable:
+class Traversable(object):
 
     security = ClassSecurityInfo()
 

@@ -201,7 +201,7 @@ class ContentAdding(Adding, SimpleItem):
 
 
 @implementer(INameChooser)
-class ObjectManagerNameChooser:
+class ObjectManagerNameChooser(object):
     """A name chooser for a Zope object manager.
     """
 

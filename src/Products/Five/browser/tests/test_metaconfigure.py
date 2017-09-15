@@ -86,7 +86,7 @@ class DummyRequest(object):
     pass
 
 
-class DummyTemplate:
+class DummyTemplate(object):
     def __call__(self, *args, **kw):
         self._called_with = (args, kw)
         return self

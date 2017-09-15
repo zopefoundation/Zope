@@ -235,7 +235,7 @@ class AltDatabaseManagerTests(unittest.TestCase):
         return self._getTargetClass()()
 
     def _makeJar(self, dbname, dbsize):
-        class Jar:
+        class Jar(object):
             def db(self):
                 return self._db
         jar = Jar()

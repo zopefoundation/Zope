@@ -78,7 +78,7 @@ class ZApplicationWrapper(object):
         return connection.root()[self._name]
 
 
-class Cleanup:
+class Cleanup(object):
     def __init__(self, jar):
         self._jar = jar
 

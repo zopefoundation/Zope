@@ -22,7 +22,7 @@ FILE_META_TYPES = ({
 }, )
 
 
-class UnitTestSecurityPolicy:
+class UnitTestSecurityPolicy(object):
     """Stub out the existing security policy for unit testing purposes.
     """
     #   Standard SecurityPolicy interface
@@ -278,7 +278,7 @@ class TestCopySupport(CopySupportTestBase):
         ])
 
 
-class _SensitiveSecurityPolicy:
+class _SensitiveSecurityPolicy(object):
 
     def __init__(self, validate_lambda, checkPermission_lambda):
         self._lambdas = (validate_lambda, checkPermission_lambda)
