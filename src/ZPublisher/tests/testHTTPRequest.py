@@ -33,9 +33,54 @@ if sys.version_info >= (3, ):
 
 class RecordTests(unittest.TestCase):
 
-    def test_repr(self):
+    def _makeOne(self):
         from ZPublisher.HTTPRequest import record
-        rec = record()
+        return record()
+
+    def test_dict_methods(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertEqual(rec['a'], 1)
+        self.assertEqual(rec.get('a'), 1)
+        self.assertEqual(list(rec.keys()), ['a'])
+        self.assertEqual(list(rec.values()), [1])
+        self.assertEqual(list(rec.items()), [('a', 1)])
+
+    def test_dict_special_methods(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertTrue('a' in rec)
+        self.assertFalse('b' in rec)
+        self.assertEqual(len(rec), 1)
+        self.assertEqual(list(iter(rec)), ['a'])
+
+    def test_copy(self):
+        rec = self._makeOne()
+        rec.a = 1
+        rec.b = 'foo'
+        new_rec = rec.copy()
+        self.assertIsInstance(new_rec, dict)
+        self.assertEqual(new_rec, {'a': 1, 'b': 'foo'})
+
+    def test_eq(self):
+        rec1 = self._makeOne()
+        self.assertFalse(rec1, {})
+        rec2 = self._makeOne()
+        self.assertEqual(rec1, rec2)
+        rec1.a = 1
+        self.assertNotEqual(rec1, rec2)
+        rec2.a = 1
+        self.assertEqual(rec1, rec2)
+        rec2.b = 'foo'
+        self.assertNotEqual(rec1, rec2)
+
+    def test_str(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertEqual(str(rec), 'a: 1')
+
+    def test_repr(self):
+        rec = self._makeOne()
         rec.a = 1
         rec.b = 'foo'
         r = repr(rec)

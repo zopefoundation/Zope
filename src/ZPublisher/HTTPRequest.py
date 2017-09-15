@@ -1797,16 +1797,21 @@ class record(object):
                    'keys',
                    'items',
                    'values',
-                   'copy',
-                   'has_key',
-                   '__contains__',
-                   '__iter__',
-                   '__len__'):
+                   'copy'):
             return getattr(self.__dict__, key)
         raise AttributeError(key)
 
+    def __contains__(self, key):
+        return key in self.__dict__
+
     def __getitem__(self, key):
         return self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
 
     def __str__(self):
         return ", ".join("%s: %s" % item for item in
