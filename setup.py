@@ -56,7 +56,7 @@ setup(
     namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
     install_requires=[
-        'AccessControl>=4.0a4',
+        'AccessControl >= 4.0a8.dev0',
         'Acquisition',
         'BTrees',
         'DateTime',

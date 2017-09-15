@@ -20,6 +20,7 @@ Bugs Fixed
 
 - Fix issue with ``Control_Panel`` on first startup of ZODB from Zope 2.13.
 
+- Port tests for ``str.format`` security fix from Zope 2.13.
 
 Features Added
 ++++++++++++++
