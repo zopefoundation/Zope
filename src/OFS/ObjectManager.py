@@ -83,7 +83,8 @@ LOG = getLogger('ObjectManager')
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
 
-bad_id = re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
+# We want a regex to define the lower ascii control bytes and DEL as bad.
+bad_id = re.compile(r'[\x00-\x1F\x7F]').search
 
 
 def checkValidId(self, id, allow_dup=0):
