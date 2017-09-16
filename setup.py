@@ -68,6 +68,7 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
+        'ipaddress',
         'setuptools',
         'six',
         'transaction',
