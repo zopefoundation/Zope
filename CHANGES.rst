@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b2 (unreleased)
 ------------------
 
+New features
+++++++++++++
+
+- Add support for IPv6 addresses for the trusted-proxy zope.conf setting.
+
 Bugfixes
 ++++++++
 
