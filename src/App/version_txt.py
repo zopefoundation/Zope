@@ -22,7 +22,7 @@ def _prep_version_data():
     if _version_string is None:
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
-        dist = pkg_resources.get_distribution('Zope2')
+        dist = pkg_resources.get_distribution('Zope')
         _version_string = "%s, %s" % (dist.version, pyver)
 
 

@@ -69,7 +69,7 @@ Breaking changes
   new `OFS.Folder` instances.
 
 - Removed the `App.version_txt.getZopeVersion` API, you can use
-  ``pkg_resources.get_distribution('Zope2').version`` instead.
+  ``pkg_resources.get_distribution('Zope').version`` instead.
 
 - On the application object, removed `PrincipiaTime` in favor of `ZopeTime` and
   `PrincipiaRedirect` in favor of `Redirect` or `ZopeRedirect`.
