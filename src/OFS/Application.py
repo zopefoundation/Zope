@@ -393,7 +393,7 @@ def install_product(app, product_dir, product_name, meta_types,
     if misc_:
         if isinstance(misc_, dict):
             misc_ = Misc_(product_name, misc_)
-        Application.misc_.__dict__[product_name] = misc_
+        setattr(Application.misc_, product_name, misc_)
 
     productObject = FactoryDispatcher.Product(product_name)
     context = ProductContext(productObject, None, product)

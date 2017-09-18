@@ -106,4 +106,4 @@ class TestInitialization(unittest.TestCase):
         self.configure(good_cfg)
         i = self.getOne()
         i.install_products()
-        self.assertTrue('__roles__' in Application.misc_.__dict__)
+        self.assertTrue(hasattr(Application.misc_, '__roles__'))
