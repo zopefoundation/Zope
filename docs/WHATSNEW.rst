@@ -37,9 +37,11 @@ with Zope and is limited to the new WSGI based publisher. The new
 external ZServer project is currently limited to Python 2.7 compatibility
 and likely to stay that way.
 
-Python 3 support is also only offered for new installations of Zope,
-as there is so far no database migration tool in place.
+Python 3 support is mainly offered for new installations of Zope,
+as there is so far only an experimental database migration tool in place,
+see `zodb.py3migrate`_.
 
+.. _`zodb.py3migrate` : https://pypi.org/project/zodb.py3migrate
 
 Recommended WSGI setup
 ----------------------
