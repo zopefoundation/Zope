@@ -307,10 +307,6 @@ Bugfixes
 
 - Fix Content-Length header for non-ascii responses incl. a base tag.
 
-- Fix issue with ``Control_Panel`` on first startup of ZODB from Zope 2.13.
-
-- Port tests for ``str.format`` security fix from Zope 2.13.
-
 - bobo_traverse of ProductDispatcher did not correctly invalidate cache
   when a product was not initializes after first access of the cache. Types
   that were added in test-profiles were not useable.
