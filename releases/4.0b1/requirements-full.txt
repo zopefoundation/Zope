@@ -1,4 +1,4 @@
--e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
+Zope==4.0b1
 AccessControl==4.0b1
 Acquisition==4.4.2
 AuthEncoding==4.0.0
@@ -23,11 +23,9 @@ ZConfig==3.2.0
 ZEO==5.1
 ZODB==5.3.0
 ZServer==4.0a2 ; python_version < '3.0'
-Zope2==4.0b1
 five.globalrequest==99.1
 five.localsitemanager==3.0.1
 funcsigs==1.0.2
-ipaddress==1.0.18
 mock==2.0.0
 pbr==3.1.1
 persistent==4.2.2
