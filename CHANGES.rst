@@ -201,8 +201,9 @@ zope.conf
 - Removed various persistent product related code and options. The
   `enable-product-installation` `zope.conf` setting is now a no-op.
 
-- Changed the value for `default-zpublisher-encoding` and
-  `management_page_charset` to `utf-8`.
+- Changed the value for ``default-zpublisher-encoding`` to ``utf-8``.
+  If you set a different value for ``management_page_charset`` consider
+  changing ``default-zpublisher-encoding`` now.
 
 - Removed the `enable-ms-author-via` directive which was only required for
   very old web folder implementations from before 2007.
