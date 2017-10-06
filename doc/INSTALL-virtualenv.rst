@@ -20,6 +20,18 @@ Create a Virtual Environment
 Install the Zope2 2.13.26 Software Packages
 -------------------------------------------
 
+First make sure to have a compatible pip version. pip 8.0 and later
+are not supported.
+
+.. code-block:: sh
+
+   $ bin/pip install -U 'pip<8.0'
+   Installing collected packages: pip
+     Found existing installation: pip 9.0.1
+       Uninstalling pip-9.0.1:
+         Successfully uninstalled pip-9.0.1
+   Successfully installed pip-7.1.2
+
 .. code-block:: sh
 
    $ bin/pip install \

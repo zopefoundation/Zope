@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Update virtualenv based installation docs to mention pip<8.0 requirement.
+
 - Explicitly require Manager role for ``AltDatabaseManager``.  [maurits]
 
 
