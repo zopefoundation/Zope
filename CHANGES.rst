@@ -23,6 +23,9 @@ Bugfixes
 
 - Add missing version pin for `Zope2` in `versions-prod.cfg`.
 
+- Fix ``HTTPExceptionHandler`` to be usable as part of the WSGI pipeline in
+  testbrowser tests.
+
 Other changes
 +++++++++++++
 

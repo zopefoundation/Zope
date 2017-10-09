@@ -15,11 +15,15 @@
 """
 
 from AccessControl.Permissions import view
+from ZPublisher.WSGIPublisher import publish_module
+from ZPublisher.httpexceptions import HTTPExceptionHandler
 from six.moves.urllib.error import HTTPError
 from zExceptions import NotFound
+import transaction
 
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
+from Testing.testbrowser import WSGITestApp
 from Testing.ZopeTestCase import (
     FunctionalTestCase,
     user_name,
@@ -132,6 +136,29 @@ class TestTestbrowser(FunctionalTestCase):
         with self.assertRaises(NotFound):
             browser.open('http://localhost/test_folder_1_/redirect')
         self.assertTrue(browser.contents is None)
+
+    def test_handle_errors_false_HTTPExceptionHandler_in_app(self):
+        """HTTPExceptionHandler does not handle errors if requested via WSGI.
+
+        This is needed when HTTPExceptionHandler is part of the WSGI pipeline.
+        """
+        class WSGITestAppWithHTTPExceptionHandler(object):
+            """Minimized testbrowser.WSGITestApp with HTTPExceptionHandler."""
+
+            def __call__(self, environ, start_response):
+                publish = HTTPExceptionHandler(publish_module)
+                wsgi_result = publish(environ, start_response)
+
+                return wsgi_result
+
+        self.folder._setObject('stub', ExceptionStub())
+        transaction.commit()
+        browser = Browser(wsgi_app=WSGITestAppWithHTTPExceptionHandler())
+        browser.handleErrors = False
+
+        with self.assertRaises(ValueError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertIsNone(browser.contents)
 
     def test_raise_http_errors_false(self):
         self.folder._setObject('stub', ExceptionStub())

@@ -34,7 +34,7 @@ class HTTPExceptionHandler(object):
         except HTTPException as exc:
             return exc(environ, start_response)
         except Exception as exc:
-            if self.debug_mode:
+            if self.debug_mode or environ.get('x-wsgiorg.throw_errors', False):
                 # In debug mode, let the web server log a real
                 # traceback
                 raise
