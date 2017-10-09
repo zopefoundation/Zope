@@ -21,6 +21,8 @@ Bugfixes
 
 - Fix special double under methods on `HTTPRequest.record` class.
 
+- Add missing version pin for `Zope2` in `versions-prod.cfg`.
+
 
 4.0b1 (2017-09-15)
 ------------------
