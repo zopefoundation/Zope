@@ -23,6 +23,11 @@ Bugfixes
 
 - Add missing version pin for `Zope2` in `versions-prod.cfg`.
 
+Other changes
++++++++++++++
+
+- Explicitly make all classes new-style classes.
+
 
 4.0b1 (2017-09-15)
 ------------------
