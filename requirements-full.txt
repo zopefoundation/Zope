@@ -13,7 +13,7 @@ PasteDeploy==1.5.2
 Persistence==3.0b1
 Products.BTreeFolder2==4.0.0
 Products.ZCTextIndex==4.0.2
-Products.ZCatalog==4.0.0
+Products.ZCatalog==4.0.1
 Record==3.4
 RestrictedPython==4.0b2
 WSGIProxy2==0.4.4
