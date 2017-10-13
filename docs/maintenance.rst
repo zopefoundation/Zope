@@ -46,13 +46,17 @@ Steps for creating a new Zope release
 - Upload the tagged release to PyPI::
 
     python2.7 setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
+    
+    or
+    
+    release (of zest.releaser)
 
 - Update version information:
 
   - setup.py (bump version number, add dev postfix)
   - versions-prod.cfg (remove Zope pin)
-  - requirements-full.txt (replace Zope pin by git reference, either manually
-    or run bin/buildout).
+  - run ``bin/buildout`` to update ``requirements-full.txt``
+  - commit and push the changes
 
 - Check the visible releases on readthedocs.org at (should default to
   showing the active branches)::
