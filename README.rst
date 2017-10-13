@@ -1,3 +1,18 @@
+.. image:: https://travis-ci.org/zopefoundation/Zope.svg?branch=master
+        :target: https://travis-ci.org/zopefoundation/Zope
+
+.. image:: https://readthedocs.org/projects/zope/badge/?version=latest
+        :target: https://zope.readthedocs.org/en/latest/
+        :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/Zope.svg
+        :target: https://pypi.python.org/pypi/Zope
+        :alt: PyPI
+
+.. image:: https://img.shields.io/pypi/pyversions/Zope.svg
+        :target: https://pypi.python.org/pypi/Zope
+        :alt: Python versions
+
 .. contents::
 
 Introduction
