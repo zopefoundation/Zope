@@ -14,7 +14,7 @@ To run as a WSGI application, you need to install some additional software.
 
    $ bin/pip install \
     --trusted-host download.zope.org \
-    --index http://download.zope.org/Zope2/index/2.13.22/ \
+    --index http://download.zope.org/Zope2/index/2.13.26/ \
     repoze.who repoze.tm2 repoze.retry Paste PasteDeploy PasteScript
    Collecting repoze.who
    ...
