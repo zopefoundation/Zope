@@ -35,6 +35,8 @@ Steps for creating a new Zope release
 
 - Update docs/CHANGES.rst with a release date.
 
+- Commit the changes.
+
 - Run all tests::
 
    bin/tox
