@@ -8,7 +8,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b2 (unreleased)
+4.0b2 (2017-10-13)
 ------------------
 
 New features
