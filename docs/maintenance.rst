@@ -62,3 +62,5 @@ Steps for creating a new Zope release
   showing the active branches)::
 
     https://readthedocs.org/dashboard/zope/versions/
+
+- Switch to the ``gh-pages`` branch of ``Zope`` and run ``./build_index.sh``. Commit and push the changes.
