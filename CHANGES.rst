@@ -11,7 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes
+++++++++
+
+- Re-raise app exceptions if wsgi.handleErrors is False in the request environ.
 
 
 4.0b2 (2017-10-13)
