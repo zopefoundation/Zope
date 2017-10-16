@@ -517,6 +517,17 @@ class TestPublishModule(ZopeTestCase):
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
 
+    def testHandleErrorsFalseBypassesExceptionResponse(self):
+        from AccessControl import Unauthorized
+        environ = self._makeEnviron(**{
+            'wsgi.handleErrors': False,
+        })
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = Unauthorized('argg')
+        with self.assertRaises(Unauthorized):
+            self._callFUT(environ, start_response, _publish)
+
 
 class TestLoadApp(unittest.TestCase):
 
