@@ -447,7 +447,7 @@ class simple(zope.browserpage.metaconfigure.simple):
 
         attr = self.__page_attribute__
         if attr == '__call__':
-            raise AttributeError("__call__")
+            raise NotImplementedError
 
         return getattr(self, attr)
 

@@ -115,10 +115,13 @@ def render(ob, ns):
         # proxy)
         base = removeAllProxies(base)
         if callable(base):
-            if getattr(base, 'isDocTemp', 0):
-                ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
-            else:
-                ob = ob()
+            try:
+                if getattr(base, 'isDocTemp', 0):
+                    ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
+                else:
+                    ob = ob()
+            except NotImplementedError:
+                pass
     return ob
 
 
