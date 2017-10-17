@@ -52,6 +52,6 @@ def loadMoniker(data):
 
 
 def absattr(attr):
-    if isinstance(attr, collections.Callable):
+    if callable(attr):
         return attr()
     return attr

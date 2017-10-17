@@ -15,7 +15,6 @@
 
 from io import BytesIO
 from logging import getLogger
-import collections
 import copy
 import fnmatch
 import marshal
@@ -270,7 +269,7 @@ class ObjectManager(CopyContainer,
         # adequate permission to add that type of object.
         sm = getSecurityManager()
         meta_types = []
-        if isinstance(self.all_meta_types, collections.Callable):
+        if callable(self.all_meta_types):
             all = self.all_meta_types()
         else:
             all = self.all_meta_types

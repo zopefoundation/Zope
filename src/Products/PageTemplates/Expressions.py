@@ -17,7 +17,6 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
-import sys
 from six import text_type, binary_type
 
 from zope.component import queryUtility
@@ -47,7 +46,6 @@ from zExceptions import Unauthorized
 from zope.contentprovider.tales import TALESProviderExpression
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-import collections
 
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
@@ -116,7 +114,7 @@ def render(ob, ns):
         # item might be proxied (e.g. modules might have a deprecation
         # proxy)
         base = removeAllProxies(base)
-        if isinstance(base, collections.Callable):
+        if callable(base):
             if getattr(base, 'isDocTemp', 0):
                 ob = ZRPythonExpr.call_with_ns(ob, ns, 2)
             else:
