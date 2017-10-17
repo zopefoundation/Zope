@@ -1220,7 +1220,7 @@ class HTTPRequest(BaseRequest):
         # to ensure we are getting the actual object named by
         # the given url, and not some kind of default object.
         if hasattr(object, 'id'):
-            if isinstance(object.id, collections.Callable):
+            if callable(object.id):
                 name = object.id()
             else:
                 name = object.id
@@ -1359,7 +1359,7 @@ class HTTPRequest(BaseRequest):
         if self._lazies:
             v = self._lazies.get(key, _marker)
             if v is not _marker:
-                if isinstance(v, collections.Callable):
+                if callable(v):
                     v = v()
                 self[key] = v  # Promote lazy value
                 del self._lazies[key]

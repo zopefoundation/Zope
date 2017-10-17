@@ -13,7 +13,6 @@
 """Copy interface
 """
 
-import collections
 from json import dumps
 from json import loads
 import logging
@@ -625,7 +624,7 @@ def sanity_check(c, ob):
 
 
 def absattr(attr):
-    if isinstance(attr, collections.Callable):
+    if callable(attr):
         return attr()
     return attr
 

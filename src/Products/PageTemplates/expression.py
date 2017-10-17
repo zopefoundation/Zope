@@ -25,7 +25,6 @@ from chameleon.astutil import Static
 from chameleon.codegen import template
 
 from z3c.pt import expressions
-import collections
 
 _marker = object()
 
@@ -82,7 +81,7 @@ class BoboAwareZopeTraverse(object):
             return base
 
         if (getattr(base, '__call__', _marker) is not _marker or
-                isinstance(base, collections.Callable)):
+                callable(base)):
             base = render(base, econtext)
 
         return base
