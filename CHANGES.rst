@@ -19,6 +19,11 @@ Bugfixes
 - Fix path expressions trying to call views that do not implement `__call__`.
 
 
+Changes
++++++++
+
+- Move `Products.SiteAccess` back here from ZServer distribution.
+
 4.0b2 (2017-10-13)
 ------------------
 
