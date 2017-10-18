@@ -16,6 +16,8 @@ Bugfixes
 
 - Re-raise app exceptions if wsgi.handleErrors is False in the request environ.
 
+- Fix path expressions trying to call views that do not implement `__call__`.
+
 
 4.0b2 (2017-10-13)
 ------------------

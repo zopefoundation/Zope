@@ -437,6 +437,10 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
         )
 
 
+class ViewNotCallableError(AttributeError, NotImplementedError):
+    pass
+
+
 class simple(zope.browserpage.metaconfigure.simple):
 
     # __call__ should have the same signature as the original method
@@ -447,7 +451,7 @@ class simple(zope.browserpage.metaconfigure.simple):
 
         attr = self.__page_attribute__
         if attr == '__call__':
-            raise AttributeError("__call__")
+            raise ViewNotCallableError('__call__')
 
         return getattr(self, attr)
 
