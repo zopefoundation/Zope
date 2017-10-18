@@ -92,7 +92,7 @@ class EngineTestsBase(PlacelessSetup):
     def test_evaluate_with_unimplemented_call(self):
         class Dummy(object):
             def __call__(self):
-                raise NotImplementedError
+                raise NotImplementedError()
 
         dummy = Dummy()
         ec = self._makeContext(bindings={'dummy': dummy})
