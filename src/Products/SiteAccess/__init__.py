@@ -1,7 +1,7 @@
 
 
 def initialize(context):
-    import VirtualHostMonster
+    from Products.SiteAccess import VirtualHostMonster
 
     context.registerClass(
         instance_class=VirtualHostMonster.VirtualHostMonster,
