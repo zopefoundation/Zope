@@ -21,6 +21,7 @@ import re
 import sys
 import warnings
 
+from six import text_type
 import transaction
 
 from Testing.ZopeTestCase import ZopeTestCase
@@ -172,11 +173,11 @@ def http(request_string, handle_errors=True):
     headers = msg.items()
     body = msg.get_payload()
 
-    if isinstance(body, bytes):
-        body = body.decode('utf-8')
+    if isinstance(body, text_type):
+        body = body.encode('utf-8')
 
     # Store request body without headers
-    instream = BytesIO(body.encode('utf-8'))
+    instream = BytesIO(body)
 
     for name, value in headers:
         name = ('_'.join(name.upper().split('-')))

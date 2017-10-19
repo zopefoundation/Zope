@@ -520,7 +520,7 @@ class TestPublishModule(ZopeTestCase):
     def testHandleErrorsFalseBypassesExceptionResponse(self):
         from AccessControl import Unauthorized
         environ = self._makeEnviron(**{
-            'wsgi.handleErrors': False,
+            'x-wsgiorg.throw_errors': True,
         })
         start_response = DummyCallable()
         _publish = DummyCallable()

@@ -145,7 +145,7 @@ def transaction_pubevents(request, response, tm=transaction.manager):
         try:
             # Raise exception from app if handle-errors is False
             # (set by zope.testbrowser in some cases)
-            if not request.environ.get('wsgi.handleErrors', True):
+            if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
             if isinstance(exc, Unauthorized):
