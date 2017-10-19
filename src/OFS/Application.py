@@ -218,6 +218,7 @@ class AppInitializer(object):
         self.install_inituser()
         self.install_products()
         self.install_standards()
+        self.install_virtual_hosting()
 
     def install_app_manager(self):
         global APP_MANAGER
@@ -270,6 +271,19 @@ class AppInitializer(object):
                     app._p_changed = True
                     transaction.get().note(u'Migrated user folder')
                     transaction.commit()
+
+    def install_virtual_hosting(self):
+        app = self.getApp()
+        if 'virtual_hosting' not in app:
+            from Products.SiteAccess.VirtualHostMonster \
+                import VirtualHostMonster
+            any_vhm = [obj for obj in app.values()
+                       if isinstance(obj, VirtualHostMonster)]
+            if not any_vhm:
+                vhm = VirtualHostMonster()
+                vhm.id = 'virtual_hosting'
+                vhm.addToContainer(app)
+                self.commit('Added virtual_hosting')
 
     def install_products(self):
         return install_products()

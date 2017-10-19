@@ -1,0 +1,7 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <five:deprecatedManageAddDelete
+      class="Products.SiteAccess.VirtualHostMonster.VirtualHostMonster"/>
+
+</configure>
