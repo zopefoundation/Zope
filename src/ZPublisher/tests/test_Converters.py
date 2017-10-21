@@ -52,12 +52,14 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
         to_convert = ['one', 'two']
-        self.assertEqual(field2lines(to_convert), to_convert)
+        expected = [b'one', b'two']
+        self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_tuple(self):
         from ZPublisher.Converters import field2lines
         to_convert = ('one', 'two')
-        self.assertEqual(field2lines(to_convert), list(to_convert))
+        expected = [b'one', b'two']
+        self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_empty_string(self):
         from ZPublisher.Converters import field2lines

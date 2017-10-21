@@ -135,7 +135,7 @@ def field2lines(v):
     if isinstance(v, (list, tuple)):
         result = []
         for item in v:
-            result.append(str(item))
+            result.append(field2bytes(item))
         return result
     return field2text(v).splitlines()
 
