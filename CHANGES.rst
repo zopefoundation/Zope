@@ -18,6 +18,7 @@ Bugfixes
 
 - Fix path expressions trying to call views that do not implement `__call__`.
 
+- Move _html to HTTPBaseResponse since it is shared by HTTPResponse and WSGIResponse.
 
 Changes
 +++++++
