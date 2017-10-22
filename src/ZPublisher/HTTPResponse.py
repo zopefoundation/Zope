@@ -696,6 +696,12 @@ class HTTPBaseResponse(BaseResponse):
         if realm:
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
+    def _html(self, title, body):
+        return ("<html>\n"
+                "<head>\n<title>%s</title>\n</head>\n"
+                "<body>\n%s\n</body>\n"
+                "</html>\n" % (title, body))
+
 
 class HTTPResponse(HTTPBaseResponse):
 
@@ -745,12 +751,6 @@ class HTTPResponse(HTTPBaseResponse):
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
         return '\n'.join(tb)
-
-    def _html(self, title, body):
-        return ("<html>\n"
-                "<head>\n<title>%s</title>\n</head>\n"
-                "<body>\n%s\n</body>\n"
-                "</html>\n" % (title, body))
 
     def _error_html(self, title, body):
         return ("""<!DOCTYPE html><html>
