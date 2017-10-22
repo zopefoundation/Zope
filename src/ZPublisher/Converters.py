@@ -137,7 +137,7 @@ def field2lines(v):
         for item in v:
             result.append(field2bytes(item))
         return result
-    return field2text(v).splitlines()
+    return field2bytes(v).splitlines()
 
 
 def field2date(v):

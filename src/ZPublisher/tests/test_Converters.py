@@ -69,12 +69,14 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_string_no_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc def ghi'
-        self.assertEqual(field2lines(to_convert), [to_convert])
+        expected = [b'abc def ghi']
+        self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_string_with_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc\ndef\nghi'
-        self.assertEqual(field2lines(to_convert), to_convert.splitlines())
+        expected = [b'abc', b'def', b'ghi']
+        self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines
