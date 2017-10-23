@@ -21,7 +21,11 @@ from functools import total_ordering
 @total_ordering
 class FuncCode(object):
 
-    def __init__(self, varnames, argcount):
+    def __init__(self, varnames=None, argcount=None):
+        # The default values are needed for unpickling instances of this class
+        # which where created before 4.0b2 where this class was still an old
+        # style class. For details see
+        # https://github.com/zopefoundation/Zope/issues/205
         self.co_varnames = varnames
         self.co_argcount = argcount
 
