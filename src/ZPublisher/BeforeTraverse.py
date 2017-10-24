@@ -86,7 +86,8 @@ class MultiHook(object):
     MultiHook calls the named hook from the class of the container, then
     the prior hook, then all the hooks in its list.
     """
-    def __init__(self, hookname=None, prior=None, defined_in_class=None):
+    def __init__(self, hookname='<undefined hookname>', prior=None,
+                 defined_in_class=False):
         # The default values are needed for unpickling instances of this class
         # which where created before 4.0b2 where this class was still an old
         # style class. For details see
@@ -124,7 +125,7 @@ class NameCaller(object):
     >>> registerBeforeTraverse(folder, NameCaller('preop'), 'XApp')
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name='<undefined name>'):
         # The default value is needed for unpickling instances of this class
         # which where created before 4.0b2 where this class was still an old
         # style class. For details see

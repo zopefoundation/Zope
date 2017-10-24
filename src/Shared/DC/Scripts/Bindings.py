@@ -59,6 +59,8 @@ class NameAssignments(object):
         # style class. For details see
         # https://github.com/zopefoundation/Zope/issues/205
         asgns = {}
+        if mapping is None:
+            mapping = {}
         _isLegalName = self._isLegalName
         for name, expr in self._exprs:
             if name in mapping:
