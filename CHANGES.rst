@@ -128,7 +128,7 @@ Breaking changes
 
 - Simplified instance skeleton, removing old `Extensions`, `import`,
   `lib/python` and `Products` from the default. You can continue to manually
-  add these back.
+  add these back. (`Products` requires `ZServer` to be usable.)
 
 - Remove the `zopectl` script.
 
