@@ -220,23 +220,23 @@ zope.conf
 - Removed `mime-types` option from `zope.conf`. You can use the `add_files`
   API from `zope.contenttype` instead.
 
+- Removed various persistent product related code and options.
+
 - Split a WSGI part out of `zopeschema.xml`. This reduces the supported
   `zope.conf` directives when run under WSGI.
+  See https://github.com/zopefoundation/ZServer/blob/master/src/ZServer/Zope2/Startup/zopeschema.xml
+  for the directives which are now only supported via `ZServer`.
 
 - Remove profiling support via `publisher-profile-file` directive.
-
-- Removed various persistent product related code and options. The
-  `enable-product-installation` `zope.conf` setting is now a no-op.
 
 - Changed the value for ``default-zpublisher-encoding`` to ``utf-8``.
   If you set a different value for ``management_page_charset`` consider
   changing ``default-zpublisher-encoding`` now.
 
-- Removed the `enable-ms-author-via` directive which was only required for
+- Removed the ``enable-ms-author-via`` directive which was only required for
   very old web folder implementations from before 2007.
 
-- Changed zope.conf default settings for `zserver-threads` to `2` and
-  `python-check-interval` to `1000`.
+- Changed `zope.conf` default settings for ``python-check-interval`` to ``1000``.
 
 Dependencies
 ++++++++++++
