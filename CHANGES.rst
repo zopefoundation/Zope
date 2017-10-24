@@ -223,9 +223,10 @@ zope.conf
 - Removed various persistent product related code and options.
 
 - Split a WSGI part out of `zopeschema.xml`. This reduces the supported
-  `zope.conf` directives when run under WSGI.
+  `zope.conf` directives when run under WSGI. If a directive is now unkown
+  it might have been moved to the `ZServer` package.
   See https://github.com/zopefoundation/ZServer/blob/master/src/ZServer/Zope2/Startup/zopeschema.xml
-  for the directives which are now only supported via `ZServer`.
+  for the directives which are supported via `ZServer`.
 
 - Remove profiling support via `publisher-profile-file` directive.
 
