@@ -433,6 +433,10 @@ class HTTPBaseResponse(BaseResponse):
                     self.setHeader('content-length', len(self.body))
 
     def isHTML(self, text):
+        try:
+            text = text.decode(self.charset)
+        except UnicodeDecodeError:
+            pass
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().
@@ -514,7 +518,7 @@ class HTTPBaseResponse(BaseResponse):
         content_type = self.headers.get('content-type')
 
         if content_type is None:
-            if self.isHTML(body.decode(self.charset)):
+            if self.isHTML(body):
                 content_type = 'text/html; charset=%s' % self.charset
             else:
                 content_type = 'text/plain; charset=%s' % self.charset
