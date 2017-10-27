@@ -433,10 +433,12 @@ class HTTPBaseResponse(BaseResponse):
                     self.setHeader('content-length', len(self.body))
 
     def isHTML(self, text):
-        try:
-            text = text.decode(self.charset)
-        except UnicodeDecodeError:
-            pass
+        if isinstance(text, bytes):
+            try:
+                text = text.decode(self.charset)
+            except UnicodeDecodeError:
+                import pdb; pdb.set_trace()
+                pass
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().
