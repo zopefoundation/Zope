@@ -437,7 +437,6 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 text = text.decode(self.charset)
             except UnicodeDecodeError:
-                import pdb; pdb.set_trace()
                 pass
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
