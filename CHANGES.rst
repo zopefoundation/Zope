@@ -23,6 +23,8 @@ Bugfixes
 - Fix unpickling of instances created before 4.0b2 those classes changed from
   old-style classes to new-style classes.
 
+- Prevent UnicodeDecodeError when publishing image (bytes) responses without content-type
+
 Changes
 +++++++
 
