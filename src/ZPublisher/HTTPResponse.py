@@ -1080,7 +1080,7 @@ class WSGIResponse(HTTPBaseResponse):
 
         self.stdout.write(data)
 
-    def setBody(self, body, title='', is_error=False):
+    def setBody(self, body, title='', is_error=False, lock=None):
         if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
