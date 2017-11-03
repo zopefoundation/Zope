@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Fixed DocumentTemplate version 3.0b2 fixes #179 (ZMI navtree error).
+
 - Re-add a link to refresh the ZMI menu tree on the left.
 
 - Install a default page for the root view in new installations again.
