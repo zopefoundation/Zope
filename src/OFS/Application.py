@@ -219,6 +219,7 @@ class AppInitializer(object):
         self.install_products()
         self.install_standards()
         self.install_virtual_hosting()
+        self.install_root_view()
 
     def install_app_manager(self):
         global APP_MANAGER
@@ -284,6 +285,16 @@ class AppInitializer(object):
                 vhm.id = 'virtual_hosting'
                 vhm.addToContainer(app)
                 self.commit('Added virtual_hosting')
+
+    def install_root_view(self):
+        app = self.getApp()
+        if 'index_html' not in app:
+            from Products.PageTemplates.ZopePageTemplate \
+                import ZopePageTemplate
+            root_pt = ZopePageTemplate('index_html')
+            root_pt.pt_setTitle(u'Auto-generated default page')
+            app._setObject('index_html', root_pt)
+            self.commit(u'Added default view for root object')
 
     def install_products(self):
         return install_products()

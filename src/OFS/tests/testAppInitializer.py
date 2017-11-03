@@ -116,3 +116,11 @@ class TestInitialization(unittest.TestCase):
         i = self.getOne()
         i.install_products()
         self.assertTrue(hasattr(Application.misc_, '__roles__'))
+
+    def test_install_root_view(self):
+        self.configure(good_cfg)
+        i = self.getOne()
+        i.install_root_view()
+        app = i.getApp()
+        self.assertTrue('index_html' in app)
+        self.assertEqual(app.index_html.meta_type, 'Page Template')
