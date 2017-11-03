@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Re-add a link to refresh the ZMI menu tree on the left.
+
 - Install a default page for the root view in new installations again.
 
 - Re-raise app exceptions if wsgi.handleErrors is False in the request environ.
