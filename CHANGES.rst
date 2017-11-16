@@ -20,7 +20,7 @@ Bugfixes
 
 - Install a default page for the root view in new installations again.
 
-- Re-raise app exceptions if wsgi.handleErrors is False in the request environ.
+- Re-raise app exceptions if x-wsgiorg.throw_errors is True in the request environ.
 
 - Fix path expressions trying to call views that do not implement `__call__`.
 

@@ -92,6 +92,10 @@ class Functional(sandbox.Sandboxed):
         if basic:
             env['HTTP_AUTHORIZATION'] = basic_auth_encode(basic)
 
+        if not handle_errors:
+            # Tell the publisher to skip exception views
+            env['x-wsgiorg.throw_errors'] = True
+
         if stdin is None:
             stdin = BytesIO()
 
@@ -120,9 +124,6 @@ class Functional(sandbox.Sandboxed):
         publish = partial(publish_module, _request=request, _response=response)
         if handle_errors:
             publish = HTTPExceptionHandler(publish)
-        else:
-            # Tell the publisher to skip exception views
-            env['x-wsgiorg.throw_errors'] = True
 
         wsgi_result = publish(env, start_response)
 

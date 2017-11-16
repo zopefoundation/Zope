@@ -188,6 +188,10 @@ def http(request_string, handle_errors=True):
     if 'HTTP_AUTHORIZATION' in env:
         env['HTTP_AUTHORIZATION'] = auth_header(env['HTTP_AUTHORIZATION'])
 
+    if not handle_errors:
+        # Tell the publisher to skip exception views
+        env['x-wsgiorg.throw_errors'] = True
+
     outstream = BytesIO()
     response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
     request = Request(instream, env, response)
