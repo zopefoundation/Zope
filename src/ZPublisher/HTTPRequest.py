@@ -1477,7 +1477,7 @@ class HTTPRequest(BaseRequest):
             result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>cookies</h3><table>"
         for k, v in _filterPasswordFields(self.cookies.items()):
-            result = result + row % (escape(k, False), escape(repr(v, False)))
+            result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>lazy items</h3><table>"
         for k, v in _filterPasswordFields(self._lazies.items()):
             result = result + row % (escape(k, False), escape(repr(v), False))
