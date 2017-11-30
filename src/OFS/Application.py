@@ -100,7 +100,9 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         return APP_MANAGER.__of__(self)
 
     def Redirect(self, destination, URL1):
-        """Utility function to allow user-controlled redirects"""
+        # Utility function to allow user-controlled redirects.
+        # No docstring please, we do not want an open redirect
+        # available as url.
         if destination.find('//') >= 0:
             raise RedirectException(destination)
         raise RedirectException("%s/%s" % (URL1, destination))
