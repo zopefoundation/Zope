@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Made Redirect unavailable as url.  Part of PloneHotfix20171128.
+
 - add ``tox`` test configuration
 
 - set explicit PyPI index, the old ``zc.buildout`` defaults no longer work
