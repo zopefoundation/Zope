@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Made Redirect unavailable as url.  Part of PloneHotfix20171128.
+
 - Fixed DocumentTemplate version 3.0b2 fixes #179 (ZMI navtree error).
 
 - Re-add a link to refresh the ZMI menu tree on the left.
@@ -363,4 +365,3 @@ Bugfixes
 - Removed the (very obsolete) thread lock around the cookie parsing code
   in HTTPRequest.py; the python `re` module is thread-safe, unlike the
   ancient `regex` module that was once used here.
-
