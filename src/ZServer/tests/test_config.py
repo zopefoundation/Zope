@@ -145,11 +145,17 @@ class ZServerConfigurationTestCase(BaseTest, WarningInterceptor):
         self.assertEqual(factory.host, "::1")
         self.assertEqual(factory.port, 81)
         self.check_prepare(factory)
+        # Until here the test works on Travis, but ipv6 is not available
+        # there anymore, so we skip the rest of the test.
+        # See https://github.com/zopefoundation/Zope/issues/46
+        if os.environ.get('TRAVIS'):
+            print('Skipping ipv6 test on Travis.')
+            return
         server = factory.create()
         self.assertEqual(server.ip, '::1')
         self.assertEqual(server.port, 9381)
         server.close()
-    
+
     def test_http_factory_defaulthost(self):
         factory = self.load_factory("""\
             <http-server>

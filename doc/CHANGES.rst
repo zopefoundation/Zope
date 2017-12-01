@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Skip IPv6 tests on Travis, as it is not supported.
+
 - add ``tox`` test configuration
 
 - set explicit PyPI index, the old ``zc.buildout`` defaults no longer work
