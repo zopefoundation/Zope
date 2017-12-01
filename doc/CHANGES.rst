@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- add ``tox`` test configuration
+
 - set explicit PyPI index, the old ``zc.buildout`` defaults no longer work
 
 - Pin ``pytz`` to prevent unit test failures from ``DateTime``
