@@ -8,6 +8,11 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Change required Python version to 2.7 due to ``Acquisition`` update.
+
+- Update ``Acquisition`` version to 4.4 due to crash bug (#21).
+  Update dependencies ``ExtensionClass`` to 4.3 and ``BTreeFolder2`` to 3.0.
+
 - set explicit PyPI index, the old ``zc.buildout`` defaults no longer work
 
 - Pin ``pytz`` to prevent unit test failures from ``DateTime``
