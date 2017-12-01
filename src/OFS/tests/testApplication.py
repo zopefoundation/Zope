@@ -1,3 +1,4 @@
+from Testing.ZopeTestCase import FunctionalTestCase
 import unittest
 
 
@@ -103,10 +104,45 @@ class ApplicationTests(unittest.TestCase):
         self.assertTrue(isinstance(result, NullResource))
         self.assertTrue(aq_parent(aq_inner(result)) is app)
 
+    def test_redirect_regression(self):
+        """From code you should still be able to call the Redirect method.
+
+        And its aliases too.
+        This is part of PloneHotfix20171128:
+        Redirect should not be callable as url, but from code it is fine.
+        """
+        from zExceptions import Redirect as RedirectException
+        app = self._makeOne()
+        for name in ('Redirect', 'ZopeRedirect', 'PrincipiaRedirect'):
+            method = getattr(app, name, None)
+            if method is None:
+                continue
+            self.assertRaises(
+                RedirectException,
+                method, 'http://google.nl', 'http://other.url')
+
+
+class ApplicationPublishTests(FunctionalTestCase):
+
+    def test_redirect_not_found(self):
+        """Accessing Redirect as url should give a 404.
+
+        This is part of PloneHotfix20171128.
+        """
+        # These are all aliases.
+        # PrincipiaRedirect is no longer there in Zope 4.
+        for name in ('Redirect', 'ZopeRedirect', 'PrincipiaRedirect'):
+            response = self.publish(
+                '/{0}?destination=http://google.nl'.format(name))
+            # This should *not* return a 302 Redirect.
+            self.assertEqual(response.status, 404)
+
+
 def _noWay(self, key, default=None):
     raise KeyError(key)
 
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ApplicationTests),
+        unittest.makeSuite(ApplicationPublishTests),
         ))

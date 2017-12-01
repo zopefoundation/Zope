@@ -8,6 +8,8 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Made Redirect unavailable as url.  Part of PloneHotfix20171128.
+
 - Skip IPv6 tests on Travis, as it is not supported.
 
 - add ``tox`` test configuration
