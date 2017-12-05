@@ -14,19 +14,12 @@
 """ HTTP request management.
 """
 
-from cgi import FieldStorage
+import cgi
 import codecs
-import collections
 from copy import deepcopy
 import os
-from os import unlink
-from os.path import isfile
 import random
 import re
-from tempfile import (
-    mkstemp,
-    _TemporaryFileWrapper,
-)
 import time
 
 from AccessControl.tainted import TaintedString
@@ -511,7 +504,7 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs = ZopeFieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        fs = cgi.FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
@@ -1641,34 +1634,8 @@ def sane_environment(env):
     return dict
 
 
-class TemporaryFileWrapper(_TemporaryFileWrapper):
-    """
-    Variant of tempfile._TemporaryFileWrapper that doesn't rely on the
-    automatic Windows behavior of deleting closed files, which even
-    happens, when the file has been moved -- e.g. to the blob storage,
-    and doesn't complain about such a move either.
-    """
+ZopeFieldStorage = cgi.FieldStorage  # BBB
 
-    if PY2:
-        unlink = staticmethod(unlink)
-        isfile = staticmethod(isfile)
-
-        def close(self):
-            if not self.close_called:
-                self.close_called = True
-                self.file.close()
-
-        def __del__(self):
-            self.close()
-            if self.isfile(self.name):
-                self.unlink(self.name)
-
-
-class ZopeFieldStorage(FieldStorage):
-
-    def make_file(self, binary=None):
-        handle, name = mkstemp()
-        return TemporaryFileWrapper(os.fdopen(handle, 'w+b'), name)
 
 # Original version: zope.publisher.browser.FileUpload
 class FileUpload(object):
