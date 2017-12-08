@@ -14,7 +14,7 @@
 """ HTTP request management.
 """
 
-import cgi
+from cgi import FieldStorage
 import codecs
 from copy import deepcopy
 import os
@@ -504,7 +504,7 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs = cgi.FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
@@ -1634,7 +1634,7 @@ def sane_environment(env):
     return dict
 
 
-ZopeFieldStorage = cgi.FieldStorage  # BBB
+ZopeFieldStorage = FieldStorage  # BBB
 
 
 # Original version: zope.publisher.browser.FileUpload
