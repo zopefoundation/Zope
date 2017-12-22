@@ -26,6 +26,13 @@ for tag in "2.13.26"; do
     printf "\n" >> README.md
 done
 
+# Select pre egg releases
+printf "## Pre egg releases\n\n" >> README.md
+for release in $(ls -1 pre-egg-releases); do
+    echo $release
+    printf "* [$release](pre-egg-releases/$release)\n" >> README.md
+done
+
 # Add a footer
 printf "\n_____\n\n" >> README.md
 printf "[How to maintain this page](HOWTO.md)\n" >> README.md
