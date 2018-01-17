@@ -59,6 +59,14 @@
 * [versions-prod.cfg](releases/2.13.26/versions-prod.cfg)
 * [requirements.txt](releases/2.13.26/requirements.txt)
 
+## 2.12.28
+
+* [versions.cfg](releases/2.12.28/versions.cfg)
+
+## Pre egg releases
+
+* [Zope-2.10.13-final.tgz](pre-egg-releases/Zope-2.10.13-final.tgz)
+* [Zope-2.11.8-final.tgz](pre-egg-releases/Zope-2.11.8-final.tgz)
 
 _____
 
