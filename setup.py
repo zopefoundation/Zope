@@ -48,7 +48,7 @@ setup(
     namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
     install_requires=[
-        'AccessControl>=2.13.2',
+        'AccessControl >= 2.13.16',
         'Acquisition',
         'DateTime',
         'DocumentTemplate',
