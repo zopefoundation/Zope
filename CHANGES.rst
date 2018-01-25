@@ -14,6 +14,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Test that ``str.format`` checks security for accessed keys and items.
+  The real fix is in the AccessControl package, version 4.0b1.
+  Part of PloneHotfix20171128.
+
 - Made Redirect unavailable as url.  Part of PloneHotfix20171128.
 
 - Fixed DocumentTemplate version 3.0b2 fixes #179 (ZMI navtree error).
