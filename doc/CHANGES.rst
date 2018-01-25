@@ -8,21 +8,21 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
-- Test that `str.format` checks security for accessed keys and items.
+- Test that ``str.format`` checks security for accessed keys and items.
   The real fix is in the AccessControl package.
   Part of PloneHotfix20171128.
 
-- Made Redirect unavailable as url.  Part of PloneHotfix20171128.
+- Made Redirect unavailable as URL.  Part of PloneHotfix20171128.
 
 - Skip IPv6 tests on Travis, as it is not supported.
 
-- add ``tox`` test configuration
+- Add ``tox`` test configuration.
 
-- set explicit PyPI index, the old ``zc.buildout`` defaults no longer work
+- Set explicit PyPI index URL, the old ``zc.buildout`` defaults no longer work.
 
-- Pin ``pytz`` to prevent unit test failures from ``DateTime``
+- Pin ``pytz`` to prevent unit test failures from ``DateTime``.
 
-- Update virtualenv based installation docs to mention pip<8.0 requirement.
+- Fix virtualenv based installation docs.
 
 - Explicitly require Manager role for ``AltDatabaseManager``.  [maurits]
 
