@@ -8,6 +8,10 @@ http://docs.zope.org/zope2/
 2.13.27 (unreleased)
 --------------------
 
+- Test that `str.format` checks security for accessed keys and items.
+  The real fix is in the AccessControl package.
+  Part of PloneHotfix20171128.
+
 - Made Redirect unavailable as url.  Part of PloneHotfix20171128.
 
 - Skip IPv6 tests on Travis, as it is not supported.
