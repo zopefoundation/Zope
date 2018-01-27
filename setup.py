@@ -25,7 +25,7 @@ if sys.platform[:3].lower() == "win":
 setup(
     name='Zope2',
     version='2.13.27.dev0',
-    url='http://zope2.zope.org',
+    url='https://zope.readthedocs.io/en/2.13/',
     license='ZPL 2.1',
     description='Zope2 application server / web framework',
     author='Zope Foundation and Contributors',
