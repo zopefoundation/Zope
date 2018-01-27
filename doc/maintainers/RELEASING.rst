@@ -90,7 +90,7 @@ Add today's date to the current release.
    $ git commit -m "Finalize changelog 2.13.23 release" doc/CHANGES.rst
 
 .. note::
-   
+
    Keep track of the hash for this commit:  you will want to cherry-pick
    it to the ``2.13`` branch later.
 
@@ -147,6 +147,27 @@ date and a "TBD" bullet, and update the next development release in
    $ vim setup.py
    $ git commit -m svb doc/CHANGES.rst setup.py
    $ git push origin 2.13
+
+
+Update versions on GitHub pages
+-------------------------------
+
+.. code-block:: bash
+
+   $ git checkout gh-pages
+
+Add the new version number below "Select 2.13 version" at the beginning of the
+versions list and create the pages:
+
+.. code-block:: bash
+
+   $ vi build_index.sh
+   $ ./build_index.sh
+
+Commit the changes and newly created files and push the changes. (Assure there
+are no releases deleted by calling `./build_index.sh`.)
+
+Check the result on https://zopefoundation.github.io/Zope/.
 
 
 Create index on download.zope.org
