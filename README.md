@@ -59,6 +59,11 @@
 * [versions-prod.cfg](releases/2.13.26/versions-prod.cfg)
 * [requirements.txt](releases/2.13.26/requirements.txt)
 
+## 2.13.27
+
+* [versions-prod.cfg](releases/2.13.27/versions-prod.cfg)
+* [requirements.txt](releases/2.13.27/requirements.txt)
+
 ## 2.12.28
 
 * [versions.cfg](releases/2.12.28/versions.cfg)
