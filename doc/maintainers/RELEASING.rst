@@ -165,7 +165,7 @@ versions list and create the pages:
    $ ./build_index.sh
 
 Commit the changes and newly created files and push the changes. (Assure there
-are no releases deleted by calling `./build_index.sh`.)
+are no releases deleted by calling ``./build_index.sh``.)
 
 Check the result on https://zopefoundation.github.io/Zope/.
 
