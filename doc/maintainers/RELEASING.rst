@@ -58,8 +58,7 @@ Re-run the buildout and test:
 .. code-block:: bash
 
    $ rm -rf bin/ develop-eggs/ eggs/ include/ lib/
-   $ /opt/Python-2.7.9/bin/virtualenv .
-   $ bin/python bootstrap.py && bin/buildout && bin/alltest --all
+   $ tox -r
 
 Pin versions in a ``pip`` requirements file
 -------------------------------------------
