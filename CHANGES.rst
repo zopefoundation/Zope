@@ -42,6 +42,9 @@ Changes
 
 - Move `Products.SiteAccess` back here from ZServer distribution.
 
+- Update dependencies to current versions.
+
+
 4.0b2 (2017-10-13)
 ------------------
 
