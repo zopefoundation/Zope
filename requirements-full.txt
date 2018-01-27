@@ -1,4 +1,4 @@
-Zope==4.0b3
+-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
 AccessControl==4.0b3
 Acquisition==4.4.4
 AuthEncoding==4.0.0
