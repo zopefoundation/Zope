@@ -26,41 +26,47 @@ Steps for creating a new Zope release
 - Check the versions.cfg file for outdated or updated
   packages and update version information where necessary.
 
-- Update version information:
+- Update version information in change log and ``setup.py``::
 
-  - setup.py (remove dev postfix)
-  - versions-prod.cfg (pin Zope)
+  $ bin/prerelease
+
+- Pin the Zope version in ``versions-prod.cfg``.
 
 - Run ``bin/buildout`` to update ``requirements-full.txt``
-
-- Update docs/CHANGES.rst with a release date.
 
 - Commit the changes.
 
 - Run all tests::
 
-   bin/tox
-
-- Tag the release.
+  $ bin/tox
 
 - Upload the tagged release to PyPI::
 
-    python2.7 setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
-    
+    $ git tag <TAG-NAME>
+    $ bin/zopepy setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
+
     or
-    
-    release (of zest.releaser)
 
-- Update version information:
+    $ bin/release
 
-  - setup.py (bump version number, add dev postfix)
-  - versions-prod.cfg (remove Zope pin)
-  - run ``bin/buildout`` to update ``requirements-full.txt``
-  - commit and push the changes
+- Update version information::
+
+  $ bin/postrelease
+  $ vi versions-prod.cfg (remove Zope pin)
+  $ bin/buildout
+
+- Commit and push the changes.
 
 - Check the visible releases on readthedocs.org at (should default to
   showing the active branches)::
 
-    https://readthedocs.org/dashboard/zope/versions/
+    https://readthedocs.org/projects/zope/versions/
 
-- Switch to the ``gh-pages`` branch of ``Zope`` and run ``./build_index.sh``. Commit and push the changes.
+- Update https://zopefoundation.github.io/Zope/ (This is needed until https://github.com/zopefoundation/Zope/issues/244 is fixed.)::
+
+  $ git checkout gh-pages
+  $ ./build_index.sh
+
+- Add the newly created files and commit and push the changes.
+
+- Check on https://zopefoundation.github.io/Zope/ for the new release.
