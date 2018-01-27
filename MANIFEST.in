@@ -9,6 +9,7 @@ recursive-include src *
 prune docs/.build
 prune docs/_build
 
+global-exclude .DS_Store
 global-exclude *.dll
 global-exclude *.pyc
 global-exclude *.pyo
