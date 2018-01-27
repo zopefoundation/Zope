@@ -41,8 +41,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Zope 2 documentation'
-copyright = u'2009-2010, The Zope Developers Community'
+project = u'Zope documentation'
+copyright = u'2009-2018, The Zope Developers Community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -153,7 +153,7 @@ html_static_path = ['_static']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Zopedocsdoc'
+htmlhelp_basename = 'Zopedocs'
 
 
 # Options for LaTeX output
@@ -168,7 +168,7 @@ htmlhelp_basename = 'Zopedocsdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Zope2docs.tex', ur'Zope 2 Documentation',
+  ('index', 'Zopedocs.tex', ur'Zope Documentation',
    ur'Zope Developers Community', 'manual'),
 ]
 
