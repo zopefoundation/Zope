@@ -1,0 +1,7 @@
+.installed.cfg
+.mr.developer.cfg
+.tox/
+bin/
+develop-eggs/
+dist/
+src/
