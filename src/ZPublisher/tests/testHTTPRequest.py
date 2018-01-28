@@ -163,7 +163,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         if isinstance(val, TaintedString):
             self.assertTrue(
-                should_be_tainted(val),
+                should_be_tainted(val._value),
                 "%r is not dangerous, no taint required." % val)
             retval = 1
 
