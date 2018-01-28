@@ -16,6 +16,7 @@ import sys
 import unittest
 
 from six import PY2
+from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
 from zope.component import provideAdapter
 from zope.i18n.interfaces import IUserPreferredLanguages
@@ -161,8 +162,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         retval = 0
 
         if isinstance(val, TaintedString):
-            self.assertFalse(
-                '<' not in val,
+            self.assertTrue(
+                should_be_tainted(val),
                 "%r is not dangerous, no taint required." % val)
             retval = 1
 
@@ -289,7 +290,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req['bign'], 45)
         self.assertEqual(req['fract'], 4.2)
         self.assertEqual(req['morewords'], 'one\ntwo\n')
-        self.assertEqual(req['multiline'], ['one', 'two'])
+        self.assertEqual(req['multiline'], [b'one', b'two'])
         self.assertEqual(req['num'], 42)
         self.assertEqual(req['words'], 'Some words')
 

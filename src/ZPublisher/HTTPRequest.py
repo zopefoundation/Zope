@@ -22,7 +22,8 @@ import random
 import re
 import time
 
-from AccessControl.tainted import TaintedString
+from AccessControl.tainted import should_be_tainted
+from AccessControl.tainted import taint_string
 import pkg_resources
 from six import binary_type
 from six import PY2
@@ -455,11 +456,11 @@ class HTTPRequest(BaseRequest):
             parse_cookie(k, cookies)
             for k, v in cookies.items():
                 istainted = 0
-                if '<' in k:
-                    k = TaintedString(k)
+                if should_be_tainted(k):
+                    k = taint_string(k)
                     istainted = 1
-                if '<' in v:
-                    v = TaintedString(v)
+                if should_be_tainted(v):
+                    v = taint_string(v)
                     istainted = 1
                 if istainted:
                     taintedcookies[k] = v
@@ -625,8 +626,8 @@ class HTTPRequest(BaseRequest):
 
                 # If the key is tainted, mark it so as well.
                 tainted_key = key
-                if '<' in key:
-                    tainted_key = TaintedString(key)
+                if should_be_tainted(key):
+                    tainted_key = taint_string(key)
 
                 if flags:
 
@@ -641,11 +642,11 @@ class HTTPRequest(BaseRequest):
 
                         # Update the tainted_key if necessary
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
 
                         # Attributes cannot hold a <.
-                        if '<' in attr:
+                        if should_be_tainted(attr):
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
                                 escape(attr, True))
@@ -671,16 +672,16 @@ class HTTPRequest(BaseRequest):
                             # Flag potentially unsafe values
                             if converter_type in ('string', 'required', 'text',
                                                   'ustring', 'utext'):
-                                if not isFileUpload and '<' in item:
-                                    tainted = TaintedString(item)
+                                if not isFileUpload and should_be_tainted(item):
+                                    tainted = taint_string(item)
                             elif converter_type in ('tokens', 'lines',
                                                     'utokens', 'ulines'):
                                 is_tainted = 0
                                 tainted = item[:]
                                 for i in range(len(tainted)):
-                                    if '<' in tainted[i]:
+                                    if should_be_tainted(tainted[i]):
                                         is_tainted = 1
-                                        tainted[i] = TaintedString(tainted[i])
+                                        tainted[i] = taint_string(tainted[i])
                                 if not is_tainted:
                                     tainted = None
 
@@ -701,13 +702,13 @@ class HTTPRequest(BaseRequest):
                             else:
                                 raise
 
-                    elif not isFileUpload and '<' in item:
+                    elif not isFileUpload and should_be_tainted(item):
                         # Flag potentially unsafe values
-                        tainted = TaintedString(item)
+                        tainted = taint_string(item)
 
                     # If the key is tainted, we need to store stuff in the
                     # tainted dict as well, even if the value is safe.
-                    if '<' in tainted_key and tainted is None:
+                    if should_be_tainted(tainted_key) and tainted is None:
                         tainted = item
 
                     # Determine which dictionary to use
@@ -909,9 +910,9 @@ class HTTPRequest(BaseRequest):
                     # This branch is for case when no type was specified.
                     mapping_object = form
 
-                    if not isFileUpload and '<' in item:
-                        tainted = TaintedString(item)
-                    elif '<' in key:
+                    if not isFileUpload and should_be_tainted(item):
+                        tainted = taint_string(item)
+                    elif should_be_tainted(key):
                         tainted = item
 
                     # Insert in dictionary
@@ -957,8 +958,8 @@ class HTTPRequest(BaseRequest):
             if defaults:
                 for key, value in defaults.items():
                     tainted_key = key
-                    if '<' in key:
-                        tainted_key = TaintedString(key)
+                    if should_be_tainted(key):
+                        tainted_key = taint_string(key)
 
                     if key not in form:
                         # if the form does not have the key,
@@ -1109,8 +1110,8 @@ class HTTPRequest(BaseRequest):
                     if k in form:
                         # If the form has the split key get its value
                         tainted_split_key = k
-                        if '<' in k:
-                            tainted_split_key = TaintedString(k)
+                        if should_be_tainted(k):
+                            tainted_split_key = taint_string(k)
                         item = form[k]
                         if isinstance(item, record):
                             # if the value is mapped to a record, check if it
@@ -1144,8 +1145,8 @@ class HTTPRequest(BaseRequest):
                     else:
                         # the form does not have the split key
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
                         if key in form:
                             # if it has the original key, get the item
                             # convert it to a tuple
