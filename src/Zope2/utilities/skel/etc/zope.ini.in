@@ -4,6 +4,7 @@ zope_conf = %(here)s/wsgi.conf
 
 [pipeline:main]
 pipeline =
+	egg:fanstatic#fanstatic
     egg:Zope#httpexceptions
     zope
 
