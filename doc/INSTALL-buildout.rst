@@ -125,8 +125,8 @@ This procedure involves the following steps:
 - Fetch the buildout bootstrap script into the environment.
 
 - Fetch the version files into the environment, for example:
-  https://raw.github.com/zopefoundation/Zope/2.13.26/versions.cfg
-  https://raw.github.com/zopefoundation/Zope/2.13.26/ztk-versions.cfg
+  https://raw.github.com/zopefoundation/Zope/2.13.27/versions.cfg
+  https://raw.github.com/zopefoundation/Zope/2.13.27/ztk-versions.cfg
 
 - Create a buildout configuration as follows:
 

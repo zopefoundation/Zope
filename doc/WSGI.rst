@@ -13,12 +13,12 @@ To run as a WSGI application, you need to install some additional software.
 .. code-block:: sh
 
    $ bin/pip install \
-    --trusted-host download.zope.org \
-    --index http://download.zope.org/Zope2/index/2.13.26/ \
+    --no-binary zc.recipe.egg \
+    -r https://zopefoundation.github.io/Zope/releases/2.13.27/requirements.txt \
     repoze.who repoze.tm2 repoze.retry Paste PasteDeploy PasteScript
    Collecting repoze.who
    ...
-   Successfully installed Paste-1.7.5.1 PasteDeploy-1.3.4 PasteScript-1.7.5 repoze.retry-1.2 repoze.tm2-1.0 repoze.who-2.0
+   Successfully installed ...
 
 
 Update the Zope Application Configuration
@@ -39,7 +39,7 @@ Update the contents as follows.
    instancehome $INSTANCE
 
 .. note::
-   
+
    The ``%define instance /path/to/virtualenv`` element must
    point to the environment:  there is no "relative to this file" support
    built in.
@@ -145,7 +145,7 @@ Finally, configure the WSGI server:
    port = 8080
 
 .. note::
-   
+
    Any server conforming to PEP 333/3333 should work, although the parameters
    could change.
 
@@ -168,7 +168,7 @@ Start the WSGI Server
 
 .. code-block:: sh
 
-   $ bin/paster serve etc/zope.wsgi 
+   $ bin/paster serve etc/zope.wsgi
    Starting server in PID 24934.
    serving on http://127.0.0.1:8080
 
