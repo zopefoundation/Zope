@@ -70,7 +70,6 @@ setup(
         'ZODB',
         'fanstatic >= 1.0',
         'ipaddress',
-        'js.jquery',
         'setuptools',
         'six',
         'transaction',
