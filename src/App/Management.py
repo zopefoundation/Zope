@@ -23,6 +23,7 @@ from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
+import js.bootstrap
 
 try:
     from html import escape
@@ -141,9 +142,6 @@ class Navigation(Base):
     security.declareProtected(view_management_screens, 'manage_menu')
     manage_menu = DTMLFile('dtml/menu', globals())
 
-    security.declareProtected(view_management_screens, 'manage_page_header')
-    manage_page_header = DTMLFile('dtml/manage_page_header', globals())
-
     security.declareProtected(view_management_screens, 'manage_page_footer')
     manage_page_footer = DTMLFile('dtml/manage_page_footer', globals())
 
@@ -154,6 +152,14 @@ class Navigation(Base):
                                  help_topic=None)
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic'))
+
+
+    _manage_page_header = DTMLFile('dtml/manage_page_header', globals())
+    security.declareProtected(view_management_screens, 'manage_page_header')
+    def manage_page_header(self, *args, **kw):
+        """manage_page_header."""
+        js.bootstrap.bootstrap.need()
+        return self._manage_page_header(*args, **kw)
 
     security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):
