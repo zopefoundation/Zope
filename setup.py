@@ -72,6 +72,7 @@ setup(
         'ZODB',
         'fanstatic >= 1.0',
         'ipaddress',
+        'js.bootstrap >= 4.0.dev0',
         'setuptools',
         'six',
         'transaction',
