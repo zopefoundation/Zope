@@ -80,6 +80,8 @@ class Item(Base,
            Owned):
     """A common base class for simple, non-container objects."""
 
+    zmi_icon = 'icon-file'
+
     security = ClassSecurityInfo()
 
     isPrincipiaFolderish = 0

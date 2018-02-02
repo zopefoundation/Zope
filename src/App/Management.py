@@ -24,6 +24,7 @@ from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
 import js.bootstrap
+import zmi.icons
 
 try:
     from html import escape
@@ -159,6 +160,7 @@ class Navigation(Base):
     def manage_page_header(self, *args, **kw):
         """manage_page_header."""
         js.bootstrap.bootstrap.need()
+        zmi.icons.zmi_icons.need()
         return self._manage_page_header(*args, **kw)
 
     security.declarePublic('manage_zmi_logout')
