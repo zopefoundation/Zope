@@ -79,6 +79,7 @@ setup(
         'waitress',
         'zExceptions >= 3.4',
         'z3c.pt',
+        'zmi.icons',
         'zope.browser',
         'zope.browsermenu',
         'zope.browserpage >= 4.0',
