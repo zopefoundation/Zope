@@ -36,7 +36,7 @@ six==1.11.0
 transaction==2.1.2
 waitress==1.1.0
 z3c.pt==3.1.0
-zExceptions==3.6.1
+zExceptions==4.0
 zc.lockfile==1.2.1
 zdaemon==4.2.0
 zodbpickle==0.7.0
