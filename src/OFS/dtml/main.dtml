@@ -63,88 +63,73 @@
   </td>
 
   <dtml-with sequence-key>
-  <td class="text-right">
-  <div class="list-item">
-  <dtml-try>
-  <dtml-if get_size>
-  <dtml-let ob_size=get_size>
-  <dtml-if "ob_size < 1024">
-  1 Kb
-  <dtml-elif "ob_size > 1048576">
-  <dtml-var "ob_size / 1048576.0" fmt="%0.02f"> Mb
-  <dtml-else>
-  <dtml-var "_.int(ob_size / 1024)"> Kb
-  </dtml-if>
-  </dtml-let>
-  <dtml-else>
-  &nbsp;
-  </dtml-if>
-  <dtml-except>
-  &nbsp;
-  </dtml-try>
-  </div>
-  </td>
+    <td class="text-right">
+      <dtml-try>
+        <dtml-if get_size>
+          <dtml-let ob_size=get_size>
+            <dtml-if "ob_size < 1024">
+              1 Kb
+            <dtml-elif "ob_size > 1048576">
+              <dtml-var "ob_size / 1048576.0" fmt="%0.02f"> Mib
+            <dtml-else>
+              <dtml-var "_.int(ob_size / 1024)"> Kib
+            </dtml-if>
+          </dtml-let>
+        <dtml-else>
+          &nbsp;
+        </dtml-if>
+      <dtml-except>
+        &nbsp;
+      </dtml-try>
+    </td>
   </dtml-with>
 </tr>
 </dtml-in>
 </table>
 
-<table cellspacing="0" cellpadding="2" border="0">
-<tr>
-  <td align="left" valign="top" width="16"></td>
-  <td align="left" valign="top">
-  <div class="form-element">
-  <dtml-unless dontAllowCopyAndPaste>
-  <input class="form-element" type="submit" name="manage_renameForm:method"
-   value="Rename" />
+<div class="form-group">
+<dtml-unless dontAllowCopyAndPaste>
+  <input class="btn btn-outline-secondary" type="submit" name="manage_renameForm:method"
+         value="Rename" />
   <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
-  <input class="form-element" type="submit" name="manage_cutObjects:method"
-   value="Cut" />
+    <input class="btn btn-outline-danger" type="submit" name="manage_cutObjects:method"
+           value="Cut" />
   </dtml-if>
-  <input class="form-element" type="submit" name="manage_copyObjects:method"
+  <input class="btn btn-outline-secondary" type="submit" name="manage_copyObjects:method"
    value="Copy" />
   <dtml-if cb_dataValid>
-  <input class="form-element" type="submit" name="manage_pasteObjects:method"
-   value="Paste" />
+    <input class="btn btn-outline-info" type="submit" name="manage_pasteObjects:method"
+           value="Paste" />
   </dtml-if>
-  </dtml-unless>
-  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
-  <input class="form-element" type="submit" name="manage_delObjects:method"
-   value="Delete" />
-  </dtml-if>
-  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
-  <input class="form-element" type="submit"
-   name="manage_importExportForm:method"
-   value="Import/Export" />
-  </dtml-if>
-  </div>
-  </td>
-</tr>
-</table>
+</dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="btn btn-outline-danger" type="submit" name="manage_delObjects:method"
+         value="Delete" />
+</dtml-if>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+  <input class="btn btn-outline-secondary" type="submit"
+         name="manage_importExportForm:method"
+         value="Import/Export" />
+</div>
+</dtml-if>
 
 <dtml-else>
-<table cellspacing="0" cellpadding="2" border="0">
-<tr>
-<td>
-<div class="std-text">
-There are currently no items in <em>&dtml-title_or_id;</em>
-<br /><br />
+<div class="mb-2">
+  <span class="badge badge-pill badge-info">Info</span>
+  There are currently no items in <em>&dtml-title_or_id;</em>
 </div>
-<dtml-unless dontAllowCopyAndPaste>
-<dtml-if cb_dataValid>
-<div class="form-element">
-<input class="form-element" type="submit" name="manage_pasteObjects:method"
- value="Paste" />
+<div class="form-group">
+  <dtml-unless dontAllowCopyAndPaste>
+    <dtml-if cb_dataValid>
+      <input class="btn btn-outline-secondary" type="submit" name="manage_pasteObjects:method"
+             value="Paste" />
+    </dtml-if>
+  </dtml-unless>
+  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+    <input class="btn btn-outline-secondary" type="submit"
+           name="manage_importExportForm:method" value="Import/Export" />
+  </dtml-if>
 </div>
-</dtml-if>
-</dtml-unless>
-<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
-<input class="form-element" type="submit"
-  name="manage_importExportForm:method" value="Import/Export" />
-</dtml-if>
-</td>
-</tr>
-</table>
 </dtml-if>
 </form>
 
