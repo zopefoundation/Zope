@@ -49,7 +49,7 @@
       &dtml-sequence-key;
     </a>
     <dtml-try>
-      <dtml-if "wl_isLocked()==0">
+      <dtml-if "wl_isLocked()==1">
         <span class="badge badge-warning">Locked</span>
       </dtml-if>
     <dtml-except>
