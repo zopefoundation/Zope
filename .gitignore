@@ -3,6 +3,8 @@
 .installed*.cfg
 .mr.developer.cfg
 .tox
+.Python
+pip-selfcheck.json
 /bin/
 /build/
 /develop/
