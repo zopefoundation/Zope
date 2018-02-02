@@ -2,83 +2,68 @@
 <dtml-var manage_tabs>
 
 <!-- Add object widget -->
-<br />
 <dtml-if filtered_meta_types>
-  <table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-  <td align="left" valign="top">&nbsp;</td>
-  <td align="right" valign="top">
-  <div class="form-element">
-  <form action="<dtml-var "REQUEST.URL1" html_quote>/" method="get">
-  <dtml-if "_.len(filtered_meta_types) > 1">
-    <select class="form-element" name=":action"
-     onchange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
-    <option value="manage_workspace" disabled="disabled">Select type to add...</option>
-    <dtml-in filtered_meta_types mapping sort=name>
-    <dtml-if action>
-    <option value="&dtml.html_quote-action;">&dtml-name;</option>
-    </dtml-if>
-    </dtml-in>
-    </select>
-    <input class="form-element" type="submit" name="submit" value=" Add " />
-  <dtml-else>
-    <dtml-in filtered_meta_types mapping sort=name>
-    <input type="hidden" name=":method" value="&dtml.html_quote-action;" />
-    <input class="form-element" type="submit" name="submit" value="Add &dtml-name;" />
-    </dtml-in>
-  </dtml-if>
+  <form class="form-inline float-right mb-2"
+        action="<dtml-var "REQUEST.URL1" html_quote>/" method="get">
+    <div class="form-group">
+      <label for="addItemSelect"
+             class="mr-2">Select type to add</label>
+      <select class="form-control mr-2" name=":action" id="addItemSelect"
+       onchange="location.href='<dtml-var "REQUEST.URL1" html_quote>/'+this.options[this.selectedIndex].value">
+      <dtml-in filtered_meta_types mapping sort=name>
+      <dtml-if action>
+      <option value="&dtml.html_quote-action;">&dtml-name;</option>
+      </dtml-if>
+      </dtml-in>
+      </select>
+    </div>
+    <input class="btn btn-outline-secondary" type="submit" name="submit" value="Add" />
   </form>
-  </div>
-  </td>
-  </tr>
-  </table>
 </dtml-if>
 
 <form action="<dtml-var "REQUEST.URL1" html_quote>/" name="objectItems" method="post">
 <dtml-if objectItems>
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-<tr class="list-header">
-  <td width="5%" align="right" colspan="2">
-    <div class="list-item">Type</div>
-  </td>
-  <td width="50%" align="left">
-    <div class="list-item">Name</div>
-  </td>
-  <td width="15%" align="left">
-    <div class="list-item">Size</div>
-  </td>
-</tr>
+<table class="table table-striped table-hover table-sm">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col"></th>
+      <th scope="col" class="col-1">Type</th>
+      <th scope="col" class="col-2">Id</th>
+      <th scope="col" class="col-8">Title</th>
+      <th scope="col" class="text-right col-1">Size</th>
+    </tr>
+  </thead>
 
 <dtml-in objectItems>
-<dtml-if sequence-odd>
-<tr class="row-normal">
-<dtml-else>
-<tr class="row-hilite">
-</dtml-if>
-  <td align="left" valign="top" width="16">
-  <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
+<tr>
+  <td>
+    <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
   </td>
-  <td align="left" valign="top" nowrap="nowrap">
+  <td>
     <i>&dtml-meta_type;</i>
   </td>
 
-  <td align="left" valign="top">
-  <div class="list-item">
-  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
-  </a>
-  <dtml-try>
-    <dtml-if "wl_isLocked()==1">
-      Locked
+  <td>
+    <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+      &dtml-sequence-key;
+    </a>
+    <dtml-try>
+      <dtml-if "wl_isLocked()==0">
+        <span class="badge badge-warning">Locked</span>
+      </dtml-if>
+    <dtml-except>
+    </dtml-try>
+  </td>
+
+  <td>
+    <dtml-if title>
+      <a href="&dtml.url_quote-sequence-key;/manage_workspace">&dtml-title;</a>
     </dtml-if>
-  <dtml-except>
-  </dtml-try>
-  </div>
   </td>
 
   <dtml-with sequence-key>
-  <td>
+  <td class="text-right">
   <div class="list-item">
   <dtml-try>
   <dtml-if get_size>
