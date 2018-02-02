@@ -67,6 +67,8 @@ class Folder(
     """
     meta_type = 'Folder'
 
+    zmi_icon = 'icon-folder'
+
     _properties = (
         {'id': 'title', 'type': 'string', 'mode': 'wd'},
     )

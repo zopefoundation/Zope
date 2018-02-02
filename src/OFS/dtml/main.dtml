@@ -28,10 +28,10 @@
   <thead class="thead-light">
     <tr>
       <th scope="col"></th>
-      <th scope="col" class="col-1">Type</th>
-      <th scope="col" class="col-2">Id</th>
-      <th scope="col" class="col-8">Title</th>
-      <th scope="col" class="text-right col-1">Size</th>
+      <th scope="col">Type</th>
+      <th scope="col">Id</th>
+      <th scope="col">Title</th>
+      <th scope="col">Size</th>
     </tr>
   </thead>
 
@@ -41,7 +41,7 @@
     <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
   </td>
   <td>
-    <i>&dtml-meta_type;</i>
+    <span class="&dtml-zmi_icon;" title="&dtml-meta_type;"><span class="sr-only">&dtml-meta_type;</span></span>
   </td>
 
   <td>
