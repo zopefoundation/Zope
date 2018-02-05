@@ -75,6 +75,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
     meta_type = 'Page Template'
+    zmi_icon = 'icon-markup'
     output_encoding = 'utf-8'  # provide default for old instances
 
     __code__ = FuncCode((), 0)

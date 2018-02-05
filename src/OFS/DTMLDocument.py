@@ -42,6 +42,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """ DocumentTemplate.HTML objects whose 'self' is the DTML object.
     """
     meta_type = 'DTML Document'
+    zmi_icon = 'icon-doc'
 
     manage_options = DTMLMethod.manage_options
 

@@ -97,6 +97,7 @@ class File(Persistent, Implicit, PropertyManager,
     """A File object is a content object for arbitrary files."""
 
     meta_type = 'File'
+    zmi_icon = 'icon-file'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -797,6 +798,7 @@ class Image(File):
     renders an HTML 'IMG' tag.
     """
     meta_type = 'Image'
+    zmi_icon = 'icon-image'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
