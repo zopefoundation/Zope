@@ -57,10 +57,10 @@
 </dtml-unless>
 
 <dtml-if manage_tabs_message>
-<div class="system-msg">
-<dtml-var manage_tabs_message newline_to_br html_quote>
-(<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
-</div>
+  <div class="alert alert-success" role="alert">
+    <dtml-var manage_tabs_message newline_to_br html_quote>
+    (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+  </div>
 </dtml-if>
 
 </dtml-with>
