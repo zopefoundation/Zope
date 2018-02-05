@@ -61,6 +61,7 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 try:
     from html import escape
@@ -173,7 +174,7 @@ class ObjectManager(CopyContainer,
     _objects = ()
 
     security.declareProtected(view_management_screens, 'manage_main')
-    manage_main = DTMLFile('dtml/main', globals())
+    manage_main = PageTemplateFile('zpt/main', globals())
 
     manage_index_main = DTMLFile('dtml/index_main', globals())
 
@@ -834,6 +835,22 @@ class ObjectManager(CopyContainer,
     security.declareProtected(access_contents_information, 'values')
     def values(self):
         return self.objectValues()
+
+    security.declareProtected(access_contents_information, 'computeSize')
+    def computeSize(self, ob):
+        try:
+            if hasattr(ob, 'get_size'):
+                ob_size = ob.get_size()
+                if ob_size < 1024:
+                    return '1 KiB'
+                elif ob_size > 1048576:
+                    return "{:0.02f} MiB".format(ob_size / 1048576.0)
+                else:
+                    return "{:d} KiB".format(ob_size / 1024)
+        except:
+            pass
+        return ''
+
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

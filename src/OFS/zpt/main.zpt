@@ -1,0 +1,141 @@
+<tal:header replace="structure here/manage_page_header" />
+<tal:tabs replace="structure here/manage_tabs" />
+
+<!-- Add object widget -->
+<form class="form-inline float-right mb-2"
+      method="get"
+      tal:condition="here/filtered_meta_types"
+      tal:attributes="action string:${request/URL1}/" >
+  <div class="form-group">
+    <label for="addItemSelect"
+           class="mr-2">Select type to add</label>
+    <select class="form-control mr-2"
+            name=":action"
+            id="addItemSelect"
+            tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value">
+      <tal:option tal:repeat="mt here/filtered_meta_types">
+        <option tal:condition="mt/action"
+                tal:attributes="value mt/action"
+                tal:content="mt/name">Action</option>
+      </tal:option>
+    </select>
+  </div>
+  <input class="btn btn-outline-secondary" type="submit" name="submit" value="Add" />
+</form>
+
+<form name="objectItems"
+      method="post"
+      tal:define="
+        ids here/objectIds;
+        sm modules/AccessControl/SecurityManagement/getSecurityManager"
+      tal:attributes="action string:${request/URL1}/">
+
+  <tal:not-empty condition="ids">
+    <table class="table table-striped table-hover table-sm"
+           tal:condition="ids">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Type</th>
+          <th scope="col">Id</th>
+          <th scope="col">Title</th>
+          <th scope="col" class="text-right">Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="id ids">
+          <tal:ob define="ob python:here.get(id)">
+            <td>
+              <input type="checkbox"
+                     name="ids:list"
+                     tal:attributes="value id" />
+            </td>
+            <td>
+              <span tal:attributes="class ob/zmi_icon;
+                                    title ob/meta_type">
+                <span class="sr-only"
+                      tal:content="ob/meta_type">meta_type</span>
+              </span>
+            </td>
+            <td>
+              <a tal:attributes="href string:${id}/manage_workspace"
+                 tal:content="id">Id</a>
+              <span class="badge badge-warning"
+                    tal:condition="ob/wl_isLocked | nothing">
+                Locked
+              </span>
+            </td>
+            <td>
+              <a tal:condition="ob/title"
+                 tal:attributes="href string:${id}/manage_workspace"
+                 tal:content="ob/title">Title</a>
+            </td>
+
+            <td class="text-right"
+                tal:content="python:here.computeSize(ob)">
+            </td>
+          </tal:ob>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="form-group"
+         tal:define="
+           delete_allowed python:sm.checkPermission('Delete objects', context)"
+         tal:condition="ids">
+      <tal:copy-paste condition="not:context/dontAllowCopyAndPaste | default">
+        <input class="btn btn-outline-secondary"
+               type="submit"
+               name="manage_renameForm:method"
+               value="Rename" />
+          <input class="btn btn-outline-danger"
+                 type="submit"
+                 name="manage_cutObjects:method"
+                 value="Cut"
+                 tal:condition="delete_allowed" />
+          <input class="btn btn-outline-secondary"
+                 type="submit"
+                 name="manage_copyObjects:method"
+                 value="Copy" />
+          <input class="btn btn-outline-info"
+                 type="submit"
+                 name="manage_pasteObjects:method"
+                 value="Paste"
+                 tal:condition="here/cb_dataValid" />
+      </tal:copy-paste>
+      <input class="btn btn-outline-danger"
+              type="submit"
+              name="manage_delObjects:method"
+              value="Delete"
+              tal:condition="delete_allowed" />
+      <input class="btn btn-outline-secondary"
+             type="submit"
+             name="manage_importExportForm:method"
+             value="Import/Export"
+             tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+    </div>
+  </tal:not-empty>
+
+  <tal:empty condition="not:ids">
+    <div class="mb-2">
+      <span class="badge badge-pill badge-info">Info</span>
+      There are currently no items in <em tal:content="here/title_or_id"></em>.
+    </div>
+    <div class="form-group">
+      <tal:copy-paste condition="not:context/dontAllowCopyAndPaste | default">
+        <input class="btn btn-outline-secondary"
+               type="submit"
+               name="manage_pasteObjects:method"
+               value="Paste"
+               tal:condition="here/cb_dataValid" />
+      </tal:copy-paste>
+      <input class="btn btn-outline-secondary"
+             type="submit"
+             name="manage_importExportForm:method"
+             value="Import/Export"
+             tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+    </div>
+  </tal:empty>
+</form>
+
+<tal:footer replace="structure here/manage_page_footer" />
