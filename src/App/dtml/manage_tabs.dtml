@@ -32,19 +32,28 @@
 </dtml-if>
 
 <dtml-unless MANAGE_TABS_NO_BANNER>
-  <p>
-    <strong>
-    <dtml-if meta_type>
-      &dtml-meta_type;
-    <dtml-else>
-    Object
-    </dtml-if>
-    </strong>
-    at <dtml-var expr="tabs_path_default(REQUEST)">
-    <dtml-if wl_isLocked>
-      <span class="badge badge-warning">Locked</span>
-    </dtml-if wl_isLocked>
-  </p>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <dtml-in expr="tabs_path_default(REQUEST)" mapping>
+          <li class="breadcrumb-item<dtml-if last> active</dtml-if>"
+              <dtml-if last> aria-current="page"</dtml-if>>
+            <dtml-if last>
+              &dtml-title;
+              <strong class="ml-1">
+                <span class="&dtml-zmi_icon;"
+                      title="&dtml-meta_type;"></span>
+                <dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>
+              </strong>
+              <dtml-if wl_isLocked>
+                <span class="badge badge-warning">Locked</span>
+              </dtml-if wl_isLocked>
+            <dtml-else>
+              <a href="&dtml-url;">&dtml-title;</a>
+            </dtml-if>
+          </li>
+        </dtml-in>
+      </ol>
+    </nav>
 </dtml-unless>
 
 <dtml-if manage_tabs_message>
