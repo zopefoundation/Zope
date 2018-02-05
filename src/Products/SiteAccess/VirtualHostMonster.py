@@ -22,6 +22,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     """
 
     meta_type = 'Virtual Host Monster'
+    zmi_icon = 'icon-monster'
     priority = 25
 
     id = 'virtual_hosting'
