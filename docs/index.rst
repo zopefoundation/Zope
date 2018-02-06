@@ -11,6 +11,7 @@ Contents:
    INSTALL-virtualenv
    operation
    USERS
+   ZMI
    SECURITY
    maintenance
    changes
