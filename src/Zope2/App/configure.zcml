@@ -17,4 +17,7 @@
   <securityPolicy
       component="AccessControl.security.SecurityPolicy" />
 
+  <subscriber
+      handler=".zmi.load_assets" />
+
 </configure>
