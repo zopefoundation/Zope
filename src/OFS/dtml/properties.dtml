@@ -118,18 +118,12 @@ property values, edit the values and click &quot;Save Changes&quot;.
           <dtml-var "getProperty(id)" html_quote>
         </textarea>
       <dtml-elif "type in ['lines','ulines']">
+        <dtml-comment>We need to avoid any whitespaces in between these tags.
+          This unfortunately results in a very long line. </dtml-comment>
         <textarea name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
                   class="form-control"
                   rows="6"
-                  cols="35">
-          <dtml-in "getProperty(id)">
-            &dtml-sequence-item;
-            <dtml-if sequence-end>
-            <dtml-else>
-              <dtml-var "'\n'">
-            </dtml-if>
-          </dtml-in>
-        </textarea>
+                  cols="35"><dtml-in "getProperty(id)">&dtml-sequence-item;<dtml-if sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
 
       <dtml-elif "type=='selection'">
 
