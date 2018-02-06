@@ -143,3 +143,11 @@ Zope 4 depends on a new DateTime release. The new release has been optimized
 for better memory use. Applications using a lot of DateTime values like the
 Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
 to large deployments.
+
+
+ZMI overhaul
+------------
+
+The ZMI (Zope Management Interface) is now styled with Twitter Bootstrap.
+See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
+styling.
