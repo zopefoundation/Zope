@@ -15,6 +15,7 @@
 
 from zope.interface import Attribute
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 class INavigation(Interface):
@@ -30,3 +31,12 @@ class INavigation(Interface):
         """Logout current user"""
 
 INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
+
+
+class IRenderZMIEvent(Interface):
+    """ZMI is rendered."""
+
+
+@implementer(IRenderZMIEvent)
+class RenderZMIEvent(object):
+    """Event fired when the ZMI is rendered."""

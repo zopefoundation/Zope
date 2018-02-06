@@ -18,13 +18,13 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from App.interfaces import INavigation
+from App.interfaces import RenderZMIEvent
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
-import js.bootstrap
-import zmi.icons
+import zope.event
 
 try:
     from html import escape
@@ -156,13 +156,11 @@ class Navigation(Base):
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic'))
 
-
     _manage_page_header = DTMLFile('dtml/manage_page_header', globals())
     security.declareProtected(view_management_screens, 'manage_page_header')
     def manage_page_header(self, *args, **kw):
         """manage_page_header."""
-        js.bootstrap.bootstrap.need()
-        zmi.icons.zmi_icons.need()
+        zope.event.notify(RenderZMIEvent())
         return self._manage_page_header(*args, **kw)
 
     security.declarePublic('manage_zmi_logout')
