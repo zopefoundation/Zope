@@ -62,7 +62,7 @@ On Linux, this can be done as follows::
   $ tar xfvz Zope-<Zope version>.tar.gz
   $ cd Zope-<Zope version>
   $ /path/to/your/python bootstrap.py
-  $ bin/buildout
+  $ bin/buildout -n
 
 
 Creating a Zope instance
