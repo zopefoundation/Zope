@@ -35,7 +35,14 @@
            tal:condition="ids">
       <thead class="thead-light">
         <tr>
-          <th scope="col"></th>
+          <th scope="col" class="text-right">
+            <input type="checkbox" id="checkAll"
+                   onclick="(function() {
+                    var checkboxes = document.getElementsByClassName('checkbox-list-item');
+                    for (i = 0; i < checkboxes.length; i++){
+                      checkboxes[i].checked = document.getElementById('checkAll').checked;
+                    }})()">
+          </th>
           <th scope="col">Type</th>
           <th scope="col">Id</th>
           <th scope="col">Title</th>
@@ -47,6 +54,7 @@
           <tal:ob define="ob python:here.get(id)">
             <td class="text-right">
               <input type="checkbox"
+                     class="checkbox-list-item"
                      name="ids:list"
                      tal:attributes="value id" />
             </td>
