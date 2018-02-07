@@ -186,8 +186,4 @@ You have been logged out.
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.
 
-file = DTMLFile('dtml/manage_page_style.css', globals())
-Navigation.security.declarePublic('manage_page_style.css')
-setattr(Navigation, 'manage_page_style.css', file)
-
 InitializeClass(Navigation)
