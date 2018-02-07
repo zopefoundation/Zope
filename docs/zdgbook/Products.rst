@@ -833,31 +833,8 @@ When creating management views you should include the DTML variables
 ``manage_page_footer`` at the bottom.  These variables are acquired
 by your product and draw a standard management view header, tabs
 widgets, and footer.  The management header also includes CSS
-information which you can take advantage of if you wish to add CSS
-style information to your management views.  The management CSS
-information is defined in the
-`lib/python/App/dtml/manage_page_style.css.dtml`` file.  Here are the
-CSS classes defined in this file and conventions for their use.
-
-- 'form-help' -- Explanatory text related to forms.  In the future,
-  users may have the option to hide this text.
-
-- 'std-text' -- Declarative text unrelated to forms.  You should
-  rarely use this class.
-
-- 'form-title' -- Form titles.
-
-- 'form-label' -- Form labels for required form elements.
-
-- 'form-optional' -- Form labels for optional form elements.
-
-- 'form-element' -- Form elements.  Note, because of a Netscape bug,
-  you should not use this class on 'textarea' elements.
-
-- 'form-text' -- Declarative text in forms.
-
-- 'form-mono' -- Fixed width text in forms.  You should rarely use
-  this class.
+information which you can take advantage of. You can use any of the styles
+Twitter Bootstrap 4 provides. (See https://getbootstrap.com/docs/4.0)
 
 Here's an example management view for your poll class.  It allows you
 to edit the poll question and responses (see ``editPollForm.dtml``)::
