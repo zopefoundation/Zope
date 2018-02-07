@@ -10,12 +10,12 @@ browser.
 Bootstrap ZMI
 -------------
 
-Since Zope 4.0b4 the ZMI is styled using Twitter bootstrap. The previously used
+Since Zope 4.0b4 the ZMI is styled using Twitter Bootstrap. The previously used
 GIF icons were replaced by font glyphs which are stored in the package
-`zmi.icons`_
+`zmi.styles`_ together with the CSS and JavaScript needed by Twitter Bootstrap.
 
 Inside that package is a table of the `available icons`_ including the names
-which are required to use them.
+which are required to use them in the ZMI.
 
 Update packages
 +++++++++++++++
@@ -26,32 +26,53 @@ the ZMI, the default icon will be shown.
 To use one of the new icons add an attribute named `zmi_icon` to the class. The
 value should be one of the names listed on `available icons`_.
 
-.. _`zmi.icons` : https://github.com/zopefoundation/zmi.icons
-.. _`available icons` : http://htmlpreview.github.io/?https://github.com/zopefoundation/zmi.icons/blob/master/zmi/icons/resources/demo.html
+.. _`zmi.styles` : https://github.com/zopefoundation/zmi.styles
+.. _`available icons` : http://htmlpreview.github.io/?https://github.com/zopefoundation/zmi.styles/blob/master/zmi/styles/resources/zopetello/demo.html
 
-Use custom icons
-++++++++++++++++
+Use custom icons and resources
+++++++++++++++++++++++++++++++
 
-To use custom icons (which are not part of `zmi.icons`), you need to subscribe
-to ``App.interfaces.IRenderZMIEvent`` to need your resources.
+To use custom icons (which are not part of `zmi.styles`) or load custom CSS resp. JavaScript, you have to:
 
-Example from `Products.CMFCore/Products/CMFCore/zmi.py`::
+1. create a directory and fill it with your assets
+2. register this directory as resource directory
+3. register a subscription adapter for :class:`App.interfaces.ICSSPaths` resp.
+   :class:`App.interfaces.IJSPaths`. This adapter has to return an iterable of
+   paths resp. URLs which should be loaded when rendering the ZMI.
 
-    import App.interfaces
-    import cmf.icons
-    import zope.component
+Example taken from `cmf.zmiicons`_:
+
+* Register the resource directory via ZCML:
+
+  .. code-block:: XML
+
+      <browser:resourceDirectory
+          name="cmf.zmiicons"
+          directory="resources" />
+
+* Create a subscription adapter returning the path to the CSS file:
 
 
-    @zope.component.adapter(App.interfaces.IRenderZMIEvent)
-    def load_assets(event):
-        """Load the CMS icons for the ZMI."""
-        cmf.icons.cmf_icons.need()
+  .. code-block:: Python
 
-The subscriber is registered in
-`Products.CMFCore/Products/CMFCore/event.zcml` like this::
+      import zope.component
+      import zope.interface
 
-    <subscriber
-        handler=".zmi.load_assets" />
 
-You can can `need` arbitrary fanstatic resources in the event subscriber, not
-only icon fonts, but also custom CSS and JavaScript.
+      @zope.component.adapter(zope.interface.Interface)
+      def css_paths(context):
+          """Return paths to CSS files needed for the Zope 4 ZMI."""
+          return (
+              '/++resource++cmf.zmiicons/css/cmftello.css',
+          )
+
+* Register the subscriber via ZCML:
+
+  .. code-block:: XML
+
+      <subscriber
+          provides="App.interfaces.ICSSPaths"
+          factory=".css_paths" />
+
+
+.. _`cmf.zmiicons` : https://github.com/zopefoundation/cmf.zmiicons

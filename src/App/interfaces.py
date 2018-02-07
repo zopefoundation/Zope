@@ -15,7 +15,6 @@
 
 from zope.interface import Attribute
 from zope.interface import Interface
-from zope.interface import implementer
 
 
 class INavigation(Interface):
@@ -31,10 +30,9 @@ class INavigation(Interface):
         """Logout current user"""
 
 
-class IRenderZMIEvent(Interface):
-    """ZMI is rendered."""
+class ICSSPaths(Interface):
+    """Paths to CSS resources needed for the ZMI."""
 
 
-@implementer(IRenderZMIEvent)
-class RenderZMIEvent(object):
-    """Event fired when the ZMI is rendered."""
+class IJSPaths(Interface):
+    """Paths to JAvaScript resources needed for the ZMI."""
