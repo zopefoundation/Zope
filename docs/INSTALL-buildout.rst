@@ -50,7 +50,7 @@ steps:
 
 - Download the Zope source distribution from `PyPI`__
 
-  __ https://pypi.python.org/pypi/Zope
+  __ https://pypi.org/project/Zope/
 
 - Bootstrap the buildout
 
