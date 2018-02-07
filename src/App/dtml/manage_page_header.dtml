@@ -7,6 +7,12 @@
 <meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
 <dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
 <title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
+<dtml-in css_urls>
+  <link rel="stylesheet" type="text/css" href="&dtml-sequence-item;" />
+</dtml-in>
+<dtml-in js_urls>
+  <script type="text/javascript" src="&dtml-sequence-item;"></script>
+</dtml-in>
 </head>
 <body>
   <div class="container-fluid">
