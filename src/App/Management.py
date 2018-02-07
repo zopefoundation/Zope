@@ -18,12 +18,14 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from App.interfaces import INavigation
-from App.interfaces import RenderZMIEvent
+from App.interfaces import ICSSPaths
+from App.interfaces import IJSPaths
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
+import itertools
 import zope.event
 
 try:
@@ -160,7 +162,10 @@ class Navigation(Base):
     security.declareProtected(view_management_screens, 'manage_page_header')
     def manage_page_header(self, *args, **kw):
         """manage_page_header."""
-        zope.event.notify(RenderZMIEvent())
+        kw['css_urls'] = itertools.chain(
+            *zope.component.subscribers((self,), ICSSPaths))
+        kw['js_urls'] = itertools.chain(
+            *zope.component.subscribers((self,), IJSPaths))
         return self._manage_page_header(*args, **kw)
 
     security.declarePublic('manage_zmi_logout')
