@@ -30,8 +30,6 @@ class INavigation(Interface):
     def manage_zmi_logout(REQUEST, RESPONSE):
         """Logout current user"""
 
-INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
-
 
 class IRenderZMIEvent(Interface):
     """ZMI is rendered."""
