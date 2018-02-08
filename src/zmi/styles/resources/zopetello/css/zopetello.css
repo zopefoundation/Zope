@@ -1,0 +1,72 @@
+@font-face {
+  font-family: 'zopetello';
+  src: url('../font/zopetello.eot?29023549');
+  src: url('../font/zopetello.eot?29023549#iefix') format('embedded-opentype'),
+       url('../font/zopetello.woff2?29023549') format('woff2'),
+       url('../font/zopetello.woff?29023549') format('woff'),
+       url('../font/zopetello.ttf?29023549') format('truetype'),
+       url('../font/zopetello.svg?29023549#zopetello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'zopetello';
+    src: url('../font/zopetello.svg?29023549#zopetello') format('svg');
+  }
+}
+*/
+ 
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "zopetello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+ 
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+ 
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+ 
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+ 
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.icon-file:before { content: '\e800'; } /* '' */
+.icon-numbers:before { content: '\e801'; } /* '' */
+.icon-tree:before { content: '\e802'; } /* '' */
+.icon-folder2:before { content: '\e803'; } /* '' */
+.icon-folder:before { content: '\e804'; } /* '' */
+.icon-book:before { content: '\e805'; } /* '' */
+.icon-search:before { content: '\e806'; } /* '' */
+.icon-info:before { content: '\e807'; } /* '' */
+.icon-python:before { content: '\e808'; } /* '' */
+.icon-mail:before { content: '\e809'; } /* '' */
+.icon-doc:before { content: '\f0f6'; } /* '' */
+.icon-image:before { content: '\f1c5'; } /* '' */
+.icon-markup:before { content: '\f1c9'; } /* '' */
+.icon-monster:before { content: '\f23c'; } /* '' */
+.icon-user:before { content: '\f2ba'; } /* '' */

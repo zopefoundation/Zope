@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:resourceDirectory
+        name="zmi"
+        directory="resources" />
+
+    <subscriber
+        provides="App.interfaces.ICSSPaths"
+        factory=".subscriber.css_paths" />
+
+    <subscriber
+        provides="App.interfaces.IJSPaths"
+        factory=".subscriber.js_paths" />
+
+</configure>
