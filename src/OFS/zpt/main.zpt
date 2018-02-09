@@ -59,10 +59,12 @@
                      tal:attributes="value id" />
             </td>
             <td>
-              <span tal:attributes="class ob/zmi_icon;
-                                    title ob/meta_type">
+              <span title="Broken object"
+                    class="icon-broken"
+                    tal:attributes="class ob/zmi_icon | default;
+                                    title ob/meta_type | default">
                 <span class="sr-only"
-                      tal:content="ob/meta_type">meta_type</span>
+                      tal:content="ob/meta_type | default">Broken object</span>
               </span>
             </td>
             <td>
@@ -74,7 +76,7 @@
               </span>
             </td>
             <td>
-              <a tal:condition="ob/title"
+              <a tal:condition="ob/title|nothing"
                  tal:attributes="href string:${id}/manage_workspace"
                  tal:content="ob/title">Title</a>
             </td>

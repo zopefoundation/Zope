@@ -537,9 +537,12 @@ class ObjectManager(CopyContainer,
             id = ids[-1]
             v = self._getOb(id, self)
 
-            if v.wl_isLocked():
-                raise ResourceLockedError(
-                    'Object "%s" is locked.' % v.getId())
+            try:
+                if v.wl_isLocked():
+                    raise ResourceLockedError(
+                        'Object "%s" is locked.' % v.getId())
+            except AttributeError:
+                pass
 
             if v is self:
                 raise BadRequest('%s does not exist' % escape(ids[-1], True))
