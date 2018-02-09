@@ -2,6 +2,8 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+    <include package="Products.Five.browser" file="meta.zcml" />
+
     <browser:resourceDirectory
         name="zmi"
         directory="resources" />

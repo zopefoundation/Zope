@@ -12,11 +12,9 @@ def setupZCML():
     import AccessControl
     import Zope2.App
     import zmi.styles
-    import zope.browserresource
     zcml.load_config('meta.zcml', Zope2.App)
     zcml.load_config('permissions.zcml', AccessControl)
     zcml.load_config('traversing.zcml', Zope2.App)
-    zcml.load_config('meta.zcml', zope.browserresource)
     zcml.load_config('configure.zcml', zmi.styles)
 
 
