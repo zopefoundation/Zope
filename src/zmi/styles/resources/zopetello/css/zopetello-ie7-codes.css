@@ -10,6 +10,7 @@
 .icon-python { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe808;&nbsp;'); }
 .icon-mail { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe809;&nbsp;'); }
 .icon-doc { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0f6;&nbsp;'); }
+.icon-broken { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf188;&nbsp;'); }
 .icon-image { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf1c5;&nbsp;'); }
 .icon-markup { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf1c9;&nbsp;'); }
 .icon-monster { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf23c;&nbsp;'); }

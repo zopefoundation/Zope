@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'zopetello';
-  src: url('../font/zopetello.eot?29023549');
-  src: url('../font/zopetello.eot?29023549#iefix') format('embedded-opentype'),
-       url('../font/zopetello.woff2?29023549') format('woff2'),
-       url('../font/zopetello.woff?29023549') format('woff'),
-       url('../font/zopetello.ttf?29023549') format('truetype'),
-       url('../font/zopetello.svg?29023549#zopetello') format('svg');
+  src: url('../font/zopetello.eot?35248070');
+  src: url('../font/zopetello.eot?35248070#iefix') format('embedded-opentype'),
+       url('../font/zopetello.woff2?35248070') format('woff2'),
+       url('../font/zopetello.woff?35248070') format('woff'),
+       url('../font/zopetello.ttf?35248070') format('truetype'),
+       url('../font/zopetello.svg?35248070#zopetello') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'zopetello';
-    src: url('../font/zopetello.svg?29023549#zopetello') format('svg');
+    src: url('../font/zopetello.svg?35248070#zopetello') format('svg');
   }
 }
 */
@@ -66,6 +66,7 @@
 .icon-python:before { content: '\e808'; } /* '' */
 .icon-mail:before { content: '\e809'; } /* '' */
 .icon-doc:before { content: '\f0f6'; } /* '' */
+.icon-broken:before { content: '\f188'; } /* '' */
 .icon-image:before { content: '\f1c5'; } /* '' */
 .icon-markup:before { content: '\f1c9'; } /* '' */
 .icon-monster:before { content: '\f23c'; } /* '' */
