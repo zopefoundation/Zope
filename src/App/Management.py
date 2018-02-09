@@ -26,6 +26,7 @@ from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
 import itertools
+import six
 import zope.event
 
 try:
@@ -163,9 +164,11 @@ class Navigation(Base):
     def manage_page_header(self, *args, **kw):
         """manage_page_header."""
         kw['css_urls'] = itertools.chain(
-            *zope.component.subscribers((self,), ICSSPaths))
+            itertools.chain(*zope.component.subscribers((self,), ICSSPaths)),
+            self._get_zmi_additionals('zmi_additional_css_paths'))
         kw['js_urls'] = itertools.chain(
-            *zope.component.subscribers((self,), IJSPaths))
+            itertools.chain(*zope.component.subscribers((self,), IJSPaths)),
+            self._get_zmi_additionals('zmi_additional_js_paths'))
         return self._manage_page_header(*args, **kw)
 
     security.declarePublic('manage_zmi_logout')
@@ -187,6 +190,13 @@ You have been logged out.
 </body>
 </html>""")
         return
+
+    def _get_zmi_additionals(self, attrib):
+        # Get additional assets for styling ZMI defined on properties in ZMI.
+        additionals = getattr(self, attrib, ()) or ()
+        if isinstance(additionals, six.string_types):
+            additionals = (additionals, )
+        return additionals
 
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.
