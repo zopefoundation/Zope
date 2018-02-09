@@ -40,7 +40,7 @@ Creating a Zope instance
 
   The following steps describe how to install a WSGI based Zope instance.
   If you want/have to use ZServer instead of WSGI (Python 2 only!) follow
-  the documentation `Creating a Zope instance for Zope 2.13`_, as it did not have
+  the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
   changed since that version.
 
 .. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-virtualenv.html#creating-a-zope-instance
