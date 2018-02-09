@@ -24,17 +24,14 @@ ZEO==5.2.0
 ZODB==5.4.0
 ZServer==4.0b1 ; python_version < '3.0'
 Zope2==4.0b1
-fanstatic==1.0.0
 five.globalrequest==99.1
 five.localsitemanager==3.0.1
 funcsigs==1.0.2
 ipaddress==1.0.22
-js.jquery==1.9.1
 mock==2.0.0
 pbr==4.0.2
 persistent==4.2.4.2
 pytz==2018.4
-shutilwhich==1.1.0
 six==1.11.0
 transaction==2.2.1
 waitress==1.1.0
