@@ -76,3 +76,23 @@ Example taken from `cmf.zmiicons`_:
 
 
 .. _`cmf.zmiicons` : https://github.com/zopefoundation/cmf.zmiicons
+
+
+Use custom resources via ZMI
+++++++++++++++++++++++++++++
+
+To add custom CSS or JavaScript resources via ZMI you have to add a property:
+
+* ``zmi_additional_css_paths`` for additional CSS
+* ``zmi_additional_css_paths`` for additional JavaScript
+
+The properties can have one of the following types:
+
+* ``string``
+* ``ustring``
+* ``lines``
+* ``ulines``
+
+The value of the properties have to be paths or URLs to CSS resp. JavaScript
+which will be included in the HTML of the ZMI. (Paths have to be resolvable by
+the browser aka not simple file system paths.)
