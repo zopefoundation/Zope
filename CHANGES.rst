@@ -216,7 +216,7 @@ Control panel
 
 - Remove `DebugInfo` and `DavLocks` from control panel.
 
-- Move undo management to the control panel.
+- Move the undo management to Control Panel -> Databases -> Database -> Undo.
 
 - Simplify ZMI control panel and globally available management screens.
 
