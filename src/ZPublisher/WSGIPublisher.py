@@ -277,7 +277,7 @@ def publish_module(environ, start_response,
         else:
             # If somebody used response.write, that data will be in the
             # stdout BytesIO, so we put that before the body.
-            result = (stdout.getvalue(), response.body)
+            result = (response.stdout.getvalue(), response.body)
 
         for func in response.after_list:
             func()
