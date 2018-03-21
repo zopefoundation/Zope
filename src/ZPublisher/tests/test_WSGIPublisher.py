@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+import io
 import unittest
 
 import transaction
@@ -295,6 +296,19 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))
         self.assertEqual(_after2._called_with, ((), {}))
+
+    def test_publish_returns_data_witten_to_response_before_body(self):
+        # This also happens if publish creates a new response object.
+        from ZPublisher.HTTPResponse import WSGIResponse
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        def _publish(request, mod_info):
+            response = WSGIResponse()
+            response.write(b'WRITTEN')
+            response.body = b'BODY'
+            return response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertEqual(app_iter, (b'WRITTEN', b'BODY'))
 
     def test_raises_unauthorized(self):
         from zExceptions import Unauthorized
@@ -636,6 +650,9 @@ class DummyResponse(object):
     _finalized = False
     _status = '204 No Content'
     _headers = [('Content-Length', '0')]
+
+    def __init__(self):
+        self.stdout = io.BytesIO()
 
     def finalize(self):
         self._finalized = True
