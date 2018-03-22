@@ -33,11 +33,11 @@
 <td></td>
 <td colspan="2">
   <div class="form-element">
-  <input class="form-element" type="hidden" name=":default_method" 
+  <input class="form-element" type="hidden" name=":default_method"
    value="manage_renameObjects" />
-  <input class="form-element" type="submit" name="manage_renameObjects:method" 
+  <input class="form-element" type="submit" name="manage_renameObjects:method"
    value=" Ok " />
-  <input class="form-element" type="submit" name="manage_main:method" 
+  <input class="form-element" type="submit" name="manage_main:method"
    value="Cancel" />
   </div>
 </td>
