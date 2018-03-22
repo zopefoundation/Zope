@@ -210,7 +210,7 @@ class ObjectManager(CopyContainer,
                         mt.append(t)
             except Exception:
                 pass
-        mt.sort()
+        mt.sort(key=lambda k: k['name'])
         self.meta_types = tuple(mt)
 
         InitializeClass(self)
