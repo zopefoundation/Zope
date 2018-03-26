@@ -926,6 +926,8 @@ Record marshalling provides you with the ability to create complex
 forms.  However, it is a good idea to keep your web interfaces as
 simple as possible.
 
+Please note, that records do not work with input fields of type radio as you would expect, as all radio fields with the same name are considered as one group - even if they are in different records. That means, activating one radio button will also deactivate all other radio buttons from the other records.
+
 Exceptions
 ----------
 
