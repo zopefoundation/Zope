@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 - Fix an edge case where the data which was set using ``response.write()`` was
   not returned by ``publish_module``.
 
+- Fix renaming of images and files via ZMI. (#247).
+
 
 4.0b3 (2018-01-27)
 ------------------
