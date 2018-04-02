@@ -14,6 +14,7 @@
 """
 
 from io import BytesIO
+from operator import itemgetter
 from logging import getLogger
 import copy
 import fnmatch
@@ -210,8 +211,7 @@ class ObjectManager(CopyContainer,
                         mt.append(t)
             except Exception:
                 pass
-        mt.sort()
-        self.meta_types = tuple(mt)
+        self.meta_types = tuple(sorted(mt, key=itemgetter('name')))
 
         InitializeClass(self)
 
