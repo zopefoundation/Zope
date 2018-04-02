@@ -265,8 +265,10 @@ class HTTPBaseResponse(BaseResponse):
         This value overwrites any previously set value for the
         cookie in the Response object.
         """
-        name = str(name)
-        value = str(value)
+        if isinstance(name, text_type):
+            name = name.encode(self.charset)
+        if isinstance(value, text_type):
+            value = value.encode(self.charset)
 
         cookies = self.cookies
         if name in cookies:
@@ -286,8 +288,10 @@ class HTTPBaseResponse(BaseResponse):
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon.
         """
-        name = str(name)
-        value = str(value)
+        if isinstance(name, text_type):
+            name = name.encode(self.charset)
+        if isinstance(value, text_type):
+            value = value.encode(self.charset)
 
         cookies = self.cookies
         if name in cookies:
@@ -310,7 +314,8 @@ class HTTPBaseResponse(BaseResponse):
         when creating the cookie. The path can be specified as a keyword
         argument.
         """
-        name = str(name)
+        if isinstance(name, text_type):
+            name = name.encode(self.charset)
 
         d = kw.copy()
         if 'value' in d:
