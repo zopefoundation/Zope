@@ -21,13 +21,13 @@ Install the Zope Software Packages
 ----------------------------------
 
 Look for the release you want to install on
-https://github.com/zopefoundation/Zope/releases. Than use the specific
-version in the URL, replacing 4.0b1 in the example below:
+https://zopefoundation.github.io/Zope/. Than use the specific
+version of ``requirements-full.txt`` in the URL, replacing 4.0b3 in the example below:
 
 .. code-block:: sh
 
    $ bin/pip install \
-   -r https://raw.githubusercontent.com/zopefoundation/Zope/4.0b1/requirements-full.txt
+   -r https://zopefoundation.github.io/Zope/releases/4.0b3/requirements-full.txt
    Obtaining Zope
    ...
    Successfully installed ...
