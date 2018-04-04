@@ -9,11 +9,13 @@ install:
     - pip install -U setuptools==`grep setuptools versions.cfg | awk '{print $3}'`
     - pip install six==`grep '^six' versions-prod.cfg | awk '{print $3}'`
     - pip install zc.buildout==`grep '^zc.buildout' versions.cfg | awk '{print $3}'`
+    - pip install coveralls coverage
     - buildout bootstrap
     - buildout install test alltests
 script:
-    - bin/alltests -v
+    - coverage run bin/alltests -v
 after_success:
+    - coveralls
     # Bails out for non-tags
     - ./update_index.sh
 notifications:
