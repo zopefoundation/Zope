@@ -6,11 +6,11 @@
         :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/Zope.svg
-        :target: https://pypi.python.org/pypi/Zope
+        :target: https://pypi.org/project/Zope/
         :alt: PyPI
 
 .. image:: https://img.shields.io/pypi/pyversions/Zope.svg
-        :target: https://pypi.python.org/pypi/Zope
+        :target: https://pypi.org/project/Zope/
         :alt: Python versions
 
 .. contents::
