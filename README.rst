@@ -28,13 +28,15 @@ Documentation can be found at https://zope.readthedocs.io.
 Installation
 ============
 
-Installation information can be found at
-https://zope.readthedocs.io/en/latest/INSTALL-buildout.html
-
-Note that you *cannot* simply do ``pip install Zope``, because you need
+You *cannot* simply do ``pip install Zope``, because you need
 specific versions of all dependencies. Follow the documentation to
 ensure you get the correct versions, or else installation is very
 likely to fail.
+
+Zope can either be installed using:
+
+* `zc.buildout`, see https://zope.readthedocs.io/en/latest/INSTALL-buildout.html
+* `virtualenv` and `pip`, see https://zope.readthedocs.io/en/latest/INSTALL-virtualenv.html
 
 License
 =======
