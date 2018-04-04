@@ -27,7 +27,7 @@ from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
-from six import binary_type
+from six import PY3
 from six.moves.urllib.parse import quote
 from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
@@ -266,10 +266,12 @@ class DTMLMethod(RestrictedDTML,
         if self.wl_isLocked():
             raise ResourceLockedError('This DTML Method is locked.')
 
-        if not isinstance(file, binary_type):
+        if not isinstance(file, basestring):
             if REQUEST and not file:
                 raise ValueError('No file specified')
             file = file.read()
+            if PY3:
+                file = file.decode('utf-8')
 
         self.munge(file)
         self.ZCacheable_invalidate()
