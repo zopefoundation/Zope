@@ -94,7 +94,7 @@ class DocResponseWrapper(ResponseWrapper):
         self.header_output = header_output
 
     def __str__(self):
-        body = self.getBody()
+        body = self._decode(self.getBody())
         if body:
             return "%s\n\n%s" % (self.header_output, body)
         return "%s\n" % (self.header_output)
