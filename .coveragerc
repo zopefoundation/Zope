@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = src
+
+[report]
+precision = 2
