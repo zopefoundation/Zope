@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b4 (unreleased)
 ------------------
 
+- Fix regression in traversing to WebDAV NullResources if the final object
+  in the path is a proxy that provides access to aq_inner but is not itself
+  an acquisition wrapper.
+  [davisagli]
+
 - Fix an edge case where the data which was set using ``response.write()`` was
   not returned by ``publish_module``.
 
