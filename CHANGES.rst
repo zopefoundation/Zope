@@ -18,6 +18,7 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Sort HTTP headers in doctests as in Zope 2. (#259)
 
+- Update dependencies to newest versions.
 
 4.0b3 (2018-01-27)
 ------------------
