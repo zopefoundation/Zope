@@ -16,6 +16,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Fix renaming of images and files via ZMI. (#247).
 
+- Sort HTTP headers in doctests as in Zope 2.
+
 
 4.0b3 (2018-01-27)
 ------------------
