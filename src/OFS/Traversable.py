@@ -19,7 +19,6 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import Acquired
-from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -31,6 +30,7 @@ from zExceptions import NotFound
 from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
 
+from zope.globalrequest import getRequest
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
@@ -69,7 +69,7 @@ class Traversable(object):
         spp = self.getPhysicalPath()
 
         try:
-            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
+            toUrl = getRequest().physicalPathToURL
         except AttributeError:
             return path2url(spp[1:])
         return toUrl(spp)
@@ -83,7 +83,7 @@ class Traversable(object):
         """
         spp = self.getPhysicalPath()
         try:
-            toUrl = aq_acquire(self, 'REQUEST').physicalPathToURL
+            toUrl = getRequest().physicalPathToURL
         except AttributeError:
             return path2url(spp) or '/'
         return toUrl(spp, relative=1) or '/'
@@ -98,7 +98,7 @@ class Traversable(object):
         """
         spp = self.getPhysicalPath()
         try:
-            toVirt = aq_acquire(self, 'REQUEST').physicalPathToVirtualPath
+            toVirt = getRequest().physicalPathToVirtualPath
         except AttributeError:
             return path2url(spp[1:])
         return path2url(toVirt(spp))
@@ -227,7 +227,7 @@ class Traversable(object):
                         ns, nm = nsParse(name)
                         try:
                             next = namespaceLookup(
-                                ns, nm, obj, aq_acquire(self, 'REQUEST'))
+                                ns, nm, obj, getRequest())
                             if IAcquirer.providedBy(next):
                                 next = next.__of__(obj)
                             if restricted and not validate(
@@ -311,7 +311,7 @@ class Traversable(object):
                 except (AttributeError, NotFound, KeyError) as e:
                     # Try to look for a view
                     next = queryMultiAdapter(
-                        (obj, aq_acquire(self, 'REQUEST')),
+                        (obj, getRequest()),
                         Interface, name)
 
                     if next is not None:

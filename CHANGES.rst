@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b4 (unreleased)
 ------------------
 
+- In OFS.Traversable, use ``zope.globalrequest.getRequest`` throughout instead of acquiring the request.
+
 - Fix an edge case where the data which was set using ``response.write()`` was
   not returned by ``publish_module`` (#256).
 
