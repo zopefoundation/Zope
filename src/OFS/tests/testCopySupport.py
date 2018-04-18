@@ -292,9 +292,14 @@ class TestCopySupport(CopySupportTestBase):
         with self.assertRaises(CopyError) as err:
             self.folder1.manage_pasteObjects(make_data(300))
         self.assertEqual('Clipboard Error', str(err.exception))
-        # But not too much data is allowed
+        # But not too much data is allowed:
         with self.assertRaises(CopyError) as err:
             self.folder1.manage_pasteObjects(make_data(250))
+        self.assertEqual('Item Not Found', str(err.exception))
+
+        # _pasteObjects allows to paste without restriction:
+        with self.assertRaises(CopyError) as err:
+            self.folder1._pasteObjects(make_data(3000))
         self.assertEqual('Item Not Found', str(err.exception))
 
 
