@@ -277,6 +277,26 @@ class TestCopySupport(CopySupportTestBase):
             {'id': 'file2', 'new_id': 'copy_of_file2'},
         ])
 
+    def testPasteNoData(self):
+        from OFS.CopySupport import CopyError
+        with self.assertRaises(CopyError):
+            self.folder1.manage_pasteObjects()
+
+    def testPasteTooBigData(self):
+        from OFS.CopySupport import CopyError
+        from OFS.CopySupport import _cb_encode
+        def make_data(lenght):
+            return _cb_encode(
+                (1, ['qwertzuiopasdfghjklyxcvbnm' for x in range(lenght)]))
+        # Protect against DoS attack with too big data:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(300))
+        self.assertEqual('Clipboard Error', str(err.exception))
+        # But not too much data is allowed
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(250))
+        self.assertEqual('Item Not Found', str(err.exception))
+
 
 class _SensitiveSecurityPolicy(object):
 
