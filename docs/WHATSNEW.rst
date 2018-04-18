@@ -27,10 +27,10 @@ found in this release.
 Python versions
 ---------------
 
-Zope 4 supports both Python 2.7 and Python 3.4, 3.5 or 3.6. While PyPy
+Zope 4 supports both Python 2.7 and Python 3.5 or 3.6. While PyPy
 is supported by some of the underlying dependencies, it is incompatible
-with a couple of the foundational C extensions. As a result Zope as a
-whole is not compatible with PyPy.
+with a couple of the foundational C extensions and with `RestrictedPython`.
+As a result Zope as a whole is not compatible with PyPy.
 
 The Python 3 support currently covers the core dependencies shipped
 with Zope and is limited to the new WSGI based publisher. The new
