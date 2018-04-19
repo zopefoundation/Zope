@@ -1,3 +1,5 @@
+import random
+import string
 import unittest
 
 import cStringIO
@@ -282,6 +284,29 @@ class TestCopySupport( CopySupportTestBase ):
         self.assertTrue( result == [{'id':'file', 'new_id':'copy_of_file'},
                                     {'id':'file1', 'new_id':'copy_of_file1'},
                                     {'id':'file2', 'new_id':'copy_of_file2'}])
+
+    def testPasteNoData(self):
+        from OFS.CopySupport import CopyError
+        with self.assertRaises(CopyError):
+            self.folder1.manage_pasteObjects()
+
+    def testPasteTooBigData(self):
+        from OFS.CopySupport import CopyError
+        from OFS.CopySupport import _cb_encode
+
+        def make_data(lenght):
+            return _cb_encode(
+                (1, [''.join(random.sample(string.printable, 20))
+                     for x in range(lenght)]))
+        # Protect against DoS attack with too big data:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(350))
+        self.assertTrue('Clipboard Error' in str(err.exception))
+        # But not too much data is allowed:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(300))
+        self.assertTrue('Item Not Found' in str(err.exception))
+
 
 class _SensitiveSecurityPolicy:
 
