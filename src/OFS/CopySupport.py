@@ -162,7 +162,6 @@ class CopyContainer(Base):
             id = 'copy%s_of_%s' % (n and n + 1 or '', orig_id)
             n = n + 1
 
-    security.declareProtected(view_management_screens, 'manage_pasteObjects')
     def _pasteObjects(self, cp, cb_maxsize=0):
         """Paste previously copied objects into the current object.
 
@@ -180,7 +179,6 @@ class CopyContainer(Base):
 
         Returns tuple of (operator, list of {'id': orig_id, 'new_id': new_id}).
         Where `operator` is 0 for a copy operation and 1 for a move operation.
-
         """
         if cp is None:
             raise CopyError('No clipboard data found.')
