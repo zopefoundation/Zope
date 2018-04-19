@@ -307,6 +307,11 @@ class TestCopySupport( CopySupportTestBase ):
             self.folder1.manage_pasteObjects(make_data(300))
         self.assertTrue('Item Not Found' in str(err.exception))
 
+        # _pasteObjects allows to paste without restriction:
+        with self.assertRaises(CopyError) as err:
+            self.folder1._pasteObjects(make_data(3500))
+        self.assertTrue('Item Not Found' in str(err.exception))
+
 
 class _SensitiveSecurityPolicy:
 
