@@ -285,13 +285,20 @@ class TestCopySupport( CopySupportTestBase ):
                                     {'id':'file1', 'new_id':'copy_of_file1'},
                                     {'id':'file2', 'new_id':'copy_of_file2'}])
 
-    def testPasteNoData(self):
+    def assertCopyError(self, callable, error_text, *args):
         from OFS.CopySupport import CopyError
-        with self.assertRaises(CopyError):
-            self.folder1.manage_pasteObjects()
+        try:
+            callable(*args)
+        except CopyError as err:
+            if error_text:
+                self.assertTrue(error_text in str(err))
+        else:
+            self.fail('CopyError not raised.')
+
+    def testPasteNoData(self):
+        self.assertCopyError(self.folder1.manage_pasteObjects, '')
 
     def testPasteTooBigData(self):
-        from OFS.CopySupport import CopyError
         from OFS.CopySupport import _cb_encode
 
         def make_data(lenght):
@@ -299,18 +306,17 @@ class TestCopySupport( CopySupportTestBase ):
                 (1, [''.join(random.sample(string.printable, 20))
                      for x in range(lenght)]))
         # Protect against DoS attack with too big data:
-        with self.assertRaises(CopyError) as err:
-            self.folder1.manage_pasteObjects(make_data(350))
-        self.assertTrue('Clipboard Error' in str(err.exception))
+        self.assertCopyError(
+            self.folder1.manage_pasteObjects, 'Clipboard Error',
+            make_data(350))
         # But not too much data is allowed:
-        with self.assertRaises(CopyError) as err:
-            self.folder1.manage_pasteObjects(make_data(300))
-        self.assertTrue('Item Not Found' in str(err.exception))
+        self.assertCopyError(
+            self.folder1.manage_pasteObjects, 'Item Not Found',
+            make_data(300))
 
         # _pasteObjects allows to paste without restriction:
-        with self.assertRaises(CopyError) as err:
-            self.folder1._pasteObjects(make_data(3500))
-        self.assertTrue('Item Not Found' in str(err.exception))
+        self.assertCopyError(
+            self.folder1._pasteObjects, 'Item Not Found', make_data(3500))
 
 
 class _SensitiveSecurityPolicy:
