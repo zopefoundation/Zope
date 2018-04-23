@@ -28,7 +28,7 @@ Supported versions
 Breaking changes
 ++++++++++++++++
 
-- The 'lines' property now type now always stores bytes on all Python versions.
+- The 'lines' property type now always stores bytes on all Python versions.
   (`#206 <https://github.com/zopefoundation/Zope/issues/206>`_)
 
 Bugfixes
