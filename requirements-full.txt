@@ -2,7 +2,7 @@
 AccessControl==4.0b4
 Acquisition==4.4.4
 AuthEncoding==4.0.0
-BTrees==4.4.1
+BTrees==4.5.0
 Chameleon==3.2
 DateTime==4.2
 DocumentTemplate==3.0b3
@@ -63,7 +63,7 @@ zope.formlib==4.4
 zope.globalrequest==1.4
 zope.i18n==4.3.1
 zope.i18nmessageid==4.1.0
-zope.interface==4.4.3
+zope.interface==4.5.0
 zope.lifecycleevent==4.2.0
 zope.location==4.1.0
 zope.pagetemplate==4.3.0
