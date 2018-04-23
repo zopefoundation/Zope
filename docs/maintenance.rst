@@ -79,3 +79,5 @@ Steps for creating a new Zope release
 - Add the newly created files and commit and push the changes.
 
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
+
+- Announce the release to the world.
