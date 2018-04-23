@@ -99,8 +99,7 @@ class TestPropertyManager(unittest.TestCase):
         self.assertEqual(pm.getProperty('test_lines'), (b'bar', b'baz'))
 
         pm._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(pm.getProperty('test_lines'), 
-                         (six.b('uni'), six.b('code')))
+        self.assertEqual(pm.getProperty('test_lines'), (b'uni', b'code'))
 
 
 class TestPropertySheet(unittest.TestCase):
@@ -137,7 +136,4 @@ class TestPropertySheet(unittest.TestCase):
         self.assertEqual(ps.getProperty('test_lines'), (b'bar', b'baz'))
 
         ps._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(ps.getProperty('test_lines'), 
-                         (six.b('uni'), six.b('code')))
-
-
+        self.assertEqual(ps.getProperty('test_lines'), (b'uni', b'code'))

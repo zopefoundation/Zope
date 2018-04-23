@@ -184,7 +184,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         elif type(val) in (str, unicode):
             self.assertFalse(
-                '<' in val,
+                should_be_tainted(val),
                 "'%s' is dangerous and should have been tainted." % val)
 
         return retval
