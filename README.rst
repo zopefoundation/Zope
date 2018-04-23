@@ -1,17 +1,20 @@
 .. image:: https://travis-ci.org/zopefoundation/Zope.svg?branch=master
         :target: https://travis-ci.org/zopefoundation/Zope
 
+.. image:: https://coveralls.io/repos/github/zopefoundation/Zope/badge.svg?branch=master
+        :target: https://coveralls.io/github/zopefoundation/Zope?branch=master
+
 .. image:: https://readthedocs.org/projects/zope/badge/?version=latest
         :target: https://zope.readthedocs.org/en/latest/
         :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/Zope.svg
         :target: https://pypi.org/project/Zope/
-        :alt: PyPI
+        :alt: Current version on PyPI
 
 .. image:: https://img.shields.io/pypi/pyversions/Zope.svg
         :target: https://pypi.org/project/Zope/
-        :alt: Python versions
+        :alt: Supported Python versions
 
 .. contents::
 
