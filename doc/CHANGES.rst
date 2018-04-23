@@ -8,7 +8,9 @@ http://docs.zope.org/zope2/
 2.13.28 (unreleased)
 --------------------
 
-- ...
+- Add ``OFS.CopySupport.CopyContainer._pasteObjects()`` to be able to paste
+  objects no matter how many objects where cut or copied.
+  (`#217 <https://github.com/zopefoundation/Zope/issues/217>`_)
 
 
 2.13.27 (2018-01-27)
