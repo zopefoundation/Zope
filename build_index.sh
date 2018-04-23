@@ -17,7 +17,7 @@ for tag in "master" $(git tag -l "4*" | sort -r); do
 done
 
 # Select 2.13 versions
-for tag in "2.13.27" "2.13.26"; do
+for tag in "2.13.28" "2.13.27" "2.13.26"; do
     echo $tag
     mkdir -p releases/$tag
     echo "[versions]" >releases/$tag/versions-prod.cfg
