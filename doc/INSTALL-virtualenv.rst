@@ -17,14 +17,14 @@ Create a Virtual Environment
    $ cd z213
 
 
-Install the Zope2 2.13.27 Software Packages
+Install the Zope2 2.13.28 Software Packages
 -------------------------------------------
 
 .. code-block:: sh
 
    $ bin/pip install \
     --no-binary zc.recipe.egg \
-    -r https://zopefoundation.github.io/Zope/releases/2.13.27/requirements.txt
+    -r https://zopefoundation.github.io/Zope/releases/2.13.28/requirements.txt
    Collecting Zope2
    ...
    Successfully installed ...
