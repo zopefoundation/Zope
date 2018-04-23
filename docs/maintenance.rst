@@ -80,4 +80,4 @@ Steps for creating a new Zope release
 
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
 
-- Announce the release to the world.
+- Announce the release to the world via zope-announce@zope.org and https://community.plone.org/c/announcements.
