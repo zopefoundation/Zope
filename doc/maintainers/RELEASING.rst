@@ -169,9 +169,13 @@ are no releases deleted by calling ``./build_index.sh``.)
 
 Check the result on https://zopefoundation.github.io/Zope/.
 
+Announce the release to the world.
+
 
 Create index on download.zope.org
 ---------------------------------
+
+This index is no longer used, as it does no work with `pip`. No need to create it any more.
 
 .. code-block:: bash
 
