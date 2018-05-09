@@ -11,7 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes
+++++++++
+
+- Fix comparison against non-ints in ZCacheable_getModTime.
 
 
 4.0b4 (2018-04-23)
