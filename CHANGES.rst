@@ -11,7 +11,7 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use log.warning to avoid deprecation warning for log.warn
 
 
 4.0b4 (2018-04-23)
