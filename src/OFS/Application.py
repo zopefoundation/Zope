@@ -370,10 +370,11 @@ def import_products():
     done = {}
     for priority, product_name, index, product_dir in get_products():
         if product_name in done:
-            LOG.warn('Duplicate Product name: '
-                     'After loading Product %r from %r, '
-                     'I skipped the one in %r.' % (
-                         product_name, done[product_name], product_dir))
+            LOG.warning(
+                'Duplicate Product name: '
+                'After loading Product %r from %r, '
+                'I skipped the one in %r.' % (
+                    product_name, done[product_name], product_dir))
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
