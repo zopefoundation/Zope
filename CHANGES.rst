@@ -16,6 +16,8 @@ Bugfixes
 
 - Fix comparison against non-ints in ZCacheable_getModTime.
 
+- Use log.warning to avoid deprecation warning for log.warn
+
 
 4.0b4 (2018-04-23)
 ------------------
