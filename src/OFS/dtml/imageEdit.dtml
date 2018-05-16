@@ -1,118 +1,71 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
+<main class="<dtml-var "meta_type.replace(' ', '-')"> <dtml-var "URL0[_.len(URL1)+1:]">">
 
-<p class="form-help">
-You can update the data for this &dtml-kind; using the form below. 
-Select a data file from your local computer by clicking the <em>browse</em> 
-button and click <em>upload</em> to update the contents of the &dtml-kind;.
-</p>
+    <p class="form-help">
+        You can update the data for this &dtml-kind; using the form below. 
+        Select a data file from your local computer by clicking the <em>browse</em> 
+        button and click <em>upload</em> to update the contents of the &dtml-kind;.
+    </p>
 
-<form action="&dtml-URL1;/manage_edit" method="post"
-  enctype="multipart/form-data">
-<table cellpadding="2" cellspacing="0" width="100%" border="0">
-<tr>
-  <td align="left" valign="top">
-  <div class="form-optional">
-  Title
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <input type="text" name="title" size="40" value="<dtml-if 
-   title>&dtml-title;</dtml-if>">
-  </td>
-</tr>
-
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Content Type
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <input type="text" name="content_type:required" size="40" value="<dtml-if 
-   content_type>&dtml-content_type;</dtml-if>">
-  </td>
-</tr>
-
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Preview
-  </div>
-  </td>
-  <td align="left" valign="top">
-    <dtml-if "_.same_type(height, 1) and height and height > 250">
-    <dtml-var "tag(scale=250.0 / height)">
-    <dtml-elif "_.same_type(height, 's') and height and _.int(height) > 250">
-    <dtml-var "tag(scale=250.0 / _.int(height))">
-    <dtml-else>
-    <dtml-var tag>
-    </dtml-if>
-  </td>
-</tr>
-
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  File Size
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  <dtml-var size thousands_commas> bytes
-  </div>
-  </td>
-</tr>
-
-<tr>
-  <td></td>
-  <td align="left" valign="top">
-  <div class="form-element">
-  <dtml-if wl_isLocked>
-   <em>Locked</em>
-  <dtml-else>
-   <input class="form-element" type="submit" name="submit"
-    value="Save Changes">
-  </dtml-if>
-  </div>
-  </td>
-</tr>
-
-</table>
-</form>
-
-<form action="&dtml-URL1;/manage_upload" method="post"
-  enctype="multipart/form-data">
-<table cellpadding="2" cellspacing="0" width="100%" border="0">
-<tr>
-  <td align="left" valign="top">
-  <br />
-  <div class="form-label">
-  File Data
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <br />
-  <input type="file" name="file" size="25" />
-  </td>
-</tr>
-
-<tr>
-  <td></td>
-  <td align="left" valign="top">
-  <div class="form-element">
-  <dtml-if wl_isLocked>
-   <em>Locked</em>
-  <dtml-else>
-   <input class="form-element" type="submit" name="submit"
-    value="Upload">
-  </dtml-if>
-  </div>
-  </td>
-</tr>
-
-</table>
-</form>
+    <form action="&dtml-URL1;/manage_edit" method="post" enctype="multipart/form-data" class="image metadata">
+        
+        <div class="form-group row">
+          <label for="title" class="col-sm-2">Title</label>
+          <div class="col-sm-10">
+              <input id="title" class="form-control" type="text" name="title" value="<dtml-if title>&dtml-title;</dtml-if>">
+          </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="content-type" class="col-sm-2">Content Type</label>
+            <div class="col-sm-10">
+                <input id="content-type" class="form-control" type="text" name="content_type:required" value="<dtml-if content_type>&dtml-content_type;</dtml-if>">
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="preview" class="col-sm-2">Preview</label>
+            <figure id="preview" class="figure col-sm-10">
+                <dtml-if "_.same_type(height, 1) and height and height > 250">
+                    <dtml-var "tag(scale=250.0 / height, css_class='img-thumbnail', id='preview')">
+                <dtml-elif "_.same_type(height, 's') and height and _.int(height) > 250">
+                    <dtml-var "tag(scale=250.0 / _.int(height), css_class='img-thumbnail', id='preview')">
+                <dtml-else>
+                    <dtml-var "tag(css_class='img-thumbnail', id='preview')">
+                </dtml-if>
+                <figcaption class="figure-caption">File Size: <dtml-var size thousands_commas> bytes</figcaption>
+            </figure>
+        </div>
+        
+        <div class="controls">
+            <dtml-if wl_isLocked>
+                <em>Locked</em>
+            <dtml-else>
+                <input class="btn btn-primary" type="submit" name="submit" value="Save Changes">
+            </dtml-if>
+        </div>
+    </form>
+    
+    <form action="&dtml-URL1;/manage_upload" method="post" enctype="multipart/form-data" class="image upload mt-5">
+        
+        <div class="form-group row">
+            <label for="file-data" class="col-sm-2">File Data</label>
+            <div class="col-sm-10">
+                <input id="file-data" class="form-control-file" type="file" name="file" />
+            </div>
+        </div>
+        
+        <div class="controls">
+            <dtml-if wl_isLocked>
+                <em>Locked</em>
+            <dtml-else>
+                <input class="btn btn-primary" type="submit" name="submit" value="Upload">
+            </dtml-if>
+        </div>
+        
+    </form>
+</main>
 
 <dtml-var manage_page_footer>
