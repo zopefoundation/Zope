@@ -9,7 +9,7 @@ from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user, nobody, system
 from AccessControl.User import User  # before SpecialUsers
 from Acquisition import aq_self, Implicit
-from six import PY2, PY3
+from six import PY2
 from zExceptions import BadRequest
 from zope.component.testing import PlacelessSetup
 from zope.interface import implementer
@@ -528,7 +528,7 @@ class TestCheckValidId(unittest.TestCase):
         self.assertEqual(str(e),
                          "('Empty or invalid id specified', '')")
 
-    @unittest.skipIf(PY3, 'Python 3 cannot handle bytestrings here.')
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
     def test_unicode_py2(self):
         e = self.assertBadRequest(u'abc☃')
         self.assertEqual(
@@ -538,7 +538,7 @@ class TestCheckValidId(unittest.TestCase):
     def test_unicode_py3(self):
         self._callFUT(self._makeContainer(), u'abc☃')
 
-    @unittest.skipIf(PY3, 'Python 3 cannot handle bytestrings here.')
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
     def test_encoded_unicode_py2(self):
         self._callFUT(self._makeContainer(), u'abcö'.encode('utf-8'))
 
@@ -549,7 +549,7 @@ class TestCheckValidId(unittest.TestCase):
                          "('Empty or invalid id specified', "
                          "b'abc\\xc3\\xb6')")
 
-    @unittest.skipIf(PY3, 'Python 3 cannot handle bytestrings here.')
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
     def test_unprintable_characters_py2(self):
         # We do not allow the first 31 ASCII characters. \x00-\x19
         # We do not allow the DEL character. \x7f
