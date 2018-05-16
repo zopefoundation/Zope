@@ -58,7 +58,7 @@ class TestRegisterClass(unittest.TestCase):
         from zope.security.interfaces import IPermission
 
         @implementer(IPermission)
-        class Perm:
+        class Perm(object):
 
             def __init__(self, title):
                 self. title = title

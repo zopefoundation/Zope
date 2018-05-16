@@ -14,13 +14,13 @@
 
 import logging
 import sys
-import re
-from socket import gethostbyaddr
 
 from six import PY2
 from ZConfig import ConfigurationError
 from zope.event import notify
 from zope.processlifetime import ProcessStarting
+
+from Zope2.Startup.handlers import _name_to_ips
 
 logger = logging.getLogger("Zope")
 
@@ -103,14 +103,3 @@ class WSGIStarter(object):
         # Import Zope
         import Zope2
         Zope2.startup_wsgi()
-
-
-def _name_to_ips(host, _is_ip=re.compile(r'(\d+\.){3}').match):
-    '''map a name *host* to the sequence of its ip addresses;
-    use *host* itself (as sequence) if it already is an ip address.
-    Thus, if only a specific interface on a host is trusted,
-    identify it by its ip (and not the host name).
-    '''
-    if _is_ip(host):
-        return [host]
-    return gethostbyaddr(host)[2]

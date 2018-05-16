@@ -40,7 +40,7 @@ _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
 
 
-class ProductContext:
+class ProductContext(object):
 
     def __init__(self, product, app, package):
         self.__prod = product

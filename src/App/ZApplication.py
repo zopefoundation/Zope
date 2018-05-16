@@ -42,6 +42,9 @@ class ZApplicationWrapper(object):
         return getattr(self._klass, name)
 
     def __bobo_traverse__(self, REQUEST=None, name=None):
+        # This is only called by ZServer.ZPublisher.Publish,
+        # as the app in the module_info is used directly.
+
         conn = self._db.open()
 
         # arrange for the connection to be closed when the request goes away
@@ -63,6 +66,9 @@ class ZApplicationWrapper(object):
         return v
 
     def __call__(self, connection=None):
+        # This is only called by ZPublisher.WSGIPublisher,
+        # as load_app calls the app object present in the module_info.
+
         db = self._db
         if connection is None:
             connection = db.open()
@@ -72,7 +78,7 @@ class ZApplicationWrapper(object):
         return connection.root()[self._name]
 
 
-class Cleanup:
+class Cleanup(object):
     def __init__(self, jar):
         self._jar = jar
 

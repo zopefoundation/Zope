@@ -80,13 +80,18 @@ def rewriteBeforeTraverse(container, btr):
         bpth.add(btr[key])
 
 
-class MultiHook:
+class MultiHook(object):
     """Class used to multiplex hook.
 
     MultiHook calls the named hook from the class of the container, then
     the prior hook, then all the hooks in its list.
     """
-    def __init__(self, hookname, prior, defined_in_class):
+    def __init__(self, hookname='<undefined hookname>', prior=None,
+                 defined_in_class=False):
+        # The default values are needed for unpickling instances of this class
+        # which where created before 4.0b2 where this class was still an old
+        # style class. For details see
+        # https://github.com/zopefoundation/Zope/issues/205
         self._hookname = hookname
         self._prior = prior
         self._defined_in_class = defined_in_class
@@ -110,7 +115,7 @@ class MultiHook:
         self._list.append(cob)
 
 
-class NameCaller:
+class NameCaller(object):
     """Class used to proxy sibling objects by name.
 
     When called with a container and request object, it gets the named
@@ -120,7 +125,11 @@ class NameCaller:
     >>> registerBeforeTraverse(folder, NameCaller('preop'), 'XApp')
     """
 
-    def __init__(self, name):
+    def __init__(self, name='<undefined name>'):
+        # The default value is needed for unpickling instances of this class
+        # which where created before 4.0b2 where this class was still an old
+        # style class. For details see
+        # https://github.com/zopefoundation/Zope/issues/205
         self.name = name
 
     def __call__(self, container, request):

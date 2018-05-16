@@ -24,7 +24,6 @@ available:
   installed from system-level packages.  Supported versions include:
 
   * 2.7
-  * 3.4
   * 3.5
   * 3.6
 
@@ -48,9 +47,9 @@ Installing the Zope software
 Installing the Zope software using ``zc.buildout`` involves the following
 steps:
 
-- Download the Zope 2 source distribution from `PyPI`__
+- Download the Zope source distribution from `PyPI`__
 
-  __ https://pypi.python.org/pypi/Zope2
+  __ https://pypi.org/project/Zope/
 
 - Bootstrap the buildout
 
@@ -58,15 +57,24 @@ steps:
 
 On Linux, this can be done as follows::
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
-  $ tar xfvz Zope2-<Zope version>.tar.gz
-  $ cd Zope2-<Zope version>
+  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-<Zope version>.tar.gz
+  $ tar xfvz Zope-<Zope version>.tar.gz
+  $ cd Zope-<Zope version>
   $ /path/to/your/python bootstrap.py
-  $ bin/buildout
+  $ bin/buildout -n
 
 
 Creating a Zope instance
 ::::::::::::::::::::::::
+
+.. attention::
+
+  The following steps describe how to install a WSGI based Zope instance.
+  If you want/have to use ZServer instead of WSGI (Python 2 only!) follow
+  the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
+  changed since that version.
+
+.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-buildout.html#creating-a-zope-instance
 
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a

@@ -10,8 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+import io
 import unittest
 
+import transaction
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
@@ -252,7 +254,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.traversing.interfaces import ITraversable
         from zope.traversing.namespace import view
 
-        class TestView:
+        class TestView(object):
             __name__ = 'testing'
 
             def __init__(self, context, request):
@@ -294,6 +296,19 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(_response._finalized)
         self.assertEqual(_after1._called_with, ((), {}))
         self.assertEqual(_after2._called_with, ((), {}))
+
+    def test_publish_returns_data_witten_to_response_before_body(self):
+        # This also happens if publish creates a new response object.
+        from ZPublisher.HTTPResponse import WSGIResponse
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        def _publish(request, mod_info):
+            response = WSGIResponse()
+            response.write(b'WRITTEN')
+            response.body = b'BODY'
+            return response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertEqual(app_iter, (b'WRITTEN', b'BODY'))
 
     def test_raises_unauthorized(self):
         from zExceptions import Unauthorized
@@ -516,6 +531,76 @@ class TestPublishModule(ZopeTestCase):
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
 
+    def testHandleErrorsFalseBypassesExceptionResponse(self):
+        from AccessControl import Unauthorized
+        environ = self._makeEnviron(**{
+            'x-wsgiorg.throw_errors': True,
+        })
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = Unauthorized('argg')
+        with self.assertRaises(Unauthorized):
+            self._callFUT(environ, start_response, _publish)
+
+
+class TestLoadApp(unittest.TestCase):
+
+    def _getTarget(self):
+        from ZPublisher.WSGIPublisher import load_app
+        return load_app
+
+    def _makeModuleInfo(self):
+        class Connection(object):
+            def close(self):
+                pass
+
+        class App(object):
+            _p_jar = Connection()
+
+        return (App, 'Zope', False)
+
+    def test_open_transaction_is_aborted(self):
+        load_app = self._getTarget()
+
+        transaction.begin()
+        self.assertIsNotNone(transaction.manager._txn)
+        with load_app(self._makeModuleInfo()):
+            pass
+        self.assertIsNone(transaction.manager._txn)
+
+    def test_no_second_transaction_is_created_if_closed(self):
+        load_app = self._getTarget()
+
+        class TransactionCounter(object):
+
+            after = 0
+            before = 0
+
+            def newTransaction(self, transaction):
+                pass
+
+            def beforeCompletion(self, transaction):
+                self.before += 1
+
+            def afterCompletion(self, transaction):
+                self.after += 1
+
+            def counts(self):
+                return (self.after, self.before)
+
+        counter = TransactionCounter()
+        self.addCleanup(lambda: transaction.manager.unregisterSynch(counter))
+
+        transaction.manager.registerSynch(counter)
+
+        transaction.begin()
+        self.assertIsNotNone(transaction.manager._txn)
+        with load_app(self._makeModuleInfo()):
+            transaction.abort()
+
+        self.assertIsNone(transaction.manager._txn)
+        self.assertEqual(counter.counts(), (1, 1))
+
 
 class CustomExceptionView(object):
 
@@ -565,6 +650,9 @@ class DummyResponse(object):
     _finalized = False
     _status = '204 No Content'
     _headers = [('Content-Length', '0')]
+
+    def __init__(self):
+        self.stdout = io.BytesIO()
 
     def finalize(self):
         self._finalized = True

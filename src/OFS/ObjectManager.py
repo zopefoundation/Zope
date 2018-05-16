@@ -14,8 +14,8 @@
 """
 
 from io import BytesIO
+from operator import itemgetter
 from logging import getLogger
-import collections
 import copy
 import fnmatch
 import marshal
@@ -212,8 +212,7 @@ class ObjectManager(CopyContainer,
                         mt.append(t)
             except Exception:
                 pass
-        mt.sort()
-        self.meta_types = tuple(mt)
+        self.meta_types = tuple(sorted(mt, key=itemgetter('name')))
 
         InitializeClass(self)
 
@@ -271,7 +270,7 @@ class ObjectManager(CopyContainer,
         # adequate permission to add that type of object.
         sm = getSecurityManager()
         meta_types = []
-        if isinstance(self.all_meta_types, collections.Callable):
+        if callable(self.all_meta_types):
             all = self.all_meta_types()
         else:
             all = self.all_meta_types
@@ -857,7 +856,7 @@ def findChildren(obj, dirname=''):
     return lst
 
 
-class IFAwareObjectManager:
+class IFAwareObjectManager(object):
 
     def all_meta_types(self, interfaces=None):
 

@@ -20,7 +20,6 @@ from Acquisition import aq_base, aq_parent
 
 # BBB
 from os.path import realpath  # NOQA
-import collections
 attrget = getattr
 
 # These are needed because the various date formats below must
@@ -72,7 +71,7 @@ def rfc1123_date(ts=None):
 def absattr(attr, callable=callable):
     # Return the absolute value of an attribute,
     # calling the attr if it is callable.
-    if isinstance(attr, collections.Callable):
+    if callable(attr):
         return attr()
     return attr
 

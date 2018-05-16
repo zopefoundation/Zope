@@ -351,7 +351,7 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
     def testPreferredCharsetResolverWithoutRequestAndWithEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
-        class ContextMock:
+        class ContextMock(object):
             management_page_charset = 'utf-8'
         result = PreferredCharsetResolver.resolve(ContextMock(), 'üöä', None)
         self.assertEqual(result, u'üöä')

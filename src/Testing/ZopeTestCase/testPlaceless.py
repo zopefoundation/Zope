@@ -49,7 +49,7 @@ class IAdapted(Interface):
 
 
 @implementer(IAdaptable)
-class Adaptable:
+class Adaptable(object):
 
     def method(self):
         return "The method"
@@ -57,7 +57,7 @@ class Adaptable:
 
 @implementer(IAdapted)
 @adapter(IAdaptable)
-class Adapter:
+class Adapter(object):
 
     def __init__(self, context):
         self.context = context

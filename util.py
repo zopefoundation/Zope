@@ -28,11 +28,11 @@ def generate(in_, out):
     requirements = []
     versions = parser.items('versions')
     zope_requirement = (
-        '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope2\n')
+        '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
     for name, pin in versions:
-        if name == 'Zope2':
+        if name == 'Zope':
             if pin:
-                zope_requirement = 'Zope2==%s\n' % pin
+                zope_requirement = 'Zope==%s\n' % pin
             continue
 
         if not pin:

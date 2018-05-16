@@ -1,13 +1,20 @@
-Installing Zope with ``virtualenv``
+Installing Zope in a ``virtualenv``
 ===================================
 
 .. highlight:: bash
 
-This document describes how to install Zope into a ``virtualenv``.
+This document describes how to install Zope into a ``virtualenv`` using ``pip``.
 
 
 Create a Virtual Environment
 ----------------------------
+
+.. code-block:: sh
+
+   $ python3.6 -m venv zope
+   $ cd zope
+
+If you are still using Python 2.7 install `virtualenv` onto your system then call:
 
 .. code-block:: sh
 
@@ -17,24 +24,34 @@ Create a Virtual Environment
    $ cd zope
 
 
-Install the Zope2 Software Packages
------------------------------------
+Install the Zope Software Packages
+----------------------------------
 
 Look for the release you want to install on
-https://github.com/zopefoundation/Zope/releases. Than use the specific
-version in the URL, replacing 4.0a5 in the example below:
+https://zopefoundation.github.io/Zope/. Than use the specific
+version of ``requirements-full.txt`` in the URL, replacing 4.0b4 in the example below:
 
 .. code-block:: sh
 
    $ bin/pip install \
-   -r https://raw.githubusercontent.com/zopefoundation/Zope/4.0a5/requirements-full.txt
-   Obtaining Zope2
+   -r https://zopefoundation.github.io/Zope/releases/4.0b4/requirements-full.txt
+   Obtaining Zope
    ...
    Successfully installed ...
 
 
 Creating a Zope instance
 ------------------------
+
+.. attention::
+
+  The following steps describe how to install a WSGI based Zope instance.
+  If you want/have to use ZServer instead of WSGI (Python 2 only!) follow
+  the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
+  changed since that version.
+
+.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-virtualenv.html#creating-a-zope-instance
+
 
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a

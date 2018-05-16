@@ -59,7 +59,7 @@ class TestFolder(Folder):
         pass  # Always allow
 
 
-class EventLayer:
+class EventLayer(object):
 
     @classmethod
     def setUp(cls):

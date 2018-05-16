@@ -143,15 +143,20 @@ def transaction_pubevents(request, response, tm=transaction.manager):
         # Create new exc_info with the upgraded exception.
         exc_info = (exc_type, exc, sys.exc_info()[2])
 
-        if isinstance(exc, Unauthorized):
-            # _unauthorized modifies the response in-place. If this hook
-            # is used, an exception view for Unauthorized has to merge
-            # the state of the response and the exception instance.
-            exc.setRealm(response.realm)
-            response._unauthorized()
-            response.setStatus(exc.getStatus())
-
         try:
+            # Raise exception from app if handle-errors is False
+            # (set by zope.testbrowser in some cases)
+            if request.environ.get('x-wsgiorg.throw_errors', False):
+                reraise(*exc_info)
+
+            if isinstance(exc, Unauthorized):
+                # _unauthorized modifies the response in-place. If this hook
+                # is used, an exception view for Unauthorized has to merge
+                # the state of the response and the exception instance.
+                exc.setRealm(response.realm)
+                response._unauthorized()
+                response.setStatus(exc.getStatus())
+
             # Handle exception view
             exc_view_created = _exc_view_created_response(
                 exc, request, response)
@@ -218,7 +223,10 @@ def load_app(module_info):
     try:
         yield (app, realm, debug_mode)
     finally:
-        transaction.abort()
+        if transaction.manager._txn is not None:
+            # Only abort a transaction, if one exists. Otherwise the
+            # abort creates a new transaction just to abort it.
+            transaction.abort()
         app._p_jar.close()
 
 
@@ -282,8 +290,8 @@ def publish_module(environ, start_response,
             result = response.body
         else:
             # If somebody used response.write, that data will be in the
-            # stdout BytesIO, so we put that before the body.
-            result = (stdout.getvalue(), response.body)
+            # response.stdout BytesIO, so we put that before the body.
+            result = (response.stdout.getvalue(), response.body)
 
         for func in response.after_list:
             func()

@@ -27,7 +27,6 @@ from ExtensionClass import Base
 from zope.interface import implementer
 
 from OFS.interfaces import IFindSupport
-import collections
 
 
 @implementer(IFindSupport)
@@ -212,6 +211,6 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
 
 
 def absattr(attr):
-    if isinstance(attr, collections.Callable):
+    if callable(attr):
         return attr()
     return attr

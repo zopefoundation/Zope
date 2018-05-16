@@ -5,6 +5,7 @@
   <!-- type definitions -->
 
   <import package="ZODB"/>
+  <import package="tempstorage" condition="tempstorage"/>
 
   <sectiontype name="environment"
                datatype=".environment"

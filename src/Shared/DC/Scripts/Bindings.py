@@ -34,7 +34,7 @@ defaultBindings = {'name_context': 'context',
 _marker = []  # Create a new marker
 
 
-class NameAssignments:
+class NameAssignments(object):
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
@@ -50,10 +50,17 @@ class NameAssignments:
 
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, mapping):
+    def __init__(self, mapping=None):
         # mapping is presumably the REQUEST or compatible equivalent.
         # Note that we take care not to store expression texts in the ZODB.
+
+        # The default value is needed for unpickling instances of this class
+        # which where created before 4.0b2 where this class was still an old
+        # style class. For details see
+        # https://github.com/zopefoundation/Zope/issues/205
         asgns = {}
+        if mapping is None:
+            mapping = {}
         _isLegalName = self._isLegalName
         for name, expr in self._exprs:
             if name in mapping:
@@ -149,7 +156,7 @@ class NameAssignments:
         return self._generateCodeBlock(text, assigned_names)
 
 
-class UnauthorizedBinding:
+class UnauthorizedBinding(object):
     """Explanation: as of Zope 2.6.3 a security hole was closed - no
        security check was happening when 'context' and 'container'
        were bound to a script. Adding the check broke lots of sites
@@ -198,7 +205,7 @@ class UnauthorizedBinding:
     __str__ = __call__ = index_html = __you_lose
 
 
-class Bindings:
+class Bindings(object):
 
     security = ClassSecurityInfo()
 

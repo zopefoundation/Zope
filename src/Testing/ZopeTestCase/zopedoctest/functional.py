@@ -21,6 +21,7 @@ import re
 import sys
 import warnings
 
+from six import text_type
 import transaction
 
 from Testing.ZopeTestCase import ZopeTestCase
@@ -91,6 +92,12 @@ class DocResponseWrapper(ResponseWrapper):
         ResponseWrapper.__init__(self, response, outstream, path,
                                  wsgi_result, wsgi_headers)
         self.header_output = header_output
+
+    def __str__(self):
+        body = self._decode(self.getBody())
+        if body:
+            return "%s\n\n%s" % (self.header_output, body)
+        return "%s\n" % (self.header_output)
 
 
 basicre = re.compile(r'Basic (.+)?:(.+)?$')
@@ -172,11 +179,11 @@ def http(request_string, handle_errors=True):
     headers = msg.items()
     body = msg.get_payload()
 
-    if isinstance(body, bytes):
-        body = body.decode('utf-8')
+    if isinstance(body, text_type):
+        body = body.encode('utf-8')
 
     # Store request body without headers
-    instream = BytesIO(body.encode('utf-8'))
+    instream = BytesIO(body)
 
     for name, value in headers:
         name = ('_'.join(name.upper().split('-')))
@@ -186,6 +193,10 @@ def http(request_string, handle_errors=True):
 
     if 'HTTP_AUTHORIZATION' in env:
         env['HTTP_AUTHORIZATION'] = auth_header(env['HTTP_AUTHORIZATION'])
+
+    if not handle_errors:
+        # Tell the publisher to skip exception views
+        env['x-wsgiorg.throw_errors'] = True
 
     outstream = BytesIO()
     response = WSGIResponse(stdout=outstream, stderr=sys.stderr)

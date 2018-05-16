@@ -30,7 +30,7 @@ def test_view_with_unwrapped_context():
     >>> from zope.interface import implementer
     >>> from zope.component import queryMultiAdapter
     >>> @implementer(sc.ISimpleContent)
-    ... class Unwrapped:
+    ... class Unwrapped(object):
     ...     pass
     >>> unwrapped = Unwrapped()
 

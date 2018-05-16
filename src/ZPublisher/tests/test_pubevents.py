@@ -251,7 +251,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
 
     def test_BeforeAbort_and_Failure_events_can_access_zope_globalRequest(self):
         self.expected_exception_type = zExceptions.NotFound
-        response = self.publish('/')
+        response = self.publish('/notexisting')
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
@@ -260,14 +260,14 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.expected_exception_type = zExceptions.NotFound
         # zope.globalrequest works inside an exception view.
         self._registerExceptionView(INotFound)
-        response = self.publish('/')
+        response = self.publish('/notexisting')
         self.assertEqual(response._response.events,
                          ['PubStart', 'exc_view',
                           'PubBeforeAbort', 'PubFailure'])
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost>")
+            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost/notexisting>")
 
     def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
         self.expected_exception_type = zExceptions.HTTPVersionNotSupported
@@ -325,6 +325,7 @@ class _Request(BaseRequest):
     response = WSGIResponse()
     _hacked_path = False
     args = ()
+    environ = {}
 
     def __init__(self, *args, **kw):
         BaseRequest.__init__(self, *args, **kw)

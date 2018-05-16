@@ -26,37 +26,39 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-__version__ = '4.0a7.dev0'
+version = '4.0b5.dev0'
 
 setup(
-    name='Zope2',
-    version=__version__,
+    name='Zope',
+    version=version,
     url='https://zope.readthedocs.io/en/latest/',
     license='ZPL 2.1',
-    description='Zope2 application server / web framework',
+    description='Zope application server / web framework',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     long_description="\n\n".join([README, CHANGES]),
     classifiers=[
         'Development Status :: 6 - Mature',
         "Environment :: Web Environment",
-        "Framework :: Zope2",
+        "Framework :: Zope :: 4",
+        "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC'],
     package_dir={'': 'src'},
     install_requires=[
-        'AccessControl>=4.0a4',
+        'AccessControl >= 4.0b4',
         'Acquisition',
         'BTrees',
         'DateTime',
@@ -68,6 +70,7 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
+        'ipaddress',
         'setuptools',
         'six',
         'transaction',

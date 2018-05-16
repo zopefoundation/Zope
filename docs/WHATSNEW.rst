@@ -27,19 +27,21 @@ found in this release.
 Python versions
 ---------------
 
-Zope 4 supports both Python 2.7 and Python 3.4, 3.5 or 3.6. While PyPy
+Zope 4 supports both Python 2.7 and Python 3.5 or 3.6. While PyPy
 is supported by some of the underlying dependencies, it is incompatible
-with a couple of the foundational C extensions. As a result Zope as a
-whole is not compatible with PyPy.
+with a couple of the foundational C extensions and with `RestrictedPython`.
+As a result Zope as a whole is not compatible with PyPy.
 
 The Python 3 support currently covers the core dependencies shipped
 with Zope and is limited to the new WSGI based publisher. The new
 external ZServer project is currently limited to Python 2.7 compatibility
 and likely to stay that way.
 
-Python 3 support is also only offered for new installations of Zope,
-as there is so far no database migration tool in place.
+Python 3 support is mainly offered for new installations of Zope,
+as there is so far only an experimental database migration tool in place,
+see `zodb.py3migrate`_.
 
+.. _`zodb.py3migrate` : https://pypi.org/project/zodb.py3migrate
 
 Recommended WSGI setup
 ----------------------
@@ -84,10 +86,10 @@ Error rendered as a normal HTML response.
     would expect a ``Redirect``, the following might help you.
 
     Although the ``zope.ini`` created by ``mkwsgiinstance`` includes
-    ``egg:Zope2#httpexceptions`` as part of the pipeline, this might not be
+    ``egg:Zope#httpexceptions`` as part of the pipeline, this might not be
     sufficient for existing projects. In case your project has configured a
     middleware handling and creating error views for HTTP exceptions, you need
-    to make sure that ``egg:Zope2#httpexceptions`` runs before that middleware.
+    to make sure that ``egg:Zope#httpexceptions`` runs before that middleware.
     Otherwise a ``Redirect`` might not be handled as such. This can result in a
     non-functional ZMI.
 

@@ -16,7 +16,6 @@
       >
 
     <browser:page name="index.html"  template="adding.pt" />
-    <browser:page name="action.html" attribute="action" />
 
   </browser:view>
 

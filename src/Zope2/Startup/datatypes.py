@@ -212,7 +212,7 @@ def default_zpublisher_encoding(value):
     return value
 
 
-class DBTab:
+class DBTab(object):
     """A Zope database configuration, similar in purpose to /etc/fstab.
     """
 

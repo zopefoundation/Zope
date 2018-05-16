@@ -12,8 +12,8 @@
 #
 ##############################################################################
 
+import ipaddress
 import os
-import re
 from socket import gethostbyaddr
 
 from zope.deferredimport import deprecated
@@ -94,16 +94,20 @@ def root_wsgi_handler(cfg):
         HTTPRequest.retry_max_count = 3
 
 
-def _name_to_ips(host, _is_ip=re.compile(r'(\d+\.){3}').match):
-    """Map a name *host* to the sequence of its ip addresses.
+def _name_to_ips(host):
+    """Map a name *host* to the sequence of its IP addresses.
 
-    use *host* itself (as sequence) if it already is an ip address.
+    Use *host* itself (as sequence) if it already is an IP address.
     Thus, if only a specific interface on a host is trusted,
-    identify it by its ip (and not the host name).
+    identify it by its IP (and not the host name).
     """
-    if _is_ip(host):
-        return [host]
-    return gethostbyaddr(host)[2]
+    if isinstance(host, bytes):
+        host = host.decode('utf-8')
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return gethostbyaddr(host)[2]
+    return [str(ip)]
 
 
 def handleWSGIConfig(cfg, multihandler):

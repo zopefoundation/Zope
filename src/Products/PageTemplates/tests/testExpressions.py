@@ -1,8 +1,7 @@
 # *-* coding: iso-8859-1 -*-
 
-import sys
 import unittest
-from six import text_type, binary_type
+from six import text_type
 
 from zope.component.testing import PlacelessSetup
 
@@ -24,14 +23,14 @@ class EngineTestsBase(PlacelessSetup):
 
     def _makeContext(self, bindings=None):
 
-        class Dummy:
+        class Dummy(object):
             __allow_access_to_unprotected_subobjects__ = 1
             management_page_charset = 'utf-8'
 
             def __call__(self):
                 return 'dummy'
 
-        class DummyDocumentTemplate:
+        class DummyDocumentTemplate(object):
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
 
@@ -89,6 +88,15 @@ class EngineTestsBase(PlacelessSetup):
     def test_evaluate_with_render_simple_callable(self):
         ec = self._makeContext()
         self.assertEqual(ec.evaluate('dummy'), 'dummy')
+
+    def test_evaluate_with_unimplemented_call(self):
+        class Dummy(object):
+            def __call__(self):
+                raise NotImplementedError()
+
+        dummy = Dummy()
+        ec = self._makeContext(bindings={'dummy': dummy})
+        self.assertIs(ec.evaluate('dummy'), dummy)
 
     def test_evaluate_with_render_DTML_template(self):
         # http://www.zope.org/Collectors/Zope/2232
@@ -279,7 +287,7 @@ class ZopeContextTests(unittest.TestCase):
         return self._getTargetClass()(engine, contexts)
 
     def _makeEngine(self):
-        class DummyEngine:
+        class DummyEngine(object):
             pass
         return DummyEngine()
 

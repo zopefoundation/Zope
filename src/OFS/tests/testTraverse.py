@@ -16,7 +16,7 @@
 import unittest
 
 
-class UnitTestSecurityPolicy:
+class UnitTestSecurityPolicy(object):
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -29,7 +29,7 @@ class UnitTestSecurityPolicy:
         return 1
 
 
-class CruelSecurityPolicy:
+class CruelSecurityPolicy(object):
     """Denies everything
     """
     #   Standard SecurityPolicy interface
@@ -41,7 +41,7 @@ class CruelSecurityPolicy:
         return 0
 
 
-class ProtectedMethodSecurityPolicy:
+class ProtectedMethodSecurityPolicy(object):
     """Check security strictly on bound methods.
     """
     def validate(self, accessed, container, name, value, *args):

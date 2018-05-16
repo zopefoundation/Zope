@@ -1,10 +1,10 @@
 [app:zope]
-use = egg:Zope2#main
+use = egg:Zope#main
 zope_conf = %(here)s/wsgi.conf
 
 [pipeline:main]
 pipeline =
-    egg:Zope2#httpexceptions
+    egg:Zope#httpexceptions
     zope
 
 [server:main]

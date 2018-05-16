@@ -47,6 +47,11 @@
 </div>
 </td>
 </tr>
+<tr>
+  <td align="center">
+    <strong><a href="manage_menu">Refresh menu</a></strong>
+  </td>
+</tr>
 </table>
 
 <dtml-var manage_page_footer>

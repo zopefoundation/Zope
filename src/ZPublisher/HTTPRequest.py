@@ -16,20 +16,14 @@
 
 from cgi import FieldStorage
 import codecs
-import collections
 from copy import deepcopy
 import os
-from os import unlink
-from os.path import isfile
 import random
 import re
-from tempfile import (
-    mkstemp,
-    _TemporaryFileWrapper,
-)
 import time
 
-from AccessControl.tainted import TaintedString
+from AccessControl.tainted import should_be_tainted
+from AccessControl.tainted import taint_string
 import pkg_resources
 from six import binary_type
 from six import PY2
@@ -462,11 +456,11 @@ class HTTPRequest(BaseRequest):
             parse_cookie(k, cookies)
             for k, v in cookies.items():
                 istainted = 0
-                if '<' in k:
-                    k = TaintedString(k)
+                if should_be_tainted(k):
+                    k = taint_string(k)
                     istainted = 1
-                if '<' in v:
-                    v = TaintedString(v)
+                if should_be_tainted(v):
+                    v = taint_string(v)
                     istainted = 1
                 if istainted:
                     taintedcookies[k] = v
@@ -511,7 +505,7 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs = ZopeFieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
@@ -632,8 +626,8 @@ class HTTPRequest(BaseRequest):
 
                 # If the key is tainted, mark it so as well.
                 tainted_key = key
-                if '<' in key:
-                    tainted_key = TaintedString(key)
+                if should_be_tainted(key):
+                    tainted_key = taint_string(key)
 
                 if flags:
 
@@ -648,11 +642,11 @@ class HTTPRequest(BaseRequest):
 
                         # Update the tainted_key if necessary
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
 
                         # Attributes cannot hold a <.
-                        if '<' in attr:
+                        if should_be_tainted(attr):
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
                                 escape(attr, True))
@@ -678,16 +672,16 @@ class HTTPRequest(BaseRequest):
                             # Flag potentially unsafe values
                             if converter_type in ('string', 'required', 'text',
                                                   'ustring', 'utext'):
-                                if not isFileUpload and '<' in item:
-                                    tainted = TaintedString(item)
+                                if not isFileUpload and should_be_tainted(item):
+                                    tainted = taint_string(item)
                             elif converter_type in ('tokens', 'lines',
                                                     'utokens', 'ulines'):
                                 is_tainted = 0
                                 tainted = item[:]
                                 for i in range(len(tainted)):
-                                    if '<' in tainted[i]:
+                                    if should_be_tainted(tainted[i]):
                                         is_tainted = 1
-                                        tainted[i] = TaintedString(tainted[i])
+                                        tainted[i] = taint_string(tainted[i])
                                 if not is_tainted:
                                     tainted = None
 
@@ -708,13 +702,13 @@ class HTTPRequest(BaseRequest):
                             else:
                                 raise
 
-                    elif not isFileUpload and '<' in item:
+                    elif not isFileUpload and should_be_tainted(item):
                         # Flag potentially unsafe values
-                        tainted = TaintedString(item)
+                        tainted = taint_string(item)
 
                     # If the key is tainted, we need to store stuff in the
                     # tainted dict as well, even if the value is safe.
-                    if '<' in tainted_key and tainted is None:
+                    if should_be_tainted(tainted_key) and tainted is None:
                         tainted = item
 
                     # Determine which dictionary to use
@@ -916,9 +910,9 @@ class HTTPRequest(BaseRequest):
                     # This branch is for case when no type was specified.
                     mapping_object = form
 
-                    if not isFileUpload and '<' in item:
-                        tainted = TaintedString(item)
-                    elif '<' in key:
+                    if not isFileUpload and should_be_tainted(item):
+                        tainted = taint_string(item)
+                    elif should_be_tainted(key):
                         tainted = item
 
                     # Insert in dictionary
@@ -964,8 +958,8 @@ class HTTPRequest(BaseRequest):
             if defaults:
                 for key, value in defaults.items():
                     tainted_key = key
-                    if '<' in key:
-                        tainted_key = TaintedString(key)
+                    if should_be_tainted(key):
+                        tainted_key = taint_string(key)
 
                     if key not in form:
                         # if the form does not have the key,
@@ -1116,8 +1110,8 @@ class HTTPRequest(BaseRequest):
                     if k in form:
                         # If the form has the split key get its value
                         tainted_split_key = k
-                        if '<' in k:
-                            tainted_split_key = TaintedString(k)
+                        if should_be_tainted(k):
+                            tainted_split_key = taint_string(k)
                         item = form[k]
                         if isinstance(item, record):
                             # if the value is mapped to a record, check if it
@@ -1151,8 +1145,8 @@ class HTTPRequest(BaseRequest):
                     else:
                         # the form does not have the split key
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
                         if key in form:
                             # if it has the original key, get the item
                             # convert it to a tuple
@@ -1220,7 +1214,7 @@ class HTTPRequest(BaseRequest):
         # to ensure we are getting the actual object named by
         # the given url, and not some kind of default object.
         if hasattr(object, 'id'):
-            if isinstance(object.id, collections.Callable):
+            if callable(object.id):
                 name = object.id()
             else:
                 name = object.id
@@ -1359,7 +1353,7 @@ class HTTPRequest(BaseRequest):
         if self._lazies:
             v = self._lazies.get(key, _marker)
             if v is not _marker:
-                if isinstance(v, collections.Callable):
+                if callable(v):
                     v = v()
                 self[key] = v  # Promote lazy value
                 del self._lazies[key]
@@ -1477,7 +1471,7 @@ class HTTPRequest(BaseRequest):
             result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>cookies</h3><table>"
         for k, v in _filterPasswordFields(self.cookies.items()):
-            result = result + row % (escape(k, False), escape(repr(v, False)))
+            result = result + row % (escape(k, False), escape(repr(v), False))
         result = result + "</table><h3>lazy items</h3><table>"
         for k, v in _filterPasswordFields(self._lazies.items()):
             result = result + row % (escape(k, False), escape(repr(v), False))
@@ -1641,34 +1635,8 @@ def sane_environment(env):
     return dict
 
 
-class TemporaryFileWrapper(_TemporaryFileWrapper):
-    """
-    Variant of tempfile._TemporaryFileWrapper that doesn't rely on the
-    automatic Windows behavior of deleting closed files, which even
-    happens, when the file has been moved -- e.g. to the blob storage,
-    and doesn't complain about such a move either.
-    """
+ZopeFieldStorage = FieldStorage  # BBB
 
-    if PY2:
-        unlink = staticmethod(unlink)
-        isfile = staticmethod(isfile)
-
-        def close(self):
-            if not self.close_called:
-                self.close_called = True
-                self.file.close()
-
-        def __del__(self):
-            self.close()
-            if self.isfile(self.name):
-                self.unlink(self.name)
-
-
-class ZopeFieldStorage(FieldStorage):
-
-    def make_file(self, binary=None):
-        handle, name = mkstemp()
-        return TemporaryFileWrapper(os.fdopen(handle, 'w+b'), name)
 
 # Original version: zope.publisher.browser.FileUpload
 class FileUpload(object):
@@ -1797,16 +1765,21 @@ class record(object):
                    'keys',
                    'items',
                    'values',
-                   'copy',
-                   'has_key',
-                   '__contains__',
-                   '__iter__',
-                   '__len__'):
+                   'copy'):
             return getattr(self.__dict__, key)
         raise AttributeError(key)
 
+    def __contains__(self, key):
+        return key in self.__dict__
+
     def __getitem__(self, key):
         return self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
 
     def __str__(self):
         return ", ".join("%s: %s" % item for item in

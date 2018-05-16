@@ -92,6 +92,10 @@ class Functional(sandbox.Sandboxed):
         if basic:
             env['HTTP_AUTHORIZATION'] = basic_auth_encode(basic)
 
+        if not handle_errors:
+            # Tell the publisher to skip exception views
+            env['x-wsgiorg.throw_errors'] = True
+
         if stdin is None:
             stdin = BytesIO()
 
@@ -149,17 +153,7 @@ class ResponseWrapper(object):
         return self.getOutput()
 
     def __str__(self):
-        out = self.getOutput()
-        if PY2:
-            return out
-        # This is a hack. This method is called to print a response
-        # as part of a doctest. But if that response contains an
-        # actual binary body, like a GIF image, there's no good
-        # way to print that into the doctest output.
-        try:
-            return out.decode('utf-8')
-        except UnicodeDecodeError:
-            return out.decode('latin-1')
+        return self._decode(self.getOutput())
 
     def getOutput(self):
         '''Returns the complete output, headers and all.'''
@@ -180,3 +174,15 @@ class ResponseWrapper(object):
     def getCookie(self, name):
         '''Returns a response cookie.'''
         return self.cookies.get(name)
+
+    def _decode(self, data):
+        if PY2:
+            return data
+        # This is a hack. This method is called to print a response
+        # as part of a doctest. But if that response contains an
+        # actual binary body, like a GIF image, there's no good
+        # way to print that into the doctest output.
+        try:
+            return data.decode('utf-8')
+        except UnicodeDecodeError:
+            return data.decode('latin-1')

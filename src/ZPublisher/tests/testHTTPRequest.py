@@ -16,6 +16,7 @@ import sys
 import unittest
 
 from six import PY2
+from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
 from zope.component import provideAdapter
 from zope.i18n.interfaces import IUserPreferredLanguages
@@ -33,9 +34,54 @@ if sys.version_info >= (3, ):
 
 class RecordTests(unittest.TestCase):
 
-    def test_repr(self):
+    def _makeOne(self):
         from ZPublisher.HTTPRequest import record
-        rec = record()
+        return record()
+
+    def test_dict_methods(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertEqual(rec['a'], 1)
+        self.assertEqual(rec.get('a'), 1)
+        self.assertEqual(list(rec.keys()), ['a'])
+        self.assertEqual(list(rec.values()), [1])
+        self.assertEqual(list(rec.items()), [('a', 1)])
+
+    def test_dict_special_methods(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertTrue('a' in rec)
+        self.assertFalse('b' in rec)
+        self.assertEqual(len(rec), 1)
+        self.assertEqual(list(iter(rec)), ['a'])
+
+    def test_copy(self):
+        rec = self._makeOne()
+        rec.a = 1
+        rec.b = 'foo'
+        new_rec = rec.copy()
+        self.assertIsInstance(new_rec, dict)
+        self.assertEqual(new_rec, {'a': 1, 'b': 'foo'})
+
+    def test_eq(self):
+        rec1 = self._makeOne()
+        self.assertFalse(rec1, {})
+        rec2 = self._makeOne()
+        self.assertEqual(rec1, rec2)
+        rec1.a = 1
+        self.assertNotEqual(rec1, rec2)
+        rec2.a = 1
+        self.assertEqual(rec1, rec2)
+        rec2.b = 'foo'
+        self.assertNotEqual(rec1, rec2)
+
+    def test_str(self):
+        rec = self._makeOne()
+        rec.a = 1
+        self.assertEqual(str(rec), 'a: 1')
+
+    def test_repr(self):
+        rec = self._makeOne()
         rec.a = 1
         rec.b = 'foo'
         r = repr(rec)
@@ -116,8 +162,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         retval = 0
 
         if isinstance(val, TaintedString):
-            self.assertFalse(
-                '<' not in val,
+            self.assertTrue(
+                should_be_tainted(val._value),
                 "%r is not dangerous, no taint required." % val)
             retval = 1
 
@@ -138,7 +184,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         elif type(val) in (str, unicode):
             self.assertFalse(
-                '<' in val,
+                should_be_tainted(val),
                 "'%s' is dangerous and should have been tainted." % val)
 
         return retval
@@ -244,7 +290,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req['bign'], 45)
         self.assertEqual(req['fract'], 4.2)
         self.assertEqual(req['morewords'], 'one\ntwo\n')
-        self.assertEqual(req['multiline'], ['one', 'two'])
+        self.assertEqual(req['multiline'], [b'one', b'two'])
         self.assertEqual(req['num'], 42)
         self.assertEqual(req['words'], 'Some words')
 
@@ -1048,7 +1094,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(clone['PARENTS'], PARENTS[1:])
 
     def test_clone_preserves_response_class(self):
-        class DummyResponse:
+        class DummyResponse(object):
             pass
         environ = self._makePostEnviron()
         request = self._makeOne(None, environ, DummyResponse())

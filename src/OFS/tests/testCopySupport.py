@@ -22,7 +22,7 @@ FILE_META_TYPES = ({
 }, )
 
 
-class UnitTestSecurityPolicy:
+class UnitTestSecurityPolicy(object):
     """Stub out the existing security policy for unit testing purposes.
     """
     #   Standard SecurityPolicy interface
@@ -277,8 +277,33 @@ class TestCopySupport(CopySupportTestBase):
             {'id': 'file2', 'new_id': 'copy_of_file2'},
         ])
 
+    def testPasteNoData(self):
+        from OFS.CopySupport import CopyError
+        with self.assertRaises(CopyError):
+            self.folder1.manage_pasteObjects()
 
-class _SensitiveSecurityPolicy:
+    def testPasteTooBigData(self):
+        from OFS.CopySupport import CopyError
+        from OFS.CopySupport import _cb_encode
+        def make_data(lenght):
+            return _cb_encode(
+                (1, ['qwertzuiopasdfghjklyxcvbnm' for x in range(lenght)]))
+        # Protect against DoS attack with too big data:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(300))
+        self.assertEqual('Clipboard Error', str(err.exception))
+        # But not too much data is allowed:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(250))
+        self.assertEqual('Item Not Found', str(err.exception))
+
+        # _pasteObjects allows to paste without restriction:
+        with self.assertRaises(CopyError) as err:
+            self.folder1._pasteObjects(make_data(3000))
+        self.assertEqual('Item Not Found', str(err.exception))
+
+
+class _SensitiveSecurityPolicy(object):
 
     def __init__(self, validate_lambda, checkPermission_lambda):
         self._lambdas = (validate_lambda, checkPermission_lambda)

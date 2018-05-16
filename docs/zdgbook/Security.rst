@@ -619,8 +619,8 @@ conflicting permissions on a method::
           """ make index_html web-publishable """
           return "<html><body>hi!</body></html>"
 
-security.declareProtected('View', 'index_html')
-# whoops, declared a conflicting permission on index_html!
+  security.declareProtected('View', 'index_html')
+  # whoops, declared a conflicting permission on index_html!
 
 When you make a mistake like this, the security machinery will
 accept the *first* declaration made in the code and will write
@@ -823,14 +823,14 @@ Python inheritance can prove confusing in the face of security
 declarations.
 
 If a base class which has already been run through "InitializeClass"
-is inherited by a superclass, nothing special needs to be done to
-protect the base class' methods within the superclass unless you wish
+is inherited by a subclass, nothing special needs to be done to
+protect the base class' methods within the subclass unless you wish
 to modify the declarations made in the base class.  The security
-declarations "filter down" into the superclass.
+declarations "filter down" into the subclass.
 
 On the other hand, if a base class hasn't been run through the global
 class initializer ('InitializeClass'), you need to proxy its security
-declarations in the superclass if you wish to access any of its
+declarations in the subclass if you wish to access any of its
 methods within through-the-web code or via URL traversal.
 
 In other words, security declarations that you make using

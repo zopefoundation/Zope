@@ -13,7 +13,6 @@
 """Copy interface
 """
 
-import collections
 from json import dumps
 from json import loads
 import logging
@@ -163,25 +162,29 @@ class CopyContainer(Base):
             id = 'copy%s_of_%s' % (n and n + 1 or '', orig_id)
             n = n + 1
 
-    security.declareProtected(view_management_screens, 'manage_pasteObjects')
-    def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
+    def _pasteObjects(self, cp, cb_maxsize=0):
         """Paste previously copied objects into the current object.
 
-        If calling manage_pasteObjects from python code, pass the result of a
+        ``cp`` is the list of objects for paste as encoded by ``_cb_encode``.
+        If calling _pasteObjects from python code, pass the result of a
         previous call to manage_cutObjects or manage_copyObjects as the first
         argument.
 
-        Also sends IObjectCopiedEvent and IObjectClonedEvent
+        ``cb_maxsize`` is the maximum size of the JSON representation of the
+        object list. Set it to a non-zero value to prevent DoS attacks with
+        huge object lists or zlib bombs.
+
+        This method sends IObjectCopiedEvent and IObjectClonedEvent
         or IObjectWillBeMovedEvent and IObjectMovedEvent.
+
+        Returns tuple of (operator, list of {'id': orig_id, 'new_id': new_id}).
+        Where `operator` is 0 for a copy operation and 1 for a move operation.
         """
-        cp = cb_copy_data
-        if cp is None and REQUEST is not None and '__cp' in REQUEST:
-            cp = REQUEST['__cp']
         if cp is None:
             raise CopyError('No clipboard data found.')
 
         try:
-            op, mdatas = _cb_decode(cp)
+            op, mdatas = _cb_decode(cp, cb_maxsize)
         except Exception as e:
             six.raise_from(CopyError('Clipboard Error'), e)
 
@@ -230,9 +233,6 @@ class CopyContainer(Base):
                 compatibilityCall('manage_afterClone', ob, ob)
 
                 notify(ObjectClonedEvent(ob))
-
-            if REQUEST is not None:
-                return self.manage_main(self, REQUEST, cb_dataValid=1)
 
         elif op == 1:
             # Move operation
@@ -294,13 +294,38 @@ class CopyContainer(Base):
                 # try to make ownership implicit if possible
                 ob.manage_changeOwnershipType(explicit=0)
 
-            if REQUEST is not None:
+        return op, result
+
+    security.declareProtected(view_management_screens, 'manage_pasteObjects')
+    def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
+        """Paste previously copied objects into the current object.
+
+        If calling manage_pasteObjects from python code, pass the result of a
+        previous call to manage_cutObjects or manage_copyObjects as the first
+        argument.
+
+        Also sends IObjectCopiedEvent and IObjectClonedEvent
+        or IObjectWillBeMovedEvent and IObjectMovedEvent.
+
+        If `REQUEST` is None it returns a
+        list of dicts {'id': orig_id, 'new_id': new_id} otherwise it renders
+        a HTML page.
+        """
+        if cb_copy_data is None and REQUEST is not None and '__cp' in REQUEST:
+            cb_copy_data = REQUEST['__cp']
+        op, result = self._pasteObjects(cb_copy_data, cb_maxsize=8192)
+
+        if REQUEST is not None:
+            if op == 0:
+                cb_valid = 1
+            elif op == 1:
                 REQUEST['RESPONSE'].setCookie(
                     '__cp', 'deleted',
                     path='%s' % cookie_path(REQUEST),
                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
-                return self.manage_main(self, REQUEST, cb_dataValid=0)
+                cb_valid = 0
+            return self.manage_main(self, REQUEST, cb_dataValid=cb_valid)
 
         return result
 
@@ -625,7 +650,7 @@ def sanity_check(c, ob):
 
 
 def absattr(attr):
-    if isinstance(attr, collections.Callable):
+    if callable(attr):
         return attr()
     return attr
 
@@ -650,6 +675,7 @@ def _cb_decode(s, maxsize=8192):
     """Decode a list of IDs from storage in a cookie.
 
     ``s`` is text as encoded by ``_cb_encode``.
+    ``maxsize`` is the maximum size of uncompressed data. ``0`` means no limit.
 
     Return a list of text IDs.
     """

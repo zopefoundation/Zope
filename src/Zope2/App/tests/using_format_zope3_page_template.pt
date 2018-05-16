@@ -1,0 +1,6 @@
+<p tal:content="python:'class of {0} is {0.__class__}'.format(context).lower()" />
+<p tal:content="python:u'class of {0} is {0.__class__}'.format(context).upper()" />
+<p tal:content="python:'{0} has foo={0[foo]}'.format({'foo': context.test_folder_1_})" />
+<p tal:content="python:u'{0} has foo={0[foo]}'.format({'foo': context.test_folder_1_})" />
+<p tal:content="python:'{0} has first item {0[0]}'.format([context.test_folder_1_])" />
+<p tal:content="python:u'{0} has first item {0[0]}'.format([context.test_folder_1_])" />

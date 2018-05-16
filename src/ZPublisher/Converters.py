@@ -135,9 +135,9 @@ def field2lines(v):
     if isinstance(v, (list, tuple)):
         result = []
         for item in v:
-            result.append(str(item))
+            result.append(field2bytes(item))
         return result
-    return field2text(v).splitlines()
+    return field2bytes(v).splitlines()
 
 
 def field2date(v):
@@ -164,7 +164,7 @@ def field2boolean(v):
     return not not v
 
 
-class _unicode_converter:
+class _unicode_converter(object):
 
     def __call__(self, v):
         # Convert a regular python string. This probably doesn't do
@@ -209,7 +209,7 @@ class field2utext(_unicode_converter):
 field2utext = field2utext()
 
 
-class field2ulines:
+class field2ulines(object):
     def __call__(self, v):
         if hasattr(v, 'read'):
             v = v.read()

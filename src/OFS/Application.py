@@ -100,7 +100,9 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         return APP_MANAGER.__of__(self)
 
     def Redirect(self, destination, URL1):
-        """Utility function to allow user-controlled redirects"""
+        # Utility function to allow user-controlled redirects.
+        # No docstring please, we do not want an open redirect
+        # available as url.
         if destination.find('//') >= 0:
             raise RedirectException(destination)
         raise RedirectException("%s/%s" % (URL1, destination))
@@ -197,7 +199,7 @@ def initialize(app):
     initializer.initialize()
 
 
-class AppInitializer:
+class AppInitializer(object):
     """ Initialze an Application object (called at startup) """
 
     def __init__(self, app):
@@ -218,6 +220,8 @@ class AppInitializer:
         self.install_inituser()
         self.install_products()
         self.install_standards()
+        self.install_virtual_hosting()
+        self.install_root_view()
 
     def install_app_manager(self):
         global APP_MANAGER
@@ -270,6 +274,29 @@ class AppInitializer:
                     app._p_changed = True
                     transaction.get().note(u'Migrated user folder')
                     transaction.commit()
+
+    def install_virtual_hosting(self):
+        app = self.getApp()
+        if 'virtual_hosting' not in app:
+            from Products.SiteAccess.VirtualHostMonster \
+                import VirtualHostMonster
+            any_vhm = [obj for obj in app.values()
+                       if isinstance(obj, VirtualHostMonster)]
+            if not any_vhm:
+                vhm = VirtualHostMonster()
+                vhm.id = 'virtual_hosting'
+                vhm.addToContainer(app)
+                self.commit('Added virtual_hosting')
+
+    def install_root_view(self):
+        app = self.getApp()
+        if 'index_html' not in app:
+            from Products.PageTemplates.ZopePageTemplate \
+                import ZopePageTemplate
+            root_pt = ZopePageTemplate('index_html')
+            root_pt.pt_setTitle(u'Auto-generated default page')
+            app._setObject('index_html', root_pt)
+            self.commit(u'Added default view for root object')
 
     def install_products(self):
         return install_products()
@@ -343,10 +370,11 @@ def import_products():
     done = {}
     for priority, product_name, index, product_dir in get_products():
         if product_name in done:
-            LOG.warn('Duplicate Product name: '
-                     'After loading Product %r from %r, '
-                     'I skipped the one in %r.' % (
-                         product_name, done[product_name], product_dir))
+            LOG.warning(
+                'Duplicate Product name: '
+                'After loading Product %r from %r, '
+                'I skipped the one in %r.' % (
+                    product_name, done[product_name], product_dir))
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
@@ -393,7 +421,7 @@ def install_product(app, product_dir, product_name, meta_types,
     if misc_:
         if isinstance(misc_, dict):
             misc_ = Misc_(product_name, misc_)
-        Application.misc_.__dict__[product_name] = misc_
+        setattr(Application.misc_, product_name, misc_)
 
     productObject = FactoryDispatcher.Product(product_name)
     context = ProductContext(productObject, None, product)

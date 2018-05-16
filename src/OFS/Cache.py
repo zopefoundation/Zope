@@ -165,7 +165,7 @@ class Cacheable(object):
                                    mtime_func, default)
                 return val
             except:
-                LOG.warn('ZCache_get() exception')
+                LOG.warning('ZCache_get() exception')
                 return default
         return default
 
@@ -182,7 +182,7 @@ class Cacheable(object):
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                LOG.warn('ZCache_set() exception')
+                LOG.warning('ZCache_set() exception')
 
     security.declareProtected(ViewManagementScreensPermission,
                               'ZCacheable_invalidate')
@@ -201,7 +201,7 @@ class Cacheable(object):
             except:
                 exc = sys.exc_info()
                 try:
-                    LOG.warn('ZCache_invalidate() exception')
+                    LOG.warning('ZCache_invalidate() exception')
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None

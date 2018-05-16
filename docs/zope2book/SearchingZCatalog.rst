@@ -835,8 +835,8 @@ That's it.  You can continue to extend this search form using HTML
 form elements to be as complex as you'd like.  In the next section,
 we'll show you how to use the next kind of index, keyword indexes.
 
-Searching Keyword Indexes
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Searching KeywordIndexes
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 A *KeywordIndex* indexes a sequence of keywords for objects and
 can be queried for any objects that have one or more of those
@@ -1024,8 +1024,8 @@ traditional queries, as demonstrated above.
 A record style query involves passing a record (or dictionary)
 to the catalog instead of a simple query string.
 
-Keyword Index Record Attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+KeywordIndex Record Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 'query'
  Either a sequence of words or a single word.

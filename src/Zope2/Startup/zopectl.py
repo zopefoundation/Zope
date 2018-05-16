@@ -22,6 +22,7 @@ deprecated(
     quote_command='ZServer.Zope2.Startup.zopectl:quote_command',
     run='ZServer.Zope2.Startup.zopectl:run',
     string_list='ZServer.Zope2.Startup.zopectl:string_list',
+    WIN='ZServer.Zope2.Startup.zopectl:WIN',
     ZopeCmd='ZServer.Zope2.Startup.zopectl:ZopeCmd',
     ZopeCtlOptions='ZServer.Zope2.Startup.zopectl:ZopeCtlOptions',
 )
