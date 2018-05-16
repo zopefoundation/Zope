@@ -84,7 +84,9 @@ LOG = getLogger('ObjectManager')
 BadRequestException = BadRequest
 
 # We want a regex to define the lower ascii control bytes and DEL as bad.
-bad_id = re.compile(r'[\x00-\x1F\x7F]').search
+# Additionally we want to exclude angle brackets and ampersand as they mess
+# with the url-quoting.
+bad_id = re.compile(r'[\x00-\x1F\x7F<>&]').search
 
 
 def checkValidId(self, id, allow_dup=0):

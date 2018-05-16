@@ -539,20 +539,13 @@ class TestCheckValidId(unittest.TestCase):
             # Does not raise
             self._callFUT(self._makeContainer(), u'abc☃')
 
-    def test_unicode_escaped(self):
-        if PY2:
-            # No unicode allowed in general
-            e = self.assertBadRequest(u'<abc>&def')
-            self.assertEqual(str(e),
-                             "('Empty or invalid id specified', "
-                             "u'&lt;abc&gt;&amp;def')")
-        else:
-            # With Python 3, this is valid.
-            self._callFUT(self._makeContainer(), u'<abc>&def')
-
-    def test_allow_brackets_and_ampersand(self):
-        # We allow this from now, as these characters are quoted by urllib.
-        self._callFUT(self._makeContainer(), '<abc>&def')
+    def test_fail_on_brackets_and_ampersand(self):
+        # We do not allow this characters as they result in TaintedString (for
+        # < and >) which are not allowed in hasattr.
+        e = self.assertBadRequest('<abc>&def')
+        self.assertEqual(str(e),
+                         'The id "&lt;abc&gt;&amp;def" contains characters '
+                         'illegal in URLs.')
 
     def test_encoded_unicode(self):
         if PY2:
