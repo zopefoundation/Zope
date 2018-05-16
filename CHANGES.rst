@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Use log.warning to avoid deprecation warning for log.warn
 
+- Accept bytes and text as cookie value.
+  (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
+
 
 4.0b4 (2018-04-23)
 ------------------
