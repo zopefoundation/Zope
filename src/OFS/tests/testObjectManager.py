@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from logging import getLogger
 import unittest
 
@@ -362,9 +363,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si = SimpleItem('2')
         self.assertRaises(BadRequest, om._setObject, 123, si)
         self.assertRaises(BadRequest, om._setObject, 'a\x01b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a\\b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a:b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a;b', si)
         self.assertRaises(BadRequest, om._setObject, '.', si)
         self.assertRaises(BadRequest, om._setObject, '..', si)
         self.assertRaises(BadRequest, om._setObject, '_foo', si)
@@ -530,27 +528,56 @@ class TestCheckValidId(unittest.TestCase):
         self.assertEqual(str(e),
                          "('Empty or invalid id specified', '')")
 
-    def test_unicode(self):
-        if PY2:
-            e = self.assertBadRequest(u'abc')
-            self.assertEqual(str(e),
-                             "('Empty or invalid id specified', u'abc')")
-        else:
-            # Does not raise
-            self._callFUT(self._makeContainer(), u'abc')
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
+    def test_unicode_py2(self):
+        e = self.assertBadRequest(u'abc☃')
+        self.assertEqual(
+            str(e), "('Empty or invalid id specified', u'abc\\u2603')")
 
-    def test_unicode_escaped(self):
-        e = self.assertBadRequest(u'<abc>&def')
-        if PY2:
-            self.assertEqual(str(e),
-                             "('Empty or invalid id specified', "
-                             "u'&lt;abc&gt;&amp;def')")
-        else:
-            self.assertEqual(str(e),
-                             'The id "&lt;abc&gt;&amp;def" contains '
-                             'characters illegal in URLs.')
+    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
+    def test_unicode_py3(self):
+        self._callFUT(self._makeContainer(), u'abc☃')
 
-    def test_badid_XSS(self):
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
+    def test_encoded_unicode_py2(self):
+        self._callFUT(self._makeContainer(), u'abcö'.encode('utf-8'))
+
+    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
+    def test_encoded_unicode_py3(self):
+        e = self.assertBadRequest(u'abcö'.encode('utf-8'))
+        self.assertEqual(str(e),
+                         "('Empty or invalid id specified', "
+                         "b'abc\\xc3\\xb6')")
+
+    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
+    def test_unprintable_characters_py2(self):
+        # We do not allow the first 31 ASCII characters. \x00-\x19
+        # We do not allow the DEL character. \x7f
+        e = self.assertBadRequest('abc\x10')
+        self.assertEqual(str(e),
+                         'The id "abc\x10" contains characters illegal'
+                         ' in URLs.')
+        e = self.assertBadRequest('abc\x7f')
+        self.assertEqual(str(e),
+                         'The id "abc\x7f" contains characters illegal'
+                         ' in URLs.')
+
+    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
+    def test_unprintable_characters_py3(self):
+        # We do not allow the first 31 ASCII characters. \x00-\x19
+        # We do not allow the DEL character. \x7f
+        e = self.assertBadRequest(u'abc\x10')
+        self.assertEqual(str(e),
+                         'The id "abc\x10" contains characters illegal'
+                         ' in URLs.')
+        e = self.assertBadRequest(u'abc\x7f')
+        self.assertEqual(str(e),
+                         'The id "abc\x7f" contains characters illegal'
+                         ' in URLs.')
+
+    def test_fail_on_brackets_and_ampersand(self):
+        # We do not allow this characters as they result in TaintedString (for
+        # < and >) which are not allowed in hasattr.
         e = self.assertBadRequest('<abc>&def')
         self.assertEqual(str(e),
                          'The id "&lt;abc&gt;&amp;def" contains characters '

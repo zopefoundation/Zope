@@ -23,8 +23,17 @@ The following persons have access to the ``Zope`` package on PyPI
 Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
 
+- Create releases for the packages mentioned in `buildout.cfg` below
+  ``auto-checkout``.
+
 - Check the versions.cfg file for outdated or updated
-  packages and update version information where necessary.
+  packages and update version information where necessary::
+
+  $ bin/checkversions buildout.cfg
+
+- Run the tests::
+
+  $ bin/tox
 
 - Update version information in change log and ``setup.py``::
 
@@ -70,3 +79,5 @@ Steps for creating a new Zope release
 - Add the newly created files and commit and push the changes.
 
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
+
+- Announce the release to the world via zope-announce@zope.org and https://community.plone.org/c/announcements.

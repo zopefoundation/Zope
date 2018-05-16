@@ -8,13 +8,48 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b4 (unreleased)
+4.0b5 (unreleased)
 ------------------
+
+- Use log.warning to avoid deprecation warning for log.warn
+
+
+4.0b4 (2018-04-23)
+------------------
+
+Supported versions
+++++++++++++++++++
+
+- Drop support for Python 3.4 because it was dropped by `AccessControl` on
+  which `Zope` depends.
+
+- Update dependencies to newest versions.
+
+Breaking changes
+++++++++++++++++
+
+- The 'lines' property type now always stores bytes on all Python versions.
+  (`#206 <https://github.com/zopefoundation/Zope/issues/206>`_)
+
+Bugfixes
+++++++++
 
 - Fix an edge case where the data which was set using ``response.write()`` was
   not returned by ``publish_module``.
+  (`#256 <https://github.com/zopefoundation/Zope/issues/256>`_)
 
-- Fix renaming of images and files via ZMI. (#247).
+- Fix renaming of images and files via ZMI.
+  (`#247 <https://github.com/zopefoundation/Zope/issues/247>`_)
+
+- Sort HTTP headers in doctests as in Zope 2.
+  (`#259 <https://github.com/zopefoundation/Zope/pull/259>`_)
+
+Changes
++++++++
+
+- Add ``OFS.CopySupport.CopyContainer._pasteObjects()`` to be able to paste
+  objects no matter how many objects where cut or copied.
+  (`#217 <https://github.com/zopefoundation/Zope/issues/217>`_)
 
 
 4.0b3 (2018-01-27)
@@ -29,7 +64,8 @@ Bugfixes
 
 - Made Redirect unavailable as url.  Part of PloneHotfix20171128.
 
-- Fixed DocumentTemplate version 3.0b2 fixes #179 (ZMI navtree error).
+- Fix ZMI navtree error by using DocumentTemplate version 3.0b2.
+  (`#179 <https://github.com/zopefoundation/Zope/issues/179>`_)
 
 - Re-add a link to refresh the ZMI menu tree on the left.
 
@@ -350,8 +386,10 @@ Security fixes
 
 - Removed docstrings from some methods to avoid publishing them.
 
-- LP #789863:  Ensure that Request objects cannot be published / traversed
+- Ensure that Request objects cannot be published / traversed
   directly via a URL.
+  (`LP #789863 <https://bugs.launchpad.net/zope2/+bug/789863>`_)
+
 
 - Port tests for ``str.format`` security fix from Zope 2.13.
 
@@ -369,14 +407,16 @@ Bugfixes
   when a product was not initializes after first access of the cache. Types
   that were added in test-profiles were not useable.
 
-- Issue #16: prevent leaked connections when broken ``EndRequestEvent``
+- Prevent leaked connections when broken ``EndRequestEvent``
   subscribers raise exceptions.
+  (`#16 <https://github.com/zopefoundation/Zope/issues/16>`_)
 
 - Made sure ``getConfiguration().default_zpublisher_encoding`` is set correctly.
 
-- Issue #28: Fix publishing of ``IStreamIterator``. This interface does
+- Fix publishing of ``IStreamIterator``. This interface does
   not have seek or tell.  Introduce ``IUnboundStreamIterator`` to support
   publishing iterators of unknown length.
+  (`#28 <https://github.com/zopefoundation/Zope/pull/28>`_)
 
 - Removed the (very obsolete) thread lock around the cookie parsing code
   in HTTPRequest.py; the python `re` module is thread-safe, unlike the

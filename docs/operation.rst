@@ -129,7 +129,7 @@ Template` or `DTML Document` named ``index_html``.
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 2.7 or Python 3.4 and later.
+- This version of Zope requires Python 2.7 or Python 3.5 and later.
   It will *not* run with any version of PyPy.
 
 - To build Python extensions you need to have Python configuration
