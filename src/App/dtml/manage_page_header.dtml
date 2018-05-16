@@ -14,5 +14,5 @@
   <script type="text/javascript" src="&dtml-sequence-item;"></script>
 </dtml-in>
 </head>
-<body>
+<body class="zmi">
   <div class="container-fluid">
