@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b5 (unreleased)
 ------------------
 
+- Allow unicode in ids.
+  (`#181 <https://github.com/zopefoundation/Zope/pull/181>`_)
+
 - Use log.warning to avoid deprecation warning for log.warn
 
 
