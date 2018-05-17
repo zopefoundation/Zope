@@ -14,5 +14,6 @@
   <script type="text/javascript" src="&dtml-sequence-item;"></script>
 </dtml-in>
 </head>
-<body class="zmi">
+<!-- REFACT what is a better way to get the last part of the current URL? -->
+<body class="zmi zmi-<dtml-var "meta_type.replace(' ', '-')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
   <div class="container-fluid">
