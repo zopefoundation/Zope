@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<main class="<dtml-var "meta_type.replace(' ', '-')"> <dtml-var "URL0[_.len(URL1)+1:]">">
+<main>
 
     <p class="form-help">
         You can update the data for this &dtml-kind; using the form below. 
