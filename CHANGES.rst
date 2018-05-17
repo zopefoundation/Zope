@@ -36,6 +36,9 @@ Bugfixes
 - Accept bytes and text as cookie value.
   (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
 
+- always raise InternalError when using WSGI
+  (`#280 <https://github.com/zopefoundation/Zope/pull/280>`)
+
 
 4.0b4 (2018-04-23)
 ------------------
