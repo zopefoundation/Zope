@@ -1,0 +1,60 @@
+/* ZOPE 4 Base Styles */
+
+.zmi input.btn.btn-primary {
+    background-color:white !important;
+    color:#6c757d;
+    border-color:#6c757d
+}
+input.btn.btn-primary:hover {
+    background-color:#e9ecef !important;
+}
+
+/* https://css-tricks.com/rotated-table-column-headers/ */
+.zmi.zmi-manage_access th.blank,
+.zmi.zmi-manage_access td.blank {
+    width:100%;
+}
+
+.zmi.zmi-manage_access td.nowrap {
+    min-width:12em;
+}
+@media (min-width: 768px) {
+    .zmi.zmi-manage_access .nowrap {
+        white-space:nowrap;
+    }
+}
+.zmi th.zmi-akcquire-title {
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+.zmi td.zmi-akcquire-title {
+    border:1px solid #dee2e6;
+}
+.zmi th.zmi-rolename {
+    height:95px;
+    white-space: nowrap;
+}
+.zmi th.zmi-rolename > div {
+    transform: translate(0px,63px) rotate(-60deg);
+    padding: 0;
+    max-width: 20px;
+    /* text-overflow: ellipsis; */
+    /* overflow: hidden; */
+    font-weight: normal;
+    cursor: default;
+}
+
+.zmi th.zmi-rolename > div > span {
+    border-top: 1px solid #ccc;
+    padding: 5px 00px 5px 20px;
+    text-overflow: ellipsis;
+    width:110px;
+    overflow:hidden;
+    display:inline-block;
+}
+.zmi.zmi-manage_access td.zmi-akcquire-check,
+.zmi.zmi-manage_access .zmi-rolename-check {
+    border:1px solid #dee2e6;
+    text-align:center;
+    width:2.75em
+}
