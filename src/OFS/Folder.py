@@ -66,7 +66,7 @@ class Folder(
     a management interface and can have arbitrary properties.
     """
     meta_type = 'Folder'
-    zmi_icon = 'icon-folder'
+    zmi_icon = 'zmi-icon-folder'
 
     _properties = (
         {'id': 'title', 'type': 'string', 'mode': 'wd'},
