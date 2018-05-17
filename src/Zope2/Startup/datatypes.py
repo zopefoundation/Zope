@@ -18,6 +18,7 @@ import os
 import traceback
 
 from six.moves import UserDict
+from six import PY2, text_type
 
 from ZODB.config import ZODBDatabase
 from zope.deferredimport import deprecated
@@ -165,6 +166,8 @@ class ZopeDatabase(ZODBDatabase):
     def computeMountPaths(self):
         mps = []
         for part in self.config.mount_points:
+            if PY2 and isinstance(part, text_type):
+                part = part.encode()
             real_root = None
             if ':' in part:
                 # 'virtual_path:real_path'
