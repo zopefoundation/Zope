@@ -226,10 +226,12 @@ class Cacheable(object):
             # Allow mtime_func to influence the mod time.
             mtime = mtime_func()
         base = aq_base(self)
-        mtime = max(getattr(base, '_p_mtime', mtime), mtime)
+        mtime = max(getattr(base, '_p_mtime', mtime) or 0, mtime)
         klass = getattr(base, '__class__', None)
         if klass:
-            mtime = max(getattr(klass, '_p_mtime', mtime), mtime)
+            klass_mtime = getattr(klass, '_p_mtime', mtime)
+            if isinstance(klass_mtime, int):
+                mtime = max(klass_mtime, mtime)
         return mtime
 
     security.declareProtected(ViewManagementScreensPermission,

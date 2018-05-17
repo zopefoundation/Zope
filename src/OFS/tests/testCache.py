@@ -32,3 +32,17 @@ class CacheTests(unittest.TestCase):
 
         # The parent_cache should still trigger managersExist
         self.assertTrue(managersExist(root.child.child_content))
+
+
+class CacheableTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from OFS.Cache import Cacheable
+        return Cacheable
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_ZCacheable_getModTime(self):
+        ob = self._makeOne()
+        self.assertEqual(0, ob.ZCacheable_getModTime())

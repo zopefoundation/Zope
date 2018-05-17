@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b5 (unreleased)
 ------------------
 
+Bugfixes
+++++++++
+
+- Fix comparison against non-ints in ZCacheable_getModTime.
+
 - Allow unicode in ids.
   (`#181 <https://github.com/zopefoundation/Zope/pull/181>`_)
 
