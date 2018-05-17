@@ -10,15 +10,18 @@ input.btn.btn-primary:hover {
 }
 
 /* https://css-tricks.com/rotated-table-column-headers/ */
+.zmi.zmi-manage_defined_roles th.blank,
+.zmi.zmi-manage_defined_roles td.blank,
 .zmi.zmi-manage_access th.blank,
 .zmi.zmi-manage_access td.blank {
     width:100%;
 }
-
+.zmi.zmi-manage_defined_roles td.nowrap,
 .zmi.zmi-manage_access td.nowrap {
     min-width:12em;
 }
 @media (min-width: 768px) {
+    .zmi.zmi-manage_defined_roles .nowrap,
     .zmi.zmi-manage_access .nowrap {
         white-space:nowrap;
     }
@@ -52,6 +55,8 @@ input.btn.btn-primary:hover {
     overflow:hidden;
     display:inline-block;
 }
+.zmi.zmi-manage_defined_roles td.zmi-akcquire-check,
+.zmi.zmi-manage_defined_roles .zmi-rolename-check
 .zmi.zmi-manage_access td.zmi-akcquire-check,
 .zmi.zmi-manage_access .zmi-rolename-check {
     border:1px solid #dee2e6;
