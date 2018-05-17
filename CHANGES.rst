@@ -16,6 +16,9 @@ Bugfixes
 
 - Fix comparison against non-ints in ZCacheable_getModTime.
 
+- Allow unicode in ids.
+  (`#181 <https://github.com/zopefoundation/Zope/pull/181>`_)
+
 - Use log.warning to avoid deprecation warning for log.warn
 
 
