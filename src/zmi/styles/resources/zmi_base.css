@@ -3,24 +3,48 @@
 .zmi input.btn.btn-primary {
     background-color:white !important;
     color:#6c757d;
-    border-color:#6c757d
+    border-color:#6c757d;
+    min-width: 7em;
 }
+
 input.btn.btn-primary:hover {
     background-color:#e9ecef !important;
 }
+.zmi .breadcrumb {
+    background:none !important;
+}
+.zmi {
+    background-color:#fcfcfc;
+}
+.zmi nav[role="navigation"] {
+    background-color:#fff;
+    padding-top:8px;
+}
+.zmi .nav-link.active {
+    background-color:#fcfcfc;
+    border-color: #dee2e6 #dee2e6 #fcfcfc;
+}
+
+.zmi form.addItemSelect {
+    margin-top:-3.5em;
+}
 
 /* https://css-tricks.com/rotated-table-column-headers/ */
+.zmi.zmi-manage_changePermissions th.blank,
+.zmi.zmi-manage_changePermissions td.blank,
 .zmi.zmi-manage_defined_roles th.blank,
 .zmi.zmi-manage_defined_roles td.blank,
 .zmi.zmi-manage_access th.blank,
 .zmi.zmi-manage_access td.blank {
     width:100%;
 }
+.zmi.zmi-manage_changePermissions td.nowrap
 .zmi.zmi-manage_defined_roles td.nowrap,
 .zmi.zmi-manage_access td.nowrap {
     min-width:12em;
 }
 @media (min-width: 768px) {
+    .zmi.zmi-manage_changePermissions .nowrap,
     .zmi.zmi-manage_defined_roles .nowrap,
     .zmi.zmi-manage_access .nowrap {
         white-space:nowrap;
@@ -55,6 +79,8 @@ input.btn.btn-primary:hover {
     overflow:hidden;
     display:inline-block;
 }
+.zmi.zmi-manage_changePermissions td.zmi-akcquire-check,
+.zmi.zmi-manage_changePermissions td.zmi-rolename-check,
 .zmi.zmi-manage_defined_roles td.zmi-akcquire-check,
 .zmi.zmi-manage_defined_roles .zmi-rolename-check
 .zmi.zmi-manage_access td.zmi-akcquire-check,
