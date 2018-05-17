@@ -82,7 +82,7 @@ class Item(Base,
            Owned):
     """A common base class for simple, non-container objects."""
 
-    zmi_icon = 'icon-file'
+    zmi_icon = 'zmi-icon-file'
 
     security = ClassSecurityInfo()
 
