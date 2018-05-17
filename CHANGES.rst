@@ -16,6 +16,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Use log.warning to avoid deprecation warning for log.warn
 
+- Keep existing loggers
+  (`#276 <https://github.com/zopefoundation/Zope/pull/276>`)
 
 4.0b4 (2018-04-23)
 ------------------
