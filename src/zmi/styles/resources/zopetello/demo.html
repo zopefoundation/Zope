@@ -229,11 +229,11 @@ body {
 }
 @font-face {
       font-family: 'zopetello';
-      src: url('./font/zopetello.eot?82212024');
-      src: url('./font/zopetello.eot?82212024#iefix') format('embedded-opentype'),
-           url('./font/zopetello.woff?82212024') format('woff'),
-           url('./font/zopetello.ttf?82212024') format('truetype'),
-           url('./font/zopetello.svg?82212024#zopetello') format('svg');
+      src: url('./font/zopetello.eot?84257931');
+      src: url('./font/zopetello.eot?84257931#iefix') format('embedded-opentype'),
+           url('./font/zopetello.woff?84257931') format('woff'),
+           url('./font/zopetello.ttf?84257931') format('truetype'),
+           url('./font/zopetello.svg?84257931#zopetello') format('svg');
       font-weight: normal;
       font-style: normal;
     }
@@ -275,7 +275,7 @@ body {
       /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
     }
      </style>
-    <link rel="stylesheet" href="css/animation.css"><!--[if IE 7]><link rel="stylesheet" href="css/zopetello-ie7.css"><![endif]-->
+    <link rel="stylesheet" href="css/animation.css"><!--[if IE 7]><link rel="stylesheet" href="css/" + font.fontname + "-ie7.css"><![endif]-->
     <script>
       function toggleCodes(on) {
         var obj = document.getElementById('icons');
@@ -291,38 +291,35 @@ body {
   </head>
   <body>
     <div class="container header">
-      <h1>
-        zopetello
-         <small>font demo</small>
-      </h1>
+      <h1>zopetello <small>font demo</small></h1>
       <label class="switch">
         <input type="checkbox" onclick="toggleCodes(this.checked)">show codes
       </label>
     </div>
-    <div id="icons" class="container">
+    <div class="container" id="icons">
       <div class="row">
-        <div title="Code: 0xe800" class="the-icons span3"><i class="demo-icon icon-file">&#xe800;</i> <span class="i-name">icon-file</span><span class="i-code">0xe800</span></div>
-        <div title="Code: 0xe801" class="the-icons span3"><i class="demo-icon icon-numbers">&#xe801;</i> <span class="i-name">icon-numbers</span><span class="i-code">0xe801</span></div>
-        <div title="Code: 0xe802" class="the-icons span3"><i class="demo-icon icon-tree">&#xe802;</i> <span class="i-name">icon-tree</span><span class="i-code">0xe802</span></div>
-        <div title="Code: 0xe803" class="the-icons span3"><i class="demo-icon icon-folder2">&#xe803;</i> <span class="i-name">icon-folder2</span><span class="i-code">0xe803</span></div>
+        <div class="the-icons span3" title="Code: 0xe800"><i class="demo-icon zmi-icon-file">&#xe800;</i> <span class="i-name">zmi-icon-file</span><span class="i-code">0xe800</span></div>
+        <div class="the-icons span3" title="Code: 0xe801"><i class="demo-icon zmi-icon-numbers">&#xe801;</i> <span class="i-name">zmi-icon-numbers</span><span class="i-code">0xe801</span></div>
+        <div class="the-icons span3" title="Code: 0xe802"><i class="demo-icon zmi-icon-tree">&#xe802;</i> <span class="i-name">zmi-icon-tree</span><span class="i-code">0xe802</span></div>
+        <div class="the-icons span3" title="Code: 0xe803"><i class="demo-icon zmi-icon-folder2">&#xe803;</i> <span class="i-name">zmi-icon-folder2</span><span class="i-code">0xe803</span></div>
       </div>
       <div class="row">
-        <div title="Code: 0xe804" class="the-icons span3"><i class="demo-icon icon-folder">&#xe804;</i> <span class="i-name">icon-folder</span><span class="i-code">0xe804</span></div>
-        <div title="Code: 0xe805" class="the-icons span3"><i class="demo-icon icon-book">&#xe805;</i> <span class="i-name">icon-book</span><span class="i-code">0xe805</span></div>
-        <div title="Code: 0xe806" class="the-icons span3"><i class="demo-icon icon-search">&#xe806;</i> <span class="i-name">icon-search</span><span class="i-code">0xe806</span></div>
-        <div title="Code: 0xe807" class="the-icons span3"><i class="demo-icon icon-info">&#xe807;</i> <span class="i-name">icon-info</span><span class="i-code">0xe807</span></div>
+        <div class="the-icons span3" title="Code: 0xe804"><i class="demo-icon zmi-icon-folder">&#xe804;</i> <span class="i-name">zmi-icon-folder</span><span class="i-code">0xe804</span></div>
+        <div class="the-icons span3" title="Code: 0xe805"><i class="demo-icon zmi-icon-book">&#xe805;</i> <span class="i-name">zmi-icon-book</span><span class="i-code">0xe805</span></div>
+        <div class="the-icons span3" title="Code: 0xe806"><i class="demo-icon zmi-icon-search">&#xe806;</i> <span class="i-name">zmi-icon-search</span><span class="i-code">0xe806</span></div>
+        <div class="the-icons span3" title="Code: 0xe807"><i class="demo-icon zmi-icon-info">&#xe807;</i> <span class="i-name">zmi-icon-info</span><span class="i-code">0xe807</span></div>
       </div>
       <div class="row">
-        <div title="Code: 0xe808" class="the-icons span3"><i class="demo-icon icon-python">&#xe808;</i> <span class="i-name">icon-python</span><span class="i-code">0xe808</span></div>
-        <div title="Code: 0xe809" class="the-icons span3"><i class="demo-icon icon-mail">&#xe809;</i> <span class="i-name">icon-mail</span><span class="i-code">0xe809</span></div>
-        <div title="Code: 0xf0f6" class="the-icons span3"><i class="demo-icon icon-doc">&#xf0f6;</i> <span class="i-name">icon-doc</span><span class="i-code">0xf0f6</span></div>
-        <div title="Code: 0xf188" class="the-icons span3"><i class="demo-icon icon-broken">&#xf188;</i> <span class="i-name">icon-broken</span><span class="i-code">0xf188</span></div>
+        <div class="the-icons span3" title="Code: 0xe808"><i class="demo-icon zmi-icon-python">&#xe808;</i> <span class="i-name">zmi-icon-python</span><span class="i-code">0xe808</span></div>
+        <div class="the-icons span3" title="Code: 0xe809"><i class="demo-icon zmi-icon-mail">&#xe809;</i> <span class="i-name">zmi-icon-mail</span><span class="i-code">0xe809</span></div>
+        <div class="the-icons span3" title="Code: 0xf0f6"><i class="demo-icon zmi-icon-doc">&#xf0f6;</i> <span class="i-name">zmi-icon-doc</span><span class="i-code">0xf0f6</span></div>
+        <div class="the-icons span3" title="Code: 0xf188"><i class="demo-icon zmi-icon-broken">&#xf188;</i> <span class="i-name">zmi-icon-broken</span><span class="i-code">0xf188</span></div>
       </div>
       <div class="row">
-        <div title="Code: 0xf1c5" class="the-icons span3"><i class="demo-icon icon-image">&#xf1c5;</i> <span class="i-name">icon-image</span><span class="i-code">0xf1c5</span></div>
-        <div title="Code: 0xf1c9" class="the-icons span3"><i class="demo-icon icon-markup">&#xf1c9;</i> <span class="i-name">icon-markup</span><span class="i-code">0xf1c9</span></div>
-        <div title="Code: 0xf23c" class="the-icons span3"><i class="demo-icon icon-monster">&#xf23c;</i> <span class="i-name">icon-monster</span><span class="i-code">0xf23c</span></div>
-        <div title="Code: 0xf2ba" class="the-icons span3"><i class="demo-icon icon-user">&#xf2ba;</i> <span class="i-name">icon-user</span><span class="i-code">0xf2ba</span></div>
+        <div class="the-icons span3" title="Code: 0xf1c5"><i class="demo-icon zmi-icon-image">&#xf1c5;</i> <span class="i-name">zmi-icon-image</span><span class="i-code">0xf1c5</span></div>
+        <div class="the-icons span3" title="Code: 0xf1c9"><i class="demo-icon zmi-icon-markup">&#xf1c9;</i> <span class="i-name">zmi-icon-markup</span><span class="i-code">0xf1c9</span></div>
+        <div class="the-icons span3" title="Code: 0xf23c"><i class="demo-icon zmi-icon-monster">&#xf23c;</i> <span class="i-name">zmi-icon-monster</span><span class="i-code">0xf23c</span></div>
+        <div class="the-icons span3" title="Code: 0xf2ba"><i class="demo-icon zmi-icon-user">&#xf2ba;</i> <span class="i-name">zmi-icon-user</span><span class="i-code">0xf2ba</span></div>
       </div>
     </div>
     <div class="container footer">Generated by <a href="http://fontello.com">fontello.com</a></div>

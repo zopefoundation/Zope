@@ -1,6 +1,6 @@
 {
   "name": "zopetello",
-  "css_prefix_text": "icon-",
+  "css_prefix_text": "zmi-icon-",
   "css_use_suffix": false,
   "hinting": true,
   "units_per_em": 1000,
