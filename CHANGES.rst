@@ -21,6 +21,8 @@ Bugfixes
 
 - Use log.warning to avoid deprecation warning for log.warn
 
+- always raise InternalError when using WSGI
+  (`#280 <https://github.com/zopefoundation/Zope/pull/280>`)
 
 4.0b4 (2018-04-23)
 ------------------
