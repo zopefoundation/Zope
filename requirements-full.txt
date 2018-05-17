@@ -89,5 +89,9 @@ zope.viewlet==4.1.0
 # current branch required as editable install
 -e .
 
-# development version of zmi.styles for now
+# development versions of dependencies
 -e git+https://github.com/zopefoundation/zmi.styles@master#egg=zmi.styles
+-e git+https://github.com/zopefoundation/AccessControl@zmi-bootstrap#egg=AccessControl
+-e git+https://github.com/zopefoundation/Products.BTreeFolder2@zmi-bootstrap#egg=Products.BTreeFolder2
+-e git+https://github.com/zopefoundation/Products.ZCatalog@zmi-bootstrap#egg=Products.ZCatalog
+-e git+https://github.com/zopefoundation/Products.PythonScripts@zmi-bootstrap#egg=Products.PythonScripts
