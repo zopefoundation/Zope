@@ -44,6 +44,7 @@ class ProductContext(object):
 
     def __init__(self, product, app, package):
         self.__prod = product
+        self.__app = app
         self.__pack = package
 
     def registerClass(self, instance_class=None, meta_type='',
@@ -212,6 +213,9 @@ class ProductContext(object):
         class DummyHelp(object):
             lastRegistered = None
         return DummyHelp()
+
+    def getApplication(self):
+        return self.__app
 
 
 class AttrDict(object):

@@ -299,7 +299,7 @@ class AppInitializer(object):
             self.commit(u'Added default view for root object')
 
     def install_products(self):
-        return install_products()
+        return install_products(self.getApp())
 
     def install_standards(self):
         app = self.getApp()
@@ -424,7 +424,7 @@ def install_product(app, product_dir, product_name, meta_types,
         setattr(Application.misc_, product_name, misc_)
 
     productObject = FactoryDispatcher.Product(product_name)
-    context = ProductContext(productObject, None, product)
+    context = ProductContext(productObject, app, product)
 
     # Look for an 'initialize' method in the product.
     initmethod = pgetattr(product, 'initialize', None)
@@ -439,7 +439,7 @@ def install_package(app, module, init_func, raise_exc=None):
     product.package_name = name
 
     if init_func is not None:
-        newContext = ProductContext(product, None, module)
+        newContext = ProductContext(product, app, module)
         init_func(newContext)
 
     package_initialized(module, init_func)
