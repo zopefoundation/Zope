@@ -25,14 +25,14 @@ class TestNavigation(Testing.ZopeTestCase.ZopeTestCase):
     def test_Management__Navigation__manage_page_header__3(self):
         """It respects `zmi_additional_css_paths` lines property."""
         self.folder.manage_addProperty(
-            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'lines')
+            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'ulines')
         self.assertIn('href="/foo/bar.css"', self.folder.manage_page_header())
         self.assertIn('href="/baz.css"', self.folder.manage_page_header())
 
     def test_Management__Navigation__manage_page_header__4(self):
         """It respects `zmi_additional_css_paths` ulines property."""
         self.folder.manage_addProperty(
-            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'lines')
+            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'ulines')
         self.assertIn('href="/foo/bar.css"', self.folder.manage_page_header())
         self.assertIn('href="/baz.css"', self.folder.manage_page_header())
 
