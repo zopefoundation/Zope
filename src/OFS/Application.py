@@ -286,7 +286,7 @@ class AppInitializer(object):
                 vhm = VirtualHostMonster()
                 vhm.id = 'virtual_hosting'
                 vhm.addToContainer(app)
-                self.commit('Added virtual_hosting')
+                self.commit(u'Added virtual_hosting')
 
     def install_root_view(self):
         app = self.getApp()
