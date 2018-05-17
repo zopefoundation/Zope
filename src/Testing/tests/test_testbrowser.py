@@ -98,9 +98,10 @@ class TestTestbrowser(FunctionalTestCase):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
 
-        with self.assertRaises(HTTPError):
+        # HTTP errors only for WSGI
+        with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.headers['status'].startswith('500'))
+        self.assertIsNone(browser.contents)
 
         with self.assertRaises(HTTPError):
             browser.open('http://localhost/nothing-is-here')
@@ -165,8 +166,10 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.raiseHttpErrors = False
 
-        browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.headers['status'].startswith('500'))
+        # HTTP errors only for WSGI
+        with self.assertRaises(ValueError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertIsNone(browser.contents)
 
         browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
