@@ -5,7 +5,7 @@
   </dtml-if>
 </dtml-with>
 
-<main class="<dtml-var "meta_type.replace(' ', '-')"> <dtml-var "URL0[_.len(URL1)+1:]">">
+<main class="container-fluid <dtml-var "meta_type.replace(' ', '-')"> <dtml-var "URL0[_.len(URL1)+1:]">">
     <p class="form-help">
         The listing below shows the current security settings for this item.
         Permissions are rows and roles are columns. Checkboxes are used to
@@ -97,19 +97,19 @@
             <div class="form-group">
                 <label for="username" class="nowrap">User defined roles</label>
                 <div class="form-inline">
-                    <input type="text" class="form-control col-sm-6 col-md-3 mr-2" id="role" name="role" placeholder="Define a new user role ..." />
-                    <input type="submit" class="btn btn-primary" name="submit" value="Add Role" /> 
+                    <input type="text" class="form-control col-sm-6 col-md-3 mr-2 mb-2" id="role" name="role" placeholder="Define a new user role ..." />
+                    <input type="submit" class="btn btn-primary mb-2" name="submit" value="Add Role" /> 
                 </div>
             </div>
             <dtml-if userdefined_roles>
                 <div class="form-group">
                     <div class="form-inline">
-                        <select name="roles:list" class="form-control col-sm-6 col-md-3 mr-2">
+                        <select name="roles:list" class="form-control col-sm-6 col-md-3 mr-2  mb-2">
                           <dtml-in userdefined_roles>
                             <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
                           </dtml-in userdefined_roles>
                         </select>
-                        <input type="submit" class="btn btn-primary" name="submit" value="Delete Role" /> 
+                        <input type="submit" class="btn btn-primary  mb-2" name="submit" value="Delete Role" /> 
                     </div>
                 </div>
             </dtml-if>
