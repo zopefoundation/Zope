@@ -38,6 +38,13 @@ class HTTPExceptionHandler(object):
                 # In debug mode, let the web server log a real
                 # traceback
                 raise
+            if environ.get('wsgi.errors') is not None:
+                # s. https://www.python.org/dev/peps/pep-0333/#id27
+                # Imho InternalError is the generic error case
+                # that should not be handled by the application but
+                # rather the WSGI server. This way the error along with
+                # the traceback ends up in the concfigured logs.
+                raise
             return self.catch_all_response(exc)(environ, start_response)
 
     def catch_all_response(self, exc):
