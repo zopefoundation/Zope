@@ -8,11 +8,12 @@
       tal:attributes="action string:${request/URL1}/" >
   <div class="form-group">
     <label for="addItemSelect"
-           class="mr-2">Select type to add</label>
+           class="mr-2 sr-only">Select type to add</label>
     <select class="form-control mr-2"
             name=":action"
             id="addItemSelect"
-            tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value">
+            tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value;;this.selectedIndex = 0">
+      <option value='' disabled selected>Select type to add</option>
       <tal:option tal:repeat="mt here/filtered_meta_types">
         <option tal:condition="mt/action"
                 tal:attributes="value mt/action"
@@ -20,7 +21,6 @@
       </tal:option>
     </select>
   </div>
-  <input class="btn btn-outline-secondary" type="submit" name="submit" value="Add" />
 </form>
 
 <form name="objectItems"
