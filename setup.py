@@ -126,5 +126,8 @@ setup(
             'runwsgi=Zope2.Startup.serve:main',
             'mkwsgiinstance=Zope2.utilities.mkwsgiinstance:main',
         ],
+        'zodbupdate.decode': [
+            'decodes = OFS:zodbupdate_decode_dict',
+        ],
     },
 )
