@@ -76,7 +76,8 @@ def setup_logging(config_uri, global_conf=None,  # NOQA
             here=os.path.dirname(config_file))
         if global_conf:
             full_global_conf.update(global_conf)
-        return fileConfig(config_file, full_global_conf)
+        return fileConfig(
+            config_file, full_global_conf, disable_existing_loggers=False)
 
 
 class ServeCommand(object):
