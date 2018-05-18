@@ -39,7 +39,7 @@ Bugfixes
 - Use log.warning to avoid deprecation warning for log.warn
 
 - Keep existing loggers
-  (`#276 <https://github.com/zopefoundation/Zope/pull/276>`)
+  (`#276 <https://github.com/zopefoundation/Zope/pull/276>`_)
 
 - Accept bytes and text as cookie value.
   (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
