@@ -27,6 +27,8 @@ from zope.component import adapter
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 
+import six
+
 here = os.path.dirname(os.path.abspath(__file__))
 filedata = os.path.join(here, 'test.gif')
 
@@ -328,3 +330,8 @@ class ImageTests(FileTests):
         from OFS.interfaces import IWriteLock
 
         verifyClass(IWriteLock, Image)
+
+    def test_text_representation_is_tag(self):
+        self.assertEqual(six.text_type(self.file),
+                         '<img src="http://nohost/file"'
+                         ' alt="" title="" height="16" width="16" />')
