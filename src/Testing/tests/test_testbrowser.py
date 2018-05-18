@@ -98,11 +98,12 @@ class TestTestbrowser(FunctionalTestCase):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
 
-        # HTTP errors only for WSGI
+        # An error which cannot be handled by Zope is propagated to the client:
         with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
         self.assertIsNone(browser.contents)
 
+        # Handled errors become an instance of `HTTPError`:
         with self.assertRaises(HTTPError):
             browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
@@ -121,10 +122,7 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.handleErrors = False
 
-        with self.assertRaises(ValueError):
-            browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.contents is None)
-
+        # Even errors which can be handled by Zope go to the client:
         with self.assertRaises(NotFound):
             browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.contents is None)
@@ -166,11 +164,12 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.raiseHttpErrors = False
 
-        # HTTP errors only for WSGI
+        # Internal server errors are still raised:
         with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
         self.assertIsNone(browser.contents)
 
+        # But errors handled by Zope do not create an exception:
         browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
 
