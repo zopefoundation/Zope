@@ -13,7 +13,7 @@
 </dtml-in>
 
   <nav role="navigation">
-    <ul class="nav nav-tabs nav-fill mt-2 mb-2">
+    <ul class="nav nav-tabs mt-2 mb-2">
       <dtml-in manage_options mapping>
         <dtml-let s_item=sequence-item s_index=sequence-index>
           <li class="nav-item">

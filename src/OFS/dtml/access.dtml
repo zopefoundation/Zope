@@ -44,9 +44,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <dtml-in permission_settings mapping>
-                        <dtml-if "not (_['sequence-index']%10)">
-                            <tr>
+                    <dtml-in permission_settings mapping
+                        ><dtml-let permmission_title="name"
+                        ><dtml-if "not (_['sequence-index']%10)">
+                            <tr class="zmi-table-head">
                                 <th colspan="2" class="zmi-akcquire-title" title="Acquire permission settings">
                                     <dtml-unless isTopLevelPrincipiaApplicationObject>
                                          <a href="manage_acquiredForm">Acquire
@@ -69,14 +70,18 @@
                             <td class="zmi-akcquire-title nowrap">
                                 <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
                             </td>
-                            <dtml-in roles mapping>
-                                <td class="zmi-rolename-check" title="<dtml-var "valid_roles[_['sequence-index']]"> ">
-                                    <input type="checkbox" name="&dtml-name;" &dtml-checked; />
+                            <dtml-in roles mapping
+                                ><td class="zmi-rolename-check" title="Role: <dtml-var "valid_roles[_['sequence-index']]">" 
+                                    onclick="$(this).children('input').trigger('click')">
+                                    <label class="sr-only sr-only-focusable" 
+                                        for="&dtml-name;">Role: <dtml-var "valid_roles[_['sequence-index']]">, Permission: <dtml-var "_['permmission_title']"></label>
+                                    <input type="checkbox" &dtml-checked; name="&dtml-name;" onclick="event.stopPropagation()"/>
                                 </td>
                             </dtml-in>
                             <td  class="blank">&nbsp;</td>
                         </tr>
-                    </dtml-in permission_settings>
+                    </dtml-let
+                    ></dtml-in permission_settings>
                 </tbody>
             </table>
             <div class="zmi-controls">
