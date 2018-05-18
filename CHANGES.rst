@@ -20,6 +20,8 @@ New features
   by `Products.Sessions`).
   (`#277 <https://github.com/zopefoundation/Zope/pull/277>`_)
 
+- Update dependencies to newest versions.
+
 Bugfixes
 ++++++++
 
