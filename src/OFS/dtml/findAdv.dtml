@@ -1,19 +1,20 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
+<main>
 
-<FORM ACTION="manage_findResult" METHOD="GET">
+<FORM ACTION="manage_findResult" METHOD="GET" class="zmi-find">
 <INPUT TYPE = "hidden" NAME="searchtype" VALUE="advanced">
 <TABLE>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="type" class="form-label">
   Find objects of type:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
+  <SELECT id="type" class="form-control" NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
 <dtml-in all_meta_types mapping>
   <OPTION VALUE="&dtml-name;"> &dtml-name;
@@ -25,63 +26,63 @@
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="ids" class="form-label">
   with ids:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30">
+  <INPUT id="ids" class="form-control" TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30">
   </TD>
 </TR>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="contain" class="form-label">
   containing:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30">
+  <INPUT id="contain" class="form-control" TYPE="TEXT" NAME="obj_searchterm" SIZE="30">
   </TD>
 </TR>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="expr" class="form-label">
   expr:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <TEXTAREA NAME="obj_expr" ROWS="4" COLS="30"></TEXTAREA>
+  <TEXTAREA id="expr" class="form-control" NAME="obj_expr" ROWS="4" COLS="30"></TEXTAREA>
   </TD>
 </TR>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="mod" class="form-label">
   modified:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="obj_mspec">
+  <SELECT id="mod" class="form-control" NAME="obj_mspec">
   <OPTION VALUE="&lt;"> before
   <OPTION VALUE="&gt;"> after
-  </SELECT> 
+  </SELECT>
   </div>
-  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22">
+  <INPUT class="form-control" TYPE="TEXT" NAME="obj_mtime" SIZE="22">
   </TD>
 </TR>
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="roles" class="form-label">
   where the roles:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
+  <SELECT id="roles" class="form-control" NAME="obj_roles:list" SIZE="3" MULTIPLE>
 <dtml-in valid_roles>
   <OPTION VALUE="&dtml-sequence-item;"> &dtml-sequence-item;
 </dtml-in>
@@ -92,13 +93,13 @@
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="perm" class="form-label">
   have permission:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="obj_permission">
+  <SELECT id="perm" class="form-conrol" NAME="obj_permission">
 <dtml-in permission_settings mapping>
   <OPTION VALUE="&dtml-name;"> &dtml-name;
 </dtml-in>
@@ -109,18 +110,18 @@
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-label">
+  <label for="skey" class="form-label">
   Sort results by:
-  </div>
+  </label>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="skey">
+  <SELECT NAME="skey" id="skey" class="form-control">
   <OPTION VALUE="meta_type">Type
   <OPTION VALUE="id">Id
-  </SELECT> 
-  <INPUT TYPE="checkbox" NAME="rkey" VALUE="reverse">
-  <span class="form-label"> Reverse?</span>
+  </SELECT>
+  <INPUT id="rkey" class="form-check-input" TYPE="checkbox" NAME="rkey" VALUE="reverse">
+  <label for="rkey" class="form-check-label">Reverse?</label>
   </div>
   </TD>
 </TR>
@@ -129,12 +130,13 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-text">
-  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="0"> 
-  Search only in this folder
-  <BR>
-  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="1" CHECKED> 
-  Search all subfolders
+  <div class="form-check">
+  <INPUT id="thisfolder" class="form-check-input" TYPE="RADIO" NAME="search_sub:int" VALUE="0" />
+  <label for="thisfolder" class="form-check-label">Search only in this folder</label>
+  </div>
+  <div class="form-check">
+  <INPUT id="subfolder" class="form-check-input" TYPE="RADIO" NAME="search_sub:int" VALUE="1" CHECKED />
+  <label for="subfolder" class="form-check-label">Search all subfolders</label>
   </div>
   </TD>
 </TR>
@@ -144,7 +146,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <INPUT class="form-element" TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  <INPUT class="btn btn-primary" TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">
   <span class="form-text">
   <a href="manage_findForm"> Simple...<a>
   </span>
@@ -155,7 +157,3 @@
 </FORM>
 
 <dtml-var manage_page_footer>
-
-
-
-
