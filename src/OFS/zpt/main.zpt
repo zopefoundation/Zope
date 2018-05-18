@@ -23,15 +23,17 @@
   </div>
 </form>
 
-<form name="objectItems"
-      method="post"
-      tal:define="
+<main class="container-fluid">
+<form 
+    name="objectItems"
+    method="post"
+    tal:define="
         ids here/objectIds;
         sm modules/AccessControl/SecurityManagement/getSecurityManager"
-      tal:attributes="action string:${request/URL1}/">
+    tal:attributes="action string:${request/URL1}/">
 
   <tal:not-empty condition="ids">
-    <table class="table table-striped table-hover table-sm"
+    <table class="table table-striped table-hover table-sm objectItems"
            tal:condition="ids">
       <thead class="thead-light">
         <tr>
@@ -52,13 +54,13 @@
       <tbody>
         <tr tal:repeat="id ids">
           <tal:ob define="ob python:here.get(id)">
-            <td class="text-right">
+            <td class="text-right zmi-object_check">
               <input type="checkbox"
                      class="checkbox-list-item"
                      name="ids:list"
                      tal:attributes="value id" />
             </td>
-            <td>
+            <td class="zmi-object_type">
               <span title="Broken object"
                     class="icon-broken"
                     tal:attributes="class ob/zmi_icon | default;
@@ -67,7 +69,7 @@
                       tal:content="ob/meta_type | default">Broken object</span>
               </span>
             </td>
-            <td>
+            <td class="zmi-object_id">
               <a tal:attributes="href string:${id}/manage_workspace"
                  tal:content="id">Id</a>
               <span class="badge badge-warning"
@@ -75,13 +77,13 @@
                 Locked
               </span>
             </td>
-            <td>
+            <td class="zmi-object_title">
               <a tal:condition="ob/title|nothing"
                  tal:attributes="href string:${id}/manage_workspace"
                  tal:content="ob/title">Title</a>
             </td>
 
-            <td class="text-right"
+            <td class="text-right zmi-object_size"
                 tal:content="python:here.computeSize(ob)">
             </td>
           </tal:ob>
@@ -89,36 +91,36 @@
       </tbody>
     </table>
 
-    <div class="form-group"
+    <div class="form-group zmi-controls"
          tal:define="
            delete_allowed python:sm.checkPermission('Delete objects', context)"
          tal:condition="ids">
       <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
-        <input class="btn btn-outline-secondary"
+        <input class="btn btn-primary"
                type="submit"
                name="manage_renameForm:method"
                value="Rename" />
-          <input class="btn btn-outline-danger"
+          <input class="btn btn-primary"
                  type="submit"
                  name="manage_cutObjects:method"
                  value="Cut"
                  tal:condition="delete_allowed" />
-          <input class="btn btn-outline-secondary"
+          <input class="btn btn-primary"
                  type="submit"
                  name="manage_copyObjects:method"
                  value="Copy" />
-          <input class="btn btn-outline-info"
+          <input class="btnbtn-primary"
                  type="submit"
                  name="manage_pasteObjects:method"
                  value="Paste"
                  tal:condition="here/cb_dataValid" />
       </tal:copy-paste>
-      <input class="btn btn-outline-danger"
+      <input class="btn btn-primary"
               type="submit"
               name="manage_delObjects:method"
               value="Delete"
               tal:condition="delete_allowed" />
-      <input class="btn btn-outline-secondary"
+      <input class="btn btn-primary"
              type="submit"
              name="manage_importExportForm:method"
              value="Import/Export"
@@ -133,13 +135,13 @@
     </div>
     <div class="form-group">
       <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
-        <input class="btn btn-outline-secondary"
+        <input class="btn btn-primary"
                type="submit"
                name="manage_pasteObjects:method"
                value="Paste"
                tal:condition="here/cb_dataValid" />
       </tal:copy-paste>
-      <input class="btn btn-outline-secondary"
+      <input class="btn btn-primary"
              type="submit"
              name="manage_importExportForm:method"
              value="Import/Export"
@@ -147,5 +149,5 @@
     </div>
   </tal:empty>
 </form>
-
+</main>
 <tal:footer replace="structure here/manage_page_footer" />
