@@ -11,6 +11,20 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b5 (unreleased)
 ------------------
 
+New features
+++++++++++++
+
+- The `ProductContext` handed to a product's `initialize()` method
+  now has a `getApplication()` method which a product can use to,
+  e.g., add an object to the Application during startup (as used
+  by `Products.Sessions`).
+  (`#277 <https://github.com/zopefoundation/Zope/pull/277>`_)
+
+Bugfixes
+++++++++
+
+- Fix comparison against non-ints in ZCacheable_getModTime.
+
 - Allow unicode in ids.
   (`#181 <https://github.com/zopefoundation/Zope/pull/181>`_)
 
@@ -18,6 +32,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Keep existing loggers
   (`#276 <https://github.com/zopefoundation/Zope/pull/276>`)
+
+- Accept bytes and text as cookie value.
+  (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
+
 
 4.0b4 (2018-04-23)
 ------------------
