@@ -1,16 +1,18 @@
 <dtml-var manage_page_header>
 
+<main>
+
 <h2>Rename Items</h2>
 
 <dtml-if expr="REQUEST.has_key('ids')">
 
     <form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" class="zmi-rename">
     <dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
-        <div class="form-group">
+        <div class="form-group row">
             <dtml-if cb_isMoveable>
                 <input type="hidden" name="ids:list" value="&dtml-getId;" />
-                <input class="form-control" type="text" name="new_ids:list" value="&dtml-getId;" aria-describedby="label&dtml-getId;"/>
-                <small class="text-muted form-text" id="label&dtml-getId;">Original name: &dtml-getId;</small>
+                <label for="&dtml-getId;" class="form-label col-sm-2">&dtml-getId; to:</label>
+                <input class="form-control col-sm-10" type="text" name="new_ids:list" value="&dtml-getId;" />
             <dtml-else>
                 <label class="text-muted">&dtml-getId; may not be renamed.</label>
             </dtml-if>
@@ -37,5 +39,7 @@ You must select an item to rename.
 <a href="manage_main" class="btn btn-primary">Ok</a>
 
 </dtml-if>
+
+</main>
 
 <dtml-var manage_page_footer>
