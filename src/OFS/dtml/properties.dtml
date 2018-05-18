@@ -16,7 +16,7 @@
     <dtml-call "REQUEST.set('management_page_charset','UTF-8')">
     <dtml-call "REQUEST.set('management_page_charset_tag','UTF-8:')">
 </dtml-if>
-    
+
 <dtml-if "REQUEST.get('management_page_charset',None)=='UTF-8'">
 <dtml-var "u' '">
 </dtml-if>
@@ -24,6 +24,8 @@
 <dtml-with "_(management_view='Properties')">
 <dtml-var manage_tabs>
 </dtml-with>
+
+<main>
 
 <form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
 <dtml-if propertyMap>
@@ -209,12 +211,12 @@ property values, edit the values and click &quot;Save Changes&quot;.
   <td>
   <input name="manage_editProperties:method"
          type="submit"
-         class="btn btn-outline-secondary"
+         class="btn btn-primary"
          value="Save Changes" />
 <dtml-if property_extensible_schema__>
   <input name="manage_delProperties:method"
          type="submit"
-         class="btn btn-outline-danger"
+         class="btn btn-secondary"
          value="Delete" />
   </td>
   <td>
@@ -313,5 +315,7 @@ property and click the &quot;Add&quot; button.
 </table>
 </form>
 </dtml-if>
+
+</main>
 
 <dtml-var manage_page_footer>
