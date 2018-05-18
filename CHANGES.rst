@@ -24,6 +24,10 @@ Bugfixes
 - Accept bytes and text as cookie value.
   (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
 
+- ``__str__`` of an Image object now returns the image HTML tag in
+  Python 3 as it already did on Python 2.
+  (`#282 <https://github.com/zopefoundation/Zope/pull/282>`_)
+
 
 4.0b4 (2018-04-23)
 ------------------
