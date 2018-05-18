@@ -36,6 +36,10 @@ Bugfixes
 - Accept bytes and text as cookie value.
   (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
 
+- Always raise InternalError when using WSGI and let the WSGI server decide
+  how to handle the request.
+  (`#280 <https://github.com/zopefoundation/Zope/pull/280>`)
+
 - ``__str__`` of an Image object now returns the image HTML tag in
   Python 3 as it already did on Python 2.
   (`#282 <https://github.com/zopefoundation/Zope/pull/282>`_)
