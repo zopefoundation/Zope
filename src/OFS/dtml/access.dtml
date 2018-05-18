@@ -38,7 +38,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th scope="col" colspan="2">Permission</th>
+                        <th scope="col" colspan="2">Permissions</th>
                         <th scope="col" colspan="<dtml-var expr="_.len(valid_roles)">">Roles</th>
                         <th class="blank">&nbsp;</th>
                     </tr>
@@ -63,9 +63,9 @@
                         </dtml-if>
                         <tr>
                             <td class="zmi-akcquire-check"">
-                                <dtml-unless isTopLevelPrincipiaApplicationObject>
-                                    <input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
-                                </dtml-unless>
+                                <dtml-if isTopLevelPrincipiaApplicationObject>&nbsp;<dtml-else
+                                    ><input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
+                                </dtml-if>
                             </td>
                             <td class="zmi-akcquire-title nowrap">
                                 <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>

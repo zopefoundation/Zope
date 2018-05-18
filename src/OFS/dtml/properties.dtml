@@ -25,7 +25,7 @@
 <dtml-var manage_tabs>
 </dtml-with>
 
-<main>
+<main class="container-fluid">
 
 <form action="<dtml-var "REQUEST.URL1" html_quote>" method="post">
 <dtml-if propertyMap>
@@ -34,9 +34,9 @@ Properties allow you to assign simple values to Zope objects. To change
 property values, edit the values and click &quot;Save Changes&quot;.
 </p>
 
-<table class="table table-striped table-hover">
+<table class="table">
   <thead class="thead-light">
-    <tr>
+    <tr class="table-sm">
       <th scope="col"></th>
       <th scope="col">Name</th>
       <th scope="col">Value</th>
@@ -79,38 +79,32 @@ property values, edit the values and click &quot;Save Changes&quot;.
         <input type="number"
                class="form-control"
                name="&dtml-id;:&dtml-type;"
-               size="35"
                value="<dtml-if "hasProperty(id)"><dtml-var "'%s' % getProperty(id)" html_quote></dtml-if>" />
       <dtml-elif "type == 'long'">
         <input type="number"
                class="form-control"
                name="&dtml-id;:&dtml-type;"
-               size="35"
                value="<dtml-if "hasProperty(id)"><dtml-var "('%s' % getProperty(id))" html_quote></dtml-if>" />
       <dtml-elif "type == 'date' and not _.same_type(getProperty(id), '')
                   and getProperty(id).timezoneNaive()">
         <input type="text"
                class="form-control"
                name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
-               size="35"
                value="<dtml-var "str(getProperty(id)).rsplit(' ', 1)[0]" html_quote>" />
       <dtml-elif "type in ['date', 'float', 'string', 'ustring']">
         <input type="text"
                class="form-control"
                name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
-               size="35"
                value="<dtml-var "getProperty(id)" html_quote>" />
       <dtml-elif "type=='boolean'">
         <input type="checkbox"
                class="form-control"
                name="&dtml-id;:&dtml-type;"
-               size="35"
                <dtml-if "getProperty(id)">checked="checked"</dtml-if> />
       <dtml-elif "type in ['tokens','utokens']">
         <input type="text"
                class="form-control"
                name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
-               size="35"
                value="<dtml-in "getProperty(id)">&dtml-sequence-item; </dtml-in>" />
       <dtml-elif "type in ['text','utext']">
         <textarea name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
@@ -182,7 +176,7 @@ property values, edit the values and click &quot;Save Changes&quot;.
         <em>Unknown property type</em>
       </dtml-if>
     <dtml-else>
-      <table border="1">
+      <table>
         <tr><td><dtml-var "getProperty(id)" html_quote></td></tr>
       </table>
     </dtml-if>
@@ -197,50 +191,45 @@ property values, edit the values and click &quot;Save Changes&quot;.
 </tr>
 
 <dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')">
-  <tr class="table-danger">
+  <tr">
     <td colspan="4">
-      <strong>Warning:</strong> be aware that removing 'title'
-       without re-adding it might be dangerous.
+      <p class="text-danger"><strong>Warning:</strong> be aware that removing 'title'
+       without re-adding it might be dangerous.</p>
     </td>
   </tr>
 </dtml-if>
 </dtml-let>
 </dtml-in>
-<tr>
-  <td colspan="2">&nbsp;</td>
-  <td>
-  <input name="manage_editProperties:method"
-         type="submit"
-         class="btn btn-primary"
-         value="Save Changes" />
-<dtml-if property_extensible_schema__>
-  <input name="manage_delProperties:method"
-         type="submit"
-         class="btn btn-secondary"
-         value="Delete" />
-  </td>
-  <td>
-  <dtml-comment>
-  This needs some community review before exposing it officially.
-  <input type="submit" name="manage_propertyTypeForm:method"
-         value="Change Names/Types" />
-  </dtml-comment>
-  </td>
-<dtml-else>
-  </td>
-  <td>&nbsp;</td>
-</dtml-if>
 </tr>
 </table>
 
+<div class="zmi-controls">
+    <input name="manage_editProperties:method"
+         type="submit"
+         class="btn btn-primary"
+         value="Save Changes" />
+    <dtml-if property_extensible_schema__>
+    <input name="manage_delProperties:method"
+         type="submit"
+         class="btn btn-primary"
+         value="Delete" />
+        <dtml-comment>
+        This needs some community review before exposing it officially.
+        <input type="submit" name="manage_propertyTypeForm:method"
+             value="Change Names/Types" />
+        </dtml-comment>
+    </dtml-if>
+</div>
+
 <dtml-else>
-<p>
-Properties allow you to assign simple values to Zope objects. There are
-currently no properties defined for this item. <dtml-if
-property_extensible_schema__>To add a property, enter a name, type
-and value and click the &quot;Add&quot; button.
-</dtml-if>
-</p>
+    <p class="form-help">
+        Properties allow you to assign simple values to Zope objects. There are
+        currently no properties defined for this item. 
+        <dtml-if property_extensible_schema__>
+            To add a property, enter a name, type and value and click the 
+            &quot;Add&quot; button.
+        </dtml-if>
+    </p>
 
 </dtml-if>
 </form>
@@ -250,14 +239,14 @@ and value and click the &quot;Add&quot; button.
 <form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty"
  method="post">
 
-<p>
-To add a new property, enter a name, type and value for the new
-property and click the &quot;Add&quot; button.
-</p>
+    <p class="form-help mt-5">
+        To add a new property, enter a name, type and value for the new
+        property and click the &quot;Add&quot; button.
+    </p>
 
-<table class="table table-striped table-hover">
+<table class="table">
   <thead class="thead-light">
-    <tr>
+    <tr class="table-sm">
       <th scope="col">Name</th>
       <th scope="col">Value</th>
       <th scope="col">Type</th>
@@ -270,7 +259,6 @@ property and click the &quot;Add&quot; button.
         <input type="text"
                class="form-control"
                name="id:<dtml-var "REQUEST['management_page_charset_tag']">string"
-               size="30"
                value="" />
       </td>
       <td>
@@ -278,12 +266,12 @@ property and click the &quot;Add&quot; button.
           <input type="text"
                  class="form-control"
                  name="value:UTF-8:ustring"
-                 size="30" />
+                 />
         <dtml-else>
           <input type="text"
                  class="form-control"
                  name="value:string"
-                 size="30" />
+                 />
         </dtml-if>
       </td>
       <td>
@@ -308,7 +296,7 @@ property and click the &quot;Add&quot; button.
         </select>
       </td>
       <td>
-        <input class="btn btn-outline-secondary" type="submit" name="submit" value="   Add " />
+        <input class="btn btn-primary" type="submit" name="submit" value="   Add " />
       </td>
     </tr>
   </tbody>

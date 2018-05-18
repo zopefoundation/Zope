@@ -1,6 +1,6 @@
 <dtml-var manage_page_header>
 
-<main>
+<main class="container-fluid">
 
 <h2>Rename Items</h2>
 
