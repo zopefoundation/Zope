@@ -10,7 +10,7 @@ Bootstrap.
 It uses the  ``zopetello`` font for the icons.
 The font ``zopetello`` has been created using `Fontello`_.
 
-.. _`Fontello`: https://fontello.com
+.. _`Fontello`: http://fontello.com
 
 Contents
 ========
