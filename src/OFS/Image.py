@@ -798,7 +798,7 @@ class Image(File):
     renders an HTML 'IMG' tag.
     """
     meta_type = 'Image'
-    zmi_icon = 'zmi-icon-image'
+    zmi_icon = 'far fa-file-image'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
