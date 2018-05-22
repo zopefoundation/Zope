@@ -24,10 +24,11 @@ If you have a Product or package which contains types, which can be added via
 the ZMI, the default icon will be shown.
 
 To use one of the new icons add an attribute named `zmi_icon` to the class. The
-value should be one of the names listed on `available icons`_.
+value should be one of the class of one of the `available icons`_. I.e. to get the 
+info (i in a circle) icon you would set attribute `zmi icon` to `'fas fa-info-circle'`
 
 .. _`zmi.styles` : https://github.com/zopefoundation/zmi.styles
-.. _`available icons` : http://htmlpreview.github.io/?https://github.com/zopefoundation/zmi.styles/blob/master/zmi/styles/resources/zopetello/demo.html
+.. _`available icons` : https://fontawesome.com/icons?d=gallery&m=free
 
 Use custom icons and resources
 ++++++++++++++++++++++++++++++
