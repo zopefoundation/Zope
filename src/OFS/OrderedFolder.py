@@ -41,7 +41,7 @@ class OrderedFolder(OrderSupport, Folder):
     """ Extends the default Folder by order support.
     """
     meta_type = 'Folder (Ordered)'
-    zmi_icon = 'zmi-icon-folder2'
+    zmi_icon = 'far fa-folder'
 
     manage_options = (
         OrderSupport.manage_options +
