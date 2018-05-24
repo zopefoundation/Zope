@@ -11,7 +11,7 @@ file. You may also edit the file content directly if the content is a
 text type and small enough to be edited in a text area.
 </p>
 
-<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data" class="zmi-file zmi-metadata">
+<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data" class="zmi-file zmi-edit">
 
 <div class="form-group row">
   <label for="title" class="form-label  col-sm-3 col-md-2">
