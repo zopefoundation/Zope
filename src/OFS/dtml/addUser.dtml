@@ -1,73 +1,54 @@
 <dtml-var manage_page_header>
 
+<main>
+
 <dtml-var "manage_form_title(this(), _, form_title='Add User')">
 
 <p class="form-help">
 To add a new user, enter the name <dtml-unless remote_user_mode__>
-,password, confirmation</dtml-unless> and roles for the new user and 
-click &quot;Add&quot;. <em>Domains</em> is an optional list of domains 
-from which the user is allowed to login. 
+,password, confirmation</dtml-unless> and roles for the new user and
+click &quot;Add&quot;. <em>Domains</em> is an optional list of domains
+from which the user is allowed to login.
 </p>
 
-<form action="manage_users" method="post">
-<table>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Name
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <input type="text" name="name" size="30" />
-  </td>
-</tr>
+<form action="manage_users" method="post"  class="zmi-user">
+<div class="form-group row">
+    <label for="name" class="form-label col-sm-3 col-md-2">
+        Name
+    </label>
+    <input id="name" class="form-control col-sm-9 col-md-6" type="text" name="name" size="30" />
+</div>
 
 <dtml-if remote_user_mode__>
 <input type="hidden" name="password" value="password" />
 <input type="hidden" name="confirm"  value="password" />
 <dtml-else>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Password
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <input type="password" name="password" size="30" />
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  (Confirm)
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <input type="password" name="confirm" size="30" />
-  </td>
-</tr>
+<div class="form-group row">
+  <label for="pw" class="form-label col-sm-3 col-md-2">
+      Password
+  </label>
+  <input id="pw" class="form-control col-sm-9 col-md-6" type="password" name="password" size="30" />
+</div>
+<div class="form-group row">
+    <label for="confirm" class="form-label col-sm-3 col-md-2">
+        (Confirm)
+    </label>
+    <input id="confirm" class="form-control col-sm-9 col-md-6" type="password" name="confirm" size="30" />
+</div>
 </dtml-if>
 
-<tr>
-<td align="left" valign="top">
-<div class="form-optional">
-Domains
+<div class="form-group row">
+    <label for="domains" class="form-label col-sm-3 col-md-2">
+        Domains
+    </label>
+    <input id="domains" class="form-control col-sm-9 col-md-6" type="text" name="domains:tokens" size="30" value="" />
 </div>
-</td>
-<td align="left" valign="top">
-<input type="text" name="domains:tokens" size="30" value="" />
-</td>
-</tr>
 
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
+<div class="form-group row">
+  <label for="roles" class="form-label col-sm-3 col-md-2">
   Roles
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-element">
-  <select name="roles:list" size="5" multiple>
+  </label>
+  <select id="roles" class="form-control col-sm-9 col-md-6" name="roles:list" size="5" multiple>
   <dtml-in valid_roles>
   <dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
   <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
@@ -78,12 +59,12 @@ Domains
   </dtml-if>
   </dtml-in valid_roles>
   </select>
-  <br />
-  <input type="submit" name="submit" value="Add" />
-  </div>
-</td>
-</tr>
-</table>
+</div>
+<div class="controls">
+    <input class="btn btn-primary" type="submit" name="submit" value="Add" />
+ </div>
 </form>
+
+</main>
 
 <dtml-var manage_page_footer>

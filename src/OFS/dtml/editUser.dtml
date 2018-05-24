@@ -1,90 +1,72 @@
 <dtml-var manage_page_header>
 
+<main>
+
 <dtml-var "manage_form_title(this(), _, form_title='Change User')">
 
-<FORM ACTION="manage_users" METHOD="POST">
-<TABLE>
-<TR>
-<TD VALIGN="TOP">
-<div class="form-label">
-Name
+<FORM ACTION="manage_users" METHOD="POST" class="zmi-user">
+<div class="form-group row">
+    <label for="name" class="form-label col-sm-3 col-md-2">
+        Name
+    </label>
+    <div id="name" class="form-text col-sm-9 col-md-6">
+        <dtml-var expr="user.name" html_quote>
+    </div>
 </div>
-</TD>
-<TD VALIGN="TOP">
-<div class="form-text">
-<dtml-var expr="user.name" html_quote>
-</div>
-</TD>
-</TR>
-<TR><TD COLSPAN=2>&nbsp;</TD></TR>
+
 <dtml-if remote_user_mode__>
   <INPUT TYPE="HIDDEN" NAME="password" value="&dtml-password;" />
   <INPUT TYPE="HIDDEN" NAME="confirm"  value="&dtml-password;" />
 <dtml-else>
-<TR>
-<TD VALIGN="TOP">
-<div class="form-label">
-New Password
+<div class="form-group row">
+    <label for="pw" class="form-label col-sm-3 col-md-2">
+        New Password
+    </label>
+    <INPUT id="pw" class="form-control col-sm-9 col-md-6" TYPE="PASSWORD" NAME="password" SIZE="30" value="password" />
 </div>
-</TD>
-<TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="password" SIZE="30" value="password" />
-</TD>
-</TR>
-<TR>
-<TD VALIGN="TOP">
-<div class="form-label">
-(Confirm)
+<div class="form-group row">
+    <label for="confirm" class="form-label col-sm-3 col-md-2">
+        (Confirm)
+    </label>
+    <INPUT id="confirm" class="form-control col-sm-9 col-md-6" TYPE="PASSWORD" NAME="confirm" SIZE="30" value="pconfirm" />
 </div>
-</TD>
-<TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="confirm" SIZE="30" value="pconfirm" />
-</TD>
-</TR>
 </dtml-if>
-<TR>
-<TD VALIGN="TOP">
-<div class="form-optional">
-Domains
-</div>
-</TD>
-<TD VALIGN="TOP">
-<INPUT TYPE="TEXT" NAME="domains:tokens" SIZE="30"
-  VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains">&dtml-sequence-item; </dtml-in></dtml-if>" />
-</TD>
-</TR>
 
-<TR>
-<TD VALIGN="TOP">
-<div class="form-label">
-Roles
+<div class="form-group row">
+    <label for="domains" class="form-label col-sm-3 col-md-2">
+        Domains
+    </label>
+    <INPUT id="domains" class="form-control col-sm-9 col-md-6" TYPE="TEXT" NAME="domains:tokens" SIZE="30"
+        VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains">&dtml-sequence-item; </dtml-in></dtml-if>" />
 </div>
-</TD>
-<TD VALIGN="TOP">
-<div class="form-element">
-<SELECT NAME="roles:list" SIZE="5" MULTIPLE>
-<dtml-in valid_roles>
-<dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
-<dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
-<dtml-if expr="_vars['sequence-item'] != 'Shared'">
-<dtml-if expr="_vars['sequence-item'] in user.roles">
-<OPTION VALUE="&dtml-sequence-item;" selected>&dtml-sequence-item;
-<dtml-else>
-<OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
-</dtml-if>
-</dtml-if>
-</dtml-if>
-</dtml-if>
-</dtml-in valid_roles>
-</SELECT>
+
+<div class="form-group row">
+    <label for="roles" class="form-label col-sm-3 col-md-2">
+    Roles
+    </label>
+    <SELECT id="roles" class="form-control col-sm-9 col-md-6" NAME="roles:list" SIZE="5" MULTIPLE>
+        <dtml-in valid_roles>
+            <dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
+            <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
+            <dtml-if expr="_vars['sequence-item'] != 'Shared'">
+            <dtml-if expr="_vars['sequence-item'] in user.roles">
+            <OPTION VALUE="&dtml-sequence-item;" selected>&dtml-sequence-item;
+            <dtml-else>
+            <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
+            </dtml-if>
+            </dtml-if>
+            </dtml-if>
+            </dtml-if>
+        </dtml-in valid_roles>
+    </SELECT>
+</div>
 
 <INPUT TYPE="HIDDEN" NAME="name" VALUE="<dtml-var expr="user.name" html_quote>" />
-<br /><br />
-<INPUT class="form-element" TYPE="SUBMIT" NAME="submit" VALUE="Change" />
+<div class="controls">
+    <INPUT class="btn btn-primary" TYPE="SUBMIT" NAME="submit" VALUE="Change" />
 </div>
-</TD>
-</TR>
-</TABLE>
 </FORM>
+
+</main>
 
 <dtml-var manage_page_footer>
