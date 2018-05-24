@@ -13,48 +13,29 @@ Select a file to upload from your local computer by clicking the
 
 <form action="manage_add&dtml-Kind;" method="post"
       enctype="multipart/form-data" class="zmi-image">
-<table cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td align="left" valign="top">
-    <label for="id" class="form-label">
+<div class="form-group row">
+    <label for="id" class="form-label col-sm-3 col-md-2">
     Id
     </label>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" class="form-control" name="id" id="id" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <label for="title" class="form-label">
+    <input type="text" class="form-control col-sm-9 col-md-6" name="id" id="id" size="40" />
+</div>
+<div class="form-group row">
+    <label for="title" class="form-label col-sm-3 col-md-2">
     Title
     </label>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" class="form-control" name="title" id="title" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <label for="file" class="form-label">
+    <input type="text" class="form-control col-sm-9 col-md-6" name="title" id="title" size="40" />
+</div>
+<div class="form-group row">
+    <label for="file" class="form-label col-sm-3 col-md-2">
     File
     </label>
-    </td>
-    <td align="left" valign="top">
-    <input type="file" class="form-control-file" name="file" id="file" size="25" value="" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
+    <input type="file" class="form-control-file col-sm-9 col-md-6" name="file" id="file" size="25" value="" />
+</div>
+<div class="controls">
     <input class="form-element btn btn-primary" type="submit" name="submit"
      value=" Add " />
-    </div>
-    </td>
-  </tr>
-</table>
+</div>
+
 </form>
 
 </main>
