@@ -24,7 +24,7 @@ If you have a Product or package which contains types, which can be added via
 the ZMI, the default icon will be shown.
 
 To use one of the new icons add an attribute named `zmi_icon` to the class. The
-value should be one of the class of one of the `available icons`_. I.e. to get the 
+value should be one of the class of one of the `available icons`_. I.e. to get the
 info (i in a circle) icon you would set attribute `zmi icon` to `'fas fa-info-circle'`
 
 .. _`zmi.styles` : https://github.com/zopefoundation/zmi.styles
@@ -85,7 +85,7 @@ Use custom resources via ZMI
 To add custom CSS or JavaScript resources via ZMI you have to add a property:
 
 * ``zmi_additional_css_paths`` for additional CSS
-* ``zmi_additional_css_paths`` for additional JavaScript
+* ``zmi_additional_js_paths`` for additional JavaScript
 
 The properties can have one of the following types:
 
