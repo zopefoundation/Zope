@@ -48,6 +48,9 @@ Bugfixes
   how to handle the request.
   (`#280 <https://github.com/zopefoundation/Zope/pull/280>`)
 
+- Make ZODB mount points in Python 2 compatible with `ZConfig >= 3.2`.
+  (`#281 <https://github.com/zopefoundation/Zope/pull/281>`_)
+
 - ``__str__`` of an Image object now returns the image HTML tag in
   Python 3 as it already did on Python 2.
   (`#282 <https://github.com/zopefoundation/Zope/pull/282>`_)
