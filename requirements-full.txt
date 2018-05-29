@@ -87,7 +87,7 @@ zope.traversing==4.2.0
 zope.viewlet==4.1.0
 
 # current branch required as editable install
--e .
+-e git+https://github.com/zopefoundation/Zope@zmi-bootstrap#egg=Zope
 
 # development versions of dependencies
 -e git+https://github.com/zopefoundation/zmi.styles@master#egg=zmi.styles
