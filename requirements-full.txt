@@ -11,7 +11,7 @@ MultiMapping==4.0
 PasteDeploy==1.5.2
 Persistence==3.0b3
 # Products.BTreeFolder2==4.0.0
-Products.ZCTextIndex==4.0.2
+# Products.ZCTextIndex==4.0.2 # empty shell anyway
 # Products.ZCatalog==4.1
 Record==3.4
 RestrictedPython==4.0b3
