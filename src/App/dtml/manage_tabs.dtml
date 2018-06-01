@@ -46,9 +46,7 @@
                   </dtml-if wl_isLocked>
               </span>
             <dtml-else>
-              <a href="&dtml-url;" class="text-primary"
-                 title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
-              >&dtml-title;</a>
+              <a href="&dtml-url;" class="text-primary">&dtml-title;</a>
             </dtml-if>
           </li>
         </dtml-in>
