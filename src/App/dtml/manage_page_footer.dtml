@@ -1,2 +1,10 @@
 </body>
+<script>
+// Wrap form element with fluid-container if missing
+$(function() {
+    if ( $('main.container-fluid').length==0 ) {
+        $('form').wrap('<main class="container-fluid"></main>');
+    }
+});
+</script>
 </html>

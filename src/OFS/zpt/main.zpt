@@ -37,7 +37,7 @@
            tal:condition="ids">
       <thead class="thead-light">
         <tr>
-          <th scope="col" class="text-right">
+          <th scope="col" class="zmi-object-check text-right">
             <input type="checkbox" id="checkAll"
                    onclick="(function() {
                     var checkboxes = document.getElementsByClassName('checkbox-list-item');
@@ -45,23 +45,27 @@
                       checkboxes[i].checked = document.getElementById('checkAll').checked;
                     }})()">
           </th>
-          <th scope="col">Type</th>
-          <th scope="col">Id</th>
-          <th scope="col">Title</th>
-          <th scope="col" class="text-right">Size</th>
+          <th scope="col" class="zmi-object-type">Type</th>
+          <th scope="col" class="zmi-object-id">Id</th>
+          <th scope="col" class="zmi-object-title hidden-xs">Title</th>
+          <th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
         </tr>
       </thead>
       <tbody>
         <tr tal:repeat="id ids">
           <tal:ob define="ob python:here.get(id)">
-            <td class="text-right zmi-object_check">
-              <input type="checkbox"
+            <td class="zmi-object-check text-right" 
+                onclick="$(this).children('input').trigger('click')">
+                <input type="checkbox"
                      class="checkbox-list-item"
                      name="ids:list"
-                     tal:attributes="value id" />
+                     tal:attributes="value id"
+                     onclick="event.stopPropagation()"
+                     />
             </td>
-            <td class="zmi-object_type">
-              <span title="Broken object"
+            <td class="zmi-object-type"
+                onclick="$(this).prev().children('input').trigger('click')">
+                <span title="Broken object"
                     class="icon-broken"
                     tal:attributes="class ob/zmi_icon | default;
                                     title ob/meta_type | default">
@@ -69,7 +73,7 @@
                       tal:content="ob/meta_type | default">Broken object</span>
               </span>
             </td>
-            <td class="zmi-object_id">
+            <td class="zmi-object-id">
               <a tal:attributes="href string:${id}/manage_workspace"
                  tal:content="id">Id</a>
               <span class="badge badge-warning"
@@ -77,13 +81,12 @@
                 Locked
               </span>
             </td>
-            <td class="zmi-object_title">
+            <td class="zmi-object-title hidden-xs">
               <a tal:condition="ob/title|nothing"
                  tal:attributes="href string:${id}/manage_workspace"
                  tal:content="ob/title">Title</a>
             </td>
-
-            <td class="text-right zmi-object_size"
+            <td class="text-right zmi-object hidden-xs"
                 tal:content="python:here.computeSize(ob)">
             </td>
           </tal:ob>

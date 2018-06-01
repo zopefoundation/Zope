@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<main>
+<main class="container-fluid">
 
     <form action="manage_setUserFolderProperties" method="post" class="zmi-folder zmi-properties">
         <div class="form-check">
@@ -14,9 +14,9 @@
             <input type="checkbox" class="form-check-input" name="update_passwords" id="update_passwords"/>
             <label for="update_passwords" class="form-check-label">Update existing passwords</label>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-3">
             <label for="maxlistusers">Role assignment presents search dialog when more users than</label>
-            <input type=text class="form-control" name="maxlistusers" id="maxlistusers" value="&dtml.missing-maxlistusers;" size=3 />
+            <input type=text class="form-control col-sm-2" name="maxlistusers" id="maxlistusers" value="&dtml.missing-maxlistusers;" size=3 />
             <small id="maxlistusersHelpInline" class="text-muted">-1 is always, 0 is never</small>
         </div>
         <div class="zmi-controls">

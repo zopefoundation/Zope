@@ -13,6 +13,10 @@
 <dtml-in js_urls>
   <script type="text/javascript" src="&dtml-sequence-item;"></script>
 </dtml-in>
+
+<!-- FONTAWESOME: to be integrated -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
 </head>
 <!-- REFACT what is a better way to get the last part of the current URL? -->
 <body class="zmi zmi-<dtml-var "meta_type.replace(' ', '-')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
