@@ -112,7 +112,7 @@
                  type="submit"
                  name="manage_copyObjects:method"
                  value="Copy" />
-          <input class="btnbtn-primary"
+          <input class="btn btn-primary"
                  type="submit"
                  name="manage_pasteObjects:method"
                  value="Paste"
