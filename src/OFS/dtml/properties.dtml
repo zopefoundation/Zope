@@ -51,7 +51,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
 <tr title="&dtml-pdesc;">
 
   <!-- Checkbox column -->
-
   <td>
   <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
   <input type="checkbox" name="_ids:&dtml-charset_tag;string:list"
@@ -61,7 +60,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
   </td>
 
   <!-- Name column -->
-
   <td>
   <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
   <label for="cb-&dtml-id;">
@@ -72,7 +70,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
   </td>
 
   <!-- Value column start -->
-
   <td>
     <dtml-if "'w' in _['sequence-item'].get('mode', 'awd')">
       <dtml-if "type == 'int'">
@@ -109,10 +106,8 @@ property values, edit the values and click &quot;Save Changes&quot;.
       <dtml-elif "type in ['text','utext']">
         <textarea name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
                   class="form-control"
-                  rows="6"
-                  cols="35">
-          <dtml-var "getProperty(id)" html_quote>
-        </textarea>
+                  rows="6"><dtml-var "getProperty(id)" html_quote
+        ></textarea>
       <dtml-elif "type in ['lines','ulines']">
         <dtml-comment>We need to avoid any whitespaces in between these tags.
           This unfortunately results in a very long line. </dtml-comment>
@@ -122,7 +117,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
                   cols="35"><dtml-in "getProperty(id)">&dtml-sequence-item;<dtml-if sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
 
       <dtml-elif "type=='selection'">
-
         <dtml-if "hasProperty(select_variable)">
           <select name="&dtml-id;:&dtml-charset_tag;text"
                   class="form-control">
@@ -146,7 +140,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
         </dtml-if>
 
       <dtml-elif "type=='multiple selection'">
-
         <dtml-if "hasProperty(select_variable)">
           <select name="&dtml-id;:&dtml-charset_tag;list:string"
                   class="form-control"
@@ -180,8 +173,12 @@ property values, edit the values and click &quot;Save Changes&quot;.
         <tr><td><dtml-var "getProperty(id)" html_quote></td></tr>
       </table>
     </dtml-if>
-  </td>
 
+    <dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')">
+      <small class="form-help text-danger"><strong>Warning:</strong> be aware that removing 'title'
+       without re-adding it might be dangerous.</small>
+    </dtml-if>
+  </td>
   <!-- Value column end -->
 
   <!-- Type column -->
@@ -189,15 +186,6 @@ property values, edit the values and click &quot;Save Changes&quot;.
   &dtml-type;
   </td>
 </tr>
-
-<dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')">
-  <tr">
-    <td colspan="4">
-      <p class="text-danger"><strong>Warning:</strong> be aware that removing 'title'
-       without re-adding it might be dangerous.</p>
-    </td>
-  </tr>
-</dtml-if>
 </dtml-let>
 </dtml-in>
 </tr>
@@ -235,47 +223,24 @@ property values, edit the values and click &quot;Save Changes&quot;.
 </form>
 
 <dtml-if property_extensible_schema__>
-
 <form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty"
- method="post">
-
+    method="post"
+    class="form-inline">
     <p class="form-help mt-5">
         To add a new property, enter a name, type and value for the new
         property and click the &quot;Add&quot; button.
     </p>
-
-<table class="table">
-  <thead class="thead-light">
-    <tr class="table-sm">
-      <th scope="col">Name</th>
-      <th scope="col">Value</th>
-      <th scope="col">Type</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
+    <div class="form-group zmi-controls mt-2">
         <input type="text"
-               class="form-control"
-               name="id:<dtml-var "REQUEST['management_page_charset_tag']">string"
-               value="" />
-      </td>
-      <td>
-        <dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
-          <input type="text"
-                 class="form-control"
-                 name="value:UTF-8:ustring"
-                 />
-        <dtml-else>
-          <input type="text"
-                 class="form-control"
-                 name="value:string"
-                 />
-        </dtml-if>
-      </td>
-      <td>
-        <select name="type" class="form-control">
+            placeholder="Name"
+            title="Title"
+            class="form-control"
+            name="id:<dtml-var "REQUEST['management_page_charset_tag']">string"
+            value="" />
+        <select name="type"
+          title="Data Type"
+          placeholder="Type"
+          class="form-control">
           <option>boolean</option>
           <option>date</option>
           <option>float</option>
@@ -294,13 +259,20 @@ property values, edit the values and click &quot;Save Changes&quot;.
           <option>selection</option>
           <option>multiple selection</option>
         </select>
-      </td>
-      <td>
-        <input class="btn btn-primary" type="submit" name="submit" value="   Add " />
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <input type="text"
+            title="Value"
+            placeholder="Value"
+            class="form-control"
+            <dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
+                 name="value:UTF-8:ustring"
+            <dtml-else>
+                 name="value:string"
+            </dtml-if> />
+        <input class="btn btn-primary" 
+            type="submit" 
+            name="submit" 
+            value="   Add " />
+    </div>
 </form>
 </dtml-if>
 

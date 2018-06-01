@@ -1,109 +1,100 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<main>
+<main class="container-fluid">
 
 <p class="form-help">
 Find allows you to locate Zope objects based on different
-criteria. For more find choices choose the <EM>Advanced</EM>
+criteria. For more find choices choose the <em>Advanced</em>
 find option.
 </p>
 
-<FORM ACTION="manage_findResult" METHOD="GET" class="zmi-find">
-<INPUT TYPE = "hidden" NAME="searchtype" VALUE="simple">
-<TABLE class="action">
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <label for="type" class="form-label">
-  Find objects of type:
-  </label>
+<form action="manage_findResult" method="get" class="zmi-find">
+<input type="hidden" name="searchtype" value="simple" />
+<table class="table table-borderless">
+<TR class="simple-search">
+  <TD style="width:10rem">
+  <label for="type" class="form-label">Find objects of type:</label>
   </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
+  <TD style="width:*">
   <div class="form-element">
-  <SELECT id="type" class="form-control" NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
-  <OPTION VALUE="all" SELECTED> All types
-<dtml-let sorted_meta_types="[]">
-  <dtml-in all_meta_types mapping>
-  <dtml-call "sorted_meta_types.append(name)">
-  </dtml-in>
-  <dtml-call "sorted_meta_types.sort()">
-  <dtml-in sorted_meta_types>
-  <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
-  </dtml-in>
-</dtml-let>
-  </SELECT>
+      <select id="type" class="form-control" NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
+        <option value="all" selected="selected"> All types</option>
+        <dtml-let sorted_meta_types="[]"
+            ><dtml-in all_meta_types mapping
+                ><dtml-call "sorted_meta_types.append(name)"
+            ></dtml-in><dtml-call "sorted_meta_types.sort()"
+            ><dtml-in sorted_meta_types
+              ><option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+            </dtml-in
+        ></dtml-let>
+      </select>
   </div>
   </TD>
 </TR>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <label for="ids" class="form-label">
-  with ids:
-  </label>
+<TR class="simple-search">
+  <TD>
+    <label for="ids" class="form-label">With ids:</label>
   </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT id="ids" class="form-control" TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30">
+  <TD>
+    <input id="ids" class="form-control" type="text" name="obj_ids:tokens" />
   </TD>
 </TR>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <label for="contain" class="form-label">
-  containing:
-  </label>
+<TR class="simple-search">
+  <TD>
+    <label for="contain" class="form-label">Containing:</label>
   </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT id="contain" class="form-control" TYPE="TEXT" NAME="obj_searchterm" SIZE="30">
+  <TD>
+    <input id="contain" class="form-control" type="text" name="obj_searchterm" />
   </TD>
 </TR>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <label for="mod" class="form-label">
-  modified:
-  </label>
+<TR class="simple-search">
+  <TD>
+    <label for="mod" class="form-label">Modified:</label>
   </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-element">
-  <SELECT id="mod" class="form-control" NAME="obj_mspec">
-  <OPTION VALUE="&lt;"> before
-  <OPTION VALUE="&gt;"> after
-  </SELECT>
-  </div>
-  <INPUT class="form-control" TYPE="TEXT" NAME="obj_mtime" SIZE="22">
+  <TD>
+      <div class="form-inline">
+      <div class="input-group px-0 col-12">
+          <select id="mod" name="obj_mspec"
+              class="input-group-prepend form-control col-4 col-md-3">
+              <option value="&lt;"> before</option>
+              <option value="&gt;"> after</option>
+          </select>
+        <input class="form-control col-8  col-md-9 px-0" type="text" name="obj_mtime" />
+      </div>
+      </div>
   </TD>
 </TR>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
+<TR class="simple-search">
+  <TD>&nbsp;</TD>
+  <TD>
   <div class="form-check">
-  <INPUT id="thisfolder" class="form-check-input" TYPE="RADIO" class="form-check-input" NAME="search_sub:int" VALUE="0" />
-  <label for="thisfolder" class="form-check-label">Search only in this folder</label>
+      <input id="thisfolder" class="form-check-input" type="radio" name="search_sub:int" value="0" />
+      <label for="thisfolder" class="form-check-label">Search only in this folder</label>
   </div>
   <div class="form-check">
-  <INPUT id="subfolder" class="form-check-input" TYPE="RADIO" class="form-check-input" NAME="search_sub:int" VALUE="1" CHECKED />
-  <label for="subfolder" class="form-check-label">Search all subfolders</label>
+      <input id="subfolder" class="form-check-input" type="radio" value="search_sub:int" value="1" checked="checked" />
+      <label for="subfolder" class="form-check-label">Search all subfolders</label>
   </div>
   </TD>
 </TR>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <div class="form-element">
-  <INPUT class="form-element btn btn-primary" TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">
-  <span class="form-text">
-  <a href="manage_findAdv">Advanced...<a>
-  </span>
+<TR class="simple-search">
+  <TD>&nbsp;</TD>
+  <TD>
+  <div class="zmi-controls">
+      <input class="btn btn-primary" type="submit" name="btn_submit" value="Find" />
+      <span class="btn"><a href="manage_findAdv">Advanced...<a></span>
   </div>
   </TD>
 </TR>
-</TABLE>
-</FORM>
+
+</table>
+</form>
 
 </main>
 

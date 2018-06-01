@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<main>
+<main class="container-fluid">
 
 <p class="form-help">
 You may edit the source for this document using the form below. You

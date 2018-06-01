@@ -3,7 +3,7 @@
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
 </dtml-with>
 
-<main>
+<main class="container-fluid">
 
 <dtml-if stat>
 <hr>

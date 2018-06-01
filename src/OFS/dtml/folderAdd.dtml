@@ -4,7 +4,7 @@
            form_title='Add Folder',
            )">
 
-<main>
+<main class="container-fluid">
 
 <p class="form-help">
 A Folder contains other objects. Use Folders to organize your

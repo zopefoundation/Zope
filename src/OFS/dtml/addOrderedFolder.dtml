@@ -4,7 +4,7 @@
            form_title='Add Folder (Ordered)'
            )">
 
-<main>
+<main class="container-fluid">
 
 <p class="form-help">
 An ordered Folder contains other objects. Use Folders to organize your
