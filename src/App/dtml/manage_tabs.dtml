@@ -38,17 +38,17 @@
           <li class="breadcrumb-item<dtml-if last> active</dtml-if>"
               <dtml-if last> aria-current="page"</dtml-if>>
             <dtml-if last>
-              &dtml-title;
-              <strong class="ml-1">
-                <span class="&dtml-zmi_icon;"
-                      title="&dtml-meta_type;"></span>
-                <dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>
-              </strong>
-              <dtml-if wl_isLocked>
-                <span class="badge badge-warning">Locked</span>
-              </dtml-if wl_isLocked>
+              <span title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>">
+                  <i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
+                  <strong>&dtml-title;</strong>
+                  <dtml-if wl_isLocked>
+                    <span class="badge badge-warning">Locked</span>
+                  </dtml-if wl_isLocked>
+              </span>
             <dtml-else>
-              <a href="&dtml-url;">&dtml-title;</a>
+              <a href="&dtml-url;" class="text-primary"
+                 title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
+              >&dtml-title;</a>
             </dtml-if>
           </li>
         </dtml-in>

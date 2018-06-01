@@ -5,7 +5,7 @@
   </dtml-if>
 </dtml-with>
 
-<main class="container-fluid <dtml-var "meta_type.replace(' ', '-')"> <dtml-var "URL0[_.len(URL1)+1:]">">
+<main class="container-fluid">
     <p class="form-help">
         The listing below shows the current security settings for this item.
         Permissions are rows and roles are columns. Checkboxes are used to
