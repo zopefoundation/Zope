@@ -1,5 +1,11 @@
 /* ZOPE 4 Base Styles */
 
+@media (max-width: 576px) {
+    .hidden-xs {
+        display:none !important;
+    }
+}
+
 /* BUTTONS / CONTROLS */
 a {
     color:#6c757d;
@@ -17,6 +23,10 @@ a:hover {
 .h2, h2 {
     font-size: 1.5rem;
     margin: 2rem 0 1rem;
+}
+.h3, h3 {
+    font-size: 1.25rem;
+    margin: 2rem 0 .5rem;
 }
 
 input.btn.btn-primary:hover {
@@ -41,15 +51,27 @@ input.btn.btn-primary:hover {
     font-weight:bold;
 }
 
-.zmi form.addItemSelect {
-    margin-top:-3.2rem;
-    margin-right:1rem;
+@media (min-width: 578px) {
+    .zmi form.addItemSelect {
+        margin-top:-3.2rem;
+        margin-right:1rem;
+    }
 }
+@media (max-width: 576px) {
+    .zmi form.addItemSelect {
+        display:block;
+        float:none !important;
+        margin:1rem;
+    }
+}
+
 .zmi-controls {
     margin-top:1.75rem
 }
-.zmi-controls .btn {
-    margin-right:.5rem
+.zmi-controls > * {
+    margin-right:.5rem;
+    margin-bottom:.6rem;
+    min-width: 7em;
 }
 
 /* TAB NVAIGATION */
@@ -70,7 +92,16 @@ input.btn.btn-primary:hover {
 .zmi table.objectItems td { 
     line-height:1.7rem;
 }
-.zmi table.objectItems td.zmi-object_type {
+.zmi table.objectItems .zmi-object-check {
+    padding-left:1rem;
+    max-width:2rem;
+}
+.zmi table.objectItems .zmi-object-type {
+    max-width:3rem;
+    min-width:2rem;
+    text-align:center;
+}
+.zmi table.objectItems td.zmi-object-type {
     font-size:1.1rem;
 }
 
@@ -195,4 +226,20 @@ main.container-fluid {
     width: 4rem;
     min-width: 4rem;
     padding-left: 1rem;
+}
+
+.zmi-userlist .list-group .list-group-item {
+    padding-left:2rem;
+}
+.zmi-userlist .list-group .list-group-item input.form-check-input {
+    margin-top:.4rem;
+}
+.zmi-userlist .list-group .list-group-item i.fa-user {
+    margin-right:0.15rem;
+
+}
+
+
+.advanced-search-only {
+    background-color: #d1ecf1;
 }
