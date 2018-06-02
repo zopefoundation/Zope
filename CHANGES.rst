@@ -11,7 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
+  instances.
 
 
 4.0b5 (2018-05-18)
