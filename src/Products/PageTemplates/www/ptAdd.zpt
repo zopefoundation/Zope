@@ -1,6 +1,6 @@
 <h1 tal:replace="structure here/manage_page_header">Header</h1>
 
-<main>
+<main class="container-fluid">
 
 <h2 tal:define="form_title string:Add Page Template"
     tal:replace="structure here/manage_form_title">Form Title</h2>
