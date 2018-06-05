@@ -3,8 +3,103 @@
 
 <main class="container-fluid">
 
-<form action="manage_findResult" method="get" class="zmi-find">
-<input type="hidden" name="searchtype" value="advanced" />
+<!-- /BO findResults.dtml -->
+<dtml-in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')"
+    ><dtml-else expr="_.hasattr(REQUEST, _['sequence-item'])"
+    ><dtml-call expr="REQUEST.set(_['sequence-item'], None)"
+    ></dtml-else
+></dtml-in>
+
+<dtml-if btn_submit>
+<dtml-with "_.namespace(
+    results=ZopeFind(this(),
+        obj_ids=obj_ids,
+        obj_metatypes=obj_metatypes,
+        obj_searchterm=obj_searchterm,
+        obj_expr=obj_expr,
+        obj_mtime=obj_mtime,
+        obj_mspec=obj_mspec,
+        obj_permission=obj_permission,
+        obj_roles=obj_roles,
+        search_sub=search_sub,
+        REQUEST=REQUEST)
+    )">
+
+<dtml-unless batch_size>
+<dtml-call "REQUEST.set('batch_size',20)">
+</dtml-unless>
+
+<dtml-if results>
+    <p class="alert alert-success">
+        Displaying items
+        <dtml-in name="results" size=batch_size start=query_start
+            ><dtml-if sequence-start>&dtml-sequence-number;</dtml-if
+            ><dtml-if sequence-end>-&dtml-sequence-number; of 
+                <dtml-var "_.len(results)"
+            ></dtml-if
+        ></dtml-in>
+        items matching your query. You can <a href="#zmi-search-form">revise</a> 
+        your search terms below.
+    </p>
+<dtml-else>
+    <p class="alert alert-danger">
+        No items were found matching your query. You can 
+        <a href="#zmi-search-form">revise</a> your search terms below.
+    </p>
+</dtml-if>
+
+<dtml-unless searchtype
+    ><dtml-call expr="REQUEST.set('searchtype', 'simple')"
+></dtml-unless>
+<dtml-unless skey
+    ><dtml-call expr="REQUEST.set('skey', 'id')"
+></dtml-unless>
+<dtml-unless rkey
+    ><dtml-call expr="REQUEST.set('rkey', '')"
+></dtml-unless>
+<dtml-if "rkey == 'reverse'"
+    ><dtml-call "REQUEST.set('rkey', skey)"
+></dtml-if>
+
+
+<dtml-if expr="_.len(results) > int(batch_size)">
+    <nav class="zmi-find-results nav row mb-2">
+    <div class="col-6">
+    <dtml-in name="results" previous size=batch_size start=query_start>
+        <a class="btn btn-primary float-left" 
+            href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">
+            <i class="fa fa-caret-left"></i>&nbsp;&nbsp;Previous
+        </a>
+    </dtml-in>
+    </div>
+    <div class="col-6 text-right">
+    <dtml-in name="results" next size=batch_size start=query_start>
+        <a class="btn btn-primary"
+            href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">
+            Next&nbsp;&nbsp;<i class="fa fa-caret-right"></i> 
+        </a>
+    </dtml-in>
+    </div>
+    </nav>
+</dtml-if>
+
+
+<ul class="zmi-find-results list-group">
+<dtml-in results size="batch_size" start="query_start" sort_expr="skey" reverse_expr="rkey">
+    <li class="list-group-item">
+        <a href="&dtml.url_quote-sequence-key;/manage_workspace">&dtml-sequence-key;
+            <dtml-if title>(&dtml-title;)</dtml-if>
+        </a>
+    </li>
+</dtml-in>
+</ul>
+
+</dtml-with> <!-- /namespace -->
+</dtml-if> <!-- /button submit -->
+<!-- /EO findResults.dtml -->
+
+<form id="zmi-search-form" action="manage_find" method="get" class="zmi-find">
+<!--input type="hidden" name="searchtype" value="advanced" / -->
 <table class="table table-borderless">
 <TR class="simple-search">
   <TD style="width:10rem">
@@ -12,14 +107,25 @@
   </TD>
   <TD style="width:*">
   <div class="form-element">
-      <select id="type" class="form-control" NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
-        <option value="all" selected="selected"> All types</option>
+      <select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
+        <option value="all" 
+            <dtml-if "obj_metatypes==None">
+                selected="selected"
+            <dtml-else>
+                <dtml-var "( 'all' in list(obj_metatypes ) ) and 'selected=\042selected\042' or ''">
+            </dtml-if>
+        >All types</option>
         <dtml-let sorted_meta_types="[]"
             ><dtml-in all_meta_types mapping
                 ><dtml-call "sorted_meta_types.append(name)"
             ></dtml-in><dtml-call "sorted_meta_types.sort()"
             ><dtml-in sorted_meta_types
-              ><option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+              ><option value="&dtml-sequence-item;"
+                <dtml-if "obj_metatypes==None">
+                <dtml-else>
+                    <dtml-var "( _['sequence-item'] in list(obj_metatypes ) ) and 'selected=\042selected\042' or ''">
+                </dtml-if>
+                >&dtml-sequence-item;</option>
             </dtml-in
         ></dtml-let>
       </select>
@@ -32,7 +138,7 @@
     <label for="ids" class="form-label">With ids:</label>
   </TD>
   <TD>
-    <input id="ids" class="form-control" type="text" name="obj_ids:tokens" />
+    <input id="ids" class="form-control" type="text" name="obj_ids:tokens" value="<dtml-var "' '.join(obj_ids or [])" html_quote>" />
   </TD>
 </TR>
 
@@ -41,20 +147,20 @@
     <label for="contain" class="form-label">Containing:</label>
   </TD>
   <TD>
-    <input id="contain" class="form-control" type="text" name="obj_searchterm" />
+    <input id="contain" class="form-control" type="text" name="obj_searchterm" value="<dtml-var "REQUEST.get('obj_searchterm','')" html_quote>" />
   </TD>
 </TR>
 
-<TR class="advanced-search-only">
+<TR class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
   <TD>
     <label for="expr" class="form-label">Expr:</label>
   </TD>
   <TD>
-    <textarea id="expr" class="form-control" name="obj_expr" rows="4" cols="30"></textarea>
+    <textarea id="expr" class="form-control" name="obj_expr" rows="4" cols="30">&dtml-obj_expr;</textarea>
   </TD>
 </TR>
 
-<TR class="advanced-search-only">
+<TR class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
   <TD>
   <label for="roles" class="form-label">Where the roles:</label>
   </TD>
@@ -62,14 +168,18 @@
   <div class="form-element">
       <select id="roles" class="form-control" name="obj_roles:list" size="3" multiple="multiple">
         <dtml-in valid_roles>
-          <option value="&dtml-sequence-item;"> &dtml-sequence-item;</option>
+            <dtml-if obj_roles>
+              <option value="&dtml-sequence-item;"<dtml-if "_['sequence-item'] in obj_roles"> selected="selected"</dtml-if>>&dtml-sequence-item;</option>
+            <dtml-else>
+             <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+            </dtml-if>
         </dtml-in>
       </select>
   </div>
   </TD>
 </TR>
 
-<TR class="advanced-search-only">
+<TR class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
   <TD>
   <label for="perm" class="form-label">Have permission:</label>
   </TD>
@@ -85,7 +195,7 @@
   </TD>
 </TR>
 
-<TR class="advanced-search-only">
+<TR class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
   <TD>
   <label for="skey" class="form-label">Sort results by:</label>
   </TD>
@@ -129,7 +239,7 @@
           <label for="thisfolder" class="form-check-label">Search only in this folder</label>
       </div>
       <div class="form-check">
-          <input id="subfolder" class="form-check-input" type="radio" value="search_sub:int" value="1" checked="checked" />
+          <input id="subfolder" class="form-check-input" type="radio" name="search_sub:int" value="1" checked="checked" />
           <label for="subfolder" class="form-check-label">Search all subfolders</label>
       </div>
   </TD>
@@ -139,8 +249,13 @@
   <TD>&nbsp;</TD>
   <TD>
       <div class="zmi-controls">
-          <input class="btn btn-primary" type="submit" name="btn_submit" value="Find" />
-          <span class="btn"><a href="manage_findForm">Simple...<a></span>
+            <input class="btn btn-primary" type="submit" name="btn_submit" value="Find" />
+            <div class="btn ml-3" >
+                <input id="searchtype" 
+                    onclick="$('.advanced-search-only').toggle()"
+                    class="form-check-input" type="checkbox" name="searchtype" value="advanced" <dtml-if "searchtype=='advanced'"> checked="checked"</dtml-if> />
+                <label for="searchtype" class="form-check-label">Advanced Search</label>
+            </div>
       </div>
   </TD>
 </TR>

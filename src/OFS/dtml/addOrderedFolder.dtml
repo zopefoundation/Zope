@@ -7,12 +7,12 @@
 <main class="container-fluid">
 
 <p class="form-help">
-An ordered Folder contains other objects. Use Folders to organize your
-web objects in to logical groups. The <em>create public interface</em>
-option creates an index document inside the Folder to give the
-Folder a default HTML representation. The <em>create user folder</em>
-option creates a User Folder inside the Folder to hold authorization
-information for the Folder.
+    An ordered Folder contains other objects. Use Folders to organize your
+    web objects in to logical groups. The <em>create public interface</em>
+    option creates an index document inside the Folder to give the
+    Folder a default HTML representation. The <em>create user folder</em>
+    option creates a User Folder inside the Folder to hold authorization
+    information for the Folder.
 </p>
 
 <form action="manage_addOrderedFolder" method="post" class="zmi-orderedfolder">
