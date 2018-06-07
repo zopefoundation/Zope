@@ -21,39 +21,33 @@ the <em>browse</em> button to select a local file to upload.
    title>&dtml-title;</dtml-if>">
 </div>
 <div class="form-group">
-  <textarea id="content" class="form-control zmi-code col-sm-12" name="data:text" wrap="off" style="width: 100%;"
-            rows="20"><dtml-var __str__></textarea>
+  <textarea id="content" class="form-control zmi-code col-sm-12" name="data:text" wrap="off" style="width: 100%;" 
+   rows="20"><dtml-var __str__></textarea>
 </div>
 </dtml-with>
 
 
-  <div class="controls">
+<div class="zmi-controls">
   <dtml-if wl_isLocked>
-   <em>Locked</em>
+   <input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
+   <span class="badge badge-warning">Locked</span>
   <dtml-else>
-   <input class="btn btn-primary" type="submit" name="SUBMIT" value="Save Changes">
+   <input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
   </dtml-if>
-  </div>
+</div>
 
 </form>
 
-<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-5">
-    <div class="form-group row">
-        <label for="file-data" class="col-sm-3 col-md-2" class="form-label">
-            File
-        </label>
-        <div class="col-sm-9 col-md-6">
-            <input id="file-data" class="form-control-file" type="file" name="file" size="25" value="">
-        </div>
-    </div>
-    <div class="controls">
-        <dtml-if wl_isLocked>
-            <em>Locked</em>
-        <dtml-else>
-            <input class="btn btn-primary" type="submit" value="Upload File">
-        </dtml-if>
+<dtml-unless wl_isLocked>
+<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
+    <div class="form-group">
+            <input title="Select File for Uploading the Source Code" id="file-data" 
+                class="btn btn-primary form-control-file col-12 mb-3" 
+                type="file" name="file" size="25" value="" />
+            <input class="btn btn-primary" type="submit" value="Upload File" />
     </div>
 </form>
+</dtml-unless>
 
 </main>
 
