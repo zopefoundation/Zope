@@ -78,6 +78,13 @@ input.btn.btn-primary:hover {
     min-width: 7em;
 }
 
+form.zmi-upload {
+    margin: 0 -15px;
+    padding: 2.15rem 15px;
+    border-top: #ced4da solid 1px;
+}
+
+
 /* TAB NVAIGATION */
 .zmi nav .nav-tabs .nav-item:first-child {
     margin-left: 1em;
@@ -249,7 +256,7 @@ main.container-fluid {
 }
 
 textarea.zmi-code {
-	font-damily:monospaced;
+	font-family:monospace;
 }
 
 
@@ -285,9 +292,9 @@ table.main-table td img {
 }
 
 #menu_buttons {
-	padding: 1.3rem 30px .65rem 30px;
+	padding: 1.3rem 0 .65rem 3px;
 	border-bottom: 1px solid #eaecef;
-	margin: 0 -30px;
+	margin: 0;
 	background-color:white;
 }
 #menu_buttons button {
@@ -303,11 +310,21 @@ table.main-table td img {
 	margin-right: 0.75em;
 }
 #menu_buttons ul.dropdown-menu {
-	margin: -6px 30px 0;
+	margin: 0.5rem;
+	border: 1px solid #e4e4e4;
+	padding: 0.5em 1em;
+	font-size:80%;
+	box-shadow: 0px 5px 10px #e4e4e4;
+	line-height:2;
 }
+
+#menu_buttons #dropdownMenu1 {
+	box-shadow: none !important;
+}
+
 table#menu_title td,
 div#menu_tree table td{
-	padding:0.2em .3em 0 .4em !important;
+	padding:0.2em .3em 0 0 !important;
 	min-width:1em;
 	white-space:nowrap !important;
 }
@@ -330,9 +347,9 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 }
 table#menu_title,
 div#menu_tree {
-	width:100%;
+	width:auto;
 	background-color:transparent;
-	margin-left:-0.3em;
+	margin-left:0.5em;
 }
 table#menu_title td {
 	padding: 1em .3em .0em .4em !important;
