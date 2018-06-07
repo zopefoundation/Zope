@@ -65,13 +65,13 @@
             </td>
             <td class="zmi-object-type"
                 onclick="$(this).prev().children('input').trigger('click')">
-                <span title="Broken object"
+                <i title="Broken object"
                     class="icon-broken"
                     tal:attributes="class ob/zmi_icon | default;
                                     title ob/meta_type | default">
                 <span class="sr-only"
                       tal:content="ob/meta_type | default">Broken object</span>
-              </span>
+              </i>
             </td>
             <td class="zmi-object-id">
               <a tal:attributes="href string:${id}/manage_workspace"
