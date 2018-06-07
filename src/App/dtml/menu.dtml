@@ -1,6 +1,5 @@
 <dtml-var manage_page_header>
 
-
 <div class="dropdown" id="menu_buttons">
 	<button title="Logged in as" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 		<span class="caret"></span>Login: &dtml-AUTHENTICATED_USER; 
@@ -14,7 +13,6 @@
 	</ul>
 </div>
 
-
 <table id="menu_title">
 	<tr>
 		<td id="menu_workspace">
@@ -22,8 +20,8 @@
 				<a href="manage_workspace" target="manage_main"><img
 				src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
 				title="Click to open this item" alt="&dtml-meta_type;" /></a>
- 			</dtml-if>
- 			<a href="manage_workspace" target="manage_main">
+			</dtml-if>
+			<a href="manage_workspace" target="manage_main">
 				<dtml-if expr="URLPATH1==BASEPATH1">Root Folder<dtml-else>&dtml-id;</dtml-if>
 			</a>
 		</td>
@@ -31,21 +29,14 @@
 </table>
 
 <div id="menu_tree">
-<dtml-tree nowrap=1>
-<dtml-if icon>
-<a href="&dtml.url_quote-tree-item-url;/manage_workspace"
- target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
- title="Click to open this item" alt="&dtml-meta_type;" /></a>
-</dtml-if>
-<a href="&dtml.url_quote-tree-item-url;/manage_workspace"
- target="manage_main">&dtml-id;</a>
-</dtml-tree>
+	<dtml-tree nowrap=1>
+		<a href="&dtml.url_quote-tree-item-url;/manage_workspace" target="manage_main"><i title="&dtml-meta_type;" class="&dtml-zmi_icon;"></i>&nbsp;&dtml-id;</a>
+	</dtml-tree>
 </div>
 
-
-<dtml-if save_layout>
-  <dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())">
-</dtml-if>
+<dtml-if save_layout
+	><dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())"
+></dtml-if>
 
 <dtml-var manage_page_footer>
 

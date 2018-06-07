@@ -1,11 +1,13 @@
 </body>
 <script>
-    // Wrap form element with fluid-container if missing
-    $(function() {
-        if ( $('main.container-fluid').length==0 ) {
-            $('form').wrap('<main class="container-fluid"></main>');
-        }
-    });
+// Wrap form element with fluid-container if missing
+	$(function() {
+		if ( $('main.container-fluid').length==0 ) {
+			$('form').wrap('<main class="container-fluid"></main>');
+		}
+	});
+
+// QUICKFIX OBJECT ICONS (as long as not set systematically in the class definitions)
 	$('i[title*="UserFolder"]').replaceWith('<i data-title="Access Control List" class="fa fa-users"></i>');
 	$('i[title*="PluggableAuthService"]').replaceWith('<i data-title="Pluggable Auth Service" class="fa fa-users"></i>');
 	$('i[title*="User"]').replaceWith('<i data-title="User" class="far fa-user"></i>');
@@ -38,11 +40,9 @@
 	$('i[title*="Browser Session"]').replaceWith('<i data-title="Browser Session Manager" class="far fa-bookmark"></i>');
 	$('i[title*="Session Data"]').replaceWith('<i data-title="Session Data Manager" class="fab fa-bookmark"></i>');
 
-
 // ALL THE OTHER ICONS
 	$('img[src*="misc_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
 	$('img[src*="zms_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
-
 
 // SHOW MENU TOGGLE ONLY ON LIST PAGES
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
