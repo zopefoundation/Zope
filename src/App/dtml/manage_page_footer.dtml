@@ -1,10 +1,59 @@
 </body>
 <script>
-// Wrap form element with fluid-container if missing
-$(function() {
-    if ( $('main.container-fluid').length==0 ) {
-        $('form').wrap('<main class="container-fluid"></main>');
-    }
-});
+    // Wrap form element with fluid-container if missing
+    $(function() {
+        if ( $('main.container-fluid').length==0 ) {
+            $('form').wrap('<main class="container-fluid"></main>');
+        }
+    });
+	$('i[title*="UserFolder"]').replaceWith('<i data-title="Access Control List" class="fa fa-users"></i>');
+	$('i[title*="PluggableAuthService"]').replaceWith('<i data-title="Pluggable Auth Service" class="fa fa-users"></i>');
+	$('i[title*="User"]').replaceWith('<i data-title="User" class="far fa-user"></i>');
+	$('i[title*="TemporaryFolder"]').replaceWith('<i data-title="Folder" class="far fa-folder"></i>');
+	$('i[title*="Filesystem Directory View"]').replaceWith('<i data-title="Filesystem Directory View" class="far fa-folder-open"></i>');
+	$('i[title*="Folder"]').replaceWith('<i data-title="Folder" class="far fa-folder"></i>');
+	$('i[title*="Error"]').replaceWith('<i data-title="Error" class="fa fa-exclamation"></i>');
+	$('i[title*="Script"]').replaceWith('<i data-title="Script (Python)" class="fa fa-terminal"></i>');
+	$('i[title*="ExternalMethod"]').replaceWith('<i data-title="External Python Method" class="fa fa-external-link-square"></i>');
+	$('i[title*="DTML"]').replaceWith('<i data-title="DTML" class="far fa-file"></i>');
+	$('i[title*="Template"]').replaceWith('<i data-title="Template" class="far fa-file-code"></i>');
+	$('i[title*="File"]').replaceWith('<i data-title="File Object" class="far fa-file"></i>');
+	$('i[title*="Mail"]').replaceWith('<i data-title="Mail Folder" class="far fa-envelope"></i>');
+	$('i[title*="Image"]').replaceWith('<i data-title="Image" class="far fa-file-image"></i>');
+	$('i[title*="Control"]').replaceWith('<i data-title="Control Panel" class="fa fa-cogs"></i>');
+	$('i[title*="Database"]').replaceWith('<i data-title="Database" class="far fa-database"></i>');
+	$('i[title*="ZSQLiteDA"]').replaceWith('<i data-title="Database" class="far fa-database"></i>');
+	$('i[title*="ZMySQLDA"]').replaceWith('<i data-title="MySQL-Database Adapter" class="far fa-database"></i>');
+	$('i[title*="Product"]').replaceWith('<i data-title="Installed Product" class="fa fa-gift"></i>');
+	$('i[title*="ZSQL"]').replaceWith('<i data-title="ZSQL-Method" class="far fa-puzzle-piece"></i>');
+	$('i[title*="/p_/pl"]').replaceWith('<i data-title="Expand..." class="far fa-plus-square"></i>');
+	$('i[title*="/p_/mi"]').replaceWith('<i data-title="Collapse..." class="far fa-minus-square"></i>');
+	$('i[title*="/p_/davlocked"]').replaceWith('<i data-title="WebDAV" class="fa fa-retweet"></i>');
+	$('i[title*="DebugManager"]').replaceWith('<i data-title="Debug Manager" class="far fa-bug"></i>');
+	$('i[title*="SiteErrorLog"]').replaceWith('<i data-title="Site Error Log" class="far fa-bug"></i>');
+	$('i[title*="ZMS"]').replaceWith('<i data-title="ZMS Root" class="fas fa-home"></i>');
+	$('i[title*="ZMSObject.png"]').replaceWith('<i data-title="ZMS Content" class="far fa-file"></i>');
+	$('i[title*="Monster"]').replaceWith('<i data-title="Virtual Host Monster" class="fa fa-road"></i>');
+	$('i[title*="ZCatalog"]').replaceWith('<i data-title="ZCatalog" class="far fa-search"></i>');
+	$('i[title*="Browser Session"]').replaceWith('<i data-title="Browser Session Manager" class="far fa-bookmark"></i>');
+	$('i[title*="Session Data"]').replaceWith('<i data-title="Session Data Manager" class="fab fa-bookmark"></i>');
+
+
+// ALL THE OTHER ICONS
+	$('img[src*="misc_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
+	$('img[src*="zms_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
+
+
+// SHOW MENU TOGGLE ONLY ON LIST PAGES
+	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
+		$('#toggle_menu').show();
+	} else {
+		$('#toggle_menu').hide();
+	}
+// HELP ICON
+	$('a[href*="HelpSys"]').empty()
+		.append('<i class="fa fa-question-sign"></i>')
+		.css('border-color','transparent');
+
 </script>
 </html>
