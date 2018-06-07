@@ -1,3 +1,6 @@
+/* FONTAWESOME 5+ */
+@import 'fontawesome-5.0.13/css/fontawesome-all.min.css'
+
 /* ZOPE 4 Base Styles */
 
 @media (max-width: 576px) {
@@ -7,6 +10,7 @@
 }
 
 /* BUTTONS / CONTROLS */
+
 a {
     color:#6c757d;
 }
@@ -231,6 +235,7 @@ main.container-fluid {
 .zmi-userlist .list-group .list-group-item {
     padding-left:2rem;
 }
+.zmi-controls input.form-check-input,
 .zmi-userlist .list-group .list-group-item input.form-check-input {
     margin-top:.4rem;
 }
@@ -239,7 +244,97 @@ main.container-fluid {
 
 }
 
-
 .advanced-search-only {
     background-color: #d1ecf1;
 }
+
+textarea.zmi-code {
+	font-damily:monospaced;
+}
+
+
+/* MANAGE MENU */
+#toggle_menu {
+	position: absolute;
+	z-index: 1000;
+	right: 0;
+}
+#toggle_menu a {
+	position: relative;
+	color: #888;
+	right: 1.5rem;
+	z-index: 1001;
+	display: inline-block;
+	top: 1rem;
+}
+#toggle_menu a:hover i {
+	color:black;
+}
+table#menu_title,
+#menu_tree table,
+table#menu_buttons {
+	margin:0;
+}
+table#menu_title {
+	margin-top:0.6em;
+}
+table#menu_title td img,
+#menu_tree table td img,
+table.main-table td img {
+	visibility:hidden;
+}
+
+#menu_buttons {
+	padding: 1.3rem 30px .65rem 30px;
+	border-bottom: 1px solid #eaecef;
+	margin: 0 -30px;
+	background-color:white;
+}
+#menu_buttons button {
+	width: 100%;
+	background: transparent;
+	color: black;
+	text-align: left;
+	border: 0;
+	padding: 0;
+	line-height:1;
+}
+#menu_buttons button .caret {
+	margin-right: 0.75em;
+}
+#menu_buttons ul.dropdown-menu {
+	margin: -6px 30px 0;
+}
+table#menu_title td,
+div#menu_tree table td{
+	padding:0.2em .3em 0 .4em !important;
+	min-width:1em;
+	white-space:nowrap !important;
+}
+div#menu_title a {
+	color:inherit;
+}
+div#menu_tree i.icon.icon-expand-alt,
+div#menu_tree i.icon.icon-collapse-alt {
+	vertical-align:top;
+	color:#aaa;
+}
+div#menu_tree i.icon.icon-expand-alt:hover,
+div#menu_tree i.icon.icon-collapse-alt:hover {
+	color: #000 !important;
+}
+div#menu_tree a:focus,
+div#menu_tree i.icon.icon-expand-alt:focus,
+div#menu_tree i.icon.icon-collapse-alt:focus {
+	outline-color: transparent !important;
+}
+table#menu_title,
+div#menu_tree {
+	width:100%;
+	background-color:transparent;
+	margin-left:-0.3em;
+}
+table#menu_title td {
+	padding: 1em .3em .0em .4em !important;
+}
+/* /MANAGE MENU */
