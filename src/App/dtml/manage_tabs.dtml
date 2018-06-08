@@ -42,7 +42,7 @@
                   <i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
                   <strong>&dtml-title;</strong>
                   <dtml-if wl_isLocked>
-                    <span class="badge badge-warning">Locked</span>
+                    <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
                   </dtml-if wl_isLocked>
               </span>
             <dtml-else>

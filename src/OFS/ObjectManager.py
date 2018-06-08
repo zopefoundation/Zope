@@ -854,6 +854,14 @@ class ObjectManager(CopyContainer,
             pass
         return ''
 
+    security.declareProtected(access_contents_information, 'last_modified')
+    def last_modified(self, ob):
+        try:
+            return DateTime(ob._p_mtime).strftime("%Y-%m-%d %H:%M")
+        except:
+            pass
+        return ''
+
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

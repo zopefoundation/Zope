@@ -30,7 +30,7 @@ the <em>browse</em> button to select a local file to upload.
 <div class="zmi-controls">
   <dtml-if wl_isLocked>
    <input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
-   <span class="badge badge-warning">Locked</span>
+   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
   <dtml-else>
    <input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
   </dtml-if>
