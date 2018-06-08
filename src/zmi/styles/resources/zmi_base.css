@@ -115,6 +115,8 @@ form.zmi-upload {
 }
 
 /* MAIN / OBJECTLIST */
+
+
 .zmi table.objectItems td {
 	line-height:1.7rem;
 }
@@ -122,8 +124,28 @@ form.zmi-upload {
 	padding-left:1rem;
 	max-width:2rem;
 }
+.zmi table.objectItems th.zmi-object-id {
+	width:100%;
+} 
 .zmi table.objectItems tbody .zmi-object-id {
 	font-weight: 600;
+}
+.zmi table.objectItems .zmi-object-id #tablefilter {
+	padding:0 1.5em;
+	background:none;
+	border:none;
+	box-shadow:none;
+	border-radius:3px;
+}
+.zmi table.objectItems .zmi-object-id #tablefilter:focus {
+	outline-color: transparent;
+	border-radius: 3px;
+	background-color: #dadee3;
+}
+.zmi table.objectItems .zmi-object-id .fa-search.tablefilter {
+	margin:0 -1.5rem 0 0.5rem;
+	opacity:.3;
+	font-size:90%;
 }
 .zmi table.objectItems .zmi-object-title {
 	font-weight: 400;
