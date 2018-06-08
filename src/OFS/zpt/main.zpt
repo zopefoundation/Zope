@@ -53,7 +53,11 @@
                     }})()">
           </th>
           <th scope="col" class="zmi-object-type">Type</th>
-          <th scope="col" class="zmi-object-id" title="Name and (Title)">Name</th>
+          <th scope="col" class="zmi-object-id">
+            <span title="Name and (Title)">Name</span>
+            <i class="fa fa-search tablefilter" title="Filter Name by Entering String"></i>
+            <input id="tablefilter" name="tablefilter" type="text" title="Filter Name by Entering String"></input>
+          </th>
           <th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
           <th scope="col" class="zmi-object-date text-right hidden-xs">Last Modified</th>
         </tr>
@@ -173,8 +177,8 @@
 		$('#tablefilter').keyup( function (e) {
 			var tablefilter = $(this).val();
 			console.log('You pressed ' + tablefilter);
-			$('table').find("tr.list-item").hide();
-			$('table').find("tr.list-item td.main-title a:contains(" + tablefilter+ ")").closest('tr.list-item').show();
+			$('table.objectItems').find("tbody tr").hide();
+			$('table.objectItems').find("tbody tr td.zmi-object-id a:contains(" + tablefilter+ ")").closest('tbody tr').show();
 		});
 		$(document).keypress(function() {$('#tablefilter').focus()})
 	});
