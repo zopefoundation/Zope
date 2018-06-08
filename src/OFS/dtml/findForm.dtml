@@ -84,7 +84,7 @@
 </dtml-if>
 
 
-<ul class="zmi-find-results list-group">
+<ul class="zmi-find-results list-group mb-5">
 <dtml-in results size="batch_size" start="query_start" sort_expr="skey" reverse_expr="rkey">
     <li class="list-group-item">
         <a href="&dtml.url_quote-sequence-key;/manage_workspace">&dtml-sequence-key;

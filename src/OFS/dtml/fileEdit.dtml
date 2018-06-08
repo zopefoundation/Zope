@@ -57,12 +57,12 @@ text type and small enough to be edited in a text area.
   </dtml-if>
 </dtml-let>
 
-<div class="controls">
+<div class="zmi-controls">
   <dtml-if wl_isLocked>
-   <em>Locked</em>
+   <input class="btn btn-primary disabled" type="submit" name="manage_edit:method" value="Save Changes" disabled="disabled" />
+   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
   <dtml-else>
-   <input class="btn btn-primary" type="submit" name="manage_edit:method"
-    value="Save Changes">
+   <input class="btn btn-primary" type="submit" name="manage_edit:method" value="Save Changes" />
   </dtml-if>
 </div>
 
@@ -78,14 +78,15 @@ text type and small enough to be edited in a text area.
     </div>
 </div>
 
-<div class="controls">
+<div class="zmi-controls">
   <dtml-if wl_isLocked>
-      <em>Locked</em>
+   <input class="btn btn-primary disabled" type="submit" name="manage_upload:method" value="Upload" disabled="disabled" />
+   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
   <dtml-else>
-      <input class="btn btn-primary" type="submit" name="manage_upload:method"
-    value="Upload">
+   <input class="btn btn-primary" type="submit" name="manage_upload:method" value="Upload" />
   </dtml-if>
 </div>
+
 </form>
 
 </main>
