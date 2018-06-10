@@ -5,36 +5,45 @@
 <h2 tal:define="form_title string:Add Page Template"
     tal:replace="structure here/manage_form_title">Form Title</h2>
 
-<p class="form-help">Page Templates allow you to use simple HTML or
-XML attributes to create dynamic templates.  You may choose to upload
-the template text from a local file by typing the file name or using
-the <em>browse</em> button.</p>
+<p class="form-help">
+	Page Templates allow you to use simple HTML or
+	XML attributes to create dynamic templates.  You may choose to upload
+	the template text from a local file by typing the file name or using
+	the <em>browse</em> button.
+</p>
 
-<form action="manage_addPageTemplate" method="post"
-      enctype="multipart/form-data" class="zmi-zpt zmi-add">
+<form action="manage_addPageTemplate" method="post" enctype="multipart/form-data" class="zmi-zpt zmi-add">
 
-    <div class="form-group row">
-        <label for="id" class="form-label col-sm-2">Id</label>
-        <input id="id" class="form-control col-sm-9 col-md-6" type="text" name="id" size="40" />
-    </div>
-    <div class="form-group row">
-        <label for="file-data" class="form-label col-sm-2">File</label>
-        <input id="file-data" class="form-control-file col-sm-9 col-md-6" type="file" name="file" size="25" value="" />
-    </div>
-    <div class="form-group row">
-      <label for="encoding" class="form-label col-sm-2">Encoding</label>
-      <div class="col-sm-9 col-md-6">
-      <input id="encoding" class="form-control" type="text" name="encoding" size="25" value="utf-8" />
-      <small id="encodingHelp" class="form-text text-muted">only used for non-XML and non-HTML content</small>
-      </div>
-    </div>
+	<div class="form-group row">
+		<label for="id" class="form-label col-sm-2">Id</label>
+		<div class="col-sm-10">
+			<input id="id" class="form-control" type="text" name="id" size="40" />
+		</div>
+	</div>
 
-      <div class="controls">
-        <input class="btn btn-primary" type="submit" name="submit"
-               value=" Add " />
-        <input class="btn btn-primary" type="submit" name="submit"
-               value=" Add and Edit " />
-      </div>
+	<div class="form-group row" title="Select File for Uploading the Source Code">
+		<label for="file-data" class="form-label col-sm-2">File</label>
+		<div class="col-sm-10">
+				<input id="file-data"
+					class="btn btn-primary form-control-file"
+					type="file" name="file" size="25" value="" />
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label for="encoding" class="form-label col-sm-2">Encoding</label>
+		<div class="col-sm-10">
+			<input id="encoding" type="text" class="form-control"
+				name="encoding" value="utf-8" placeholder="utf-8" />
+			<small id="encodingHelp" class="form-text text-muted">Only used for non-XML and non-HTML content</small>
+		</div>
+	</div>
+
+
+	<div class="zmi-controls">
+		<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
+		<input class="btn btn-primary" type="submit" name="submit" value=" Add and Edit " />
+	</div>
 
 </form>
 

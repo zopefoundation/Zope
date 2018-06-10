@@ -40,14 +40,6 @@ class FindSupport(Base):
     manage_findForm = DTMLFile('dtml/findForm', globals(),
                                management_view='Find')
 
-    security.declareProtected(view_management_screens, 'manage_findAdv')
-    manage_findAdv = DTMLFile('dtml/findAdv', globals(),
-                              management_view='Find')
-
-    security.declareProtected(view_management_screens, 'manage_findResult')
-    manage_findResult = DTMLFile('dtml/findResult', globals(),
-                                 management_view='Find')
-
     manage_options = (
         {'label': 'Find', 'action': 'manage_findForm'},
     )

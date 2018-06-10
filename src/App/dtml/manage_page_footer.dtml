@@ -3,12 +3,12 @@
 // Wrap form element with fluid-container if missing
 	$(function() {
 		if ( $('main.container-fluid').length==0 ) {
-			$('form').wrap('<main class="container-fluid"></main>');
+			$('form,p').wrap('<main class="container-fluid"></main>');
 		}
 	});
 
 // QUICKFIX OBJECT ICONS (as long as not set systematically in the class definitions)
-	$('i[title*="UserFolder"]').replaceWith('<i data-title="Access Control List" class="fa fa-users"></i>');
+	$('i[title*="User Folder"], i[title*="UserFolder"]').replaceWith('<i data-title="Access Control List" class="fa fa-users"></i>');
 	$('i[title*="PluggableAuthService"]').replaceWith('<i data-title="Pluggable Auth Service" class="fa fa-users"></i>');
 	$('i[title*="User"]').replaceWith('<i data-title="User" class="far fa-user"></i>');
 	$('i[title*="TemporaryFolder"]').replaceWith('<i data-title="Folder" class="far fa-folder"></i>');

@@ -24,9 +24,7 @@
 </form>
 
 <main class="container-fluid">
-<form 
-    name="objectItems"
-    method="post"
+<form name="objectItems" method="post"
     tal:define="
         ids here/objectIds;
         sm modules/AccessControl/SecurityManagement/getSecurityManager"
@@ -39,24 +37,27 @@
         <tr>
           <th scope="col" class="zmi-object-check text-right">
             <input type="checkbox" id="checkAll"
-                   onclick="(function() {
-                    var checkboxes = document.getElementsByClassName('checkbox-list-item');
-                    // Toggle Highlighting CSS-Class
-                    if ( document.getElementById('checkAll').checked ) {
-                       $('table.objectItems tbody tr').addClass('checked');
-                    } else {
-                       $('table.objectItems tbody tr').removeClass('checked');
-                    };
-                    // Set Checkbox like checkAll-Box
-                    for (i = 0; i < checkboxes.length; i++){
-                      checkboxes[i].checked = document.getElementById('checkAll').checked;
-                    }})()">
+               onclick="(function() {
+                  var checkboxes = document.getElementsByClassName('checkbox-list-item');
+                  // Toggle Highlighting CSS-Class
+                  if ( document.getElementById('checkAll').checked ) {
+                     $('table.objectItems tbody tr').addClass('checked');
+                  } else {
+                     $('table.objectItems tbody tr').removeClass('checked');
+                  };
+                  // Set Checkbox like checkAll-Box
+                  for (i = 0; i < checkboxes.length; i++){
+                    checkboxes[i].checked = document.getElementById('checkAll').checked;
+                    }
+                })()">
           </th>
           <th scope="col" class="zmi-object-type">Type</th>
           <th scope="col" class="zmi-object-id">
             <span title="Name and (Title)">Name</span>
-            <i class="fa fa-search tablefilter" title="Filter Name by Entering String"></i>
-            <input id="tablefilter" name="tablefilter" type="text" title="Filter Name by Entering String"></input>
+              <i class="fa fa-search tablefilter"></i>
+              <input id="tablefilter" name="obj_ids:tokens" type="text"
+                 title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
+              ></input>
           </th>
           <th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
           <th scope="col" class="zmi-object-date text-right hidden-xs">Last Modified</th>
@@ -172,15 +173,30 @@
 <script type="text/javascript">
 <!--
 	$(function() {
+
 		$('td.zmi-object-type i').tooltip({'placement':'top'});
 
 		$('#tablefilter').keyup( function (e) {
 			var tablefilter = $(this).val();
 			console.log('You pressed ' + tablefilter);
+			if( e.which==13 ) {
+				window.location.href = 'manage_findForm?btn_submit=Find&search_sub:int=1&obj_ids%3Atokens=' + tablefilter;
+				e.preventDefault();
+			};
 			$('table.objectItems').find("tbody tr").hide();
 			$('table.objectItems').find("tbody tr td.zmi-object-id a:contains(" + tablefilter+ ")").closest('tbody tr').show();
 		});
-		$(document).keypress(function() {$('#tablefilter').focus()})
+
+		$(document).keypress( function(e) {
+			$('#tablefilter').focus();
+			// Prevent Submitting a form by hitting Enter
+			// https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
+			if ( e.which == 13 ) {
+					event.preventDefault();
+					return false;
+			};
+		})
+
 	});
 //-->
 </script>
