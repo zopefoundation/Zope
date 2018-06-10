@@ -136,6 +136,7 @@ form.zmi-upload {
 	border:none;
 	box-shadow:none;
 	border-radius:3px;
+	height:1.3rem;
 }
 .zmi table.objectItems .zmi-object-id #tablefilter:focus {
 	outline-color: transparent;
@@ -297,11 +298,10 @@ td.zmi-rolename-check:hover {
 }
 .zmi-userlist .list-group .list-group-item i.fa-user {
 	margin-right:0.15rem;
-
 }
 
 .advanced-search-only {
-	background-color: #d1ecf1;
+	background-color: #ced4da;
 }
 
 textarea.zmi-code {
@@ -404,3 +404,8 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 }
 
 /* /MANAGE MENU */
+
+
+.zmi .btn.btn-primary.form-control-file {
+	border-color:#ced4da;
+}
