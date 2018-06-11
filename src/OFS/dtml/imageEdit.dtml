@@ -3,69 +3,76 @@
 
 <main class="container-fluid">
 
-    <p class="form-help">
-        You can update the data for this &dtml-kind; using the form below.
-        Select a data file from your local computer by clicking the <em>browse</em>
-        button and click <em>upload</em> to update the contents of the &dtml-kind;.
-    </p>
+	<p class="form-help">
+		You can update the data for this &dtml-kind; using the form below.
+		Select a data file from your local computer by clicking the <em>browse</em>
+		button and click <em>upload</em> to update the contents of the &dtml-kind;.
+	</p>
 
-    <form action="&dtml-URL1;/manage_edit" method="post" enctype="multipart/form-data" class="zmi-image zmi-metadata">
+	<form action="&dtml-URL1;/manage_edit" method="post" enctype="multipart/form-data" class="zmi-image zmi-metadata">
 
-        <div class="form-group row">
-          <label for="title" class="col-sm-3 col-md-2">Title</label>
-          <div class="col-sm-9 col-md-6">
-              <input id="title" class="form-control" type="text" name="title" value="<dtml-if title>&dtml-title;</dtml-if>">
-          </div>
-        </div>
+		<div class="form-group row">
+			<label for="title" class="col-sm-3 col-md-2">Title</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="title" class="form-control" type="text" name="title" value="<dtml-if title>&dtml-title;</dtml-if>">
+			</div>
+		</div>
 
-        <div class="form-group row">
-            <label for="content-type" class="col-sm-3 col-md-2">Content Type</label>
-            <div class="col-sm-9 col-md-6">
-                <input id="content-type" class="form-control" type="text" name="content_type:required" value="<dtml-if content_type>&dtml-content_type;</dtml-if>">
-            </div>
-        </div>
+		<div class="form-group row">
+			<label for="content-type" class="col-sm-3 col-md-2">Content Type</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="content-type" class="form-control" type="text" name="content_type:required" value="<dtml-if content_type>&dtml-content_type;</dtml-if>">
+			</div>
+		</div>
 
-        <div class="form-group row">
-            <label for="preview" class="col-sm-3 col-md-2">Preview</label>
-            <figure id="preview" class="figure col-sm-9 col-md-6">
-                <dtml-if "_.same_type(height, 1) and height and height > 250">
-                    <dtml-var "tag(scale=250.0 / height, css_class='img-thumbnail', id='preview')">
-                <dtml-elif "_.same_type(height, 's') and height and _.int(height) > 250">
-                    <dtml-var "tag(scale=250.0 / _.int(height), css_class='img-thumbnail', id='preview')">
-                <dtml-else>
-                    <dtml-var "tag(css_class='img-thumbnail', id='preview')">
-                </dtml-if>
-                <figcaption class="figure-caption">File Size: <dtml-var size thousands_commas> bytes</figcaption>
-            </figure>
-        </div>
+		<div class="form-group row">
+			<label for="preview" class="col-sm-3 col-md-2">Preview</label>
+			<figure id="preview" class="figure col-sm-9 col-md-10"
+				><span onclick="javascript: window.open('../<dtml-var "getId()">')"
+					style="cursor:zoom-in" title="Click to View Generic File"
+				><dtml-if "_.same_type(height, 1) and height and height > 250">
+					<dtml-var "tag(scale=250.0 / height, css_class='img-thumbnail', id='preview')">
+				<dtml-elif "_.same_type(height, 's') and height and _.int(height) > 250">
+					<dtml-var "tag(scale=250.0 / _.int(height), css_class='img-thumbnail', id='preview')">
+				<dtml-else>
+					<dtml-var "tag(css_class='img-thumbnail', id='preview')">
+				</dtml-if></span>
+				<figcaption class="figure-caption">File Size: <dtml-var size thousands_commas> bytes</figcaption>
+			</figure>
+		</div>
 
-        <div class="controls">
-            <dtml-if wl_isLocked>
-                <em>Locked</em>
-            <dtml-else>
-                <input class="btn btn-primary" type="submit" name="submit" value="Save Changes">
-            </dtml-if>
-        </div>
-    </form>
+		<div class="form-group row">
+			<label for="preview" class="col-sm-3 col-md-2">Last Modified</label>
+			<div class="col-sm-9 col-md-10">
+				<dtml-var "context.last_modified(context)">
+			</div>
+		</div>
 
-    <form action="&dtml-URL1;/manage_upload" method="post" enctype="multipart/form-data" class="zmi-image zmi-upload mt-5">
+		<div class="zmi-controls">
+			<dtml-if wl_isLocked>
+				<input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
+				<span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
+			<dtml-else>
+				<input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
+			</dtml-if>
+		</div>
+	</form>
 
-        <div class="form-group row">
-            <label for="file-data" class="col-sm-3 col-md-2">File Data</label>
-            <div class="col-sm-9 col-md-6">
-                <input id="file-data" class="form-control-file" type="file" name="file" />
-            </div>
-        </div>
 
-        <div class="controls">
-            <dtml-if wl_isLocked>
-                <em>Locked</em>
-            <dtml-else>
-                <input class="btn btn-primary" type="submit" name="submit" value="Upload">
-            </dtml-if>
-        </div>
+	<dtml-unless wl_isLocked>
+		<form action="&dtml-URL1;/manage_upload" method="post" enctype="multipart/form-data" class="zmi-image zmi-upload mt-4">
+			<div class="input-group" title="Select Local File for Uploading">
+				<div class="custom-file">
+					<input type="file" name="file" class="custom-file-input" id="file-data" value="">
+					<label class="custom-file-label" for="file-data">Choose file</label>
+				</div>
+				<div class="input-group-append">
+					<input class="btn btn-outline-secondary"" type="submit" value="Upload File" />
+				</div>
+			</div>
+		</form>
+	</dtml-unless>
 
-    </form>
 </main>
 
 <dtml-var manage_page_footer>

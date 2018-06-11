@@ -3,51 +3,53 @@
 
 <main class="container-fluid">
 
-<p class="form-help">
-You may edit the source for this document using the form below. You
-may also upload the source for this document from a local file. Click
-the <em>browse</em> button to select a local file to upload.
-</p>
+	<p class="form-help">
+		You may edit the source for this document using the form below. You
+		may also upload the source for this document from a local file. Click
+		the <em>browse</em> button to select a local file to upload.
+	</p>
 
-<form action="manage_edit" method="post" class="zmi-dtml zmi-edit">
+	<form action="manage_edit" method="post" class="zmi-dtml zmi-edit">
 
-<dtml-with keyword_args mapping>
-<div class="form-group row">
-  <label for="title" class="form-label col-sm-2">
-  Title
-  </label>
+		<dtml-with keyword_args mapping>
+			<div class="form-group row">
+				<label for="title" class="form-label col-sm-2 col-md-3">Title</label>
+				<div class="col-sm-9 col-md-10">
+					<input id="title" class="form-control" type="text" name="title" 
+						value="<dtml-if title>&dtml-title;</dtml-if>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<textarea id="content" class="form-control zmi-code col-sm-12" 
+					name="data:text" wrap="off" style="width: 100%;" 
+					rows="20"><dtml-var __str__></textarea>
+			</div>
+		</dtml-with>
 
-  <input id="title" class="form-control col-sm-10 col-md-7" type="text" name="title" size="40" value="<dtml-if
-   title>&dtml-title;</dtml-if>">
-</div>
-<div class="form-group">
-  <textarea id="content" class="form-control zmi-code col-sm-12" name="data:text" wrap="off" style="width: 100%;" 
-   rows="20"><dtml-var __str__></textarea>
-</div>
-</dtml-with>
+		<div class="zmi-controls">
+			<dtml-if wl_isLocked>
+				<input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
+				<span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
+			<dtml-else>
+				<input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
+			</dtml-if>
+		</div>
 
+	</form>
 
-<div class="zmi-controls">
-  <dtml-if wl_isLocked>
-   <input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
-   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
-  <dtml-else>
-   <input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
-  </dtml-if>
-</div>
-
-</form>
-
-<dtml-unless wl_isLocked>
-<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
-    <div class="form-group">
-            <input title="Select File for Uploading the Source Code" id="file-data" 
-                class="btn btn-primary form-control-file col-12 mb-3" 
-                type="file" name="file" size="25" value="" />
-            <input class="btn btn-primary" type="submit" value="Upload File" />
-    </div>
-</form>
-</dtml-unless>
+	<dtml-unless wl_isLocked>
+		<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
+			<div class="input-group" title="Select Local File for Uploading">
+				<div class="custom-file">
+					<input type="file" name="file" class="custom-file-input" id="file-data" value="">
+					<label class="custom-file-label" for="file-data">Choose file</label>
+				</div>
+				<div class="input-group-append">
+					<input class="btn btn-outline-secondary"" type="submit" value="Upload File" />
+				</div>
+			</div>
+		</form>
+	</dtml-unless>
 
 </main>
 

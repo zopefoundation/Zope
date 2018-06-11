@@ -3,7 +3,7 @@
 <main class="container-fluid">
 
 <h2 tal:define="form_title string:Add Page Template"
-    tal:replace="structure here/manage_form_title">Form Title</h2>
+	tal:replace="structure here/manage_form_title">Form Title</h2>
 
 <p class="form-help">
 	Page Templates allow you to use simple HTML or
@@ -15,15 +15,15 @@
 <form action="manage_addPageTemplate" method="post" enctype="multipart/form-data" class="zmi-zpt zmi-add">
 
 	<div class="form-group row">
-		<label for="id" class="form-label col-sm-2">Id</label>
-		<div class="col-sm-10">
+		<label for="id" class="form-label col-sm-2 col-md-3">Id</label>
+		<div class="col-sm-9 col-md-10">
 			<input id="id" class="form-control" type="text" name="id" size="40" />
 		</div>
 	</div>
 
 	<div class="form-group row" title="Select File for Uploading the Source Code">
-		<label for="file-data" class="form-label col-sm-2">File</label>
-		<div class="col-sm-10">
+		<label for="file-data" class="form-label col-sm-2 col-md-3">File</label>
+		<div class="col-sm-9 col-md-10">
 				<input id="file-data"
 					class="btn btn-primary form-control-file"
 					type="file" name="file" size="25" value="" />
@@ -31,8 +31,8 @@
 	</div>
 
 	<div class="form-group row">
-		<label for="encoding" class="form-label col-sm-2">Encoding</label>
-		<div class="col-sm-10">
+		<label for="encoding" class="form-label col-sm-2 col-md-3">Encoding</label>
+		<div class="col-sm-9 col-md-10">
 			<input id="encoding" type="text" class="form-control"
 				name="encoding" value="utf-8" placeholder="utf-8" />
 			<small id="encodingHelp" class="form-text text-muted">Only used for non-XML and non-HTML content</small>
