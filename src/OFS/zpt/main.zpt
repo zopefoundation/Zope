@@ -2,171 +2,170 @@
 <tal:tabs replace="structure here/manage_tabs" />
 
 <!-- Add object widget -->
-<form  class="form-inline float-right mb-2 addItemSelect"
-      method="get"
-      tal:condition="here/filtered_meta_types"
-      tal:attributes="action string:${request/URL1}/" >
-  <div class="form-group">
-    <label for="addItemSelect"
-           class="mr-2 sr-only">Select type to add</label>
-    <select class="form-control mr-2"
-            name=":action"
-            id="addItemSelect"
-            tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value;;this.selectedIndex = 0">
-      <option value='' disabled selected>Select type to add</option>
-      <tal:option tal:repeat="mt here/filtered_meta_types">
-        <option tal:condition="mt/action"
-                tal:attributes="value mt/action"
-                tal:content="mt/name">Action</option>
-      </tal:option>
-    </select>
-  </div>
+<form class="form-inline float-right mb-2 addItemSelect"
+	method="get"
+	tal:condition="here/filtered_meta_types"
+	tal:attributes="action string:${request/URL1}/" >
+	<div class="form-group">
+		<label for="addItemSelect"
+			class="mr-2 sr-only">Select type to add</label>
+		<select class="form-control mr-2"
+			name=":action"
+			id="addItemSelect"
+			tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value;;this.selectedIndex = 0">
+			<option value='' disabled selected>Select type to add</option>
+			<tal:option tal:repeat="mt here/filtered_meta_types">
+				<option tal:condition="mt/action"
+					tal:attributes="value mt/action"
+					tal:content="mt/name">Action</option>
+			</tal:option>
+		</select>
+	</div>
 </form>
 
 <main class="container-fluid">
-<form name="objectItems" method="post"
-    tal:define="
-        ids here/objectIds;
-        sm modules/AccessControl/SecurityManagement/getSecurityManager"
-    tal:attributes="action string:${request/URL1}/">
+	<form name="objectItems" method="post"
+		tal:define="
+			ids here/objectIds;
+			sm modules/AccessControl/SecurityManagement/getSecurityManager"
+		tal:attributes="action string:${request/URL1}/">
 
-  <tal:not-empty condition="ids">
-    <table class="table table-striped table-hover table-sm objectItems"
-           tal:condition="ids">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col" class="zmi-object-check text-right">
-            <input type="checkbox" id="checkAll"
-               onclick="(function() {
-                  var checkboxes = document.getElementsByClassName('checkbox-list-item');
-                  // Toggle Highlighting CSS-Class
-                  if ( document.getElementById('checkAll').checked ) {
-                     $('table.objectItems tbody tr').addClass('checked');
-                  } else {
-                     $('table.objectItems tbody tr').removeClass('checked');
-                  };
-                  // Set Checkbox like checkAll-Box
-                  for (i = 0; i < checkboxes.length; i++){
-                    checkboxes[i].checked = document.getElementById('checkAll').checked;
-                    }
-                })()">
-          </th>
-          <th scope="col" class="zmi-object-type">Type</th>
-          <th scope="col" class="zmi-object-id">
-            <span title="Name and (Title)">Name</span>
-              <i class="fa fa-search tablefilter"></i>
-              <input id="tablefilter" name="obj_ids:tokens" type="text"
-                 title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
-              ></input>
-          </th>
-          <th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
-          <th scope="col" class="zmi-object-date text-right hidden-xs">Last Modified</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr tal:repeat="id ids">
-          <tal:ob define="ob python:here.get(id)">
-            <td class="zmi-object-check text-right" 
-                onclick="$(this).children('input').trigger('click');">
-                <input type="checkbox"
-                     class="checkbox-list-item"
-                     name="ids:list"
-                     tal:attributes="value id"
-                     onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');"
-                     />
-            </td>
-            <td class="zmi-object-type"
-                onclick="$(this).prev().children('input').trigger('click')">
-                <i title="Broken object"
-                    class="icon-broken"
-                    tal:attributes="class ob/zmi_icon | default;
-                                    title ob/meta_type | default">
-                <span class="sr-only"
-                      tal:content="ob/meta_type | default">Broken object</span>
-              </i>
-            </td>
-            <td class="zmi-object-id">
-              <a tal:attributes="href string:${id}/manage_workspace">
-              <span tal:replace="id">Id</span>
-              <span class="badge badge-warning" title="Locked"
-                tal:condition="ob/wl_isLocked | nothing">
-                <i class="fa fa-lock"></i>
-              </span>
-              <span class="zmi-object-title hidden-xs"
-                 tal:condition="ob/title|nothing">
-                 &nbsp;(<span tal:replace="ob/title"></span>)
-              </span>
-              </a>
-            </td>
-            <td class="text-right zmi-object-size hidden-xs"
-                tal:content="python:here.computeSize(ob)">
-            </td>
-            <td class="text-right zmi-object-date hidden-xs pl-3"
-                tal:content="python:here.last_modified(ob)">
-            </td>
-          </tal:ob>
-        </tr>
-      </tbody>
-    </table>
+	<tal:not-empty condition="ids">
+		<table class="table table-striped table-hover table-sm objectItems"
+			tal:condition="ids">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col" class="zmi-object-check text-right">
+						<input type="checkbox" id="checkAll"
+							onclick="(function() {
+								var checkboxes = document.getElementsByClassName('checkbox-list-item');
+								// Toggle Highlighting CSS-Class
+								if ( document.getElementById('checkAll').checked ) {
+									 $('table.objectItems tbody tr').addClass('checked');
+								} else {
+									 $('table.objectItems tbody tr').removeClass('checked');
+								};
+								// Set Checkbox like checkAll-Box
+								for (i = 0; i < checkboxes.length; i++){
+									checkboxes[i].checked = document.getElementById('checkAll').checked;
+									}
+							})()">
+					</th>
+					<th scope="col" class="zmi-object-type">Type</th>
+					<th scope="col" class="zmi-object-id">
+						<span title="Name and (Title)">Name</span>
+							<i class="fa fa-search tablefilter"></i>
+							<input id="tablefilter" name="obj_ids:tokens" type="text"
+								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
+							></input>
+					</th>
+					<th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
+					<th scope="col" class="zmi-object-date text-right hidden-xs">Last Modified</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr tal:repeat="id ids">
+					<tal:ob define="ob python:here.get(id)">
+						<td class="zmi-object-check text-right" 
+								onclick="$(this).children('input').trigger('click');">
+								<input type="checkbox"
+									class="checkbox-list-item"
+									name="ids:list"
+									tal:attributes="value id"
+									onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');"
+									/>
+						</td>
+						<td class="zmi-object-type"
+								onclick="$(this).prev().children('input').trigger('click')">
+								<i title="Broken object"
+									class="icon-broken"
+									tal:attributes="class ob/zmi_icon | default; title ob/meta_type | default">
+								<span class="sr-only"
+									tal:content="ob/meta_type | default">Broken object</span>
+							</i>
+						</td>
+						<td class="zmi-object-id">
+							<a tal:attributes="href string:${id}/manage_workspace">
+							<span tal:replace="id">Id</span>
+							<span class="badge badge-warning" title="Locked"
+								tal:condition="ob/wl_isLocked | nothing">
+								<i class="fa fa-lock"></i>
+							</span>
+							<span class="zmi-object-title hidden-xs"
+								tal:condition="ob/title|nothing">
+								&nbsp;(<span tal:replace="ob/title"></span>)
+							</span>
+							</a>
+						</td>
+						<td class="text-right zmi-object-size hidden-xs"
+							tal:content="python:here.computeSize(ob)">
+						</td>
+						<td class="text-right zmi-object-date hidden-xs pl-3"
+							tal:content="python:here.last_modified(ob)">
+						</td>
+					</tal:ob>
+				</tr>
+			</tbody>
+		</table>
 
-    <div class="form-group zmi-controls"
-         tal:define="
-           delete_allowed python:sm.checkPermission('Delete objects', context)"
-         tal:condition="ids">
-      <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
-        <input class="btn btn-primary"
-               type="submit"
-               name="manage_renameForm:method"
-               value="Rename" />
-          <input class="btn btn-primary"
-                 type="submit"
-                 name="manage_cutObjects:method"
-                 value="Cut"
-                 tal:condition="delete_allowed" />
-          <input class="btn btn-primary"
-                 type="submit"
-                 name="manage_copyObjects:method"
-                 value="Copy" />
-          <input class="btn btn-primary"
-                 type="submit"
-                 name="manage_pasteObjects:method"
-                 value="Paste"
-                 tal:condition="here/cb_dataValid" />
-      </tal:copy-paste>
-      <input class="btn btn-primary"
-              type="submit"
-              name="manage_delObjects:method"
-              value="Delete"
-              tal:condition="delete_allowed" />
-      <input class="btn btn-primary"
-             type="submit"
-             name="manage_importExportForm:method"
-             value="Import/Export"
-             tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
-    </div>
-  </tal:not-empty>
+		<div class="form-group zmi-controls"
+			tal:define="
+			delete_allowed python:sm.checkPermission('Delete objects', context)"
+			tal:condition="ids">
+			<tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
+				<input class="btn btn-primary"
+					type="submit"
+					name="manage_renameForm:method"
+					value="Rename" />
+				<input class="btn btn-primary"
+					type="submit"
+					name="manage_cutObjects:method"
+					value="Cut"
+					tal:condition="delete_allowed" />
+				<input class="btn btn-primary"
+					type="submit"
+					name="manage_copyObjects:method"
+					value="Copy" />
+				<input class="btn btn-primary"
+					type="submit"
+					name="manage_pasteObjects:method"
+					value="Paste"
+					tal:condition="here/cb_dataValid" />
+			</tal:copy-paste>
+			<input class="btn btn-primary"
+				type="submit"
+				name="manage_delObjects:method"
+				value="Delete"
+				tal:condition="delete_allowed" />
+			<input class="btn btn-primary"
+				type="submit"
+				name="manage_importExportForm:method"
+				value="Import/Export"
+				tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+		</div>
+	</tal:not-empty>
 
-  <tal:empty condition="not:ids">
-    <div class="mb-2">
-      <span class="badge badge-pill badge-info">Info</span>
-      There are currently no items in <em tal:content="here/title_or_id"></em>.
-    </div>
-    <div class="form-group">
-      <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
-        <input class="btn btn-primary"
-               type="submit"
-               name="manage_pasteObjects:method"
-               value="Paste"
-               tal:condition="here/cb_dataValid" />
-      </tal:copy-paste>
-      <input class="btn btn-primary"
-             type="submit"
-             name="manage_importExportForm:method"
-             value="Import/Export"
-             tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
-    </div>
-  </tal:empty>
-</form>
+		<tal:empty condition="not:ids">
+			<div class="mb-2">
+				<span class="badge badge-pill badge-info">Info</span>
+				There are currently no items in <em tal:content="here/title_or_id"></em>.
+			</div>
+			<div class="form-group">
+				<tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
+					<input class="btn btn-primary"
+						type="submit"
+						name="manage_pasteObjects:method"
+						value="Paste"
+						tal:condition="here/cb_dataValid" />
+				</tal:copy-paste>
+				<input class="btn btn-primary"
+					type="submit"
+					name="manage_importExportForm:method"
+					value="Import/Export"
+					tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+			</div>
+		</tal:empty>
+	</form>
 </main>
 
 

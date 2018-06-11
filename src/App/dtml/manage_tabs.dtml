@@ -1,64 +1,66 @@
-<dtml-with "_(manage_options=filtered_manage_options())">
-<dtml-if manage_options>
-<dtml-call "REQUEST.set('n_', _.len(manage_options)-1)">
-<dtml-call "REQUEST.set('a_', 0)">
-<dtml-in manage_options mapping>
-<dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
-                REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']">
-<dtml-call "REQUEST.set('a_', _['sequence-index'])">
-</dtml-if>
-<dtml-if "_.has_key('management_view') and management_view==label">
-<dtml-call "REQUEST.set('a_', _['sequence-index'])">
-</dtml-if>
-</dtml-in>
+<dtml-with "_(manage_options=filtered_manage_options())"
+	><dtml-if manage_options
+		><dtml-call "REQUEST.set('n_', _.len(manage_options)-1)"
+		><dtml-call "REQUEST.set('a_', 0)"
+		><dtml-in manage_options mapping
+			><dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
+				REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']"
+				><dtml-call "REQUEST.set('a_', _['sequence-index'])"
+			></dtml-if
+			><dtml-if "_.has_key('management_view') and management_view==label"
+				><dtml-call "REQUEST.set('a_', _['sequence-index'])"
+			></dtml-if
+		></dtml-in>
 
-  <nav role="navigation">
-    <ul class="nav nav-tabs mt-2 mb-2">
-      <dtml-in manage_options mapping>
-        <dtml-let s_item=sequence-item s_index=sequence-index>
-          <li class="nav-item">
-            <a <dtml-if "s_index==a_">class="nav-link active"<dtml-else
-              >class="nav-link"</dtml-if>
-               <dtml-if "s_item.get('action')"
-               >href="&dtml-action;"<dtml-else
-               >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
-               ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
-               >><dtml-var "s_item['label']"></a>
-          </li>
-        </dtml-let>
-      </dtml-in>
-    </ul>
-  </nav>
-</dtml-if>
+		<nav role="navigation">
+			<ul class="nav nav-tabs mt-2 mb-2">
+				<dtml-in manage_options mapping>
+					<dtml-let s_item=sequence-item s_index=sequence-index>
+						<li class="nav-item">
+							<a <dtml-if "s_index==a_">class="nav-link active"<dtml-else
+								>class="nav-link"</dtml-if>
+								<dtml-if "s_item.get('action')"
+								>href="&dtml-action;"<dtml-else
+								>href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
+								><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
+								>><dtml-var "s_item['label']"></a>
+						</li>
+					</dtml-let>
+				</dtml-in>
+			</ul>
+		</nav>
+	</dtml-if>
 
-<dtml-unless MANAGE_TABS_NO_BANNER>
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <dtml-in expr="tabs_path_default(REQUEST)" mapping>
-          <li class="breadcrumb-item<dtml-if last> active</dtml-if>"
-              <dtml-if last> aria-current="page"</dtml-if>>
-            <dtml-if last>
-              <span title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>">
-                  <i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
-                  <strong>&dtml-title;</strong>
-                  <dtml-if wl_isLocked>
-                    <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
-                  </dtml-if wl_isLocked>
-              </span>
-            <dtml-else>
-              <a href="&dtml-url;" class="text-primary">&dtml-title;</a>
-            </dtml-if>
-          </li>
-        </dtml-in>
-      </ol>
-    </nav>
-</dtml-unless>
+	<dtml-unless MANAGE_TABS_NO_BANNER
+		><nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item meta_type"><dtml-if meta_type
+					><i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
+					&dtml-meta_type;<dtml-else>Object</dtml-if> at 
+				</li>
+				<dtml-in expr="tabs_path_default(REQUEST)" mapping>
+					<li class="breadcrumb-item<dtml-if last> active</dtml-if>"
+						<dtml-if last>
+							aria-current="page"
+							title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
+						>&dtml-title;
+						<dtml-if wl_isLocked>
+							<span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
+						</dtml-if>
+						<dtml-else>
+							><a href="&dtml-url;" class="text-primary">&dtml-title;</a>
+						</dtml-if>
+					</li>
+				</dtml-in>
+			</ol>
+		</nav>
+	</dtml-unless>
 
-<dtml-if manage_tabs_message>
-  <div class="alert alert-success" role="alert">
-    <dtml-var manage_tabs_message newline_to_br html_quote>
-    (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
-  </div>
-</dtml-if>
+	<dtml-if manage_tabs_message
+		><div class="alert alert-success" role="alert">
+			<dtml-var manage_tabs_message newline_to_br html_quote
+			>(<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+		</div>
+	</dtml-if>
 
 </dtml-with>
