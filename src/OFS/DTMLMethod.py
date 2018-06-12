@@ -44,8 +44,6 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher.Iterators import IStreamIterator
 
-if PY3:
-    basestring = str
 
 _marker = []  # Create a new marker object.
 
