@@ -25,13 +25,12 @@ probably need to manage Zope using its raw IP address to fix things.
 </dtml-in></textarea>
 </dtml-with>
 
-<div class="zmi-controls mb-5">
+<div class="zmi-controls">
   <dtml-if wl_isLocked>
-   <input class="btn btn-default disabled" type="submit" 
-    title="Configuration is locked and cannot be changed"
-    value="Locked" disabled="disabled">
+   <input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
+   <span class="badge badge-warning" title="Configuration is locked and cannot be changed"><i class="fa fa-lock"></i></span>
   <dtml-else>
-   <input class="btn btn-primary" type="submit" name="submit" value="Save Changes">
+   <input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
   </dtml-if>
 </div>
 
