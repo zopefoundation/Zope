@@ -43,13 +43,18 @@
 						<dtml-if last>
 							aria-current="page"
 							title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
-						>&dtml-title;
-						<dtml-if wl_isLocked>
-							<span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
 						</dtml-if>
-						<dtml-else>
-							><a href="&dtml-url;" class="text-primary">&dtml-title;</a>
+						><a href="&dtml-url;">
+							<dtml-if "title=='Root'">
+								<strong>&nbsp;/&nbsp;</strong>
+							<dtml-else>
+								&dtml-title;
+							</dtml-if>
+						</a>
+						<dtml-if "title!='Root' and last==False">
+							 &nbsp;/&nbsp;
 						</dtml-if>
+						<dtml-if wl_isLocked><span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span></dtml-if>
 					</li>
 				</dtml-in>
 			</ol>
