@@ -286,7 +286,7 @@ class AppInitializer(object):
                 vhm = VirtualHostMonster()
                 vhm.id = 'virtual_hosting'
                 vhm.addToContainer(app)
-                self.commit('Added virtual_hosting')
+                self.commit(u'Added virtual_hosting')
 
     def install_root_view(self):
         app = self.getApp()
@@ -299,7 +299,7 @@ class AppInitializer(object):
             self.commit(u'Added default view for root object')
 
     def install_products(self):
-        return install_products()
+        return install_products(self.getApp())
 
     def install_standards(self):
         app = self.getApp()
@@ -370,10 +370,11 @@ def import_products():
     done = {}
     for priority, product_name, index, product_dir in get_products():
         if product_name in done:
-            LOG.warn('Duplicate Product name: '
-                     'After loading Product %r from %r, '
-                     'I skipped the one in %r.' % (
-                         product_name, done[product_name], product_dir))
+            LOG.warning(
+                'Duplicate Product name: '
+                'After loading Product %r from %r, '
+                'I skipped the one in %r.' % (
+                    product_name, done[product_name], product_dir))
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
@@ -423,7 +424,7 @@ def install_product(app, product_dir, product_name, meta_types,
         setattr(Application.misc_, product_name, misc_)
 
     productObject = FactoryDispatcher.Product(product_name)
-    context = ProductContext(productObject, None, product)
+    context = ProductContext(productObject, app, product)
 
     # Look for an 'initialize' method in the product.
     initmethod = pgetattr(product, 'initialize', None)
@@ -438,7 +439,7 @@ def install_package(app, module, init_func, raise_exc=None):
     product.package_name = name
 
     if init_func is not None:
-        newContext = ProductContext(product, None, module)
+        newContext = ProductContext(product, app, module)
         init_func(newContext)
 
     package_initialized(module, init_func)

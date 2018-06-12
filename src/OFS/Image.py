@@ -878,9 +878,8 @@ class Image(File):
     def __bytes__(self):
         return self.tag().encode('utf-8')
 
-    if PY2:
-        def __str__(self):
-            return self.tag()
+    def __str__(self):
+        return self.tag()
 
     security.declareProtected(View, 'tag')
     def tag(self, height=None, width=None, alt=None,

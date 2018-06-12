@@ -264,9 +264,15 @@ class HTTPBaseResponse(BaseResponse):
 
         This value overwrites any previously set value for the
         cookie in the Response object.
+
+        `name` has to be text in Python 3.
+
+        `value` may be text or bytes. The default encoding of respective python
+        version is used.
         """
-        name = str(name)
-        value = str(value)
+        if PY2:
+            name = str(name)
+            value = str(value)
 
         cookies = self.cookies
         if name in cookies:
@@ -285,9 +291,15 @@ class HTTPBaseResponse(BaseResponse):
         browsers with a key "name" and value "value". If a value for the
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon.
+
+        `name` has to be text in Python 3.
+
+        `value` may be text or bytes. The default encoding of respective python
+        version is used.
         """
-        name = str(name)
-        value = str(value)
+        if PY2:
+            name = str(name)
+            value = str(value)
 
         cookies = self.cookies
         if name in cookies:
@@ -309,8 +321,11 @@ class HTTPBaseResponse(BaseResponse):
         to be specified - this path must exactly match the path given
         when creating the cookie. The path can be specified as a keyword
         argument.
+
+        `name` has to be text in Python 3.
         """
-        name = str(name)
+        if PY2:
+            name = str(name)
 
         d = kw.copy()
         if 'value' in d:

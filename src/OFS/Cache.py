@@ -165,7 +165,7 @@ class Cacheable(object):
                                    mtime_func, default)
                 return val
             except:
-                LOG.warn('ZCache_get() exception')
+                LOG.warning('ZCache_get() exception')
                 return default
         return default
 
@@ -182,7 +182,7 @@ class Cacheable(object):
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
             except:
-                LOG.warn('ZCache_set() exception')
+                LOG.warning('ZCache_set() exception')
 
     security.declareProtected(ViewManagementScreensPermission,
                               'ZCacheable_invalidate')
@@ -201,7 +201,7 @@ class Cacheable(object):
             except:
                 exc = sys.exc_info()
                 try:
-                    LOG.warn('ZCache_invalidate() exception')
+                    LOG.warning('ZCache_invalidate() exception')
                     message = 'An exception occurred: %s: %s' % exc[:2]
                 finally:
                     exc = None
@@ -226,10 +226,12 @@ class Cacheable(object):
             # Allow mtime_func to influence the mod time.
             mtime = mtime_func()
         base = aq_base(self)
-        mtime = max(getattr(base, '_p_mtime', mtime), mtime)
+        mtime = max(getattr(base, '_p_mtime', mtime) or 0, mtime)
         klass = getattr(base, '__class__', None)
         if klass:
-            mtime = max(getattr(klass, '_p_mtime', mtime), mtime)
+            klass_mtime = getattr(klass, '_p_mtime', mtime)
+            if isinstance(klass_mtime, int):
+                mtime = max(klass_mtime, mtime)
         return mtime
 
     security.declareProtected(ViewManagementScreensPermission,

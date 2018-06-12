@@ -124,3 +124,24 @@ class TestInitialization(unittest.TestCase):
         app = i.getApp()
         self.assertTrue('index_html' in app)
         self.assertEqual(app.index_html.meta_type, 'Page Template')
+
+    def test_install_products_which_need_the_application(self):
+        self.configure(good_cfg)
+        from Zope2.App import zcml
+        configure_zcml = '''
+        <configure
+         xmlns="http://namespaces.zope.org/zope"
+         xmlns:five="http://namespaces.zope.org/five"
+         i18n_domain="foo">
+        <include package="Products.Five" file="meta.zcml" />
+        <five:registerPackage
+           package="OFS.tests.applicationproduct"
+           initialize="OFS.tests.applicationproduct.initialize"
+           />
+        </configure>'''
+        zcml.load_string(configure_zcml)
+
+        i = self.getOne()
+        i.install_products()
+        app = i.getApp()
+        self.assertEqual(app.some_folder.meta_type, 'Folder')

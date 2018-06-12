@@ -8,10 +8,56 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b5 (unreleased)
+4.0b6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
+  instances.
+
+- Fix ZMI upload of `DTMLMethod` and `DTMLDocument` to store the DTML as a
+  native ``str`` on both Python versions.
+  (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)
+
+4.0b5 (2018-05-18)
+------------------
+
+New features
+++++++++++++
+
+- The `ProductContext` handed to a product's `initialize()` method
+  now has a `getApplication()` method which a product can use to,
+  e.g., add an object to the Application during startup (as used
+  by `Products.Sessions`).
+  (`#277 <https://github.com/zopefoundation/Zope/pull/277>`_)
+
+- Update dependencies to newest versions.
+
+Bugfixes
+++++++++
+
+- Fix comparison against non-ints in ZCacheable_getModTime.
+
+- Allow unicode in ids.
+  (`#181 <https://github.com/zopefoundation/Zope/pull/181>`_)
+
+- Use log.warning to avoid deprecation warning for log.warn
+
+- Keep existing loggers
+  (`#276 <https://github.com/zopefoundation/Zope/pull/276>`_)
+
+- Accept bytes and text as cookie value.
+  (`#263 <https://github.com/zopefoundation/Zope/pull/263>`_)
+
+- Always raise InternalError when using WSGI and let the WSGI server decide
+  how to handle the request.
+  (`#280 <https://github.com/zopefoundation/Zope/pull/280>`)
+
+- Make ZODB mount points in Python 2 compatible with `ZConfig >= 3.2`.
+  (`#281 <https://github.com/zopefoundation/Zope/pull/281>`_)
+
+- ``__str__`` of an Image object now returns the image HTML tag in
+  Python 3 as it already did on Python 2.
+  (`#282 <https://github.com/zopefoundation/Zope/pull/282>`_)
 
 
 4.0b4 (2018-04-23)

@@ -340,6 +340,28 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(cookie_list), 1)
         self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
+    def test_setCookie_handle_byte_values(self):
+        response = self._makeOne()
+        response.setCookie('foo', b'bar')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), b'bar')
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+
+    def test_setCookie_handle_unicode_values(self):
+        response = self._makeOne()
+        response.setCookie('foo', u'bar')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 2)
+        self.assertEqual(cookie.get('value'), u'bar')
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+
     def test_appendCookie_w_existing(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', path='/')

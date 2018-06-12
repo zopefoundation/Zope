@@ -12,10 +12,7 @@
 #
 ##############################################################################
 
-from zExceptions import (
-    HTTPException,
-    InternalError,
-)
+from zExceptions import HTTPException
 
 
 class HTTPExceptionHandler(object):
@@ -33,17 +30,6 @@ class HTTPExceptionHandler(object):
             return self.application(environ, start_response)
         except HTTPException as exc:
             return exc(environ, start_response)
-        except Exception as exc:
-            if self.debug_mode or environ.get('x-wsgiorg.throw_errors', False):
-                # In debug mode, let the web server log a real
-                # traceback
-                raise
-            return self.catch_all_response(exc)(environ, start_response)
-
-    def catch_all_response(self, exc):
-        response = InternalError()
-        response.detail = repr(exc)
-        return response
 
 
 def main(app, global_conf=None):

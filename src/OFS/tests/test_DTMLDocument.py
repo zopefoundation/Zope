@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import io
 import unittest
 
 
@@ -14,6 +16,39 @@ class DTMLDocumentTests(unittest.TestCase):
         from zope.interface.verify import verifyClass
         from OFS.interfaces import IWriteLock
         verifyClass(IWriteLock, self._getTargetClass())
+
+    def test_manage_upload__bytes(self):
+        """It stores uploaded bytes as a native str."""
+        doc = self._makeOne()
+        data = u'bÿtës'.encode('utf-8')
+        self.assertIsInstance(data, bytes)
+        doc.manage_upload(data)
+        self.assertEqual(doc.read(), 'bÿtës')
+        self.assertIsInstance(doc.read(), str)
+
+    def test_manage_upload__str(self):
+        """It stores an uploaded str as a native str."""
+        doc = self._makeOne()
+        data = 'bÿtës'
+        doc.manage_upload(data)
+        self.assertEqual(doc.read(), 'bÿtës')
+        self.assertIsInstance(doc.read(), str)
+
+    def test_manage_upload__StringIO(self):
+        """It stores StringIO contents as a native str."""
+        doc = self._makeOne()
+        data = io.StringIO(u'bÿtës')
+        doc.manage_upload(data)
+        self.assertIsInstance(doc.read(), str)
+        self.assertEqual(doc.read(), 'bÿtës')
+
+    def test_manage_upload__BytesIO(self):
+        """It stores BytesIO contents as a native str."""
+        doc = self._makeOne()
+        data = io.BytesIO(u'bÿtës'.encode('utf-8'))
+        doc.manage_upload(data)
+        self.assertEqual(doc.read(), 'bÿtës')
+        self.assertIsInstance(doc.read(), str)
 
 
 class FactoryTests(unittest.TestCase):

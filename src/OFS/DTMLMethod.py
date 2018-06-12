@@ -13,7 +13,6 @@
 """DTML Method objects.
 """
 import re
-import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -27,7 +26,10 @@ from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from six import PY2
+from six import PY3
 from six import binary_type
+from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
@@ -42,8 +44,6 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher.Iterators import IStreamIterator
 
-if sys.version_info >= (3, ):
-    basestring = str
 
 _marker = []  # Create a new marker object.
 
@@ -262,15 +262,22 @@ class DTMLMethod(RestrictedDTML,
     security.declareProtected(change_dtml_methods, 'manage_upload')
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
+
+        Store `file` as a native `str`.
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
             raise ResourceLockedError('This DTML Method is locked.')
 
-        if not isinstance(file, binary_type):
-            if REQUEST and not file:
-                raise ValueError('No file specified')
+        if REQUEST and not file:
+            raise ValueError('No file specified')
+
+        if hasattr(file, 'read'):
             file = file.read()
+        if PY3 and isinstance(file, binary_type):
+            file = file.decode('utf-8')
+        if PY2 and isinstance(file, text_type):
+            file = file.encode('utf-8')
 
         self.munge(file)
         self.ZCacheable_invalidate()
