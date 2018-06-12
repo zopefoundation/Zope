@@ -17,7 +17,10 @@ from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.permissions import change_dtml_documents
+from six import PY2
+from six import PY3
 from six import binary_type
+from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
@@ -55,10 +58,15 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         if self.wl_isLocked():
             raise ResourceLockedError('This document has been locked.')
 
-        if not isinstance(file, binary_type):
-            if REQUEST and not file:
-                raise ValueError('No file specified')
+        if REQUEST and not file:
+            raise ValueError('No file specified')
+
+        if hasattr(file, 'read'):
             file = file.read()
+        if PY3 and isinstance(file, binary_type):
+            file = file.decode('utf-8')
+        if PY2 and isinstance(file, text_type):
+            file = file.encode('utf-8')
 
         self.munge(file)
         self.ZCacheable_invalidate()
