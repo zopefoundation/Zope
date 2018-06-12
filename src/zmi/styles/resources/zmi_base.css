@@ -62,12 +62,16 @@ input.btn.btn-primary:hover {
 	background-color:#fff;
 	padding-top:.4rem;
 }
-.zmi .nav-link.active {
+.zmi nav .nav-tabs .nav-item .nav-link {
+	padding: .33rem 1em .33rem 1rem;
+	min-width: 5em;
+	text-align: center;
+}
+.zmi nav .nav-tabs .nav-link.active {
 	background-color:#fcfcfc;
 	border-color: #dee2e6 #dee2e6 #fcfcfc;
-}
-.zmi .nav-link.active a {
 	font-weight:bold;
+	color: #6c757d !important;
 }
 
 @media (min-width: 578px) {
@@ -114,6 +118,19 @@ form.zmi-upload {
 	padding-top:.45rem
 }
 
+
+.breadcrumb .breadcrumb-item.meta_type {
+	padding-right: .25rem;
+}
+.breadcrumb .breadcrumb-item a:hover {
+	color: #007bff !important;
+}
+.breadcrumb .breadcrumb-item+.breadcrumb-item {
+	padding-left: .25rem;
+}
+.breadcrumb .breadcrumb-item+.breadcrumb-item::before {
+	content: none;
+}
 /* MAIN / OBJECTLIST */
 
 
