@@ -87,7 +87,8 @@
 						<td class="zmi-object-id">
 							<a tal:attributes="href string:${id}/manage_workspace">
 							<span tal:replace="id">Id</span>
-							<span class="badge badge-warning" title="Locked"
+							<span class="badge badge-warning" 
+								title="This item has been locked by WebDAV"
 								tal:condition="ob/wl_isLocked | nothing">
 								<i class="fa fa-lock"></i>
 							</span>

@@ -60,7 +60,7 @@ text type and small enough to be edited in a text area.
 <div class="zmi-controls">
   <dtml-if wl_isLocked>
    <input class="btn btn-primary disabled" type="submit" name="manage_edit:method" value="Save Changes" disabled="disabled" />
-   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
+   <span class="badge badge-warning" title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
   <dtml-else>
    <input class="btn btn-primary" type="submit" name="manage_edit:method" value="Save Changes" />
   </dtml-if>
