@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 - Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
   instances.
 
+- Fix ZMI upload of `DTMLMethod` and `DTMLDocument` to store the DTML as a
+  native ``str`` on both Python versions.
+  (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)
 
 4.0b5 (2018-05-18)
 ------------------
