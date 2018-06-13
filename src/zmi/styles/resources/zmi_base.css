@@ -13,7 +13,7 @@ main,
 main.container-fluid {
 	width: 100%;
 	padding-right: 1rem;
-	padding-left: 1rem
+	padding-left: 1rem;
 	margin-right: auto;
 	margin-left: auto;
 }
@@ -164,6 +164,7 @@ form.zmi-upload {
 	margin:0 -1.5rem 0 0.5rem;
 	opacity:.3;
 	font-size:90%;
+	cursor:pointer;
 }
 .zmi table.objectItems .zmi-object-title {
 	font-weight: 400;
@@ -176,6 +177,9 @@ form.zmi-upload {
 }
 .zmi table.objectItems td.zmi-object-type {
 	font-size:1.1rem;
+}
+.zmi table.objectItems td.zmi-object-type .fa.fa-terminal {
+	font-size:smaller;
 }
 .zmi table.objectItems .zmi-object-check,
 .zmi table.objectItems .zmi-object-check input,
@@ -195,7 +199,6 @@ form.zmi-upload {
 	margin: 0 -1rem;
 	max-width: calc(100% + 1.9rem);
 	width: calc(100% + 1.9rem);
-	border-bottom: 1px solid #e9ecef;
 }
 .zmi main > form > table.table tr th:last-child,
 .zmi main > form > table.table tr td:last-child {
@@ -236,25 +239,29 @@ form.zmi-upload {
 }
 .zmi th.zmi-rolename > div > span {
 	text-overflow: ellipsis;
-	max-width: 110px;
+	width: 110px;
 	overflow: hidden;
-	display: inline-block;;
+	display: inline-block;
 }
 
-@media (min-width: 769px) {
-	.zmi th.zmi-rolename {
-		border:1px solid #dee2e6;
-	}
-}
 @media (max-width: 768px) {
-	.zmi td.zmi-akcquire-title {
-		border:1px solid #dee2e6;
+	.zmi th.blank > div > span {
+		width: 110px;
+		overflow: hidden;
+		display: inline-block;
 	}
-	.zmi th.zmi-rolename {
+	.zmi .zmi-table-head th {
+		border:none;
+	}
+	.zmi th.zmi-table-head-roles {
+		border-right-color:white !important;
+	}
+	.zmi .zmi-table-head th.zmi-rolename {
 		height:95px;
 		white-space: nowrap;
 	}
-	.zmi th.zmi-rolename > div {
+	.zmi .zmi-table-head th.zmi-rolename > div,
+	.zmi .zmi-table-head th.blank > div {
 		transform: translate(0px,63px) rotate(-60deg);
 		padding: 0;
 		max-width: 20px;
@@ -263,8 +270,8 @@ form.zmi-upload {
 		font-weight: normal;
 		cursor: default;
 	}
-
-	.zmi th.zmi-rolename > div > span {
+	.zmi .zmi-table-head  th.zmi-rolename > div > span,
+	.zmi .zmi-table-head th.blank > div > span {
 		border-top: 1px solid #ccc;
 		padding: 5px 0px 5px 20px;
 	}
@@ -343,6 +350,13 @@ textarea.zmi-code {
 #toggle_menu a:hover i {
 	color:black;
 }
+@media (max-width: 576px) {
+	#toggle_menu {
+		display:none !important;
+	}
+}
+
+
 table#menu_title,
 #menu_tree table,
 table#menu_buttons {
@@ -358,7 +372,7 @@ table.main-table td img {
 }
 
 #menu_buttons {
-	padding: 1.3rem 0 .65rem 3px;
+	padding: 1rem 0 .65rem 3px;
 	border-bottom: 1px solid #eaecef;
 	margin: 0;
 	background-color:white;
@@ -392,11 +406,13 @@ table#menu_title,
 div#menu_tree {
 	width:auto;
 	background-color:transparent;
-	margin-left:0.5em;
+	margin-left:1rem;
 }
 table#menu_title td {
-	padding: .5em 0 0 .4em !important;
+	padding: .5rem 0 0 0 !important;
+	font-weight:bold;
 }
+menu_workspace
 div#menu_title a {
 	color:inherit;
 }
@@ -425,4 +441,25 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 
 .zmi .btn.btn-primary.form-control-file {
 	border-color:#ced4da;
+}
+
+/* CUSTOM ICON: Folder (Ordered) */
+i.fa-folder.zmi-icon-folder-ordered:after {
+	content: "\f309";
+	font-family: "Font Awesome\ 5 Free",Fontawesome;
+	font-weight:900;
+	margin: 0 0 0 -.76rem !important;
+	padding-top:.45rem;
+	position:absolute;
+	font-size:15px
+}
+
+i.zmi-icon-broken:after {
+	content: "\f12a";
+	font-family: "Font Awesome\ 5 Free",Fontawesome;
+	position: absolute;
+	display: inline-block;
+	margin: 0 0 0 0.25rem;
+	font-size: smaller;
+	color: red;
 }
