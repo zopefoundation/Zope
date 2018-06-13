@@ -97,7 +97,7 @@ class File(Persistent, Implicit, PropertyManager,
     """A File object is a content object for arbitrary files."""
 
     meta_type = 'File'
-    zmi_icon = 'far fa-file'
+    zmi_icon = 'far fa-file-archive'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)

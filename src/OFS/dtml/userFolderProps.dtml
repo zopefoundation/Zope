@@ -3,26 +3,26 @@
 
 <main class="container-fluid">
 
-    <form action="manage_setUserFolderProperties" method="post" class="zmi-folder zmi-properties">
-        <div class="form-check">
-            <dtml-let checked="encrypt_passwords and 'checked' or ' '">
-                <input type="checkbox" class="form-check-input" name="encrypt_passwords" id="encrypt_passwords" &dtml-checked; />
-                <label for="encrypt_passwords" class="form-check-label">Encrypt user passwords</label>
-            </dtml-let>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="update_passwords" id="update_passwords"/>
-            <label for="update_passwords" class="form-check-label">Update existing passwords</label>
-        </div>
-        <div class="form-group mt-3">
-            <label for="maxlistusers">Role assignment presents search dialog when more users than</label>
-            <input type=text class="form-control col-sm-2" name="maxlistusers" id="maxlistusers" value="&dtml.missing-maxlistusers;" size=3 />
-            <small id="maxlistusersHelpInline" class="text-muted">-1 is always, 0 is never</small>
-        </div>
-        <div class="zmi-controls">
-            <input class="btn btn-primary" type="submit" name="submit" value="Save changes" />
-        </div>
-    </form>
+	<form action="manage_setUserFolderProperties" method="post" class="zmi-folder zmi-properties">
+		<div class="form-check">
+			<dtml-let checked="encrypt_passwords and 'checked' or ' '">
+				<input type="checkbox" class="form-check-input" name="encrypt_passwords" id="encrypt_passwords" &dtml-checked; />
+				<label for="encrypt_passwords" class="form-check-label">Encrypt user passwords</label>
+			</dtml-let>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" name="update_passwords" id="update_passwords"/>
+			<label for="update_passwords" class="form-check-label">Update existing passwords</label>
+		</div>
+		<div class="form-group mt-3">
+			<label for="maxlistusers">Role assignment presents search dialog when more users than</label>
+			<input type=text class="form-control col-sm-2" name="maxlistusers" id="maxlistusers" value="&dtml.missing-maxlistusers;" size=3 />
+			<small id="maxlistusersHelpInline" class="text-muted">-1 is always, 0 is never</small>
+		</div>
+		<div class="zmi-controls">
+			<input class="btn btn-primary" type="submit" name="submit" value="Save changes" />
+		</div>
+	</form>
 
 </main>
 

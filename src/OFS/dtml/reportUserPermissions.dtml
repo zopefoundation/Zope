@@ -3,76 +3,73 @@
 <dtml-if  manage_tabs><dtml-var manage_tabs></dtml-if>
 </dtml-with>
 
-<p class="form-help">
-This listing shows the permissions and roles for particular user
-in the context of the current object.
-</p>
+<main class="container-fluid">
+	<p class="form-help">
+		This listing shows the permissions and roles for particular user
+		in the context of the current object.
+	</p>
 
-<dtml-let result="manage_getUserRolesAndPermissions(user)">
+	<dtml-let result="manage_getUserRolesAndPermissions(user)">
+	<p>
+		<strong>User account </strong>: &dtml-user;<br/>
+		<strong>User account defined in</strong>: <dtml-var "result['user_defined_in']">
+	</p>
 
-<b>User account </b>: &dtml-user;
-<br/>
-<b>User account defined in</b>: <dtml-var "result['user_defined_in']">
-<br/>
-<br/>
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col" class="w-50">Roles</th>
+				<th scope="col" class="w-50">Roles in context</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td valign="top">
+					<ul class="list-group zmi-roles">
+						<dtml-in "result['roles']">
+							<li class="list-group-item">&dtml-sequence-item;
+						</dtml-in>
+					</ul>
+				</td>
+				<td valign="top">
+					<ul class="list-group zmi-rolesincontext">
+						<dtml-in "result['roles_in_context']">
+							<li class="list-group-item">&dtml-sequence-item;
+						</dtml-in>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col" class="w-50">Allowed permissions</th>
+				<th scope="col" class="w-50">Disallowed permissions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td valign="top">
+					<ul class="list-group zmi-allowed">
+						<dtml-in "result['allowed_permissions']">
+							<li class="list-group-item">&dtml-sequence-item;
+						</dtml-in>
+					</ul>
+				</td>
+				<td valign="top">
+					<ul class="list-group zmi-disallowed">
+						<dtml-in "result['disallowed_permissions']">
+							<li class="list-group-item">&dtml-sequence-item;
+						</dtml-in>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col" class="w-50">Roles</th>
-            <th scope="col" class="w-50">Roles in context</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td valign="top">
-                <ul class="list-group zmi-roles">
-                    <dtml-in "result['roles']">
-                        <li class="list-group-item">&dtml-sequence-item;
-                    </dtml-in>
-                </ul>
-            </td>
-            <td valign="top">
-                <ul class="list-group zmi-rolesincontext">
-                    <dtml-in "result['roles_in_context']">
-                        <li class="list-group-item">&dtml-sequence-item;
-                    </dtml-in>
-                </ul>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-<br/>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col" class="w-50">Allowed permissions</th>
-            <th scope="col" class="w-50">Disallowed permissions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td valign="top">
-                <ul class="list-group zmi-allowed">
-                    <dtml-in "result['allowed_permissions']">
-                        <li class="list-group-item">&dtml-sequence-item;
-                    </dtml-in>
-                </ul>
-            </td>
-            <td valign="top">
-                <ul class="list-group zmi-disallowed">
-                    <dtml-in "result['disallowed_permissions']">
-                        <li class="list-group-item">&dtml-sequence-item;
-                    </dtml-in>
-                </ul>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-
-</dtml-let>
+	</dtml-let>
+</main>
 
 <dtml-var manage_page_footer>

@@ -54,7 +54,7 @@
 					<th scope="col" class="zmi-object-type">Type</th>
 					<th scope="col" class="zmi-object-id">
 						<span title="Name and (Title)">Name</span>
-							<i class="fa fa-search tablefilter"></i>
+							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
 								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
 							></input>
@@ -115,34 +115,34 @@
 			tal:condition="ids">
 			<tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
 				<input class="btn btn-primary"
-					type="submit"
-					name="manage_renameForm:method"
-					value="Rename" />
+						type="submit"
+						name="manage_renameForm:method"
+						value="Rename" />
 				<input class="btn btn-primary"
-					type="submit"
-					name="manage_cutObjects:method"
-					value="Cut"
-					tal:condition="delete_allowed" />
+						type="submit"
+						name="manage_cutObjects:method"
+						value="Cut"
+						tal:condition="delete_allowed" />
 				<input class="btn btn-primary"
-					type="submit"
-					name="manage_copyObjects:method"
-					value="Copy" />
+						type="submit"
+						name="manage_copyObjects:method"
+						value="Copy" />
 				<input class="btn btn-primary"
-					type="submit"
-					name="manage_pasteObjects:method"
-					value="Paste"
-					tal:condition="here/cb_dataValid" />
+						type="submit"
+						name="manage_pasteObjects:method"
+						value="Paste"
+						tal:condition="here/cb_dataValid" />
 			</tal:copy-paste>
 			<input class="btn btn-primary"
-				type="submit"
-				name="manage_delObjects:method"
-				value="Delete"
-				tal:condition="delete_allowed" />
+					type="submit"
+					name="manage_delObjects:method"
+					value="Delete"
+					tal:condition="delete_allowed" />
 			<input class="btn btn-primary"
-				type="submit"
-				name="manage_importExportForm:method"
-				value="Import/Export"
-				tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+					type="submit"
+					name="manage_importExportForm:method"
+					value="Import/Export"
+					tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
 		</div>
 	</tal:not-empty>
 
@@ -154,16 +154,16 @@
 			<div class="form-group">
 				<tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
 					<input class="btn btn-primary"
-						type="submit"
-						name="manage_pasteObjects:method"
-						value="Paste"
-						tal:condition="here/cb_dataValid" />
+							type="submit"
+							name="manage_pasteObjects:method"
+							value="Paste"
+							tal:condition="here/cb_dataValid" />
 				</tal:copy-paste>
 				<input class="btn btn-primary"
-					type="submit"
-					name="manage_importExportForm:method"
-					value="Import/Export"
-					tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+						type="submit"
+						name="manage_importExportForm:method"
+						value="Import/Export"
+						tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
 			</div>
 		</tal:empty>
 	</form>

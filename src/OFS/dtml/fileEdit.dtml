@@ -3,91 +3,82 @@
 
 <main class="container-fluid">
 
-<p class="form-help">
-You can update the data for this file object using the form below.
-Select a data file from your local computer by clicking the <em>browse</em>
-button and click <em>upload</em> to update the contents of the
-file. You may also edit the file content directly if the content is a
-text type and small enough to be edited in a text area.
-</p>
+	<p class="form-help">
+		You can update the data for this file object using the form below.
+		Select a data file from your local computer by clicking the <em>browse</em>
+		button and click <em>upload</em> to update the contents of the
+		file. You may also edit the file content directly if the content is a
+		text type and small enough to be edited in a text area.
+	</p>
 
-<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data" class="zmi-file zmi-edit">
+	<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" 
+		enctype="multipart/form-data" class="zmi-file zmi-edit">
 
-<div class="form-group row">
-  <label for="title" class="form-label  col-sm-3 col-md-2">
-  Title
-  </label>
-  <input id="title" class="form-control col-sm-9 col-md-6" type="text" name="title" value="<dtml-if
-   title>&dtml-title;</dtml-if>">
-</div>
+		<div class="form-group row">
+			<label for="title" class="form-label	col-sm-3 col-md-2">Title</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="title" class="form-control" type="text" name="title" 
+					value="<dtml-if title>&dtml-title;</dtml-if>">
+			</div>
+		</div>
 
-<div class="form-group row">
-  <label for="contenttype" class="form-label  col-sm-3 col-md-2">
-  Content Type
-  </label>
-  <input id="contenttype" class="form-control col-sm-9 col-md-6" type="text" name="content_type:required" value="<dtml-if
-   content_type>&dtml-content_type;</dtml-if>">
-</div>
+		<div class="form-group row">
+			<label for="contenttype" class="form-label	col-sm-3 col-md-2">Content Type</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="contenttype" class="form-control" type="text" name="content_type:required" 
+					value="<dtml-if content_type>&dtml-content_type;</dtml-if>">
+				</div>
+		</div>
 
-<div class="form-group row">
-  <label for="precondition" class="form-label  col-sm-3 col-md-2">
-  Precondition
-  </label>
-  <input id="precondition" class="form-control col-sm-9 col-md-6" type="text" name="precondition" value="<dtml-if
-   precondition>&dtml-precondition;</dtml-if>">
-</div>
+		<div class="form-group row">
+			<label for="precondition" class="form-label	col-sm-3 col-md-2">Precondition</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="precondition" class="form-control" type="text" name="precondition" 
+				value="<dtml-if precondition>&dtml-precondition;</dtml-if>">
+			</div>
+		</div>
 
-<dtml-let ct=getContentType>
-  <dtml-if "(ct.startswith('text') or ct.endswith('javascript'))
-            and this().get_size() < 65536">
-  <div class="form-group">
-    <textarea id="content" class="form-control zmi-file zmi-code col-sm-12" name="filedata:text" wrap="off" style="width: 100%;"
-              rows="20"><dtml-var __str__ html_quote></textarea>
-  </div>
+		<dtml-let ct=getContentType>
+			<dtml-if "(ct.startswith('text') or ct.endswith('javascript')) and this().get_size() < 65536">
+				<div class="form-group">
+					<textarea id="content" class="form-control zmi-file zmi-code col-sm-12" name="filedata:text" 
+						wrap="off" style="width: 100%;" rows="20"><dtml-var __str__ html_quote></textarea>
+				</div>
+		
+			<dtml-else>
+				<div class="form-group row">
+					<label for="size" class="form-label	col-sm-3 col-md-2">File Size</label>
+					<div class="form-text col-sm-9 col-md-10">
+						<dtml-var size thousands_commas> bytes
+					</div>
+				</div>
+			</dtml-if>
+		</dtml-let>
 
-  <dtml-else>
-  <div class="form-group row">
-    <label for="size" class="form-label  col-sm-3 col-md-2">
-    File Size
-    </label>
-    <div class="form-text col-sm-9 col-md-6">
-    <dtml-var size thousands_commas> bytes
-    </div>
-</div>
-  </dtml-if>
-</dtml-let>
-
-<div class="zmi-controls">
-  <dtml-if wl_isLocked>
-   <input class="btn btn-primary disabled" type="submit" name="manage_edit:method" value="Save Changes" disabled="disabled" />
-   <span class="badge badge-warning" title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
-  <dtml-else>
-   <input class="btn btn-primary" type="submit" name="manage_edit:method" value="Save Changes" />
-  </dtml-if>
-</div>
+		<div class="zmi-controls">
+			<dtml-if wl_isLocked>
+				<input class="btn btn-primary disabled" type="submit" name="manage_edit:method" value="Save Changes" disabled="disabled" />
+				<span class="badge badge-warning" title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
+			<dtml-else>
+				<input class="btn btn-primary" type="submit" name="manage_edit:method" value="Save Changes" />
+			</dtml-if>
+		</div>
 
 </form>
 
-<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data" class="zmi-file zmi-upload mt-5">
-<div class="form-group row">
-    <label for="file-data" class="form-label  col-sm-3 col-md-2">
-    File Data
-    </label>
-    <div class="col-sm-9 col-md-6">
-        <input id="file-data" class="form-control-file" type="file" name="file" />
-    </div>
-</div>
-
-<div class="zmi-controls">
-  <dtml-if wl_isLocked>
-   <input class="btn btn-primary disabled" type="submit" name="manage_upload:method" value="Upload" disabled="disabled" />
-   <span class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
-  <dtml-else>
-   <input class="btn btn-primary" type="submit" name="manage_upload:method" value="Upload" />
-  </dtml-if>
-</div>
-
-</form>
+	<dtml-unless wl_isLocked>
+		<form X-action="<dtml-var "REQUEST.URL1" html_quote>" action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
+			<div class="input-group" title="Select Local File for Uploading">
+				<div class="custom-file">
+					<input type="file" name="file" class="custom-file-input" id="file-data" value="">
+					<label class="custom-file-label" for="file-data">Choose file</label>
+				</div>
+				<div class="input-group-append">
+					<input class="btn btn-outline-secondary"" type="submit" value="Upload File" />
+				</div>
+			</div>
+		</form>
+	</dtml-unless>
 
 </main>
 

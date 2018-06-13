@@ -62,7 +62,7 @@ class DTMLMethod(RestrictedDTML,
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
-    zmi_icon = 'far fa-file-code'
+    zmi_icon = 'far fa-file-alt'
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()

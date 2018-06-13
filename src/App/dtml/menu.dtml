@@ -16,13 +16,12 @@
 <table id="menu_title">
 	<tr>
 		<td id="menu_workspace">
-			<dtml-if icon>
-				<a href="manage_workspace" target="manage_main"><img
-				src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
-				title="Click to open this item" alt="&dtml-meta_type;" /></a>
-			</dtml-if>
 			<a href="manage_workspace" target="manage_main">
-				<dtml-if expr="URLPATH1==BASEPATH1">Root Folder<dtml-else>&dtml-id;</dtml-if>
+				<dtml-if expr="URLPATH1==BASEPATH1">
+					Root Folder
+				<dtml-else>
+					<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i> &dtml-id;
+				</dtml-if>
 			</a>
 		</td>
 	</tr>

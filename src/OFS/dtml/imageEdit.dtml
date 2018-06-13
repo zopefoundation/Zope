@@ -60,7 +60,7 @@
 
 
 	<dtml-unless wl_isLocked>
-		<form action="&dtml-URL1;/manage_upload" method="post" enctype="multipart/form-data" class="zmi-image zmi-upload mt-4">
+		<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-image zmi-upload mt-4">
 			<div class="input-group" title="Select Local File for Uploading">
 				<div class="custom-file">
 					<input type="file" name="file" class="custom-file-input" id="file-data" value="">

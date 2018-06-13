@@ -1,125 +1,125 @@
 <dtml-var manage_page_header>
 <dtml-with "_(management_view='Security')">
-  <dtml-if  manage_tabs>
-    <dtml-var manage_tabs>
-  </dtml-if>
+	<dtml-if	manage_tabs>
+	<dtml-var manage_tabs>
+	</dtml-if>
 </dtml-with>
 
 <main class="container-fluid">
-    <p class="form-help">
-        The listing below shows the current security settings for this item.
-        Permissions are rows and roles are columns. Checkboxes are used to
-        indicate where roles are assigned permissions. You can also assign
-        <strong><a href="manage_listLocalRoles">local roles</a></strong> to
-        users, which give users extra roles in the context of this object and
-        its subobjects.<br />
-        When a role is assigned to a permission, users with the given role
-        will be able to perform tasks associated with the permission on this
-        item. When the <em>Acquire permission settings</em> checkbox is selected
-        then the containing objects's permission settings are used. Note: the
-        acquired permission settings may be augmented by selecting Roles for
-        a permission in addition to selecting to acquire permissions.
-    </p>
+	<p class="form-help">
+		The listing below shows the current security settings for this item.
+		Permissions are rows and roles are columns. Checkboxes are used to
+		indicate where roles are assigned permissions. You can also assign
+		<strong><a href="manage_listLocalRoles">local roles</a></strong> to
+		users, which give users extra roles in the context of this object and
+		its subobjects.<br />
+		When a role is assigned to a permission, users with the given role
+		will be able to perform tasks associated with the permission on this
+		item. When the <em>Acquire permission settings</em> checkbox is selected
+		then the containing objects's permission settings are used. Note: the
+		acquired permission settings may be augmented by selecting Roles for
+		a permission in addition to selecting to acquire permissions.
+	</p>
 
-    <form action="manage_reportUserPermissions" method="get" class="form-inline mb-4">
-        <div class="form-group">
-            <label for="username" class="col-sm-2">Username:</label>
-            <div class="col-sm-10">
-                <input class="form-control" type="text" id="username" name="user" placeholder="Enter name of user ..." />
-                <input type="submit" class="btn btn-primary mr-sm-2"
-                title="Show me the user permissions and roles in the context of the current object"
-                value="Show permissions" />
-            </div>
-        </div>
-    </form>
+	<form action="manage_reportUserPermissions" method="get" class="form-inline mb-4">
+		<div class="form-group">
+			<label for="username" class="col-sm-2">Username:</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" id="username" name="user" placeholder="Enter name of user ..." />
+				<input type="submit" class="btn btn-primary mr-sm-2"
+				title="Show me the user permissions and roles in the context of the current object"
+				value="Show permissions" />
+			</div>
+		</div>
+	</form>
 
-    <dtml-with expr="_.namespace(valid_roles=valid_roles())">
-        <form action="manage_changePermissions" method="post">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col" colspan="2">Permissions</th>
-                        <th scope="col" colspan="<dtml-var expr="_.len(valid_roles)">">Roles</th>
-                        <th class="blank">&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <dtml-in permission_settings mapping
-                        ><dtml-let permmission_title="name"
-                        ><dtml-if "not (_['sequence-index']%10)">
-                            <tr class="zmi-table-head">
-                                <th colspan="2" class="zmi-akcquire-title" title="Acquire permission settings">
-                                    <dtml-unless isTopLevelPrincipiaApplicationObject>
-                                         <a href="manage_acquiredForm">Acquire
-                                            <dtml-unless sequence-index> <span class="d-none d-sm-block">permission settings</span></dtml-unless>
-                                         </a>
-                                    </dtml-unless>
-                                </th>
-                                <dtml-in valid_roles>
-                                    <th class="zmi-rolename" title="&dtml-sequence-item;"><div><span>&dtml-sequence-item;</span></div></th>
-                                </dtml-in valid_roles>
-                                <th class="blank">&nbsp;</th>
-                            </tr>
-                        </dtml-if>
-                        <tr>
-                            <td class="zmi-akcquire-check"">
-                                <dtml-if isTopLevelPrincipiaApplicationObject>&nbsp;<dtml-else
-                                    ><input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
-                                </dtml-if>
-                            </td>
-                            <td class="zmi-akcquire-title nowrap">
-                                <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
-                            </td>
-                            <dtml-in roles mapping
-                                ><td class="zmi-rolename-check" title="Role: <dtml-var "valid_roles[_['sequence-index']]">" 
-                                    onclick="$(this).children('input').trigger('click')">
-                                    <label class="sr-only sr-only-focusable" 
-                                        for="&dtml-name;">Role: <dtml-var "valid_roles[_['sequence-index']]">, Permission: <dtml-var "_['permmission_title']"></label>
-                                    <input type="checkbox" &dtml-checked; name="&dtml-name;" onclick="event.stopPropagation()"/>
-                                </td>
-                            </dtml-in>
-                            <td  class="blank">&nbsp;</td>
-                        </tr>
-                    </dtml-let
-                    ></dtml-in permission_settings>
-                </tbody>
-            </table>
-            <div class="zmi-controls">
-                <input type="submit" class="btn btn-primary" name="submit"  value="Save Changes" />
-            </div>
-        </form>
-    </dtml-with>
+	<dtml-with expr="_.namespace(valid_roles=valid_roles())">
+		<form action="manage_changePermissions" method="post">
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th scope="col" colspan="2" class="zmi-table-head-permisions">Permissions</th>
+						<th scope="col" colspan="<dtml-var expr="_.len(valid_roles)">" class="zmi-table-head-roles">Roles</th>
+						<th class="blank">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<dtml-in permission_settings mapping
+						><dtml-let permmission_title="name"
+						><dtml-if "not (_['sequence-index']%10)">
+							<tr class="zmi-table-head">
+								<th colspan="2" class="zmi-akcquire-title" title="Acquire permission settings">
+									<dtml-unless isTopLevelPrincipiaApplicationObject>
+										 <a href="manage_acquiredForm">Acquire
+											<dtml-unless sequence-index> <span class="d-none d-sm-block">permission settings</span></dtml-unless>
+										 </a>
+									</dtml-unless>
+								</th>
+								<dtml-in valid_roles>
+									<th class="zmi-rolename" title="&dtml-sequence-item;"><div><span>&dtml-sequence-item;</span></div></th>
+								</dtml-in valid_roles>
+								<th class="blank"><div><span>&nbsp;</span></div></th>
+							</tr>
+						</dtml-if>
+						<tr>
+							<td class="zmi-akcquire-check"">
+								<dtml-if isTopLevelPrincipiaApplicationObject>&nbsp;<dtml-else
+									><input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
+								</dtml-if>
+							</td>
+							<td class="zmi-akcquire-title nowrap">
+								<a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
+							</td>
+							<dtml-in roles mapping
+								><td class="zmi-rolename-check" title="Role: <dtml-var "valid_roles[_['sequence-index']]">" 
+									onclick="$(this).children('input').trigger('click')">
+									<label class="sr-only sr-only-focusable" 
+										for="&dtml-name;">Role: <dtml-var "valid_roles[_['sequence-index']]">, Permission: <dtml-var "_['permmission_title']"></label>
+									<input type="checkbox" &dtml-checked; name="&dtml-name;" onclick="event.stopPropagation()"/>
+								</td>
+							</dtml-in>
+							<td	class="blank">&nbsp;</td>
+						</tr>
+					</dtml-let
+					></dtml-in permission_settings>
+				</tbody>
+			</table>
+			<div class="zmi-controls">
+				<input type="submit" class="btn btn-primary" name="submit"	value="Save Changes" />
+			</div>
+		</form>
+	</dtml-with>
 
 
-    <dtml-if "_['id'] != 'acl_users'">
+	<dtml-if "_['id'] != 'acl_users'">
 
-        <p class="form-help mt-4">
-          You can define new roles by entering a role name and clicking the
-          &quot;Add Role&quot; button.
-        </p>
+		<p class="form-help mt-4">
+			You can define new roles by entering a role name and clicking the
+			&quot;Add Role&quot; button.
+		</p>
 
-        <form action="manage_defined_roles" method="post" class="form">
-            <div class="form-group">
-                <label for="username" class="nowrap">User defined roles</label>
-                <div class="form-inline">
-                    <input type="text" class="form-control col-sm-6 col-md-3 mr-2 mb-2" id="role" name="role" placeholder="Define a new user role ..." />
-                    <input type="submit" class="btn btn-primary mb-2" name="submit" value="Add Role" /> 
-                </div>
-            </div>
-            <dtml-if userdefined_roles>
-                <div class="form-group">
-                    <div class="form-inline">
-                        <select name="roles:list" class="form-control col-sm-6 col-md-3 mr-2  mb-2">
-                          <dtml-in userdefined_roles>
-                            <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-                          </dtml-in userdefined_roles>
-                        </select>
-                        <input type="submit" class="btn btn-primary  mb-2" name="submit" value="Delete Role" /> 
-                    </div>
-                </div>
-            </dtml-if>
-        </form>
-    </dtml-if >
+		<form action="manage_defined_roles" method="post" class="form">
+			<div class="form-group">
+				<label for="username" class="nowrap">User defined roles</label>
+				<div class="form-inline">
+					<input type="text" class="form-control col-sm-6 col-md-3 mr-2 mb-2" id="role" name="role" placeholder="Define a new user role ..." />
+					<input type="submit" class="btn btn-primary mb-2" name="submit" value="Add Role" /> 
+				</div>
+			</div>
+			<dtml-if userdefined_roles>
+				<div class="form-group">
+					<div class="form-inline">
+						<select name="roles:list" class="form-control col-sm-6 col-md-3 mr-2	mb-2">
+							<dtml-in userdefined_roles>
+							<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+							</dtml-in userdefined_roles>
+						</select>
+						<input type="submit" class="btn btn-primary	mb-2" name="submit" value="Delete Role" /> 
+					</div>
+				</div>
+			</dtml-if>
+		</form>
+	</dtml-if >
 </main>
 
 <dtml-var manage_page_footer>

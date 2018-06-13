@@ -2,41 +2,37 @@
 
 <main class="container-fluid">
 
-<h2>Rename Items</h2>
+	<h2>Rename Items</h2>
 
-<dtml-if expr="REQUEST.has_key('ids')">
+	<dtml-if expr="REQUEST.has_key('ids')">
 
-    <form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" class="zmi-rename">
-    <dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
-        <div class="form-group row">
-            <dtml-if cb_isMoveable>
-                <input type="hidden" name="ids:list" value="&dtml-getId;" />
-                <label for="&dtml-getId;" class="form-label col-sm-2">&dtml-getId; to:</label>
-                <input class="form-control col-sm-10" type="text" name="new_ids:list" value="&dtml-getId;" />
-            <dtml-else>
-                <label class="text-muted">&dtml-getId; may not be renamed.</label>
-            </dtml-if>
-
-        </div>
-    </dtml-in>
-
-    <div class="zmi-controls">
-      <input class="form-element" type="hidden" name=":default_method"
-       value="manage_renameObjects" />
-      <input  class="btn btn-primary" type="submit" name="manage_renameObjects:method"
-       value=" Ok " />
-      <input  class="btn btn-default" type="submit" name="manage_main:method"
-       value="Cancel" />
-   </div>
-    </table>
-    </form>
+	<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" class="zmi-rename">
+		<dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
+			<div class="form-group row">
+				<dtml-if cb_isMoveable>
+					<input type="hidden" name="ids:list" value="&dtml-getId;" />
+					<label for="&dtml-getId;" class="form-label col-sm-3 col-md-2">&dtml-getId; <em>to</em>:</label>
+					<div class="col-md-10 col-sm-9">
+						<input class="form-control" type="text" name="new_ids:list" value="&dtml-getId;" />
+					</div>
+				<dtml-else>
+					<label class="text-muted">&dtml-getId; may not be renamed.</label>
+				</dtml-if>
+			</div>
+		</dtml-in>
+		<div class="zmi-controls">
+			<input class="form-element" type="hidden" name=":default_method" value="manage_renameObjects" />
+			<input class="btn btn-primary" type="submit" name="manage_renameObjects:method" value=" Ok " />
+			<input class="btn btn-default" type="submit" name="manage_main:method" value="Cancel" />
+		</div>
+	</form>
 
 <dtml-else>
 
-<div class="alert alert-warning" role="alert">
-You must select an item to rename.
-</div>
-<a href="manage_main" class="btn btn-primary">Ok</a>
+	<div class="alert alert-warning" role="alert">You must select an item to rename.</div>
+	<div class="zmi-controls">
+		<a href="manage_main" class="btn btn-primary">Ok</a>
+	</div>
 
 </dtml-if>
 
