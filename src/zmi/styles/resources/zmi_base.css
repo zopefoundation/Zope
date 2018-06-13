@@ -125,6 +125,9 @@ form.zmi-upload {
 .breadcrumb .breadcrumb-item a:hover {
 	color: #007bff !important;
 }
+.breadcrumb .breadcrumb-item a:hover strong[title='Root Folder']{
+	text-shadow: 0 0 5px #007bff !important;
+}
 .breadcrumb .breadcrumb-item+.breadcrumb-item {
 	padding-left: .25rem;
 }
@@ -446,12 +449,13 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 /* CUSTOM ICON: Folder (Ordered) */
 i.fa-folder.zmi-icon-folder-ordered:after {
 	content: "\f309";
+	content: "\f338";
 	font-family: "Font Awesome\ 5 Free",Fontawesome;
 	font-weight:900;
 	margin: 0 0 0 -.76rem !important;
 	padding-top:.45rem;
 	position:absolute;
-	font-size:15px
+	font-size:14px
 }
 
 i.zmi-icon-broken:after {
