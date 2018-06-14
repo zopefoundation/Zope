@@ -171,6 +171,9 @@ class Navigation(Base):
             self._get_zmi_additionals('zmi_additional_js_paths'))
         return self._manage_page_header(*args, **kw)
 
+    security.declareProtected(view_management_screens, 'manage_navbar')
+    manage_navbar = DTMLFile('dtml/manage_navbar', globals())
+
     security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""

@@ -6,47 +6,47 @@
            form_title='Add DTML Document'
            )">
 
-<p class="form-help">
-A DTML Document is used to hold text content. It can contain
-HTML, XML, plain text, structured-text, etcetera.
-A DTML document can contain DTML scripting tags.
-A DTML Document differs from a DTML Method in that it has properties
-and does not call methods on its container object.
-</p>
+	<p class="form-help mb-4">
+		A DTML Document is used to hold text content. It can contain
+		HTML, XML, plain text, structured-text, etcetera.
+		A DTML document can contain DTML scripting tags.
+		A DTML Document differs from a DTML Method in that it has properties
+		and does not call methods on its container object.
+		<br />
+		You may create a new DTML Document using the form below.
+		You may also choose to upload an existing html file from your
+		local computer by clicking the <I>Browse</I> button.
+	</p>
 
-<p class="form-help">
-You may create a new DTML Document using the form below.
-You may also choose to upload an existing html file from your
-local computer by clicking the <I>Browse</I> button.
-</p>
+	<form action="addDTMLDocument" method="post" enctype="multipart/form-data" class="zmi-dtml">
+	
+		<div class="form-group row">
+			<label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+			<div class=" col-sm-9 col-md-10">
+				<input id="id" class="form-control" type="text" name="id" />
+			</div>
+		</div>
 
-<form action="addDTMLDocument" method="post" enctype="multipart/form-data" class="zmi-dtml">
-<div class="form-group row">
-    <label for="id" class="form-label col-sm-3 col-md-2">
-    Id
-    </label>
-    <input id="id" class="form-control col-sm-9 col-md-6" type="text" name="id" size="40" />
-</div>
-<div class="form-group row">
-    <label for="title" class="form-label col-sm-3 col-md-2">
-    Title
-    </label>
-    <input id="type" class="form-control col-sm-9 col-md-6" type="text" name="title" size="40" />
-</div>
-<div class="form-group row">
-    <label for="file-data" class="form-label col-sm-3 col-md-2">
-    File
-    </label>
-    <input id="file-data" class="form-control-file col-sm-9 col-md-6" type="file" name="file:string" size="25" value="" />
-</div>
-<div class="controls">
-    <input class="btn btn-primary" type="submit" name="submit"
-     value=" Add " />
-    <input class="btn btn-primary" type="submit" name="submit"
-     value=" Add and Edit " />
-</div>
+		<div class="form-group row">
+			<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+			<div class=" col-sm-9 col-md-10">
+				<input id="type" class="form-control" type="text" name="title" />
+			</div>
+		</div>
+	
+		<div class="form-group row">
+			<label for="file-data" class="form-label col-sm-3 col-md-2">File</label>
+			<div class=" col-sm-9 col-md-10">
+				<input id="file-data" class="form-control form-control-file" type="file" name="file:string" value="" />
+			</div>
+		</div>
+	
+		<div class="zmi-controls">
+			<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
+			<input class="btn btn-primary" type="submit" name="submit" value=" Add and Edit " />
+		</div>
 
-</form>
+	</form>
 
 </main>
 

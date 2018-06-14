@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <dtml-unless management_page_charset
-    ><dtml-call "REQUEST.set('management_page_charset','utf-8')"
+	><dtml-call "REQUEST.set('management_page_charset','utf-8')"
 ></dtml-unless>
 
 <meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
@@ -11,7 +11,7 @@
 
 <title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
 <dtml-in css_urls>
-  <link rel="stylesheet" type="text/css" href="&dtml-sequence-item;" />
+	<link rel="stylesheet" type="text/css" href="&dtml-sequence-item;" />
 </dtml-in>
 <dtml-in js_urls>
   <script type="text/javascript" src="&dtml-sequence-item;"></script>
@@ -20,20 +20,4 @@
 </head>
 <!-- REFACT what is a better way to get the last part of the current URL? -->
 <body id="nodeid-<dtml-var "getId()">" class="zmi zmi-<dtml-var "this().meta_type.replace(' ', '-')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
-<dtml-unless "'manage_menu' in REQUEST['URL']">
-<!--  EXPERIMENTAL: TOGGLE FRAMED TREE MENU -->
-	<div id="toggle_menu" class="desktop">
-		<a href="#" onclick="javascript:toggle_menu()" target="_parent"
-			><i class="fa fa-bars"
-				title="Show/Hide Tree Menu of the Navigation Context">&nbsp;</i></a>
-	</div>
-	<script>
-		function toggle_menu() {
-			if (document.referrer.endsWith('/manage')) {
-				window.parent.location.href="manage_main";
-			} else {
-				window.parent.location.href="manage";
-			};
-		}
-	</script>
-</dtml-unless>
+

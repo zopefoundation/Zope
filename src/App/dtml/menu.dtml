@@ -1,9 +1,14 @@
 <dtml-var manage_page_header>
 
 <div class="dropdown" id="menu_buttons">
-	<button title="Logged in as" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-		<span class="caret"></span>Login: &dtml-AUTHENTICATED_USER; 
-	</button>
+	<a href="#" class="dropdown-toggle" 
+		data-toggle="dropdown" 
+		id="dropdownMenu1" 
+		title="Menu-Options"
+		aria-haspopup="true" 
+		aria-expanded="true"
+		><i class="fa fa-cog"></i>
+	</a>
 	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 		<li><a id="menu_refresh" href="manage_menu">Refresh</a></li>
 		<li><a id="menu_save" href="manage_menu?save_layout=1">Save layout</a></li>

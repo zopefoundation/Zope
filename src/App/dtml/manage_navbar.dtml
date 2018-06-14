@@ -1,0 +1,58 @@
+<dtml-unless "'manage_menu' in REQUEST['URL']">
+
+<header class="navbar navbar-nav navbar-expand navbar-dark flex-column flex-sm-row bd-navbar">
+
+	<div id="toggle_menu" class="desktop"
+		data-title-active = "Show/Hide Tree Menu of the Navigation Context"
+		data-title-inactive = "STATUS INACTIVE: Tree Menu Button only be Active on List Views"
+		title="Show/Hide Tree Menu of the Navigation Context"
+	><a href="#" onclick="javascript:toggle_menu()" target="_parent"
+			><i class="fa fa-bars">&nbsp;</i></a>
+	</div>
+	<script>
+		function toggle_menu() {
+			if (document.referrer.endsWith('/manage')) {
+				window.parent.location.href="manage_main";
+			} else {
+				window.parent.location.href="manage";
+			};
+		}
+	</script>
+
+	<a class="navbar-brand" href="#" onclick="window.open('http://www.zope.org');">
+		<span class="product">ZOPE 4.0</span>
+	</a>
+
+	<ul class="navbar-nav flex-row ml-sm-auto d-none d-sm-flex">
+		<li class="form-inline zmi-authenticated_user">
+			<span>&dtml-AUTHENTICATED_USER;</span>
+		</li>
+		<dtml-if filtered_meta_types>
+			<li class="form-inline zmi-addItemSelect">
+				<form method="get" class="form-group">
+						<label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
+						<select id="addItemSelect" class="form-control-sm" name=":action" 
+							data-title-active="Select type to add"
+							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
+							title="Select type to add"
+							onchange="location.href='<dtml-var "REQUEST.get('URL1','')">/'+this.options[this.selectedIndex].value;this.selectedIndex = 0">
+							<option value="" selected="selected">Select type to add</option>
+							<dtml-if "_.len(filtered_meta_types) > 1"
+								><dtml-in filtered_meta_types mapping sort=name
+									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option></dtml-if
+								></dtml-in
+							></dtml-if>
+						</select>
+				</form>
+			</li>
+		</dtml-if>
+	</ul>
+
+		<a href="manage_zmi_logout" title="Logout"
+			class="ml-4 d-none d-sm-block">
+			<i class="fas fa-sign-out-alt"></i>
+		</a>
+
+</header>
+
+</dtml-unless>

@@ -3,7 +3,7 @@
 // Wrap form element with fluid-container if missing
 	$(function() {
 		if ( $('main.container-fluid').length==0 ) {
-			$('form,p').wrap('<main class="container-fluid"></main>');
+			$('body>form,body>p').wrap('<main class="container-fluid"></main>');
 		}
 	});
 
@@ -65,12 +65,19 @@
 	$('#menu_tree td[width="16"] a:contains("+")').html(('<i title="Expand..." class="fas fa-caret-right text-muted"></i>'));
 	$('#menu_tree td[width="16"] a:contains("-")').html(('<i title="Collapse..." class="fas fa-caret-down text-muted"></i>'));
 
-// SHOW MENU TOGGLE ONLY ON LIST PAGES
+// SHOW SOME MENUS ONLY ON LIST PAGES AS ACTIVE
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
-		$('#toggle_menu').show();
+		$('#addItemSelect, #toggle_menu').css('opacity',1);
+		$('#addItemSelect').removeAttr('disabled');
+		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
+		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-active') );
 	} else {
-		$('#toggle_menu').hide();
+		$('#addItemSelect, #toggle_menu').css('opacity',.5);
+		$('#addItemSelect').attr('disabled','disabled');
+		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
+		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-inactive') );
 	}
+
 // HELP ICON
 	$('a[href*="HelpSys"]').empty()
 		.append('<i class="fa fa-question-sign"></i>')

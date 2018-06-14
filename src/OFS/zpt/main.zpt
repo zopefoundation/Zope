@@ -1,8 +1,10 @@
 <tal:header replace="structure here/manage_page_header" />
+
 <tal:tabs replace="structure here/manage_tabs" />
 
-<!-- Add object widget -->
-<form class="form-inline float-right mb-2 addItemSelect"
+<!-- Add object widget // DEACTIVATED!! -->
+<form tal:replace="nothing"
+	class="form-inline float-right mb-2 addItemSelect"
 	method="get"
 	tal:condition="here/filtered_meta_types"
 	tal:attributes="action string:${request/URL1}/" >
