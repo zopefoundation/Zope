@@ -33,6 +33,7 @@ a:hover {
 	text-decoration: none;
 }
 
+.zmi a.btn.btn-primary, 
 .zmi input.btn.btn-primary {
 	background-color:white !important;
 	color:#6c757d;
@@ -334,7 +335,13 @@ td.zmi-rolename-check:hover {
 textarea.zmi-code {
 	font-family:monospace;
 }
-
+.code {
+	font-size: 87.5%;
+	color: #e83e8c;
+	word-break: break-word;
+	font-size: 1em;
+	font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
 
 /* MANAGE MENU */
 #toggle_menu {
@@ -375,6 +382,40 @@ table.main-table td img {
 }
 
 #menu_buttons {
+	padding: .65rem 1rem .4rem 1rem;
+	border-bottom: 0px solid #eaecef;
+	margin: 0;
+	background-color:black;
+	color:silver;
+	height:42px;
+}
+#menu_buttons a.dropdown-toggle:hover,
+#menu_buttons.show a.dropdown-toggle {
+	color:white;
+}
+#menu_buttons ul.dropdown-menu {
+	margin: 42px 0 0 0;
+	padding: 0.5em 1em;
+	font-size: 14px;
+	box-shadow: none;
+	transform: none !important;
+	line-height: 2.3;
+	left: 0 !important;
+	border: 0;
+	border-radius: 0;
+	background: #495057;
+	height: calc( 100vh - 42px );
+	width: 100%;
+}
+#menu_buttons ul.dropdown-menu li a {
+	color:silver;
+}
+#menu_buttons ul.dropdown-menu li a:hover {
+	color:white;
+}
+
+/*
+#menu_buttons {
 	padding: 1rem 0 .65rem 3px;
 	border-bottom: 1px solid #eaecef;
 	margin: 0;
@@ -400,10 +441,12 @@ table.main-table td img {
 	box-shadow: 0px 5px 10px #e4e4e4;
 	line-height:2;
 }
+*/
 
 #menu_buttons #dropdownMenu1 {
 	box-shadow: none !important;
 }
+
 
 table#menu_title,
 div#menu_tree {
@@ -466,4 +509,110 @@ i.zmi-icon-broken:after {
 	margin: 0 0 0 0.25rem;
 	font-size: smaller;
 	color: red;
+}
+
+
+
+/* HEADER BAR */
+header.navbar {
+	background: black;
+	padding: .25rem 1rem;
+	height:42px;
+}
+header .navbar-brand {
+	color:white;
+	font-size: 1rem;
+	margin-left: 3rem;
+}
+header.navbar-nav,
+header.navbar-nav a {
+	color: silver;
+}
+header.navbar-nav .product {
+	color:white;
+}
+header #toggle_menu {
+	display: block;
+	left: 0;
+	top: 0;
+	position: absolute;
+	width:3rem;
+}
+header #toggle_menu a {
+	color:silver;
+	position:static;
+	padding: .6rem .8em .6rem 1rem;
+	border-right: 1px solid #e9ecef;
+}
+header #toggle_menu a:hover i {
+	color:white !important;
+}
+.zmi header nav[role="navigation"] {
+	padding-top: 0;
+}
+header ul.navbar-nav li {
+	font-size:14px;
+}
+header .zmi-authenticated_user:before {
+	margin-right:.5rem;
+	content: "\f007";
+	font-family:Font Awesome\ 5 Free;
+	font-weight:bold;
+}
+header li.zmi-addItemSelect {
+	border: 0;
+	border-left: 1px solid;
+	border-radius: 0;
+	border-right: 1px solid;
+	height: 42px !important;
+	margin-left: .7rem;
+	font-size: 14px;
+	padding-top: .1rem;
+	padding-right:.3rem;
+}
+header select.form-control-sm {
+	color: silver;
+	background: black;
+	max-width: 9.6rem;
+	border: 0;
+	border-radius: 0;
+}
+header select.form-control-sm:focus {
+	outline-color:transparent;
+}
+
+.zmi-Site-Error-Log div.zmi-traceback.code {
+	padding: 1rem;
+	background: #212529;
+	border-radius: .4rem;
+	margin: 1rem 0;
+	color: white;
+}
+.zmi-Site-Error-Log div.zmi-request-object table {
+	background: #212529;
+	width: 100%;
+	border-radius:6px;
+}
+.zmi-Site-Error-Log div.zmi-request-object table tr th {
+	color:#ccc;
+	font-size:87%;
+	white-space: nowrap;
+	padding: .5rem 1rem;
+	font-weight:normal;
+}
+.zmi-Site-Error-Log div.zmi-request-object table tr td {
+	padding: .5rem 1rem;
+	font-family: monospace;
+	color: white;
+	width: 100%;
+}
+
+/* EXAMPLE: CUSTOMIZE HEADER CUSTOM */
+#menu_buttons,
+header.navbar,
+header select.form-control-sm {
+	background: #354f67;
+}
+#menu_buttons ul.dropdown-menu {
+	background:#646d75
 }
