@@ -581,6 +581,41 @@ header select.form-control-sm:focus {
 	outline-color:transparent;
 }
 
+/* MODAL DIALOG */
+#zmi-modal i.zmi-help-icon {
+	display: block;
+	margin: 0 -1rem 1rem 0;
+	text-align: right;
+}
+#zmi-modal i.zmi-help-icon.active {
+	color:#007bff;
+}
+
+#zmi-modal p.form-help {
+	padding: 1rem;
+	border: 1px solid #ced4da;
+	border-radius: 0.4rem;
+	background: #f1f4f7;
+	margin-top: -1rem;
+}
+
+@media (min-width: 576px) {
+	#zmi-modal {
+		padding-left:.5rem;
+	}
+	#zmi-modal .modal-dialog {
+		max-width: fit-content;
+	}
+	#zmi-modal .modal-body {
+		width:calc(100vw - 300px);
+		min-width:500px;
+	}
+	#zmi-modal .modal-body[data-add_type="addIdManager"] {
+		min-width:800px;
+	}
+}
+
+/* OBECT CLASS Site-Error-Log */
 .zmi-Site-Error-Log div.zmi-traceback.code {
 	padding: 1rem;
 	background: #212529;
@@ -616,3 +651,4 @@ header select.form-control-sm {
 #menu_buttons ul.dropdown-menu {
 	background:#646d75
 }
+
