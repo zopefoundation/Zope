@@ -7,39 +7,47 @@
            )">
 
 <p class="form-help">
-A DTML Method is used to hold scripting tags and text content.
-It can contain HTML, XML, plain text, structured-text, etcetera.
-A DTML Method can contain DTML scripting tags which operate
-in the context of the DTML Method's containing object.
-A DTML Method differs from a DTML Document in that it does not
-have properties and calls methods on its container object.
+	A DTML Method is used to hold scripting tags and text content.
+	It can contain HTML, XML, plain text, structured-text, etcetera.
+	A DTML Method can contain DTML scripting tags which operate
+	in the context of the DTML Method's containing object.
+	A DTML Method differs from a DTML Document in that it does not
+	have properties and calls methods on its container object.
+	</br />
+	You may create a new DTML Method object using the form below. 
+	You may also choose to upload an existing html file from your 
+	local computer by clicking the <em>Browse</em> button.
 </p>
 
-<p class="form-help">
-You may create a new DTML Method object using the form below.
- You may also choose to upload an existing html file from your
- local computer by clicking the <I>Browse</I> button.
-</p>
+	<form action="addDTMLMethod" method="post" enctype="multipart/form-data" class="zmi-add zmi-dtmlmethod">
 
-<form action="addDTMLMethod" method="post" enctype="multipart/form-data" class="zmi-add zmi-dtmlmethod">
+		<div class="form-group row">
+			<label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+			<div class="col-sm-9 col-md-10">
+				<input type="text" class="form-control" name="id" id="id" />
+			</div>
+		</div>
 
-<div class="form-group row">
-    <label for="id" class="form-label col-sm-3 col-md-2">Id</label>
-    <input type="text" class="form-control col-sm-9 col-md-6" name="id" id="id" />
-</div>
-<div class="form-group row">
-    <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
-    <input type="text" class="form-control col-sm-9 col-md-6" name="title" id="title" />
-</div>
-<div class="form-group row">
-    <label for="file" class="form-label col-sm-3 col-md-2">File</label>
-    <input type="file" id="file" class="form-control-file col-sm-9 col-md-6" name="file:string" size="25" value="" />
-</div>
-<div class="controls">
-    <input class="btn btn-primary" type="submit" name="submit" value=" Add " />
-    <input class="btn btn-secondary" type="submit" name="submit" value=" Add and Edit " />
-</div>
-</form>
+		<div class="form-group row">
+			<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+			<div class="col-sm-9 col-md-10">
+				<input type="text" class="form-control" name="title" id="title" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label for="file" class="form-label col-sm-3 col-md-2">File</label>
+			<div class="col-sm-9 col-md-10">
+				<input type="file" id="file" class="form-control form-control-file" name="file:string" size="25" value="" />
+			</div>
+		</div>
+
+		<div class="zmi-controls">
+			<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
+			<input class="btn btn-secondary" type="submit" name="submit" value=" Add and Edit " />
+		</div>
+
+	</form>
 
 </main>
 

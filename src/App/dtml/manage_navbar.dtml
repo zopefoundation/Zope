@@ -9,16 +9,6 @@
 	><a href="#" onclick="javascript:toggle_menu()" target="_parent"
 			><i class="fa fa-bars">&nbsp;</i></a>
 	</div>
-	<script>
-		function toggle_menu() {
-			if (document.referrer.endsWith('/manage')) {
-				window.parent.location.href="manage_main";
-			} else {
-				window.parent.location.href="manage";
-			};
-		}
-	</script>
-
 	<a class="navbar-brand" href="#" onclick="window.open('http://www.zope.org');">
 		<span class="product">ZOPE 4.0</span>
 	</a>
@@ -35,11 +25,12 @@
 							data-title-active="Select type to add"
 							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
 							title="Select type to add"
-							onchange="location.href='<dtml-var "REQUEST.get('URL1','')">/'+this.options[this.selectedIndex].value;this.selectedIndex = 0">
-							<option value="" selected="selected">Select type to add</option>
+							onchange="addItem( elm=this, url1='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
+							><option value="" selected="selected">Select type to add</option>
 							<dtml-if "_.len(filtered_meta_types) > 1"
 								><dtml-in filtered_meta_types mapping sort=name
-									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option></dtml-if
+									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option>
+									</dtml-if
 								></dtml-in
 							></dtml-if>
 						</select>
@@ -48,11 +39,30 @@
 		</dtml-if>
 	</ul>
 
-		<a href="manage_zmi_logout" title="Logout"
-			class="ml-4 d-none d-sm-block">
-			<i class="fas fa-sign-out-alt"></i>
-		</a>
+	<a href="manage_zmi_logout" title="Logout"
+		class="ml-4 d-none d-sm-block">
+		<i class="fas fa-sign-out-alt"></i>
+	</a>
 
 </header>
+
+<!-- ZMI-MODAL DIALOG -->
+<div class="modal fade" id="zmi-modal" tabindex="-1" role="dialog" aria-labelledby="#" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				... Loading Form ...
+			</div>
+			<div class="modal-footer">
+					&nbsp;
+			</div>
+		</div>
+	</div>
+</div>
 
 </dtml-unless>

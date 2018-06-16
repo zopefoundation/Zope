@@ -176,7 +176,26 @@
 <!--
 	$(function() {
 
+		// +++++++++++++++++++++++++++
+		// Icon Tooltips
+		// +++++++++++++++++++++++++++
 		$('td.zmi-object-type i').tooltip({'placement':'top'});
+
+		// +++++++++++++++++++++++++++
+		// Tablefilter/Search Element
+		// +++++++++++++++++++++++++++
+		$(document).keypress( function(e) {
+			// Set Focus to Tablefilter only when Modal Dialog is not Shown
+			if ( !$('#zmi-modal').hasClass('show') ) {
+				$('#tablefilter').focus();
+				// Prevent Submitting a form by hitting Enter
+				// https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
+				if ( e.which == 13 ) {
+						event.preventDefault();
+						return false;
+				};
+			};
+		})
 
 		$('#tablefilter').keyup( function (e) {
 			var tablefilter = $(this).val();
@@ -188,16 +207,6 @@
 			$('table.objectItems').find("tbody tr").hide();
 			$('table.objectItems').find("tbody tr td.zmi-object-id a:contains(" + tablefilter+ ")").closest('tbody tr').show();
 		});
-
-		$(document).keypress( function(e) {
-			$('#tablefilter').focus();
-			// Prevent Submitting a form by hitting Enter
-			// https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
-			if ( e.which == 13 ) {
-					event.preventDefault();
-					return false;
-			};
-		})
 
 	});
 //-->
