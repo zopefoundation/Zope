@@ -31,7 +31,7 @@
 		</div>
 
 		<div class="form-group row">
-			<label for="precondition" class="form-label	col-sm-3 col-md-2">Precondition</label>
+			<label for="precondition" class="form-label col-sm-3 col-md-2">Precondition</label>
 			<div class="col-sm-9 col-md-10">
 				<input id="precondition" class="form-control" type="text" name="precondition" 
 				value="<dtml-if precondition>&dtml-precondition;</dtml-if>" />

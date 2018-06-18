@@ -33,17 +33,19 @@
 		</nav>
 	</dtml-if>
 
+<dtml-comment>
 	<dtml-unless MANAGE_TABS_NO_BANNER>
 		<!-- IS THIS STILL NEEDED? WHY SHOW NOT BREADCRUMB etc.?
 			https://mail.zope.org/pipermail/zope-checkins/1999-August/001313.html
 		-->
 	</dtml-unless>
+</dtml-comment>
 
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item meta_type"><dtml-if meta_type
 					><i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
-					&dtml-meta_type;<dtml-else>Object</dtml-if> at 
+					&dtml-meta_type;<dtml-else>Object</dtml-if>
 				</li>
 				<dtml-in expr="tabs_path_default(REQUEST)" mapping>
 					<li class="breadcrumb-item<dtml-if last> active</dtml-if>"

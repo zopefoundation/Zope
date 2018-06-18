@@ -4,7 +4,7 @@
 
 <main class="container-fluid">
 
-<!-- /BO findResults.dtml -->
+<!-- BO findResults.dtml -->
 <dtml-in "('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub','searchtype')"
 	><dtml-else "_.hasattr(REQUEST, _['sequence-item'])"
 	><dtml-call "REQUEST.set(_['sequence-item'], None)"
@@ -87,16 +87,16 @@
 
 </dtml-with> <!-- /namespace -->
 </dtml-if> <!-- /button submit -->
-<!-- /EO findResults.dtml -->
+<!-- EO findResults.dtml -->
 
 <form id="zmi-search-form" action="manage_findForm" method="get" class="zmi-find">
 <!--input type="hidden" name="searchtype" value="advanced" / -->
 <table class="table table-borderless">
 <tr class="simple-search">
-	<TD style="width:10rem">
-	<label for="type" class="form-label">Find objects of type:</label>
+	<td style="width:10rem">
+		<label for="type" class="form-label">Find objects of type:</label>
 	</td>
-	<TD style="width:*">
+	<td style="width:*">
 	<div class="form-element">
 		<select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
 		<option value="all" 
@@ -212,14 +212,13 @@
 	</td>
 	<td>
 	<div class="form-inline">
-	<div class="input-group px-0 col-12">
-		<select id="mod" name="obj_mspec"
-			class="input-group-prepend form-control col-4 col-md-3">
-			<option value="&lt;"> before</option>
-			<option value="&gt;"> after</option>
-		</select>
-	<input class="form-control col-8	col-md-9 px-0" type="text" name="obj_mtime" />
-	</div>
+		<div class="input-group px-0 col-12">
+			<select id="mod" name="obj_mspec" class="input-group-prepend form-control col-4 col-md-3">
+				<option value="&lt;"> before</option>
+				<option value="&gt;"> after</option>
+			</select>
+			<input class="form-control col-8 col-md-9 px-0" type="text" name="obj_mtime" />
+		</div>
 	</div>
 	</td>
 </tr>
