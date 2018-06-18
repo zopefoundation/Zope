@@ -17,6 +17,12 @@
 		<li class="form-inline zmi-authenticated_user">
 			<span>&dtml-AUTHENTICATED_USER;</span>
 		</li>
+		<li class="form-inline zmi-cp">
+			<a title="TEST: Useful link set has to evaluated" 
+				href="/Control_Panel/manage_main" target="manage_main">
+				<i class="fa fa-cog"></i> Control Panel
+			</a>
+		</li>
 		<dtml-if filtered_meta_types>
 			<li class="form-inline zmi-addItemSelect">
 				<form method="get" class="form-group">
