@@ -4,38 +4,38 @@
 
 <main class="container-fluid">
 
-	<p class="form-help">
+	<p class="form-help mt-4">
 		The Control Panel provides access to system information.
 	</p>
 
 	<table class="table">
 		<tr>
-			<th>Zope Version</th>
-			<td>&dtml-version_txt;</td>
+			<th class="text-muted">Zope Version</th>
+			<td class="code">&dtml-version_txt;</td>
 		</tr>
 		<tr>
-			<th>Python Version</th>
-			<td>&dtml-sys_version;</td>
+			<th class="text-muted">Python Version</th>
+			<td class="code">&dtml-sys_version;</td>
 		</tr>
 		<tr>
-			<th>System Platform</th>
-			<td>&dtml-sys_platform;</td>
+			<th class="text-muted">System Platform</th>
+			<td class="code">&dtml-sys_platform;</td>
 		</tr>
 		<tr>
-			<th>INSTANCE_HOME</th>
-			<td>&dtml-getINSTANCE_HOME;</td>
+			<th class="text-muted">INSTANCE_HOME</th>
+			<td class="code">&dtml-getINSTANCE_HOME;</td>
 		</tr>
 		<tr>
-			<th>CLIENT_HOME</th>
-			<td>&dtml-getCLIENT_HOME;</th>
+			<th class="text-muted">CLIENT_HOME</th>
+			<td class="code">&dtml-getCLIENT_HOME;</th>
 		</tr>
 		<tr>
-			<th>Debug mode</th>
-			<td>&dtml-debug_mode;</td>
+			<th class="text-muted">Debug mode</th>
+			<td class="code">&dtml-debug_mode;</td>
 		</tr>
 		<tr>
-			<th>Process Id</th>
-			<td>&dtml-process_id;</td>
+			<th class="text-muted">Process Id</th>
+			<td class="code">&dtml-process_id;</td>
 		</tr>
 	</table>
 

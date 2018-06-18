@@ -33,8 +33,13 @@
 		</nav>
 	</dtml-if>
 
-	<dtml-unless MANAGE_TABS_NO_BANNER
-		><nav aria-label="breadcrumb">
+	<dtml-unless MANAGE_TABS_NO_BANNER>
+		<!-- IS THIS STILL NEEDED? WHY SHOW NOT BREADCRUMB etc.?
+			https://mail.zope.org/pipermail/zope-checkins/1999-August/001313.html
+		-->
+	</dtml-unless>
+
+		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item meta_type"><dtml-if meta_type
 					><i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
@@ -64,7 +69,7 @@
 				</dtml-in>
 			</ol>
 		</nav>
-	</dtml-unless>
+
 
 	<dtml-if manage_tabs_message
 		><div class="alert alert-success" role="alert">

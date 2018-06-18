@@ -67,7 +67,7 @@
 
 	<dtml-else>
 
-		<div class="alert alert-warning">There are no transactions that can be undone.</div>
+		<div class="alert alert-warning mt-4">There are no transactions that can be undone.</div>
 
 </dtml-if>
 
