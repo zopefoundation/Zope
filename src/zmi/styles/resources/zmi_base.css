@@ -540,35 +540,35 @@ header.navbar-nav a {
 header.navbar-nav .product {
 	color:white;
 }
-header #toggle_menu {
+header.navbar #toggle_menu {
 	display: block;
 	left: 0;
 	top: 0;
 	position: absolute;
 	width:3rem;
 }
-header #toggle_menu a {
+header.navbar #toggle_menu a {
 	color:silver;
 	position:static;
 	padding: .6rem .8em .6rem 1rem;
 	border-right: 1px solid #e9ecef;
 }
-header #toggle_menu a:hover i {
+header.navbar #toggle_menu a:hover i {
 	color:white !important;
 }
-.zmi header nav[role="navigation"] {
+header.navbar nav[role="navigation"] {
 	padding-top: 0;
 }
-header ul.navbar-nav li {
+header.navbar ul.navbar-nav li {
 	font-size:14px;
 }
-header .zmi-authenticated_user:before {
+header.navbar .zmi-authenticated_user:before {
 	margin-right:.5rem;
 	content: "\f007";
 	font-family:Font Awesome\ 5 Free;
 	font-weight:bold;
 }
-header li.zmi-addItemSelect {
+header.navbar li.zmi-addItemSelect {
 	border: 0;
 	border-left: 1px solid;
 	border-radius: 0;
@@ -579,20 +579,26 @@ header li.zmi-addItemSelect {
 	padding-top: .1rem;
 	padding-right:.3rem;
 }
-header select.form-control-sm {
+header.navbar select.form-control-sm {
 	color: silver;
 	background: black;
 	max-width: 9.6rem;
 	border: 0;
 	border-radius: 0;
 }
-header a:hover,
-header select.form-control-sm:not([disabled="disabled"]):hover  {
+header.navbar a:hover,
+header.navbar select.form-control-sm:not([disabled="disabled"]):hover  {
 	color:#e8e8e8;
 }
-header select.form-control-sm:focus {
+header.navbar select.form-control-sm:focus {
 	outline-color:transparent;
 	color:#e8e8e8;
+}
+
+header.navbar .zmi-cp {
+	border-left:1px solid silver;
+	padding-left:.75rem;
+	margin-left:.75rem;
 }
 
 /* MODAL DIALOG */
@@ -659,12 +665,12 @@ p.form-help {
 }
 
 /* EXAMPLE: CUSTOMIZE HEADER CUSTOM */
-#menu_buttons,
 header.navbar,
-header select.form-control-sm {
+header.navbar select.form-control-sm,
+.zmi-manage_menu #menu_buttons {
 	background: #354f67;
 }
-#menu_buttons ul.dropdown-menu {
+.zmi-manage_menu #menu_buttons ul.dropdown-menu {
 	background:#646d75
 }
 
