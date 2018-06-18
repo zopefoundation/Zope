@@ -17,8 +17,9 @@ function addItem( elm, url1 ) {
 
 	// List of Object Types Inserting Without Form GUI
 	var no_form_types = [
-		'manage_addVirtualHostMonster',
-		'manage_addRegistry'
+		'manage_addRegistry',
+		'manage_addUserFolder',
+		'manage_addVirtualHostMonster'
 	]
 	
 	if ( $.inArray(add_type, no_form_types) < 0 ) {
@@ -39,7 +40,7 @@ function addItem( elm, url1 ) {
 				$('#zmi-modal .modal-body p.form-help').remove();
 				$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
 			}
-			$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'.form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
+			$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
 			$('#zmi-modal .modal-body p.form-help').hide();
 		});
 		// Clean up Modal DOM on Close
