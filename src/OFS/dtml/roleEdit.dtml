@@ -1,4 +1,5 @@
 <dtml-var manage_page_header>
+
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
 
 <main class="container-fluid">
@@ -14,9 +15,11 @@
 					<option &dtml-selected;>&dtml-name;</option>
 				</dtml-in>
 			</select>
+
 		<div class="zmi-controls">
 			<input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
 		</div>
+
 	</form>
 
 </main>

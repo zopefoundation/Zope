@@ -1,3 +1,1 @@
-<dtml-with keyword_args mapping>
-<h2 class="zmi-form-title">&dtml-form_title;</h2>
-</dtml-with>
+<dtml-with keyword_args mapping><h2 class="zmi-form-title">&dtml-form_title;</h2></dtml-with>

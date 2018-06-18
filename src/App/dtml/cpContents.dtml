@@ -1,96 +1,44 @@
 <dtml-var manage_page_header>
+
 <dtml-var manage_tabs>
 
-<p class="form-help">
-The Control Panel provides access to system information.
-</p>
+<main class="container-fluid">
 
-<table cellspacing="0" cellpadding="2" border="0">
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Zope Version
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-version_txt;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Python Version
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-sys_version;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  System Platform
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-sys_platform;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  INSTANCE_HOME
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-getINSTANCE_HOME;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  CLIENT_HOME
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-getCLIENT_HOME;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Debug mode
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-debug_mode;
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Process Id
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  &dtml-process_id;
-  </div>
-  </td>
-</tr>
+	<p class="form-help">
+		The Control Panel provides access to system information.
+	</p>
 
-</table>
+	<table class="table">
+		<tr>
+			<th>Zope Version</th>
+			<td>&dtml-version_txt;</td>
+		</tr>
+		<tr>
+			<th>Python Version</th>
+			<td>&dtml-sys_version;</td>
+		</tr>
+		<tr>
+			<th>System Platform</th>
+			<td>&dtml-sys_platform;</td>
+		</tr>
+		<tr>
+			<th>INSTANCE_HOME</th>
+			<td>&dtml-getINSTANCE_HOME;</td>
+		</tr>
+		<tr>
+			<th>CLIENT_HOME</th>
+			<td>&dtml-getCLIENT_HOME;</th>
+		</tr>
+		<tr>
+			<th>Debug mode</th>
+			<td>&dtml-debug_mode;</td>
+		</tr>
+		<tr>
+			<th>Process Id</th>
+			<td>&dtml-process_id;</td>
+		</tr>
+	</table>
+
+</main>
 
 <dtml-var manage_page_footer>

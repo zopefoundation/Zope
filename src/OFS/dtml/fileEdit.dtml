@@ -44,7 +44,7 @@
 					<textarea id="content" class="form-control zmi-file zmi-code col-sm-12" name="filedata:text" 
 						wrap="off" style="width: 100%;" rows="20"><dtml-var __str__ html_quote></textarea>
 				</div>
-		
+
 			<dtml-else>
 				<div class="form-group row">
 					<label for="size" class="form-label	col-sm-3 col-md-2">File Size</label>

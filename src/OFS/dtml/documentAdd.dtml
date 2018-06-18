@@ -2,9 +2,7 @@
 
 <main class="container-fluid">
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add DTML Document'
-           )">
+<dtml-var "manage_form_title(this(), _, form_title='Add DTML Document')">
 
 	<p class="form-help mb-4">
 		A DTML Document is used to hold text content. It can contain

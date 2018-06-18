@@ -2,9 +2,7 @@
 
 <main class="container-fluid">
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add %s' % Kind,
-           )">
+<dtml-var "manage_form_title(this(), _, form_title='Add %s' % Kind, )">
 
 	<p class="form-help">
 		Select a file to upload from your local computer by clicking the <em>Browse</em> button.
@@ -24,17 +22,18 @@
 				<input type="text" class="form-control" name="title" id="title" size="40" />
 			</div>
 		</div>
-	
+
 		<div class="form-group row">
 			<label for="file" class="form-label col-sm-3 col-md-2">File</label>
 			<div class="col-sm-9 col-md-10">
 				<input type="file" class="btn btn-primary form-control-file" name="file" id="file-data" value="" />
 			</div>
 		</div>
+
 		<div class="zmi-controls">
-			<input class="form-element btn btn-primary" type="submit" name="submit" value=" Add " />
+			<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
 		</div>
-	
+
 	</form>
 
 </main>

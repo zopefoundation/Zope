@@ -1,10 +1,8 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add Folder',
-           )">
-
 <main class="container-fluid">
+
+	<dtml-var "manage_form_title(this(), _, form_title='Add Folder', )">
 
 	<p class="form-help">
 		A Folder contains other objects. Use Folders to organize your
