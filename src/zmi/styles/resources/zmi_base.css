@@ -129,16 +129,23 @@ form.zmi-upload {
 }
 .zmi .breadcrumb li.breadcrumb-item {
 	padding: 0 .2rem;
+	height:1.75rem;
 }
 .zmi .breadcrumb li.breadcrumb-item.meta_type {
 	padding-left:	0;
 }
+.zmi .breadcrumb li.breadcrumb-item.meta_type:after {
+	content:'at';
+	margin-left:.5rem;
+	font-style:italic;
+}
+
 .zmi .breadcrumb li.breadcrumb-item,
 .zmi .breadcrumb li.breadcrumb-item.meta_type:hover{
 	border:1px solid transparent;
 }
 .zmi .breadcrumb li.breadcrumb-item:hover {
-	border:1px solid #c0c0c080;
+	border:1px solid #e0e0e0;
 }
 .zmi .breadcrumb .breadcrumb-item a:hover {
 	color: #007bff !important;
@@ -510,7 +517,7 @@ i.fa-folder.zmi-icon-folder-ordered:after {
 	font-size:14px
 }
 
-i.zmi-icon-broken:after {
+i:not(.fa-ban).zmi_icon-broken:after {
 	content: "\f12a";
 	font-family: "Font Awesome\ 5 Free",Fontawesome;
 	position: absolute;
@@ -518,6 +525,7 @@ i.zmi-icon-broken:after {
 	margin: 0 0 0 0.25rem;
 	font-size: smaller;
 	color: red;
+	font-weight:normal;
 }
 
 

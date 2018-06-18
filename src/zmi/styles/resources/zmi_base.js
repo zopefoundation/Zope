@@ -19,6 +19,7 @@ function addItem( elm, url1 ) {
 	var no_form_types = [
 		'manage_addRegistry',
 		'manage_addUserFolder',
+		'manage_addErrorLog',
 		'manage_addVirtualHostMonster'
 	]
 	
@@ -62,14 +63,14 @@ function addItem( elm, url1 ) {
 var zmi_icons = {
 	"User Folder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
 	"UserFolder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
-	"PluggableAuthService":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
+	"Pluggable Auth Service":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
 	"User":{ "title":"User", "class":"fa fa-user" },
-	"TemporaryFolder":{ "title":"Folder", "class":"far fa-folder" },
+	"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-folder-open" },
 	"Filesystem Directory View":{ "title":"Filesystem Directory View", "class":"far fa-folder-open" },
 	"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" },
 	"Folder":{ "title":"Folder", "class":"far fa-folder" },
 	"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
-	"ExternalMethod":{ "title":"External Python Method", "class":"fa fa-external-link-square" },
+	"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square" },
 	"DTML Document":{ "title":"DTML Document", "class":"far fa-file-alt" },
 	"DTML Method":{ "title":"DTML Document", "class":"far fa-file-alt" },
 	"Page Template":{ "title":"Page Template", "class":"far fa-file-code" },
@@ -88,6 +89,7 @@ var zmi_icons = {
 	"ZMS":{ "title":"ZMS Root", "class":"fas fa-home" },
 	"ZMSObject.png":{ "title":"ZMS Content", "class":"far fa-file" },
 	"Monster":{ "title":"Virtual Host Monster", "class":"fa fa-code-branch" },
+	"ZCatalogIndex":{ "title":"ZCatalogIndex", "class":"far fa-list-alt" },
 	"ZCatalog":{ "title":"ZCatalog", "class":"far fa-search" },
 	"Session Data Manager":{ "title":"Session Data Manager", "class":"fas fa-history" },
 	"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"far fa-user-circle" },
@@ -110,8 +112,8 @@ $(function() {
 		var i_name = i;
 		var i_title =zmi_icons[i].title;
 		var i_class =zmi_icons[i].class;
-		if ( $('i[title*="'+i_name+'"]').hasClass('icon-broken') ) {
-			i_class += ' zmi-icon-broken'
+		if ( $('i[title*="'+i_name+'"]').hasClass('zmi_icon-broken') ) {
+		 	i_class += ' zmi_icon-broken'
 		};
 		$('i[title*="'+i_name+'"]').replaceWith('<i data-title="'+i_title+'" class="'+i_class+'"></i>');
 	}
