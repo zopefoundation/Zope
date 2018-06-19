@@ -669,6 +669,12 @@ header.navbar .zmi-cp {
 	width: 100%;
 }
 
+/* OBECT CLASS ZCatalog */
+.zmi-manage_catalogAdvanced table td form > * {
+	width:12rem;
+}
+
+
 /* STYLE PATCHES TO ANCIENT ZOPE FORMS */
 
 main.zmi-patch:after {

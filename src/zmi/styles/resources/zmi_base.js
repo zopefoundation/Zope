@@ -12,11 +12,12 @@ function toggle_menu() {
 }
 
 // [2] Add New Object Item (with Modal Dialog)
-function addItem( elm, url1 ) {
-	var action =  elm.options[elm.selectedIndex].value;
-	var add_type = action.split('/')[2];
-	var win_url = url1 + '/' + action
-	var modal_body_url = win_url + '?zmi_dialog=modal';
+function addItem( elm, base_url ) {
+	var url_action =  elm.options[elm.selectedIndex].value;
+	var url_full = base_url + '/' + url_action;
+	var action = url_action.split('/')[url_action.split('/').length-1];
+	var modal_form_base = url_full.split(action)[0];
+	var modal_body_url = url_full + '?zmi_dialog=modal';
 
 	// List of Object Types Inserting Without Modal Dialog 
 	var no_modal_dialog = [
@@ -28,12 +29,12 @@ function addItem( elm, url1 ) {
 	]
 
 	// SHOW MODAL DIALOG	
-	if ( $.inArray(add_type, no_modal_dialog) < 0 ) {
+	if ( $.inArray(action, no_modal_dialog) < 0 ) {
 	// Deactivate for Testing Purposes:
 	// if ( 1==0 ) {
 		$('#zmi-modal').modal('show');
 		$('#zmi-modal').modal({ focus: true });
-		$('#zmi-modal .modal-body').attr('data-add_type', add_type);
+		$('#zmi-modal .modal-body').attr('data-add_type', action);
 		// Load Modal Form by AJAX
 		$('#zmi-modal .modal-body').load(modal_body_url);
 		// Shift Titel to Modal Header
@@ -49,6 +50,13 @@ function addItem( elm, url1 ) {
 			}
 			$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
 			$('#zmi-modal .modal-body p.form-help').hide();
+
+			//Modify Form Action for Modal Use
+			$( '#zmi-modal form' ).each( function() {
+				var modal_form_url = modal_form_base + $( this ).attr( 'action' );
+				$( this ).attr( 'action', modal_form_url )
+			})
+
 			// GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
 			fix_ancient_modal_gui();
 		});
@@ -59,7 +67,7 @@ function addItem( elm, url1 ) {
 		});
 	} else {
 	// REDIRECT TO NEW URL (WINDOW)
-		window.location.href = win_url;
+		window.location.href = url_full;
 	}
 }
 
@@ -77,7 +85,7 @@ function addItem( elm, url1 ) {
 		"UserFolder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
 		"Pluggable Auth Service":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
 		"User":{ "title":"User", "class":"fa fa-user" },
-		"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-folder-open" },
+		"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-hdd" },
 		"Filesystem Directory View":{ "title":"Filesystem Directory View", "class":"far fa-folder-open" },
 		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" },
 		"Folder":{ "title":"Folder", "class":"far fa-folder" },
@@ -102,8 +110,8 @@ function addItem( elm, url1 ) {
 		"ZMSObject.png":{ "title":"ZMS Content", "class":"far fa-file" },
 		"Monster":{ "title":"Virtual Host Monster", "class":"fa fa-code-branch" },
 		"ZCatalogIndex":{ "title":"ZCatalogIndex", "class":"far fa-list-alt" },
-		"ZCatalog":{ "title":"ZCatalog", "class":"far fa-search" },
-		"Session Data Manager":{ "title":"Session Data Manager", "class":"fas fa-history" },
+		"ZCatalog":{ "title":"ZCatalog", "class":"fa fa-search" },
+		"Session Data Manager":{ "title":"Session Data Manager", "class":"far fa-clock" },
 		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"far fa-user-circle" },
 		"Broken object":{ "title":"Broken object", "class":"fas fa-ban text-danger" }
 	}
@@ -136,7 +144,7 @@ function addItem( elm, url1 ) {
 		if ( $('main').length==0 ) {
 			$('body>form,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
 		// ADD BOOTSTRAP CLASSES
-			$('input[type="text"],input[type="file"],textarea').addClass('form-control zmi-patch');
+			$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
 			$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
 			$('textarea[name*=":text"]').addClass('zmi-code');
 			$('table').addClass('table zmi-patch');
@@ -147,7 +155,7 @@ function addItem( elm, url1 ) {
 		if ( $('.modal-body main').length==0 ) {
 			$('.modal-body>form,.modal-body>table,.modal-body>h2,.modal-body>p,.modal-body>i.zmi-help-icon').wrapAll('<main class="container-fluid zmi-patch"></main>');
 		// ADD BOOTSTRAP CLASSES
-			$('.modal-body input[type="text"],input[type="file"],textarea').addClass('form-control zmi-patch');
+			$('.modal-body input[type="text"],.modal-body input[type="file"],.modal-body textarea,.modal-body select').addClass('form-control zmi-patch');
 			$('.modal-body input[type="submit"]').addClass('btn btn-primary zmi-patch');
 			$('.modal-body textarea[name*=":text"]').addClass('zmi-code');
 			$('.modal-body table').addClass('table zmi-patch');
