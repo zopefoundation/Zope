@@ -10,9 +10,9 @@ browser.
 Bootstrap ZMI
 -------------
 
-Since Zope 4.0b4 the ZMI is styled using Twitter Bootstrap. The previously used
+Since Zope 4.0b6 the ZMI is styled using Bootstrap. The previously used
 GIF icons were replaced by font glyphs which are stored in the package
-`zmi.styles`_ together with the CSS and JavaScript needed by Twitter Bootstrap.
+`zmi.styles`_ together with the CSS and JavaScript needed by Bootstrap.
 
 Inside that package is a table of the `available icons`_ including the names
 which are required to use them in the ZMI.

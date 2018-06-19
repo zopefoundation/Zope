@@ -834,7 +834,7 @@ When creating management views you should include the DTML variables
 by your product and draw a standard management view header, tabs
 widgets, and footer.  The management header also includes CSS
 information which you can take advantage of. You can use any of the styles
-Twitter Bootstrap 4 provides. (See https://getbootstrap.com/docs/4.0)
+Bootstrap 4 provides. (See https://getbootstrap.com/docs/4.0)
 
 Here's an example management view for your poll class.  It allows you
 to edit the poll question and responses (see ``editPollForm.dtml``)::

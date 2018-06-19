@@ -148,6 +148,6 @@ to large deployments.
 ZMI overhaul
 ------------
 
-The ZMI (Zope Management Interface) is now styled with Twitter Bootstrap.
+The ZMI (Zope Management Interface) is now styled with Bootstrap.
 See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
 styling.
