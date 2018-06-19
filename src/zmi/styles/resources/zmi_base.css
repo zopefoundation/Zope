@@ -9,8 +9,8 @@
 	}
 }
 
-main,
-main.container-fluid {
+.zmi:not(.zmi-manage_menu) main,
+.zmi main.container-fluid {
 	width: 100%;
 	padding-right: 1rem;
 	padding-left: 1rem;
@@ -99,6 +99,9 @@ form.zmi-upload {
 	margin: 0 -15px;
 	padding: 2.15rem 15px;
 	border-top: #ced4da solid 1px;
+}
+.zmi p.form-help {
+	margin-bottom:2rem;
 }
 
 
@@ -210,12 +213,10 @@ form.zmi-upload {
 .zmi table.objectItems .zmi-object-size {
 	white-space:nowrap;
 }
-
 .zmi table.objectItems tr.checked {
 	background-color:#007bff1c !important;
 }
-
-.zmi main > form > table.table {
+.zmi main:not(.zmi-patch) > form > table.table {
 	margin: 0 -1rem;
 	max-width: calc(100% + 1.9rem);
 	width: calc(100% + 1.9rem);
@@ -343,11 +344,9 @@ td.zmi-rolename-check:hover {
 .zmi-userlist .list-group .list-group-item i.fa-user {
 	margin-right:0.15rem;
 }
-
 .advanced-search-only {
 	background-color: #ced4da;
 }
-
 textarea.zmi-code {
 	font-family:monospace;
 }
@@ -497,7 +496,6 @@ div#menu_tree i.icon.icon-expand-alt:focus,
 div#menu_tree i.icon.icon-collapse-alt:focus {
 	outline-color: transparent !important;
 }
-
 /* /MANAGE MENU */
 
 
@@ -527,7 +525,6 @@ i:not(.fa-ban).zmi_icon-broken:after {
 	color: red;
 	font-weight:normal;
 }
-
 
 
 /* HEADER BAR */
@@ -610,6 +607,10 @@ header.navbar .zmi-cp {
 }
 
 /* MODAL DIALOG */
+
+#zmi-modal main > form > table.table {
+	margin: 0;
+}
 #zmi-modal i.zmi-help-icon {
 	display: block;
 	margin: 0 -1rem 1rem 0;
@@ -618,9 +619,6 @@ header.navbar .zmi-cp {
 #zmi-modal i.zmi-help-icon.active {
 	color:#007bff;
 }
-p.form-help {
-	margin-bottom:2rem;
-}
 #zmi-modal p.form-help {
 	padding: 1rem;
 	border: 1px solid #ced4da;
@@ -628,7 +626,6 @@ p.form-help {
 	background: #f1f4f7;
 	margin-top: -1rem;
 }
-
 @media (min-width: 576px) {
 	#zmi-modal {
 		padding-left:.5rem;
@@ -671,6 +668,28 @@ p.form-help {
 	color: white;
 	width: 100%;
 }
+
+/* STYLE PATCHES TO ANCIENT ZOPE FORMS */
+
+main.zmi-patch:after {
+	content:"Design Hints: This layout is still not updated to ZMI conventions of Zope 4";
+	font-family: monospace;
+	font-size:12px;
+	padding:24px 0 24px 0;
+	color:#ced4da;
+	font-style:italic;
+}
+table.zmi-patch th,
+table.zmi-patch td {
+	font-weight:normal;
+	border:none;
+	padding-left:0;
+	padding-right:2rem
+}
+table.zmi-patch  {
+	background-color:transparent !important;
+}
+
 
 /* EXAMPLE: CUSTOMIZE HEADER CUSTOM */
 header.navbar,
