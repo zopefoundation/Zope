@@ -1,4 +1,5 @@
-# AccessControl==4.0b4
+-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
+AccessControl==4.0b4
 Acquisition==4.4.4
 AuthEncoding==4.0.0
 BTrees==4.5.0
@@ -10,9 +11,9 @@ Missing==4.0.1
 MultiMapping==4.0
 PasteDeploy==1.5.2
 Persistence==3.0b3
-# Products.BTreeFolder2==4.0.0
-# Products.ZCTextIndex==4.0.2 # empty shell anyway
-# Products.ZCatalog==4.1
+Products.BTreeFolder2==4.0.0
+Products.ZCTextIndex==4.0.2
+Products.ZCatalog==4.1
 Record==3.4
 RestrictedPython==4.0b4
 WSGIProxy2==0.4.4
@@ -31,6 +32,7 @@ mock==2.0.0
 pbr==4.0.3
 persistent==4.2.4.2
 pytz==2018.4
+shutilwhich==1.1.0
 six==1.11.0
 transaction==2.2.1
 waitress==1.1.0
@@ -85,13 +87,3 @@ zope.testing==4.6.2
 zope.testrunner==4.8.1
 zope.traversing==4.2.0
 zope.viewlet==4.1.0
-
-# current branch required as editable install
--e git+https://github.com/zopefoundation/Zope@zmi-bootstrap#egg=Zope
-
-# development versions of dependencies
--e git+https://github.com/zopefoundation/zmi.styles@master#egg=zmi.styles
--e git+https://github.com/zopefoundation/AccessControl@zmi-bootstrap#egg=AccessControl
--e git+https://github.com/zopefoundation/Products.BTreeFolder2@zmi-bootstrap#egg=Products.BTreeFolder2
--e git+https://github.com/zopefoundation/Products.ZCatalog@zmi-bootstrap#egg=Products.ZCatalog
--e git+https://github.com/zopefoundation/Products.PythonScripts@zmi-bootstrap#egg=Products.PythonScripts
