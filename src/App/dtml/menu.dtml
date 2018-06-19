@@ -1,5 +1,6 @@
 <dtml-var manage_page_header>
 
+<main>
 <div class="dropdown" id="menu_buttons">
 	<a href="#" class="dropdown-toggle" 
 		data-toggle="dropdown" 
@@ -54,5 +55,6 @@
 	><dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())"
 ></dtml-if>
 
+</main>
 <dtml-var manage_page_footer>
 

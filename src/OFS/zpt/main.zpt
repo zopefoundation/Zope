@@ -2,29 +2,6 @@
 
 <tal:tabs replace="structure here/manage_tabs" />
 
-<!-- Add object widget // DEACTIVATED!! -->
-<form tal:replace="nothing"
-	class="form-inline float-right mb-2 addItemSelect"
-	method="get"
-	tal:condition="here/filtered_meta_types"
-	tal:attributes="action string:${request/URL1}/" >
-	<div class="form-group">
-		<label for="addItemSelect"
-			class="mr-2 sr-only">Select type to add</label>
-		<select class="form-control mr-2"
-			name=":action"
-			id="addItemSelect"
-			tal:attributes="onchange string:location.href='${request/URL1}/'+this.options[this.selectedIndex].value;;this.selectedIndex = 0">
-			<option value='' disabled selected>Select type to add</option>
-			<tal:option tal:repeat="mt here/filtered_meta_types">
-				<option tal:condition="mt/action"
-					tal:attributes="value mt/action"
-					tal:content="mt/name">Action</option>
-			</tal:option>
-		</select>
-	</div>
-</form>
-
 <main class="container-fluid">
 	<form name="objectItems" method="post"
 		tal:define="
@@ -38,20 +15,7 @@
 			<thead class="thead-light">
 				<tr>
 					<th scope="col" class="zmi-object-check text-right">
-						<input type="checkbox" id="checkAll"
-							onclick="(function() {
-								var checkboxes = document.getElementsByClassName('checkbox-list-item');
-								// Toggle Highlighting CSS-Class
-								if ( document.getElementById('checkAll').checked ) {
-									 $('table.objectItems tbody tr').addClass('checked');
-								} else {
-									 $('table.objectItems tbody tr').removeClass('checked');
-								};
-								// Set Checkbox like checkAll-Box
-								for (i = 0; i < checkboxes.length; i++){
-									checkboxes[i].checked = document.getElementById('checkAll').checked;
-									}
-							})()">
+						<input type="checkbox" id="checkAll" onclick="checkbox_all();">
 					</th>
 					<th scope="col" class="zmi-object-type">Type</th>
 					<th scope="col" class="zmi-object-id">
@@ -174,6 +138,25 @@
 
 <script type="text/javascript">
 <!--
+
+	// +++++++++++++++++++++++++++
+	// checkbox_all: Item  Selection
+	// +++++++++++++++++++++++++++
+	function checkbox_all() {
+		var checkboxes = document.getElementsByClassName('checkbox-list-item');
+		// Toggle Highlighting CSS-Class
+		if ( document.getElementById('checkAll').checked ) {
+			 $('table.objectItems tbody tr').addClass('checked');
+		} else {
+			 $('table.objectItems tbody tr').removeClass('checked');
+		};
+		// Set Checkbox like checkAll-Box
+		for (i = 0; i < checkboxes.length; i++){
+			checkboxes[i].checked = document.getElementById('checkAll').checked;
+			}
+	};
+
+
 	$(function() {
 
 		// +++++++++++++++++++++++++++
