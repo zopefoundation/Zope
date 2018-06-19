@@ -844,7 +844,7 @@ class ObjectManager(CopyContainer,
 
     security.declareProtected(access_contents_information, 'computeSize')
     def computeSize(self, ob):
-        try:
+        #try:
             if hasattr(ob, 'get_size'):
                 ob_size = ob.get_size()
                 if ob_size < 1024:
@@ -852,10 +852,10 @@ class ObjectManager(CopyContainer,
                 elif ob_size > 1048576:
                     return "{:0.02f} MiB".format(ob_size / 1048576.0)
                 else:
-                    return "{:d} KiB".format(ob_size / 1024)
-        except:
-            pass
-        return ''
+                    return "{:0.0f} KiB".format(ob_size / 1024.0)
+        #except:
+        #    pass
+        #return ''
 
     security.declareProtected(access_contents_information, 'last_modified')
     def last_modified(self, ob):

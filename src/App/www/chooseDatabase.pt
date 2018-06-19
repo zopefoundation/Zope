@@ -10,6 +10,7 @@
 
 <ol tal:define="databases python:context.getDatabaseNames(quote=True);">
 	<li tal:repeat="info databases">
+		<i class="fa fa-database text-secondary ml-3 mr-2"></i>
 		<a class="font-weight-bold"
 			tal:define="name python: info[0]; qname python: info[1]"
 			tal:attributes="href string:${context/absolute_url}/${qname}/manage_main"

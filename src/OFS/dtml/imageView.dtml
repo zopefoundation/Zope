@@ -2,7 +2,10 @@
 
 <dtml-var manage_tabs>
 
-<figure><dtml-var tag></figure>
-
+<main class="container-fluid">
+	<figure class="zmi-preview">
+		<dtml-var tag>
+	</figure>
+</main>
 <dtml-var manage_page_footer>
 

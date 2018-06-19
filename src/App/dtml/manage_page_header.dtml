@@ -15,7 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="&dtml-sequence-item;" />
 </dtml-in>
 <dtml-in js_urls>
-  <script type="text/javascript" src="&dtml-sequence-item;"></script>
+  <script src="&dtml-sequence-item;"></script>
 </dtml-in>
 
 </head>
