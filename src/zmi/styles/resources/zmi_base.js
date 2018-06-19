@@ -82,7 +82,7 @@ function addItem( elm, url1 ) {
 		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" },
 		"Folder":{ "title":"Folder", "class":"far fa-folder" },
 		"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
-		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square" },
+		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square-alt" },
 		"DTML Document":{ "title":"DTML Document", "class":"far fa-file-alt" },
 		"DTML Method":{ "title":"DTML Document", "class":"far fa-file-alt" },
 		"Page Template":{ "title":"Page Template", "class":"far fa-file-code" },
@@ -138,6 +138,7 @@ function addItem( elm, url1 ) {
 		// ADD BOOTSTRAP CLASSES
 			$('input[type="text"],input[type="file"],textarea').addClass('form-control zmi-patch');
 			$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
+			$('textarea[name*=":text"]').addClass('zmi-code');
 			$('table').addClass('table zmi-patch');
 		}
 	}
@@ -148,6 +149,7 @@ function addItem( elm, url1 ) {
 		// ADD BOOTSTRAP CLASSES
 			$('.modal-body input[type="text"],input[type="file"],textarea').addClass('form-control zmi-patch');
 			$('.modal-body input[type="submit"]').addClass('btn btn-primary zmi-patch');
+			$('.modal-body textarea[name*=":text"]').addClass('zmi-code');
 			$('.modal-body table').addClass('table zmi-patch');
 		}
 	}
