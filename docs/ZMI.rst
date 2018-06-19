@@ -91,7 +91,6 @@ The properties can have one of the following types:
 
 * ``string``
 * ``ustring``
-* ``lines``
 * ``ulines``
 
 The value of the properties have to be paths or URLs to CSS resp. JavaScript
