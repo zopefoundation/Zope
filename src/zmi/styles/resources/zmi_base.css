@@ -697,13 +697,52 @@ table.zmi-patch  {
 }
 
 
-/* EXAMPLE: CUSTOMIZE HEADER CUSTOM */
+/* EXAMPLE: CUSTOMIZE HEADER */
 header.navbar,
 header.navbar select.form-control-sm,
 .zmi-manage_menu #menu_buttons {
 	background: #354f67;
 }
-.zmi-manage_menu #menu_buttons ul.dropdown-menu {
-	background:#646d75
+.zmi-manage_menu #menu_buttons ul.dropdown-menu  {
+	background-color:#646d75;
 }
 
+@media (min-width: 960px) {
+	.zmi-manage_menu #menu_buttons ul.dropdown-menu {
+		background-image:url("logo/Zope_white_opacity12.svg");
+		background-size:97%;
+		background-position: bottom center;
+		background-repeat:no-repeat;
+		
+	}
+}
+/* EXAMPLE: IMPLANT YOUR LOGO */
+/*
+	.zmi-manage_menu {
+		height:100vh;
+	}
+	.zmi-manage_menu,
+	.zmi-manage_menu #menu_buttons ul.dropdown-menu {
+		background-size:contain;
+		background-position: bottom left;
+		background-repeat:no-repeat;
+	}
+	.zmi-manage_menu {
+		background-image:url("logo/Zope_black_opacity12.svg");
+	}
+	.zmi-manage_menu #menu_buttons ul.dropdown-menu  {
+		background-image:url("logo/Zope_opacity12.svg");
+	}
+	@media (min-width: 768px) {
+		header.navbar-nav .product {
+			background-position: 0 9px;
+			background-repeat:no-repeat;
+			background-image:url("logo/Zope_white.svg");
+			background-size:92px;
+			height:42px;
+			width:130px;
+			display:inline-block;
+			color:transparent
+		}
+	}
+*/
