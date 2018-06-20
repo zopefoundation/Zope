@@ -11,7 +11,7 @@
 	<table class="table table-striped">
 		<thead>
 			<tr>
-				<th colspan="2">Database information</th>
+				<th colspan="2">Database information <i class="fa fa-database text-secondary ml-1 mr-1"></i> <em>&dtml-id;</em></th>
 			</tr>
 		</thead>
 		<tbody>

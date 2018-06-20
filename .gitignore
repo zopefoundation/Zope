@@ -5,9 +5,9 @@
 .coverage.*
 .installed*.cfg
 .mr.developer.cfg
+.project
+.pydevproject
 .tox
-.Python
-pip-selfcheck.json
 /bin/
 /build/
 /develop-eggs/

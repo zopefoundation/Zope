@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 
 <dtml-with "_(management_view='Security')"
-	><dtml-if	manage_tabs>
+	><dtml-if	manage_tabs
 		><dtml-var manage_tabs
 	></dtml-if
 ></dtml-with>
@@ -29,8 +29,8 @@
 			<div class="col-sm-10">
 				<input class="form-control" type="text" id="username" name="user" placeholder="Enter name of user ..." />
 				<input type="submit" class="btn btn-primary mr-sm-2"
-				title="Show me the user permissions and roles in the context of the current object"
-				value="Show permissions" />
+					title="Show me the user permissions and roles in the context of the current object"
+					value="Show permissions" />
 			</div>
 		</div>
 	</form>
@@ -59,12 +59,12 @@
 								</th>
 								<dtml-in valid_roles>
 									<th class="zmi-rolename" title="&dtml-sequence-item;"><div><span>&dtml-sequence-item;</span></div></th>
-								</dtml-in valid_roles>
+								</dtml-in>
 								<th class="blank"><div><span>&nbsp;</span></div></th>
 							</tr>
 						</dtml-if>
 						<tr>
-							<td class="zmi-akcquire-check"">
+							<td class="zmi-akcquire-check">
 								<dtml-if isTopLevelPrincipiaApplicationObject>&nbsp;<dtml-else
 									><input type="checkbox" name="acquire_&dtml-hashed_name;" &dtml-acquire; />
 								</dtml-if>
@@ -77,14 +77,14 @@
 									onclick="$(this).children('input').trigger('click')">
 									<label class="sr-only sr-only-focusable" 
 										for="&dtml-name;">Role: <dtml-var "valid_roles[_['sequence-index']]">, Permission: <dtml-var "_['permmission_title']"></label>
-									<input type="checkbox" &dtml-checked; name="&dtml-name;" onclick="event.stopPropagation()"/>
+									<input type="checkbox" &dtml-checked; id="&dtml-name;" name="&dtml-name;" onclick="event.stopPropagation()" />
 								</td>
 							</dtml-in>
 							<td	class="blank">&nbsp;</td>
 						</tr>
 					</dtml-let
-					></dtml-in permission_settings>
-				</tbody>
+					></dtml-in permission_settings
+				></tbody>
 			</table>
 			<div class="zmi-controls">
 				<input type="submit" class="btn btn-primary" name="submit"	value="Save Changes" />
@@ -113,15 +113,15 @@
 					<div class="form-inline">
 						<select name="roles:list" class="form-control col-sm-6 col-md-3 mr-2	mb-2">
 							<dtml-in userdefined_roles>
-							<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-							</dtml-in userdefined_roles>
+								<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+							</dtml-in>
 						</select>
 						<input type="submit" class="btn btn-primary	mb-2" name="submit" value="Delete Role" /> 
 					</div>
 				</div>
 			</dtml-if>
 		</form>
-	</dtml-if >
+	</dtml-if>
 </main>
 
 <dtml-var manage_page_footer>

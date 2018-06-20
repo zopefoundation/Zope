@@ -31,7 +31,7 @@
 							data-title-active="Select type to add"
 							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
 							title="Select type to add"
-							onchange="addItem( elm=this, url1='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
+							onchange="addItem( elm=this, base_url='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
 							><option value="" selected="selected">Select type to add</option>
 							<dtml-if "_.len(filtered_meta_types) > 1"
 								><dtml-in filtered_meta_types mapping sort=name
@@ -53,7 +53,7 @@
 </header>
 
 <!-- ZMI-MODAL DIALOG -->
-<div class="modal fade" id="zmi-modal" tabindex="-1" role="dialog" aria-labelledby="#" aria-hidden="true">
+<div class="modal fade" id="zmi-modal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
