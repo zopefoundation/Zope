@@ -8,8 +8,6 @@
 .project
 .pydevproject
 .tox
-.Python
-pip-selfcheck.json
 /bin/
 /build/
 /develop-eggs/
