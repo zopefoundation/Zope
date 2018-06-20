@@ -5,39 +5,63 @@
 <main class="container-fluid">
 	<form name="objectItems" method="post"
 		tal:define="
-			ids here/objectIds;
-			sm modules/AccessControl/SecurityManagement/getSecurityManager"
+			sm modules/AccessControl/SecurityManagement/getSecurityManager;
+			obs here/objectValues;
+			sort_key python:request.get('sort_key','id');
+			sort_order python:request.get('sort_order','asc');
+			sort_order_alt python:request.get('sort_order','asc')=='asc' and 'desc' or 'asc';
+			sort_func python:['nocase','cmp'][sort_key not in ['title','meta_type','id']];
+			obs python:sequence.sort(obs, ((sort_key,sort_func,sort_order),) )"
 		tal:attributes="action string:${request/URL1}/">
 
-	<tal:not-empty condition="ids">
+	<tal:not-empty condition="obs">
 		<table class="table table-striped table-hover table-sm objectItems"
-			tal:condition="ids">
+			tal:condition="obs">
 			<thead class="thead-light">
 				<tr>
 					<th scope="col" class="zmi-object-check text-right">
 						<input type="checkbox" id="checkAll" onclick="checkbox_all();">
 					</th>
-					<th scope="col" class="zmi-object-type">Type</th>
+					<th scope="col" class="zmi-object-type"
+						><a
+							title="Sort Ascending by meta_type"
+							href="?sort_key=meta_type&sort_order=asc"
+							tal:attributes="
+								title python:'Sort %s by Meta_type'%( sort_order_alt.upper() );
+								href python:'?sort_key=meta_type&sort_order=%s'%( sort_order_alt );">Type</a></th>
 					<th scope="col" class="zmi-object-id">
-						<span title="Name and (Title)">Name</span>
+						<a title="Sort Ascending by Name"
+							href="?sort_key=id&sort_order=asc"
+							tal:attributes="
+								title python:'Sort %s by Name'%( sort_order_alt.upper() );
+								href python:'?sort_key=id&sort_order=%s'%( sort_order_alt );">Name</a>
 							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
 								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
 							></input>
 					</th>
-					<th scope="col" class="zmi-object-size text-right hidden-xs">Size</th>
-					<th scope="col" class="zmi-object-date text-right hidden-xs">Last Modified</th>
+					<th scope="col" class="zmi-object-size text-right hidden-xs"><a
+						title="Sort Ascending by File-Size"
+						href="?sort_key=get_size&sort_order=asc"
+						tal:attributes="
+							title python:'Sort %s by File-Size'%( sort_order_alt.upper() );
+							href python:'?sort_key=get_size&sort_order=%s'%( sort_order_alt );">Size</th>
+					<th scope="col" class="zmi-object-date text-right hidden-xs"><a
+						title="Sort Ascending by Modification Date"
+						href="?sort_key=_p_mtime&sort_order=asc"
+						tal:attributes="
+							title python:'Sort %s by Modification Date'%( sort_order_alt.upper() );
+							href python:'?sort_key=_p_mtime&sort_order=%s'%( sort_order_alt );">Last Modified</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr tal:repeat="id ids">
-					<tal:ob define="ob python:here.get(id)">
+				<tr tal:repeat="ob obs">
 						<td class="zmi-object-check text-right" 
 								onclick="$(this).children('input').trigger('click');">
 								<input type="checkbox"
 									class="checkbox-list-item"
 									name="ids:list"
-									tal:attributes="value id"
+									tal:attributes="value python:ob.getId()"
 									onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');"
 									/>
 						</td>
@@ -51,8 +75,8 @@
 							</i>
 						</td>
 						<td class="zmi-object-id">
-							<a tal:attributes="href string:${id}/manage_workspace">
-							<span tal:replace="id">Id</span>
+							<a tal:attributes="href python:'%s/manage_workspace'%(ob.getId())">
+							<span tal:replace="python:ob.getId()">Id</span>
 							<span class="badge badge-warning" 
 								title="This item has been locked by WebDAV"
 								tal:condition="ob/wl_isLocked | nothing">
@@ -65,12 +89,11 @@
 							</a>
 						</td>
 						<td class="text-right zmi-object-size hidden-xs"
-							tal:content="python:here.computeSize(ob)">
+							tal:content="python:here.compute_size(ob)">
 						</td>
 						<td class="text-right zmi-object-date hidden-xs pl-3"
 							tal:content="python:here.last_modified(ob)">
 						</td>
-					</tal:ob>
 				</tr>
 			</tbody>
 		</table>
@@ -78,7 +101,7 @@
 		<div class="form-group zmi-controls"
 			tal:define="
 			delete_allowed python:sm.checkPermission('Delete objects', context)"
-			tal:condition="ids">
+			tal:condition="obs">
 			<tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
 				<input class="btn btn-primary"
 						type="submit"
@@ -112,9 +135,8 @@
 		</div>
 	</tal:not-empty>
 
-		<tal:empty condition="not:ids">
-			<div class="mb-2">
-				<span class="badge badge-pill badge-info">Info</span>
+		<tal:empty condition="not:obs">
+			<div class="alert alert-info mt-4 mb-4">
 				There are currently no items in <em tal:content="here/title_or_id"></em>.
 			</div>
 			<div class="form-group">

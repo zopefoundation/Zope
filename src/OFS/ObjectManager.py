@@ -842,8 +842,8 @@ class ObjectManager(CopyContainer,
     def values(self):
         return self.objectValues()
 
-    security.declareProtected(access_contents_information, 'computeSize')
-    def computeSize(self, ob):
+    security.declareProtected(access_contents_information, 'compute_size')
+    def compute_size(self, ob):
         #try:
             if hasattr(ob, 'get_size'):
                 ob_size = ob.get_size()
