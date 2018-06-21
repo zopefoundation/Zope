@@ -4,7 +4,7 @@
 
 <main class="container-fluid">
 
-	<dtml-if stat><div class="alert alert danger">&dtml-stat;</div></dtml-if>
+	<dtml-if stat><div class="alert alert-success">&dtml-stat;</div></dtml-if>
 
 	<p class="form-help">
 		Local roles allow you to give particular users extra roles in the context
@@ -23,7 +23,8 @@
 		<form action="manage_delLocalRoles" method="POST" class="zmi-localroles-delete">
 			<dtml-in get_local_roles>
 				<div class="form-check">
- 					<input type="checkbox" class="form-check-input" name="userids:list" value="&dtml-sequence-key;" id="&dtml-sequence-key;_&dtml-sequence-item;" />
+ 					<input type="checkbox" class="form-check-input" 
+ 						name="userids:list" value="&dtml-sequence-key;" id="&dtml-sequence-key;_&dtml-sequence-item;" />
 					<label for="&dtml-sequence-key;_&dtml-sequence-item;" class="form-check-label">
 	 					<a href="manage_editLocalRoles?userid=&dtml.url_quote-sequence-key;"><strong>&dtml-sequence-key;</strong></a> (<dtml-in
 							sequence-item>&dtml-sequence-item;<dtml-unless
@@ -32,7 +33,7 @@
 				</div>
 			</dtml-in>
 			<div class="zmi-controls mt-3 mb-4">
- 				<input class="btn btn-primary" type="submit" name="submit" value="Remove" />
+				<input class="btn btn-primary" type="submit" name="submit" value="Remove" />
 			</div>
 		</form>
 
@@ -47,25 +48,35 @@
 		<table class="table table-md">
 			<thead>
 				<tr>
-					<th class="pl-3">User</th>
-					<th>Roles</th>
+					<th scope="col" class="pl-3" style="width:50%">User</th>
+					<th scope="col" style="width:50%">Roles</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
 					<td class="pl-3">
 					<dtml-try>
-						<select name="userid" class="form-control" size="5">
+						<input id="userid" name="userid" class="form-control" 
+							placeholder="Enter User Name or Select from List"
+							value="<dtml-var "REQUEST.get('username','')">" 
+							required="required" />
+						<select name="userid_list" class="form-control bg-light" size="5"
+							onclick="$('#userid').val( $(this).val() ); $('#userid').focus();">
 							<dtml-in get_valid_userids>
 								<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
 							</dtml-in>
 						</select>
 						<dtml-except OverflowError>
-						<input name="userid" size=10>
+						<input id="userid" placeholder="Enter User Name" 
+							name="userid" class="form-control"
+							required="required" />
 					</dtml-try>
 				</td>
 				<td>
-					<select name="roles:list" class="form-control" size="5" multiple>
+					<select id="roles" name="roles:list" class="form-control pb-4" 
+						size="6" 
+						multiple="multiple"
+						required="required">
 						<dtml-in valid_roles><dtml-if
 							"_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
 							<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>

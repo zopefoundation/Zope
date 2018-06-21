@@ -23,14 +23,21 @@
 		a permission in addition to selecting to acquire permissions.
 	</p>
 
-	<form action="manage_reportUserPermissions" method="get" class="form-inline mb-4">
-		<div class="form-group">
-			<label for="username" class="col-sm-2">Username:</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" id="username" name="user" placeholder="Enter name of user ..." />
-				<input type="submit" class="btn btn-primary mr-sm-2"
+	<form action="manage_reportUserPermissions" method="get" class="mb-4">
+		<div class="form-group row form-inline">
+			<label for="username" class="col-sm-3 col-md-2">Username:</label>
+			<div class="col-sm-9 col-md-10">
+				<input class="form-control mr-3" type="text" id="username" name="user" 
+					required="required" placeholder="Enter name of user ..." />
+				<input type="submit" 
+					class="btn btn-primary mr-sm-2"
 					title="Show me the user permissions and roles in the context of the current object"
 					value="Show permissions" />
+				<input type="button"
+				  class="btn btn-primary mr-3"
+					title="Add a New Local Roles for the entered or any other User Name"
+					onclick="window.location.href='manage_listLocalRoles?username=' + $('#username').val()"
+					value="Assign Local Roles" />
 			</div>
 		</div>
 	</form>
