@@ -7,55 +7,64 @@
 		tal:define="
 			sm modules/AccessControl/SecurityManagement/getSecurityManager;
 			obs here/objectValues;
-			sort_key python:request.get('sort_key','id');
-			sort_order python:request.get('sort_order','asc');
-			sort_order_alt python:request.get('sort_order','asc')=='asc' and 'desc' or 'asc';
-			sort_func python:['nocase','cmp'][sort_key not in ['title','meta_type','id']];
-			obs python:sequence.sort(obs, ((sort_key,sort_func,sort_order),) )"
+			skey python:request.get('skey','getId');
+			rkey python:request.get('rkey','asc');
+			rkey_alt python:request.get('rkey','asc')=='asc' and 'desc' or 'asc';
+			sort_func python:['nocase','cmp'][skey not in ['getId','meta_type','id','title']];
+			obs python:sequence.sort(obs, ((skey,sort_func,rkey),) )"
 		tal:attributes="action string:${request/URL1}/">
 
 	<tal:not-empty condition="obs">
 		<table class="table table-striped table-hover table-sm objectItems"
 			tal:condition="obs">
-			<thead class="thead-light">
+			<thead class="thead-light"
+				tal:attributes="class python:'thead-light sorted_%s'%(request.get('rkey',''))">
 				<tr>
 					<th scope="col" class="zmi-object-check text-right">
-						<input type="checkbox" id="checkAll" onclick="checkbox_all();">
+						<input type="checkbox" id="checkAll" onclick="checkbox_all();" />
 					</th>
 					<th scope="col" class="zmi-object-type"
 						><a
-							title="Sort Ascending by meta_type"
-							href="?sort_key=meta_type&sort_order=asc"
+							title="Sort Ascending by Meta-Type"
+							href="?skey=meta_type&rkey=asc"
 							tal:attributes="
-								title python:'Sort %s by Meta_type'%( sort_order_alt.upper() );
-								href python:'?sort_key=meta_type&sort_order=%s'%( sort_order_alt );
-								class python:request.get('sort_key',None)=='meta_type' and 'zmi-sort_key' or None">Type</a></th>
-					<th scope="col" class="zmi-object-id">
-						<a title="Sort Ascending by Name"
-							href="?sort_key=id&sort_order=asc"
+								title python:'Sort %s by Meta-Type'%( rkey_alt.upper() );
+								href python:'?skey=meta_type&rkey=%s'%( rkey_alt );
+								class python:request.get('skey',None)=='meta_type' and 'zmi-sort_key' or None">
+								<i class="fa fa-sort"></i>
+						</a>
+					</th>
+					<th scope="col" class="zmi-object-id"
+						><a title="Sort Ascending by Name"
+							href="?skey=getId&rkey=asc"
 							tal:attributes="
-								title python:'Sort %s by Name'%( sort_order_alt.upper() );
-								href python:'?sort_key=id&sort_order=%s'%( sort_order_alt );
-								class python:request.get('sort_key',None)=='id' and 'zmi-sort_key' or None">Name</a>
+								title python:'Sort %s by Name'%( rkey_alt.upper() );
+								href python:'?skey=getId&rkey=%s'%( rkey_alt );
+								class python:request.get('skey',None)=='getId' and 'zmi-sort_key' or None"
+								>Name<i class="fa fa-sort"></i></a>
 							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
 								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
 							></input>
 					</th>
-					<th scope="col" class="zmi-object-size text-right hidden-xs"><a
-						title="Sort Ascending by File-Size"
-						href="?sort_key=get_size&sort_order=asc"
-						tal:attributes="
-							title python:'Sort %s by File-Size'%( sort_order_alt.upper() );
-							href python:'?sort_key=get_size&sort_order=%s'%( sort_order_alt );
-							class python:request.get('sort_key',None)=='get_size' and 'zmi-sort_key' or None">Size</th>
-					<th scope="col" class="zmi-object-date text-right hidden-xs"><a
-						title="Sort Ascending by Modification Date"
-						href="?sort_key=_p_mtime&sort_order=asc"
-						tal:attributes="
-							title python:'Sort %s by Modification Date'%( sort_order_alt.upper() );
-							href python:'?sort_key=_p_mtime&sort_order=%s'%( sort_order_alt );
-							class python:request.get('sort_key',None)=='_p_mtime' and 'zmi-sort_key' or None">Last Modified</th>
+					<th scope="col" class="zmi-object-size text-right hidden-xs"
+						><a
+							title="Sort Ascending by File-Size"
+							href="?skey=get_size&rkey=asc"
+							tal:attributes="
+								title python:'Sort %s by File-Size'%( rkey_alt.upper() );
+								href python:'?skey=get_size&rkey=%s'%( rkey_alt );
+								class python:request.get('skey',None)=='get_size' and 'zmi-sort_key' or None"
+								>Size<i class="fa fa-sort"></i></th>
+					<th scope="col" class="zmi-object-date text-right hidden-xs"
+						><a
+							title="Sort Ascending by Modification Date"
+							href="?skey=_p_mtime&rkey=asc"
+							tal:attributes="
+								title python:'Sort %s by Modification Date'%( rkey_alt.upper() );
+								href python:'?skey=_p_mtime&rkey=%s'%( rkey_alt );
+								class python:request.get('skey',None)=='_p_mtime' and 'zmi-sort_key' or None"
+								>Last Modified<i class="fa fa-sort"></i></th>
 				</tr>
 			</thead>
 			<tbody>
