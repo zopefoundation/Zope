@@ -64,7 +64,9 @@
 		<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-image zmi-upload mt-4">
 			<div class="input-group" title="Select Local File for Uploading">
 				<div class="custom-file">
-					<input type="file" name="file" class="custom-file-input" id="file-data" value="">
+					<input type="file" name="file" class="custom-file-input" id="file-data" value=""
+					id="file-data"
+						onchange="$('.custom-file label').html($(this).val().replace(/^.*(\\|\/|\:)/, ''));" />
 					<label class="custom-file-label" for="file-data">Choose file</label>
 				</div>
 				<div class="input-group-append">
