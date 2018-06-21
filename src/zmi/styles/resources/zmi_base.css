@@ -1,5 +1,5 @@
 /* FONTAWESOME 5+ */
-@import "fontawesome-5.0.13/css/fontawesome-all.min.css";
+@import "fontawesome-free-5.1.0/css/fontawesome.css";
 
 /* ZOPE 4 Base Styles */
 
@@ -218,38 +218,31 @@ form.zmi-upload {
 
 
 /* Table Object-Items: Sorting Links*/
-.zmi table.objectItems th a:hover {
-	color:black;
-}
-.zmi table.objectItems th a:after {
+
+.zmi table.objectItems th a i {
+	margin-left:.2rem;
 	color:transparent;
-	margin-left:.15rem !important;
 }
-.zmi table.objectItems th a.zmi-sort_key::after,
-.zmi table.objectItems th a.zmi-sort_key::after {
-	color:black;
+.zmi table.objectItems thead.sorted_desc th a,
+.zmi table.objectItems thead.sorted_asc th a,
+.zmi table.objectItems th.zmi-object-type a i {
+	color:#bbb;
 }
-.zmi table.objectItems th a.zmi-sort_key[title*='ASC']:after,
-.zmi table.objectItems th a.zmi-sort_key[title*='DESC']:hover:after,
-.zmi table.objectItems th a[title*='DESC']:after {
-	content:"↓";
-/*
-	content:"\f0d7";
-	font-family: "Font Awesome\ 5 Free",Fontawesome;
-*/
+.zmi table.objectItems th.zmi-object-type a.zmi-sort_key i,
+.zmi table.objectItems th a.zmi-sort_key i,
+.zmi table.objectItems th a.zmi-sort_key,
+.zmi table.objectItems thead.sorted_desc th a.zmi-sort_key,
+.zmi table.objectItems thead.sorted_asc th a.zmi-sort_key,
+.zmi table.objectItems th a:hover {
+	color:black !important;
 }
-.zmi table.objectItems th a.zmi-sort_key[title*='DESC']:after,
-.zmi table.objectItems th a.zmi-sort_key[title*='ASC']:hover:after,
-.zmi table.objectItems th a[title*='ASC']:after {
-	content:"↑";
-/*
+.zmi table.objectItems th a.zmi-sort_key[title*='ASC'] i:before {
 	content:"\f0d8";
-	font-family: "Font Awesome\ 5 Free",Fontawesome;
-*/
+	color:#dc3545;
 }
-.zmi table.objectItems th a[title*='DESC']:hover:after,
-.zmi table.objectItems th a[title*='ASC']:hover:after {
-color:red;
+.zmi table.objectItems th a.zmi-sort_key[title*='DESC'] i:before {
+	content:"\f0d7";
+	color:#dc3545;
 }
 
 
@@ -582,7 +575,8 @@ header.navbar-nav a {
 header.navbar-nav .product {
 	color:white;
 }
-header.navbar #toggle_menu {
+header.navbar #toggle_menu,
+header.navbar #toggle_menu a  {
 	display: block;
 	left: 0;
 	top: 0;

@@ -112,7 +112,7 @@ function addItem( elm, base_url ) {
 		"ZCatalogIndex":{ "title":"ZCatalogIndex", "class":"far fa-list-alt" },
 		"ZCatalog":{ "title":"ZCatalog", "class":"fa fa-search" },
 		"Session Data Manager":{ "title":"Session Data Manager", "class":"far fa-clock" },
-		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"far fa-user-circle" },
+		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"fa fa-cookie-bite" },
 		"Broken object":{ "title":"Broken object", "class":"fas fa-ban text-danger" }
 	}
 // PROCESS Object Icons
