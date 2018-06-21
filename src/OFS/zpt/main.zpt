@@ -28,13 +28,15 @@
 							href="?sort_key=meta_type&sort_order=asc"
 							tal:attributes="
 								title python:'Sort %s by Meta_type'%( sort_order_alt.upper() );
-								href python:'?sort_key=meta_type&sort_order=%s'%( sort_order_alt );">Type</a></th>
+								href python:'?sort_key=meta_type&sort_order=%s'%( sort_order_alt );
+								class python:request.get('sort_key',None)=='meta_type' and 'zmi-sort_key' or None">Type</a></th>
 					<th scope="col" class="zmi-object-id">
 						<a title="Sort Ascending by Name"
 							href="?sort_key=id&sort_order=asc"
 							tal:attributes="
 								title python:'Sort %s by Name'%( sort_order_alt.upper() );
-								href python:'?sort_key=id&sort_order=%s'%( sort_order_alt );">Name</a>
+								href python:'?sort_key=id&sort_order=%s'%( sort_order_alt );
+								class python:request.get('sort_key',None)=='id' and 'zmi-sort_key' or None">Name</a>
 							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
 								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
@@ -45,13 +47,15 @@
 						href="?sort_key=get_size&sort_order=asc"
 						tal:attributes="
 							title python:'Sort %s by File-Size'%( sort_order_alt.upper() );
-							href python:'?sort_key=get_size&sort_order=%s'%( sort_order_alt );">Size</th>
+							href python:'?sort_key=get_size&sort_order=%s'%( sort_order_alt );
+							class python:request.get('sort_key',None)=='get_size' and 'zmi-sort_key' or None">Size</th>
 					<th scope="col" class="zmi-object-date text-right hidden-xs"><a
 						title="Sort Ascending by Modification Date"
 						href="?sort_key=_p_mtime&sort_order=asc"
 						tal:attributes="
 							title python:'Sort %s by Modification Date'%( sort_order_alt.upper() );
-							href python:'?sort_key=_p_mtime&sort_order=%s'%( sort_order_alt );">Last Modified</th>
+							href python:'?sort_key=_p_mtime&sort_order=%s'%( sort_order_alt );
+							class python:request.get('sort_key',None)=='_p_mtime' and 'zmi-sort_key' or None">Last Modified</th>
 				</tr>
 			</thead>
 			<tbody>
