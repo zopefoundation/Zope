@@ -156,7 +156,6 @@ form.zmi-upload {
 
 /* MAIN / OBJECTLIST */
 
-
 .zmi table.objectItems td {
 	line-height:1.7rem;
 }
@@ -216,6 +215,44 @@ form.zmi-upload {
 .zmi table.objectItems tr.checked {
 	background-color:#007bff1c !important;
 }
+
+
+/* Table Object-Items: Sorting Links*/
+.zmi table.objectItems th a:hover {
+	color:black;
+}
+.zmi table.objectItems th a:after {
+	color:transparent;
+	margin-left:.15rem !important;
+}
+.zmi table.objectItems th a.zmi-sort_key::after,
+.zmi table.objectItems th a.zmi-sort_key::after {
+	color:black;
+}
+.zmi table.objectItems th a.zmi-sort_key[title*='ASC']:after,
+.zmi table.objectItems th a.zmi-sort_key[title*='DESC']:hover:after,
+.zmi table.objectItems th a[title*='DESC']:after {
+	content:"↓";
+/*
+	content:"\f0d7";
+	font-family: "Font Awesome\ 5 Free",Fontawesome;
+*/
+}
+.zmi table.objectItems th a.zmi-sort_key[title*='DESC']:after,
+.zmi table.objectItems th a.zmi-sort_key[title*='ASC']:hover:after,
+.zmi table.objectItems th a[title*='ASC']:after {
+	content:"↑";
+/*
+	content:"\f0d8";
+	font-family: "Font Awesome\ 5 Free",Fontawesome;
+*/
+}
+.zmi table.objectItems th a[title*='DESC']:hover:after,
+.zmi table.objectItems th a[title*='ASC']:hover:after {
+color:red;
+}
+
+
 .zmi main:not(.zmi-patch) > form > table.table {
 	margin: 0 -1rem;
 	max-width: calc(100% + 1.9rem);
