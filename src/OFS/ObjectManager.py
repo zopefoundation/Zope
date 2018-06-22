@@ -37,6 +37,7 @@ from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_acquire, aq_parent
 from Acquisition import Implicit
 from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from Persistence import Persistent
 from six import string_types
 from six import text_type
@@ -861,9 +862,8 @@ class ObjectManager(CopyContainer,
     def last_modified(self, ob):
         try:
             return DateTime(ob._p_mtime).strftime("%Y-%m-%d %H:%M")
-        except:
-            pass
-        return ''
+        except (DateTimeError, AttributeError):
+            return ''
 
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
