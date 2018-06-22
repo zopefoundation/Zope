@@ -139,7 +139,7 @@ form.zmi-upload {
 }
 .zmi .breadcrumb li.breadcrumb-item.meta_type:after {
 	content:'at';
-	margin-left:.5rem;
+	margin-left:.35rem;
 	font-style:italic;
 }
 
