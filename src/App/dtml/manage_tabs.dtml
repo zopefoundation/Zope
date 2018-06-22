@@ -39,10 +39,16 @@
 </dtml-comment>
 
 		<nav aria-label="breadcrumb">
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item meta_type"><dtml-if meta_type
-					><i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
-					&dtml-meta_type;<dtml-else>Object</dtml-if>
+		<dtml-let breadcrumb_length="len(list(tabs_path_default(REQUEST)))">
+			<ol class="breadcrumb <dtml-var "'zmi-' + title.replace(' ','')">" 
+				data-length="<dtml-var breadcrumb_length>">
+				<li class="breadcrumb-item meta_type">
+					<dtml-if meta_type>
+						<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
+						<dtml-var "breadcrumb_length==1 and 'Root Folder' or meta_type">
+					<dtml-else>
+						Object
+					</dtml-if>
 				</li>
 				<dtml-in expr="tabs_path_default(REQUEST)" mapping>
 					<li class="breadcrumb-item<dtml-if last> active</dtml-if>"
@@ -51,14 +57,14 @@
 							title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
 						</dtml-if>
 						><a href="&dtml-url;">
-							<dtml-if "title=='Root'">
+							<dtml-if "_['sequence-index']==0">
 								<strong title="Root Folder">&nbsp;/&nbsp;</strong>
 							<dtml-else>
 								&dtml-title;
 							</dtml-if>
 						</a>
-						<dtml-if "title!='Root' and last==False">
-							 &nbsp;/&nbsp;
+						<dtml-if "_['sequence-index']!=0 and last==False">
+							&nbsp;/&nbsp;
 						</dtml-if>
 						<dtml-if wl_isLocked
 							><span class="badge badge-warning" 
@@ -67,6 +73,7 @@
 					</li>
 				</dtml-in>
 			</ol>
+			</dtml-let>
 		</nav>
 
 
