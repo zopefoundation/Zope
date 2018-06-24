@@ -186,6 +186,10 @@ $(function() {
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
 		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-inactive') );
 	}
+	
+	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
+		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});
+	}
 
 });
 
