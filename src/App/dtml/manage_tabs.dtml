@@ -14,19 +14,21 @@
 			></dtml-if
 		></dtml-in>
 
-		<nav role="navigation">
-			<ul class="nav nav-tabs mt-2 mb-2">
-				<dtml-in manage_options mapping>
-					<dtml-let s_item=sequence-item s_index=sequence-index>
-						<li class="nav-item">
-							<a <dtml-if "s_index==a_"> class="nav-link active"<dtml-else> class="nav-link"</dtml-if
-								><dtml-if "s_item.get('action')"> href="&dtml-action;"<dtml-else> href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
-								><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if>
-								><dtml-var "s_item['label']"></a>
-						</li>
-					</dtml-let>
-				</dtml-in>
-			</ul>
+		<nav id="tabs" class="navbar navbar-light navbar-expand-md row mt-2 mb-0 pb-0" role="navigation">
+			<div class="collapse navbar-collapse" id="tabs_items">
+				<ul class="nav nav-tabs" style="width:100%">
+					<dtml-in manage_options mapping>
+						<dtml-let s_item=sequence-item s_index=sequence-index>
+							<li class="nav-item">
+								<a <dtml-if "s_index==a_"> class="nav-link active"<dtml-else> class="nav-link"</dtml-if
+									><dtml-if "s_item.get('action')"> href="&dtml-action;"<dtml-else> href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
+									><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if>
+									><dtml-var "s_item['label']"></a>
+							</li>
+						</dtml-let>
+					</dtml-in>
+				</ul>
+			</div>
 		</nav>
 	</dtml-if>
 

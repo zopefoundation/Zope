@@ -1,26 +1,31 @@
 <dtml-unless "'manage_menu' in REQUEST['URL']">
 
-<header class="navbar navbar-nav navbar-expand navbar-dark flex-column flex-sm-row bd-navbar">
-
-	<div id="toggle_menu" class="desktop"
-		data-title-active = "Show/Hide Tree Menu of the Navigation Context"
-		data-title-inactive = "STATUS INACTIVE: Tree Menu Button only be Active on List Views"
-		title="Show/Hide Tree Menu of the Navigation Context"
-	><a href="#" onclick="javascript:toggle_menu()" target="_parent"
-			><i class="fa fa-bars">&nbsp;</i></a>
+<header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
+	<div id="toggle_tabs" class="collapse" 
+		data-toggle="collapse" 
+		data-target="#tabs_items" 
+		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
+		<i class="fa fa-bars"></i>
 	</div>
 	<a class="navbar-brand" href="#" onclick="window.open('http://www.zope.org');">
 		<span class="product">ZOPE 4.0</span>
 	</a>
-
-	<ul class="navbar-nav flex-row ml-sm-auto d-none d-sm-flex">
-		<li class="form-inline zmi-authenticated_user">
-			<span>&dtml-AUTHENTICATED_USER;</span>
+	<ul class="navbar-nav flex-row ml-sm-auto d-flex">
+		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: &dtml-AUTHENTICATED_USER;">
+			<span class="zmi-label">&dtml-AUTHENTICATED_USER;</span>
+		</li>
+		<li id="toggle_menu" class="form-inline desktop"
+			data-title-active="Show/Hide Tree Menu of the Navigation Context"
+			data-title-inactive="STATUS INACTIVE: Tree Menu Button only be Active on List Views"
+			title="Show/Hide Tree Menu of the Navigation Context">
+			<a href="#" onclick="javascript:toggle_menu()" target="_parent">
+				<i class="fa fa-sitemap"></i>
+			</a>
 		</li>
 		<li class="form-inline zmi-cp">
 			<a title="TEST: Useful link set has to evaluated" 
 				href="/Control_Panel/manage_main" target="manage_main">
-				<i class="fa fa-cog"></i> Control Panel
+				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
 		</li>
 		<dtml-if filtered_meta_types>
@@ -46,7 +51,7 @@
 	</ul>
 
 	<a href="manage_zmi_logout" title="Logout"
-		class="ml-4 d-none d-sm-block">
+		class="ml-4">
 		<i class="fas fa-sign-out-alt"></i>
 	</a>
 
