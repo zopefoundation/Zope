@@ -161,6 +161,8 @@ form.zmi-upload {
 	box-shadow:none;
 	border-radius:3px;
 	height:1.3rem;
+	width:10rem;
+	max-width:50%;
 }
 .zmi table.objectItems .zmi-object-id #tablefilter:focus {
 	outline-color: transparent;
