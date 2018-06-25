@@ -1,7 +1,7 @@
 <dtml-unless "'manage_menu' in REQUEST['URL']">
 
 <header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
-	<div id="toggle_tabs" class="collapse" 
+	<div id="toggle_tabs" class="collapsed" 
 		data-toggle="collapse" 
 		data-target="#tabs_items" 
 		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
