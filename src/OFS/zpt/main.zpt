@@ -226,6 +226,17 @@
 			$('table.objectItems').find("tbody tr td.zmi-object-id a:contains(" + tablefilter+ ")").closest('tbody tr').show();
 		});
 
+		// +++++++++++++++++++++++++++
+		// OBJECTIST SORTING: Show skey=meta_type
+		// +++++++++++++++++++++++++++
+		let searchParams = new URLSearchParams(window.location.search);
+		if (searchParams.get('skey') == 'meta_type' ) {
+			$('td.zmi-object-type i').each( function() {
+				$(this).parent().parent().find('td.zmi-object-id').prepend('<span class="zmi-typename_show">' + $(this).attr('data-title')+'</span>')
+			});
+			$('th.zmi-object-id').addClass('zmi-typename_show');
+		}
+
 	});
 //-->
 </script>
