@@ -195,6 +195,16 @@ form.zmi-upload {
 .zmi table.objectItems .zmi-object-type{
 	cursor:pointer;
 }
+.zmi table.objectItems td.zmi-object-id span.zmi-typename_show {
+	width:180px;
+	font-weight:normal;
+	display:inline-block;
+	font-size:small;
+	font-style: italic;
+}
+.zmi table.objectItems th.zmi-object-id.zmi-typename_show {
+	padding-left:190px;
+}
 .zmi table.objectItems .zmi-object-date,
 .zmi table.objectItems .zmi-object-size {
 	white-space:nowrap;
@@ -263,6 +273,12 @@ form.zmi-upload {
 	.zmi.zmi-manage_defined_roles .nowrap,
 	.zmi.zmi-manage_access .nowrap {
 		white-space:nowrap;
+	}
+}
+@media (max-width: 768px) {
+	.zmi.zmi-manage_access form[action='manage_reportUserPermissions'] .form-group.row.form-inline input,
+	.zmi.zmi-manage_access form[action='manage_reportUserPermissions'] .form-group.row.form-inline label  {
+		margin-bottom:.5rem;
 	}
 }
 .zmi th.zmi-akcquire-title {
@@ -511,6 +527,7 @@ header.navbar-nav #toggle_tabs {
 	border-right: 1px solid silver;
 	padding: .60rem 1rem 0 0;
 	height: 42px;
+	display:none;
 }
 header.navbar-nav .product {
 	color:white;
@@ -538,7 +555,7 @@ header.navbar ul.navbar-nav li.zmi-cp i {
 	margin-right:.5em;
 }
 header.navbar ul.navbar-nav li.zmi-addItemSelect {
-	padding:.75rem .5rem .75rem 0;
+	padding: 0 .5rem 0 0;
 }
 header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm {
 	color: silver;
@@ -557,6 +574,9 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 
 @media (max-width: 768px) {
 
+	.zmi header.navbar {
+		z-index:1001;
+	}
 	.zmi header.navbar .navbar-brand,
 	.zmi header.navbar ul.navbar-nav li#toggle_menu,
 	.zmi header.navbar li.zmi-authenticated_user span.zmi-label,
@@ -572,17 +592,37 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	}
 	header.navbar #toggle_tabs {
 		display:inline-block;
+		cursor:pointer;
+	}
+	header.navbar #toggle_tabs:not(.collapsed) {
+		background: #e9ecef;
+		margin-left: -16px;
+		padding-left: 19px;
+		color: black;
+	}
+	header.navbar #toggle_tabs:not(.collapsed) i.fa.fa-bars:before {
+		content:"\f00d" !important;
 	}
 	.zmi nav[role="navigation"] {
 		background-color: #e9ecef;
 		margin-top:0 !important;
 		padding:0;
+		height: calc(100vh - 42px);
+		position: absolute;
+		z-index: 100;
+		width: max-content;
+		align-items: baseline;
+		box-shadow: 1px 0 24px rgba(53, 79, 103, 0.5);
+	}
+	.zmi nav[role="navigation"] .navbar-collapse.row {
+			margin-right: 1rem;
+			min-width:200px;
 	}
 	.zmi nav[role="navigation"] .nav-tabs {
 		display:block;
-		flex-wrap: none;
 		list-style: none; 
 		padding:1rem;
+		border-bottom:0;
 	}
 	.zmi nav[role="navigation"] .nav-tabs li.nav-item {
 		padding-left:0 !important;
