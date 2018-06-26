@@ -483,6 +483,13 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 .zmi .btn.btn-primary.form-control-file {
 	border-color:#ced4da;
 }
+.zmi .custom-file label.custom-file-label span {
+	max-width: calc(100% - 80px);
+	display:inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
 /* CUSTOM ICON: Folder (Ordered) */
 i.fa-folder.zmi-icon-folder-ordered:after {
