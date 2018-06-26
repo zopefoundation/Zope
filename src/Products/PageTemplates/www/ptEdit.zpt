@@ -98,8 +98,9 @@
 		<form action="pt_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
 			<div class="input-group" title="Select Local File for Uploading">
 				<div class="custom-file">
-					<input type="file" name="file" class="custom-file-input" id="file-data" value="">
-					<label class="custom-file-label" for="file-data">Choose file</label>
+					<input type="file" name="file" class="custom-file-input" id="file-data" value=""
+						onchange="$('.custom-file label span').html($(this).val().replace(/^.*(\\|\/|\:)/, ''));" />
+					<label class="custom-file-label" for="file-data"><span>Choose file</span></label>
 				</div>
 				<div class="input-group-append">
 					<input id="encoding" type="text" title="Encoding"
@@ -108,7 +109,7 @@
 						name="encoding" value="utf-8" placeholder="utf-8" />
 				</div>
 				<div class="input-group-append">
-					<input class="btn btn-outline-secondary"" type="submit" value="Upload File" />
+					<input class="btn btn-outline-secondary" type="submit" value="Upload File" />
 				</div>
 			</div>
 			<small id="encodingHelp" class="form-text text-warning text-right">
