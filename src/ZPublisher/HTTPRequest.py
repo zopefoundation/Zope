@@ -497,23 +497,8 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-
-        # Workaround for https://bugs.python.org/issue27777:
-        # If Content-Length is nonzero, manufacture a Content-Disposition
-        # with a filename to make sure a binary file is opened.
-        headers = None
-        if 'CONTENT_LENGTH' in environ and environ['CONTENT_LENGTH'] != '0':
-            # In order to override content-disposition we need to
-            # specify the full headers; this is based on FileStorage.__init__
-            headers = {
-                'content-type': 'application/x-www-form-urlencoded'
-            }
-            if 'CONTENT_TYPE' in environ:
-                headers['content-type'] = environ['CONTENT_TYPE']
-            headers['content-length'] = environ['CONTENT_LENGTH']
-            headers['content-disposition'] = 'inline; filename="stdin"'
-        fs = FieldStorage(
-            fp=fp, headers=headers, environ=environ, keep_blank_values=1)
+        fs = ZopeFieldStorage(
+            fp=fp, environ=environ, keep_blank_values=1)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
