@@ -505,14 +505,11 @@ class HTTPRequest(BaseRequest):
         if 'CONTENT_LENGTH' in environ and environ['CONTENT_LENGTH'] != '0':
             # In order to override content-disposition we need to
             # specify the full headers; this is based on FileStorage.__init__
-            headers = {}
-            if method == 'POST':
-                # Set default content-type for POST to what's traditional
-                headers['content-type'] = "application/x-www-form-urlencoded"
+            headers = {
+                'content-type': 'application/x-www-form-urlencoded'
+            }
             if 'CONTENT_TYPE' in environ:
                 headers['content-type'] = environ['CONTENT_TYPE']
-            if 'QUERY_STRING' in environ:
-                self.qs_on_post = environ['QUERY_STRING']
             headers['content-length'] = environ['CONTENT_LENGTH']
             headers['content-disposition'] = 'inline; filename="stdin"'
         fs = FieldStorage(
