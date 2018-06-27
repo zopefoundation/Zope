@@ -644,6 +644,19 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	.zmi .breadcrumb {
 		margin-bottom: 0;
 	}
+	.zmi table#zmi-db_info tbody tr td {
+		display:block;	
+		padding:.2rem .75rem .5rem
+	}	
+	.zmi table#zmi-db_cache tbody tr td:nth-child(1) {
+		color: black;
+	}
+	.zmi table#zmi-db_info tbody tr:nth-of-type(odd) td:nth-child(2) {
+		border-top:1px solid #f7f8f9;
+	}
+	.zmi table#zmi-db_info tbody tr:nth-of-type(even) td:nth-child(2) {
+		border-top:1px solid white;
+	}
 }
 
 /* MODAL DIALOG */
