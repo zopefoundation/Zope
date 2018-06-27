@@ -8,7 +8,7 @@
 		The Database Manager allows you to view database status information.
 	</p>
 
-	<table class="table table-striped">
+	<table id="zmi-db_info" class="table table-striped">
 		<thead>
 			<tr>
 				<th colspan="2">Database information <i class="fa fa-database text-secondary ml-1 mr-1"></i> <em>&dtml-id;</em></th>
@@ -17,49 +17,56 @@
 		<tbody>
 			<tr>
 				<td>Database Location</td>
-				<td>&dtml-db_name;</td>
+				<td class="code">&dtml-db_name;</td>
 			</tr>
 			<tr>
 				<td>Database Size</td>
-				<td>&dtml-db_size;</td>
+				<td class="code">&dtml-db_size;</td>
 			</tr>
 			<tr>
 				<td>Total number of objects in the database</td>
-				<td>&dtml-database_size;</td>
+				<td class="code">&dtml-database_size;</td>
 			</tr>
 			<tr>
 				<td>Total number of objects in memory from all caches</td>
-				<td>&dtml-cache_length;</td>
+				<td class="code">&dtml-cache_length;</td>
 			</tr>
 			<tr>
 				<td>Target number of objects in memory per cache</td>
-				<td>&dtml-cache_size;</td>
+				<td class="code">&dtml-cache_size;</td>
 			</tr>
 			<tr>
 				<td>Target memory size per cache in bytes</td>
-				<td>&dtml-cache_length_bytes;</td>
+				<td class="code">&dtml-cache_length_bytes;</td>
 			</tr>
 		</tbody>
 	</table>
 
 
-	<table class="table table-striped mt-5">
+	<table id="zmi-db_cache" class="table table-striped mt-5">
 		<thead>
 			<tr>
 				<th colspan="3">Total number of objects in each cache</th>
 			</tr>
 			<tr>
-					<th><em>Cache Name</em></th>
-					<th><em>Number of active objects</em></th>
-					<th><em>Total active and non-active objects</em></th>
+					<th>
+						<em>Cache Name</em></th>
+					<th>
+						<em class="d-none d-md-block">Number of active objects</em>
+						<em class="d-sm-block d-md-none">Active</em>
+					</th>
+					<th>
+						<em class="d-none d-md-block">Total active and non-active objects</em>
+						<em class="d-sm-block d-md-none">Total</em>
+					</th>
 			</tr>
 		</thead>
 		<tbody>
 			<dtml-in cache_detail_length mapping>
 				<tr>
 					<td>&dtml-connection;</td>
-					<td>&dtml-ngsize;</td>
-					<td>&dtml-size;</td>
+					<td class="code">&dtml-ngsize;</td>
+					<td class="code">&dtml-size;</td>
 				</tr>
 			</dtml-in>
 			<tr>
