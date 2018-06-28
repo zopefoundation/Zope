@@ -382,6 +382,11 @@ td.zmi-rolename-check:hover {
 }
 textarea.zmi-code {
 	font-family:monospace;
+/*
+	width: 100%;
+	box-shadow: inset 0px 0px 30px silver;
+	background: #f6f6f6;
+*/
 }
 .code {
 	font-size: 87.5%;

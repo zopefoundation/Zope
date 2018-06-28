@@ -97,7 +97,7 @@ function addItem( elm, base_url ) {
 		"File":{ "title":"File Object", "class":"far fa-file-archive" },
 		"Mail":{ "title":"Mail Folder", "class":"far fa-envelope" },
 		"Image":{ "title":"Image", "class":"far fa-file-image" },
-		"Control":{ "title":"Control Panel", "class":"fa fa-cogs" },
+		"Control":{ "title":"Control Panel", "class":"fa fa-cog" },
 		"Database":{ "title":"Database", "class":"fa fa-database" },
 		"ZSQLiteDA":{ "title":"Database", "class":"fa fa-database" },
 		"ZMySQLDA":{ "title":"MySQL-Database Adapter", "class":"fa fa-database" },
