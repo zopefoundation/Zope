@@ -408,7 +408,7 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     zpt = getattr(self, id)
 
     if RESPONSE:
-        if submit == " Add and Edit ":
+        if submit == "Add and Edit":
             RESPONSE.redirect(zpt.absolute_url() + '/pt_editForm')
         else:
             RESPONSE.redirect(self.absolute_url() + '/manage_main')

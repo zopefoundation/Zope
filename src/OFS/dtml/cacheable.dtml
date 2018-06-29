@@ -5,39 +5,37 @@
 
 	<form action="&dtml-absolute_url;" method="post">
 
-		<div class="form-group row">
-			<label for="manager_id" class="form-label col-sm-3 col-md-2">New Cache this object using</label>
-			<div class="col-sm-9 col-md-10">
-					<div class="input-group">
-					<div class="input-group-prepend">
-						<input class="btn btn-primary" type="submit" name="ZCacheable_setManagerId:method" value="Save Changes" />
-					</div>
-						<select class="form-control" id="manager_id" name="manager_id">
-							<option value="">None</option>
-							<dtml-in ZCacheable_getManagerIds mapping
-							><option value="&dtml-id;" <dtml-if expr="id == ZCacheable_getManagerId()">selected="selected"</dtml-if
-								>>&dtml-id;<dtml-if title>(&dtml-title;)</dtml-if></option>
-							</dtml-in>
-						</select>
+		<div class="form-group row mt-4 mb-4" title="New Cache this object using">
+			<div class="input-group col-12">
+				<div class="input-group-prepend">
+					<span class="input-group-text">New Cache&nbsp;<span class="d-none d-sm-block">this object using </span></span>
+				</div>
+					<select class="form-control" id="manager_id" name="manager_id">
+						<option value="">None</option>
+						<dtml-in ZCacheable_getManagerIds mapping
+						><option value="&dtml-id;" <dtml-if expr="id == ZCacheable_getManagerId()">selected="selected"</dtml-if
+							>>&dtml-id;<dtml-if title>(&dtml-title;)</dtml-if></option>
+						</dtml-in>
+					</select>
+					<div class="input-group-append">
+						<input class="btn btn-primary" style="width:8rem" type="submit" name="ZCacheable_setManagerId:method" value="Save Changes" />
 				</div>
 			</div>
 		</div>
 
 
 		<dtml-if ZCacheable_getManagerURL>
-			<div class="form-group row">
-				<label for="ZCacheable_invalidate:method" class="form-label col-sm-3 col-md-2">
-					<a href="&dtml-ZCacheable_getManagerURL;/manage_main">Cache Settings</a>
-				</label>
-				<div class="col-sm-9 col-md-10">
-					<input class="btn btn-primary" type="submit" name="ZCacheable_invalidate:method" value="Invalidate" />
+			<div class="form-group row mt-4 mb-4" title="Revise Cache Settings">
+				<div class="input-group col-12">
+						<span class="form-control input-group-text"><a href="&dtml-ZCacheable_getManagerURL;/manage_main">Cache Settings ...</a></span>
+						<div class="input-group-append">
+							<input class="btn btn-primary" style="width:8rem" type="submit" name="ZCacheable_invalidate:method" value="Invalidate" />
+					</div>
 				</div>
 			</div>
 		</dtml-if>
 
-		<div class="mt-5">
-			<dtml-var ZCacheable_configHTML>
-		</div>
+		<div class="mt-5"><dtml-var ZCacheable_configHTML></div>
 
 	</form>
 

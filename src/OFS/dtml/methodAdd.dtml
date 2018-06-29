@@ -36,13 +36,13 @@
 		<div class="form-group row">
 			<label for="file" class="form-label col-sm-3 col-md-2">File</label>
 			<div class="col-sm-9 col-md-10">
-				<input type="file" id="file" class="form-control form-control-file" name="file:string" size="25" value="" />
+				<input type="file" id="file" class="form-control form-control-file" name="file:string" value="" />
 			</div>
 		</div>
 
 		<div class="zmi-controls">
-			<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
-			<input class="btn btn-secondary" type="submit" name="submit" value=" Add and Edit " />
+			<input class="btn btn-primary" type="submit" name="submit" value="Add" />
+			<input class="btn btn-primary" type="submit" name="submit" value="Add and Edit" />
 		</div>
 
 	</form>

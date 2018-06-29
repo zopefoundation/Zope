@@ -171,7 +171,7 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
             u = self.DestinationURL()
         except Exception:
             u = REQUEST['URL1']
-        if submit == " Add and Edit ":
+        if submit == "Add and Edit":
             u = "%s/%s" % (u, quote(id))
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

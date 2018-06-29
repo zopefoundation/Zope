@@ -12,7 +12,7 @@
 						><dtml-if id
 							><tr>
 								<td>
-									<dtml-if expr="isDeletable(id)"><input type=checkbox name="ids:list" value="&dtml-id;"></dtml-if>
+									<dtml-if expr="isDeletable(id)"><input type="checkbox" name="ids:list" value="&dtml-id;"></dtml-if>
 								</td>
 								<td>
 									<a href="&dtml-id;/manage">&dtml-id; <dtml-if xml_namespace>(<dtml-var xml_namespace>)</dtml-if></a>

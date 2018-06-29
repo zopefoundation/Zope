@@ -1,49 +1,44 @@
 <dtml-var manage_page_header>
+
 <dtml-var manage_tabs>
 
-<p class="form-help">
-Enter variable values to pass to the script in the form below and 
-click <em>run script</em> to view the result of the call.
-</p>
+<main class="container-fluid">
 
-<form action="&dtml-URL1;/ZScriptHTML_tryAction" method="post">
-<table cellpadding="2" cellspacing="0" border="0">
-<tr class="list-header">
-  <td align="left" valign="top">
-  <div class="form-label">
-  Parameter
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Value
-  </div>
-  </td>
-</tr>
+	<p class="form-help">
+		Enter variable values to pass to the script in the form below and 
+		click <em>run script</em> to view the result of the call.
+	</p>
 
-<dtml-in ZScriptHTML_tryParams>
-<tr>
-  <td align="left" valign="top">
-  <input name="argvars.name:records" type="text" 
-     value="&dtml-sequence-item;">
-  </td>
-  <td align="left" valign="top">
-  <input name="argvars.value:records" type="text" value="">
-  </td>
-</tr>
-<dtml-else>
-  <dtml-raise type="Redirect"><dtml-var URL1></dtml-raise>
-</dtml-in>
+	<form action="&dtml-URL1;/ZScriptHTML_tryAction" method="post">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Parameter</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+			<dtml-in ZScriptHTML_tryParams>
+				<tr>
+					<td>
+						<input class="form-control" name="argvars.name:records" type="text" value="&dtml-sequence-item;">
+					</td>
+					<td>
+						<input class="form-control" name="argvars.value:records" type="text" value="">
+					</td>
+				</tr>
+			<dtml-else>
+				<dtml-raise type="Redirect"><dtml-var URL1></dtml-raise>
+			</dtml-in>
+			</tbody>
+		</table>
 
-<tr>
-  <td align="left" valign="top" colspan="2">
-  <div class="form-element">
-  <input class="form-element" type="submit" name="submit" 
-   value="Run Script" /> 
-  </div>
-  </td>
-</tr>
-</table>
-</form>
+		<div class="zmi-controls">
+			<input class="btn btn-primary" type="submit" name="submit" value="Run Scripts" />
+		</div>
+
+	</form>
+
+</main>
 
 <dtml-var manage_page_footer>

@@ -41,8 +41,8 @@
 
 
 	<div class="zmi-controls">
-		<input class="btn btn-primary" type="submit" name="submit" value=" Add " />
-		<input class="btn btn-primary" type="submit" name="submit" value=" Add and Edit " />
+		<input class="btn btn-primary" type="submit" name="submit" value="Add" />
+		<input class="btn btn-primary" type="submit" name="submit" value="Add and Edit" />
 	</div>
 
 </form>
