@@ -69,7 +69,7 @@
 			</thead>
 			<tbody>
 				<tr tal:repeat="ob obs">
-						<td class="zmi-object-check text-right" 
+						<td class="zmi-object-check text-right"
 								onclick="$(this).children('input').trigger('click');">
 								<input type="checkbox"
 									class="checkbox-list-item"
@@ -90,7 +90,7 @@
 						<td class="zmi-object-id">
 							<a tal:attributes="href python:'%s/manage_workspace'%(ob.getId())">
 							<span tal:replace="python:ob.getId()">Id</span>
-							<span class="badge badge-warning" 
+							<span class="badge badge-warning"
 								title="This item has been locked by WebDAV"
 								tal:condition="ob/wl_isLocked | nothing">
 								<i class="fa fa-lock"></i>
@@ -217,7 +217,6 @@
 
 		$('#tablefilter').keyup( function (e) {
 			var tablefilter = $(this).val();
-			console.log('You pressed ' + tablefilter);
 			if( e.which==13 ) {
 				window.location.href = 'manage_findForm?btn_submit=Find&search_sub:int=1&obj_ids%3Atokens=' + tablefilter;
 				e.preventDefault();
