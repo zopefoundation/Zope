@@ -14,8 +14,7 @@
 		<li><a id="menu_refresh" href="manage_menu">Refresh</a></li>
 		<li><a id="menu_save" href="manage_menu?save_layout=1">Save layout</a></li>
 
-<!-- TEST: Useful link set has to evaluated -->
-		<li><a id="menu_cp" title="TEST: Useful link set has to evaluated" 
+		<li><a id="menu_cp" title="Control Panel" 
 			href="/Control_Panel/manage_main" target="manage_main">Control Panel</a></li>
 		<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
 			<li><a title="Zope Object Database Manager" target="manage_main"
@@ -23,7 +22,6 @@
 		</dtml-in>
 		<li><a id="menu_undo" 
 			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
-<!-- /TEST: Useful link set has to evaluated -->
 
 		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
 		<li role="separator" class="divider"></li>

@@ -23,8 +23,8 @@
 			</a>
 		</li>
 		<li class="form-inline zmi-cp">
-			<a title="TEST: Useful link set has to evaluated" 
-				href="/Control_Panel/manage_main" target="manage_main">
+			<a title="Control Panel" 
+				href="/Control_Panel/manage_main" target="_self">
 				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
 		</li>
