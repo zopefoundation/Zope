@@ -60,6 +60,9 @@ input.btn.btn-primary:hover {
 	background-color:#fff;
 	padding-top:.4rem;
 }
+.zmi nav[role="navigation"] ul.nav.nav-tabs {
+	width:100% !important;
+}
 .zmi nav .nav-tabs .nav-item .nav-link {
 	padding: .33rem 1em .33rem 1rem;
 	min-width: 5em;
@@ -381,7 +384,7 @@ td.zmi-rolename-check:hover {
 	background-color: #ced4da;
 }
 textarea.zmi-code {
-	font-family:monospace;
+	font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 /*
 	width: 100%;
 	box-shadow: inset 0px 0px 30px silver;
@@ -623,7 +626,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 		position: absolute;
 		z-index: 100;
 		width: max-content;
-		align-items: baseline;
+		align-items: start;
 		box-shadow: 1px 0 24px rgba(53, 79, 103, 0.5);
 	}
 	.zmi nav[role="navigation"] .navbar-collapse.row {
@@ -635,6 +638,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 		list-style: none; 
 		padding:1rem;
 		border-bottom:0;
+		height: calc(100vh - 42px);
 	}
 	.zmi nav[role="navigation"] .nav-tabs li.nav-item {
 		padding-left:0 !important;
