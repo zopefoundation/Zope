@@ -18,5 +18,7 @@ def js_paths(context):
     return (
         '/++resource++zmi/jquery-3.2.1.min.js',
         '/++resource++zmi/bootstrap-4.1.1/bootstrap.bundle.min.js',
+        '/++resource++zmi/ace.ajax.org/ace.js',
         '/++resource++zmi/zmi_base.js',
+        
     )
