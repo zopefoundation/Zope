@@ -4,13 +4,15 @@
 .coverage.py*
 .installed*.cfg
 .mr.developer.cfg
+.project
+.pydevproject
 .tox
 /bin/
 /build/
-coverage.xml
-/develop/
 /develop-eggs/
+/develop/
 /dist/
+/docs/_build/
 /eggs/
 /etc/
 /htmlcov/
@@ -19,5 +21,4 @@ coverage.xml
 /log/
 /parts/
 /var/
-/docs/_build/
-/docs/.build/
+coverage.xml
