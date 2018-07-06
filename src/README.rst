@@ -17,6 +17,7 @@ Contents
 * Bootstrap CSS and JS
 * FontAwesome
 * jQuery
+* custom CSS and JS for the ZMI
 
 
 Usage
