@@ -171,9 +171,7 @@
 </main>
 
 
-<script type="text/javascript">
-<!--
-
+<script>
 	// +++++++++++++++++++++++++++
 	// checkbox_all: Item  Selection
 	// +++++++++++++++++++++++++++
@@ -254,7 +252,6 @@
 		}
 
 	});
-//-->
 </script>
 
 <tal:footer replace="structure here/manage_page_footer" />
