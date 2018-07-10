@@ -81,13 +81,13 @@ function addItem( elm, base_url ) {
 // [1] ICON FIX: As long as not set systematically in the class definitions
  function fix_zmi_icons() {
 	 var zmi_icons = {
-		"User Folder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
+		"User Folder":{ "title":"Access Control List", "class":"fa fa-user-friends" }, // templated
 		"UserFolder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
 		"Pluggable Auth Service":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
 		"User":{ "title":"User", "class":"fa fa-user" },
 		"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-hdd" },
 		"Filesystem Directory View":{ "title":"Filesystem Directory View", "class":"far fa-folder-open" },
-		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" },
+		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" }, // templated
 		"Folder":{ "title":"Folder", "class":"far fa-folder" },
 		"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
 		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square-alt" },
