@@ -233,7 +233,12 @@
 			
 			var tablefilter = $(this).val();
 			if( e.which==13 ) {
-				window.location.href = 'manage_findForm?btn_submit=Find&search_sub:int=1&obj_ids%3Atokens=' + tablefilter;
+				if (1 === $('tbody tr:visible').length) {
+					window.location.href = $('tbody tr:visible a').attr('href');
+				}
+				else {
+					window.location.href = 'manage_findForm?btn_submit=Find&search_sub:int=1&obj_ids%3Atokens=' + tablefilter;
+				}
 				e.preventDefault();
 			};
 			$('table.objectItems').find("tbody tr").hide();
