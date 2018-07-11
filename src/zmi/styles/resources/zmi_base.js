@@ -25,7 +25,8 @@ function addItem( elm, base_url ) {
 		'manage_addUserFolder',
 		'manage_addErrorLog',
 		'manage_addVirtualHostMonster',
-		'manage_addzmsform'
+		'manage_addzmsform',
+		'addPluggableAuthService'
 	];
 
 	// SHOW MODAL DIALOG	
