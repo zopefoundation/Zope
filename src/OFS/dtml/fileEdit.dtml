@@ -41,8 +41,9 @@
 		<dtml-let ct=getContentType>
 			<dtml-if "(ct.startswith('text') or ct.endswith('javascript')) and this().get_size() < 65536">
 				<div class="form-group">
-					<textarea id="content" class="form-control zmi-file zmi-code col-sm-12" name="filedata:text" 
-						wrap="off" style="width: 100%;" rows="20"><dtml-var __str__ html_quote></textarea>
+					<textarea id="content" <dtml-if content_type>data-contenttype="&dtml-content_type;"</dtml-if>
+						class="form-control zmi-file zmi-code col-sm-12"
+						name="filedata:text" wrap="off" rows="20"><dtml-var __str__ html_quote></textarea>
 				</div>
 
 			<dtml-else>
