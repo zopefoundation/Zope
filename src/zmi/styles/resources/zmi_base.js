@@ -37,7 +37,11 @@ function addItem( elm, base_url ) {
 		$('#zmi-modal').modal({ focus: true });
 		$('#zmi-modal .modal-body').attr('data-add_type', action);
 		// Load Modal Form by AJAX
-		$('#zmi-modal .modal-body').load(modal_body_url);
+		$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
+			if(statusTxt == "error") { 
+				window.location.href = url_full; 
+			}
+		});
 		// Shift Titel to Modal Header
 		$( document ).ajaxComplete(function() {
 			$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
