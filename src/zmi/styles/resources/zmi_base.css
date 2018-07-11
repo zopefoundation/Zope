@@ -395,6 +395,13 @@ textarea.zmi-code {
 #editor_container {
 	height:30rem;
 }
+#editor_container:after {
+	content:"Please press F10 for full screen view";
+	display:block;
+	margin-top:0;
+	font-size:11px;
+	color:#999;
+}
 #editor {
 	height:100%;
 	width: 100%;
