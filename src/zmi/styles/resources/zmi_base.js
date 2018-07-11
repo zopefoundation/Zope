@@ -186,7 +186,11 @@ function show_ace_editor() {
 	$("textarea#content").hide();
 	editor = ace.edit("editor");
 	var value = $("textarea#content").val();
-	var content_type = $("input#contenttype").val();
+	if ( $("textarea#content").attr('data-contenttype') ) {
+		var content_type = $("textarea#content").attr('data-contenttype');
+		} else {
+		var content_type = $("input#contenttype").val();
+	}
 	if (typeof content_type === "undefined" || ! content_type || content_type === 'text/x-unknown-content-type') {
 		var absolute_url = $("span#absolute_url").text();
 		var id = absolute_url.substr(absolute_url.lastIndexOf("/")+1);
@@ -209,7 +213,7 @@ function show_ace_editor() {
 	if ( 0 === value.indexOf("<?xml") || value.indexOf("tal:") >= 0) {
 		content_type = "text/xml";
 	}
-	if ( 0 === value.indexOf("#!/usr/bin/python") || 0 === value.indexOf("## Script (Python)") || $('.zmi-pythonscript').length > 0 ) {
+	if ( 0 === value.indexOf("#!/usr/bin/python") || 0 === value.indexOf("## Script (Python)") ) {
 		content_type = "python";
 	}
 	var mode = "text";
