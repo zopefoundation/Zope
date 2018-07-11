@@ -21,7 +21,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<textarea id="content" class="form-control zmi-code col-sm-12" 
+				<textarea id="content" data-contenttype="html" class="form-control zmi-code col-sm-12" 
 					name="data:text" wrap="off" style="width: 100%;" 
 					rows="20"><dtml-var __str__></textarea>
 			</div>

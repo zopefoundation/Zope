@@ -47,7 +47,7 @@
 		<pre tal:content="python:'\n'.join(errors)">errors</pre>
 	</div>
 
-	<textarea id="content" class="form-control zmi-zpt zmi-code col-sm-12"
+	<textarea id="content" data-contenttype="html" class="form-control zmi-zpt zmi-code col-sm-12"
 		name="text:text" wrap="off" style="width: 100%;" rows="20"
 		tal:content="body"
 		tal:attributes="data-readonly python:context.wl_isLocked() and 'true' or 'false'">
