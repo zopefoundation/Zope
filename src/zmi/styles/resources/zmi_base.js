@@ -191,10 +191,9 @@ function show_ace_editor() {
 	$("textarea#content").hide();
 	editor = ace.edit("editor");
 	var value = $("textarea#content").val();
+	var content_type = $("input#contenttype").val();
 	if ( $("textarea#content").attr('data-contenttype') ) {
-		var content_type = $("textarea#content").attr('data-contenttype');
-		} else {
-		var content_type = $("input#contenttype").val();
+		content_type = $("textarea#content").attr('data-contenttype');
 	}
 	if (typeof content_type === "undefined" || ! content_type || content_type === 'text/x-unknown-content-type') {
 		var absolute_url = $("span#absolute_url").text();
@@ -221,8 +220,8 @@ function show_ace_editor() {
 	if ( 0 === value.indexOf("#!/usr/bin/python") || 0 === value.indexOf("## Script (Python)") ) {
 		content_type = "python";
 	}
-	var mode = "text";
-	if (content_type == "text/html") {
+	var mode = "html";
+	if (content_type == "html" || content_type == "text/html") {
 		mode = "html";
 	}
 	else if (content_type == "text/css" || content_type == "application/css" || content_type == "application/x-css") {
