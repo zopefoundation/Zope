@@ -97,7 +97,7 @@ function addItem( elm, base_url ) {
 		"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
 		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square-alt" },
 		"DTML Document":{ "title":"DTML Document", "class":"far fa-file-alt" },
-		"DTML Method":{ "title":"DTML Document", "class":"far fa-file-alt" },
+		"DTML Method":{ "title":"DTML Method", "class":"far fa-file-alt" },
 		"Page Template":{ "title":"Page Template", "class":"far fa-file-code" },
 		"File":{ "title":"File Object", "class":"far fa-file-archive" },
 		"Mail":{ "title":"Mail Folder", "class":"far fa-envelope" },
@@ -220,7 +220,7 @@ function show_ace_editor() {
 	if ( 0 === value.indexOf("#!/usr/bin/python") || 0 === value.indexOf("## Script (Python)") ) {
 		content_type = "python";
 	}
-	var mode = "html";
+	var mode = "text";
 	if (content_type == "html" || content_type == "text/html") {
 		mode = "html";
 	}
