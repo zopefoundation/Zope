@@ -27,7 +27,7 @@
 
 		<dtml-else>
 
-			<div class="alert alert-warning">There are no users defined.</div>
+			<div class="alert alert-info">There are no users defined.</div>
 	
 			<div class="zmi-controls">
 				<input class="btn btn-primary" type="submit" name="submit" value="Add..." />

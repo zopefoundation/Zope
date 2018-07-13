@@ -37,7 +37,7 @@
 			<a href="manage_main" class="btn btn-primary">Ok</a>
 		</div>
 
-<	/dtml-if>
+	</dtml-if>
 
 </main>
 
