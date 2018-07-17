@@ -148,7 +148,7 @@ function addItem( elm, base_url ) {
 function fix_ancient_gui() {
 	// WRAP FORM ELEMENT with fluid-container (if missing)
 	if ( 0 === $('main').length ) {
-		$('body>form,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
+		$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
 		// ADD BOOTSTRAP CLASSES
 		$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
 		$('input[type="submit"]').addClass('btn btn-primary zmi-patch');

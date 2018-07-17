@@ -62,6 +62,7 @@ input.btn.btn-primary:hover {
 }
 .zmi nav[role="navigation"] ul.nav.nav-tabs {
 	width:100% !important;
+	min-width: max-content;
 }
 .zmi nav .nav-tabs .nav-item .nav-link {
 	padding: .33rem 1em .33rem 1rem;
@@ -762,7 +763,21 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	width: 100%;
 }
 
-/* OBECT CLASS ZCatalog */
+/* OBJECT CLASS ZCatalog */
+@media (min-width: 577px) {
+	body.zmi-ZCatalog {
+		min-width: max-content;
+	}
+	body.zmi-ZCatalog:not(.zmi-manage_catalogFind) main.container-fluid {
+		width: 100vw;
+		margin-right: unset;
+		margin-left: unset;
+	}
+	body.zmi-ZCatalog.zmi-manage_catalogPlan textarea.form-control.zmi-patch {
+		width:auto !important;
+		max-width: 100%;
+	}
+}
 .zmi-manage_catalogAdvanced table td form > * {
 	width:12rem;
 }
