@@ -1764,7 +1764,7 @@ https://pypi.org/project/Products.TextIndexNG3/.
 FieldedTextIndex
 ~~~~~~~~~~~~~~~~
 
-FieldTextIndex is a new index type that is not (yet) a standard
+FieldedTextIndex is a new index type that is not (yet) a standard
 part of Zope, but is a separate product that can be installed
 and used with a standard catalog.
 
