@@ -1039,7 +1039,7 @@ KeywordIndex Record Attributes
 For example::
 
   # big or shiny
-  results=ZCatalog(categories=['big, 'shiny'])
+  results=ZCatalog(categories=['big', 'shiny'])
 
   # big and shiny
   results=ZCatalog(categories={'query':['big','shiny'], 
