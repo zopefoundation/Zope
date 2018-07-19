@@ -5,7 +5,7 @@ Contributors to this book include Amos Latteier, Michel Pelletier,
 Chris McDonough, Evan Simpson, Tom Deprez, Paul Everitt, Bakhtiar
 A. Hamid, Geir Baekholt, Thomas Reulbach, Paul Winkler, Peter Sabaini,
 Andrew Veitch, Kevin Carlson, Joel Burton, John DeStefano, Tres Seaver,
-Hanno Schlicting, and the Zope Community.
+Hanno Schlichting, and the Zope Community.
 
 Amos and Michel wrote the entirety of the first edition of this
 book, and kept the online version of the book current up until Zope
