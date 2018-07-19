@@ -568,7 +568,7 @@ getURL()
   This can differ from getPath() if you are using virtual hosting.
 
 getObject()
-  Returns the actual zope object from the result object.  This
+  Returns the actual Zope object from the result object.  This
   is useful if you want to examine or show an attribute or
   method of the object that isn't in the metadata--once we have
   the actual object, we can get any normal attribute or method
