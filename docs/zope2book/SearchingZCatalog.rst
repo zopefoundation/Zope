@@ -1314,12 +1314,12 @@ handle objects that change. As objects evolve and change, the
 index information is always current, even for rapidly changing
 information sources like message boards.
 
-On the other hand, cataloging a complex object when it changes
-(especially if the catalog index attempts to translate the
-information, as TextIndexNG, described below, can do with
-PDF files or Microsoft Office files). Some sites may benefit
-from mass cataloging, and having a cron job or other scheduled
-job initiate the mass cataloging every night.
+On the other hand, cataloging a complex object when it changes may be too time
+consuming during operation (especially if the catalog index attempts to
+translate the information, as TextIndexNG, described below, can do with PDF
+files or Microsoft Office files). Some sites may benefit from mass cataloging,
+and having a cron job or other scheduled job initiate the mass cataloging every
+night.
 
 In standard (non-CMF, non-Plone) Zope, none of the built-in
 object types attempt to automatically catalog themselves. In
