@@ -1600,7 +1600,7 @@ would include the text in an object's title, it's body, and
 anywhere else you'd want to be able to search. 
 
 For example, if you downloaded a Zope product that managed
-our zoo, and it had an Animal type that you could add to your
+our zoo, and it had an animal type that you could add to your
 site, this animal type would probably expose a 
 PrincipiaSearchSource that looked something like this::
 
