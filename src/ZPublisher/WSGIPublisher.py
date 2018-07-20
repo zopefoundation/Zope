@@ -149,6 +149,10 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
+            # Handle exception view
+            exc_view_created = _exc_view_created_response(
+                exc, request, response)
+
             if isinstance(exc, Unauthorized):
                 # _unauthorized modifies the response in-place. If this hook
                 # is used, an exception view for Unauthorized has to merge
@@ -156,10 +160,6 @@ def transaction_pubevents(request, response, tm=transaction.manager):
                 exc.setRealm(response.realm)
                 response._unauthorized()
                 response.setStatus(exc.getStatus())
-
-            # Handle exception view
-            exc_view_created = _exc_view_created_response(
-                exc, request, response)
 
             notify(pubevents.PubBeforeAbort(
                 request, exc_info, request.supports_retry()))
