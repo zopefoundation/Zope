@@ -9,10 +9,16 @@ This document describes how to install Zope into a ``virtualenv`` using ``pip``.
 Create a Virtual Environment
 ----------------------------
 
+Python 3
+++++++++
+
 .. code-block:: sh
 
    $ python3.6 -m venv zope
    $ cd zope
+
+Python 2.7
+++++++++++
 
 If you are still using Python 2.7 install `virtualenv` onto your system then call:
 
@@ -22,6 +28,11 @@ If you are still using Python 2.7 install `virtualenv` onto your system then cal
    New python executable in zope/bin/python2.7
    Installing setuptools, pip, wheel...done.
    $ cd zope
+   
+Make sure you use at least version ``12.0.1`` of `virtualenv`.
+(Calling ``virtualenv --version`` tells you the used version number.)
+Older versions install a `pip` version which is not compatible with the file format
+of ``requirements-full.txt`` used in `Zope`.
 
 
 Install the Zope Software Packages
