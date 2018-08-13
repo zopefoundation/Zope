@@ -34,11 +34,18 @@ for tag in "2.12.28"; do
     printf "\n" >> README.md
 done
 
-# Select pre egg releases
+# Select pre egg releases >= 2.10
 printf "## Pre egg releases\n\n" >> README.md
-for release in $(ls -1 pre-egg-releases); do
-    echo $release
-    printf "* [$release](pre-egg-releases/$release)\n" >> README.md
+for release in $(find pre-egg-releases -name Zope-2.1* -print); do
+    rel=${release/pre-egg-releases\//}
+    echo $rel
+    printf "* [$rel]($release)\n" >> README.md
+done
+# Select pre egg releases < 2.10 (This is a separate block to ensure the sort order newest --> oldest.)
+for release in $(find pre-egg-releases -name Zope* -a -not -name Zope-2.1* -print); do
+    rel=${release/pre-egg-releases\//}
+    echo $rel
+    printf "* [$rel]($release)\n" >> README.md
 done
 
 # Add a footer
