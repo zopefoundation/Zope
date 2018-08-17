@@ -1,16 +1,25 @@
 <h1 tal:replace="structure context/manage_page_header" />
 <h2 tal:replace="structure context/manage_tabs" />
 
-<h3>Databases</h3>
+<main class="container-fluid">
 
-<table tal:define="databases python:context.getDatabaseNames(quote=True);">
-<tr tal:repeat="info databases">
-<td tal:define="name python: info[0];
-                qname python: info[1]">
-<a tal:content="name" tal:attributes="href
-   string:${context/absolute_url}/${qname}/manage_main">Main</a>
-</td>
-</tr>
-</table>
+<p class="form-help mt-4">
+	Mounted Zope Object Databases (ZODB): Please select a database name 
+	to get into it's <em>Database Manager</em>.
+</p>
+
+<ol tal:define="databases python:context.getDatabaseNames(quote=True);">
+	<li tal:repeat="info databases">
+		<i class="fa fa-database text-secondary ml-3 mr-2"></i>
+		<a class="font-weight-bold"
+			tal:define="name python: info[0]; qname python: info[1]"
+			tal:attributes="href string:${context/absolute_url}/${qname}/manage_main"
+			tal:content="name">
+			Main
+		</a>
+	</li>
+</ol>
+
+</main>
 
 <h1 tal:replace="structure context/manage_page_footer" />

@@ -42,6 +42,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """ DocumentTemplate.HTML objects whose 'self' is the DTML object.
     """
     meta_type = 'DTML Document'
+    zmi_icon = 'far far fa-file-alt'
 
     manage_options = DTMLMethod.manage_options
 
@@ -170,7 +171,7 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
             u = self.DestinationURL()
         except Exception:
             u = REQUEST['URL1']
-        if submit == " Add and Edit ":
+        if submit == "Add and Edit":
             u = "%s/%s" % (u, quote(id))
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

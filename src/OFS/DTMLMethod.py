@@ -62,6 +62,7 @@ class DTMLMethod(RestrictedDTML,
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
+    zmi_icon = 'far fa-file-alt'
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
@@ -432,7 +433,7 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
             u = self.DestinationURL()
         except Exception:
             u = REQUEST['URL1']
-        if submit == " Add and Edit ":
+        if submit == "Add and Edit":
             u = "%s/%s" % (u, quote(id))
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

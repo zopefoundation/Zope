@@ -1,9 +1,11 @@
 <dtml-var manage_page_header>
+
 <dtml-var manage_tabs>
 
-<p>
- <dtml-var tag>
-</p>
-
+<main class="container-fluid">
+	<figure class="zmi-preview">
+		<dtml-var tag>
+	</figure>
+</main>
 <dtml-var manage_page_footer>
 

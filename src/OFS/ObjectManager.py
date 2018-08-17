@@ -37,6 +37,7 @@ from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base, aq_acquire, aq_parent
 from Acquisition import Implicit
 from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from Persistence import Persistent
 from six import string_types
 from six import text_type
@@ -62,6 +63,7 @@ from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 try:
     from html import escape
@@ -177,7 +179,7 @@ class ObjectManager(CopyContainer,
     _objects = ()
 
     security.declareProtected(view_management_screens, 'manage_main')
-    manage_main = DTMLFile('dtml/main', globals())
+    manage_main = PageTemplateFile('zpt/main', globals())
 
     manage_index_main = DTMLFile('dtml/index_main', globals())
 
@@ -539,9 +541,12 @@ class ObjectManager(CopyContainer,
             id = ids[-1]
             v = self._getOb(id, self)
 
-            if v.wl_isLocked():
-                raise ResourceLockedError(
-                    'Object "%s" is locked.' % v.getId())
+            try:
+                if v.wl_isLocked():
+                    raise ResourceLockedError(
+                        'Object "%s" is locked.' % v.getId())
+            except AttributeError:
+                pass
 
             if v is self:
                 raise BadRequest('%s does not exist' % escape(ids[-1], True))
@@ -837,6 +842,29 @@ class ObjectManager(CopyContainer,
     security.declareProtected(access_contents_information, 'values')
     def values(self):
         return self.objectValues()
+
+    security.declareProtected(access_contents_information, 'compute_size')
+    def compute_size(self, ob):
+        #try:
+            if hasattr(ob, 'get_size'):
+                ob_size = ob.get_size()
+                if ob_size < 1024:
+                    return '1 KiB'
+                elif ob_size > 1048576:
+                    return "{:0.02f} MiB".format(ob_size / 1048576.0)
+                else:
+                    return "{:0.0f} KiB".format(ob_size / 1024.0)
+        #except:
+        #    pass
+        #return ''
+
+    security.declareProtected(access_contents_information, 'last_modified')
+    def last_modified(self, ob):
+        try:
+            return DateTime(ob._p_mtime).strftime("%Y-%m-%d %H:%M")
+        except (DateTimeError, AttributeError):
+            return ''
+
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

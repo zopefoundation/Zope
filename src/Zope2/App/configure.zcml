@@ -17,4 +17,6 @@
   <securityPolicy
       component="AccessControl.security.SecurityPolicy" />
 
+  <include package="zmi.styles" />
+
 </configure>

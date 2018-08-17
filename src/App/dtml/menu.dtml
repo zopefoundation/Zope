@@ -1,57 +1,58 @@
 <dtml-var manage_page_header>
 
-<table width="100%">
-<tr bgcolor="#eeeeee">
-  <td>
-  <a href="Control_Panel/manage_main" target="manage_main">
-      Control Panel
-  </a>
-  </td>
-</tr>
-</table>
-<br />
+<main>
+<div class="dropdown" id="menu_buttons">
+	<a href="#" class="dropdown-toggle" 
+		data-toggle="dropdown" 
+		id="dropdownMenu1" 
+		title="Menu-Options"
+		aria-haspopup="true" 
+		aria-expanded="true"
+		><i class="fa fa-cog"></i>
+	</a>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+		<li><a id="menu_refresh" href="manage_menu">Refresh</a></li>
+		<li><a id="menu_save" href="manage_menu?save_layout=1">Save layout</a></li>
 
-<table width="100%">
-<tr bgcolor="#000000">
-  <td valign="top" nowrap="nowrap">
-  <a href="manage_workspace" target="manage_main" style="color: #ffffff;">
-  <dtml-if expr="URLPATH1==BASEPATH1">
-  Root Folder
-  <dtml-else>
-  &dtml-id;
-  </dtml-if>
-  </a>
-  </td>
-</tr>
-</table>
+		<li><a id="menu_cp" title="Control Panel" 
+			href="/Control_Panel/manage_main" target="manage_main">Control Panel</a></li>
+		<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
+			<li><a title="Zope Object Database Manager" target="manage_main"
+				href="/Control_Panel/Database/<dtml-var "_['sequence-item']">/manage_main">ZODB <dtml-var "_['sequence-item']"></a></li>
+		</dtml-in>
+		<li><a id="menu_undo" 
+			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
 
-<dtml-tree nowrap=1>
-<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
- target="manage_main">&dtml-id;</a>
-</dtml-tree>
-<br />
-
-<table width="100%" bgcolor="#6699cc">
-<tr>
-<td valign="top" align="center">
-<div class="form-element">
-<form action="&dtml-BASEPATH1;/manage_zmi_logout" method="POST" target="manage_main">
-<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span>
-&nbsp;&nbsp;
-<br />
-<dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
-<input class="form-element" type="submit" name="submit" value="Logout" />
-</dtml-if>
-&nbsp;
-</form>
+		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
+		<li role="separator" class="divider"></li>
+		<li><a id="menu_copyright" href="manage_copyright">&copy; Zope Foundation</a></li>
+	</ul>
 </div>
-</td>
-</tr>
-<tr>
-  <td align="center">
-    <strong><a href="manage_menu">Refresh menu</a></strong>
-  </td>
-</tr>
+
+<table id="menu_title">
+	<tr>
+		<td id="menu_workspace">
+			<a href="manage_workspace" target="manage_main">
+				<dtml-if expr="URLPATH1==BASEPATH1">
+					Root Folder
+				<dtml-else>
+					<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i> &dtml-id;
+				</dtml-if>
+			</a>
+		</td>
+	</tr>
 </table>
 
+<div id="menu_tree">
+	<dtml-tree nowrap=1>
+		<a href="&dtml.url_quote-tree-item-url;/manage_workspace" target="manage_main"><i title="&dtml-meta_type;" class="&dtml-zmi_icon;"></i>&nbsp;&dtml-id;</a>
+	</dtml-tree>
+</div>
+
+<dtml-if save_layout
+	><dtml-call "RESPONSE.setCookie('tree-s', REQUEST.get('tree-s'), expires=ZopeTime('2975-05-26').rfc822())"
+></dtml-if>
+
+</main>
 <dtml-var manage_page_footer>
+

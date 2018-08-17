@@ -29,4 +29,10 @@ class INavigation(Interface):
     def manage_zmi_logout(REQUEST, RESPONSE):
         """Logout current user"""
 
-INavigation.setTaggedValue('manage_page_style.css', Attribute(""" """))
+
+class ICSSPaths(Interface):
+    """Paths to CSS resources needed for the ZMI."""
+
+
+class IJSPaths(Interface):
+    """Paths to JAvaScript resources needed for the ZMI."""

@@ -1,33 +1,15 @@
 <dtml-var manage_page_header>
 
-<FORM ACTION="manage_workspace" METHOD="POST">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
-<TR>
-  <TD VALIGN="TOP">
-  <div class="std-text">
-  <BR>
-  <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
-  </div>
-  </TD>
-  <TD VALIGN="TOP">
-  <div class="std-text">
-  <BR><BR>
-  <CENTER>
-  &dtml-title_and_id; has been successfully edited.
-  </CENTER>
-  </div>
-  </TD>
-</TR>
-<TR>
-  <TD VALIGN="TOP">
-  </TD>
-  <TD VALIGN="TOP">
-  <CENTER>
-  <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
-  </CENTER>
-  </TD>
-</TR>
-</TABLE>
-</FORM>
+<main class="container-fluid">
+
+	<div class="alert alert-success">  &dtml-title_and_id; has been successfully edited.</div>
+	
+	<form action="manage_workspace" method="post">
+			<div class="zmi-controls">
+				<input class="btn btn-primary" type="submit" value="OK">
+			</div
+	</form>
+
+</main>
 
 <dtml-var manage_page_footer>

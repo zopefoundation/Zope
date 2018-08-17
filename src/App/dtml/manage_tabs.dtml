@@ -1,105 +1,89 @@
-<dtml-with "_(manage_options=filtered_manage_options())">
-<dtml-if manage_options>
-<dtml-call "REQUEST.set('n_', _.len(manage_options)-1)">
-<dtml-call "REQUEST.set('a_', 0)">
-<dtml-in manage_options mapping>
-<dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
-                REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']">
-<dtml-call "REQUEST.set('a_', _['sequence-index'])">
-</dtml-if>
-<dtml-if "_.has_key('management_view') and management_view==label">
-<dtml-call "REQUEST.set('a_', _['sequence-index'])">
-</dtml-if>
-</dtml-in>
+<dtml-var manage_navbar>
+
+<dtml-with "_(manage_options=filtered_manage_options())"
+	><dtml-if manage_options
+		><dtml-call "REQUEST.set('n_', _.len(manage_options)-1)"
+		><dtml-call "REQUEST.set('a_', 0)"
+		><dtml-in manage_options mapping
+			><dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
+				REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']"
+				><dtml-call "REQUEST.set('a_', _['sequence-index'])"
+			></dtml-if
+			><dtml-if "_.has_key('management_view') and management_view==label"
+				><dtml-call "REQUEST.set('a_', _['sequence-index'])"
+			></dtml-if
+		></dtml-in>
+
+		<nav id="tabs" class="navbar navbar-light navbar-expand-md mt-2 mb-0 pb-0" role="navigation">
+			<div class="collapse navbar-collapse row" id="tabs_items">
+				<ul class="nav nav-tabs">
+					<dtml-in manage_options mapping>
+						<dtml-let s_item=sequence-item s_index=sequence-index>
+							<li class="nav-item">
+								<a <dtml-if "s_index==a_"> class="nav-link active"<dtml-else> class="nav-link"</dtml-if
+									><dtml-if "s_item.get('action')"> href="&dtml-action;"<dtml-else> href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
+									><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if>
+									><dtml-var "s_item['label']"></a>
+							</li>
+						</dtml-let>
+					</dtml-in>
+				</ul>
+			</div>
+		</nav>
+	</dtml-if>
+
+<dtml-comment>
+	<dtml-unless MANAGE_TABS_NO_BANNER>
+		<!-- IS THIS STILL NEEDED? WHY SHOW NOT BREADCRUMB etc.?
+			https://mail.zope.org/pipermail/zope-checkins/1999-August/001313.html
+		-->
+	</dtml-unless>
+</dtml-comment>
+
+		<nav aria-label="breadcrumb">
+		<dtml-let breadcrumb_length="len(list(tabs_path_default(REQUEST)))">
+			<ol class="breadcrumb <dtml-var "'zmi-' + title.replace(' ','')">" 
+				data-length="<dtml-var breadcrumb_length>">
+				<li class="breadcrumb-item meta_type">
+					<dtml-if meta_type>
+						<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
+						<dtml-var "breadcrumb_length==1 and 'Root Folder' or meta_type">
+					<dtml-else>
+						Object
+					</dtml-if>
+				</li>
+				<dtml-in expr="tabs_path_default(REQUEST)" mapping>
+					<li class="breadcrumb-item<dtml-if last> active</dtml-if>"
+						<dtml-if last>
+							aria-current="page"
+							title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
+						</dtml-if>
+						><a href="&dtml-url;">
+							<dtml-if "_['sequence-index']==0">
+								<strong title="Root Folder">&nbsp;/&nbsp;</strong>
+							<dtml-else>
+								&dtml-title;
+							</dtml-if>
+						</a>
+						<dtml-if "_['sequence-index']!=0 and last==False">
+							&nbsp;/&nbsp;
+						</dtml-if>
+						<dtml-if wl_isLocked
+							><span class="badge badge-warning" 
+								title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
+						</dtml-if>
+					</li>
+				</dtml-in>
+			</ol>
+			</dtml-let>
+		</nav>
 
 
-<table cellpadding="0" cellspacing="0" width="100%" border="0">
-
-<tr>
-  <td bgcolor="#000000" rowspan="5" width="1%"></td>
-</tr>
-
-<tr>
-<dtml-in manage_options>
-<dtml-if "_['sequence-index']==a_">
-  <td bgcolor="#ffffff" rowspan="2"></td>
-  <td></td>
-  <td bgcolor="#ffffff" rowspan="2"></td>
-  <td bgcolor="#000000" rowspan="4">&nbsp;</td>
-<dtml-else>
-  <td bgcolor="#efefef" rowspan="2"></td>
-  <td bgcolor="#efefef"><span style="font-size:10%;">&nbsp;</span></td>
-  <td bgcolor="#efefef" rowspan="2"></td>
-  <td bgcolor="#000000" rowspan="4">&nbsp;</td>
-</dtml-if>
-</dtml-in>
-</tr>
-<tr>
-<dtml-in manage_options mapping>
-<dtml-let s_item=sequence-item s_index=sequence-index>
-<dtml-if "s_index==a_">
-  <td bgcolor="#ffffff" valign="bottom" class="tab-small"
-   align="center"><font face="Verdana, Arial, Helvetica"
-   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
-   >href="&dtml-action;"<dtml-else
-   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
-   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
-   ></strong></span></a>&nbsp;</font></td>
-<dtml-else>
-  <td bgcolor="#efefef" valign="bottom" class="tab-small"
-   align="center"><font face="Verdana, Arial, Helvetica"
-   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
-   >href="&dtml-action;"<dtml-else
-   >href="<dtml-var "REQUEST.URL1" html_quote>"</dtml-if
-   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
-   ></strong></span></a>&nbsp;</font></td>
-</dtml-if>
-</dtml-let>
-</dtml-in>
-</tr>
-<tr>
-<dtml-in manage_options>
-<dtml-if "_['sequence-index']==a_">
-  <td colspan="3" bgcolor="#ffffff"><span style="font-size:30%;">&nbsp;</span></td>
-<dtml-else>
-  <td colspan="3" bgcolor="#c0c0c0"><span style="font-size:30%;">&nbsp;</span></td>
-</dtml-if>
-</dtml-in>
-</tr>
-</table>
-</dtml-if>
-
-<dtml-unless MANAGE_TABS_NO_BANNER>
-  <br />
-  <table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr class="location-bar">
-    <td align="left" valign="top">
-    <div class="std-text">
-    <strong>
-    <dtml-if meta_type>
-      &dtml-meta_type;
-    <dtml-else>
-    Object
-    </dtml-if>
-    at <dtml-var expr="tabs_path_default(REQUEST)">
-    </strong>
-    <dtml-if wl_isLocked>
-      Locked
-    </dtml-if wl_isLocked>
-    </div>
-    </td>
-  </tr>
-  </table>
-
-</dtml-unless>
-
-<dtml-if manage_tabs_message>
-<div class="system-msg">
-<dtml-var manage_tabs_message newline_to_br html_quote>
-(<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
-</div>
-</dtml-if>
+	<dtml-if manage_tabs_message
+		><div class="alert alert-success" role="alert">
+			<dtml-var manage_tabs_message newline_to_br html_quote
+			> (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+		</div>
+	</dtml-if>
 
 </dtml-with>

@@ -5,6 +5,8 @@
 .coverage.*
 .installed*.cfg
 .mr.developer.cfg
+.project
+.pydevproject
 .tox
 /bin/
 /build/

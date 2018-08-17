@@ -1,0 +1,79 @@
+<dtml-unless "'manage_menu' in REQUEST['URL']">
+
+<header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
+	<div id="toggle_tabs" class="collapsed"
+		data-toggle="collapse"
+		data-target="#tabs_items"
+		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
+		<i class="fa fa-bars"></i>
+	</div>
+	<a class="navbar-brand" href="#" onclick="window.open('http://www.zope.org');">
+		<span class="product">ZOPE 4.0</span>
+	</a>
+	<ul class="navbar-nav flex-row ml-sm-auto d-flex">
+		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var AUTHENTICATED_USER missing="not logged-in">">
+			<span class="zmi-label"><dtml-var AUTHENTICATED_USER missing="not logged-in"></span>
+		</li>
+		<li id="toggle_menu" class="form-inline desktop"
+			data-title-active="Show/Hide Tree Menu of the Navigation Context"
+			data-title-inactive="STATUS INACTIVE: Tree Menu Button only be Active on List Views"
+			title="Show/Hide Tree Menu of the Navigation Context">
+			<a href="#" onclick="javascript:toggle_menu()" target="_parent">
+				<i class="fa fa-sitemap"></i>
+			</a>
+		</li>
+		<li class="form-inline zmi-cp">
+			<a title="Control Panel"
+				href="/Control_Panel/manage_main" target="_self">
+				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
+			</a>
+		</li>
+		<dtml-if filtered_meta_types>
+			<li class="form-inline zmi-addItemSelect">
+				<form method="get" class="form-group">
+						<label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
+						<select id="addItemSelect" class="form-control-sm" name=":action"
+							data-title-active="Select type to add"
+							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
+							title="Select type to add"
+							onchange="addItem( elm=this, base_url='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
+							><option value="" selected="selected">Select type to add</option>
+							<dtml-if "_.len(filtered_meta_types) > 1"
+								><dtml-in filtered_meta_types mapping sort=name
+									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option>
+									</dtml-if
+								></dtml-in
+							></dtml-if>
+						</select>
+				</form>
+			</li>
+		</dtml-if>
+	</ul>
+
+	<a href="manage_zmi_logout" title="Logout"
+		class="ml-4">
+		<i class="fas fa-sign-out-alt"></i>
+	</a>
+
+</header>
+
+<!-- ZMI-MODAL DIALOG -->
+<div class="modal fade" id="zmi-modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				... Loading Form ...
+			</div>
+			<div class="modal-footer">
+					&nbsp;
+			</div>
+		</div>
+	</div>
+</div>
+
+</dtml-unless>

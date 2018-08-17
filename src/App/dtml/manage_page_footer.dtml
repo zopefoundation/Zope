@@ -1,2 +1,4 @@
+<dtml-unless "REQUEST.get('zmi_dialog','window')=='modal'">
 </body>
 </html>
+</dtml-unless>

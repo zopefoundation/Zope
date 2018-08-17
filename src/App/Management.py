@@ -18,11 +18,16 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from App.interfaces import INavigation
+from App.interfaces import ICSSPaths
+from App.interfaces import IJSPaths
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
 from zope.interface import implementer
+import itertools
+import six
+import zope.event
 
 try:
     from html import escape
@@ -87,20 +92,22 @@ class Tabs(Base):
     def tabs_path_default(self, REQUEST):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']
-        linkpat = '<a href="%s/manage_workspace">%s</a>'
-        out = []
-        url = linkpat % (escape(script, True), '&nbsp;/')
+        linkpat = '{}/manage_workspace'
+        yield {'url': linkpat.format(escape(script, True)),
+               'title': 'Root',
+               'last': not bool(steps)}
         if not steps:
-            return url
+            return
         last = steps.pop()
         for step in steps:
             script = '%s/%s' % (script, step)
-            out.append(linkpat % (escape(script, True), escape(unquote(step))))
+            yield {'url': linkpat.format(escape(script, True)),
+                   'title': escape(unquote(step)),
+                   'last': False}
         script = '%s/%s' % (script, last)
-        out.append(
-            '<a class="strong-link" href="%s/manage_workspace">%s</a>' %
-            (escape(script, True), escape(unquote(last), False)))
-        return '%s%s' % (url, '/'.join(out))
+        yield {'url': linkpat.format(escape(script, True)),
+               'title': escape(unquote(last)),
+               'last': True}
 
     def tabs_path_info(self, script, path):
         out = []
@@ -141,9 +148,6 @@ class Navigation(Base):
     security.declareProtected(view_management_screens, 'manage_menu')
     manage_menu = DTMLFile('dtml/menu', globals())
 
-    security.declareProtected(view_management_screens, 'manage_page_header')
-    manage_page_header = DTMLFile('dtml/manage_page_header', globals())
-
     security.declareProtected(view_management_screens, 'manage_page_footer')
     manage_page_footer = DTMLFile('dtml/manage_page_footer', globals())
 
@@ -154,6 +158,21 @@ class Navigation(Base):
                                  help_topic=None)
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic'))
+
+    _manage_page_header = DTMLFile('dtml/manage_page_header', globals())
+    security.declareProtected(view_management_screens, 'manage_page_header')
+    def manage_page_header(self, *args, **kw):
+        """manage_page_header."""
+        kw['css_urls'] = itertools.chain(
+            itertools.chain(*zope.component.subscribers((self,), ICSSPaths)),
+            self._get_zmi_additionals('zmi_additional_css_paths'))
+        kw['js_urls'] = itertools.chain(
+            itertools.chain(*zope.component.subscribers((self,), IJSPaths)),
+            self._get_zmi_additionals('zmi_additional_js_paths'))
+        return self._manage_page_header(*args, **kw)
+
+    security.declareProtected(view_management_screens, 'manage_navbar')
+    manage_navbar = DTMLFile('dtml/manage_navbar', globals())
 
     security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):
@@ -175,11 +194,14 @@ You have been logged out.
 </html>""")
         return
 
+    def _get_zmi_additionals(self, attrib):
+        # Get additional assets for styling ZMI defined on properties in ZMI.
+        additionals = getattr(self, attrib, ()) or ()
+        if isinstance(additionals, six.string_types):
+            additionals = (additionals, )
+        return additionals
+
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.
-
-file = DTMLFile('dtml/manage_page_style.css', globals())
-Navigation.security.declarePublic('manage_page_style.css')
-setattr(Navigation, 'manage_page_style.css', file)
 
 InitializeClass(Navigation)

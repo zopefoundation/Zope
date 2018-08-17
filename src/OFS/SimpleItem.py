@@ -52,6 +52,7 @@ from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
 
+from App.Management import Navigation
 from OFS import bbb
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
@@ -72,6 +73,7 @@ logger = logging.getLogger()
 
 @implementer(IItem)
 class Item(Base,
+           Navigation,
            Resource,
            LockableItem,
            CopySource,
@@ -79,6 +81,8 @@ class Item(Base,
            Traversable,
            Owned):
     """A common base class for simple, non-container objects."""
+
+    zmi_icon = 'far fa-file'
 
     security = ClassSecurityInfo()
 
