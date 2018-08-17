@@ -196,6 +196,8 @@ Breaking changes
 
 - Remove proxy role support from DTML documents and methods.
 
+- Removed `AccessRule` and `SiteRoot` from `Products.SiteAccess`.
+
 - Remove `Products.ZReST` and the `reStructuredText` wrapper, you can use
   `docutils` directly to gain `reST` support.
 

@@ -568,7 +568,7 @@ getURL()
   This can differ from getPath() if you are using virtual hosting.
 
 getObject()
-  Returns the actual zope object from the result object.  This
+  Returns the actual Zope object from the result object.  This
   is useful if you want to examine or show an attribute or
   method of the object that isn't in the metadata--once we have
   the actual object, we can get any normal attribute or method
@@ -1039,7 +1039,7 @@ KeywordIndex Record Attributes
 For example::
 
   # big or shiny
-  results=ZCatalog(categories=['big, 'shiny'])
+  results=ZCatalog(categories=['big', 'shiny'])
 
   # big and shiny
   results=ZCatalog(categories={'query':['big','shiny'], 
@@ -1314,12 +1314,12 @@ handle objects that change. As objects evolve and change, the
 index information is always current, even for rapidly changing
 information sources like message boards.
 
-On the other hand, cataloging a complex object when it changes
-(especially if the catalog index attempts to translate the
-information, as TextIndexNG, described below, can do with
-PDF files or Microsoft Office files). Some sites may benefit
-from mass cataloging, and having a cron job or other scheduled
-job initiate the mass cataloging every night.
+On the other hand, cataloging a complex object when it changes may be too time
+consuming during operation (especially if the catalog index attempts to
+translate the information, as TextIndexNG, described below, can do with PDF
+files or Microsoft Office files). Some sites may benefit from mass cataloging,
+and having a cron job or other scheduled job initiate the mass cataloging every
+night.
 
 In standard (non-CMF, non-Plone) Zope, none of the built-in
 object types attempt to automatically catalog themselves. In
@@ -1599,8 +1599,8 @@ purpose searching.  Traditionally, 'PrincipiaSearchSource'
 would include the text in an object's title, it's body, and
 anywhere else you'd want to be able to search. 
 
-For example, if you downloaded a zope product that managed
-our zoo, and it had an Animal type that you could add to your
+For example, if you downloaded a Zope product that managed
+our zoo, and it had an animal type that you could add to your
 site, this animal type would probably expose a 
 PrincipiaSearchSource that looked something like this::
 
@@ -1759,12 +1759,12 @@ especially if you have non-English language documents or expect to
 have users that will want to use a rich query syntax.
 
 Full information on TextIndexNG is available at
-http://pypi.python.org/pypi/textindexng.
+https://pypi.org/project/Products.TextIndexNG3/.
 
 FieldedTextIndex
 ~~~~~~~~~~~~~~~~
 
-FieldTextIndex is a new index type that is not (yet) a standard
+FieldedTextIndex is a new index type that is not (yet) a standard
 part of Zope, but is a separate product that can be installed
 and used with a standard catalog.
 
@@ -1867,7 +1867,7 @@ attribute or method result together, such as for 'SearchableText'
 or 'PrincipiaSearchSource'.
 
 FieldedTextIndex can be downloaded at
-http://zope.org/Members/Caseman/FieldedTextIndex.
+http://old.zope.org/Members/Caseman/FieldedTextIndex/folder_contents.
 Full documentation on how to create this type of index, and further
 information on how to search it, including how to search it from
 web forms, is available in the README file that comes with this
