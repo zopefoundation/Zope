@@ -3,7 +3,7 @@ AccessControl==4.0b4
 Acquisition==4.4.4
 AuthEncoding==4.0.0
 BTrees==4.5.0
-Chameleon==3.2
+Chameleon==3.4
 DateTime==4.2
 DocumentTemplate==3.0b3
 ExtensionClass==4.3.0
