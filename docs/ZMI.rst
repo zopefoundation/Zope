@@ -14,8 +14,8 @@ Since Zope 4.0b6 the ZMI is styled using Bootstrap. The previously used
 GIF icons were replaced by font glyphs which are stored in the package
 `zmi.styles`_ together with the CSS and JavaScript needed by Bootstrap.
 
-Inside that package is a table of the `available icons`_ including the names
-which are required to use them in the ZMI.
+The free Font Awesome glyphs are used as icons, see the table of
+`available icons`_.
 
 Update packages
 +++++++++++++++
@@ -23,9 +23,11 @@ Update packages
 If you have a Product or package which contains types, which can be added via
 the ZMI, the default icon will be shown.
 
-To use one of the new icons add an attribute named `zmi_icon` to the class. The
-value should be one of the class of one of the `available icons`_. I.e. to get the
-info (i in a circle) icon you would set attribute `zmi icon` to `'fas fa-info-circle'`
+To use one of the new icons add an attribute named ``zmi_icon`` to the class.
+As value use a name listed on `available icons`_ prefixed by ``fas fa-``.
+Example to use the info icon (i in a circle)::
+
+    zmi_icon = 'fas fa-info-circle'
 
 .. _`zmi.styles` : https://github.com/zopefoundation/zmi.styles
 .. _`available icons` : https://fontawesome.com/icons?d=gallery&m=free
@@ -41,17 +43,18 @@ To use custom icons (which are not part of `zmi.styles`) or load custom CSS resp
    :class:`App.interfaces.IJSPaths`. This adapter has to return an iterable of
    paths resp. URLs which should be loaded when rendering the ZMI.
 
-Example taken from `cmf.zmiicons`_:
+Example taken from `zmi.styles`_:
 
 * Register the resource directory via ZCML:
 
   .. code-block:: XML
 
       <browser:resourceDirectory
-          name="cmf.zmiicons"
+          name="zmi"
           directory="resources" />
 
-* Create a subscription adapter returning the path to the CSS file:
+* Create a subscription adapter returning the path to the CSS file
+  (`zmi.styles`_ has this code in `subscriber.py`.):
 
 
   .. code-block:: Python
@@ -64,7 +67,9 @@ Example taken from `cmf.zmiicons`_:
       def css_paths(context):
           """Return paths to CSS files needed for the Zope 4 ZMI."""
           return (
-              '/++resource++cmf.zmiicons/css/cmftello.css',
+              '/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css',
+              '/++resource++zmi/fontawesome-free-5.1.0/css/all.css',
+              '/++resource++zmi/zmi_base.css',
           )
 
 * Register the subscriber via ZCML:
@@ -73,10 +78,7 @@ Example taken from `cmf.zmiicons`_:
 
       <subscriber
           provides="App.interfaces.ICSSPaths"
-          factory=".css_paths" />
-
-
-.. _`cmf.zmiicons` : https://github.com/zopefoundation/cmf.zmiicons
+          factory=".subscriber.css_paths" />
 
 
 Use custom resources via ZMI
@@ -93,6 +95,6 @@ The properties can have one of the following types:
 * ``ustring``
 * ``ulines``
 
-The value of the properties have to be paths or URLs to CSS resp. JavaScript
-which will be included in the HTML of the ZMI. (Paths have to be resolvable by
-the browser aka not simple file system paths.)
+The value of the property has to be one or more paths/URLs to CSS resp.
+JavaScript which will be included in the HTML of the ZMI. (Paths have to be
+resolvable by the browser aka not simple file system paths.)
