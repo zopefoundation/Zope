@@ -45,7 +45,7 @@
 							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
 								title="Filter object list by entering a name. Pressing the Enter key starts recursive search."
-							></input>
+							/>
 					</th>
 					<th scope="col" class="zmi-object-size text-right hidden-xs"
 						><a
@@ -55,7 +55,7 @@
 								title python:'Sort %s by File-Size'%( rkey_alt.upper() );
 								href python:'?skey=get_size&rkey=%s'%( rkey_alt );
 								class python:request.get('skey',None)=='get_size' and 'zmi-sort_key' or None"
-								>Size<i class="fa fa-sort"></i></th>
+								>Size<i class="fa fa-sort"></i></a></th>
 					<th scope="col" class="zmi-object-date text-right hidden-xs"
 						><a
 							title="Sort Ascending by Modification Date"
@@ -64,7 +64,7 @@
 								title python:'Sort %s by Modification Date'%( rkey_alt.upper() );
 								href python:'?skey=_p_mtime&rkey=%s'%( rkey_alt );
 								class python:request.get('skey',None)=='_p_mtime' and 'zmi-sort_key' or None"
-								>Last Modified<i class="fa fa-sort"></i></th>
+								>Last Modified<i class="fa fa-sort"></i></a></th>
 				</tr>
 			</thead>
 			<tbody>
