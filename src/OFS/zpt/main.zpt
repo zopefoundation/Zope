@@ -225,14 +225,14 @@
 			};
 		})
 
-		$('#tablefilter').keyup( function (e) {
+		$('#tablefilter').keyup( function (event) {
 
 			if (isModifierKeyPressed(event)) {
 				return; // ignore
 			}
 
 			var tablefilter = $(this).val();
-			if( e.which==13 ) {
+			if( event.which==13 ) {
 				if (1 === $('tbody tr:visible').length) {
 					window.location.href = $('tbody tr:visible a').attr('href');
 				}
