@@ -200,19 +200,19 @@
 		// +++++++++++++++++++++++++++
 		// Tablefilter/Search Element
 		// +++++++++++++++++++++++++++
-		
+
 		function isModifierKeyPressed(event) {
 			return event.altKey
 				|| event.ctrlKey
 				|| event.metaKey;
 		}
-		
+
 		$(document).keypress( function(event) {
-			
+
 			if (isModifierKeyPressed(event)) {
 				return; // ignore
 			}
-			
+
 			// Set Focus to Tablefilter only when Modal Dialog is not Shown
 			if ( !$('#zmi-modal').hasClass('show') ) {
 				$('#tablefilter').focus();
@@ -226,11 +226,11 @@
 		})
 
 		$('#tablefilter').keyup( function (e) {
-			
+
 			if (isModifierKeyPressed(event)) {
 				return; // ignore
 			}
-			
+
 			var tablefilter = $(this).val();
 			if( e.which==13 ) {
 				if (1 === $('tbody tr:visible').length) {

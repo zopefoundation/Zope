@@ -1,9 +1,9 @@
 <dtml-unless "'manage_menu' in REQUEST['URL']">
 
 <header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
-	<div id="toggle_tabs" class="collapsed" 
-		data-toggle="collapse" 
-		data-target="#tabs_items" 
+	<div id="toggle_tabs" class="collapsed"
+		data-toggle="collapse"
+		data-target="#tabs_items"
 		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
 		<i class="fa fa-bars"></i>
 	</div>
@@ -23,7 +23,7 @@
 			</a>
 		</li>
 		<li class="form-inline zmi-cp">
-			<a title="Control Panel" 
+			<a title="Control Panel"
 				href="/Control_Panel/manage_main" target="_self">
 				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
@@ -32,7 +32,7 @@
 			<li class="form-inline zmi-addItemSelect">
 				<form method="get" class="form-group">
 						<label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
-						<select id="addItemSelect" class="form-control-sm" name=":action" 
+						<select id="addItemSelect" class="form-control-sm" name=":action"
 							data-title-active="Select type to add"
 							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
 							title="Select type to add"
