@@ -12,7 +12,7 @@ Bootstrap ZMI
 
 Since Zope 4.0b6 the ZMI is styled using Bootstrap. The previously used
 GIF icons were replaced by font glyphs which are stored in the package
-`zmi.styles`_ together with the CSS and JavaScript needed by Bootstrap.
+`zmi.styles`_ (part of Zope) together with the CSS and JavaScript needed by Bootstrap.
 
 The free Font Awesome glyphs are used as icons, see the table of
 `available icons`_.
@@ -29,7 +29,7 @@ Example to use the info icon (i in a circle)::
 
     zmi_icon = 'fas fa-info-circle'
 
-.. _`zmi.styles` : https://github.com/zopefoundation/zmi.styles
+.. _`zmi.styles` : https://github.com/zopefoundation/Zope/tree/master/src/zmi/styles
 .. _`available icons` : https://fontawesome.com/icons?d=gallery&m=free
 
 Use custom icons and resources
