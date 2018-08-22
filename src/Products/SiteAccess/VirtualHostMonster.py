@@ -148,7 +148,12 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 protocol = stack.pop()
                 host = stack.pop()
                 if ':' in host:
-                    host, port = host.split(':')
+                    if host.startswith('['):
+                        # IPv6 address passed
+                        host, port = host.rsplit(':', 1)
+                    else:
+                        # Name or IPv4 address passed
+                        host, port = host.split(':')
                     request.setServerURL(protocol, host, port)
                 else:
                     request.setServerURL(protocol, host)

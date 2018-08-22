@@ -139,6 +139,54 @@ for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
 
     setattr(VHMRegressions, 'testTraverse%s' % i, test)
 
+class VHMPort(unittest.TestCase):
+
+    def setUp(self):
+        import transaction
+        from Testing.makerequest import makerequest
+        from Testing.ZopeTestCase.ZopeLite import app
+        transaction.begin()
+        self.app = makerequest(app())
+        if 'virtual_hosting' not in  self.app.objectIds():
+            # If ZopeLite was imported, we have no default virtual
+            # host monster
+            from Products.SiteAccess.VirtualHostMonster \
+                import manage_addVirtualHostMonster
+            manage_addVirtualHostMonster(self.app, 'virtual_hosting')
+        self.app.manage_addFolder('folder')
+        self.app.folder.manage_addDTMLMethod('doc', '')
+        self.app.REQUEST.set('PARENTS', [self.app])
+        self.traverse = self.app.REQUEST.traverse
+
+    def tearDown(self):
+        import transaction
+        transaction.abort()
+        self.app._p_jar.close()
+
+    def testIPv4(self):
+      ob = self.traverse('/VirtualHostBase/http/www.mysite.com:80'
+                           '/folder/')
+      self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://www.mysite.com/folder/')
+
+    def testPassedPortIPv4(self):
+      ob = self.traverse('/VirtualHostBase/http/www.mysite.com:81'
+                           '/folder/')
+      self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://www.mysite.com:81/folder/')
+
+    def testIPv6(self):
+        ob = self.traverse('/VirtualHostBase/http/[::1]:80'
+                           '/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://[::1]/folder/')
+
+    def testIPv6PassedPort(self):
+        ob = self.traverse('/VirtualHostBase/http/[::1]:81'
+                           '/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://[::1]:81/folder/')
+
 
 class VHMAddingTests(unittest.TestCase):
 
