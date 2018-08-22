@@ -18,6 +18,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
   native ``str`` on both Python versions.
   (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)
 
+- Inlcude the ``zmi.styles`` repository in this package to break a circular
+  dependency.
+  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
+
+
 4.0b5 (2018-05-18)
 ------------------
 
