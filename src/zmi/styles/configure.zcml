@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <include package="Products.Five.browser" file="meta.zcml" />
+
+    <browser:resourceDirectory
+        name="zmi"
+        directory="resources" />
+
+    <subscriber
+        provides="App.interfaces.ICSSPaths"
+        factory=".subscriber.css_paths" />
+
+    <subscriber
+        provides="App.interfaces.IJSPaths"
+        factory=".subscriber.js_paths" />
+
+</configure>
