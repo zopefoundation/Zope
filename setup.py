@@ -55,7 +55,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
     packages=find_packages('src'),
-    namespace_packages=['Products', 'Shared', 'Shared.DC'],
+    namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
     install_requires=[
         'AccessControl >= 4.0b4',
@@ -77,7 +77,6 @@ setup(
         'waitress',
         'zExceptions >= 3.4',
         'z3c.pt',
-        'zmi.styles',
         'zope.browser',
         'zope.browsermenu',
         'zope.browserpage >= 4.0',
