@@ -505,7 +505,12 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        fs_kw = {}
+        if PY3:
+            # In Python 3 we need the proper encoding to parse the input.
+            fs_kw['encoding'] = self.charset
+
+        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.

@@ -296,8 +296,8 @@ class FileTests(unittest.TestCase):
     def testUnicode(self):
         val = u'some unicode string here'
 
-        self.assertRaises(TypeError, self.file.manage_edit,
-                          'foobar', 'text/plain', filedata=val)
+        self.assertRaises(TypeError, self.file.update_data,
+                          data=val, content_type='text/plain')
 
 
 class ImageTests(FileTests):
@@ -396,3 +396,14 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
             self.browser.getControl('Content Type').value, 'text/plain')
         text = self.browser.getControl(name='filedata:text').value
         self.assertEqual(text, 'test text file')
+
+    def test_Image__manage_edit__1(self):
+        """It it possible to change the file's content via browser."""
+        self.browser.open('http://localhost/file/manage_main')
+        text_1 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_1, '')
+        self.browser.getControl(name='filedata:text').value = u'hällo'
+        self.browser.getControl('Save Changes').click()
+        self.assertIn('Saved changes', self.browser.contents)
+        text_2 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_2, 'hällo')

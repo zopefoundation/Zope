@@ -471,6 +471,11 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
         self.http__refreshEtag()
 
+    def _get_encoding(self):
+        """Get the canonical encoding for ZMI."""
+        return getattr(self, 'management_page_charset',
+                       ZPublisher.HTTPRequest.default_encoding)
+
     security.declareProtected(change_images_and_files, 'manage_edit')
     def manage_edit(self, title, content_type, precondition='',
                     filedata=None, REQUEST=None):
@@ -487,6 +492,8 @@ class File(Persistent, Implicit, PropertyManager,
         elif self.precondition:
             del self.precondition
         if filedata is not None:
+            if isinstance(filedata, text_type):
+                filedata = filedata.encode(self._get_encoding())
             self.update_data(filedata, content_type, len(filedata))
         else:
             self.ZCacheable_invalidate()
@@ -629,9 +636,7 @@ class File(Persistent, Implicit, PropertyManager,
         if PY2:
             return str(self.data)
         else:
-            encoding = getattr(self, 'management_page_charset',
-                               ZPublisher.HTTPRequest.default_encoding)
-            return self.data.decode(encoding)
+            return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
