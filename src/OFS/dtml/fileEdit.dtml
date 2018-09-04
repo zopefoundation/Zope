@@ -11,13 +11,13 @@
 		text type and small enough to be edited in a text area.
 	</p>
 
-	<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" 
+	<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post"
 		enctype="multipart/form-data" class="zmi-file zmi-edit">
 
 		<div class="form-group row">
 			<label for="title" class="form-label	col-sm-3 col-md-2">Title</label>
 			<div class="col-sm-9 col-md-10">
-				<input id="title" class="form-control" type="text" name="title" 
+				<input id="title" class="form-control" type="text" name="title"
 					value="<dtml-if title>&dtml-title;</dtml-if>" />
 			</div>
 		</div>
@@ -25,7 +25,7 @@
 		<div class="form-group row">
 			<label for="contenttype" class="form-label	col-sm-3 col-md-2">Content Type</label>
 			<div class="col-sm-9 col-md-10">
-				<input id="contenttype" class="form-control" type="text" name="content_type:required" 
+				<input id="contenttype" class="form-control" type="text" name="content_type:required"
 					value="<dtml-if content_type>&dtml-content_type;</dtml-if>" />
 				</div>
 		</div>
@@ -33,7 +33,7 @@
 		<div class="form-group row">
 			<label for="precondition" class="form-label col-sm-3 col-md-2">Precondition</label>
 			<div class="col-sm-9 col-md-10">
-				<input id="precondition" class="form-control" type="text" name="precondition" 
+				<input id="precondition" class="form-control" type="text" name="precondition"
 				value="<dtml-if precondition>&dtml-precondition;</dtml-if>" />
 			</div>
 		</div>
@@ -71,7 +71,7 @@
 		<form action="<dtml-var "REQUEST.URL1" html_quote>" action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
 			<div class="input-group" title="Select Local File for Uploading">
 				<div class="custom-file">
-					<input type="file" name="file" class="custom-file-input" id="file-data" value="" 
+					<input type="file" name="file" class="custom-file-input" id="file-data" value=""
 						onchange="$('.custom-file label span').html($(this).val().replace(/^.*(\\|\/|\:)/, ''));" />
 					<label class="custom-file-label" for="file-data"><span>Choose file</span></label>
 				</div>
