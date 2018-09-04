@@ -68,7 +68,7 @@
 </form>
 
 	<dtml-unless wl_isLocked>
-		<form action="<dtml-var "REQUEST.URL1" html_quote>" action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
+		<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
 			<div class="input-group" title="Select Local File for Uploading">
 				<div class="custom-file">
 					<input type="file" name="file" class="custom-file-input" id="file-data" value=""
@@ -76,7 +76,7 @@
 					<label class="custom-file-label" for="file-data"><span>Choose file</span></label>
 				</div>
 				<div class="input-group-append">
-					<input class="btn btn-outline-secondary" type="submit" value="Upload File" />
+					<input class="btn btn-outline-secondary" type="submit" name="manage_upload:method" value="Upload File" />
 				</div>
 			</div>
 		</form>

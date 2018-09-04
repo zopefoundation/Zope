@@ -2,6 +2,7 @@ import unittest
 
 import Zope2
 
+import codecs
 import os
 import sys
 import time
@@ -19,6 +20,8 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from App.Common import rfc1123_date
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
+import Testing.ZopeTestCase
+import Testing.testbrowser
 import transaction
 
 import OFS.Image
@@ -335,3 +338,27 @@ class ImageTests(FileTests):
         self.assertEqual(six.text_type(self.file),
                          '<img src="http://nohost/file"'
                          ' alt="" title="" height="16" width="16" />')
+
+
+class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
+    """Browser testing ..Image.File"""
+
+    def test_fileEdit__manage_upload__1(self):
+        """It uploads a file, replaces the content and sets content type."""
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        self.app.manage_addFile('file')
+
+        transaction.commit()
+        browser = Testing.testbrowser.Browser()
+        browser.addHeader(
+            'Authorization',
+            'basic {}'.format(codecs.encode(
+                b'manager:manager_pass', 'base64').decode()))
+        browser.open('http://localhost/file/manage_main')
+        browser.getControl(name='file').add_file(
+            b'test text file', 'text/plain', 'TestFile.txt')
+        browser.getControl('Upload File').click()
+        self.assertIn('Saved changes', browser.contents)
+        self.assertEqual(
+            browser.getControl('Content Type').value, 'text/plain')
