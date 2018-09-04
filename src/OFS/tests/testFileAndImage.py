@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 
 import Zope2
@@ -361,8 +362,9 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.app.file.update_data(u'hällo'.encode('utf-8'))
         self.browser.open('http://localhost/file/manage_main')
         text = self.browser.getControl(name='filedata:text').value
-        self.assertEqual(text, u'hällo')
+        self.assertEqual(text, 'hällo')
 
+    @unittest.skipIf(six.PY2, "feature not supported on Python 2")
     def test_Image__manage_main__2(self):
         """It shows the content of text files.
 
@@ -372,8 +374,9 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.app.file.update_data(u'hällo'.encode('latin-1'))
         self.browser.open('http://localhost/file/manage_main')
         text = self.browser.getControl(name='filedata:text').value
-        self.assertEqual(text, u'hällo')
+        self.assertEqual(text, 'hällo')
 
+    @unittest.skipIf(six.PY2, "feature not supported on Python 2")
     def test_Image__manage_main__3(self):
         """It shows an error message if the file content cannot be decoded."""
         self.app.file.update_data(u'hällo'.encode('latin-1'))
