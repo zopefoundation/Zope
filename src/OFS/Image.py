@@ -46,6 +46,7 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+import ZPublisher.HTTPRequest
 
 try:
     from html import escape
@@ -624,9 +625,13 @@ class File(Persistent, Implicit, PropertyManager,
     def __bytes__(self):
         return bytes(self.data)
 
-    if PY2:
-        def __str__(self):
+    def __str__(self):
+        if PY2:
             return str(self.data)
+        else:
+            encoding = getattr(self, 'management_page_charset',
+                               ZPublisher.HTTPRequest.default_encoding)
+            return self.data.decode(encoding)
 
     def __bool__(self):
         return True

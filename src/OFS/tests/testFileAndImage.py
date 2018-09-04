@@ -343,22 +343,53 @@ class ImageTests(FileTests):
 class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
     """Browser testing ..Image.File"""
 
-    def test_fileEdit__manage_upload__1(self):
-        """It uploads a file, replaces the content and sets content type."""
+    def setUp(self):
+        super(FileEditTests, self).setUp()
         uf = self.app.acl_users
         uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
         self.app.manage_addFile('file')
 
         transaction.commit()
-        browser = Testing.testbrowser.Browser()
-        browser.addHeader(
+        self.browser = Testing.testbrowser.Browser()
+        self.browser.addHeader(
             'Authorization',
             'basic {}'.format(codecs.encode(
                 b'manager:manager_pass', 'base64').decode()))
-        browser.open('http://localhost/file/manage_main')
-        browser.getControl(name='file').add_file(
+
+    def test_Image__manage_main__1(self):
+        """It shows the content of text files as text."""
+        self.app.file.update_data(u'hällo'.encode('utf-8'))
+        self.browser.open('http://localhost/file/manage_main')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, u'hällo')
+
+    def test_Image__manage_main__2(self):
+        """It shows the content of text files.
+
+        It respects the encoding in `management_page_charset`.
+        """
+        self.app.management_page_charset = 'latin-1'
+        self.app.file.update_data(u'hällo'.encode('latin-1'))
+        self.browser.open('http://localhost/file/manage_main')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, u'hällo')
+
+    def test_Image__manage_main__3(self):
+        """It shows an error message if the file content cannot be decoded."""
+        self.app.file.update_data(u'hällo'.encode('latin-1'))
+        self.browser.open('http://localhost/file/manage_main')
+        self.assertIn(
+            "The file could not be decoded with 'utf-8'.",
+            self.browser.contents)
+
+    def test_Image__manage_upload__1(self):
+        """It uploads a file, replaces the content and sets content type."""
+        self.browser.open('http://localhost/file/manage_main')
+        self.browser.getControl(name='file').add_file(
             b'test text file', 'text/plain', 'TestFile.txt')
-        browser.getControl('Upload File').click()
-        self.assertIn('Saved changes', browser.contents)
+        self.browser.getControl('Upload File').click()
+        self.assertIn('Saved changes', self.browser.contents)
         self.assertEqual(
-            browser.getControl('Content Type').value, 'text/plain')
+            self.browser.getControl('Content Type').value, 'text/plain')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'test text file')
