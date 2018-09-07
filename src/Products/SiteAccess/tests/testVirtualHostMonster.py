@@ -169,6 +169,12 @@ class VHMPort(unittest.TestCase):
       self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                            'http://www.mysite.com/folder/')
 
+    def testIPv4Noport(self):
+      ob = self.traverse('/VirtualHostBase/http/www.mysite.com'
+                           '/folder/')
+      self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://www.mysite.com/folder/')
+
     def testPassedPortIPv4(self):
       ob = self.traverse('/VirtualHostBase/http/www.mysite.com:81'
                            '/folder/')
@@ -177,6 +183,12 @@ class VHMPort(unittest.TestCase):
 
     def testIPv6(self):
         ob = self.traverse('/VirtualHostBase/http/[::1]:80'
+                           '/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                           'http://[::1]/folder/')
+
+    def testIPv6Noport(self):
+        ob = self.traverse('/VirtualHostBase/http/[::1]'
                            '/folder/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                            'http://[::1]/folder/')
