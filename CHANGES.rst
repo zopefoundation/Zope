@@ -22,6 +22,9 @@ New features
 Bugfixes
 ++++++++
 
+- Fix XML Page template files in Python 3
+  (`#319 <https://github.com/zopefoundation/Zope/issues/319>`_)
+
 - Fix ZMI upload of `DTMLMethod` and `DTMLDocument` to store the DTML as a
   native ``str`` on both Python versions.
   (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)

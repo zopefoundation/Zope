@@ -5,7 +5,6 @@ ZopePageTemplate regression tests.
 Ensures that adding a page template works correctly.
 """
 
-import sys
 import unittest
 import transaction
 
@@ -26,7 +25,7 @@ from Products.PageTemplates.unicodeconflictresolver \
     import PreferredCharsetResolver
 import Zope2
 
-from six import text_type, binary_type
+from six import text_type
 
 ascii_binary = b'<html><body>hello world</body></html>'
 iso885915_binary = u'<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
@@ -39,7 +38,7 @@ xml_template = u'''<?xml version="1.0" encoding="%s"?>
 '''
 
 xml_binary_iso_8859_15 = (xml_template % 'iso-8859-15').encode('iso-8859-15')
-xml_binary_utf8 = (xml_template % 'utf-8').encode('utf-8') 
+xml_binary_utf8 = (xml_template % 'utf-8').encode('utf-8')
 
 html_template_w_header = u'''
 <html>

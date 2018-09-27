@@ -1,3 +1,4 @@
+# coding=utf-8
 """Tests of PageTemplateFile."""
 
 import os
@@ -210,3 +211,16 @@ class LazyLoadingTestCase(unittest.TestCase):
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         self.assertTrue(not pt._text and not pt._v_program)
+
+
+class RenderTestCase(unittest.TestCase):
+
+    def testXMLPageTemplateFile(self):
+        dirname = os.path.dirname(__file__)
+
+        filename = os.path.join(dirname, 'utf8.xml')
+        with open(filename, 'rb') as f:
+            self.assertEqual(
+                PageTemplateFile(filename).pt_render(),
+                f.read().decode('utf8'),
+            )
