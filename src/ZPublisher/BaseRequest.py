@@ -34,16 +34,11 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
+from ZPublisher.xmlrpc import is_xmlrpc_response
 
 from App.bbb import HAS_ZSERVER
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
-
-if HAS_ZSERVER:
-    from ZServer.ZPublisher.xmlrpc import is_xmlrpc_response
-else:
-    def is_xmlrpc_response(response):
-        return False
 
 _marker = []
 UNSPECIFIED_ROLES = ''
