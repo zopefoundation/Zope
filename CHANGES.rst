@@ -47,6 +47,8 @@ Bugfixes
   when reading request bodies not encoded as application/x-www-form-urlencoded
   or multipart/form-data.
 
+- Fix `HTTPResponse.setBody` when the published object returns a tuple.
+
 
 4.0b5 (2018-05-18)
 ------------------

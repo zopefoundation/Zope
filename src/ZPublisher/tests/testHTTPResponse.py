@@ -654,6 +654,10 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
 
+    def test_setBody_tuple(self):
+        response = self._makeOne()
+        self.assertEqual(b"('a',)", response.setBody(('a',)))
+
     def test_setBody_calls_insertBase(self):
         response = self._makeOne()
         lamb = {}

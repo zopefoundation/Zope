@@ -511,7 +511,7 @@ class HTTPBaseResponse(BaseResponse):
         else:
             try:
                 body = bytes(body)
-            except UnicodeError:
+            except (TypeError, UnicodeError):
                 body = self._encode_unicode(text_type(body))
 
         # At this point body is always binary
