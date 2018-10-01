@@ -33,6 +33,16 @@ a:hover {
 	text-decoration: none;
 }
 
+::placeholder{
+	color:rgba(108, 117, 125, .5) !important;
+}
+:-ms-input-placeholder {
+	color:rgba(108, 117, 125, .5) !important;
+}
+::-ms-input-placeholder {
+	color:rgba(108, 117, 125, .5) !important;
+}
+
 .zmi a.btn.btn-primary, 
 .zmi input.btn.btn-primary {
 	background-color:white !important;
