@@ -24,7 +24,6 @@ import time
 
 from AccessControl.tainted import should_be_tainted
 from AccessControl.tainted import taint_string
-import pkg_resources
 from six import binary_type
 from six import PY2
 from six import PY3
@@ -43,6 +42,7 @@ from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.utils import basic_auth_decode
+from ZPublisher import xmlrpc
 
 if PY3:
     from html import escape
@@ -52,14 +52,6 @@ else:
     from cgi import escape
     from urllib import splitport
     from urllib import splittype
-
-xmlrpc = None
-try:
-    dist = pkg_resources.get_distribution('ZServer')
-except pkg_resources.DistributionNotFound:
-    pass
-else:
-    from ZServer.ZPublisher import xmlrpc
 
 # Flags
 SEQUENCE = 1
@@ -510,7 +502,8 @@ class HTTPRequest(BaseRequest):
             # In Python 3 we need the proper encoding to parse the input.
             fs_kw['encoding'] = self.charset
 
-        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
+        fs = ZopeFieldStorage(
+            fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
@@ -520,7 +513,7 @@ class HTTPRequest(BaseRequest):
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
-            elif (xmlrpc is not None and method == 'POST' and
+            elif (method == 'POST' and
                   ('content-type' in fs.headers and
                    'text/xml' in fs.headers['content-type'])):
                 # Ye haaa, XML-RPC!
@@ -1640,7 +1633,15 @@ def sane_environment(env):
     return dict
 
 
-ZopeFieldStorage = FieldStorage  # BBB
+class ZopeFieldStorage(FieldStorage):
+    """This subclass exists to work around a Python bug
+    (see https://bugs.python.org/issue27777) to make sure
+    we can read binary data from a request body.
+    """
+
+    def read_binary(self):
+        self._binary_file = True
+        return FieldStorage.read_binary(self)
 
 
 # Original version: zope.publisher.browser.FileUpload

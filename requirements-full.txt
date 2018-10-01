@@ -15,7 +15,7 @@ Products.BTreeFolder2==4.0.0
 Products.ZCTextIndex==4.0.2
 Products.ZCatalog==4.1
 Record==3.4
-RestrictedPython==4.0b4
+RestrictedPython==4.0b5
 WSGIProxy2==0.4.4
 WebOb==1.8.1
 WebTest==2.0.29

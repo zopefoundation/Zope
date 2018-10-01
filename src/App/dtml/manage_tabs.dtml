@@ -14,7 +14,7 @@
 			></dtml-if
 		></dtml-in>
 
-		<nav id="tabs" class="navbar navbar-light navbar-expand-md mt-2 mb-0 pb-0" role="navigation">
+		<nav id="tabs" class="navbar navbar-light navbar-expand-md mt-0 mb-0 pb-0" role="navigation">
 			<div class="collapse navbar-collapse row" id="tabs_items">
 				<ul class="nav nav-tabs">
 					<dtml-in manage_options mapping>

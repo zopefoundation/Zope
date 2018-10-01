@@ -766,6 +766,31 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.cookies['multi2'],
                          'cookie data with unquoted spaces')
 
+    def test_processInputs_xmlrpc(self):
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<methodCall><methodName>test</methodName></methodCall>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.PATH_INFO, '/test')
+        self.assertEqual(req.args, ())
+
+    def test_processInputs_w_urlencoded_and_qs(self):
+        body = b'foo=1'
+        environ = {
+            'CONTENT_TYPE': 'application/x-www-form-urlencoded',
+            'CONTENT_LENGTH': len(body),
+            'QUERY_STRING': 'bar=2',
+            'REQUEST_METHOD': 'POST',
+        }
+        req = self._makeOne(stdin=BytesIO(body), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.form['foo'], '1')
+        self.assertEqual(req.form['bar'], '2')
+
     def test_postProcessInputs(self):
         from ZPublisher.HTTPRequest import default_encoding
 

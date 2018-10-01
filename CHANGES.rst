@@ -11,8 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b6 (unreleased)
 ------------------
 
-Changes
-+++++++
+New features
+++++++++++++
+
+- Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
 - Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
   instances.
@@ -30,6 +32,10 @@ Bugfixes
 
 - Fix upload and rendering of text files.
   (`#240 <https://github.com/zopefoundation/Zope/pull/240>`_)
+
+- Work around Python bug (https://bugs.python.org/issue27777)
+  when reading request bodies not encoded as application/x-www-form-urlencoded
+  or multipart/form-data.
 
 
 4.0b5 (2018-05-18)
