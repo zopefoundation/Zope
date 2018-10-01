@@ -226,7 +226,7 @@ needed by ace-editor to determine the fitting syntax high-lighting.
 ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
 
 **File upload element:** 
-The file upload element has an own form container (classfied as ``zmi-upload``). 
+The file upload element has it's own form container (classfied as ``zmi-upload``). 
 All subseqeunt elements are nested as 'input-group' containing a div classified as 
 ``custom-file`` nestingthe actual input element. An inline JS fired on the 
 onchange-event beautifies the file name showed after selecting it.
@@ -239,7 +239,7 @@ by the width defining div-container). Possible text colors are declared by
 typical bootstrap class names like ``text-warning``.
 
 **Icons:** 
-Zope4 object classes which are show in the ZMI have declared a global variable 
+Zope4 object classes which are shown in the ZMI have declared a class variable 
 ``zmi_icon``; this string corresponds to an appropiate font icon-CSS class 
 supplied by the Fontawsome web font (https://fontawesome.com/icons)
 
@@ -247,7 +247,8 @@ supplied by the Fontawsome web font (https://fontawesome.com/icons)
 Bootstraps requires an explictit CSS class ``table`` for any table; espcially 
 long item lists should get an additional CSS class ``table-sm`` and maybe another 
 class ``table-striped`` for a better readability. Finally it is recommended 
-to add a specific identifying class name. The table structure is 
+to add a specific identifying class name. The table structure is compliant to 
+bootstrap standard table (https://getbootstrap.com/docs/4.1/content/tables/).
 
 **ZMI-classes:** 
 All basic stylings of the zmi-elements  are defined in the CSS file, see:
