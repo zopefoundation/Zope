@@ -98,3 +98,157 @@ The properties can have one of the following types:
 The value of the property has to be one or more paths/URLs to CSS resp.
 JavaScript which will be included in the HTML of the ZMI. (Paths have to be
 resolvable by the browser aka not simple file system paths.)
+
+
+Update your Zope2 ZMI template code
++++++++++++++++++++++++++++++++++++
+
+The Zope4 ZMI uses some basic CSS class names of the bootstrap cCSS framework 
+and structuring concepts for page layout and forms. A ZMI page usually sequences 
+following templates nesting the page core:
+
+1. manage_page_header()
+2. manage_tabs()
+3. page core
+4. manage_page_footer()
+
+The page core of any form or object listing ZMI template is starting by the 
+html element ``<main class="container-fluid">``.
+Ususally <main> is nesting a p-element for a help-text and the actual form. 
+To make specific form styling possible the form-element has following CSS names:
+
+1. zmi-$classname
+2. zmi-edit|-add
+
+
+In general specific functional ZMI elements are declared by a CSS class with a
+prefixed ``zmi-`` whereas the basic layout is done by usual bootstrap classes 
+fowllowing the typical element nesting:
+any form element has a bootstrap-like form-group structure containing a label 
+and an input field. Important: the width of the input field is defined by the 
+nesting div-container using the responsive grid classes ``col-sm-9 col-and md-10``. 
+The input field width is completed to 12 (=100%) by the preceeding label classes 
+``col-sm-3`` and ``col-md-2``
+
+.. raw:: html
+	<div class="form-group row">
+		<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+		<div class="col-sm-9 col-md-10">
+			<input id="title" class="form-control" type="text" name="title" 
+				value="<dtml-if title>&dtml-title;</dtml-if>" />
+		</div>
+	</div>
+
+The following buttons are constructed as div element with the classname 
+``zmi-controls``; the bbuttons use systematically the  bootstrap class pair 
+``btn btn-primary``.
+
+.. raw:: html
+	<div class="zmi-controls">
+		<input class="btn btn-primary" type="submit" name="submit" value="Save" />
+	</div
+
+The following example code shows a whole restructed DTML template rendering the 
+Zope4 ZMI
+
+**Example: updated DTML template** 
+(from: ``../Zope/src/OFS/dtml/documentEdit.dtml``)
+
+.. raw:: html
+	<dtml-var manage_page_header>
+	
+	<dtml-var manage_tabs>
+	
+	<main class="container-fluid">
+	
+		<p class="form-help">
+			You may edit the source for this document using the form below. You
+			may also upload the source for this document from a local file. Click
+			the <em>browse</em> button to select a local file to upload.
+		</p>
+	
+		<form action="manage_edit" method="post" class="zmi-dtml zmi-edit">
+	
+			<dtml-with keyword_args mapping>
+				<div class="form-group row">
+					<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+					<div class="col-sm-9 col-md-10">
+						<input id="title" class="form-control" type="text" name="title" 
+							value="<dtml-if title>&dtml-title;</dtml-if>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<textarea id="content" data-contenttype="html" 
+						class="form-control zmi-code col-sm-12" name="data:text" wrap="off" 
+						rows="20"><dtml-var __str__></textarea>
+				</div>
+			</dtml-with>
+	
+			<div class="zmi-controls">
+				<dtml-if wl_isLocked>
+					<input class="btn btn-primary disabled" type="submit" name="submit" value="Save Changes" disabled="disabled" />
+					<span class="badge badge-warning" title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
+				<dtml-else>
+					<input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
+				</dtml-if>
+			</div>
+	
+		</form>
+	
+		<dtml-unless wl_isLocked>
+			<form action="manage_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4">
+				<div class="input-group" title="Select Local File for Uploading">
+					<div class="custom-file">
+						<input type="file" name="file" class="custom-file-input" id="file-data" value="" 
+							onchange="$('.custom-file label span').html($(this).val().replace(/^.*(\\|\/|\:)/, ''));" />
+						<label class="custom-file-label" for="file-data"><span>Choose file</span></label>
+					</div>
+					<div class="input-group-append">
+						<input class="btn btn-outline-secondary" type="submit" value="Upload File" />
+					</div>
+				</div>
+			</form>
+		</dtml-unless>
+	
+	</main>
+	
+	<dtml-var manage_page_footer>
+
+More details
+------------
+
+**Textarea:** 
+A textarea element for editing template or script code uses the JS library 
+``ace`` for syntax high-lighting and line numbering. Textarea elements which 
+are declared by the CSS class ``zmi-code`` are transformed into an ace-edditor 
+field. Moreover this element has an attribute ``data-contenttype`` which is 
+needed by ace-editor to determine the fitting syntax high-lighting.
+ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
+
+**File upload element:** 
+The file upload element has an own form container (classfied as ``zmi-upload``). 
+All subseqeunt elements are nested as 'input-group' containing a div classified as 
+``custom-file`` nestingthe actual input element. An inline JS fired on the 
+onchange-event beautifies the file name showed after selecting it.
+ZPT-Example see: ../Zope/src/Products/PageTemplates/www/ptEdit.zpt
+
+**Hints and Warnings:** 
+Some input field show additional informations; these are added as element 
+``<small>`` directly following the referred inout field. (Both element are nested 
+by the width defining div-container). Possible text colors are declared by 
+typical bootstrap class names like ``text-warning``.
+
+**Icons:** 
+Zope4 object classes which are show in the ZMI have declared a global variable 
+``zmi_icon``; this string corresponds to an appropiate font icon-CSS class 
+supplied by the Fontawsome web font (https://fontawesome.com/icons)
+
+**Tables:** 
+Bootstraps requires an explictit CSS class ``table`` for any table; espcially 
+long item lists should get an additional CSS class ``table-sm`` and maybe another 
+class ``table-striped`` for a better readability. Finally it is recommended 
+to add a specific identifying class name. The table structure is 
+
+**ZMI-classes:** 
+All basic stylings of the zmi-elements  are defined in the CSS file, see:
+``../Zope/src/zmi/styles/resources/zmi_base.css``
