@@ -26,7 +26,7 @@ Bugfixes
   native ``str`` on both Python versions.
   (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)
 
-- Inlcude the ``zmi.styles`` repository in this package to break a circular
+- Include the ``zmi.styles`` repository in this package to break a circular
   dependency.
   (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 

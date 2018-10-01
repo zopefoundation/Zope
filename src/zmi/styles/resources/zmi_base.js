@@ -13,10 +13,15 @@ function toggle_menu() {
 
 // [2] Add New Object Item (with Modal Dialog)
 function addItem( elm, base_url ) {
+	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
+	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
 	var url_full = base_url + '/' + url_action;
-	var action = url_action.split('/')[url_action.split('/').length-1];
-	var modal_form_base = url_full.split(action)[0];
+	var parts = url_action.split('/');
+	// folderAdd
+	var action = parts[parts.length-1];
+	// http://localhost/myfolder/manage_addProduct/OFSP/
+	var modal_form_base = url_full.slice(0, -action.length);
 	var modal_body_url = url_full + '?zmi_dialog=modal';
 
 	// List of Object Types Inserting Without Modal Dialog
