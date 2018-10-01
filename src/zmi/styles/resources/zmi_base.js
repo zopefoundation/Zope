@@ -19,7 +19,7 @@ function addItem( elm, base_url ) {
 	var modal_form_base = url_full.split(action)[0];
 	var modal_body_url = url_full + '?zmi_dialog=modal';
 
-	// List of Object Types Inserting Without Modal Dialog 
+	// List of Object Types Inserting Without Modal Dialog
 	var no_modal_dialog = [
 		'manage_addRegistry',
 		'manage_addUserFolder',
@@ -29,7 +29,7 @@ function addItem( elm, base_url ) {
 		'addPluggableAuthService'
 	];
 
-	// SHOW MODAL DIALOG	
+	// SHOW MODAL DIALOG
 	if ( $.inArray(action, no_modal_dialog) < 0 ) {
 	// Deactivate for Testing Purposes:
 	// if ( 1==0 ) {
@@ -38,8 +38,8 @@ function addItem( elm, base_url ) {
 		$('#zmi-modal .modal-body').attr('data-add_type', action);
 		// Load Modal Form by AJAX
 		$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
-			if(statusTxt == "error") { 
-				window.location.href = url_full; 
+			if(statusTxt == "error") {
+				window.location.href = url_full;
 			}
 		});
 		// Shift Titel to Modal Header
@@ -120,7 +120,7 @@ function addItem( elm, base_url ) {
 		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"fa fa-cookie-bite" },
 		"Broken object":{ "title":"Broken object", "class":"fas fa-ban text-danger" }
 	};
-	
+
 	// PROCESS Object Icons
 	for ( var i in zmi_icons ) {
 		var i_name = i;
@@ -258,11 +258,11 @@ $(function() {
 	}
 
 	// EXECUTE DESIGN WORKAROUNDS
-	// Needed until ALL GUI Forms are Bootstrap Conformant 
+	// Needed until ALL GUI Forms are Bootstrap Conformant
 	fix_zmi_icons();
 	fix_ancient_gui();
 
-	// EXECUTE FUNCTIONAL WORKAROUNDS 
+	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
 		$('#addItemSelect, #toggle_menu').css('opacity',1);
@@ -275,7 +275,7 @@ $(function() {
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
 		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-inactive') );
 	}
-	
+
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});
 	}
