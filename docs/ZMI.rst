@@ -103,7 +103,7 @@ resolvable by the browser aka not simple file system paths.)
 Update your Zope2 ZMI template code
 +++++++++++++++++++++++++++++++++++
 
-The Zope4 ZMI uses some basic CSS class names of the bootstrap cCSS framework 
+The Zope4 ZMI uses some basic CSS class names of the bootstrap CSS framework 
 and structuring concepts for page layout and forms. A ZMI page usually sequences 
 following templates nesting the page core:
 
@@ -125,17 +125,16 @@ In general specific functional ZMI elements are declared by a CSS class with a
 prefixed ``zmi-`` whereas the basic layout is done by usual bootstrap classes 
 fowllowing the typical element nesting:
 any form element has a bootstrap-like form-group structure containing a label 
-and an input field. Important: the width of the input field is defined by the 
-nesting div-container using the responsive grid classes ``col-sm-9 col-and md-10``. 
-The input field width is completed to 12 (=100%) by the preceeding label classes 
-``col-sm-3`` and ``col-md-2``
+and an input field. Important: The width of the input field is defined by the 
+nesting div-container using the responsive grid classes ``col-sm-9 col md-10``. 
+With the classes ``col-sm-3 col-md-2`` for the label, a complete bootstrap row 
+of 12 is filled.
 
 .. raw:: html
 	<div class="form-group row">
 		<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
 		<div class="col-sm-9 col-md-10">
-			<input id="title" class="form-control" type="text" name="title" 
-				value="<dtml-if title>&dtml-title;</dtml-if>" />
+			<input id="title" class="form-control" type="text" name="title" value="<dtml-if title>&dtml-title;</dtml-if>" />
 		</div>
 	</div>
 
@@ -226,29 +225,30 @@ needed by ace-editor to determine the fitting syntax high-lighting.
 ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
 
 **File upload element:** 
-The file upload element has an own form container (classfied as ``zmi-upload``). 
-All subseqeunt elements are nested as 'input-group' containing a div classified as 
+The file upload element has it's own form container (classfied as ``zmi-upload``). 
+All subsequent elements are nested as 'input-group' containing a div classified as 
 ``custom-file`` nestingthe actual input element. An inline JS fired on the 
 onchange-event beautifies the file name showed after selecting it.
 ZPT-Example see: ../Zope/src/Products/PageTemplates/www/ptEdit.zpt
 
 **Hints and Warnings:** 
-Some input field show additional informations; these are added as element 
+Some input fields show additional information; these are added as element 
 ``<small>`` directly following the referred inout field. (Both element are nested 
 by the width defining div-container). Possible text colors are declared by 
 typical bootstrap class names like ``text-warning``.
 
 **Icons:** 
-Zope4 object classes which are show in the ZMI have declared a global variable 
+Zope4 object classes which are shown in the ZMI have declared a class variable 
 ``zmi_icon``; this string corresponds to an appropiate font icon-CSS class 
 supplied by the Fontawsome web font (https://fontawesome.com/icons)
 
 **Tables:** 
-Bootstraps requires an explictit CSS class ``table`` for any table; espcially 
+Bootstraps requires an explicit CSS class ``table`` for any table; especially 
 long item lists should get an additional CSS class ``table-sm`` and maybe another 
 class ``table-striped`` for a better readability. Finally it is recommended 
-to add a specific identifying class name. The table structure is 
+to add a specific id attribute like "zmi-db_info". The general table structure is 
+compliant to bootstrap standard table (https://getbootstrap.com/docs/4.1/content/tables/).
 
 **ZMI-classes:** 
-All basic stylings of the zmi-elements  are defined in the CSS file, see:
+All basic stylings of the zmi-elements are defined in the CSS file, see:
 ``../Zope/src/zmi/styles/resources/zmi_base.css``
