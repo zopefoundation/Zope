@@ -28,6 +28,7 @@ necessary to create a Zope WSGI instance home.
 
 import getopt
 import os
+import subprocess
 import sys
 from . import copyzopeskel
 
@@ -213,12 +214,12 @@ def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
     zope2file = ''
-    p = os.popen('"%s" -c"import Zope2; print(Zope2.__file__)"' % python)
     try:
-        zope2file = p.readline()[:-1]
-    finally:
-        p.close()
-    if not zope2file:
+        output = subprocess.check_output(
+            [python, '-c', 'import Zope2; print(Zope2.__file__)'],
+            stderr=subprocess.PIPE)
+        zope2file = output.strip()
+    except subprocess.CalledProcessError:
         # fall back to current Python interpreter
         import Zope2
         zope2file = Zope2.__file__
