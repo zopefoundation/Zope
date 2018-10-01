@@ -12,6 +12,7 @@
 ##############################################################################
 
 import os
+import six
 from logging import getLogger
 
 from AccessControl.class_init import InitializeClass
@@ -74,9 +75,11 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     security.declareProtected(
         'View management screens', 'read', 'document_src')
 
-    def __init__(self, filename, _prefix=None, **kw):
+    def __init__(
+        self, filename, _prefix=None, encoding=DEFAULT_ENCODING, **kw
+    ):
         name = kw.pop('__name__', None)
-
+        self.encoding = encoding
         basepath, ext = os.path.splitext(filename)
 
         if name:
@@ -168,33 +171,28 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def _prepare_html(self, text):
         match = meta_pattern.search(text)
         if match is not None:
-            type_, encoding = (x.decode('utf-8') for x in match.groups())
+            type_, encoding = (x.decode(self.encoding) for x in match.groups())
             # TODO: Shouldn't <meta>/<?xml?> stripping
             # be in PageTemplate.__call__()?
             text = meta_pattern.sub(b"", text)
         else:
             type_ = None
-            encoding = DEFAULT_ENCODING
+            encoding = self.encoding
         text = text.decode(encoding)
         return text, type_
 
     def _prepare_xml(self, text):
-        try:
-            text = text.decode(encodingFromXMLPreamble(text))
-        except UnicodeDecodeError:
-            pass
+        if not isinstance(text, six.text_type):
+            encoding = encodingFromXMLPreamble(text, default=self.encoding)
+            text = text.decode(encoding)
         return text, 'text/xml'
 
     def _read_file(self):
         __traceback_info__ = self.filename
-        f = open(self.filename, "rb")
-        try:
+        with open(self.filename, "rb") as f:
             text = f.read(XML_PREFIX_MAX_LENGTH)
-        except Exception:
-            f.close()
-            raise
-        type_ = sniff_type(text)
-        text += f.read()
+            type_ = sniff_type(text)
+            text += f.read()
         if type_ != "text/xml":
             text, type_ = self._prepare_html(text)
         else:

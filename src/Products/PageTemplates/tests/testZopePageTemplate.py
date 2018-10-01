@@ -20,6 +20,7 @@ from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from zope.component import provideUtility
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver \
     import PreferredCharsetResolver
@@ -85,7 +86,7 @@ class ZPTUtilsTests(unittest.TestCase):
 
     def testExtractEncodingFromXMLPreamble(self):
         extract = encodingFromXMLPreamble
-        self.assertEqual(extract(b'<?xml version="1.0" ?>'), 'utf-8')
+        self.assertEqual(extract(b'<?xml version="1.0" ?>'), DEFAULT_ENCODING)
         self.assertEqual(extract(b'<?xml encoding="utf-8" '
                                  b'version="1.0" ?>'),
                          'utf-8')
