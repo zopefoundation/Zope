@@ -45,10 +45,9 @@ function addItem( elm, base_url ) {
 		$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
 			if(statusTxt == "error") {
 				window.location.href = url_full;
+					return;
 			}
-		});
-		// Shift Titel to Modal Header
-		$( document ).ajaxComplete(function() {
+			// Shift Title to Modal Header
 			$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
 			// STRANGE: Why is this Removing Necessary..
 			$('#zmi-modal .modal-body i').remove();
