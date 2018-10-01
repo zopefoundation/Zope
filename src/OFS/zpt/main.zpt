@@ -239,7 +239,7 @@
 				else {
 					window.location.href = 'manage_findForm?btn_submit=Find&search_sub:int=1&obj_ids%3Atokens=' + tablefilter;
 				}
-				e.preventDefault();
+				event.preventDefault();
 			};
 			$('table.objectItems').find("tbody tr").hide();
 			$('table.objectItems').find("tbody tr td.zmi-object-id a:contains(" + tablefilter+ ")").closest('tbody tr').show();
