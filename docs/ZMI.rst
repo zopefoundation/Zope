@@ -155,6 +155,7 @@ Zope4 ZMI
 (from: ``../Zope/src/OFS/dtml/documentEdit.dtml``)
 
 .. raw:: html
+
 	<dtml-var manage_page_header>
 	
 	<dtml-var manage_tabs>
