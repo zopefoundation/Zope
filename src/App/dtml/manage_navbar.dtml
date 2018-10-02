@@ -7,7 +7,7 @@
 		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
 		<i class="fa fa-bars"></i>
 	</div>
-	<a class="navbar-brand" href="#" onclick="window.open('http://www.zope.org');">
+	<a class="navbar-brand" href="http://www.zope.org" target="_blank">
 		<span class="product">ZOPE 4.0</span>
 	</a>
 	<ul class="navbar-nav flex-row ml-sm-auto d-flex">
