@@ -31,53 +31,39 @@ function addItem( elm, base_url ) {
 		'manage_addErrorLog',
 		'manage_addVirtualHostMonster',
 		'manage_addzmsform',
-		'addPluggableAuthService'
+		'addPluggableAuthService',
 	];
 
-	// SHOW MODAL DIALOG
-	if ( $.inArray(action, no_modal_dialog) < 0 ) {
-	// Deactivate for Testing Purposes:
-	// if ( 1==0 ) {
-		$('#zmi-modal').modal('show');
-		$('#zmi-modal').modal({ focus: true });
-		$('#zmi-modal .modal-body').attr('data-add_type', action);
-		// Load Modal Form by AJAX
-		$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
-			if(statusTxt == "error") {
-				window.location.href = url_full;
-					return;
-			}
-			// Shift Title to Modal Header
-			$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
-			// STRANGE: Why is this Removing Necessary..
-			$('#zmi-modal .modal-body i').remove();
-			// Aggregate multiple Help-Paragraphs
-			if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
-				var help_text = $('#zmi-modal .modal-body p.form-help').text();
-				$('#zmi-modal .modal-body p.form-help').remove();
-				$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
-			}
-			$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
-			$('#zmi-modal .modal-body p.form-help').hide();
-
-			//Modify Form Action for Modal Use
-			$( '#zmi-modal form' ).each( function() {
-				var modal_form_url = modal_form_base + $( this ).attr( 'action' );
-				$( this ).attr( 'action', modal_form_url );
-			});
-
-			// GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
-			fix_ancient_modal_gui();
-		});
-		// Clean up Modal DOM on Close
-		$('#zmi-modal').on('hide.bs.modal', function (event) {
-			$('#zmi-modal .modal-header h2').remove();
-			$('#zmi-modal .modal-body').empty();
-		});
-	} else {
-	// REDIRECT TO NEW URL (WINDOW)
+	if ( $.inArray(action, no_modal_dialog) !== -1 ) {
 		window.location.href = url_full;
+		return
 	}
+	
+	// SHOW MODAL DIALOG
+	$('#zmi-modal').modal('show');
+	$('#zmi-modal').modal({ focus: true });
+	$('#zmi-modal .modal-body').attr('data-add_type', action);
+	// Load Modal Form by AJAX
+	$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
+		if(statusTxt == "error") {
+			window.location.href = url_full;
+				return;
+		}
+		
+		//Modify Form Action for Modal Use
+		$( '#zmi-modal form' ).each( function() {
+			var modal_form_url = modal_form_base + $( this ).attr( 'action' );
+			$( this ).attr( 'action', modal_form_url );
+		});
+		
+		fix_ancient_modal_gui();
+		fix_modern_modal_gui();
+	});
+	// Clean up Modal DOM on Close
+	$('#zmi-modal').on('hide.bs.modal', function (event) {
+		$('#zmi-modal .modal-header h2').remove();
+		$('#zmi-modal .modal-body').empty();
+	});
 }
 
 
@@ -160,6 +146,7 @@ function fix_ancient_gui() {
 		$('table').addClass('table zmi-patch');
 	}
 }
+
 // [3] GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_modal_gui() {
 	if ( 0 === $('.modal-body main').length ) {
@@ -170,6 +157,20 @@ function fix_ancient_modal_gui() {
 		$('.modal-body textarea[name*=":text"]').addClass('zmi-code');
 		$('.modal-body table').addClass('table zmi-patch');
 	}
+}
+
+function fix_modern_modal_gui() {
+	// Shift Title to Modal Header
+	$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
+	
+	// Aggregate multiple Help-Paragraphs
+	if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
+		var help_text = $('#zmi-modal .modal-body p.form-help').text();
+		$('#zmi-modal .modal-body p.form-help').remove();
+		$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
+	}
+	$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
+	$('#zmi-modal .modal-body p.form-help').hide();
 }
 
 // +++++++++++++++++++++++++++++++
