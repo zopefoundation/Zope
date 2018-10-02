@@ -26,6 +26,9 @@ New features
 Bugfixes
 ++++++++
 
+- Call exception view before triggering _unauthorized.
+  (`#304 <https://github.com/zopefoundation/Zope/pull/304>`_)
+
 - Fix XML Page template files in Python 3
   (`#319 <https://github.com/zopefoundation/Zope/issues/319>`_)
 
