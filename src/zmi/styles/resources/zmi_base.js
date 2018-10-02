@@ -2,12 +2,36 @@
 
 // NAVBAR-FUNCTIONS
 
-// [1] Toggle Sitemap
-function toggle_menu() {
-	if (document.referrer.endsWith('/manage')) {
-		window.parent.location.href="manage_main";
-	} else {
-		window.parent.location.href="manage";
+function setupShowHideTreeView() {
+	/*
+	Disable the show sidebar button if the sidebar cannot be shown
+	without navigating away from the current view.
+	
+	It would be cool to get rid of this, but that would require
+	reworking the TreeTagView to understand that it could show the 
+	elements above the current object if it is not a folderish thing.
+	*/
+	var $li = $('#toggle_menu');
+	if (0 === $li.length) {
+		return // no menu toggle on this page
+	}
+	
+	var $a = $li.find('a');
+	// var isInFrameset = window.parent.location.href.endsWith('/manage');
+	var isShowingFrameset = window !== window.parent;
+	var isFolderish = !! $li.data().is_folderish
+	if (isShowingFrameset) {
+		$a.attr('href', 'manage_main')
+	}
+	else {
+		if ( isFolderish ) {
+			$a.attr('href', 'manage')
+		}
+		else {
+			$li.attr('title', $li.attr('data-title_inactive'))
+			$li.css('opacity', .5);
+			$a.addClass('disabled')
+		}
 	}
 }
 
@@ -203,16 +227,16 @@ $(function() {
 	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
-		$('#addItemSelect, #toggle_menu').css('opacity',1);
+		$('#addItemSelect').css('opacity',1);
 		$('#addItemSelect').removeAttr('disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
-		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-active') );
 	} else {
-		$('#addItemSelect, #toggle_menu').css('opacity', 0.5);
+		$('#addItemSelect').css('opacity', 0.5);
 		$('#addItemSelect').attr('disabled','disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
-		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-inactive') );
 	}
+	
+	setupShowHideTreeView()
 
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});

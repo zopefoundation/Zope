@@ -15,10 +15,11 @@
 			<span class="zmi-label"><dtml-var AUTHENTICATED_USER missing="not logged-in"></span>
 		</li>
 		<li id="toggle_menu" class="form-inline desktop hidden-xs"
-			data-title-active="Show/Hide Tree Menu of the Navigation Context"
-			data-title-inactive="STATUS INACTIVE: Tree Menu Button only be Active on List Views"
-			title="Show/Hide Tree Menu of the Navigation Context">
-			<a href="#" onclick="javascript:toggle_menu()" target="_parent">
+			title="Show/Hide Tree Menu of the Navigation Context"
+			data-title_inactive="STATUS INACTIVE: Tree Menu Button is only active on List Views. Navigate up a level to show the tree view again."
+			data-is_folderish="<dtml-var "(manage_main != manage) and 1 or 0">"
+		>
+			<a href="#" target="_parent">
 				<i class="fa fa-sitemap"></i>
 			</a>
 		</li>
