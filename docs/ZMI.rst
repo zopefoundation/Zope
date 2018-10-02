@@ -131,7 +131,8 @@ nesting div-container using the responsive grid classes ``col-sm-9 col md-10``.
 With the classes ``col-sm-3 col-md-2`` for the label, a complete bootstrap row 
 of 12 is filled.
 
-.. raw:: html
+.. code-block:: html
+
 	<div class="form-group row">
 		<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
 		<div class="col-sm-9 col-md-10">
@@ -143,7 +144,8 @@ The following buttons are constructed as div element with the classname
 ``zmi-controls``; the buttons use systematically the  bootstrap class pair 
 ``btn btn-primary``.
 
-.. raw:: html
+.. code-block:: html
+
 	<div class="zmi-controls">
 		<input class="btn btn-primary" type="submit" name="submit" value="Save" />
 	</div>
@@ -154,7 +156,8 @@ Zope4 ZMI
 **Example: updated DTML template** 
 (from: ``../Zope/src/OFS/dtml/documentEdit.dtml``)
 
-.. raw:: html
+.. code-block:: html
+	:linenos:
 
 	<dtml-var manage_page_header>
 	
@@ -224,14 +227,14 @@ A textarea element for editing template or script code uses the JS library
 are declared by the CSS class ``zmi-code`` are transformed into an ace-editor 
 field. Moreover this element has an attribute ``data-contenttype`` which is 
 needed by ace-editor to determine the fitting syntax high-lighting.
-ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
+ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt`` 
 
 **File upload element:** 
 The file upload element has it's own form container (classfied as ``zmi-upload``). 
 All subsequent elements are nested as 'input-group' containing a div classified as 
 ``custom-file`` nesting the actual input element. An inline JS fired on the 
 onchange-event beautifies the file name showed after selecting it.
-ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt
+ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
 
 **Hints and Warnings:** 
 Some input fields show additional information; these are added as element 
