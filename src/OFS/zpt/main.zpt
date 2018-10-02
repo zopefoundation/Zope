@@ -9,7 +9,6 @@
 			skey python:request.get('skey','id');
 			rkey python:request.get('rkey','asc');
 			rkey_alt python:request.get('rkey','asc')=='asc' and 'desc' or 'asc';
-			sort_func python:'strcoll' if skey in ['meta_type', 'id', 'title'] else 'cmp';
             obs python: here.manage_get_sortedObjects(sortkey = skey, revkey = rkey);
           "
 		tal:attributes="action string:${request/URL1}/">
