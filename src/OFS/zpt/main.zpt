@@ -9,19 +9,9 @@
 			skey python:request.get('skey','id');
 			rkey python:request.get('rkey','asc');
 			rkey_alt python:request.get('rkey','asc')=='asc' and 'desc' or 'asc';
-			sort_func python:['strcoll','cmp'][skey not in ['meta_type','id','title']];
-      obs python: [
-        [('id', item[0]), ('obj', item[1]),]
-        + [
-          (key, getattr(item[1],key)) 
-          for key in ['title', 'meta_type']
-          if hasattr(item[1],key)
-          ]
-        for item in here.objectItems()
-        ];
-      obs python: [dict(item) for item in obs];
-			obs python: sequence.sort(obs, ((skey,sort_func,rkey),), mapping=1 );
-      "
+			sort_func python:'strcoll' if skey in ['meta_type', 'id', 'title'] else 'cmp';
+            obs python: here.manage_get_sortedObjects(sortkey = skey, revkey = rkey);
+          "
 		tal:attributes="action string:${request/URL1}/">
 
 	<tal:not-empty condition="obs">
@@ -79,7 +69,7 @@
 			</thead>
 			<tbody>
 				<tr tal:repeat="ob_dict obs">
-        <tal:x define="ob nocall:ob_dict/obj">
+                    <tal:obj define="ob nocall:ob_dict/obj">
 						<td class="zmi-object-check text-right"
 								onclick="$(this).children('input').trigger('click');">
 								<input type="checkbox"
@@ -118,7 +108,7 @@
 						<td class="text-right zmi-object-date hidden-xs pl-3"
 							tal:content="python:here.last_modified(ob)">
 						</td>
-        </tal:x>
+                    </tal:obj>
 				</tr>
 			</tbody>
 		</table>
