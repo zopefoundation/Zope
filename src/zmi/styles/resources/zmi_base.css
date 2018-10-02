@@ -635,7 +635,6 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 		z-index:1001;
 	}
 	.zmi header.navbar .navbar-brand,
-	.zmi header.navbar ul.navbar-nav li#toggle_menu,
 	.zmi header.navbar li.zmi-authenticated_user span.zmi-label,
 	.zmi header.navbar li.zmi-cp span.zmi-label	{
 		display:none;

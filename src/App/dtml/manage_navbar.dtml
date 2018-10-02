@@ -14,7 +14,7 @@
 		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var AUTHENTICATED_USER missing="not logged-in">">
 			<span class="zmi-label"><dtml-var AUTHENTICATED_USER missing="not logged-in"></span>
 		</li>
-		<li id="toggle_menu" class="form-inline desktop"
+		<li id="toggle_menu" class="form-inline desktop hidden-xs"
 			data-title-active="Show/Hide Tree Menu of the Navigation Context"
 			data-title-inactive="STATUS INACTIVE: Tree Menu Button only be Active on List Views"
 			title="Show/Hide Tree Menu of the Navigation Context">
