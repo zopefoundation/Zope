@@ -553,18 +553,6 @@ i.fa-folder.zmi-icon-folder-ordered:after {
 	font-size:14px
 }
 
-i:not(.fa-ban).zmi_icon-broken:after {
-	content: "\f12a"; /* fa-exclamation */
-	font-family: "Font Awesome\ 5 Free",Fontawesome;
-	position: absolute;
-	display: inline-block;
-	margin: 0 0 0 0.25rem;
-	font-size: smaller;
-	color: red;
-	font-weight:normal;
-}
-
-
 /* HEADER BAR */
 header.navbar {
 	background: black;

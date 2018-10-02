@@ -81,7 +81,7 @@
 						<td class="zmi-object-type"
 								onclick="$(this).prev().children('input').trigger('click')">
 								<i title="Broken object"
-									class="zmi_icon-broken"
+									class="fas fa-ban text-danger"
 									tal:attributes="class ob/zmi_icon | default; title ob/meta_type | default">
 								<span class="sr-only"
 									tal:content="ob/meta_type | default">Broken object</span>
