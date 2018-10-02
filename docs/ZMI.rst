@@ -140,13 +140,13 @@ of 12 is filled.
 	</div>
 
 The following buttons are constructed as div element with the classname 
-``zmi-controls``; the bbuttons use systematically the  bootstrap class pair 
+``zmi-controls``; the buttons use systematically the  bootstrap class pair 
 ``btn btn-primary``.
 
 .. raw:: html
 	<div class="zmi-controls">
 		<input class="btn btn-primary" type="submit" name="submit" value="Save" />
-	</div
+	</div>
 
 The following example code shows a whole restructed DTML template rendering the 
 Zope4 ZMI
@@ -221,7 +221,7 @@ More details
 **Textarea:** 
 A textarea element for editing template or script code uses the JS library 
 ``ace`` for syntax high-lighting and line numbering. Textarea elements which 
-are declared by the CSS class ``zmi-code`` are transformed into an ace-edditor 
+are declared by the CSS class ``zmi-code`` are transformed into an ace-editor 
 field. Moreover this element has an attribute ``data-contenttype`` which is 
 needed by ace-editor to determine the fitting syntax high-lighting.
 ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
@@ -229,9 +229,9 @@ ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt``
 **File upload element:** 
 The file upload element has it's own form container (classfied as ``zmi-upload``). 
 All subsequent elements are nested as 'input-group' containing a div classified as 
-``custom-file`` nestingthe actual input element. An inline JS fired on the 
+``custom-file`` nesting the actual input element. An inline JS fired on the 
 onchange-event beautifies the file name showed after selecting it.
-ZPT-Example see: ../Zope/src/Products/PageTemplates/www/ptEdit.zpt
+ZPT-Example see: ``../Zope/src/Products/PageTemplates/www/ptEdit.zpt
 
 **Hints and Warnings:** 
 Some input fields show additional information; these are added as element 
