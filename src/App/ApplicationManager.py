@@ -90,6 +90,7 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
     id = 'Control_Panel'
     name = title = 'Control Panel'
     meta_type = 'Control Panel'
+    zmi_icon = 'fa fa-cog'
 
     Database = DatabaseChooser()
 

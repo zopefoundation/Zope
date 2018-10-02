@@ -544,7 +544,7 @@ i.fa-folder.zmi-icon-folder-ordered:after {
 }
 
 i:not(.fa-ban).zmi_icon-broken:after {
-	content: "\f12a";
+	content: "\f12a"; /* fa-exclamation */
 	font-family: "Font Awesome\ 5 Free",Fontawesome;
 	position: absolute;
 	display: inline-block;

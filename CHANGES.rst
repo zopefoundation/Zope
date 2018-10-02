@@ -26,12 +26,19 @@ New features
 Bugfixes
 ++++++++
 
+- Fix XML Page template files in Python 3
+  (`#319 <https://github.com/zopefoundation/Zope/issues/319>`_)
+
 - Fix ZMI upload of `DTMLMethod` and `DTMLDocument` to store the DTML as a
   native ``str`` on both Python versions.
   (`#265 <https://github.com/zopefoundation/Zope/pull/265>`_)
 
 - Fix upload and rendering of text files.
   (`#240 <https://github.com/zopefoundation/Zope/pull/240>`_)
+
+- Include the ``zmi.styles`` repository in this package to break a circular
+  dependency.
+  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
 - Work around Python bug (https://bugs.python.org/issue27777)
   when reading request bodies not encoded as application/x-www-form-urlencoded
