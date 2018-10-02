@@ -46,6 +46,7 @@ from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+import ZPublisher.HTTPRequest
 
 try:
     from html import escape
@@ -470,6 +471,11 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
         self.http__refreshEtag()
 
+    def _get_encoding(self):
+        """Get the canonical encoding for ZMI."""
+        return getattr(self, 'management_page_charset',
+                       ZPublisher.HTTPRequest.default_encoding)
+
     security.declareProtected(change_images_and_files, 'manage_edit')
     def manage_edit(self, title, content_type, precondition='',
                     filedata=None, REQUEST=None):
@@ -486,6 +492,8 @@ class File(Persistent, Implicit, PropertyManager,
         elif self.precondition:
             del self.precondition
         if filedata is not None:
+            if isinstance(filedata, text_type):
+                filedata = filedata.encode(self._get_encoding())
             self.update_data(filedata, content_type, len(filedata))
         else:
             self.ZCacheable_invalidate()
@@ -624,9 +632,11 @@ class File(Persistent, Implicit, PropertyManager,
     def __bytes__(self):
         return bytes(self.data)
 
-    if PY2:
-        def __str__(self):
+    def __str__(self):
+        if PY2:
             return str(self.data)
+        else:
+            return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
