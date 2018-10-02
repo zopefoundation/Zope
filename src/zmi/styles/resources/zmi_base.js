@@ -67,73 +67,6 @@ function addItem( elm, base_url ) {
 }
 
 
-// ++++++++++++++++++++++++++++++++++++++++
-// DESIGN-FUNCTIONS
-// Ex-post Design-Fixes for Non-Bootstrap-
-// Conformant GUI Pages and Missing Icons
-// ++++++++++++++++++++++++++++++++++++++++
-
-// [1] ICON FIX: As long as not set systematically in the class definitions
- function fix_zmi_icons() {
-	 var zmi_icons = {
-		"User Folder":{ "title":"Access Control List", "class":"fa fa-user-friends" }, // templated
-		"UserFolder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
-		"Pluggable Auth Service":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
-		"User":{ "title":"User", "class":"fa fa-user" },
-		"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-hdd" },
-		"Filesystem Directory View":{ "title":"Filesystem Directory View", "class":"far fa-folder-open" },
-		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" }, // templated
-		"Folder":{ "title":"Folder", "class":"far fa-folder" },
-		"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
-		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square-alt" },
-		"DTML Document":{ "title":"DTML Document", "class":"far fa-file-alt" },
-		"DTML Method":{ "title":"DTML Method", "class":"far fa-file-alt" },
-		"Page Template":{ "title":"Page Template", "class":"far fa-file-code" },
-		"File":{ "title":"File Object", "class":"far fa-file-archive" },
-		"Mail":{ "title":"Mail Folder", "class":"far fa-envelope" },
-		"Image":{ "title":"Image", "class":"far fa-file-image" },
-		"Control":{ "title":"Control Panel", "class":"fa fa-cog" },
-		"Database":{ "title":"Database", "class":"fa fa-database" },
-		"ZSQLiteDA":{ "title":"Database", "class":"fa fa-database" },
-		"ZMySQLDA":{ "title":"MySQL-Database Adapter", "class":"fa fa-database" },
-		"Product":{ "title":"Installed Product", "class":"fa fa-gift" },
-		"ZSQL":{ "title":"ZSQL-Method", "class":"far fa-puzzle-piece" },
-		"Debug Manager":{ "title":"Debug Manager", "class":"fas fa-bug" },
-		"Site Error Log":{ "title":"Site Error Log", "class":"fas fa-bug" },
-		"Browser Id Manager":{ "title":"Browser Id Manager", "class":"far fa-id-card" },
-		"ZMS":{ "title":"ZMS Root", "class":"fas fa-home" },
-		"ZMSObject.png":{ "title":"ZMS Content", "class":"far fa-file" },
-		"Monster":{ "title":"Virtual Host Monster", "class":"fa fa-code-branch" },
-		"ZCatalogIndex":{ "title":"ZCatalogIndex", "class":"far fa-list-alt" },
-		"ZCatalog":{ "title":"ZCatalog", "class":"fa fa-search" },
-		"Session Data Manager":{ "title":"Session Data Manager", "class":"far fa-clock" },
-		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"fa fa-cookie-bite" },
-		"Broken object":{ "title":"Broken object", "class":"fas fa-ban text-danger" }
-	};
-
-	// PROCESS Object Icons
-	for ( var i in zmi_icons ) {
-		var i_name = i;
-		var i_title =zmi_icons[i].title;
-		var i_class =zmi_icons[i].class;
-		if ( $('i[title*="'+i_name+'"]').hasClass('zmi_icon-broken') ) {
-		 	i_class += ' zmi_icon-broken';
-		}
-		$('i[title*="'+i_name+'"]').replaceWith('<i data-title="'+i_title+'" class="'+i_class+'"></i>');
-	}
-	// PROCESS Other Icons
-	$('i[title*="/p_/pl"]').replaceWith('<i data-title="Expand..." class="far fa-plus-square"></i>');
-	$('i[title*="/p_/mi"]').replaceWith('<i data-title="Collapse..." class="far fa-minus-square"></i>');
-	$('i[title*="/p_/davlocked"]').replaceWith('<i data-title="WebDAV" class="fa fa-retweet"></i>');
-	$('img[src*="misc_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
-	$('img[src*="zms_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
-	$('#menu_tree td[width="16"] a:contains("+")').html(('<i title="Expand..." class="fas fa-caret-right text-muted"></i>'));
-	$('#menu_tree td[width="16"] a:contains("-")').html(('<i title="Collapse..." class="fas fa-caret-down text-muted"></i>'));
-	$('a[href*="HelpSys"]').empty()
-		.append('<i class="fa fa-question-sign"></i>')
-		.css('border-color','transparent');
-}
-
 // [2] GUI FIX: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_gui() {
 	if ( 0 !== $('main').length ) {
@@ -265,7 +198,6 @@ $(function() {
 
 	// EXECUTE DESIGN WORKAROUNDS
 	// Needed until ALL GUI Forms are Bootstrap Conformant
-	fix_zmi_icons();
 	fix_ancient_gui();
 
 	// EXECUTE FUNCTIONAL WORKAROUNDS
