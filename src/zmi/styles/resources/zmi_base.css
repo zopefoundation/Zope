@@ -735,6 +735,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 		padding-left:.5rem;
 	}
 	#zmi-modal .modal-dialog {
+		max-width:-moz-fit-content;
 		max-width: fit-content;
 	}
 	#zmi-modal .modal-body {
