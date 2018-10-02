@@ -25,3 +25,5 @@
 /var/
 coverage.xml
 pip-selfcheck.json
+Pipfile
+Pipfile.lock
