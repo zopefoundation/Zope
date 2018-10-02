@@ -23,7 +23,7 @@ Bugfixes
 ++++++++
 
 - Call exception view before triggering _unauthorized.
-  (_`#304 <https://github.com/zopefoundation/Zope/pull/304>`_)
+  (`#304 <https://github.com/zopefoundation/Zope/pull/304>`_)
 
 - Fix ZMI upload of `DTMLMethod` and `DTMLDocument` to store the DTML as a
   native ``str`` on both Python versions.
