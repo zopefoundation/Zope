@@ -877,7 +877,7 @@ class ObjectManager(CopyContainer,
         is the ID of the object as known by the parent and 'obj' is the child
         object.
         '''
-        if sortkey not in ['id', 'title', 'meta_type', 'get_size', '_p_mtime']:
+        if sortkey not in ['title', 'meta_type', 'get_size', '_p_mtime']:
             sortkey = 'id'
 
         items = []
