@@ -1,3 +1,3 @@
 .. attention::
 
-  This document was written for Zope2.
+  This document was written for Zope 2.
