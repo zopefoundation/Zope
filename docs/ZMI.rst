@@ -103,7 +103,8 @@ resolvable by the browser aka not simple file system paths.)
 Update your Zope2 ZMI template code
 +++++++++++++++++++++++++++++++++++
 
-The Zope4 ZMI uses some basic CSS class names of the bootstrap CSS framework 
+The old Zope2 styling rules did not allow a modern and responsive design. Nnow 
+the Zope4 ZMI uses some basic CSS class names of the bootstrap CSS framework 
 and structuring concepts for page layout and forms. A ZMI page usually sequences 
 following templates nesting the page core:
 
@@ -252,3 +253,9 @@ compliant to bootstrap standard table (https://getbootstrap.com/docs/4.1/content
 **ZMI-classes:** 
 All basic stylings of the zmi-elements are defined in the CSS file, see:
 ``../Zope/src/zmi/styles/resources/zmi_base.css``
+
+**Implicit  handling of old Zope2 ZMI templates:** Old templates which do not 
+contain the ``<main>``-element are automattically postprocessed by a Javascript 
+function in the browser. The DOM is minimally modified, so that old forms will fit 
+*somehow* into the Zope4 layout. In the page footer a hint about this autoamtic 
+customizing is shown.
