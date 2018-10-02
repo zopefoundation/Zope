@@ -5,6 +5,10 @@ Installing Zope via ``pipenv``
 
 This document describes how to install Zope via ``pipenv``. Python 3 only.
 
+Please note, that the support for Pipenv is considered experimental.
+
+Also, currently there is no support to update the Zope installation via ``pipenv``.
+
 
 Create a Virtual Environment
 ----------------------------
