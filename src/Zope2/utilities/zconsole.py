@@ -24,7 +24,7 @@ def debug(zopeconf):
 
 
 def debug_console(zopeconf):
-    cmd = 'bin/zopepy -i -c "from Zope2.utilities.zconsole import debug; app = debug(\\\"{}\\\")"'.format(zopeconf)  # noqa: E501
+    cmd = '{} -i -c "from Zope2.utilities.zconsole import debug; app = debug(\\\"{}\\\")"'.format(sys.executable, zopeconf)  # noqa: E501
     os.system(cmd)
 
 
