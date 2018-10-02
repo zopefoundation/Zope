@@ -2,6 +2,8 @@
 Introduction
 ############
 
+.. include:: includes/zope2_notice.rst
+
 Overview
 ========
 
