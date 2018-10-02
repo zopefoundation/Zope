@@ -151,3 +151,12 @@ ZMI overhaul
 The ZMI (Zope Management Interface) is now styled with Bootstrap.
 See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
 styling.
+
+
+Unified encoding
+----------------
+
+As it is reasonable to have one unified encoding in ZMI and frontend,
+``management_page_charset`` (as property of a folder) and ``default-zpublisher-
+encoding`` in `zope.conf` have to define the same encoding, which is `utf-8`
+by default for both.

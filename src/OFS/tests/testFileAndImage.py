@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 import unittest
 
 import Zope2
 
+import codecs
 import os
 import sys
 import time
@@ -19,6 +21,8 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from App.Common import rfc1123_date
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
+import Testing.ZopeTestCase
+import Testing.testbrowser
 import transaction
 
 import OFS.Image
@@ -292,8 +296,8 @@ class FileTests(unittest.TestCase):
     def testUnicode(self):
         val = u'some unicode string here'
 
-        self.assertRaises(TypeError, self.file.manage_edit,
-                          'foobar', 'text/plain', filedata=val)
+        self.assertRaises(TypeError, self.file.update_data,
+                          data=val, content_type='text/plain')
 
 
 class ImageTests(FileTests):
@@ -335,3 +339,71 @@ class ImageTests(FileTests):
         self.assertEqual(six.text_type(self.file),
                          '<img src="http://nohost/file"'
                          ' alt="" title="" height="16" width="16" />')
+
+
+class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
+    """Browser testing ..Image.File"""
+
+    def setUp(self):
+        super(FileEditTests, self).setUp()
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        self.app.manage_addFile('file')
+
+        transaction.commit()
+        self.browser = Testing.testbrowser.Browser()
+        self.browser.addHeader(
+            'Authorization',
+            'basic {}'.format(codecs.encode(
+                b'manager:manager_pass', 'base64').decode()))
+
+    def test_Image__manage_main__1(self):
+        """It shows the content of text files as text."""
+        self.app.file.update_data(u'hällo'.encode('utf-8'))
+        self.browser.open('http://localhost/file/manage_main')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'hällo')
+
+    @unittest.skipIf(six.PY2, "feature not supported on Python 2")
+    def test_Image__manage_main__2(self):
+        """It shows the content of text files.
+
+        It respects the encoding in `management_page_charset`.
+        """
+        self.app.management_page_charset = 'latin-1'
+        self.app.file.update_data(u'hällo'.encode('latin-1'))
+        self.browser.open('http://localhost/file/manage_main')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'hällo')
+
+    @unittest.skipIf(six.PY2, "feature not supported on Python 2")
+    def test_Image__manage_main__3(self):
+        """It shows an error message if the file content cannot be decoded."""
+        self.app.file.update_data(u'hällo'.encode('latin-1'))
+        self.browser.open('http://localhost/file/manage_main')
+        self.assertIn(
+            "The file could not be decoded with 'utf-8'.",
+            self.browser.contents)
+
+    def test_Image__manage_upload__1(self):
+        """It uploads a file, replaces the content and sets content type."""
+        self.browser.open('http://localhost/file/manage_main')
+        self.browser.getControl(name='file').add_file(
+            b'test text file', 'text/plain', 'TestFile.txt')
+        self.browser.getControl('Upload File').click()
+        self.assertIn('Saved changes', self.browser.contents)
+        self.assertEqual(
+            self.browser.getControl('Content Type').value, 'text/plain')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'test text file')
+
+    def test_Image__manage_edit__1(self):
+        """It it possible to change the file's content via browser."""
+        self.browser.open('http://localhost/file/manage_main')
+        text_1 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_1, '')
+        self.browser.getControl(name='filedata:text').value = u'hällo'
+        self.browser.getControl('Save Changes').click()
+        self.assertIn('Saved changes', self.browser.contents)
+        text_2 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_2, 'hällo')
