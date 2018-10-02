@@ -133,12 +133,9 @@
 
   <key name="locale" datatype="locale" handler="locale">
     <description>
-     Enable locale (internationalization) support by supplying a locale
-     name to be used. See your operating system documentation for locale
-     information specific to your system. If your Python module does not
-     support the locale module, or if the requested locale is not
-     supported by your system, an error will be raised and Zope will not
-     start.
+     locale name to be used. See your operating system documentation for locale
+     information specific to your system. If the requested locale is not
+     supported by your system, an error will be raised and Zope will not start.
     </description>
     <metadefault>unset</metadefault>
   </key>

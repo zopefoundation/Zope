@@ -14,6 +14,8 @@
 
 import logging
 import sys
+import locale
+import codecs
 
 from six import PY2
 from ZConfig import ConfigurationError
@@ -51,32 +53,22 @@ class WSGIStarter(object):
             sys.setcheckinterval(self.cfg.python_check_interval)
 
     def setupLocale(self):
-        # set a locale if one has been specified in the config
-        if not self.cfg.locale:
-            return
-
+        '''
+        set a locale if one has been specified in the config, else read from
+        environment.
+        '''
         # workaround to allow unicode encoding conversions in DTML
-        import codecs
         dummy = codecs.lookup('utf-8')  # NOQA
 
         locale_id = self.cfg.locale
 
-        if locale_id is not None:
-            try:
-                import locale
-            except Exception:
-                raise ConfigurationError(
-                    'The locale module could not be imported.\n'
-                    'To use localization options, you must ensure\n'
-                    'that the locale module is compiled into your\n'
-                    'Python installation.')
-            try:
-                locale.setlocale(locale.LC_ALL, locale_id)
-            except Exception:
-                raise ConfigurationError(
-                    'The specified locale "%s" is not supported by your'
-                    'system.\nSee your operating system documentation for '
-                    'more\ninformation on locale support.' % locale_id)
+        try:
+            locale.setlocale(locale.LC_ALL, locale_id or '')
+        except locale.Error:
+            raise ConfigurationError(
+                'The specified locale "%s" is not supported by your'
+                'system.\nSee your operating system documentation for '
+                'more\ninformation on locale support.' % locale_id)
 
     def setupPublisher(self):
         import ZPublisher.HTTPRequest
