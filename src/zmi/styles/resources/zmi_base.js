@@ -136,15 +136,16 @@ function addItem( elm, base_url ) {
 
 // [2] GUI FIX: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_gui() {
-	// WRAP FORM ELEMENT with fluid-container (if missing)
-	if ( 0 === $('main').length ) {
-		$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
-		// ADD BOOTSTRAP CLASSES
-		$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
-		$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
-		$('textarea[name*=":text"]').addClass('zmi-code');
-		$('table').addClass('table zmi-patch');
+	if ( 0 !== $('main').length ) {
+		return;
 	}
+	// WRAP FORM ELEMENT with fluid-container (if missing)
+	$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
+	// ADD BOOTSTRAP CLASSES
+	$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
+	$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
+	$('textarea[name*=":text"]').addClass('zmi-code');
+	$('table').addClass('table zmi-patch');
 }
 
 // [3] GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
