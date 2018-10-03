@@ -133,7 +133,7 @@
 
   <key name="locale" datatype="locale" handler="locale">
     <description>
-     locale name to be used. See your operating system documentation for locale
+     Locale name to be used. See your operating system documentation for locale
      information specific to your system. If the requested locale is not
      supported by your system, an error will be raised and Zope will not start.
     </description>

@@ -53,10 +53,9 @@ class WSGIStarter(object):
             sys.setcheckinterval(self.cfg.python_check_interval)
 
     def setupLocale(self):
-        '''
-        set a locale if one has been specified in the config, else read from
-        environment.
-        '''
+        # set a locale if one has been specified in the config, else read from
+        # environment.
+
         # workaround to allow unicode encoding conversions in DTML
         dummy = codecs.lookup('utf-8')  # NOQA
 
