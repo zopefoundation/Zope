@@ -656,7 +656,8 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setBody_tuple(self):
         response = self._makeOne()
-        self.assertEqual(b"('a',)", response.setBody(('a',)))
+        response.setBody(('a',))
+        self.assertEqual(b"('a',)", response.body)
 
     def test_setBody_calls_insertBase(self):
         response = self._makeOne()
