@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b6 (unreleased)
 ------------------
 
+Breaking changes
+++++++++++++++++
+
+- Remove the ``OFS.History`` module which contained only BBB code since 4.0a2.
+
 New features
 ++++++++++++
 
