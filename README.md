@@ -5,6 +5,7 @@
 * [versions.cfg](releases/master/versions.cfg)
 * [versions-prod.cfg](releases/master/versions-prod.cfg)
 * [requirements-full.txt](releases/master/requirements-full.txt)
+* [constraints.txt](releases/master/constraints.txt)
 
 ## 4.0b5
 

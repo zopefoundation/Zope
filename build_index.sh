@@ -18,6 +18,9 @@ for tag in "master" $(git tag -l "4*" | sort -r); do
     printf "\n\n* [versions.cfg](releases/$tag/versions.cfg)\n* [versions-prod.cfg](releases/$tag/versions-prod.cfg)\n" >> README.md
     git show $tag:requirements-full.txt > releases/$tag/requirements-full.txt 2>/dev/null && printf "* [requirements-full.txt](releases/$tag/requirements-full.txt)\n" >> README.md || rm releases/$tag/requirements-full.txt
     git show $tag:requirements.txt > releases/$tag/requirements.txt 2>/dev/null && printf "* [requirements.txt](releases/$tag/requirements.txt)\n" >> README.md || rm releases/$tag/requirements.txt
+    if [ $tag == "master" ] ; then
+        git show $tag:constraints.txt > releases/$tag/constraints.txt 2>/dev/null && printf "* [constraints.txt](releases/$tag/constraints.txt)\n" >> README.md || rm releases/$tag/constraints.txt
+    fi
     printf "\n" >> README.md
 done
 
