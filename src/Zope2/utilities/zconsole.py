@@ -17,7 +17,9 @@ def runscript(zopeconf, script_name, *extra_args):
     newSecurityManager(None, user)
     scriptglobals = globals()
     scriptglobals.update(__name__='__main__')
-    exec(compile(open(script_name).read(), script_name, 'exec'))
+    with open(script_name) as script:
+        scriptcode = script.read()
+    exec(compile(scriptcode, script_name, 'exec'))
 
 
 def debug(zopeconf):
