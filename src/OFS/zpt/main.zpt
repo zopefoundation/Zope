@@ -6,12 +6,11 @@
 	<form name="objectItems" method="post"
 		tal:define="
 			sm modules/AccessControl/SecurityManagement/getSecurityManager;
-			obs here/objectValues;
-			skey python:request.get('skey','getId');
+			skey python:request.get('skey','id');
 			rkey python:request.get('rkey','asc');
 			rkey_alt python:request.get('rkey','asc')=='asc' and 'desc' or 'asc';
-			sort_func python:['nocase','cmp'][skey not in ['getId','meta_type','id','title']];
-			obs python:sequence.sort(obs, ((skey,sort_func,rkey),) )"
+            obs python: here.manage_get_sortedObjects(sortkey = skey, revkey = rkey);
+          "
 		tal:attributes="action string:${request/URL1}/">
 
 	<tal:not-empty condition="obs">
@@ -36,11 +35,11 @@
 					</th>
 					<th scope="col" class="zmi-object-id"
 						><a title="Sort Ascending by Name"
-							href="?skey=getId&rkey=asc"
+							href="?skey=id&rkey=asc"
 							tal:attributes="
 								title python:'Sort %s by Name'%( rkey_alt.upper() );
-								href python:'?skey=getId&rkey=%s'%( rkey_alt );
-								class python:request.get('skey',None)=='getId' and 'zmi-sort_key' or None"
+								href python:'?skey=id&rkey=%s'%( rkey_alt );
+								class python:request.get('skey',None)=='id' and 'zmi-sort_key' or None"
 								>Name<i class="fa fa-sort"></i></a>
 							<i class="fa fa-search tablefilter" onclick="$('#tablefilter').focus()"></i>
 							<input id="tablefilter" name="obj_ids:tokens" type="text"
@@ -68,13 +67,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr tal:repeat="ob obs">
+				<tr tal:repeat="ob_dict obs">
+                    <tal:obj define="ob nocall:ob_dict/obj">
 						<td class="zmi-object-check text-right"
 								onclick="$(this).children('input').trigger('click');">
 								<input type="checkbox"
 									class="checkbox-list-item"
 									name="ids:list"
-									tal:attributes="value python:ob.getId()"
+									tal:attributes="value ob_dict/id"
 									onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');"
 									/>
 						</td>
@@ -88,8 +88,8 @@
 							</i>
 						</td>
 						<td class="zmi-object-id">
-							<a tal:attributes="href python:'%s/manage_workspace'%(ob.getId())">
-							<span tal:replace="python:ob.getId()">Id</span>
+							<a tal:attributes="href python:'%s/manage_workspace'%(ob_dict['id'])">
+							<span tal:replace="ob_dict/id">Id</span>
 							<span class="badge badge-warning"
 								title="This item has been locked by WebDAV"
 								tal:condition="ob/wl_isLocked | nothing">
@@ -107,6 +107,7 @@
 						<td class="text-right zmi-object-date hidden-xs pl-3"
 							tal:content="python:here.last_modified(ob)">
 						</td>
+                    </tal:obj>
 				</tr>
 			</tbody>
 		</table>
