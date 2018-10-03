@@ -4,9 +4,9 @@ sudo: false
 matrix:
     include:
         - python: "2.7"
-          env: TOXENV=lint
+          env: TOXENV=lint-py27
         - python: "3.6"
-          env: TOXENV=lint
+          env: TOXENV=lint-py36
         - python: "2.7"
           env: TOXENV=py27
         - python: "3.5"
@@ -23,13 +23,17 @@ matrix:
           sudo: true
         - python: "3.8-dev"
           env: TOXENV=py38
-          dist: xenial
-          sudo: true
 allow_failures:
-        - python: "3.8-dev"
-          env: TOXENV=py38
-          dist: xenial
-          sudo: true
+    - python: "3.7"
+      env: TOXENV=py37
+      dist: xenial
+      sudo: true
+    - python: "3.7-dev"
+      env: TOXENV=py37
+      dist: xenial
+      sudo: true
+    - python: "3.8-dev"
+      env: TOXENV=py38
 
 install:
     - travis_retry pip install -U pip setuptools
