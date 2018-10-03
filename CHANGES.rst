@@ -234,14 +234,14 @@ Breaking changes
 - Stop setting ``CLIENT_HOME`` as a builtin, get it via
   ``App.config.getConfiguration().clienthome`` instead.
 
-- Drop `OFS.History` functionality.
+- Drop ``OFS.History`` functionality.
 
-- Removed `OFS.DefaultObservable` - an early predecessor of `zope.event`.
+- Removed ``OFS.DefaultObservable`` - an early predecessor of `zope.event`.
 
-- Removed `OFS.ZDOM`. `OFS.SimpleItem.Item` now implements `getParentNode()`.
+- Removed ``OFS.ZDOM``. `OFS.SimpleItem.Item` now implements `getParentNode()`.
 
 - Removed special code to create user folders and page templates while creating
-  new `OFS.Folder` instances.
+  new ``OFS.Folder` instances.
 
 - Removed the `App.version_txt.getZopeVersion` API, you can use
   ``pkg_resources.get_distribution('Zope').version`` instead.
