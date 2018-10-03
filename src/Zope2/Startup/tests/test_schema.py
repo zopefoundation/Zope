@@ -19,6 +19,8 @@ import tempfile
 import unittest
 
 import ZConfig
+import ZPublisher.HTTPRequest
+import Zope2.Startup.datatypes
 
 from Zope2.Startup.options import ZopeWSGIOptions
 
@@ -37,6 +39,13 @@ def getSchema():
 
 
 class WSGIStartupTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.default_encoding = ZPublisher.HTTPRequest.default_encoding
+
+    def tearDown(self):
+        Zope2.Startup.datatypes.default_zpublisher_encoding(
+            self.default_encoding)
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
