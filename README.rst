@@ -40,6 +40,7 @@ Zope can either be installed using:
 
 * `zc.buildout`, see https://zope.readthedocs.io/en/latest/INSTALL-buildout.html
 * `virtualenv` and `pip`, see https://zope.readthedocs.io/en/latest/INSTALL-virtualenv.html
+* `pipenv`, see https://zope.readthedocs.io/en/latest/INSTALL-pipenv.html
 
 License
 =======
