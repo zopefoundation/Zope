@@ -1,0 +1,53 @@
+# AppVeyor CI settings (Windows Machine CI Tests)
+
+matrix:
+  allow_failures:
+  - PROFILE: py38
+
+environment:
+  matrix:
+    - PROFILE: py27-conventions
+      PYTHON_VERSION: 2.7"
+      TOXENV: "lint,docs"
+    - PROFILE: py35-conventions
+      PYTHON_VERSION: 3.6"
+      TOXENV: "lint,docs"
+    - PROFILE: py36-conventions
+      PYTHON_VERSION: 3.6"
+      TOXENV: "lint,docs"
+    - PROFILE: py37-conventions
+      PYTHON_VERSION: 3.7"
+      TOXENV: "lint,docs"
+    - PROFILE: py27
+      PYTHON_VERSION: 2.7"
+      TOXENV: "py27"
+    - PROFILE: py35
+      PYTHON_VERSION: 3.5"
+      TOXENV: "py35"
+    - PROFILE: py36
+      PYTHON_VERSION: 3.6"
+      TOXENV: "py36"
+    - PROFILE: py37
+      PYTHON_VERSION: 3.7"
+      TOXENV: "py37"
+    - PROFILE: py38
+      PYTHON_VERSION: 3.8"
+      TOXENV: "py38"
+
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
+
+version: '{branch}.{build}'
+
+install:
+  - "python.exe -m pip install tox"
+
+build: off
+
+test_script:
+  - "tox.exe"
+
+after_success:
+  - coveralls
+  # Bails out for non-tags
+  - ./update_index.sh
