@@ -11,7 +11,7 @@ for tag in "master" $(git tag -l "4*" | sort -r); do
     git show $tag:versions.cfg > releases/$tag/versions.cfg
     git show $tag:versions-prod.cfg > releases/$tag/versions-prod.cfg
     if [ $tag == "master" ] ; then
-        printf "## latest (files created from master but not necessarily in sync with it)" >> README.md
+        printf "## latest\n\n(files created from master but not necessarily in sync with it)" >> README.md
     else
         printf "## $tag" >> README.md
     fi

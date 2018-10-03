@@ -1,6 +1,8 @@
 # Zope Releases
 
-## latest (files created from master but not necessarily in sync with it)
+## latest
+
+(files created from master but not necessarily in sync with it)
 
 * [versions.cfg](releases/master/versions.cfg)
 * [versions-prod.cfg](releases/master/versions-prod.cfg)
