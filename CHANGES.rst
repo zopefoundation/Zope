@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 New features
 ++++++++++++
 
+- add zconsole module for running scripts and interactive mode
+
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
 - Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
