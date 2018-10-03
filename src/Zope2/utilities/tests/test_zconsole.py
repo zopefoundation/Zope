@@ -1,8 +1,12 @@
-import io
 import os
 import sys
 import tempfile
 import unittest
+
+if sys.version_info.major == 2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 zope_conf_template = """
 %define INSTANCE {}
@@ -41,7 +45,7 @@ class ZConsoleTestCase(unittest.TestCase):
         stored_stdout = sys.stdout
         try:
             from Zope2.utilities.zconsole import debug
-            sys.stdout = io.StringIO()
+            sys.stdout = StringIO()
             got = debug(self.zopeconf)
             expected = '<Application at >'
         finally:
@@ -62,8 +66,9 @@ class ZConsoleTestCase(unittest.TestCase):
                 'run',
                 self.zopeconf,
                 script,
+
                 'bar', 'baz']
-            sys.stdout = io.StringIO()
+            sys.stdout = StringIO()
             runscript(self.zopeconf, script, 'bar', 'baz')
             sys.stdout.seek(0)
             got = sys.stdout.read()
