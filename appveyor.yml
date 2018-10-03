@@ -2,6 +2,11 @@
 
 matrix:
   allow_failures:
+  - PROFILE: py27-conventions
+  - PROFILE: py35-conventions
+  - PROFILE: py36-conventions
+  - PROFILE: py237-conventions
+  - PROFILE: py37
   - PROFILE: py38
 
 environment:
