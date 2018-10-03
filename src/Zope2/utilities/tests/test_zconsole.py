@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 import tempfile
@@ -37,6 +38,8 @@ class ZConsoleTestCase(unittest.TestCase):
             conffile.write(zope_conf_template.format(self.instancedir))
 
     def test_debug(self):
+        # XXX it would be nice to test debug_console, but somehow
+        # the call to os.system seems to get in the way
         with Popen(sys.executable, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE) as test:  # noqa: E501
             test.stdin.write(
                 bytes('from Zope2.utilities.zconsole import debug; app = debug("{}")\n'.format(  # noqa: E501
@@ -52,16 +55,22 @@ class ZConsoleTestCase(unittest.TestCase):
         script = os.path.join(self.instancedir, 'test_script.py')
         with open(script, 'w') as scriptfile:
             scriptfile.write(test_script)
-        cmd = [
-            sys.executable,
-            '-m',
-            'Zope2.utilities.zconsole',
-            'run',
-            self.zopeconf,
-            script,
-            'bar',
-            'baz']
-        with Popen(cmd, stdout=PIPE) as test:
-            got = test.stdout.read()
+        stored_sys_argv = sys.argv
+        stored_stdout = sys.stdout
+        try:
+            from Zope2.utilities.zconsole import runscript
+            sys.argv = [
+                sys.executable,
+                'run',
+                self.zopeconf,
+                script,
+                'bar', 'baz']
+            sys.stdout = io.StringIO()
+            runscript(self.zopeconf, script, 'bar', 'baz')
+            sys.stdout.seek(0)
+            got = sys.stdout.read()
+        finally:
+            sys.argv = stored_sys_argv
+            sys.stdout = stored_stdout
         expected = "42\n['run', '{}', '{}', 'bar', 'baz']\n".format(self.zopeconf, script)  # noqa: E501
-        self.assertEqual(expected, got.decode('ascii'))
+        self.assertEqual(expected, got)
