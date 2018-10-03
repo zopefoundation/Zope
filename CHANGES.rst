@@ -26,6 +26,10 @@ New features
 Bugfixes
 ++++++++
 
+- Restore controls for reordering items in an Ordered Folder and list them
+  according to the internal order by default in ZMI.
+  (`#344 <https://github.com/zopefoundation/Zope/pull/344>`_)
+
 - Call exception view before triggering _unauthorized.
   (`#304 <https://github.com/zopefoundation/Zope/pull/304>`_)
 

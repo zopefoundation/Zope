@@ -5,10 +5,12 @@
 <main class="container-fluid">
 	<form name="objectItems" method="post"
 		tal:define="
+            has_order_support python:getattr(here.aq_explicit, 'has_order_support', 0);
 			sm modules/AccessControl/SecurityManagement/getSecurityManager;
-			skey python:request.get('skey','id');
+            default_sort python: 'position' if has_order_support else 'id';
+			skey python:request.get('skey',default_sort);
 			rkey python:request.get('rkey','asc');
-			rkey_alt python:request.get('rkey','asc')=='asc' and 'desc' or 'asc';
+			rkey_alt python:'desc' if rkey=='asc' else 'asc';
             obs python: here.manage_get_sortedObjects(sortkey = skey, revkey = rkey);
           "
 		tal:attributes="action string:${request/URL1}/">
@@ -147,6 +149,33 @@
 					value="Import/Export"
 					tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
 		</div>
+        <div class="container-fluid">
+            <div class="form-group row zmi-controls"
+                tal:condition="python: has_order_support and sm.checkPermission('Manage properties', context)">
+                <input type="submit" name="manage_move_objects_up:method"
+                    value="Move up" title="Move selected items up" 
+                    class="btn btn-primary" />
+                <span>/</span>
+                <input type="submit" name="manage_move_objects_down:method" 
+                    value="Move down" title="Move selected items down" 
+                    class="btn btn-primary" />
+                <span>by</span>
+                <div class="col-xs-2">
+                    <select class="form-control" name="delta:int">
+                        <option tal:repeat="val python:range(1,min(5,len(obs)))"
+                            tal:content="val"/>
+                        <option tal:repeat="val python:range(5,len(obs),5)"
+                            tal:content="val"/>
+                    </select>
+                </div>
+                <input type="submit" name="manage_move_objects_to_top:method" 
+                    value="Move to top" class="btn btn-primary" 
+                    title="Move selected items to top" />
+                <input type="submit" name="manage_move_objects_to_bottom:method" 
+                    value="Move to bottom" class="btn btn-primary" 
+                    title="Move selected items to bottom" />
+            </div>
+        </div>
 	</tal:not-empty>
 
 		<tal:empty condition="not:obs">
