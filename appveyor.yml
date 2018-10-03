@@ -52,7 +52,7 @@ build: off
 test_script:
   - "tox.exe"
 
-after_success:
+after_test:
   - coveralls
   # Bails out for non-tags
   - ./update_index.sh
