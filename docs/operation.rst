@@ -30,6 +30,10 @@ The section in the configuration file looks like this::
 After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
+For a full description of the supported sections and directives for
+``wsgi.conf``, refer to the machine readable schema description file
+``https://rawgit.com/zopefoundation/Zope/master/src/Zope2/Startup/wsgischema.xml``.
+
 
 Running Zope
 ------------
