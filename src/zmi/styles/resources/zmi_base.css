@@ -104,7 +104,7 @@ form.zmi-upload {
 }
 
 
-/* TAB NVAIGATION */
+/* TAB NAVIGATION */
 .zmi nav .nav-tabs .nav-item:first-child {
 	margin-left: 1em;
 }
@@ -225,6 +225,10 @@ form.zmi-upload {
 }
 .zmi table.objectItems tr.checked {
 	background-color:#007bff1c !important;
+}
+.zmi form[name="objectItems"] div.zmi-controls.row span {
+    padding: .375rem .25rem;
+    min-width: initial;
 }
 
 

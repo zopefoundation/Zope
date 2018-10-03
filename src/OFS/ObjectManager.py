@@ -866,7 +866,8 @@ class ObjectManager(CopyContainer,
         except (DateTimeError, AttributeError):
             return ''
 
-    security.declareProtected(view_management_screens, 'manage_get_sortedObjects')
+    security.declareProtected(view_management_screens,
+                              'manage_get_sortedObjects')
     def manage_get_sortedObjects(self, sortkey, revkey):
         '''
         Return dictionaries used for the management page, sorted by sortkey
@@ -877,16 +878,24 @@ class ObjectManager(CopyContainer,
         is the ID of the object as known by the parent and 'obj' is the child
         object.
         '''
-        if sortkey not in ['title', 'meta_type', 'get_size', '_p_mtime']:
+        if sortkey not in ['position', 'title', 'meta_type', 'get_size',
+                           '_p_mtime']:
             sortkey = 'id'
 
         items = []
         for id, obj in self.objectItems():
             item = {'id': id, 'obj': obj}
-            if sortkey != 'id' and hasattr(obj, sortkey):
+            if sortkey not in ['id', 'position'] and hasattr(obj, sortkey):
                 # add the attribute by which we need to sort
                 item[sortkey] = getattr(obj, sortkey)
             items.append(item)
+
+        if sortkey == 'position':
+            # native ordering of Ordered Folders
+            if revkey == 'desc':
+                return list(reversed(items))
+            else:
+                return items
 
         if sortkey in ['id', 'title', 'meta_type']:
             sort_func = 'strcoll'
@@ -894,9 +903,9 @@ class ObjectManager(CopyContainer,
             sort_func = 'cmp'
 
         sorted_items = zope.sequencesort.sort(
-            items, 
-            ((sortkey, sort_func, revkey), ), 
-            mapping = 1
+            items,
+            ((sortkey, sort_func, revkey), ),
+            mapping=1
         )
 
         # remove the additional attribute
@@ -904,8 +913,6 @@ class ObjectManager(CopyContainer,
             {'id': item['id'], 'obj': item['obj']}
             for item in sorted_items
         ]
-
-
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)
