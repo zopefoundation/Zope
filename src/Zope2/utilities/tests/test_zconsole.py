@@ -38,8 +38,6 @@ class ZConsoleTestCase(unittest.TestCase):
             conffile.write(zope_conf_template.format(self.instancedir))
 
     def test_debug(self):
-        # XXX it would be nice to test debug_console, but somehow
-        # the call to os.system seems to get in the way
         with Popen(sys.executable, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE) as test:  # noqa: E501
             test.stdin.write(
                 bytes('from Zope2.utilities.zconsole import debug; app = debug("{}")\n'.format(  # noqa: E501
@@ -48,8 +46,17 @@ class ZConsoleTestCase(unittest.TestCase):
                 got, errs = test.communicate(b'print(app)\n', timeout=1)
             except TimeoutExpired:
                 test.kill()
-        expected = b'<Application at >\n'
-        self.assertEqual(expected, got)
+        stored_sys_argv = sys.argv
+        stored_stdout = sys.stdout
+        try:
+            from Zope2.utilities.zconsole import debug
+            sys.stdout = io.StringIO()
+            got = debug(self.zopeconf)
+            expected = '<Application at >'
+        finally:
+            sys.argv = stored_sys_argv
+            sys.stdout = stored_stdout
+        self.assertEqual(expected, str(got))
 
     def test_runscript(self):
         script = os.path.join(self.instancedir, 'test_script.py')
