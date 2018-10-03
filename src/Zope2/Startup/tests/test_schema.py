@@ -124,3 +124,6 @@ class WSGIStartupTestCase(unittest.TestCase):
             default-zpublisher-encoding iso-8859-15
             """)
         self.assertEqual(conf.default_zpublisher_encoding, 'iso-8859-15')
+        self.assertEqual(
+            ZPublisher.HTTPRequest.default_encoding, 'iso-8859-15')
+        self.assertEqual(type(ZPublisher.HTTPRequest.default_encoding), str)

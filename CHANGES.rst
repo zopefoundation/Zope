@@ -51,6 +51,10 @@ Bugfixes
   when reading request bodies not encoded as application/x-www-form-urlencoded
   or multipart/form-data.
 
+- Prevent breaking page rendering when setting `default-zpublisher-encoding`
+  in `zope.conf` on Python 2.
+  (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
+
 
 4.0b5 (2018-05-18)
 ------------------
