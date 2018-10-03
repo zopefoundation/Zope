@@ -10,7 +10,12 @@ for tag in "master" $(git tag -l "4*" | sort -r); do
     mkdir -p releases/$tag
     git show $tag:versions.cfg > releases/$tag/versions.cfg
     git show $tag:versions-prod.cfg > releases/$tag/versions-prod.cfg
-    printf "## $tag\n\n* [versions.cfg](releases/$tag/versions.cfg)\n* [versions-prod.cfg](releases/$tag/versions-prod.cfg)\n" >> README.md
+    if [ $tag == "master" ] ; then
+        printf "## latest (files created from master but not necessarily in sync with it)" >> README.md
+    else
+        printf "## $tag" >> README.md
+    fi
+    printf "\n\n* [versions.cfg](releases/$tag/versions.cfg)\n* [versions-prod.cfg](releases/$tag/versions-prod.cfg)\n" >> README.md
     git show $tag:requirements-full.txt > releases/$tag/requirements-full.txt 2>/dev/null && printf "* [requirements-full.txt](releases/$tag/requirements-full.txt)\n" >> README.md || rm releases/$tag/requirements-full.txt
     git show $tag:requirements.txt > releases/$tag/requirements.txt 2>/dev/null && printf "* [requirements.txt](releases/$tag/requirements.txt)\n" >> README.md || rm releases/$tag/requirements.txt
     printf "\n" >> README.md
