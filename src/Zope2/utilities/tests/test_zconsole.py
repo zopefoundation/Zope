@@ -3,7 +3,6 @@ import os
 import sys
 import tempfile
 import unittest
-from subprocess import Popen, PIPE, TimeoutExpired
 
 zope_conf_template = """
 %define INSTANCE {}
@@ -38,14 +37,6 @@ class ZConsoleTestCase(unittest.TestCase):
             conffile.write(zope_conf_template.format(self.instancedir))
 
     def test_debug(self):
-        with Popen(sys.executable, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE) as test:  # noqa: E501
-            test.stdin.write(
-                bytes('from Zope2.utilities.zconsole import debug; app = debug("{}")\n'.format(  # noqa: E501
-                    self.zopeconf).encode('ascii')))
-            try:
-                got, errs = test.communicate(b'print(app)\n', timeout=1)
-            except TimeoutExpired:
-                test.kill()
         stored_sys_argv = sys.argv
         stored_stdout = sys.stdout
         try:
