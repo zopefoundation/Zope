@@ -8,16 +8,16 @@ environment:
   matrix:
     - PROFILE: py27-conventions
       PYTHON_VERSION: 2.7"
-      TOXENV: "lint,docs"
+      TOXENV: "lint"
     - PROFILE: py35-conventions
       PYTHON_VERSION: 3.6"
-      TOXENV: "lint,docs"
+      TOXENV: "lint"
     - PROFILE: py36-conventions
       PYTHON_VERSION: 3.6"
-      TOXENV: "lint,docs"
+      TOXENV: "lint"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
-      TOXENV: "lint,docs"
+      TOXENV: "lint"
     - PROFILE: py27
       PYTHON_VERSION: 2.7"
       TOXENV: "py27"
