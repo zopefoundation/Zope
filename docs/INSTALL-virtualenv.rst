@@ -28,7 +28,7 @@ If you are still using Python 2.7 install `virtualenv` onto your system then cal
    New python executable in zope/bin/python2.7
    Installing setuptools, pip, wheel...done.
    $ cd zope
-   
+
 Make sure you use at least version ``12.0.1`` of `virtualenv`.
 (Calling ``virtualenv --version`` tells you the used version number.)
 Older versions install a `pip` version which is not compatible with the file format
@@ -44,13 +44,25 @@ version of ``requirements-full.txt`` in the URL, replacing 4.0b6 in the example 
 
 .. code-block:: sh
 
-   $ bin/pip install \
-   -r https://zopefoundation.github.io/Zope/releases/4.0b6/requirements-full.txt
+   $ bin/pip install Zope==4.0b6\
+   -c https://zopefoundation.github.io/Zope/releases/4.0b6/constraints.txt
+   ...
    Obtaining Zope
    ...
    Successfully installed ...
 
-If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to 
+
+Or you can install Zope using a single requirements file. Note that this
+installation method might install packages that are not actually needed (i.e.
+are not listed in the ``install_requires`` section of ``setup.py``
+
+ .. code-block:: sh
+
+-   $ bin/pip install \
+-   -r https://zopefoundation.github.io/Zope/releases/4.0b6/requirements-full.txt
+
+
+If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
 install that package seperately using the version spec in constraints.txt
 
 .. code-block:: sh
