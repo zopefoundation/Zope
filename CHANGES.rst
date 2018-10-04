@@ -65,6 +65,8 @@ Bugfixes
   in `zope.conf` on Python 2.
   (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
 
+- Fix `HTTPResponse.setBody` when the published object returns a tuple.
+
 
 4.0b5 (2018-05-18)
 ------------------
