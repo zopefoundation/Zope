@@ -118,8 +118,6 @@ Core Permissions
 
 - View -- view or execute an object
 
-- View History -- view ZODB history of an object
-
 - View management screens -- view management screens related to an object
 
 
