@@ -5,7 +5,7 @@ Components and Interfaces
 .. include:: includes/zope2_notice.rst
 
 Zope uses a component architecture internally in many places.  Zope
-components is nothing but Python objects with interfaces that
+components are nothing but Python objects with interfaces that
 describe them.  As a Zope developer you can use interfaces right now
 to build your Zope components.
 
@@ -19,7 +19,7 @@ creating components, and a description of interfaces and how they
 work.
 
 Here is a very simple component that says hello.  Like all
-components, this one generally consists of two pieces, an interface,
+components, this one consists of two pieces, an interface,
 and an implementation::
 
   from zope.interface import Interface
@@ -44,7 +44,7 @@ and the second class statement creates the *implementation*.
 
 The first class statement creates the ``IHello`` interface.  This
 interface describes one method, called ``hello``.  Notice that there
-is no implementation for this method, interfaces do not define
+is no implementation for this method. Interfaces do not define
 behavior, they just describe a specification.
 
 The second ``class`` statement creates the ``HelloComponent`` class.
@@ -85,7 +85,7 @@ into a Zope product.
 Python Interfaces
 =================
 
-Interface describe the behavior of an object by containing useful
+An interface describes the behavior of an object by containing useful
 information about the object.  This information includes:
 
 - Prose documentation about the object.  In Python terms, this is
@@ -127,7 +127,7 @@ large systems with lots of developers.
   system to figure out how objects work.  This is even worse if
   someone else has already wasted their time doing the same thing.
 
-- Developers who are new to your system may misunderstand how your
+- Developers who are new to your system may misunderstand how an
   object works, causing, and possibly propagating, usage errors.
 
 - Because an object's interface is inferred from the source,
@@ -165,7 +165,7 @@ Python class that subclasses from ``zope.interface.Interface``::
 
 This interface does not implement behavior for its methods, it just
 describes an interface that a typical "Hello" object would realize.
-By subclassing the ``zope.interface.Interface`` interface, the
+By subclassing ``zope.interface.Interface``, the
 resulting object ``Hello`` is an interface object. The Python
 interpreter confirms this::
 
@@ -246,7 +246,7 @@ kept clear.  The purpose of a class is to share the implementation of
 how an object works.  The purpose of an interface is to document how
 to work *with* an object, not how the object is implemented.  It is
 possible to have several different classes with very different
-implementations realize the same interface.  Because of this,
+implementations realizing the same interface.  Because of this,
 interfaces and classes should never be confused.
 
 
@@ -275,20 +275,20 @@ For example::
 
 As you can see, the "description" of the Interface's three items in
 these cases are all `Method` objects.  Description objects can be
-either 'Attribute' or `Method` objects.  Attributes, methods, and
+either 'Attribute' or `Method` objects.  Attributes, methods and
 interface objects implement the following interface::
 
-- `getName()` -- Returns the name of the object.
+  - `getName()` -- Returns the name of the object.
 
-- `getDoc()` -- Returns the documentation for the object.
+  - `getDoc()` -- Returns the documentation for the object.
 
 Method objects provide a way to describe rich meta-data about Python
-methods. Method objects have the following methods:
+methods. Method objects have the following methods::
 
-- `getSignatureInfo()` -- Returns a dictionary describing the method
+  - `getSignatureInfo()` -- Returns a dictionary describing the method
   parameters.
 
-- `getSignatureString()` -- Returns a human-readable string
+  - `getSignatureString()` -- Returns a human-readable string
   representation of the method's signature.
 
 For example::
