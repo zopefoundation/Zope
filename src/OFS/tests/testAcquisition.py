@@ -11,19 +11,19 @@
 #
 ##############################################################################
 
-import unittest
-
-from Testing.makerequest import makerequest
-
-from OFS.SimpleItem import SimpleItem
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.Permissions import view_management_screens
 from AccessControl.ZopeGuards import guarded_getattr
+from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
 
+import unittest
 import Zope2
+
+
 Zope2.startup_wsgi()
 
 

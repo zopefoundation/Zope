@@ -1,19 +1,18 @@
-import unittest
-import Zope2
-
-import transaction
-
-from zope import component
-from zope import interface
-from zope.interface.interfaces import IObjectEvent
-from zope.testing import cleanup
-
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
+from zope import component
+from zope import interface
 from Zope2.App import zcml
+from zope.interface.interfaces import IObjectEvent
+from zope.testing import cleanup
+
+import transaction
+import unittest
+import Zope2
+
 
 Zope2.startup_wsgi()
 
