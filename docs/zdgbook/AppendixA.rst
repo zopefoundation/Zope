@@ -5,8 +5,12 @@ Appendix A: Zope Core Permissions
 This is a list of standard permissions included with Zope.  It is a
 good idea to use these permissions when applicable with your Zope
 products, rather than creating new ones.  A list of built-in Zope
-permissions are available in Zope source code:
+permissions are available in the source code of the
+AccessControl package:
 ``src/AccessControl/Permissions.py``.
+
+Additionally, also ``src/DocumentTemplate/permissions.py`` contains
+some more permissions.
 
 Core Permissions
 ================
@@ -43,10 +47,6 @@ Core Permissions
 - Add ZCatalogs  -- add ZCatalog objects
 
 - Add Zope Tutorials  -- add Zope Tutorial objects
-
-- Change DTML Documents -- modify DTML Documents
-
-- Change DTML Methods  -- modify DTML Methods
 
 - Change Database Connections  -- change database connection objects
 
@@ -121,3 +121,12 @@ Core Permissions
 - View History -- view ZODB history of an object
 
 - View management screens -- view management screens related to an object
+
+
+
+Document Template Permissions
+=============================
+
+- Change DTML Documents -- modify DTML Documents
+
+- Change DTML Methods  -- modify DTML Methods
