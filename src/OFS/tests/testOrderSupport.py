@@ -1,7 +1,7 @@
-import unittest
-
 from OFS.CopySupport import CopySource
 from OFS.ObjectManager import ObjectManager
+
+import unittest
 
 
 class DummyObject(CopySource):
