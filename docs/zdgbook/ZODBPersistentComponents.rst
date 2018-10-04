@@ -2,6 +2,8 @@
 ZODB Persistent Components
 ##########################
 
+.. include:: includes/zope2_notice.rst
+
 Most Zope components live in the Zope Object DataBase (ZODB).
 Components that are stored in ZODB are said to be *persistent*.
 Creating persistent components is, for the most part, a trivial

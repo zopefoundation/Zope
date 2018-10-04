@@ -2,12 +2,36 @@
 
 // NAVBAR-FUNCTIONS
 
-// [1] Toggle Sitemap
-function toggle_menu() {
-	if (document.referrer.endsWith('/manage')) {
-		window.parent.location.href="manage_main";
-	} else {
-		window.parent.location.href="manage";
+function setupShowHideTreeView() {
+	/*
+	Disable the show sidebar button if the sidebar cannot be shown
+	without navigating away from the current view.
+	
+	It would be cool to get rid of this, but that would require
+	reworking the TreeTagView to understand that it could show the 
+	elements above the current object if it is not a folderish thing.
+	*/
+	var $li = $('#toggle_menu');
+	if (0 === $li.length) {
+		return // no menu toggle on this page
+	}
+	
+	var $a = $li.find('a');
+	// var isInFrameset = window.parent.location.href.endsWith('/manage');
+	var isShowingFrameset = window !== window.parent;
+	var isFolderish = !! $li.data().is_folderish
+	if (isShowingFrameset) {
+		$a.attr('href', 'manage_main')
+	}
+	else {
+		if ( isFolderish ) {
+			$a.attr('href', 'manage')
+		}
+		else {
+			$li.attr('title', $li.attr('data-title_inactive'))
+			$li.css('opacity', .5);
+			$a.addClass('disabled')
+		}
 	}
 }
 
@@ -31,135 +55,56 @@ function addItem( elm, base_url ) {
 		'manage_addErrorLog',
 		'manage_addVirtualHostMonster',
 		'manage_addzmsform',
-		'addPluggableAuthService'
+		'addPluggableAuthService',
 	];
 
-	// SHOW MODAL DIALOG
-	if ( $.inArray(action, no_modal_dialog) < 0 ) {
-	// Deactivate for Testing Purposes:
-	// if ( 1==0 ) {
-		$('#zmi-modal').modal('show');
-		$('#zmi-modal').modal({ focus: true });
-		$('#zmi-modal .modal-body').attr('data-add_type', action);
-		// Load Modal Form by AJAX
-		$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
-			if(statusTxt == "error") {
-				window.location.href = url_full;
-					return;
-			}
-			// Shift Title to Modal Header
-			$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
-			// STRANGE: Why is this Removing Necessary..
-			$('#zmi-modal .modal-body i').remove();
-			// Aggregate multiple Help-Paragraphs
-			if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
-				var help_text = $('#zmi-modal .modal-body p.form-help').text();
-				$('#zmi-modal .modal-body p.form-help').remove();
-				$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
-			}
-			$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
-			$('#zmi-modal .modal-body p.form-help').hide();
-
-			//Modify Form Action for Modal Use
-			$( '#zmi-modal form' ).each( function() {
-				var modal_form_url = modal_form_base + $( this ).attr( 'action' );
-				$( this ).attr( 'action', modal_form_url );
-			});
-
-			// GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
-			fix_ancient_modal_gui();
-		});
-		// Clean up Modal DOM on Close
-		$('#zmi-modal').on('hide.bs.modal', function (event) {
-			$('#zmi-modal .modal-header h2').remove();
-			$('#zmi-modal .modal-body').empty();
-		});
-	} else {
-	// REDIRECT TO NEW URL (WINDOW)
+	if ( $.inArray(action, no_modal_dialog) !== -1 ) {
 		window.location.href = url_full;
+		return
 	}
-}
-
-
-// ++++++++++++++++++++++++++++++++++++++++
-// DESIGN-FUNCTIONS
-// Ex-post Design-Fixes for Non-Bootstrap-
-// Conformant GUI Pages and Missing Icons
-// ++++++++++++++++++++++++++++++++++++++++
-
-// [1] ICON FIX: As long as not set systematically in the class definitions
- function fix_zmi_icons() {
-	 var zmi_icons = {
-		"User Folder":{ "title":"Access Control List", "class":"fa fa-user-friends" }, // templated
-		"UserFolder":{ "title":"Access Control List", "class":"fa fa-user-friends" },
-		"Pluggable Auth Service":{ "title":"Pluggable Auth Service", "class":"fa fa-users-cog" },
-		"User":{ "title":"User", "class":"fa fa-user" },
-		"Temporary Folder":{ "title":"Temporary Folder", "class":"far fa-hdd" },
-		"Filesystem Directory View":{ "title":"Filesystem Directory View", "class":"far fa-folder-open" },
-		"Ordered":{ "title":"Folder (Ordered)", "class":"far fa-folder zmi-icon-folder-ordered" }, // templated
-		"Folder":{ "title":"Folder", "class":"far fa-folder" },
-		"Script":{ "title":"Script (Python)", "class":"fa fa-terminal" },
-		"External Method":{ "title":"External Python Method", "class":"fa fa-external-link-square-alt" },
-		"DTML Document":{ "title":"DTML Document", "class":"far fa-file-alt" },
-		"DTML Method":{ "title":"DTML Method", "class":"far fa-file-alt" },
-		"Page Template":{ "title":"Page Template", "class":"far fa-file-code" },
-		"File":{ "title":"File Object", "class":"far fa-file-archive" },
-		"Mail":{ "title":"Mail Folder", "class":"far fa-envelope" },
-		"Image":{ "title":"Image", "class":"far fa-file-image" },
-		"Control":{ "title":"Control Panel", "class":"fa fa-cog" },
-		"Database":{ "title":"Database", "class":"fa fa-database" },
-		"ZSQLiteDA":{ "title":"Database", "class":"fa fa-database" },
-		"ZMySQLDA":{ "title":"MySQL-Database Adapter", "class":"fa fa-database" },
-		"Product":{ "title":"Installed Product", "class":"fa fa-gift" },
-		"ZSQL":{ "title":"ZSQL-Method", "class":"far fa-puzzle-piece" },
-		"Debug Manager":{ "title":"Debug Manager", "class":"fas fa-bug" },
-		"Site Error Log":{ "title":"Site Error Log", "class":"fas fa-bug" },
-		"Browser Id Manager":{ "title":"Browser Id Manager", "class":"far fa-id-card" },
-		"ZMS":{ "title":"ZMS Root", "class":"fas fa-home" },
-		"ZMSObject.png":{ "title":"ZMS Content", "class":"far fa-file" },
-		"Monster":{ "title":"Virtual Host Monster", "class":"fa fa-code-branch" },
-		"ZCatalogIndex":{ "title":"ZCatalogIndex", "class":"far fa-list-alt" },
-		"ZCatalog":{ "title":"ZCatalog", "class":"fa fa-search" },
-		"Session Data Manager":{ "title":"Session Data Manager", "class":"far fa-clock" },
-		"Cookie Crumbler":{ "title":"Cookie Crumbler", "class":"fa fa-cookie-bite" },
-		"Broken object":{ "title":"Broken object", "class":"fas fa-ban text-danger" }
-	};
-
-	// PROCESS Object Icons
-	for ( var i in zmi_icons ) {
-		var i_name = i;
-		var i_title =zmi_icons[i].title;
-		var i_class =zmi_icons[i].class;
-		if ( $('i[title*="'+i_name+'"]').hasClass('zmi_icon-broken') ) {
-		 	i_class += ' zmi_icon-broken';
+	
+	// SHOW MODAL DIALOG
+	$('#zmi-modal').modal('show');
+	$('#zmi-modal').modal({ focus: true });
+	$('#zmi-modal .modal-body').attr('data-add_type', action);
+	// Load Modal Form by AJAX
+	$('#zmi-modal .modal-body').load(modal_body_url, function(responseTxt, statusTxt, xhr) {
+		if(statusTxt == "error") {
+			window.location.href = url_full;
+				return;
 		}
-		$('i[title*="'+i_name+'"]').replaceWith('<i data-title="'+i_title+'" class="'+i_class+'"></i>');
-	}
-	// PROCESS Other Icons
-	$('i[title*="/p_/pl"]').replaceWith('<i data-title="Expand..." class="far fa-plus-square"></i>');
-	$('i[title*="/p_/mi"]').replaceWith('<i data-title="Collapse..." class="far fa-minus-square"></i>');
-	$('i[title*="/p_/davlocked"]').replaceWith('<i data-title="WebDAV" class="fa fa-retweet"></i>');
-	$('img[src*="misc_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
-	$('img[src*="zms_"]').replaceWith('<i class="fa fa-circle-blank"></i>');
-	$('#menu_tree td[width="16"] a:contains("+")').html(('<i title="Expand..." class="fas fa-caret-right text-muted"></i>'));
-	$('#menu_tree td[width="16"] a:contains("-")').html(('<i title="Collapse..." class="fas fa-caret-down text-muted"></i>'));
-	$('a[href*="HelpSys"]').empty()
-		.append('<i class="fa fa-question-sign"></i>')
-		.css('border-color','transparent');
+		
+		//Modify Form Action for Modal Use
+		$( '#zmi-modal form' ).each( function() {
+			var modal_form_url = modal_form_base + $( this ).attr( 'action' );
+			$( this ).attr( 'action', modal_form_url );
+		});
+		
+		fix_ancient_modal_gui();
+		fix_modern_modal_gui();
+	});
+	// Clean up Modal DOM on Close
+	$('#zmi-modal').on('hide.bs.modal', function (event) {
+		$('#zmi-modal .modal-header h2').remove();
+		$('#zmi-modal .modal-body').empty();
+	});
 }
+
 
 // [2] GUI FIX: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_gui() {
-	// WRAP FORM ELEMENT with fluid-container (if missing)
-	if ( 0 === $('main').length ) {
-		$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
-		// ADD BOOTSTRAP CLASSES
-		$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
-		$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
-		$('textarea[name*=":text"]').addClass('zmi-code');
-		$('table').addClass('table zmi-patch');
+	if ( 0 !== $('main').length ) {
+		return;
 	}
+	// WRAP FORM ELEMENT with fluid-container (if missing)
+	$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
+	// ADD BOOTSTRAP CLASSES
+	$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
+	$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
+	$('textarea[name*=":text"]').addClass('zmi-code');
+	$('table').addClass('table zmi-patch');
 }
+
 // [3] GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_modal_gui() {
 	if ( 0 === $('.modal-body main').length ) {
@@ -170,6 +115,20 @@ function fix_ancient_modal_gui() {
 		$('.modal-body textarea[name*=":text"]').addClass('zmi-code');
 		$('.modal-body table').addClass('table zmi-patch');
 	}
+}
+
+function fix_modern_modal_gui() {
+	// Shift Title to Modal Header
+	$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
+	
+	// Aggregate multiple Help-Paragraphs
+	if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
+		var help_text = $('#zmi-modal .modal-body p.form-help').text();
+		$('#zmi-modal .modal-body p.form-help').remove();
+		$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
+	}
+	$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
+	$('#zmi-modal .modal-body p.form-help').hide();
 }
 
 // +++++++++++++++++++++++++++++++
@@ -263,22 +222,21 @@ $(function() {
 
 	// EXECUTE DESIGN WORKAROUNDS
 	// Needed until ALL GUI Forms are Bootstrap Conformant
-	fix_zmi_icons();
 	fix_ancient_gui();
 
 	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
-		$('#addItemSelect, #toggle_menu').css('opacity',1);
+		$('#addItemSelect').css('opacity',1);
 		$('#addItemSelect').removeAttr('disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
-		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-active') );
 	} else {
-		$('#addItemSelect, #toggle_menu').css('opacity', 0.5);
+		$('#addItemSelect').css('opacity', 0.5);
 		$('#addItemSelect').attr('disabled','disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
-		$('#toggle_menu').attr( 'title', $('#toggle_menu').attr('data-title-inactive') );
 	}
+	
+	setupShowHideTreeView()
 
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});

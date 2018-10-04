@@ -11,8 +11,15 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b6 (unreleased)
 ------------------
 
+Breaking changes
+++++++++++++++++
+
+- Remove the ``OFS.History`` module which contained only BBB code since 4.0a2.
+
 New features
 ++++++++++++
+
+- Add zconsole module for running scripts and interactive mode.
 
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
@@ -25,6 +32,10 @@ New features
 
 Bugfixes
 ++++++++
+
+- Restore controls for reordering items in an Ordered Folder and list them
+  according to the internal order by default in ZMI.
+  (`#344 <https://github.com/zopefoundation/Zope/pull/344>`_)
 
 - Call exception view before triggering _unauthorized.
   (`#304 <https://github.com/zopefoundation/Zope/pull/304>`_)
@@ -46,6 +57,13 @@ Bugfixes
 - Work around Python bug (https://bugs.python.org/issue27777)
   when reading request bodies not encoded as application/x-www-form-urlencoded
   or multipart/form-data.
+
+- Show navigation in ``manage_menu`` in case the databases cannot be retrieved.
+  (`#309 <https://github.com/zopefoundation/Zope/issues/309>`_)
+
+- Prevent breaking page rendering when setting `default-zpublisher-encoding`
+  in `zope.conf` on Python 2.
+  (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
 
 
 4.0b5 (2018-05-18)
@@ -234,14 +252,14 @@ Breaking changes
 - Stop setting ``CLIENT_HOME`` as a builtin, get it via
   ``App.config.getConfiguration().clienthome`` instead.
 
-- Drop `OFS.History` functionality.
+- Drop ``OFS.History`` functionality.
 
-- Removed `OFS.DefaultObservable` - an early predecessor of `zope.event`.
+- Removed ``OFS.DefaultObservable`` - an early predecessor of `zope.event`.
 
-- Removed `OFS.ZDOM`. `OFS.SimpleItem.Item` now implements `getParentNode()`.
+- Removed ``OFS.ZDOM``. `OFS.SimpleItem.Item` now implements `getParentNode()`.
 
 - Removed special code to create user folders and page templates while creating
-  new `OFS.Folder` instances.
+  new ``OFS.Folder` instances.
 
 - Removed the `App.version_txt.getZopeVersion` API, you can use
   ``pkg_resources.get_distribution('Zope').version`` instead.

@@ -17,3 +17,142 @@ instancehome $INSTANCE
 #     mount-point /temp_folder
 #     container-class Products.TemporaryFolder.TemporaryContainer
 # </zodb_db>
+
+
+# Directive: locale
+#
+# Description:
+#     Overwrite the locale settings found in the environment by supplying a
+#     locale name to be used. See your operating system documentation for
+#     locale information specific to your system. If the requested locale is
+#     not supported by your system, an error will be raised and Zope will not
+#     start.
+#
+# Default: unset
+#
+# Example:
+#
+#    locale fr_FR
+
+
+# Directive: debug-mode
+#
+# Description:
+#     A switch which controls several aspects of Zope operation useful for
+#     developing under Zope.  When debug mode is on:
+#
+#     - The process will not detach from the controlling terminal
+#
+#     - Errors in product initialization will cause startup to fail
+#       (instead of writing error messages to the event log file).
+#
+#     - Filesystem-based scripts such as skins, PageTemplateFiles, and
+#       DTMLFiles can be edited while the server is running and the server
+#       will detect these changes in real time.  When this switch is
+#       off, you must restart the server to see the changes.
+#
+#     Setting this to 'off' when Zope is in a production environment is
+#     encouraged, as it speeds execution (sometimes dramatically).
+#
+# Default: off
+#
+# Example:
+#
+#    debug-mode on
+
+
+# Directive: http-realm
+#
+# Description:
+#     The HTTP "Realm" header value sent by this Zope instance. This value
+#     often shows up in basic authentication dialogs.
+#
+# Default: Zope
+#
+# Example:
+#
+#    http-realm Slipknot
+
+
+# Directive: trusted-proxy
+#
+# Description:
+#     Define one or more 'trusted-proxies' directives, each of which is a
+#     hostname or an IP address.  The set of definitions comprises a list
+#     of front-end proxies that are trusted to supply an accurate
+#     X-Forwarded-For header to Zope.  If a connection comes from
+#     a trusted proxy, Zope will trust any X-Forwarded header to contain
+#     the user's real IP address for the purposes of address-based
+#     authentication restriction.
+#
+# Default: unset
+#
+# Example:
+#
+#    trusted-proxy www.example.com
+#    trusted-proxy 192.168.1.1
+
+
+# Directive: security-policy-implementation
+#
+# Description:
+#     The default Zope security machinery is implemented in C.  Change
+#     this to "python" to use the Python version of the Zope security
+#     machinery.  This setting may impact performance but is useful
+#     for debugging purposes.  See also the "verbose-security" option
+#     below.
+#
+# Default: C
+#
+# Example:
+#
+#    security-policy-implementation python
+
+
+# Directive: skip-authentication-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to skip checks related
+#     to authentication, for servers which serve only anonymous content.
+#     Only works if security-policy-implementation is 'C'.
+#
+# Default: off
+#
+# Example:
+#
+#    skip-authentication-checking on
+
+
+# Directive: skip-ownership-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to ignore ownership checking
+#     when attempting to execute "through the web" code. By default, this
+#     directive is on in order to prevent 'trojan horse' security problems
+#     whereby a user with less privilege can cause a user with more
+#     privilege to execute dangerous code.
+#
+# Default: off
+#
+# Example:
+#
+#    skip-ownership-checking on
+
+
+# Directive: verbose-security
+#
+# Description:
+#     By default, Zope reports authorization failures in a terse manner in
+#     order to avoid revealing unnecessary information.  This option
+#     modifies the Zope security policy to report more information about
+#     the reason for authorization failures.  It's designed for debugging.
+#     If you enable this option, you must also set the
+#     'security-policy-implementation' to 'python'.
+#
+# Default: off
+#
+# Example:
+#
+#    security-policy-implementation python
+#    verbose-security on
+

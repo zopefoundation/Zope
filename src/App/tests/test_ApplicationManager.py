@@ -1,3 +1,5 @@
+import Testing.ZopeTestCase
+import codecs
 import os
 import shutil
 import sys
@@ -53,18 +55,22 @@ class DummyDB(object):
 class ConfigTestBase(object):
 
     def setUp(self):
+        super(ConfigTestBase, self).setUp()
         import App.config
         self._old_config = App.config._config
 
     def tearDown(self):
         import App.config
         App.config._config = self._old_config
+        super(ConfigTestBase, self).tearDown()
 
     def _makeConfig(self, **kw):
         import App.config
 
         class DummyConfig(object):
-            pass
+            def __init__(self):
+                self.debug_mode = False
+
         App.config._config = config = DummyConfig()
         config.dbtab = DummyDBTab(kw)
         return config
@@ -279,3 +285,40 @@ class AltDatabaseManagerTests(unittest.TestCase):
         am = self._makeOne()
         am._p_jar = self._makeJar('foo', (2048 * 1024) + 123240)
         self.assertEqual(am.db_size(), '2.1M')
+
+
+class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):
+    """Browser testing ..dtml.menu.dtml."""
+
+    def setUp(self):
+        super(MenuDtmlTests, self).setUp()
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        self.browser = Testing.testbrowser.Browser()
+        self.browser.addHeader(
+            'Authorization',
+            'basic {}'.format(codecs.encode(
+                b'manager:manager_pass', 'base64').decode()))
+
+    def test_menu_dtml__1(self):
+        """It contains the databases in navigation."""
+        self._makeConfig(foo=object(), bar=object(), qux=object())
+        self.browser.open('http://localhost/manage_menu')
+        links = [
+            self.browser.getLink('ZODB foo'),
+            self.browser.getLink('ZODB bar'),
+            self.browser.getLink('ZODB qux'),
+        ]
+        for link in links:
+            self.assertEqual(
+                link.attrs['title'], 'Zope Object Database Manager')
+
+    def test_menu_dtml__2(self):
+        """It still shows the navigation in case no database is configured."""
+        # This effect can happen in tests, e.g. with `plone.testing`. There a
+        # `Control_Panel` is not configured in the standard setup, so we will
+        # get a `NameError` while trying to get the databases.
+        self.browser.open('http://localhost/manage_menu')
+        self.assertTrue(self.browser.isHtml)
+        self.assertIn('Control Panel', self.browser.contents)
+        self.assertNotIn('ZODB', self.browser.contents)

@@ -30,6 +30,10 @@ The section in the configuration file looks like this::
 After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
+For a full description of the supported sections and directives for
+``wsgi.conf``, refer to the machine readable schema description file
+``https://rawgit.com/zopefoundation/Zope/master/src/Zope2/Startup/wsgischema.xml``.
+
 
 Running Zope
 ------------
@@ -79,14 +83,10 @@ Debugging Zope
 In order to debug the Zope application, it can be helpful to connect
 to its database and inspect or change it on the command line. This
 feature was previously available via the dedicated `zopectl debug`
-command and the same can be achieved in the new WSGI setup.
+command - in the new WSGI setup this is available via the `zconsole`
+module and console script::
 
-Assuming you have a Python interpreter with the correct sys.path
-available, for example as ``bin/zopepy``, you can run::
-
-  $ ZOPE_CONFIG=etc/wsgi.conf bin/zopepy
-  >>> import Zope2
-  >>> app = Zope2.app()
+  $ bin/zconsole debug etc/wsgi.conf
   >>> app
   <Application at >
 
@@ -99,6 +99,13 @@ available, for example as ``bin/zopepy``, you can run::
   <User 'foo'>
   >>> transaction.commit()
 
+Running scripts
+---------------
+
+This was previously availabe using `zopectl run <path_to_script> <scriparg1> ...`.
+Again in the WSGI setup the `zconsole` module and console script can be used::
+
+  $ bin/zconsole run etc/wsgi.conf <path_to_script> <scriptarg1> ...
 
 Logging In To Zope
 ------------------

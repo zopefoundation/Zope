@@ -2,6 +2,8 @@
 Components and Interfaces
 #########################
 
+.. include:: includes/zope2_notice.rst
+
 Zope uses a component architecture internally in many places.  Zope
 components is nothing but Python objects with interfaces that
 describe them.  As a Zope developer you can use interfaces right now

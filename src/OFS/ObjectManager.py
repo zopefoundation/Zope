@@ -48,6 +48,7 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+import zope.sequencesort
 
 from App.Common import is_acquired
 from App.config import getConfiguration
@@ -865,6 +866,53 @@ class ObjectManager(CopyContainer,
         except (DateTimeError, AttributeError):
             return ''
 
+    security.declareProtected(view_management_screens,
+                              'manage_get_sortedObjects')
+    def manage_get_sortedObjects(self, sortkey, revkey):
+        '''
+        Return dictionaries used for the management page, sorted by sortkey
+        (which is 'id' or an attribute of the objects). The direction is
+        determined by rkey, which can be 'asc' for ascending or 'desc' for
+        descending.
+        It returns a list of dictionaries, with keys 'id' and 'obj', where 'id'
+        is the ID of the object as known by the parent and 'obj' is the child
+        object.
+        '''
+        if sortkey not in ['position', 'title', 'meta_type', 'get_size',
+                           '_p_mtime']:
+            sortkey = 'id'
+
+        items = []
+        for id, obj in self.objectItems():
+            item = {'id': id, 'obj': obj}
+            if sortkey not in ['id', 'position'] and hasattr(obj, sortkey):
+                # add the attribute by which we need to sort
+                item[sortkey] = getattr(obj, sortkey)
+            items.append(item)
+
+        if sortkey == 'position':
+            # native ordering of Ordered Folders
+            if revkey == 'desc':
+                return list(reversed(items))
+            else:
+                return items
+
+        if sortkey in ['id', 'title', 'meta_type']:
+            sort_func = 'strcoll'
+        else:
+            sort_func = 'cmp'
+
+        sorted_items = zope.sequencesort.sort(
+            items,
+            ((sortkey, sort_func, revkey), ),
+            mapping=1
+        )
+
+        # remove the additional attribute
+        return [
+            {'id': item['id'], 'obj': item['obj']}
+            for item in sorted_items
+        ]
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)
