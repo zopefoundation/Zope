@@ -2,6 +2,8 @@
 Appendix A: Zope Core Permissions
 #################################
 
+.. include:: includes/zope2_notice.rst
+
 This is a list of standard permissions included with Zope.  It is a
 good idea to use these permissions when applicable with your Zope
 products, rather than creating new ones.  A list of built-in Zope
@@ -96,7 +98,7 @@ Core Permissions
 
 - Manage users  -- manage Zope users
 
-- Open/Close Database Connections  -- open and close database connections    
+- Open/Close Database Connections  -- open and close database connections
 
 - Query Vocabulary -- query Vocabulary objects (ZCatalog-related)
 
@@ -117,7 +119,5 @@ Core Permissions
 - Use mailhost services -- use MailHost object services
 
 - View -- view or execute an object
-
-- View History -- view ZODB history of an object
 
 - View management screens -- view management screens related to an object

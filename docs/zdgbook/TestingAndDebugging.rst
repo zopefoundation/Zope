@@ -2,6 +2,8 @@
 Testing and Debugging
 #####################
 
+.. include:: includes/zope2_notice.rst
+
 As you develop Zope applications you may run into problems.  This
 chapter covers debugging and testing techniques that can help you.
 The Zope debugger allow you to peek inside a running process and find
