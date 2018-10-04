@@ -9,122 +9,64 @@ permissions are available in the source code of the
 AccessControl package:
 ``src/AccessControl/Permissions.py``.
 
-Additionally, also ``src/DocumentTemplate/permissions.py`` contains
+Additionally, ``src/DocumentTemplate/permissions.py`` contains
 some more permissions.
 
 Core Permissions
 ================
 
-- Access contents information -- get "directory listing" info
-
-- Add Accelerated HTTP Cache Managers -- add HTTP Cache Manager objects
-
-- Add Database Methods -- add ZSQL Method objects
-
-- Add Documents, Images, and Files -- add DTML Method/Document objects,
-  Image objects, and File objects
-
-- Add External Methods  -- add External Method objects
-
-- Add Folders -- add Folder objects
-
-- Add MailHost objects  -- add MailHost objects
-
-- Add Python Scripts  -- Add Python Script objects
-
-- Add RAM Cache Managers  -- Add RAM Cache manager objects
-
-- Add Site Roots -- add Site Root objects
-
-- Add User Folders  -- add User Folder objects
-
-- Add Versions  -- add Version objects
-
-- Add Virtual Host Monsters  -- add Virtual Host Monster objects
-
-- Add Vocabularies  -- add Vocabulary objects (ZCatalog-related)
-
-- Add ZCatalogs  -- add ZCatalog objects
-
-- Add Zope Tutorials  -- add Zope Tutorial objects
-
-- Change Database Connections  -- change database connection objects
-
-- Change Database Methods  -- change ZSQL method objects
-
-- Change External Methods -- change External Method objects
-
-- Change Images and Files  -- change Image and File objects
-
-- Change Python Scripts  -- change Python Script objects
-
-- Change Versions  -- change Version objects
-
-- Change bindings  -- change bindings (for Python Scripts)
-
-- Change cache managers  -- change cache manager objects
-
-- Change cache settings  -- change cache settings (cache mgr parameters)
-
-- Change configuration  -- generic
-
-- Change permissions  -- change permissions
-
-- Change proxy roles  -- change proxy roles
-
-- Create class instances  -- used for ZClass permission mappings
-
-- Delete objects  -- delete objects
-
-- Edit Factories  -- edit Factory objects (ZClass)
-
-- FTP access  -- allow FTP access to this object
-
-- Import/Export objects  -- export and import objects
-
-- Join/leave Versions  -- join and leave Zope versions
-
-- Manage Access Rules -- manage access rule objects
-
-- Manage Vocabulary  -- manage Vocabulary objects
-
-- Manage Z Classes  -- Manage ZClass objects (in the control panel)
-
-- Manage ZCatalog Entries  -- catalog and uncatalog objects
-
-- Manage properties -- manage properties of an object
-
-- Manage users  -- manage Zope users
-
-- Open/Close Database Connections  -- open and close database connections    
-
-- Query Vocabulary -- query Vocabulary objects (ZCatalog-related)
-
-- Save/discard Version changes -- save or discard Zope version changes
-
-- Search ZCatalog -- search a ZCatalog instance
-
-- Take ownership  -- take ownership of an object
-
-- Test Database Connections  -- test database connection objects
-
-- Undo changes  -- undo changes to the ZODB (e.g. use the Undo tab)
-
-- Use Database Methods  -- use ZSQL methods
-
-- Use Factories  -- use Factory objects (ZClass-related)
-
-- Use mailhost services -- use MailHost object services
-
-- View -- view or execute an object
-
-- View management screens -- view management screens related to an object
-
-
+- Access contents information
+- Add Database Methods
+- Add Documents, Images, and Files
+- Add External Methods
+- Add Folders
+- Add MailHost objects
+- Add Page Templates
+- Add Python Scripts
+- Add User Folders
+- Add Vocabularies
+- Add Z Gadfly Database Connections
+- Add ZCatalogs
+- Add Zope Tutorials
+- Change Database Connections
+- Change Database Methods
+- Change External Methods
+- Change Images and Files
+- Change Python Scripts
+- Change configuration
+- Change Page Templates
+- Change permissions
+- Change proxy roles
+- Copy or Move
+- Create class instances
+- Define permissions
+- Delete objects
+- Edit Factories
+- FTP access
+- Import/Export objects
+- Manage Vocabulary
+- Manage ZCatalog Entries
+- Manage ZCatalogIndex Entries
+- Manage properties
+- Manage users
+- Open/Close Database Connection
+- Open/Close Database Connections
+- Query Vocabulary
+- Search ZCatalog
+- Take ownership
+- Test Database Connections
+- Undo changes
+- Use Database Methods
+- Use Factories
+- Use mailhost services
+- View
+- View management screens
+- WebDAV access
+- WebDAV Lock items
+- WebDAV Unlock items
 
 Document Template Permissions
 =============================
 
-- Change DTML Documents -- modify DTML Documents
-
-- Change DTML Methods  -- modify DTML Methods
+- Change DTML Documents
+- Change DTML Methods
