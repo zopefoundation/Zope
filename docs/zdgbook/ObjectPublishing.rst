@@ -2,6 +2,8 @@
 Object Publishing
 #################
 
+.. include:: includes/zope2_notice.rst
+
 Introduction
 ============
 

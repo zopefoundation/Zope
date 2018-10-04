@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b6 (unreleased)
 ------------------
 
+Breaking changes
+++++++++++++++++
+
+- Remove the ``OFS.History`` module which contained only BBB code since 4.0a2.
+
 New features
 ++++++++++++
 
@@ -53,6 +58,10 @@ Bugfixes
 
 - Show navigation in ``manage_menu`` in case the databases cannot be retrieved.
   (`#309 <https://github.com/zopefoundation/Zope/issues/309>`_)
+
+- Prevent breaking page rendering when setting `default-zpublisher-encoding`
+  in `zope.conf` on Python 2.
+  (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
 
 
 4.0b5 (2018-05-18)
