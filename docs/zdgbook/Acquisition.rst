@@ -2,6 +2,8 @@
 Acquisition
 ###########
 
+.. include:: includes/zope2_notice.rst
+
 Acquisition is a mechanism that allows objects to obtain attributes
 from their environment.  It is similar to inheritance, except that,
 rather than searching an inheritance hierarchy to obtain attributes,
