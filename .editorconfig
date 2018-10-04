@@ -25,7 +25,7 @@ max_line_length = off
 # 4 space indentation
 indent_size = 4
 
-[*.{yml}]
+[*.{yml,zpt,pt,dtml}]
 # 2 space indentation
 indent_size = 2
 
