@@ -58,6 +58,9 @@ Bugfixes
   when reading request bodies not encoded as application/x-www-form-urlencoded
   or multipart/form-data.
 
+- Show navigation in ``manage_menu`` in case the databases cannot be retrieved.
+  (`#309 <https://github.com/zopefoundation/Zope/issues/309>`_)
+
 - Prevent breaking page rendering when setting `default-zpublisher-encoding`
   in `zope.conf` on Python 2.
   (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)

@@ -16,10 +16,14 @@
 
 		<li><a id="menu_cp" title="Control Panel" 
 			href="/Control_Panel/manage_main" target="manage_main">Control Panel</a></li>
-		<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
-			<li><a title="Zope Object Database Manager" target="manage_main"
-				href="/Control_Panel/Database/<dtml-var "_['sequence-item']">/manage_main">ZODB <dtml-var "_['sequence-item']"></a></li>
-		</dtml-in>
+		<dtml-try>
+			<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
+				<li><a title="Zope Object Database Manager" target="manage_main"
+					href="/Control_Panel/Database/<dtml-var "_['sequence-item']">/manage_main">ZODB <dtml-var "_['sequence-item']"></a></li>
+			</dtml-in>
+		<dtml-except AttributeError>
+		<dtml-except NameError>
+		</dtml-try>
 		<li><a id="menu_undo" 
 			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
 
