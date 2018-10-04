@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from App.config import setConfiguration, getConfiguration
 from six import StringIO
 
 zope_conf_template = """
@@ -32,14 +33,16 @@ if __name__ == '__main__':
 class ZConsoleTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.instancedir = tempfile.mkdtemp(prefix='instance')
+        self.instancedir = tempfile.mkdtemp(prefix='foo42-')
         self.zopeconf = os.path.join(self.instancedir, 'zope.conf')
         self.stored_sys_argv = sys.argv
         self.stored_stdout = sys.stdout
+        self.stored_app_config = getConfiguration()
         with open(self.zopeconf, 'w') as conffile:
             conffile.write(zope_conf_template.format(self.instancedir))
 
     def tearDown(self):
+        setConfiguration(self.stored_app_config)
         shutil.rmtree(self.instancedir)
 
     def test_debug(self):
@@ -64,7 +67,6 @@ class ZConsoleTestCase(unittest.TestCase):
                 'run',
                 self.zopeconf,
                 script,
-
                 'bar', 'baz']
             sys.stdout = StringIO()
             runscript(self.zopeconf, script, 'bar', 'baz')
