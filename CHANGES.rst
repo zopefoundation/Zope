@@ -30,6 +30,12 @@ New features
   dependency.
   (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
+- Render an error message when trying to save DTML code containing a
+  SyntaxError in ZMI of a DTMLMethod or DTMLDocument.
+
+- Render an error message when trying to upload a file without choosing one
+  in ZMI of a DTMLMethod or DTMLDocument.
+
 Bugfixes
 ++++++++
 

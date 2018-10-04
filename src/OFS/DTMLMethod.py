@@ -24,6 +24,7 @@ from AccessControl.Permissions import ftp_access
 from AccessControl.requestmethod import requestmethod
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
+from DocumentTemplate.DT_Util import ParseError
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
 from six import PY2
@@ -66,6 +67,7 @@ class DTMLMethod(RestrictedDTML,
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
+    _locked_error_text = 'This DTML Method is locked.'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -87,6 +89,10 @@ class DTMLMethod(RestrictedDTML,
 
     # More reasonable default for content-type for http HEAD requests.
     default_content_type = 'text/html'
+
+    def errQuote(self, s):
+        # Quoting is done when rendering the error in the template.
+        return s
 
     security.declareProtected(View, '__call__')
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
@@ -245,7 +251,7 @@ class DTMLMethod(RestrictedDTML,
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This item is locked.')
+            raise ResourceLockedError(self._locked_error_text)
 
         self.title = str(title)
         if isinstance(data, TaintedString):
@@ -253,7 +259,15 @@ class DTMLMethod(RestrictedDTML,
 
         if hasattr(data, 'read'):
             data = data.read()
-        self.munge(data)
+        try:
+            self.munge(data)
+        except ParseError as e:
+            if REQUEST:
+                return self.manage_main(
+                    self, REQUEST, manage_tabs_message=e,
+                    manage_tabs_type='warning')
+            else:
+                raise
         self.ZCacheable_invalidate()
         if REQUEST:
             message = "Saved changes."
@@ -267,10 +281,18 @@ class DTMLMethod(RestrictedDTML,
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This DTML Method is locked.')
+            if REQUEST is not None:
+                return self.manage_main(
+                    self, REQUEST,
+                    manage_tabs_message=self._locked_error_text,
+                    manage_tabs_type='warning')
+            raise ResourceLockedError(self._locked_error_text)
 
-        if REQUEST and not file:
-            raise ValueError('No file specified')
+        if REQUEST is not None and not file:
+            return self.manage_main(
+                self, REQUEST,
+                manage_tabs_message='No file specified',
+                manage_tabs_type='warning')
 
         if hasattr(file, 'read'):
             file = file.read()
@@ -281,8 +303,8 @@ class DTMLMethod(RestrictedDTML,
 
         self.munge(file)
         self.ZCacheable_invalidate()
-        if REQUEST:
-            message = "Saved changes."
+        if REQUEST is not None:
+            message = "Content uploaded."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def manage_haveProxy(self, r):
