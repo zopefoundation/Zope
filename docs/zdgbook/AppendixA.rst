@@ -2,8 +2,6 @@
 Appendix A: Zope Core Permissions
 #################################
 
-.. include:: includes/zope2_notice.rst
-
 This is a list of standard permissions included with Zope.  It is a
 good idea to use these permissions when applicable with your Zope
 products, rather than creating new ones.  A list of built-in Zope
