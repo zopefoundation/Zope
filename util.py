@@ -45,6 +45,7 @@ def generate(in_, requirements_file, constraints_file):
             constraints.append(spec + '\n')
         else:
             requirements.append(spec + '\n')
+            constraints.append(spec + '\n')
 
     with open(out_file_requirements, 'w') as fd:
         fd.write(zope_requirement)
