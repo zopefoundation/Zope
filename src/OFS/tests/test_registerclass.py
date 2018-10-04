@@ -35,11 +35,11 @@ class SimpleContent(SimpleItem):
         self.id = id
         self.title = title
 
-    @security.public()
+    @security.public
     def mymethod(self):
         return "Hello world"
 
-    @security.public()
+    @security.public
     def direct(self):
         """Should be able to traverse directly to this as there is no view.
         """
