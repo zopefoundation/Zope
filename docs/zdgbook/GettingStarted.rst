@@ -16,8 +16,8 @@ Prerequisites
 Make sure you have Python installed. Version 3.6 or higher is
 recommended.
 
-Creating a `VirtualEnv <https://pypi.org/project/virtualenv/>`_ is
-recommended.
+Creating and activating a `VirtualEnv <https://pypi.org/project/virtualenv/>`_
+is recommended.
 
 In order to use buildout, you have to install the ``zc.buildout``
 package.
@@ -114,8 +114,8 @@ Use the user name and password you set earlier.
 
   http://localhost:8080/manage
 
-You can see a list of installable applications in the drop-down box
-on the top right corner.
+When you have a look at the drop-down box in the top right corner,
+you see a list of objects you may create.
 
 In the next section we will create the poll application. Later, we
 will make it installable, too.
