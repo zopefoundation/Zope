@@ -20,6 +20,7 @@ New features
 ++++++++++++
 
 - Add zconsole module for running scripts and interactive mode.
+  See `documentation <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
 
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
