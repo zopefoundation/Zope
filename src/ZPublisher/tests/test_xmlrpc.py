@@ -50,7 +50,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         as_set, method = xmlrpclib.loads(body_str)
         as_set = as_set[0]
 
-        self.assertIs(method, None)
+        self.assertIsNone(method)
         self.assertNotIn('_secret', as_set.keys())
         self.assertIn('public', as_set.keys())
         self.assertEqual(as_set['public'], 'def')
