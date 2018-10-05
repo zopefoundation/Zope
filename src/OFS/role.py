@@ -37,14 +37,20 @@ class RoleManager(BaseRoleManager):
     security = ClassSecurityInfo()
 
     manage_options = (
-        {'label': 'Security', 'action': 'manage_access'},
+        {
+            'label': 'Security',
+            'action': 'manage_access',
+        },
     )
 
-    security.declareProtected(change_permissions, 'manage_roleForm')
-    manage_roleForm = DTMLFile('dtml/roleEdit', globals(),
-                               management_view='Security')
+    security.declareProtected(change_permissions, 'manage_roleForm')  # NOQA: D001,E501
+    manage_roleForm = DTMLFile(
+        'dtml/roleEdit',
+        globals(),
+        management_view='Security'
+    )
 
-    security.declareProtected(change_permissions, 'manage_role')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         """Change the permissions given to the given role.
@@ -54,11 +60,14 @@ class RoleManager(BaseRoleManager):
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
-    security.declareProtected(change_permissions, 'manage_acquiredForm')
-    manage_acquiredForm = DTMLFile('dtml/acquiredEdit', globals(),
-                                   management_view='Security')
+    security.declareProtected(change_permissions, 'manage_acquiredForm')  # NOQA: D001,E501
+    manage_acquiredForm = DTMLFile(
+        'dtml/acquiredEdit',
+        globals(),
+        management_view='Security'
+    )
 
-    security.declareProtected(change_permissions, 'manage_acquiredPermissions')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         """Change the permissions that acquire.
@@ -68,14 +77,22 @@ class RoleManager(BaseRoleManager):
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
-    security.declareProtected(change_permissions, 'manage_permissionForm')
-    manage_permissionForm = DTMLFile('dtml/permissionEdit', globals(),
-                                     management_view='Security')
+    security.declareProtected(change_permissions, 'manage_permissionForm')  # NOQA: D001,E501
+    manage_permissionForm = DTMLFile(
+        'dtml/permissionEdit',
+        globals(),
+        management_view='Security'
+    )
 
-    security.declareProtected(change_permissions, 'manage_permission')
+    @security.protected(change_permissions)
     @requestmethod('POST')
-    def manage_permission(self, permission_to_manage,
-                          roles=[], acquire=0, REQUEST=None):
+    def manage_permission(
+        self,
+        permission_to_manage,
+        roles=[],
+        acquire=0,
+        REQUEST=None
+    ):
         """Change the settings for the given permission.
 
         If optional arg acquire is true, then the roles for the permission
@@ -89,19 +106,19 @@ class RoleManager(BaseRoleManager):
 
     _normal_manage_access = DTMLFile('dtml/access', globals())
     manage_reportUserPermissions = DTMLFile(
-        'dtml/reportUserPermissions', globals())
+        'dtml/reportUserPermissions',
+        globals()
+    )
 
-    security.declareProtected(change_permissions, 'manage_access')
+    @security.protected(change_permissions)
     def manage_access(self, REQUEST, **kw):
-        """Return an interface for making permissions settings.
-        """
+        """Return an interface for making permissions settings."""
         return self._normal_manage_access(**kw)
 
-    security.declareProtected(change_permissions, 'manage_changePermissions')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_changePermissions(self, REQUEST):
-        """Change all permissions settings, called by management screen.
-        """
+        """Change all permissions settings, called by management screen."""
         valid_roles = self.valid_roles()
         have = REQUEST.__contains__
         permissions = self.ac_inherited_permissions(1)
@@ -125,20 +142,26 @@ class RoleManager(BaseRoleManager):
                 fails.append(name)
 
         if fails:
-            raise BadRequest('Some permissions had errors: ' +
-                             escape(', '.join(fails), True))
+            raise BadRequest('Some permissions had errors: '
+                             + escape(', '.join(fails), True))
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 
-    security.declareProtected(change_permissions, 'manage_listLocalRoles')
-    manage_listLocalRoles = DTMLFile('dtml/listLocalRoles', globals(),
-                                     management_view='Security')
+    security.declareProtected(change_permissions, 'manage_listLocalRoles')  # NOQA: D001,E501
+    manage_listLocalRoles = DTMLFile(
+        'dtml/listLocalRoles',
+        globals(),
+        management_view='Security'
+    )
 
-    security.declareProtected(change_permissions, 'manage_editLocalRoles')
-    manage_editLocalRoles = DTMLFile('dtml/editLocalRoles', globals(),
-                                     management_view='Security')
+    security.declareProtected(change_permissions, 'manage_editLocalRoles')  # NOQA: D001,E501
+    manage_editLocalRoles = DTMLFile(
+        'dtml/editLocalRoles',
+        globals(),
+        management_view='Security'
+    )
 
-    security.declareProtected(change_permissions, 'manage_addLocalRoles')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
@@ -147,7 +170,7 @@ class RoleManager(BaseRoleManager):
             stat = 'Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
-    security.declareProtected(change_permissions, 'manage_setLocalRoles')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
@@ -156,7 +179,7 @@ class RoleManager(BaseRoleManager):
             stat = 'Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
-    security.declareProtected(change_permissions, 'manage_delLocalRoles')
+    @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
@@ -165,10 +188,9 @@ class RoleManager(BaseRoleManager):
             stat = 'Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
-    security.declareProtected(change_permissions, 'manage_defined_roles')
+    @security.protected(change_permissions)
     def manage_defined_roles(self, submit=None, REQUEST=None):
-        """Called by management screen.
-        """
+        """Called by management screen."""
         if submit == 'Add Role':
             role = reqattr(REQUEST, 'role').strip()
             return self._addRole(role, REQUEST)
@@ -219,5 +241,6 @@ class RoleManager(BaseRoleManager):
 
     def _setRoles(self, acl_type, acl_roles):
         pass
+
 
 InitializeClass(RoleManager)

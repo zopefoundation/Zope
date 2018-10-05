@@ -34,8 +34,13 @@ from zExceptions import BadRequest
 import os
 
 
-class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
-                      accesscontrol_userfolder.BasicUserFolder):
+class BasicUserFolder(
+    Navigation,
+    Tabs,
+    Item,
+    RoleManager,
+    accesscontrol_userfolder.BasicUserFolder
+):
     """Base class for UserFolder-like objects"""
 
     security = ClassSecurityInfo()
@@ -51,7 +56,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         Item.manage_options
     )
 
-    security.declareProtected(ManageUsers, 'userFolderAddUser')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
     def userFolderAddUser(self, name, password, roles, domains,
                           REQUEST=None, **kw):
@@ -62,10 +67,17 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    security.declareProtected(ManageUsers, 'userFolderEditUser')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
-    def userFolderEditUser(self, name, password, roles, domains,
-                           REQUEST=None, **kw):
+    def userFolderEditUser(
+        self,
+        name,
+        password,
+        roles,
+        domains,
+        REQUEST=None,
+        **kw
+    ):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
            attributes."""
@@ -73,7 +85,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    security.declareProtected(ManageUsers, 'userFolderDelUsers')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
     def userFolderDelUsers(self, names, REQUEST=None):
         """API method for deleting one or more user objects. Note that not
@@ -92,19 +104,28 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
     _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
 
-    def manage_userFolderProperties(self, REQUEST=None,
-                                    manage_tabs_message=None):
+    def manage_userFolderProperties(
+        self,
+        REQUEST=None,
+        manage_tabs_message=None
+    ):
         """
         """
         return self._userFolderProperties(
-            self, REQUEST, manage_tabs_message=manage_tabs_message,
-            management_view='Properties')
+            self,
+            REQUEST,
+            manage_tabs_message=manage_tabs_message,
+            management_view='Properties',
+        )
 
     @requestmethod('POST')
-    def manage_setUserFolderProperties(self, encrypt_passwords=0,
-                                       update_passwords=0,
-                                       maxlistusers=DEFAULTMAXLISTUSERS,
-                                       REQUEST=None):
+    def manage_setUserFolderProperties(
+        self,
+        encrypt_passwords=0,
+        update_passwords=0,
+        maxlistusers=DEFAULTMAXLISTUSERS,
+        REQUEST=None
+    ):
         """
         Sets the properties of the user folder.
         """
@@ -195,7 +216,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if REQUEST:
             return self._mainUser(self, REQUEST)
 
-    security.declareProtected(ManageUsers, 'manage_users')
+    @security.protected(ManageUsers)
     def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
         """This method handles operations on users for the web based forms
            of the ZMI. Application code (code that is outside of the forms
@@ -251,6 +272,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if id != self.id:
             raise ValueError('Cannot change the id of a UserFolder')
 
+
 InitializeClass(BasicUserFolder)
 
 
@@ -290,6 +312,7 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
                     os.remove(os.path.join(cfg.instancehome, 'inituser'))
                 except Exception:
                     pass
+
 
 InitializeClass(UserFolder)
 

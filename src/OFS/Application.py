@@ -189,6 +189,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # We're at the base of the path.
         return ('', )
 
+
 InitializeClass(Application)
 
 

@@ -705,8 +705,8 @@ class File(
             RESPONSE.setStatus(204)
             return RESPONSE
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        security.declareProtected(ftp_access, 'manage_FTPlist')
+        security.declareProtected(ftp_access, 'manage_FTPstat')  # NOQA: D001
+        security.declareProtected(ftp_access, 'manage_FTPlist')  # NOQA: D001
 
         @security.protected(ftp_access)
         def manage_FTPget(self):

@@ -53,11 +53,11 @@ def filterCacheTab(ob):
 
 
 def filterCacheManagers(orig, container, name, value, extra):
-    '''
+    """
     This is a filter method for aq_acquire.
     It causes objects to be found only if they are
     in the list of cache managers.
-    '''
+    """
     if (hasattr(aq_base(container), ZCM_MANAGERS) and
             name in getattr(container, ZCM_MANAGERS)):
         return 1
@@ -65,9 +65,7 @@ def filterCacheManagers(orig, container, name, value, extra):
 
 
 def getVerifiedManagerIds(container):
-    '''
-    Gets the list of cache managers in a container, verifying each one.
-    '''
+    """Gets the list of cache managers in a container, verifying each one."""
     ids = getattr(container, ZCM_MANAGERS, ())
     rval = []
     for id in ids:
@@ -83,19 +81,20 @@ manager_timestamp = 0
 
 
 class Cacheable(object):
-    '''Mix-in for cacheable objects.
-    '''
+    """Mix-in for cacheable objects."""
 
     manage_options = (
-        {'label': 'Cache', 'action': 'ZCacheable_manage',
-         'filter': filterCacheTab},
+        {
+            'label': 'Cache',
+            'action': 'ZCacheable_manage',
+            'filter': filterCacheTab,
+        },
     )
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(ChangeCacheSettingsPermission, ('Manager',))
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_manage')
+    security.declareProtected(ViewManagementScreensPermission, 'ZCacheable_manage')  # NOQA: D001,E501
     ZCacheable_manage = DTMLFile('dtml/cacheable', globals())
 
     _v_ZCacheable_cache = None
@@ -104,23 +103,28 @@ class Cacheable(object):
     __enabled = True
     _isCacheable = True
 
-    security.declarePrivate('ZCacheable_getManager')
+    @security.private
     def ZCacheable_getManager(self):
-        '''Returns the currently associated cache manager.'''
+        """Returns the currently associated cache manager."""
         manager_id = self.__manager_id
         if manager_id is None:
             return None
         try:
             return aq_acquire(
-                self, manager_id, containment=1,
-                filter=filterCacheManagers, extra=None, default=None)
+                self,
+                manager_id,
+                containment=1,
+                filter=filterCacheManagers,
+                extra=None,
+                default=None
+            )
         except AttributeError:
             return None
 
-    security.declarePrivate('ZCacheable_getCache')
+    @security.private
     def ZCacheable_getCache(self):
-        '''Gets the cache associated with this object.
-        '''
+        """Gets the cache associated with this object.
+        """
         if self.__manager_id is None:
             return None
         c = self._v_ZCacheable_cache
@@ -138,26 +142,31 @@ class Cacheable(object):
         self._v_ZCacheable_manager_timestamp = manager_timestamp
         return c
 
-    security.declarePrivate('ZCacheable_isCachingEnabled')
+    @security.private
     def ZCacheable_isCachingEnabled(self):
-        '''
+        """
         Returns true only if associated with a cache manager and
         caching of this method is enabled.
-        '''
+        """
         return self.__enabled and self.ZCacheable_getCache()
 
-    security.declarePrivate('ZCacheable_getObAndView')
+    @security.private
     def ZCacheable_getObAndView(self, view_name):
         # Returns self and view_name unchanged.
         return self, view_name
 
-    security.declarePrivate('ZCacheable_get')
-    def ZCacheable_get(self, view_name='', keywords=None,
-                       mtime_func=None, default=None):
-        '''Retrieves the cached view for the object under the
+    @security.private
+    def ZCacheable_get(
+        self,
+        view_name='',
+        keywords=None,
+        mtime_func=None,
+        default=None
+    ):
+        """Retrieves the cached view for the object under the
         conditions specified by keywords. If the value is
         not yet cached, returns the default.
-        '''
+        """
         c = self.ZCacheable_getCache()
         if c is not None and self.__enabled:
             ob, view_name = self.ZCacheable_getObAndView(view_name)
@@ -165,17 +174,22 @@ class Cacheable(object):
                 val = c.ZCache_get(ob, view_name, keywords,
                                    mtime_func, default)
                 return val
-            except:
+            except Exception:
                 LOG.warning('ZCache_get() exception')
                 return default
         return default
 
-    security.declarePrivate('ZCacheable_set')
-    def ZCacheable_set(self, data, view_name='', keywords=None,
-                       mtime_func=None):
-        '''Cacheable views should call this method after generating
+    @security.private
+    def ZCacheable_set(
+        self,
+        data,
+        view_name='',
+        keywords=None,
+        mtime_func=None
+    ):
+        """Cacheable views should call this method after generating
         cacheable results. The data argument can be of any Python type.
-        '''
+        """
         c = self.ZCacheable_getCache()
         if c is not None and self.__enabled:
             ob, view_name = self.ZCacheable_getObAndView(view_name)
@@ -185,13 +199,12 @@ class Cacheable(object):
             except:
                 LOG.warning('ZCache_set() exception')
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_invalidate')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_invalidate(self, view_name='', REQUEST=None):
-        '''Called after a cacheable object is edited. Causes all
+        """Called after a cacheable object is edited. Causes all
         cache entries that apply to the view_name to be removed.
         Returns a status message.
-        '''
+        """
         c = self.ZCacheable_getCache()
         if c is not None:
             ob, view_name = self.ZCacheable_getObAndView(view_name)
@@ -215,9 +228,9 @@ class Cacheable(object):
                 manage_tabs_message=message)
         return message
 
-    security.declarePrivate('ZCacheable_getModTime')
+    @security.private
     def ZCacheable_getModTime(self, mtime_func=None):
-        '''Returns the highest of the last mod times.'''
+        """Returns the highest of the last mod times."""
         # Based on:
         #   mtime_func
         #   self.mtime
@@ -235,26 +248,23 @@ class Cacheable(object):
                 mtime = max(klass_mtime, mtime)
         return mtime
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_getManagerId')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_getManagerId(self):
-        '''Returns the id of the current ZCacheManager.'''
+        """Returns the id of the current ZCacheManager."""
         return self.__manager_id
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_getManagerURL')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_getManagerURL(self):
-        '''Returns the URL of the current ZCacheManager.'''
+        """Returns the URL of the current ZCacheManager."""
         manager = self.ZCacheable_getManager()
         if manager is not None:
             return manager.absolute_url()
         return None
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_getManagerIds')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_getManagerIds(self):
-        '''Returns a list of mappings containing the id and title
-        of the available ZCacheManagers.'''
+        """Returns a list of mappings containing the id and title
+        of the available ZCacheManagers."""
         rval = []
         ob = self
         used_ids = {}
@@ -272,10 +282,9 @@ class Cacheable(object):
             ob = aq_parent(aq_inner(ob))
         return tuple(rval)
 
-    security.declareProtected(ChangeCacheSettingsPermission,
-                              'ZCacheable_setManagerId')
+    @security.protected(ChangeCacheSettingsPermission)
     def ZCacheable_setManagerId(self, manager_id, REQUEST=None):
-        '''Changes the manager_id for this object.'''
+        """Changes the manager_id for this object."""
         self.ZCacheable_invalidate()
         if not manager_id:
             # User requested disassociation
@@ -288,20 +297,20 @@ class Cacheable(object):
 
         if REQUEST is not None:
             return self.ZCacheable_manage(
-                self, REQUEST, management_view='Cache',
-                manage_tabs_message='Cache settings changed.')
+                self,
+                REQUEST,
+                management_view='Cache',
+                manage_tabs_message='Cache settings changed.'
+            )
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_enabled')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_enabled(self):
-        '''Returns true if caching is enabled for this object
-        or method.'''
+        """Returns true if caching is enabled for this object or method."""
         return self.__enabled
 
-    security.declareProtected(ChangeCacheSettingsPermission,
-                              'ZCacheable_setEnabled')
+    @security.protected(ChangeCacheSettingsPermission)
     def ZCacheable_setEnabled(self, enabled=0, REQUEST=None):
-        '''Changes the enabled flag.'''
+        """Changes the enabled flag."""
         self.__enabled = enabled and 1 or 0
 
         if REQUEST is not None:
@@ -309,23 +318,30 @@ class Cacheable(object):
                 self, REQUEST, management_view='Cache',
                 manage_tabs_message='Cache settings changed.')
 
-    security.declareProtected(ViewManagementScreensPermission,
-                              'ZCacheable_configHTML')
+    @security.protected(ViewManagementScreensPermission)
     def ZCacheable_configHTML(self):
-        '''Override to provide configuration of caching
+        """Override to provide configuration of caching
         behavior that can only be specific to the cacheable object.
-        '''
+        """
         return ''
+
 
 InitializeClass(Cacheable)
 
 
-def findCacheables(ob, manager_id, require_assoc, subfolders,
-                   meta_types, rval, path):
-    '''
+def findCacheables(
+    ob,
+    manager_id,
+    require_assoc,
+    subfolders,
+    meta_types,
+    rval,
+    path
+):
+    """
     Used by the CacheManager UI.  Recursive.  Similar to the Zope
     "Find" function.  Finds all Cacheable objects in a hierarchy.
-    '''
+    """
     try:
         if meta_types:
             subobs = ob.objectValues(meta_types)
@@ -364,18 +380,18 @@ def findCacheables(ob, manager_id, require_assoc, subfolders,
                         findCacheables(
                             subob, manager_id, require_assoc,
                             subfolders, meta_types, rval, subpath)
-    except:
+    except Exception:
         # Ignore exceptions.
         import traceback
         traceback.print_exc()
 
 
 class Cache(object):
-    '''
+    """
     A base class (and interface description) for caches.
     Note that Cache objects are not intended to be visible by
     restricted code.
-    '''
+    """
 
     def ZCache_invalidate(self, ob):
         raise NotImplementedError
@@ -405,21 +421,24 @@ class Cache(object):
 
 
 class CacheManager(object):
-    '''
+    """
     A base class for cache managers.  Implement ZCacheManager_getCache().
-    '''
+    """
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(ChangeCacheSettingsPermission, ('Manager',))
 
-    security.declarePrivate('ZCacheManager_getCache')
+    @security.private
     def ZCacheManager_getCache(self):
         raise NotImplementedError
 
     _isCacheManager = 1
 
     manage_options = (
-        {'label': 'Associate', 'action': 'ZCacheManager_associate'},
+        {
+            'label': 'Associate',
+            'action': 'ZCacheManager_associate',
+        },
     )
 
     def manage_afterAdd(self, item, container):
@@ -446,37 +465,50 @@ class CacheManager(object):
                 global manager_timestamp
                 manager_timestamp = time.time()
 
-    security.declareProtected(ChangeCacheSettingsPermission,
-                              'ZCacheManager_associate')
+    security.declareProtected(ChangeCacheSettingsPermission, 'ZCacheManager_associate')  # NOQA: D001,E501
     ZCacheManager_associate = DTMLFile('dtml/cmassoc', globals())
 
-    security.declareProtected(ChangeCacheSettingsPermission,
-                              'ZCacheManager_locate')
-    def ZCacheManager_locate(self, require_assoc, subfolders,
-                             meta_types=[], REQUEST=None):
-        '''Locates cacheable objects.
-        '''
+    @security.protected(ChangeCacheSettingsPermission)
+    def ZCacheManager_locate(
+        self,
+        require_assoc,
+        subfolders,
+        meta_types=[],
+        REQUEST=None
+    ):
+        """Locates cacheable objects.
+        """
         ob = aq_parent(aq_inner(self))
         rval = []
         manager_id = self.getId()
         if '' in meta_types:
             # User selected "All".
             meta_types = []
-        findCacheables(ob, manager_id, require_assoc, subfolders,
-                       meta_types, rval, ())
+        findCacheables(
+            ob,
+            manager_id,
+            require_assoc,
+            subfolders,
+            meta_types,
+            rval,
+            ()
+        )
 
         if REQUEST is not None:
             return self.ZCacheManager_associate(
-                self, REQUEST, show_results=1, results=rval,
-                management_view="Associate")
+                self,
+                REQUEST,
+                show_results=1,
+                results=rval,
+                management_view="Associate"
+            )
         return rval
 
-    security.declareProtected(ChangeCacheSettingsPermission,
-                              'ZCacheManager_setAssociations')
+    @security.protected(ChangeCacheSettingsPermission)
     def ZCacheManager_setAssociations(self, props=None, REQUEST=None):
-        '''Associates and un-associates cacheable objects with this
+        """Associates and un-associates cacheable objects with this
         cache manager.
-        '''
+        """
         addcount = 0
         remcount = 0
         parent = aq_parent(aq_inner(self))
@@ -509,5 +541,6 @@ class CacheManager(object):
                 manage_tabs_message='%d association(s) made, %d removed.' %
                 (addcount, remcount)
             )
+
 
 InitializeClass(CacheManager)
