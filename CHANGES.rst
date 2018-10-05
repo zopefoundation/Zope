@@ -16,6 +16,9 @@ Breaking changes
 
 - Remove the ``OFS.History`` module which contained only BBB code since 4.0a2.
 
+- Remove `bootstrap.py`. To install Zope via `zc.buildout` install the
+  `zc.buildout` package in a virtual environment at first.
+
 New features
 ++++++++++++
 
