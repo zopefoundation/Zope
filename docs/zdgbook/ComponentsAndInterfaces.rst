@@ -23,7 +23,7 @@ components, this one consists of two pieces, an interface,
 and an implementation::
 
   from zope.interface import Interface
-  from zope.interface import implements
+  from zope.interface import implementer
 
   class IHello(Interface):
       """The Hello interface provides greetings."""
@@ -31,10 +31,8 @@ and an implementation::
       def hello(name):
           """Say hello to the name"""
 
+  @implementer(IHello)
   class HelloComponent(object):
-
-      implements(IHello)
-
       def hello(self, name):
           return "hello %s!" % name
 
@@ -52,7 +50,7 @@ This class is the actual component that *does* what ``IHello``
 *describes*.  This is usually referred to as the *implementation* of
 ``IHello``.  In order for you to know what interfaces
 ``HelloComponent`` implements, it must somehow associate itself with
-an interface.  The ``implements`` function call inside the class does
+an interface.  The ``implementer`` decorator above the class does
 just that.  It says, "I implement these interfaces".  In this case,
 ``HelloComponent`` asserts that it implements one interface,
 ``IHello``.
@@ -62,16 +60,14 @@ doesn't dictate how that description is implemented.  For example,
 here's a more complex implementation of the ``Hello`` interface::
 
   import xmlrpclib
+
+  @implementer(IHello)
   class XMLRPCHello:
-
-      implementats(IHello)
-
       def hello(self, name):
           """Delegates the hello call to a remote object
           using XML-RPC.
-
           """
-          s = xmlrpclib.Server('http://www.zope.org/')
+          s = xmlrpclib.Server('your/rpc/server')
           return s.hello(name)
 
 This component contacts a remote server and gets its hello greeting
@@ -79,7 +75,7 @@ from a remote component.
 
 And that's all there is to components, really.  The rest of this
 chapter describes interfaces and how you can work with them from the
-perspective of components.  In Chapter 3, we'll put all this together
+perspective of components.  In Chapter 5, we'll put all this together
 into a Zope product.
 
 Python Interfaces
@@ -175,10 +171,10 @@ interpreter confirms this::
 Now, you can associate the ``Hello`` Interface with your new concrete
 class in which you define your user behavior.  For example::
 
+  from zope.interface import implementer
+
+  @implementer(IHello)
   class HelloComponent:
-
-      implements(IHello)
-
       def hello(self, name):
           return "Hello %s!" % name
 
@@ -190,9 +186,9 @@ object.  If you wanted to assert that ``HelloComponent`` instances
 realized the ``Item`` interface as well as ``Hello``, you can provide
 a sequence of Interface objects to the 'HelloComponent' class::
 
+  @implementer(IHello, IItem)
   class HelloComponent:
-
-      implements(IHello, IItem)
+      ...
 
 
 The Interface Model
@@ -226,7 +222,7 @@ or false for this purpose::
 
   >>> ISmartHello.extends(IHello)
   True
-  >>> ISandwich(Interface):
+  >>> class ISandwich(Interface):
   ...     pass
   >>> ISmartHello.extends(ISandwich)
   False
@@ -258,8 +254,8 @@ ask an interface the names of all the various interface items it
 describes.  From the Python interpreter, for example, you can walk
 right up to an interface and ask it for its *names*::
 
-  >>> IUser.names()
-  ['getUserName', 'getFavoriteColor', 'getPassword']
+  >>> IHello.names()
+  dict_keys(['hello'])
 
 Interfaces can also give you more interesting information about their
 items.  Interface objects can return a list of '(name, description)'
@@ -268,15 +264,19 @@ method.
 
 For example::
 
-  >>> IUser.namesAndDescriptions()
-  [('getUserName', <zope.interface.interface.Method.Method object at 80f38f0>),
-  ('getFavoriteColor', <zope.interface.interface.Method.Method object at 80b24f0>),
-  ('getPassword', <zope.interface.interface.Method.Method object at 80fded8>)]
+  >>> IHello.namesAndDescriptions()
+dict_items([('hello', <zope.interface.interface.Method object at 0x7fc6875110f0>)])
 
-As you can see, the "description" of the Interface's three items in
-these cases are all `Method` objects.  Description objects can be
-either 'Attribute' or `Method` objects.  Attributes, methods and
-interface objects implement the following interface::
+.. note::
+  You cannot access the `Method` object by index, as
+  ``namesAndDescriptions`` returns a dict_view.
+
+  You can either use `list` or `next` and `iter` on the result.
+
+As you can see, the "description" of the Interface's item is a
+`Method` object.  Description objects can be either 'Attribute' or
+`Method` objects.  Attributes, methods and interface objects
+implement the following interface::
 
   - `getName()` -- Returns the name of the object.
 
@@ -293,14 +293,15 @@ methods. Method objects have the following methods::
 
 For example::
 
-  >>> m = IUser.namesAndDescriptions()[0][1]
+  >>> m = list(IHello.namesAndDescriptions())[0][1]
   >>> m
-  <zope.interface.interface.Method.Method object at 80f38f0>
+  <zope.interface.interface.Method object at 0x7fc6875110f0>
   >>> m.getSignatureString()
-  '(fullName=1)'
+  '(name)'
   >>> m.getSignatureInfo()   
-  {'varargs': None, 'kwargs': None, 'optional': {'fullName': 1}, 
-  'required': (), 'positional': ('fullName',)}  
+  {'positional': ('name',), 'required': ('name',), 'optional': {},
+   'varargs': None, 'kwargs': None}
+
 
 You can use `getSignatureInfo` to find out the names and types of the
 method parameters.
@@ -309,9 +310,9 @@ method parameters.
 Checking Implementation
 =======================
 
-You can ask an interface if a certain class or instance that you hand
+You can ask an interface if a certain class that you hand
 it implements that interface.  For example, say you want to know if
-instances of the `HelloComponent` class implement 'Hello'::
+the `HelloComponent` class implements 'IHello'::
 
   IHello.implementedBy(HelloComponent)
 
@@ -319,17 +320,14 @@ This is a true expression.  If you had an instance of
 `HelloComponent`, you can also ask the interface if that instance
 implements the interface::
 
-  IHello.implementedBy(my_hello_instance)
+  IHello.providedBy(my_hello_instance)
 
 This would also return true if *my_hello_instance* was an instance of
-*HelloComponent*, or any other class that implemented the *Hello*
-Interface.
+*HelloComponent*, or any other object of a class that implemented
+the *IHello* interface.
 
 Conclusion
 ==========
 
 Interfaces provide a simple way to describe your Python objects.  By
-using interfaces you document capabilities of objects.  As Zope
-becomes more component oriented, your objects will fit right in.
-While components and interfaces are forward looking technologies,
-they are useful today for documentation and verification.
+using interfaces you document capabilities of objects.
