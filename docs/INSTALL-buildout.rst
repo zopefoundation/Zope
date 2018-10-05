@@ -72,19 +72,12 @@ On Linux, this can be done as follows::
         https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
     parts =
         zopescripts
-        zopepy
     
     [zopescripts]
-    recipe = zc.recipe.egg
-    eggs =
-        Zope
-    
-    [zopepy]
     recipe = zc.recipe.egg
     interpreter = zopepy
     eggs =
         Zope
-
 
 Creating a Zope instance
 ::::::::::::::::::::::::
