@@ -67,3 +67,4 @@ class TestImageFileFunctional(unittest.TestCase):
         self.assertIsInstance(result, io.FileIO)
         self.assertTrue(b''.join(result).startswith(b'\x89PNG\r\n'))
         self.assertEqual(len(result), image.size)
+        result.close()
