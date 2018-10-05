@@ -32,6 +32,7 @@ class AllowedItem(SimpleItem):
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
 
+
 InitializeClass(AllowedItem)
 
 
@@ -40,6 +41,7 @@ class DeniedItem(SimpleItem):
     security = ClassSecurityInfo()
     security.setDefaultAccess('deny')
 
+
 InitializeClass(DeniedItem)
 
 
@@ -47,6 +49,7 @@ class ProtectedItem(SimpleItem):
     id = 'protected'
     security = ClassSecurityInfo()
     security.declareObjectProtected(view_management_screens)
+
 
 InitializeClass(ProtectedItem)
 
