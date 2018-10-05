@@ -67,6 +67,11 @@ Bugfixes
   (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
 
 - Fix `HTTPResponse.setBody` when the published object returns a tuple.
+  (`#340 <https://github.com/zopefoundation/Zope/pull/340>`_)
+
+- Fix ``Products.Five.browser.ObjectManagerSiteView.makeSite``
+  to interact well with plone.testing's patching of the global site manager.
+  (`#361 <https://github.com/zopefoundation/Zope/pull/361>`_)
 
 
 4.0b5 (2018-05-18)
