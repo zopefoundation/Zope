@@ -28,18 +28,13 @@ class LockableItem(EtagSupport):
 
     # Protect methods using declarative security
     security = ClassSecurityInfo()
-    security.declarePrivate('wl_lockmapping')
-    security.declarePublic('wl_isLocked', 'wl_getLock', 'wl_isLockedByUser',
-                           'wl_lockItems', 'wl_lockValues', 'wl_lockTokens',)
-    security.declareProtected('WebDAV Lock items', 'wl_setLock')
-    security.declareProtected('WebDAV Unlock items', 'wl_delLock')
-    security.declareProtected('Manage WebDAV Locks', 'wl_clearLocks')
 
     # Setting default roles for permissions - we want owners of conent
     # to be able to lock.
     security.setPermissionDefault('WebDAV Lock items', ('Manager', 'Owner',))
     security.setPermissionDefault('WebDAV Unlock items', ('Manager', 'Owner',))
 
+    @security.private
     def wl_lockmapping(self, killinvalids=0, create=0):
         """ if 'killinvalids' is 1, locks who are no longer valid
         will be deleted """
@@ -68,20 +63,25 @@ class LockableItem(EtagSupport):
         else:
             return locks
 
+    @security.public
     def wl_lockItems(self, killinvalids=0):
         return list(self.wl_lockmapping(killinvalids).items())
 
+    @security.public
     def wl_lockValues(self, killinvalids=0):
         return list(self.wl_lockmapping(killinvalids).values())
 
+    @security.public
     def wl_lockTokens(self, killinvalids=0):
         return list(self.wl_lockmapping(killinvalids).keys())
 
+    # TODO: Security Declaration
     def wl_hasLock(self, token, killinvalids=0):
         if not token:
             return 0
         return token in list(self.wl_lockmapping(killinvalids).keys())
 
+    @security.public
     def wl_isLocked(self):
         # returns true if 'self' is locked at all
         # We set 'killinvalids' to 1 to delete all locks who are no longer
@@ -93,6 +93,7 @@ class LockableItem(EtagSupport):
         else:
             return 0
 
+    @security.protected('WebDAV Lock items')
     def wl_setLock(self, locktoken, lock):
         locks = self.wl_lockmapping(create=1)
         if ILockItem.providedBy(lock):
@@ -103,15 +104,18 @@ class LockableItem(EtagSupport):
         else:
             raise ValueError('Lock does not implement the LockItem Interface')
 
+    @security.public
     def wl_getLock(self, locktoken):
         locks = self.wl_lockmapping(killinvalids=1)
         return locks.get(locktoken, None)
 
+    @security.protected('WebDAV Unlock items')
     def wl_delLock(self, locktoken):
         locks = self.wl_lockmapping()
         if locktoken in locks:
             del locks[locktoken]
 
+    @security.protected('Manage WebDAV Locks')
     def wl_clearLocks(self):
         # Called by lock management machinery to quickly and effectively
         # destroy all locks.
@@ -131,6 +135,7 @@ class LockableItem(EtagSupport):
         # with the state of empty locks.
         if hasattr(aq_base(self), '__no_valid_write_locks__'):
             self.__no_valid_write_locks__()
+
 
 InitializeClass(LockableItem)
 

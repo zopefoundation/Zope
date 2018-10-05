@@ -71,14 +71,16 @@ logger = logging.getLogger()
 
 
 @implementer(IItem)
-class Item(Base,
-           Navigation,
-           Resource,
-           LockableItem,
-           CopySource,
-           Tabs,
-           Traversable,
-           Owned):
+class Item(
+    Base,
+    Navigation,
+    Resource,
+    LockableItem,
+    CopySource,
+    Tabs,
+    Traversable,
+    Owned
+):
     """A common base class for simple, non-container objects."""
 
     zmi_icon = 'far fa-file'
@@ -103,7 +105,7 @@ class Item(Base,
     # Direct use of the 'id' attribute is deprecated - use getId()
     id = ''
 
-    security.declarePublic('getId')
+    @security.public
     def getId(self):
         """Return the id of the object as a string.
 
@@ -167,15 +169,22 @@ class Item(Base,
         return ()
 
     _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
+
     def manage_editedDialog(self, REQUEST, **args):
         return self._manage_editedDialog(self, REQUEST, **args)
 
     def raise_standardErrorMessage(
-            self, client=None, REQUEST={},
-            error_type=None, error_value=None, tb=None,
-            error_tb=None, error_message='',
-            tagSearch=re.compile(r'[a-zA-Z]>').search,
-            error_log_url=''):
+        self,
+        client=None,
+        REQUEST={},
+        error_type=None,
+        error_value=None,
+        tb=None,
+        error_tb=None,
+        error_message='',
+        tagSearch=re.compile(r'[a-zA-Z]>').search,
+        error_log_url=''
+    ):
 
         try:
             if error_type is None:
@@ -225,12 +234,14 @@ class Item(Base,
                 # For backward compatibility, we pass 'error_name' as
                 # 'error_type' here as historically this has always
                 # been a string.
-                kwargs = {'error_type': error_name,
-                          'error_value': error_value,
-                          'error_tb': error_tb,
-                          'error_traceback': error_tb,
-                          'error_message': error_message,
-                          'error_log_url': error_log_url}
+                kwargs = {
+                    'error_type': error_name,
+                    'error_value': error_value,
+                    'error_tb': error_tb,
+                    'error_traceback': error_tb,
+                    'error_message': error_message,
+                    'error_log_url': error_log_url,
+                }
 
                 if getattr(aq_base(s), 'isDocTemp', 0):
                     v = s(client, REQUEST, **kwargs)
@@ -286,7 +297,11 @@ class Item(Base,
             if (hasattr(aq_base(self), 'manage_FTPget')):
                 try:
                     if getSecurityManager().validate(
-                            None, self, 'manage_FTPget', self.manage_FTPget):
+                        None,
+                        self,
+                        'manage_FTPget',
+                        self.manage_FTPget
+                    ):
                         mode = mode | 0o0440
                 except Unauthorized:
                     pass
@@ -379,11 +394,12 @@ class Item(Base,
         res += '>'
         return res
 
-    security.declareProtected(access_contents_information, 'getParentNode')
+    @security.protected(access_contents_information)
     def getParentNode(self):
         """The parent of this node.  All nodes except Document
         DocumentFragment and Attr may have a parent"""
         return getattr(self, '__parent__', None)
+
 
 InitializeClass(Item)
 
@@ -435,11 +451,12 @@ def pretty_tb(t, v, tb, as_html=1):
 
 
 @implementer(ISimpleItem)
-class SimpleItem(Item,
-                 Persistent,
-                 Implicit,
-                 RoleManager,
-                 ):
+class SimpleItem(
+    Item,
+    Persistent,
+    Implicit,
+    RoleManager,
+):
     """Mix-in class combining the most common set of basic mix-ins
     """
 
@@ -447,7 +464,11 @@ class SimpleItem(Item,
     security.setPermissionDefault(View, ('Manager',))
 
     manage_options = Item.manage_options + (
-        {'label': 'Security', 'action': 'manage_access'},
+        {
+            'label': 'Security',
+            'action': 'manage_access',
+        },
     )
+
 
 InitializeClass(SimpleItem)
