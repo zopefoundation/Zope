@@ -501,6 +501,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
+
 _marker = object()
 
 

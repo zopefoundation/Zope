@@ -30,6 +30,7 @@ class EventLogger(object):
     def called(self):
         return self._called
 
+
 eventlog = EventLogger()
 
 

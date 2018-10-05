@@ -28,7 +28,6 @@ from OFS import bbb
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from zExceptions import BadRequest
-from zExceptions import Redirect
 from ZPublisher.Converters import type_converters
 
 import six
@@ -74,38 +73,40 @@ class View(Tabs, Base):
         """Return a manage option data structure for me instance
         """
         try:
-            r = self.REQUEST
+            request = self.REQUEST
         except Exception:
-            r = None
-        if r is None:
+            request = None
+        if request is None:
             pre = '../../'
         else:
-            pre = r['URL']
+            pre = request['URL']
             for i in (1, 2, 3):
-                l = pre.rfind('/')
-                if l >= 0:
-                    pre = pre[:l]
+                loc = pre.rfind('/')
+                if loc >= 0:
+                    pre = pre[:loc]
             pre = pre + '/'
 
-        r = []
+        request = []
         for d in aq_parent(aq_parent(self)).manage_options:
             path = d['action']
-            option = {'label': d['label'],
-                      'action': pre + path,
-                      'path': '../../' + path}
+            option = {
+                'label': d['label'],
+                'action': pre + path,
+                'path': '../../' + path,
+            }
             help = d.get('help')
             if help is not None:
                 option['help'] = help
-            r.append(option)
-        return r
+            request.append(option)
+        return request
 
     def tabs_path_info(self, script, path):
-        l = path.rfind('/')
-        if l >= 0:
-            path = path[:l]
-            l = path.rfind('/')
-            if l >= 0:
-                path = path[:l]
+        loc = path.rfind('/')
+        if loc >= 0:
+            path = path[:loc]
+            loc = path.rfind('/')
+            if loc >= 0:
+                path = path[:loc]
         return View.inheritedAttribute('tabs_path_info')(self, script, path)
 
     def meta_type(self):
@@ -151,10 +152,10 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
     def getId(self):
         return self.id
 
-    security.declareProtected(access_contents_information, 'xml_namespace')
+    @security.protected(access_contents_information)
     def xml_namespace(self):
-        # Return a namespace string usable as an xml namespace
-        # for this property set.
+        """Return a namespace string usable as an xml namespace
+        for this property set."""
         return self._md.get('xmlns', '')
 
     def v_self(self):
@@ -169,15 +170,15 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             return 0
         return 1
 
-    security.declareProtected(access_contents_information, 'hasProperty')
+    @security.protected(access_contents_information)
     def hasProperty(self, id):
-        # Return a true value if a property exists with the given id.
+        """Return a true value if a property exists with the given id."""
         for prop in self._propertyMap():
             if id == prop['id']:
                 return 1
         return 0
 
-    security.declareProtected(access_contents_information, 'getProperty')
+    @security.protected(access_contents_information)
     def getProperty(self, id, default=None):
         # Return the property with the given id, returning the optional
         # second argument or None if no such property is found.
@@ -185,7 +186,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
             return getattr(self.v_self(), id)
         return default
 
-    security.declareProtected(access_contents_information, 'getPropertyType')
+    @security.protected(access_contents_information)
     def getPropertyType(self, id):
         # Get the type of property 'id', returning None if no
         # such property exists.
@@ -285,37 +286,37 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         pself._properties = tuple(
             [i for i in pself._properties if i['id'] != id])
 
-    security.declareProtected(access_contents_information, 'propertyIds')
+    @security.protected(access_contents_information)
     def propertyIds(self):
-        # Return a list of property ids.
+        """Return a list of property ids."""
         return [i['id'] for i in self._propertyMap()]
 
-    security.declareProtected(access_contents_information, 'propertyValues')
+    @security.protected(access_contents_information)
     def propertyValues(self):
-        # Return a list of property values.
+        """Return a list of property values."""
         return [self.getProperty(i['id']) for i in self._propertyMap()]
 
-    security.declareProtected(access_contents_information, 'propertyItems')
+    @security.protected(access_contents_information)
     def propertyItems(self):
-        # Return a list of (id, property) tuples.
+        """Return a list of (id, property) tuples."""
         return [(i['id'], self.getProperty(i['id']))
                 for i in self._propertyMap()]
 
-    security.declareProtected(access_contents_information, 'propertyInfo')
+    @security.protected(access_contents_information)
     def propertyInfo(self, id):
-        # Return a mapping containing property meta-data
+        """Return a mapping containing property meta-data."""
         for p in self._propertyMap():
             if p['id'] == id:
                 return p
         raise ValueError('The property %s does not exist.' % escape(id, True))
 
     def _propertyMap(self):
-        # Return a tuple of mappings, giving meta-data for properties.
+        """Return a tuple of mappings, giving meta-data for properties."""
         return self.p_self()._properties
 
-    security.declareProtected(access_contents_information, 'propertyMap')
+    @security.protected(access_contents_information)
     def propertyMap(self):
-        # Returns a secure copy of the property definitions.
+        """Returns a secure copy of the property definitions."""
         return tuple(dict.copy() for dict in self._propertyMap())
 
     def _propdict(self):
@@ -326,12 +327,12 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
     manage = DTMLFile('dtml/properties', globals())
 
-    security.declareProtected(manage_properties, 'manage_propertiesForm')
+    @security.protected(manage_properties)
     def manage_propertiesForm(self, URL1, RESPONSE):
         " "
         RESPONSE.redirect(URL1 + '/manage')
 
-    security.declareProtected(manage_properties, 'manage_addProperty')
+    @security.protected(manage_properties)
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
@@ -341,7 +342,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
-    security.declareProtected(manage_properties, 'manage_editProperties')
+    @security.protected(manage_properties)
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
         for prop in self._propertyMap():
@@ -352,7 +353,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)
 
-    security.declareProtected(manage_properties, 'manage_changeProperties')
+    @security.protected(manage_properties)
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
 
@@ -376,7 +377,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)
 
-    security.declareProtected(manage_properties, 'manage_delProperties')
+    @security.protected(manage_properties)
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if REQUEST:
@@ -391,6 +392,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
+
 InitializeClass(PropertySheet)
 
 
@@ -401,6 +403,7 @@ class DefaultProperties(Virtual, PropertySheet, View):
 
     id = 'default'
     _md = {'xmlns': 'http://www.zope.org/propsets/default'}
+
 
 InitializeClass(DefaultProperties)
 
@@ -445,12 +448,12 @@ class PropertySheets(Traversable, Implicit, Tabs):
     def __getitem__(self, n):
         return self.__propsets__()[n].__of__(self)
 
-    security.declareProtected(access_contents_information, 'values')
+    @security.protected(access_contents_information)
     def values(self):
         propsets = self.__propsets__()
         return [n.__of__(self) for n in propsets]
 
-    security.declareProtected(access_contents_information, 'items')
+    @security.protected(access_contents_information)
     def items(self):
         propsets = self.__propsets__()
         r = []
@@ -463,7 +466,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
 
         return r
 
-    security.declareProtected(access_contents_information, 'get')
+    @security.protected(access_contents_information)
     def get(self, name, default=None):
         for propset in self.__propsets__():
             if propset.id == name or (hasattr(propset, 'xml_namespace') and
@@ -471,7 +474,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
                 return propset.__of__(self)
         return default
 
-    security.declareProtected(manage_properties, 'manage_addPropertySheet')
+    @security.protected(manage_properties)
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
         """ """
         md = {'xmlns': ns}
@@ -482,13 +485,13 @@ class PropertySheets(Traversable, Implicit, Tabs):
         ps = self.get(id)
         REQUEST.RESPONSE.redirect('%s/manage' % ps.absolute_url())
 
-    security.declareProtected(manage_properties, 'addPropertySheet')
+    @security.protected(manage_properties)
     def addPropertySheet(self, propset):
         propsets = aq_parent(self).__propsets__
         propsets = propsets + (propset,)
         aq_parent(self).__propsets__ = propsets
 
-    security.declareProtected(manage_properties, 'delPropertySheet')
+    @security.protected(manage_properties)
     def delPropertySheet(self, name):
         result = []
         for propset in aq_parent(self).__propsets__:
@@ -523,37 +526,38 @@ class PropertySheets(Traversable, Implicit, Tabs):
     def getId(self):
         return self.id
 
-    security.declareProtected(view_management_screens, 'manage')
+    security.declareProtected(view_management_screens, 'manage')  # NOQA: D001
     manage = DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
         try:
-            r = self.REQUEST
+            request = self.REQUEST
         except Exception:
-            r = None
-        if r is None:
+            request = None
+        if request is None:
             pre = '../'
         else:
-            pre = r['URLPATH0']
+            pre = request['URLPATH0']
             for i in (1, 2):
-                l = pre.rfind('/')
-                if l >= 0:
-                    pre = pre[:l]
+                loc = pre.rfind('/')
+                if loc >= 0:
+                    pre = pre[:loc]
             pre = pre + '/'
 
-        r = []
+        request = []
         for d in aq_parent(self).manage_options:
-            r.append({'label': d['label'], 'action': pre + d['action']})
-        return r
+            request.append({'label': d['label'], 'action': pre + d['action']})
+        return request
 
     def tabs_path_info(self, script, path):
-        l = path.rfind('/')
-        if l >= 0:
-            path = path[:l]
+        loc = path.rfind('/')
+        if loc >= 0:
+            path = path[:loc]
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)
+
 
 InitializeClass(PropertySheets)
 
@@ -562,11 +566,13 @@ class DefaultPropertySheets(PropertySheets):
     """A PropertySheets container that contains a default property
        sheet for compatibility with the arbitrary property mgmt
        design of Zope PropertyManagers."""
+
     default = DefaultProperties()
     webdav = DAVProperties()
 
     def _get_defaults(self):
         return (self.default, self.webdav)
+
 
 InitializeClass(DefaultPropertySheets)
 
@@ -578,6 +584,7 @@ class vps(Base):
     that a PropertySheets instance is returned when the propertysheets
     attribute of a PropertyManager is accessed.
     """
+
     def __init__(self, c=PropertySheets):
         self.c = c
 
