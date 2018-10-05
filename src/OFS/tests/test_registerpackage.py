@@ -30,7 +30,6 @@ def test_registerPackage():
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
-      >>> import Products
       >>> import Zope2.App
       >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', Zope2.App)
