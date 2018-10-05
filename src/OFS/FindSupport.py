@@ -31,36 +31,43 @@ from zope.interface import implementer
 
 @implementer(IFindSupport)
 class FindSupport(Base):
-    """Find support for Zope Folders"""
+    """Find support for Zope Folders."""
 
     manage_options = ()
     security = ClassSecurityInfo()
 
-    security.declareProtected(view_management_screens, 'manage_findForm')
-    manage_findForm = DTMLFile('dtml/findForm', globals(),
-                               management_view='Find')
-
-    manage_options = (
-        {'label': 'Find', 'action': 'manage_findForm'},
+    security.declareProtected(view_management_screens, 'manage_findForm')  # NOQA: D001,E501
+    manage_findForm = DTMLFile(
+        'dtml/findForm',
+        globals(),
+        management_view='Find',
     )
 
-    security.declareProtected(view_management_screens, 'ZopeFind')
+    manage_options = (
+        {
+            'label': 'Find',
+            'action': 'manage_findForm',
+        },
+    )
+
+    @security.protected(view_management_screens)
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
                  obj_permission=None, obj_roles=None,
                  search_sub=0,
                  REQUEST=None, result=None, pre=''):
-        """Zope Find interface"""
+        """Zope Find interface."""
         return self.ZopeFindAndApply(
             obj, obj_ids=obj_ids,
             obj_metatypes=obj_metatypes, obj_searchterm=obj_searchterm,
             obj_expr=obj_expr, obj_mtime=obj_mtime, obj_mspec=obj_mspec,
             obj_permission=obj_permission, obj_roles=obj_roles,
             search_sub=search_sub, REQUEST=REQUEST, result=result,
-            pre=pre, apply_func=None, apply_path='')
+            pre=pre, apply_func=None, apply_path=''
+        )
 
-    security.declareProtected(view_management_screens, 'ZopeFindAndApply')
+    @security.protected(view_management_screens)
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
                          obj_mtime=None, obj_mspec=None,
@@ -68,7 +75,7 @@ class FindSupport(Base):
                          search_sub=0,
                          REQUEST=None, result=None, pre='',
                          apply_func=None, apply_path=''):
-        """Zope Find interface and apply"""
+        """Zope Find interface and apply."""
 
         if result is None:
             result = []

@@ -24,6 +24,7 @@ class misc_(object):
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
+
 InitializeClass(misc_)
 
 
@@ -34,6 +35,7 @@ class p_(object):
 
     app_dir = dirname(App.__file__)
     zopelogo_png = ImageFile('www/zopelogo.png', app_dir)
+
 
 InitializeClass(p_)
 
@@ -55,5 +57,6 @@ class Misc_(object):
 
     def __setitem__(self, name, v):
         self._d[name] = v
+
 
 InitializeClass(Misc_)

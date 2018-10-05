@@ -13,6 +13,7 @@
 ##############################################################################
 """Unit tests for the registerPackage directive.
 """
+
 # need to add the testing package to the pythonpath in order to
 # test python-packages-as-products
 from Products.Five.tests import testing
