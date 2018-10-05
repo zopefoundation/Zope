@@ -13,18 +13,17 @@
 """ Order support for 'Object Manager'.
 """
 
-import sys
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
-from zope.interface import implementer
-from zope.container.contained import notifyContainerModified
-
 from OFS.interfaces import IOrderedContainer as IOrderedContainer
+from zope.container.contained import notifyContainerModified
+from zope.interface import implementer
+
+import sys
 
 
 if sys.version_info >= (3, ):

@@ -12,37 +12,36 @@
 ##############################################################################
 """DTML Method objects.
 """
-import re
-
-from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import view_management_screens
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_proxy_roles
-from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import view as View  # NOQA
+from AccessControl.Permissions import view_management_screens
 from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from OFS import bbb
+from OFS.Cache import Cacheable
+from OFS.role import RoleManager
+from OFS.SimpleItem import Item_w__name__
+from six import binary_type
 from six import PY2
 from six import PY3
-from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
-from OFS import bbb
-from OFS.Cache import Cacheable
-from OFS.role import RoleManager
-from OFS.SimpleItem import Item_w__name__
 from ZPublisher.Iterators import IStreamIterator
+
+import re
 
 
 _marker = []  # Create a new marker object.

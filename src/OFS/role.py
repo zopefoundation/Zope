@@ -15,15 +15,15 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
-from AccessControl.rolemanager import RoleManager as BaseRoleManager
-from AccessControl.rolemanager import reqattr
 from AccessControl.Permission import Permission
 from AccessControl.Permissions import change_permissions
 from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import _string_hash
+from AccessControl.rolemanager import reqattr
+from AccessControl.rolemanager import RoleManager as BaseRoleManager
+from App.special_dtml import DTMLFile
 from zExceptions import BadRequest
 
-from App.special_dtml import DTMLFile
 
 try:
     from html import escape

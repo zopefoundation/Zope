@@ -16,7 +16,8 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
 from AccessControl.Permissions import view_management_screens
-from Acquisition import aq_base, aq_parent
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from DocumentTemplate.DT_Util import Eval
@@ -24,9 +25,8 @@ from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
-from zope.interface import implementer
-
 from OFS.interfaces import IFindSupport
+from zope.interface import implementer
 
 
 @implementer(IFindSupport)

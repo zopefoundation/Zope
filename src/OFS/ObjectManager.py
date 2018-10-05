@@ -13,9 +13,52 @@
 """Object Manager
 """
 
+from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
+from AccessControl.class_init import InitializeClass
+from AccessControl.Permission import getPermissions
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import import_export_objects
+from AccessControl.Permissions import view_management_screens
+from AccessControl.ZopeSecurityPolicy import getRoles
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.Common import is_acquired
+from App.config import getConfiguration
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
+from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from io import BytesIO
-from operator import itemgetter
 from logging import getLogger
+from OFS import bbb
+from OFS.CopySupport import CopyContainer
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.interfaces import IObjectManager
+from OFS.Lockable import LockableItem
+from OFS.subscribers import compatibilityCall
+from OFS.Traversable import Traversable
+from operator import itemgetter
+from Persistence import Persistent
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from six import string_types
+from six import text_type
+from zExceptions import BadRequest
+from zExceptions import ResourceLockedError
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.interface.interfaces import ComponentLookupError
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
+
 import copy
 import fnmatch
 import marshal
@@ -23,48 +66,8 @@ import os
 import re
 import sys
 import time
-
-from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
-from AccessControl.Permission import getPermissions
-from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import access_contents_information
-from AccessControl.Permissions import delete_objects
-from AccessControl.Permissions import ftp_access
-from AccessControl.Permissions import import_export_objects
-from AccessControl import getSecurityManager
-from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_acquire, aq_parent
-from Acquisition import Implicit
-from DateTime import DateTime
-from DateTime.interfaces import DateTimeError
-from Persistence import Persistent
-from six import string_types
-from six import text_type
-from zExceptions import BadRequest, ResourceLockedError
-from zope.container.contained import notifyContainerModified
-from zope.event import notify
-from zope.interface import implementer
-from zope.interface.interfaces import ComponentLookupError
-from zope.lifecycleevent import ObjectAddedEvent
-from zope.lifecycleevent import ObjectRemovedEvent
 import zope.sequencesort
 
-from App.Common import is_acquired
-from App.config import getConfiguration
-from App.FactoryDispatcher import ProductDispatcher
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from OFS import bbb
-from OFS.CopySupport import CopyContainer
-from OFS.interfaces import IObjectManager
-from OFS.Traversable import Traversable
-from OFS.event import ObjectWillBeAddedEvent
-from OFS.event import ObjectWillBeRemovedEvent
-from OFS.Lockable import LockableItem
-from OFS.subscribers import compatibilityCall
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 try:
     from html import escape

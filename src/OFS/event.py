@@ -17,6 +17,7 @@ OFS event definitions.
 
 from zope.interface import implementer
 from zope.interface.interfaces import ObjectEvent
+
 import OFS.interfaces
 
 

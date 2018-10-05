@@ -13,8 +13,6 @@
 """Property sheets
 """
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -23,16 +21,18 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+from OFS import bbb
+from OFS.Traversable import Traversable
 from Persistence import Persistent
 from zExceptions import BadRequest
 from zExceptions import Redirect
-
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from OFS import bbb
-from OFS.Traversable import Traversable
 from ZPublisher.Converters import type_converters
+
+import six
+
 
 try:
     from html import escape

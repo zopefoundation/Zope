@@ -14,20 +14,19 @@
 """
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import ownableFilter
+from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import UnownableOwner
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import take_ownership
+from AccessControl.Permissions import view_management_screens
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
-from six.moves.urllib import parse
-
 from App.special_dtml import DTMLFile
+from six.moves.urllib import parse
 
 
 class Owned(BaseOwned):

@@ -13,40 +13,41 @@
 """Image object
 """
 
-from email.generator import _make_boundary
-from io import BytesIO
-import struct
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files
-from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import view as View  # NOQA
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from DateTime.DateTime import DateTime
-from Persistence import Persistent
-from six import binary_type
-from six import PY2
-from six import text_type
-from zExceptions import Redirect, ResourceLockedError
-from zope.contenttype import guess_content_type
-from zope.event import notify
-from zope.interface import implementer
-from zope.lifecycleevent import ObjectCreatedEvent
-from zope.lifecycleevent import ObjectModifiedEvent
-
 from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
+from email.generator import _make_boundary
+from io import BytesIO
 from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
+from Persistence import Persistent
+from six import binary_type
+from six import PY2
+from six import text_type
+from zExceptions import Redirect
+from zExceptions import ResourceLockedError
+from zope.contenttype import guess_content_type
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+
+import struct
 import ZPublisher.HTTPRequest
+
 
 try:
     from html import escape

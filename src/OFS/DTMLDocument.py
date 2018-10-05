@@ -15,22 +15,21 @@
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from DocumentTemplate.permissions import change_dtml_methods
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
 from DocumentTemplate.permissions import change_dtml_documents
+from DocumentTemplate.permissions import change_dtml_methods
+from OFS.DTMLMethod import decapitate
+from OFS.DTMLMethod import DTMLMethod
+from OFS.PropertyManager import PropertyManager
+from six import binary_type
 from six import PY2
 from six import PY3
-from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
-from OFS.DTMLMethod import decapitate
-from OFS.DTMLMethod import DTMLMethod
-from OFS.PropertyManager import PropertyManager
 
 
 done = 'done'

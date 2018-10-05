@@ -14,11 +14,11 @@
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
+from OFS.EtagSupport import EtagSupport
+from OFS.interfaces import ILockItem
+from OFS.interfaces import IWriteLock
 from Persistence import PersistentMapping
 from zope.interface import implementer
-
-from OFS.EtagSupport import EtagSupport
-from OFS.interfaces import ILockItem, IWriteLock
 
 
 @implementer(IWriteLock)

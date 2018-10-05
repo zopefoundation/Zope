@@ -13,22 +13,22 @@
 """Property management
 """
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
+from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+from OFS.interfaces import IPropertyManager
+from OFS.PropertySheets import DefaultPropertySheets
+from OFS.PropertySheets import vps
 from zExceptions import BadRequest
 from zope.interface import implementer
 from ZPublisher.Converters import type_converters
 
-from App.special_dtml import DTMLFile
-from OFS.interfaces import IPropertyManager
-from OFS.PropertySheets import DefaultPropertySheets
-from OFS.PropertySheets import vps
+import six
+
 
 try:
     from html import escape
