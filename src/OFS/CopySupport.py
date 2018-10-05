@@ -58,6 +58,7 @@ import warnings
 class CopyError(Exception):
     pass
 
+
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 logger = logging.getLogger('OFS')
 _marker = []
@@ -91,7 +92,7 @@ class CopyContainer(Base):
     def manage_CopyContainerAllItems(self, REQUEST):
         return [self._getOb(i) for i in REQUEST['ids']]
 
-    security.declareProtected(delete_objects, 'manage_cutObjects')
+    @security.protected(delete_objects)
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -121,7 +122,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
         return cp
 
-    security.declareProtected(view_management_screens, 'manage_copyObjects')
+    @security.protected(view_management_screens)
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -298,7 +299,7 @@ class CopyContainer(Base):
 
         return op, result
 
-    security.declareProtected(view_management_screens, 'manage_pasteObjects')
+    @security.protected(view_management_screens)
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
 
@@ -331,10 +332,10 @@ class CopyContainer(Base):
 
         return result
 
-    security.declareProtected(view_management_screens, 'manage_renameForm')
+    security.declareProtected(view_management_screens, 'manage_renameForm')  # NOQA: D001,E501
     manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
-    security.declareProtected(view_management_screens, 'manage_renameObjects')
+    @security.protected(view_management_screens)
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
@@ -345,7 +346,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declareProtected(view_management_screens, 'manage_renameObject')
+    @security.protected(view_management_screens)
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object.
         """
@@ -400,7 +401,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declarePublic('manage_clone')
+    @security.public
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
@@ -511,6 +512,7 @@ class CopyContainer(Base):
                 raise CopyError('Insufficient privileges')
         else:
             raise CopyError('Not Supported')
+
 
 InitializeClass(CopyContainer)
 
@@ -633,6 +635,7 @@ class CopySource(Base):
     def cb_userHasCopyOrMovePermission(self):
         if getSecurityManager().checkPermission(copy_or_move, self):
             return 1
+
 
 InitializeClass(CopySource)
 
