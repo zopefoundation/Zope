@@ -54,17 +54,17 @@ def validateTimeout(timeout):
 class LockItem(Persistent):
 
     security = ClassSecurityInfo()
-    security.declarePublic('getOwner', 'getLockToken', 'getDepth',
-                           'getTimeout', 'getTimeoutString',
-                           'getModifiedTime', 'isValid', 'getLockScope',
-                           'getLockType')
-    security.declareProtected('Change Lock Information',
-                              'setTimeout', 'refresh')
-    security.declareProtected('Access contents information',
-                              'getCreator', 'getCreatorPath')
 
-    def __init__(self, creator, owner='', depth=0, timeout='Infinite',
-                 locktype='write', lockscope='exclusive', token=None):
+    def __init__(
+        self,
+        creator,
+        owner='',
+        depth=0,
+        timeout='Infinite',
+        locktype='write',
+        lockscope='exclusive',
+        token=None
+    ):
         errors = []
         # First check the values and raise value errors if outside of contract
         if not getattr(creator, 'getUserName', None):
@@ -99,32 +99,40 @@ class LockItem(Persistent):
         else:
             self._token = token
 
+    @security.protected('Access contents information')
     def getCreator(self):
         return self._creator
 
+    @security.protected('Access contents information')
     def getCreatorPath(self):
         db, name = self._creator
         path = '/'.join(db)
         return "/%s/%s" % (path, name)
 
+    @security.public
     def getOwner(self):
         return self._owner
 
+    @security.public
     def getLockToken(self):
         return self._token
 
+    @security.public
     def getDepth(self):
         return self._depth
 
+    @security.public
     def getTimeout(self):
         return self._timeout
 
+    @security.public
     def getTimeoutString(self):
         t = str(self._timeout)
         if t[-1] == 'L':
-            t = t[:-1]     # lob off Long signifier
+            t = t[:-1]  # lob off Long signifier
         return "Second-%s" % t
 
+    @security.protected('Change Lock Information')
     def setTimeout(self, newtimeout):
         timeout, errors = validateTimeout(newtimeout)
         if errors:
@@ -133,12 +141,15 @@ class LockItem(Persistent):
             self._timeout = timeout
             self._modifiedtime = time.time()  # reset modified
 
+    @security.public
     def getModifiedTime(self):
         return self._modifiedtime
 
+    @security.protected('Change Lock Information')
     def refresh(self):
         self._modifiedtime = time.time()
 
+    @security.public
     def isValid(self):
         now = time.time()
         modified = self._modifiedtime
@@ -146,9 +157,11 @@ class LockItem(Persistent):
 
         return (modified + timeout) > now
 
+    @security.public
     def getLockType(self):
         return self._locktype
 
+    @security.public
     def getLockScope(self):
         return self._lockscope
 
@@ -185,5 +198,6 @@ class LockItem(Persistent):
  </d:lockdiscovery>
 </d:prop>""" % self.asLockDiscoveryProperty(ns="d")
         return s
+
 
 InitializeClass(LockItem)

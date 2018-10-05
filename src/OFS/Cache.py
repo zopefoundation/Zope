@@ -196,7 +196,7 @@ class Cacheable(object):
             try:
                 c.ZCache_set(ob, data, view_name, keywords,
                              mtime_func)
-            except:
+            except Exception:
                 LOG.warning('ZCache_set() exception')
 
     @security.protected(ViewManagementScreensPermission)
@@ -212,7 +212,7 @@ class Cacheable(object):
                 message = c.ZCache_invalidate(ob)
                 if not message:
                     message = 'Invalidated.'
-            except:
+            except Exception:
                 exc = sys.exc_info()
                 try:
                     LOG.warning('ZCache_invalidate() exception')
