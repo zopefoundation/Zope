@@ -67,6 +67,9 @@ Bugfixes
 
 - Fix `HTTPResponse.setBody` when the published object returns a tuple.
 
+- Fix ``Products.Five.browser.ObjectManagerSiteView.makeSite``
+  to interact well with plone.testing's patching of the global site manager.
+
 
 4.0b5 (2018-05-18)
 ------------------
