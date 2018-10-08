@@ -191,11 +191,11 @@ class TestTraverse(unittest.TestCase):
             """Instance we'll check with ProtectedMethodSecurityPolicy."""
 
             getId__roles__ = None  # ACCESS_PUBLIC
-            def getId(self):  # NOQA: E306  # psydo decorator
+            def getId(self):  # NOQA: E306  # pseudo decorator
                 return self.id
 
             private__roles__ = ()  # ACCESS_PRIVATE
-            def private(self):  # NOQA: E306  # psydo decorator
+            def private(self):  # NOQA: E306  # pseudo decorator
                 return 'private!'
 
             # not protected
