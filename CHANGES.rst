@@ -34,6 +34,8 @@ New features
   dependency.
   (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
+- Update dependencies to newest versions.
+
 Bugfixes
 ++++++++
 
