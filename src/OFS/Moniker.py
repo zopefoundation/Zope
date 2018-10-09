@@ -17,7 +17,6 @@
    a real object that retains its correct version context
    and aquisition relationships via a simple interface.
 """
-import collections
 
 
 class Moniker(object):

@@ -11,8 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import unittest
 from Testing import ZopeTestCase
+
+import unittest
 
 
 class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):

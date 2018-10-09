@@ -17,8 +17,6 @@ Folders are the basic container objects and are analogous to directories.
 
 from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
-from zope.interface import implementer
-
 from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
@@ -27,6 +25,8 @@ from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
+from zope.interface import implementer
+
 
 if bbb.HAS_ZSERVER:
     from webdav.Collection import Collection
@@ -37,10 +37,14 @@ else:
 manage_addFolderForm = DTMLFile('dtml/folderAdd', globals())
 
 
-def manage_addFolder(self, id, title='',
-                     createPublic=0,
-                     createUserF=0,
-                     REQUEST=None):
+def manage_addFolder(
+    self,
+    id,
+    title='',
+    createPublic=0,
+    createUserF=0,
+    REQUEST=None
+):
     """Add a new Folder object with id *id*.
     """
     ob = Folder(id)
@@ -53,14 +57,14 @@ def manage_addFolder(self, id, title='',
 
 @implementer(IFolder)
 class Folder(
-        ObjectManager,
-        PropertyManager,
-        RoleManager,
-        Collection,
-        LockableItem,
-        Item,
-        FindSupport):
-
+    ObjectManager,
+    PropertyManager,
+    RoleManager,
+    Collection,
+    LockableItem,
+    Item,
+    FindSupport
+):
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement
     a management interface and can have arbitrary properties.
@@ -69,15 +73,19 @@ class Folder(
     zmi_icon = 'far fa-folder'
 
     _properties = (
-        {'id': 'title', 'type': 'string', 'mode': 'wd'},
+        {
+            'id': 'title',
+            'type': 'string',
+            'mode': 'wd',
+        },
     )
 
     manage_options = (
-        ObjectManager.manage_options +
-        PropertyManager.manage_options +
-        RoleManager.manage_options +
-        Item.manage_options +
-        FindSupport.manage_options
+        ObjectManager.manage_options
+        + PropertyManager.manage_options
+        + RoleManager.manage_options
+        + Item.manage_options
+        + FindSupport.manage_options
     )
 
     __ac_permissions__ = ()
@@ -85,5 +93,6 @@ class Folder(
     def __init__(self, id=None):
         if id is not None:
             self.id = str(id)
+
 
 InitializeClass(Folder)

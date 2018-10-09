@@ -1,20 +1,16 @@
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from OFS.Folder import Folder
+from OFS.metaconfigure import setDeprecatedManageAddDelete
+from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
+from Zope2.App import zcml
+from zope.testing import cleanup
+
+import transaction
 import unittest
 import Zope2
 
-import transaction
-
-from zope.testing import cleanup
-
-from Testing.makerequest import makerequest
-
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-
-from OFS.metaconfigure import setDeprecatedManageAddDelete
-from OFS.SimpleItem import SimpleItem
-from OFS.Folder import Folder
-
-from Zope2.App import zcml
 
 Zope2.startup_wsgi()
 
@@ -31,6 +27,7 @@ class EventLogger(object):
 
     def called(self):
         return self._called
+
 
 eventlog = EventLogger()
 

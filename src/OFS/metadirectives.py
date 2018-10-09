@@ -1,8 +1,8 @@
-from zope.interface import Interface
-from zope.security.zcml import Permission
-from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import Bool
+from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
 from zope.schema import ASCII
+from zope.security.zcml import Permission
 
 
 class IDeprecatedManageAddDeleteDirective(Interface):

@@ -12,8 +12,11 @@
 #
 ##############################################################################
 
+from setuptools import find_packages
+from setuptools import setup
+
 import os
-from setuptools import setup, find_packages
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,6 +30,7 @@ README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
 version = '4.0b6.dev0'
+
 
 setup(
     name='Zope',

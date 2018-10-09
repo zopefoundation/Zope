@@ -13,18 +13,17 @@
 """ Order support for 'Object Manager'.
 """
 
-import sys
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
-from zope.interface import implementer
-from zope.container.contained import notifyContainerModified
-
 from OFS.interfaces import IOrderedContainer as IOrderedContainer
+from zope.container.contained import notifyContainerModified
+from zope.interface import implementer
+
+import sys
 
 
 if sys.version_info >= (3, ):
@@ -48,10 +47,13 @@ class OrderSupport(object):
     _default_sort_reverse = 0
 
     manage_options = (
-        {'label': 'Contents', 'action': 'manage_main'},
+        {
+            'label': 'Contents',
+            'action': 'manage_main',
+        },
     )
 
-    security.declareProtected(manage_properties, 'manage_move_objects_up')
+    @security.protected(manage_properties)
     def manage_move_objects_up(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects up by delta in container.
         """
@@ -64,10 +66,13 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+        return self.manage_main(
+            self,
+            REQUEST,
+            manage_tabs_message=message
+        )
 
-    security.declareProtected(manage_properties, 'manage_move_objects_down')
+    @security.protected(manage_properties)
     def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects down by delta in container.
         """
@@ -80,10 +85,13 @@ class OrderSupport(object):
                 message = 'Error: %s' % (errmsg)
         else:
             message = 'Error: No items were specified!'
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+        return self.manage_main(
+            self,
+            REQUEST,
+            manage_tabs_message=message
+        )
 
-    security.declareProtected(manage_properties, 'manage_move_objects_to_top')
+    @security.protected(manage_properties)
     def manage_move_objects_to_top(self, REQUEST, ids=None):
         """ Move specified sub-objects to top of container.
         """
@@ -99,8 +107,7 @@ class OrderSupport(object):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-    security.declareProtected(
-        manage_properties, 'manage_move_objects_to_bottom')
+    @security.protected(manage_properties)
     def manage_move_objects_to_bottom(self, REQUEST, ids=None):
         """ Move specified sub-objects to bottom of container.
         """
@@ -116,17 +123,21 @@ class OrderSupport(object):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-    security.declareProtected(manage_properties, 'manage_set_default_sorting')
+    @security.protected(manage_properties)
     def manage_set_default_sorting(self, REQUEST, key, reverse):
-        """ Set default sorting key and direction.
-        """
+        """ Set default sorting key and direction."""
         self.setDefaultSorting(key, reverse)
         return self.manage_main(self, REQUEST)
 
-    security.declareProtected(manage_properties, 'moveObjectsByDelta')
-    def moveObjectsByDelta(self, ids, delta, subset_ids=None,
-                           suppress_events=False):
-        # Move specified sub-objects by delta.
+    @security.protected(manage_properties)
+    def moveObjectsByDelta(
+        self,
+        ids,
+        delta,
+        subset_ids=None,
+        suppress_events=False
+    ):
+        """Move specified sub-objects by delta."""
         if isinstance(ids, basestring):
             ids = (ids,)
         min_position = 0
@@ -174,27 +185,27 @@ class OrderSupport(object):
 
         return counter
 
-    security.declareProtected(manage_properties, 'moveObjectsUp')
+    @security.protected(manage_properties)
     def moveObjectsUp(self, ids, delta=1, subset_ids=None):
         # Move specified sub-objects up by delta in container.
         return self.moveObjectsByDelta(ids, -delta, subset_ids)
 
-    security.declareProtected(manage_properties, 'moveObjectsDown')
+    @security.protected(manage_properties)
     def moveObjectsDown(self, ids, delta=1, subset_ids=None):
         # Move specified sub-objects down by delta in container.
         return self.moveObjectsByDelta(ids, delta, subset_ids)
 
-    security.declareProtected(manage_properties, 'moveObjectsToTop')
+    @security.protected(manage_properties)
     def moveObjectsToTop(self, ids, subset_ids=None):
         # Move specified sub-objects to top of container.
         return self.moveObjectsByDelta(ids, -len(self._objects), subset_ids)
 
-    security.declareProtected(manage_properties, 'moveObjectsToBottom')
+    @security.protected(manage_properties)
     def moveObjectsToBottom(self, ids, subset_ids=None):
         # Move specified sub-objects to bottom of container.
         return self.moveObjectsByDelta(ids, len(self._objects), subset_ids)
 
-    security.declareProtected(manage_properties, 'orderObjects')
+    @security.protected(manage_properties)
     def orderObjects(self, key, reverse=None):
         # Order sub-objects by key and direction.
         ids = [id for id, obj in sort(
@@ -203,8 +214,7 @@ class OrderSupport(object):
             ids.reverse()
         return self.moveObjectsByDelta(ids, -len(self._objects))
 
-    security.declareProtected(access_contents_information,
-                              'getObjectPosition')
+    @security.protected(access_contents_information)
     def getObjectPosition(self, id):
         # Get the position of an object by its id.
         ids = self.objectIds()
@@ -212,19 +222,22 @@ class OrderSupport(object):
             return ids.index(id)
         raise ValueError('The object with the id "%s" does not exist.' % id)
 
-    security.declareProtected(manage_properties, 'moveObjectToPosition')
+    @security.protected(manage_properties)
     def moveObjectToPosition(self, id, position, suppress_events=False):
         # Move specified object to absolute position.
         delta = position - self.getObjectPosition(id)
-        return self.moveObjectsByDelta(id, delta,
-                                       suppress_events=suppress_events)
+        return self.moveObjectsByDelta(
+            id,
+            delta,
+            suppress_events=suppress_events,
+        )
 
-    security.declareProtected(access_contents_information, 'getDefaultSorting')
+    @security.protected(access_contents_information)
     def getDefaultSorting(self):
         # Get default sorting key and direction.
         return self._default_sort_key, self._default_sort_reverse
 
-    security.declareProtected(manage_properties, 'setDefaultSorting')
+    @security.protected(manage_properties)
     def setDefaultSorting(self, key, reverse):
         # Set default sorting key and direction.
         self._default_sort_key = key
@@ -236,8 +249,11 @@ class OrderSupport(object):
         old_position = self.getObjectPosition(id)
         result = super(OrderSupport, self).manage_renameObject(id, new_id,
                                                                REQUEST)
-        self.moveObjectToPosition(new_id, old_position,
-                                  suppress_events=True)
+        self.moveObjectToPosition(
+            new_id,
+            old_position,
+            suppress_events=True
+        )
         return result
 
     def tpValues(self):
