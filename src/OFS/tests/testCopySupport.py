@@ -1,8 +1,3 @@
-import unittest
-
-import io
-
-import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -12,6 +7,10 @@ from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
+
+import io
+import transaction
+import unittest
 
 
 ADD_IMAGES_AND_FILES = 'Add images and files'
@@ -25,9 +24,19 @@ FILE_META_TYPES = ({
 class UnitTestSecurityPolicy(object):
     """Stub out the existing security policy for unit testing purposes.
     """
+
     #   Standard SecurityPolicy interface
-    def validate(self, accessed=None, container=None, name=None, value=None,
-                 context=None, roles=None, *args, **kw):
+    def validate(
+        self,
+        accessed=None,
+        container=None,
+        name=None,
+        value=None,
+        context=None,
+        roles=None,
+        *args,
+        **kw
+    ):
         return 1
 
     def checkPermission(self, permission, object, context):
@@ -37,6 +46,7 @@ class UnitTestSecurityPolicy(object):
 class UnitTestUser(Implicit):
     """Stubbed out manager for unit testing purposes.
     """
+
     def getId(self):
         return 'unit_tester'
 
@@ -285,6 +295,7 @@ class TestCopySupport(CopySupportTestBase):
     def testPasteTooBigData(self):
         from OFS.CopySupport import CopyError
         from OFS.CopySupport import _cb_encode
+
         def make_data(lenght):
             return _cb_encode(
                 (1, ['qwertzuiopasdfghjklyxcvbnm' for x in range(lenght)]))
@@ -418,8 +429,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_copyObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_copy_cant_create_target_metatype_not_supported(self):
         folder1, folder2 = self._initFolders()
@@ -429,7 +442,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_copyObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie, ce_regex='Not Supported')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Not Supported',
+        )
 
     def test_copy_cant_copy_invisible_items(self):
         # User can view folder1.
@@ -487,8 +503,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_move_cant_create_target_metatype_not_supported(self):
         folder1, folder2 = self._initFolders()
@@ -498,7 +516,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie, ce_regex='Not Supported')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Not Supported',
+        )
 
     def test_move_cant_create_target_metatype_not_allowed(self):
         folder1, folder2 = self._initFolders()
@@ -511,8 +532,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_move_cant_delete_source(self):
         from AccessControl.Permissions import delete_objects
@@ -528,5 +551,7 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )

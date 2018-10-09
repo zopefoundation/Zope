@@ -12,14 +12,17 @@
 #
 ##############################################################################
 
+from App.config import getConfiguration
+from App.config import setConfiguration
+from OFS.Application import AppInitializer
+from OFS.Application import Application
+from Zope2.Startup.options import ZopeWSGIOptions
+
 import os
 import shutil
 import tempfile
 import unittest
 
-from App.config import getConfiguration, setConfiguration
-from OFS.Application import Application, AppInitializer
-from Zope2.Startup.options import ZopeWSGIOptions
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")

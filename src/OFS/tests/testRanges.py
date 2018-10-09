@@ -38,11 +38,13 @@ def createBigFile():
 
     return file
 
+
 TESTFOLDER_NAME = 'RangesTestSuite_testFolder'
 BIGFILE = createBigFile()
 
 
 class TestRequestRange(unittest.TestCase):
+
     # Test case setup and teardown
     def setUp(self):
         import io
@@ -193,9 +195,10 @@ class TestRequestRange(unittest.TestCase):
         # Decode the multipart message and force a latin-1 encoding,
         # revert that later after the email was parsed
         bodyfile = io.StringIO(
-            'Content-Type: ' +
-            rsp.getHeader('content-type') +
-            '\n\n' + body.decode('latin-1'))
+            'Content-Type: '
+            + rsp.getHeader('content-type')
+            + '\n\n' + body.decode('latin-1')
+        )
 
         # This needs text, hence the forced latin-1 decoding.
         msg = email.message_from_file(bodyfile)
@@ -249,16 +252,16 @@ class TestRequestRange(unittest.TestCase):
         self.expectSingleRange('3-', 3, len(self.data))
 
     def testSuffixRange(self):
-        l = len(self.data)
-        self.expectSingleRange('-3', l - 3, l)
+        length = len(self.data)
+        self.expectSingleRange('-3', length - 3, length)
 
     def testWithNegativeZero(self):
         # A satisfiable and an unsatisfiable range
         self.expectSingleRange('-0,3-23', 3, 24)
 
     def testEndOverflow(self):
-        l = len(self.data)
-        start, end = l - 10, l + 10
+        length = len(self.data)
+        start, end = length - 10, length + 10
         range = '%d-%d' % (start, end)
         self.expectSingleRange(range, start, len(self.data))
 
@@ -274,8 +277,8 @@ class TestRequestRange(unittest.TestCase):
 
     def testBigFileEndOverflow(self):
         self.uploadBigFile()
-        l = len(self.data)
-        start, end = l - 100, l + 100
+        length = len(self.data)
+        start, end = length - 100, length + 100
         range = '%d-%d' % (start, end)
         self.expectSingleRange(range, start, len(self.data))
 
@@ -304,8 +307,8 @@ class TestRequestRange(unittest.TestCase):
 
     def testMultipleRangesBigFileEndOverflow(self):
         self.uploadBigFile()
-        l = len(self.data)
-        start, end = l - 100, l + 100
+        length = len(self.data)
+        start, end = length - 100, length + 100
         self.expectMultipleRanges(
             '3-700,%s-%s' % (start, end),
             [(3, 701), (len(self.data) - 100, len(self.data))])
@@ -319,24 +322,29 @@ class TestRequestRange(unittest.TestCase):
     def testEqualIfRangeDate(self):
         self.expectSingleRange(
             '10-25', 10, 26,
-            if_range=self.createLastModifiedDate())
+            if_range=self.createLastModifiedDate()
+        )
 
     def testIsModifiedIfRangeDate(self):
         self.expectOK(
             '21-25,10-20',
-            if_range=self.createLastModifiedDate(offset=-100))
+            if_range=self.createLastModifiedDate(offset=-100)
+        )
 
     def testIsNotModifiedIfRangeDate(self):
         self.expectSingleRange(
             '10-25', 10, 26,
-            if_range=self.createLastModifiedDate(offset=100))
+            if_range=self.createLastModifiedDate(offset=100)
+        )
 
     def testEqualIfRangeEtag(self):
         self.expectSingleRange(
             '10-25', 10, 26,
-            if_range=self.file.http__etag())
+            if_range=self.file.http__etag()
+        )
 
     def testNotEqualIfRangeEtag(self):
         self.expectOK(
             '10-25',
-            if_range=self.file.http__etag() + 'bar')
+            if_range=self.file.http__etag() + 'bar'
+        )

@@ -18,7 +18,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.component import enableSite, disableSite
 from Products.Five.component.interfaces import IObjectManagerSite
 
-from zope.component.globalregistry import base
+from zope.component.globalregistry import getGlobalSiteManager
 from zope.component.hooks import setSite
 from zope.component.persistentregistry import PersistentComponents
 
@@ -44,7 +44,7 @@ class ObjectManagerSiteView(BrowserView):
         # TODO in the future we'll have to walk up to other site
         # managers and put them in the bases
         components = PersistentComponents()
-        components.__bases__ = (base,)
+        components.__bases__ = (getGlobalSiteManager(),)
         self.context.setSiteManager(components)
 
     def unmakeSite(self):

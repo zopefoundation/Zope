@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import codecs
-import Testing.ZopeTestCase
 import Testing.testbrowser
+import Testing.ZopeTestCase
 import Zope2.App
 
 

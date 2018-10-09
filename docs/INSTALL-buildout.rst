@@ -81,19 +81,12 @@ can also start with a minimum configuration like this::
         https://zopefoundation.github.io/Zope/releases/4.0b6/versions-prod.cfg
     parts =
         zopescripts
-        zopepy
     
     [zopescripts]
-    recipe = zc.recipe.egg
-    eggs =
-        Zope
-    
-    [zopepy]
     recipe = zc.recipe.egg
     interpreter = zopepy
     eggs =
         Zope
-
 
 Creating a Zope instance
 ::::::::::::::::::::::::
