@@ -26,6 +26,7 @@ available:
   * 2.7
   * 3.5
   * 3.6
+  * 3.7
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -55,21 +56,29 @@ steps:
 
 - Run the buildout
 
+You may need to replace the used Zope version used in the examples (4.0b6) with
+ he one you actually want to install.
+
 On Linux, this can be done as follows::
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-<Zope version>.tar.gz
+  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-4.0b6.tar.gz
   $ tar xfvz Zope-<Zope version>.tar.gz
   $ cd Zope-<Zope version>
-  $ /path/to/your/python bootstrap.py
-  $ bin/buildout -n
+  $ python3.7 -m venv .
+  $ bin/pip install -U pip zc.buildout
+  $ bin/buildout
 
 .. note::
-  Instead of using the buildout configuration shipping with Zope itself, you
-  can also start with a minimum configuration like this::
+
+  When using Python 2.7 instead of calling ``python3.7 -m venv .`` you have to
+  install `virtualenv` and then call ``virtualenv-2.7 .``.
+
+Instead of using the buildout configuration shipping with Zope itself, you
+can also start with a minimum configuration like this::
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.0b6/versions-prod.cfg
     parts =
         zopescripts
     
