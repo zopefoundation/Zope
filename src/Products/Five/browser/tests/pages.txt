@@ -78,14 +78,14 @@ Make sure new-style classes work fine as view classes:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class')
   <Products.Five.browser.metaconfigure.NewStyleClass ...>
-  
+
 At one point browser classes with no attribute and no template
 values specified wasn't getting BrowserView mixed in.  Lets make
 sure it is now:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class2')
   <Products.Five.browser.metaconfigure.NewStyleClass ...>
-  
+
 Both browser:view and browser:page are ILocation providers, so make sure they
 have a __name__ attribute with a str instance:
 
@@ -259,7 +259,7 @@ The parent of the view is the view's context:
   >>> aq_parent(view) == view.context
   True
 
-The direct parent of the context is 
+The direct parent of the context is
 
   >>> aq_inner(context).__parent__.__class__
   <class 'OFS.Folder.Folder'>
