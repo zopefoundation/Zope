@@ -30,10 +30,6 @@ matrix:
           env: TOXENV=lint-py27
         - python: "3.6"
           env: TOXENV=lint-py36
-        - python: "3.7"
-          env: TOXENV=py37
-        - python: "3.7-dev"
-          env: TOXENV=py37
         - python: "3.8-dev"
           env: TOXENV=py38
 
