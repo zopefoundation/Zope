@@ -34,6 +34,8 @@ New features
   dependency.
   (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
+- Add support for Python 3.7.
+
 - Update dependencies to newest versions.
 
 Bugfixes

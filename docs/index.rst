@@ -13,6 +13,7 @@ Contents:
    USERS
    ZMI
    SECURITY
+   ZODB-migration
    maintenance
    changes
    zope2book/index
