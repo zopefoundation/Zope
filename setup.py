@@ -132,5 +132,8 @@ setup(
             'mkwsgiinstance=Zope2.utilities.mkwsgiinstance:main',
             'zconsole=Zope2.utilities.zconsole:main',
         ],
+        'zodbupdate.decode': [
+            'decodes = OFS:zodbupdate_decode_dict',
+        ],
     },
 )
