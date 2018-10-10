@@ -247,6 +247,12 @@ interfaces and classes should never be confused.
 Querying an Interface
 =====================
 
+.. attention::
+
+  The following explanation is only valid for Python 3. If you still
+  use Python 2, please note, that both ``names`` and
+  ``namesAndDescriptions`` return a list, not a dict_view.
+
 Interfaces can be queried for information.  The simplest case is to
 ask an interface the names of all the various interface items it
 describes.  From the Python interpreter, for example, you can walk
@@ -263,7 +269,7 @@ method.
 For example::
 
   >>> IHello.namesAndDescriptions()
-dict_items([('hello', <zope.interface.interface.Method object at 0x7fc6875110f0>)])
+  dict_items([('hello', <zope.interface.interface.Method object at 0x7fc6875110f0>)])
 
 .. note::
   You cannot access the `Method` object by index, as
@@ -276,17 +282,17 @@ As you can see, the "description" of the Interface's item is a
 `Method` objects.  Attributes, methods and interface objects
 implement the following interface::
 
-  - `getName()` -- Returns the name of the object.
+  `getName()` -- Returns the name of the object.
 
-  - `getDoc()` -- Returns the documentation for the object.
+  `getDoc()` -- Returns the documentation for the object.
 
 Method objects provide a way to describe rich meta-data about Python
 methods. Method objects have the following methods::
 
-  - `getSignatureInfo()` -- Returns a dictionary describing the method
+  `getSignatureInfo()` -- Returns a dictionary describing the method
   parameters.
 
-  - `getSignatureString()` -- Returns a human-readable string
+  `getSignatureString()` -- Returns a human-readable string
   representation of the method's signature.
 
 For example::
