@@ -20,9 +20,9 @@ Python 3
 
 .. note::
   You might need to install ``virtualenv``.
-  
+
   For example, on Ubuntu 18.04 you have to type the following::
-  
+
     $ sudo apt-get install python3-venv
 
 Python 2.7
@@ -37,7 +37,7 @@ system, then call:
    New python executable in zope/bin/python2.7
    Installing setuptools, pip, wheel...done.
    $ cd zope
-   
+
 Make sure you use at least version ``12.0.1`` of `virtualenv`
 (Calling ``virtualenv --version`` tells you the used version
 number.).
@@ -46,7 +46,7 @@ the file format of ``requirements-full.txt`` used in `Zope`.
 
 .. note::
   It is recommended to update pip to the lastest version. ::
-  
+
     $ path/to/your/pip install --upgrade pip
 
 
@@ -65,22 +65,22 @@ version of ``requirements-full.txt`` in the URL, replacing 4.0b6 in the example 
    Obtaining Zope
    ...
    Successfully installed ...
-   
+
 .. note::
   In order to compile C code, you might need to install the Python development package.
-  
+
   For Ubuntu 18.04, you have to type the following::
-  
+
     $ sudo apt-get install python3-dev
 
 You can also install Zope using a single requirements file. Note that this
-installation method might install packages that are not actually needed (i.e.
-are not listed in the ``install_requires`` section of ``setup.py``
+installation method might install packages that are not actually needed (i. e.
+are not listed in the ``install_requires`` section of ``setup.py``):
 
- .. code-block:: sh
+.. code-block:: sh
 
--   $ bin/pip install \
--   -r https://zopefoundation.github.io/Zope/releases/4.0b6/requirements-full.txt
+    $ bin/pip install \
+    -r https://zopefoundation.github.io/Zope/releases/4.0b6/requirements-full.txt
 
 
 If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
