@@ -9,6 +9,7 @@ Contents:
    WHATSNEW
    INSTALL-buildout
    INSTALL-virtualenv
+   INSTALL-pipenv
    operation
    USERS
    ZMI

@@ -290,7 +290,7 @@ Breaking changes
 - Removed ``OFS.ZDOM``. `OFS.SimpleItem.Item` now implements `getParentNode()`.
 
 - Removed special code to create user folders and page templates while creating
-  new ``OFS.Folder` instances.
+  new ``OFS.Folder`` instances.
 
 - Removed the `App.version_txt.getZopeVersion` API, you can use
   ``pkg_resources.get_distribution('Zope').version`` instead.
