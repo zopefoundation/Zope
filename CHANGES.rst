@@ -42,6 +42,8 @@ New features
 
 - Add support for Python 3.7.
 
+- Update dependencies to newest versions.
+
 Bugfixes
 ++++++++
 

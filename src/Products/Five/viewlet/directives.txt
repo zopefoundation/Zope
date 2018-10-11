@@ -169,7 +169,7 @@ weight attribute in the viewlet:
 
 Finally, if a non-existent template is specified, an error is raised:
 
-  >>> from zope.configuration.xmlconfig import ZopeXMLConfigurationError
+  >>> from zope.configuration.exceptions import ConfigurationError
   >>> zcml_string = ('''
   ... <configure xmlns="http://namespaces.zope.org/browser" i18n_domain="zope">
   ...   <viewletManager
@@ -181,12 +181,12 @@ Finally, if a non-existent template is specified, an error is raised:
   ... ''')
   >>> try:
   ...     context = zcml.load_string(zcml_string)
-  ... except ZopeXMLConfigurationError as exc:
+  ... except ConfigurationError as exc:
   ...     msg = str(exc)
   ...     print('No such file' in msg)
   ...     print('foo.pt' in msg)
   ... else:
-  ...     print('ZopeXMLConfigurationError not raised.')
+  ...     print('ConfigurationError not raised.')
   True
   True
 
@@ -340,10 +340,10 @@ Neither the class or template have been specified:
 
   >>> try:
   ...     zcml.load_string(zcml_string)
-  ... except ZopeXMLConfigurationError as exc:
+  ... except ConfigurationError as exc:
   ...     print('Must specify a class or template' in str(exc))
   ... else:
-  ...     print('ZopeXMLConfigurationError not raised.')
+  ...     print('ConfigurationError not raised.')
   True
 
 The specified attribute is not ``__call__``, but also a template has been
@@ -363,10 +363,10 @@ specified:
 
   >>> try:
   ...     zcml.load_string(zcml_string)
-  ... except ZopeXMLConfigurationError as exc:
+  ... except ConfigurationError as exc:
   ...     print('Attribute and template cannot be used together.' in str(exc))
   ... else:
-  ...     print('ZopeXMLConfigurationError not raised.')
+  ...     print('ConfigurationError not raised.')
   True
 
 Now, we are not specifying a template, but a class that does not have the
@@ -386,11 +386,11 @@ specified attribute:
 
   >>> try:
   ...     zcml.load_string(zcml_string)
-  ... except ZopeXMLConfigurationError as exc:
+  ... except ConfigurationError as exc:
   ...     print("The provided class doesn't have "
   ...           "the specified attribute." in str(exc))
   ... else:
-  ...     print('ZopeXMLConfigurationError not raised.')
+  ...     print('ConfigurationError not raised.')
   True
 
 

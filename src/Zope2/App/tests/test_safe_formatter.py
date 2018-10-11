@@ -5,6 +5,14 @@ from zExceptions import Unauthorized
 
 import unittest
 
+try:
+    from html import escape
+    import functools
+    # We do not want escaped " and ', as PageTemplate neither does it:
+    escape = functools.partial(escape, quote=False)
+except ImportError:  # PY2
+    from cgi import escape
+
 
 BAD_ATTR_STR = """
 <p tal:content="python:'class of {0} is {0.__class__}'.format(context)" />
@@ -133,6 +141,8 @@ class UnauthorizedSecurityPolicy(object):
 
 class FormatterFunctionalTest(FunctionalTestCase):
 
+    maxDiff = None
+
     def test_access_to_private_content_not_allowed_via_any_attribute(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
         # If access to _delObject would be allowed, it would still only say
@@ -187,8 +197,10 @@ class FormatterFunctionalTest(FunctionalTestCase):
         namespace = {'context': self.app}
         self.assertEqual(
             pt.pt_render(namespace).strip(),
-            u'<p>&lt;application at &gt;</p>\n'
-            u'<p>&lt;APPLICATION AT &gt;</p>')
+            u'<p>{}</p>\n'
+            u'<p>{}</p>'.format(
+                escape(repr(self.app).lower()),
+                escape(repr(self.app).upper())))
 
     def test_cook_zope3_page_templates_using_format(self):
         from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -202,19 +214,22 @@ class FormatterFunctionalTest(FunctionalTestCase):
         self.app.test_folder_1_.__roles__ = ['Manager']
         self.assertEqual(
             pt.pt_render(namespace).strip(),
-            u"<p>class of &lt;application at &gt; is "
+            u"<p>class of {app_lower} is "
             u"&lt;class 'ofs.application.application'&gt;</p>\n"
-            u"<p>CLASS OF &lt;APPLICATION AT &gt; IS "
+            u"<p>CLASS OF {app_upper} IS "
             u"&lt;CLASS 'OFS.APPLICATION.APPLICATION'&gt;</p>\n"
-            u"<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
-            u"foo=&lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
-            u"foo=&lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>[&lt;Folder at /test_folder_1_&gt;] has "
-            u"first item &lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>[&lt;Folder at /test_folder_1_&gt;] has "
-            u"first item &lt;Folder at test_folder_1_&gt;</p>"
-        )
+            u"<p>{{'foo': {folder}}} has "
+            u"foo={folder}</p>\n"
+            u"<p>{{'foo': {folder}}} has "
+            u"foo={folder}</p>\n"
+            u"<p>[{folder}] has "
+            u"first item {folder}</p>\n"
+            u"<p>[{folder}] has "
+            u"first item {folder}</p>".format(
+                app_lower=escape(repr(self.app).lower()),
+                app_upper=escape(repr(self.app).upper()),
+                folder=escape(repr(self.app.test_folder_1_))
+        ))
 
     def test_cook_zope2_page_templates_bad_key_str(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
@@ -222,7 +237,8 @@ class FormatterFunctionalTest(FunctionalTestCase):
         hack_pt(pt, self.app)
         self.assertEqual(
             pt.pt_render(),
-            '<p>access by key: &lt;Folder at test_folder_1_&gt;</p>')
+            '<p>access by key: {}</p>'.format(
+                escape(repr(self.app.test_folder_1_))))
         self.app.test_folder_1_.__roles__ = ['Manager']
         with self.assertRaises(Unauthorized) as err:
             pt.pt_render()
@@ -236,7 +252,8 @@ class FormatterFunctionalTest(FunctionalTestCase):
         hack_pt(pt, self.app)
         self.assertEqual(
             pt.pt_render(),
-            '<p>access by key: &lt;Folder at test_folder_1_&gt;</p>')
+            '<p>access by key: {}</p>'.format(
+                escape(repr(self.app.test_folder_1_))))
         self.app.test_folder_1_.__roles__ = ['Manager']
         with self.assertRaises(Unauthorized) as err:
             pt.pt_render()
@@ -251,7 +268,8 @@ class FormatterFunctionalTest(FunctionalTestCase):
         hack_pt(pt, self.app.testlist)
         self.assertEqual(
             pt.pt_render(),
-            '<p>access by item: &lt;Folder at test_folder_1_&gt;</p>')
+            '<p>access by item: {}</p>'.format(
+                escape(repr(self.app.test_folder_1_))))
         self.app.test_folder_1_.__roles__ = ['Manager']
         with self.assertRaises(Unauthorized) as err:
             pt.pt_render()
@@ -266,7 +284,8 @@ class FormatterFunctionalTest(FunctionalTestCase):
         hack_pt(pt, self.app.testlist)
         self.assertEqual(
             pt.pt_render(),
-            '<p>access by item: &lt;Folder at test_folder_1_&gt;</p>')
+            '<p>access by item: {}</p>'.format(
+                escape(repr(self.app.test_folder_1_))))
         self.app.test_folder_1_.__roles__ = ['Manager']
         with self.assertRaises(Unauthorized) as err:
             pt.pt_render()
