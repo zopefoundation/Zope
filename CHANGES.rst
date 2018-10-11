@@ -11,7 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes
+++++++++
+
+- Fix `bin/mkwsgiinstance` on Python 3 when Zope was installed via ``pip``.
 
 
 4.0b6 (2018-10-11)
