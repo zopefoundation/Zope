@@ -218,7 +218,7 @@ def get_zope2path(python):
         output = subprocess.check_output(
             [python, '-c', 'import Zope2; print(Zope2.__file__)'],
             stderr=subprocess.PIPE)
-        zope2file = output.strip()
+        zope2file = output.strip().decode('utf-8')
     except subprocess.CalledProcessError:
         # fall back to current Python interpreter
         import Zope2
