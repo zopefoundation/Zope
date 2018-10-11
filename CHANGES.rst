@@ -84,6 +84,10 @@ Bugfixes
   to interact well with plone.testing's patching of the global site manager.
   (`#361 <https://github.com/zopefoundation/Zope/pull/361>`_)
 
+- Add a backwards compatible shim for ``AccessRule`` which was removed in 4.0a1
+  but can exist in legacy databases.
+  (`#321 <https://github.com/zopefoundation/Zope/issue/321>`_)
+
 
 4.0b5 (2018-05-18)
 ------------------
