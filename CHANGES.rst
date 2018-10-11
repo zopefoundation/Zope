@@ -78,6 +78,10 @@ Bugfixes
   to interact well with plone.testing's patching of the global site manager.
   (`#361 <https://github.com/zopefoundation/Zope/pull/361>`_)
 
+- Install the `ipaddress` package only on Python 2.7 as it is part of the
+  stdlib in Python 3.
+  (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
+
 
 4.0b5 (2018-05-18)
 ------------------

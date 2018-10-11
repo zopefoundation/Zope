@@ -75,7 +75,6 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
-        'ipaddress',
         'setuptools',
         'six',
         'transaction',
@@ -117,6 +116,11 @@ setup(
         'zope.traversing',
         'zope.viewlet',
     ],
+    extras_require={
+        ':python_version=="2.7"': [
+            'ipaddress',
+        ]
+    },
     include_package_data=True,
     zip_safe=False,
     entry_points={
