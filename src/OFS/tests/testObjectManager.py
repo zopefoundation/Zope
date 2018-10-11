@@ -1,25 +1,28 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
-import unittest
-
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
-from AccessControl.SpecialUsers import emergency_user, nobody, system
+from AccessControl.SpecialUsers import emergency_user
+from AccessControl.SpecialUsers import nobody
+from AccessControl.SpecialUsers import system
 from AccessControl.User import User  # before SpecialUsers
-from Acquisition import aq_self, Implicit
-from six import PY2
-from zExceptions import BadRequest
-from zope.component.testing import PlacelessSetup
-from zope.interface import implementer
-
+from Acquisition import aq_self
+from Acquisition import Implicit
 from App.config import getConfiguration
+from logging import getLogger
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+from six import PY2
+from zExceptions import BadRequest
 from Zope2.App import zcml
+from zope.component.testing import PlacelessSetup
+from zope.interface import implementer
+
+import unittest
+
 
 logger = getLogger('OFS.subscribers')
 
@@ -497,6 +500,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         for filename in om.list_imports():
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
+
 
 _marker = object()
 

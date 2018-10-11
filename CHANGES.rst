@@ -16,10 +16,14 @@ Breaking changes
 
 - Remove the ``OFS.History`` module which contained only BBB code since 4.0a2.
 
+- Remove `bootstrap.py`. To install Zope via `zc.buildout` install the
+  `zc.buildout` package in a virtual environment at first.
+
 New features
 ++++++++++++
 
 - Add zconsole module for running scripts and interactive mode.
+  See `documentation <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
 
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
@@ -35,6 +39,8 @@ New features
 
 - Render an error message when trying to upload a file without choosing one
   in ZMI of a DTMLMethod or DTMLDocument.
+
+- Add support for Python 3.7.
 
 Bugfixes
 ++++++++
@@ -70,6 +76,13 @@ Bugfixes
 - Prevent breaking page rendering when setting `default-zpublisher-encoding`
   in `zope.conf` on Python 2.
   (`#308 <https://github.com/zopefoundation/Zope/issue/308>`_)
+
+- Fix `HTTPResponse.setBody` when the published object returns a tuple.
+  (`#340 <https://github.com/zopefoundation/Zope/pull/340>`_)
+
+- Fix ``Products.Five.browser.ObjectManagerSiteView.makeSite``
+  to interact well with plone.testing's patching of the global site manager.
+  (`#361 <https://github.com/zopefoundation/Zope/pull/361>`_)
 
 
 4.0b5 (2018-05-18)

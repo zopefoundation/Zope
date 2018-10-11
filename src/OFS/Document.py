@@ -15,6 +15,7 @@
 
 from zope.deferredimport import deprecated
 
+
 # BBB Zope 5.0
 deprecated(
     'Please import from OFS.DTMLMethod.',

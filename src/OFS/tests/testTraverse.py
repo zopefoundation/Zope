@@ -188,14 +188,14 @@ class TestTraverse(unittest.TestCase):
         from OFS.SimpleItem import SimpleItem
 
         class Restricted(SimpleItem):
-            """Instance we'll check with ProtectedMethodSecurityPolicy
-            """
+            """Instance we'll check with ProtectedMethodSecurityPolicy."""
+
             getId__roles__ = None  # ACCESS_PUBLIC
-            def getId(self):
+            def getId(self):  # NOQA: E306  # pseudo decorator
                 return self.id
 
             private__roles__ = ()  # ACCESS_PRIVATE
-            def private(self):
+            def private(self):  # NOQA: E306  # pseudo decorator
                 return 'private!'
 
             # not protected

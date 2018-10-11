@@ -1,37 +1,32 @@
 # -*- coding: utf-8 -*-
-import unittest
-
-import Zope2
-
-import codecs
-import os
-import sys
-import time
-from io import BytesIO
-
 from Acquisition import aq_base
-from six import PY3
-
+from App.Common import rfc1123_date
+from io import BytesIO
 from OFS.Application import Application
-from OFS.SimpleItem import SimpleItem
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
-from ZPublisher.HTTPRequest import HTTPRequest
-from ZPublisher.HTTPResponse import HTTPResponse
-from App.Common import rfc1123_date
+from OFS.SimpleItem import SimpleItem
+from six import PY3
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
-import Testing.ZopeTestCase
-import Testing.testbrowser
-import transaction
-
-import OFS.Image
-
 from zope.component import adapter
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from ZPublisher.HTTPRequest import HTTPRequest
+from ZPublisher.HTTPResponse import HTTPResponse
 
+import codecs
+import OFS.Image
+import os
 import six
+import sys
+import Testing.testbrowser
+import Testing.ZopeTestCase
+import time
+import transaction
+import unittest
+import Zope2
+
 
 here = os.path.dirname(os.path.abspath(__file__))
 filedata = os.path.join(here, 'test.gif')

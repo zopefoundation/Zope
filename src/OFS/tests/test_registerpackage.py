@@ -13,11 +13,14 @@
 ##############################################################################
 """Unit tests for the registerPackage directive.
 """
-import sys
 
 # need to add the testing package to the pythonpath in order to
 # test python-packages-as-products
 from Products.Five.tests import testing
+
+import sys
+
+
 sys.path.append(testing.__path__[0])
 
 
@@ -27,7 +30,6 @@ def test_registerPackage():
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
-      >>> import Products
       >>> import Zope2.App
       >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', Zope2.App)

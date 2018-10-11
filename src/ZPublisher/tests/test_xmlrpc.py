@@ -50,9 +50,9 @@ class XMLRPCResponseTests(unittest.TestCase):
         as_set, method = xmlrpclib.loads(body_str)
         as_set = as_set[0]
 
-        self.assertEqual(method, None)
-        self.assertFalse('_secret' in as_set.keys())
-        self.assertTrue('public' in as_set.keys())
+        self.assertIsNone(method)
+        self.assertNotIn('_secret', as_set.keys())
+        self.assertIn('public', as_set.keys())
         self.assertEqual(as_set['public'], 'def')
 
     def test_nil(self):
@@ -61,7 +61,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response = self._makeOne(faux)
         response.setBody(body)
         data, method = xmlrpclib.loads(faux._body)
-        self.assert_(data[0]['public'] is None)
+        self.assertIs(data[0]['public'], None)
 
     def test_instance(self):
         # Instances are turned into dicts with their private

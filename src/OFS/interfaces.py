@@ -13,6 +13,11 @@
 """OFS interfaces.
 """
 
+from AccessControl.interfaces import IOwned
+from AccessControl.interfaces import IRoleManager
+from Acquisition.interfaces import IAcquirer
+from App.interfaces import INavigation
+from persistent.interfaces import IPersistent
 from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
 from zope.deferredimport import deprecated
@@ -20,13 +25,9 @@ from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
 from zope.location.interfaces import IRoot
-from zope.schema import Bool, BytesLine, Tuple
-
-from AccessControl.interfaces import IOwned
-from AccessControl.interfaces import IRoleManager
-from Acquisition.interfaces import IAcquirer
-from App.interfaces import INavigation
-from persistent.interfaces import IPersistent
+from zope.schema import Bool
+from zope.schema import BytesLine
+from zope.schema import Tuple
 
 
 class IOrderedContainer(Interface):

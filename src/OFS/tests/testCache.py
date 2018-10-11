@@ -1,14 +1,16 @@
-import unittest
-
 from OFS.Cache import CacheManager
 from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
+from OFS.SimpleItem import SimpleItem
+
+import unittest
 
 
 class DummyCacheManager(CacheManager, SimpleItem):
     def __init__(self, id, *args, **kw):
         self.id = id
+
+
 setDeprecatedManageAddDelete(DummyCacheManager)
 
 

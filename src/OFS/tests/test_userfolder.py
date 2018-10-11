@@ -13,9 +13,10 @@
 """ Unit tests for OFS.userfolder
 """
 
+from ZPublisher.utils import basic_auth_encode
+
 import unittest
 
-from ZPublisher.utils import basic_auth_encode
 
 # TODO class Test_readUserAccessFile(unittest.TestCase)
 

@@ -13,48 +13,51 @@
 """Copy interface
 """
 
-from json import dumps
-from json import loads
-import logging
-import re
-import tempfile
-import warnings
-from zlib import compress
-from zlib import decompressobj
-
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import copy_or_move
 from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-import six
-from six.moves.urllib.parse import quote, unquote
-import transaction
-from zExceptions import Unauthorized, BadRequest, ResourceLockedError
-from ZODB.POSException import ConflictError
-from zope.interface import implementer
-from zope.event import notify
-from zope.lifecycleevent import ObjectCopiedEvent
-from zope.lifecycleevent import ObjectMovedEvent
-from zope.container.contained import notifyContainerModified
-
-from OFS.event import ObjectWillBeMovedEvent
+from json import dumps
+from json import loads
 from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
 from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
 from OFS.subscribers import compatibilityCall
+from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import unquote
+from zExceptions import BadRequest
+from zExceptions import ResourceLockedError
+from zExceptions import Unauthorized
+from zlib import compress
+from zlib import decompressobj
+from ZODB.POSException import ConflictError
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCopiedEvent
+from zope.lifecycleevent import ObjectMovedEvent
+
+import logging
+import re
+import six
+import tempfile
+import transaction
+import warnings
 
 
 class CopyError(Exception):
     pass
+
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 logger = logging.getLogger('OFS')
@@ -89,7 +92,7 @@ class CopyContainer(Base):
     def manage_CopyContainerAllItems(self, REQUEST):
         return [self._getOb(i) for i in REQUEST['ids']]
 
-    security.declareProtected(delete_objects, 'manage_cutObjects')
+    @security.protected(delete_objects)
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -119,7 +122,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
         return cp
 
-    security.declareProtected(view_management_screens, 'manage_copyObjects')
+    @security.protected(view_management_screens)
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -296,7 +299,7 @@ class CopyContainer(Base):
 
         return op, result
 
-    security.declareProtected(view_management_screens, 'manage_pasteObjects')
+    @security.protected(view_management_screens)
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
 
@@ -329,10 +332,10 @@ class CopyContainer(Base):
 
         return result
 
-    security.declareProtected(view_management_screens, 'manage_renameForm')
+    security.declareProtected(view_management_screens, 'manage_renameForm')  # NOQA: D001,E501
     manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
-    security.declareProtected(view_management_screens, 'manage_renameObjects')
+    @security.protected(view_management_screens)
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
@@ -343,7 +346,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declareProtected(view_management_screens, 'manage_renameObject')
+    @security.protected(view_management_screens)
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object.
         """
@@ -398,7 +401,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declarePublic('manage_clone')
+    @security.public
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
@@ -509,6 +512,7 @@ class CopyContainer(Base):
                 raise CopyError('Insufficient privileges')
         else:
             raise CopyError('Not Supported')
+
 
 InitializeClass(CopyContainer)
 
@@ -631,6 +635,7 @@ class CopySource(Base):
     def cb_userHasCopyOrMovePermission(self):
         if getSecurityManager().checkPermission(copy_or_move, self):
             return 1
+
 
 InitializeClass(CopySource)
 

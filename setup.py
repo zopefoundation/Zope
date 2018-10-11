@@ -12,8 +12,11 @@
 #
 ##############################################################################
 
+from setuptools import find_packages
+from setuptools import setup
+
 import os
-from setuptools import setup, find_packages
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,6 +30,7 @@ README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
 version = '4.0b6.dev0'
+
 
 setup(
     name='Zope',
@@ -49,6 +53,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
@@ -126,6 +131,9 @@ setup(
             'runwsgi=Zope2.Startup.serve:main',
             'mkwsgiinstance=Zope2.utilities.mkwsgiinstance:main',
             'zconsole=Zope2.utilities.zconsole:main',
+        ],
+        'zodbupdate.decode': [
+            'decodes = OFS:zodbupdate_decode_dict',
         ],
     },
 )
