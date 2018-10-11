@@ -24,7 +24,7 @@ ZEO==5.2.0
 ZODB==5.4.0
 Zope2==4.0b1
 five.globalrequest==99.1
-five.localsitemanager==3.2
+five.localsitemanager==3.2.1
 funcsigs==1.0.2
 future==0.16.0
 ipaddress==1.0.22
