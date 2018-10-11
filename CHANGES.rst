@@ -28,25 +28,25 @@ Breaking changes
 New features
 ++++++++++++
 
+- Style the ZMI using Bootstrap.
+  (`#249 <https://github.com/zopefoundation/Zope/pull/249>`_ and
+  `#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
+
 - Add zconsole module for running scripts and interactive mode.
   See `documentation <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
+
+- Add support for Python 3.7.
 
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
 - Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
   instances.
 
-- Inlcude the ``zmi.styles`` repository in this package to break a circular
-  dependency.
-  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
-
 - Render an error message when trying to save DTML code containing a
   SyntaxError in ZMI of a DTMLMethod or DTMLDocument.
 
 - Render an error message when trying to upload a file without choosing one
   in ZMI of a DTMLMethod or DTMLDocument.
-
-- Add support for Python 3.7.
 
 - Update dependencies to newest versions.
 
@@ -69,10 +69,6 @@ Bugfixes
 
 - Fix upload and rendering of text files.
   (`#240 <https://github.com/zopefoundation/Zope/pull/240>`_)
-
-- Include the ``zmi.styles`` repository in this package to break a circular
-  dependency.
-  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
 - Work around Python bug (https://bugs.python.org/issue27777)
   when reading request bodies not encoded as application/x-www-form-urlencoded
