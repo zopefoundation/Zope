@@ -1505,16 +1505,16 @@ class HTTPRequest(BaseRequest):
     def text(self):
         result = "FORM\n\n"
         row = '%-20s %s\n'
-        for k, v in self.form.items():
+        for k, v in _filterPasswordFields(self.form.items()):
             result = result + row % (k, repr(v))
         result = result + "\nCOOKIES\n\n"
-        for k, v in self.cookies.items():
+        for k, v in _filterPasswordFields(self.cookies.items()):
             result = result + row % (k, repr(v))
         result = result + "\nLAZY ITEMS\n\n"
-        for k, v in self._lazies.items():
+        for k, v in _filterPasswordFields(self._lazies.items()):
             result = result + row % (k, repr(v))
         result = result + "\nOTHER\n\n"
-        for k, v in self.other.items():
+        for k, v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS', 'RESPONSE'):
                 continue
             result = result + row % (k, repr(v))
