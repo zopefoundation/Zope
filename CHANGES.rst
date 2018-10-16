@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes
+++++++++
+
+- Fix a bug with scopes in scripts with zconsole, which made it impossible to
+  reach global imports in the script within a function.
 
 
 4.0b6 (2018-10-11)
