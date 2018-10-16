@@ -28,8 +28,8 @@ import OFS.PropertyManager
 def print_info():
     # This tests the availability of global variables and imports.
     print(sys.argv[1:])
-    # 'ExtensionClass'
-    print(OFS.PropertyManager.PropertyManager.__class__.__name__)
+    # 'PropertyManager'
+    print(OFS.PropertyManager.PropertyManager.__name__)
 
 if __name__ == '__main__':
     app.foo = '42'
@@ -84,6 +84,6 @@ class ZConsoleTestCase(unittest.TestCase):
             sys.argv = self.stored_sys_argv
             sys.stdout = self.stored_stdout
         expected = (
-            "42\n['run', '{}', '{}', 'bar', 'baz']\nExtensionClass\n").format(
+            "42\n['run', '{}', '{}', 'bar', 'baz']\nPropertyManager\n").format(
                 self.zopeconf, script)
         self.assertEqual(expected, got)
