@@ -187,7 +187,7 @@ class VHMPort(unittest.TestCase):
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                            'http://[::1]/folder/')
 
-    def testIPv6Noport(self):
+    def testIPv6NoPort(self):
         ob = self.traverse('/VirtualHostBase/http/[::1]'
                            '/folder/')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
