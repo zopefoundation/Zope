@@ -14,6 +14,7 @@ from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 from ZPublisher.BaseRequest import quote
+from ZPublisher.HTTPRequest import splitport
 from zExceptions import BadRequest
 
 
@@ -147,16 +148,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 stack.pop()
                 protocol = stack.pop()
                 host = stack.pop()
-                if ':' in host:
-                    if host.startswith('['):
-                        # IPv6 address passed
-                        host, port = host.rsplit(':', 1)
-                    else:
-                        # Name or IPv4 address passed
-                        host, port = host.split(':')
-                    request.setServerURL(protocol, host, port)
-                else:
-                    request.setServerURL(protocol, host)
+                request.setServerURL(protocol, *splitport(host))
                 path = list(stack)
 
             # Find and convert VirtualHostRoot directive
