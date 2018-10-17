@@ -584,10 +584,10 @@ class TestLoadApp(unittest.TestCase):
         load_app = self._getTarget()
 
         transaction.begin()
-        self.assertIsNotNone(transaction.manager._txn)
+        self.assertIsNotNone(transaction.manager.manager._txn)
         with load_app(self._makeModuleInfo()):
             pass
-        self.assertIsNone(transaction.manager._txn)
+        self.assertIsNone(transaction.manager.manager._txn)
 
     def test_no_second_transaction_is_created_if_closed(self):
         load_app = self._getTarget()
