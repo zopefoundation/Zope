@@ -17,6 +17,8 @@ Bugfixes
 - Fix a bug with scopes in scripts with zconsole, which made it impossible to
   reach global imports in the script within a function.
 
+- Fix handling of non-ASCII characters in URLs on Python 2 introduced on 4.0b5.
+
 
 4.0b6 (2018-10-11)
 ------------------
