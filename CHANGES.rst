@@ -20,6 +20,8 @@ Bugfixes
 - Fix handling of non-ASCII characters in URLs on Python 2 introduced on 4.0b5.
   (`#380 <https://github.com/zopefoundation/Zope/pull/380>`_)
 
+- Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
+
 
 4.0b6 (2018-10-11)
 ------------------
