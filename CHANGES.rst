@@ -16,6 +16,14 @@ Bugfixes
 
 - Fix `bin/mkwsgiinstance` on Python 3 when Zope was installed via ``pip``.
 
+- Fix a bug with scopes in scripts with zconsole, which made it impossible to
+  reach global imports in the script within a function.
+
+- Fix handling of non-ASCII characters in URLs on Python 2 introduced on 4.0b5.
+  (`#380 <https://github.com/zopefoundation/Zope/pull/380>`_)
+
+- Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
+
 
 4.0b6 (2018-10-11)
 ------------------

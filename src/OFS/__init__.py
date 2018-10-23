@@ -9,6 +9,7 @@ zodbupdate_decode_dict = {
     'OFS.Image File title': 'utf-8',
     'OFS.Image Image title': 'utf-8',
     'OFS.Image Pdata title': 'utf-8',
+    'OFS.Image Pdata data': 'binary',
     'OFS.OrderedFolder OrderedFolder title': 'utf-8',
     'OFS.userfolder UserFolder title': 'utf-8',
 }
