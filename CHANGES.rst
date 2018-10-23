@@ -22,6 +22,13 @@ Bugfixes
 
 - Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
 
+Other changes
++++++++++++++
+
+- Restore old ``__repr__`` via ``OFS.SimpleItem.PathReprProvider``. Use this
+  as first base class for your custom classes, to restore the old behaviour.
+  (`#379 <https://github.com/zopefoundation/Zope/issues/379>`_)
+
 
 4.0b6 (2018-10-11)
 ------------------
