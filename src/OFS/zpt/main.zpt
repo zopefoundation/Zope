@@ -225,7 +225,7 @@
     let searchParams = new URLSearchParams(window.location.search);
     if (searchParams.get('skey') == 'meta_type') {
       $('td.zmi-object-type i').each(function () {
-        $(this).parent().parent().find('td.zmi-object-id').prepend('<span class="zmi-typename_show">' + $(this).attr('data-title') + '</span>')
+        $(this).parent().parent().find('td.zmi-object-id').prepend('<span class="zmi-typename_show">' + $(this).text() + '</span>')
       });
       $('th.zmi-object-id').addClass('zmi-typename_show');
     }

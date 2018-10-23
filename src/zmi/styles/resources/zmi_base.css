@@ -547,14 +547,15 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 
 /* CUSTOM ICON: Folder (Ordered) */
 i.fa-folder.zmi-icon-folder-ordered:after {
-	content: "\f309";
 	content: "\f338";
 	font-family: "Font Awesome\ 5 Free",Fontawesome;
 	font-weight:900;
-	margin: 0 0 0 -.76rem !important;
-	padding-top:.45rem;
+	margin: -.65rem 0 0 -0.2rem;
 	position:absolute;
 	font-size:14px
+}
+.zmi .breadcrumb i.fa-folder.zmi-icon-folder-ordered:after {
+	margin: 0.4rem 0 0 -0.74rem;
 }
 
 /* HEADER BAR */
