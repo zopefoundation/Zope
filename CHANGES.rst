@@ -8,7 +8,25 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b6 (unreleased)
+4.0b7 (unreleased)
+------------------
+
+Bugfixes
+++++++++
+
+- Fix a bug with scopes in scripts with zconsole, which made it impossible to
+  reach global imports in the script within a function.
+
+- Fix handling of non-ASCII characters in URLs on Python 2 introduced on 4.0b5.
+  (`#380 <https://github.com/zopefoundation/Zope/pull/380>`_)
+
+- Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
+
+- Install the `ipaddress` package only on Python 2.7 as it is part of the
+  stdlib in Python 3.
+  (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
+
+4.0b6 (2018-10-11)
 ------------------
 
 Breaking changes
@@ -22,19 +40,27 @@ Breaking changes
 New features
 ++++++++++++
 
+- Style the ZMI using Bootstrap.
+  (`#249 <https://github.com/zopefoundation/Zope/pull/249>`_ and
+  `#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
+
 - Add zconsole module for running scripts and interactive mode.
   See `documentation <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
+
+- Add support for Python 3.7.
 
 - Restore support for XML-RPC when using the WSGI publisher - dropped in 4.0a2.
 
 - Add a minimum ``buildout.cfg`` suggestion in the docs for creating ``wsgi``
   instances.
 
-- Inlcude the ``zmi.styles`` repository in this package to break a circular
-  dependency.
-  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
+- Render an error message when trying to save DTML code containing a
+  SyntaxError in ZMI of a DTMLMethod or DTMLDocument.
 
-- Add support for Python 3.7.
+- Render an error message when trying to upload a file without choosing one
+  in ZMI of a DTMLMethod or DTMLDocument.
+
+- Update dependencies to newest versions.
 
 Bugfixes
 ++++++++
@@ -56,10 +82,6 @@ Bugfixes
 - Fix upload and rendering of text files.
   (`#240 <https://github.com/zopefoundation/Zope/pull/240>`_)
 
-- Include the ``zmi.styles`` repository in this package to break a circular
-  dependency.
-  (`#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
-
 - Work around Python bug (https://bugs.python.org/issue27777)
   when reading request bodies not encoded as application/x-www-form-urlencoded
   or multipart/form-data.
@@ -78,9 +100,9 @@ Bugfixes
   to interact well with plone.testing's patching of the global site manager.
   (`#361 <https://github.com/zopefoundation/Zope/pull/361>`_)
 
-- Install the `ipaddress` package only on Python 2.7 as it is part of the
-  stdlib in Python 3.
-  (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
+- Add a backwards compatible shim for ``AccessRule`` which was removed in 4.0a1
+  but can exist in legacy databases.
+  (`#321 <https://github.com/zopefoundation/Zope/issue/321>`_)
 
 
 4.0b5 (2018-05-18)
@@ -276,7 +298,7 @@ Breaking changes
 - Removed ``OFS.ZDOM``. `OFS.SimpleItem.Item` now implements `getParentNode()`.
 
 - Removed special code to create user folders and page templates while creating
-  new ``OFS.Folder` instances.
+  new ``OFS.Folder`` instances.
 
 - Removed the `App.version_txt.getZopeVersion` API, you can use
   ``pkg_resources.get_distribution('Zope').version`` instead.

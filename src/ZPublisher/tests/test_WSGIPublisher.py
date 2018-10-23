@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2009 Zope Foundation and Contributors.
@@ -10,6 +11,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+import codecs
 import io
 import unittest
 
@@ -18,9 +20,12 @@ from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
+from six.moves.urllib_parse import quote
 
-from ZPublisher.WSGIPublisher import get_module_info
+from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
+from ZPublisher.WSGIPublisher import get_module_info
+import Testing.testbrowser
 
 
 class WSGIResponseTests(unittest.TestCase):
@@ -541,6 +546,22 @@ class TestPublishModule(ZopeTestCase):
         _publish._raise = Unauthorized('argg')
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
+
+
+class WSGIPublisherTests(FunctionalTestCase):
+
+    def test_can_handle_non_ascii_URLs(self):
+        from OFS.Image import manage_addFile
+        manage_addFile(self.app, 'täst', u'çöńtêñt'.encode('utf-8'))
+
+        browser = Testing.testbrowser.Browser()
+        browser.addHeader(
+            'Authorization',
+            'basic {}'.format(codecs.encode(
+                b'manager:manager_pass', 'base64').decode()))
+
+        browser.open('http://localhost/{}'.format(quote('täst')))
+        self.assertEqual(browser.contents.decode('utf-8'), u'çöńtêñt')
 
 
 class TestLoadApp(unittest.TestCase):
