@@ -24,6 +24,9 @@ Bugfixes
 
 - Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
 
+- Install the `ipaddress` package only on Python 2.7 as it is part of the
+  stdlib in Python 3.
+  (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
 4.0b6 (2018-10-11)
 ------------------
