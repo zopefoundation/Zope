@@ -28,6 +28,12 @@ Bugfixes
   stdlib in Python 3.
   (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
+Other changes
++++++++++++++
+
+- Update dependencies to newest versions.
+
+
 4.0b6 (2018-10-11)
 ------------------
 

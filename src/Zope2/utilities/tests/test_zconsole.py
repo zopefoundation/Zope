@@ -58,11 +58,12 @@ class ZConsoleTestCase(unittest.TestCase):
             from Zope2.utilities.zconsole import debug
             sys.stdout = StringIO()
             got = debug(self.zopeconf)
-            expected = '<Application '
+            expected = '<OFS.Application.Application '
         finally:
             sys.argv = self.stored_sys_argv
             sys.stdout = self.stored_stdout
-        self.assertTrue(str(got).startswith(expected))
+        self.assertTrue(str(got).startswith(expected),
+                        '{!r} does not start with {!r}'.format(got, expected))
 
     def test_runscript(self):
         script = os.path.join(self.instancedir, 'test_script.py')
