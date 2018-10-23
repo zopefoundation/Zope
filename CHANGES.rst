@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Fix `bin/mkwsgiinstance` on Python 3 when Zope was installed via ``pip``.
+
 - Fix a bug with scopes in scripts with zconsole, which made it impossible to
   reach global imports in the script within a function.
 
@@ -21,6 +23,10 @@ Bugfixes
   (`#380 <https://github.com/zopefoundation/Zope/pull/380>`_)
 
 - Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
+
+- Install the `ipaddress` package only on Python 2.7 as it is part of the
+  stdlib in Python 3.
+  (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
 Other changes
 +++++++++++++
