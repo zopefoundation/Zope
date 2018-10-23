@@ -22,6 +22,11 @@ Bugfixes
 
 - Fix zodbupdate conversion of ``OFS.Image.Pdata`` objects.
 
+Other changes
++++++++++++++
+
+- Update dependencies to newest versions.
+
 
 4.0b6 (2018-10-11)
 ------------------
