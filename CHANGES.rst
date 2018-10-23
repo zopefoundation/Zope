@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Bugfixes
 ++++++++
 
+- Fix `bin/mkwsgiinstance` on Python 3 when Zope was installed via ``pip``.
+
 - Fix a bug with scopes in scripts with zconsole, which made it impossible to
   reach global imports in the script within a function.
 
