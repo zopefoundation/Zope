@@ -78,7 +78,7 @@ setup(
         'ipaddress ; python_version=="2.7"',
         'setuptools >= 36.2',
         'six',
-        'transaction',
+        'transaction >= 2.4',
         'waitress',
         'zExceptions >= 3.4',
         'z3c.pt',

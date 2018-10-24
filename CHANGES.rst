@@ -28,6 +28,10 @@ Bugfixes
   stdlib in Python 3.
   (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
+- Fix KeyError on releasing resources of a Connection when closing the DB.
+  This requires at least version 2.4 of the `transaction` package.
+  See `issue 208 <https://github.com/zopefoundation/ZODB/issues/208>`.
+
 - Fix rendering of ordered folder icon in ZMI.
 
 Other changes

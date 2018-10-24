@@ -615,11 +615,11 @@ class TestLoadApp(unittest.TestCase):
         transaction.manager.registerSynch(counter)
 
         transaction.begin()
-        self.assertIsNotNone(transaction.manager._txn)
+        self.assertIsNotNone(transaction.manager.manager._txn)
         with load_app(self._makeModuleInfo()):
             transaction.abort()
 
-        self.assertIsNone(transaction.manager._txn)
+        self.assertIsNone(transaction.manager.manager._txn)
         self.assertEqual(counter.counts(), (1, 1))
 
 
