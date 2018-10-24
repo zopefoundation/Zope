@@ -28,6 +28,8 @@ Bugfixes
   stdlib in Python 3.
   (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
+- Fix rendering of ordered folder icon in ZMI.
+
 Other changes
 +++++++++++++
 
