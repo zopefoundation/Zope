@@ -70,7 +70,7 @@ else:
 logger = logging.getLogger()
 
 
-class PathReprProvider(object):
+class PathReprProvider(Base):
     """Provides a representation that includes the physical path.
 
     Should be in the MRO before persistent.Persistent as this provides an own
