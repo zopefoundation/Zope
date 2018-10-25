@@ -35,6 +35,11 @@ Other changes
 
 - Update dependencies to newest versions.
 
+New features
+++++++++++++
+
+- Add wildcard rewrite to sub host name in virtualHostMonster.
+
 
 4.0b6 (2018-10-11)
 ------------------
