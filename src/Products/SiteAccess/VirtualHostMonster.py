@@ -173,6 +173,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         stack[ii] = self.id
                         stack.insert(ii, '/')
                         ii += 1
+                    if '*' in stack:
+                      stack[stack.index('*')] = host.split('.')[0]
                     path = stack[:ii]
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
