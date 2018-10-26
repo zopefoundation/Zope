@@ -261,17 +261,13 @@ The parent of the view is the view's context:
 
 The direct parent of the context is
 
-  >>> aq_inner(context).__parent__.__class__
-  <class 'OFS.Folder.Folder'>
-  >>> print(aq_inner(context).__parent__.getId())
-  test_folder_1_
+  >>> aq_inner(context).__parent__
+  <Folder at /test_folder_1_> 
 
 C methods work the same
 
-  >>> aq_parent(aq_inner(context)).__class__
-  <class 'OFS.Folder.Folder'>
-  >>> print(aq_parent(aq_inner(context)).getId())
-  test_folder_1_
+  >>> aq_parent(aq_inner(context))
+  <Folder at /test_folder_1_> 
 
 The same applies to a view registered with <browser:view /> instead of
 <browser:page />
@@ -290,10 +286,10 @@ The same applies to a view registered with <browser:view /> instead of
   True
   >>> aq_parent(view) == view.context
   True
-  >>> print(aq_inner(context).__parent__.getId())
-  test_folder_1_
-  >>> print(aq_parent(aq_inner(context)).getId())
-  test_folder_1_
+  >>> aq_inner(context).__parent__
+  <Folder at /test_folder_1_> 
+  >>> aq_parent(aq_inner(context))
+  <Folder at /test_folder_1_> 
 
 Make sure that methods which are not included in the allowed interface or
 attributes, but which already had security declarations from a base class,

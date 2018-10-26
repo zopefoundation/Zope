@@ -33,6 +33,10 @@ Bugfixes
 Other changes
 +++++++++++++
 
+- Restore old ``__repr__`` via ``OFS.SimpleItem.PathReprProvider``. Use this
+  as first base class for your custom classes, to restore the old behaviour.
+  (`#379 <https://github.com/zopefoundation/Zope/issues/379>`_)
+
 - Update dependencies to newest versions.
 
 

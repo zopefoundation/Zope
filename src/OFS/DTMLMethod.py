@@ -31,6 +31,7 @@ from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
+from OFS.SimpleItem import PathReprProvider
 from six import binary_type
 from six import PY2
 from six import PY3
@@ -54,6 +55,7 @@ class Code(object):
 
 
 class DTMLMethod(
+    PathReprProvider,
     RestrictedDTML,
     HTML,
     Implicit,
