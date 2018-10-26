@@ -14,20 +14,19 @@
 """
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import ownableFilter
+from AccessControl.owner import Owned as BaseOwned
 from AccessControl.owner import UnownableOwner
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import take_ownership
+from AccessControl.Permissions import view_management_screens
 from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
-from six.moves.urllib import parse
-
 from App.special_dtml import DTMLFile
+from six.moves.urllib import parse
 
 
 class Owned(BaseOwned):
@@ -36,14 +35,17 @@ class Owned(BaseOwned):
     security.setPermissionDefault(take_ownership, ('Owner', ))
 
     manage_options = (
-        {'label': 'Ownership', 'action': 'manage_owner',
-         'filter': ownableFilter},
+        {
+            'label': 'Ownership',
+            'action': 'manage_owner',
+            'filter': ownableFilter,
+        },
     )
 
-    security.declareProtected(view_management_screens, 'manage_owner')
+    security.declareProtected(view_management_screens, 'manage_owner')  # NOQA: D001,E501
     manage_owner = DTMLFile('dtml/owner', globals())
 
-    security.declareProtected(take_ownership, 'manage_takeOwnership')
+    @security.protected(take_ownership)
     @requestmethod('POST')
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
@@ -64,12 +66,15 @@ class Owned(BaseOwned):
         if RESPONSE is not None:
             RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
-    security.declareProtected(take_ownership, 'manage_changeOwnershipType')
+    @security.protected(take_ownership)
     @requestmethod('POST')
-    def manage_changeOwnershipType(self, explicit=1,
-                                   RESPONSE=None, REQUEST=None):
-        """Change the type (implicit or explicit) of ownership.
-        """
+    def manage_changeOwnershipType(
+        self,
+        explicit=1,
+        RESPONSE=None,
+        REQUEST=None
+    ):
+        """Change the type (implicit or explicit) of ownership."""
         old = getattr(self, '_owner', None)
         if explicit:
             if old is not None:
@@ -87,5 +92,6 @@ class Owned(BaseOwned):
 
         if RESPONSE is not None:
             RESPONSE.redirect(REQUEST['HTTP_REFERER'])
+
 
 InitializeClass(Owned)

@@ -15,11 +15,10 @@ def runscript(zopeconf, script_name, *extra_args):
     app.REQUEST['PARENTS'] = [app]
     setRequest(app.REQUEST)
     newSecurityManager(None, user)
-    scriptglobals = globals()
-    scriptglobals.update(__name__='__main__')
+    scriptglobals = {'__name__': '__main__', 'app': app}
     with open(script_name) as script:
         scriptcode = script.read()
-    exec(compile(scriptcode, script_name, 'exec'))
+    exec(compile(scriptcode, script_name, 'exec'), scriptglobals)
 
 
 def debug(zopeconf):

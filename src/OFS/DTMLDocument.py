@@ -15,22 +15,21 @@
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from DocumentTemplate.permissions import change_dtml_methods
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
 from DocumentTemplate.permissions import change_dtml_documents
+from DocumentTemplate.permissions import change_dtml_methods
+from OFS.DTMLMethod import decapitate
+from OFS.DTMLMethod import DTMLMethod
+from OFS.PropertyManager import PropertyManager
+from six import binary_type
 from six import PY2
 from six import PY3
-from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
-from OFS.DTMLMethod import decapitate
-from OFS.DTMLMethod import DTMLMethod
-from OFS.PropertyManager import PropertyManager
 
 
 done = 'done'
@@ -43,6 +42,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """
     meta_type = 'DTML Document'
     zmi_icon = 'far fa-file-alt'
+    _locked_error_text = 'This document has been locked.'
 
     manage_options = DTMLMethod.manage_options
 
@@ -51,29 +51,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         (perms[0] == change_dtml_methods) and
         (change_dtml_documents, perms[1]) or perms
         for perms in DTMLMethod.__ac_permissions__])
-
-    def manage_upload(self, file='', REQUEST=None):
-        """ Replace the contents of the document with the text in 'file'.
-        """
-        self._validateProxy(REQUEST)
-        if self.wl_isLocked():
-            raise ResourceLockedError('This document has been locked.')
-
-        if REQUEST and not file:
-            raise ValueError('No file specified')
-
-        if hasattr(file, 'read'):
-            file = file.read()
-        if PY3 and isinstance(file, binary_type):
-            file = file.decode('utf-8')
-        if PY2 and isinstance(file, text_type):
-            file = file.encode('utf-8')
-
-        self.munge(file)
-        self.ZCacheable_invalidate()
-        if REQUEST:
-            message = "Content uploaded."
-            return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document with the given client object.

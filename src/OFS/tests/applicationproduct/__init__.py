@@ -3,6 +3,7 @@
     Producs.Sessions and Products.TemporaryFolder are doing.
 """
 
+
 def initialize(context):
     from OFS.Folder import Folder
     import transaction

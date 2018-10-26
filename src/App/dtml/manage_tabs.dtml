@@ -79,11 +79,11 @@
 		</nav>
 
 
-	<dtml-if manage_tabs_message
-		><div class="alert alert-success" role="alert">
-			<dtml-var manage_tabs_message newline_to_br html_quote
-			> (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
-		</div>
+	<dtml-if manage_tabs_message>
+			<div class="alert alert-<dtml-var manage_tabs_type missing=success html_quote>" role="alert">
+				<dtml-var manage_tabs_message newline_to_br html_quote
+				> (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+			</div>
 	</dtml-if>
 
 </dtml-with>

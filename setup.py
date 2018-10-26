@@ -12,8 +12,11 @@
 #
 ##############################################################################
 
+from setuptools import find_packages
+from setuptools import setup
+
 import os
-from setuptools import setup, find_packages
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,7 +29,8 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '4.0b6.dev0'
+version = '4.0b7.dev0'
+
 
 setup(
     name='Zope',
@@ -49,6 +53,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
@@ -70,10 +75,10 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
-        'ipaddress',
-        'setuptools',
+        'ipaddress ; python_version=="2.7"',
+        'setuptools >= 36.2',
         'six',
-        'transaction',
+        'transaction >= 2.4',
         'waitress',
         'zExceptions >= 3.4',
         'z3c.pt',
@@ -112,6 +117,11 @@ setup(
         'zope.traversing',
         'zope.viewlet',
     ],
+    extras_require={
+        'test': [
+            'ZODB[test]',
+        ],
+    },
     include_package_data=True,
     zip_safe=False,
     entry_points={
@@ -126,6 +136,9 @@ setup(
             'runwsgi=Zope2.Startup.serve:main',
             'mkwsgiinstance=Zope2.utilities.mkwsgiinstance:main',
             'zconsole=Zope2.utilities.zconsole:main',
+        ],
+        'zodbupdate.decode': [
+            'decodes = OFS:zodbupdate_decode_dict',
         ],
     },
 )

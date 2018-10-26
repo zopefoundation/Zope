@@ -21,12 +21,20 @@ instancehome $INSTANCE
 
 test_script = """
 import sys
+import OFS.PropertyManager
 
+
+
+def print_info():
+    # This tests the availability of global variables and imports.
+    print(sys.argv[1:])
+    # 'PropertyManager'
+    print(OFS.PropertyManager.PropertyManager.__name__)
 
 if __name__ == '__main__':
     app.foo = '42'
     print(app.foo)
-    print(sys.argv[1:])
+    print_info()
 """
 
 
@@ -75,5 +83,7 @@ class ZConsoleTestCase(unittest.TestCase):
         finally:
             sys.argv = self.stored_sys_argv
             sys.stdout = self.stored_stdout
-        expected = "42\n['run', '{}', '{}', 'bar', 'baz']\n".format(self.zopeconf, script)  # noqa: E501
+        expected = (
+            "42\n['run', '{}', '{}', 'bar', 'baz']\nPropertyManager\n").format(
+                self.zopeconf, script)
         self.assertEqual(expected, got)

@@ -13,9 +13,52 @@
 """Object Manager
 """
 
+from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
+from AccessControl.class_init import InitializeClass
+from AccessControl.Permission import getPermissions
+from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import import_export_objects
+from AccessControl.Permissions import view_management_screens
+from AccessControl.ZopeSecurityPolicy import getRoles
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from App.Common import is_acquired
+from App.config import getConfiguration
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
+from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from io import BytesIO
-from operator import itemgetter
 from logging import getLogger
+from OFS import bbb
+from OFS.CopySupport import CopyContainer
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.interfaces import IObjectManager
+from OFS.Lockable import LockableItem
+from OFS.subscribers import compatibilityCall
+from OFS.Traversable import Traversable
+from operator import itemgetter
+from Persistence import Persistent
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from six import string_types
+from six import text_type
+from zExceptions import BadRequest
+from zExceptions import ResourceLockedError
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.interface.interfaces import ComponentLookupError
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
+
 import copy
 import fnmatch
 import marshal
@@ -23,48 +66,8 @@ import os
 import re
 import sys
 import time
-
-from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
-from AccessControl.Permission import getPermissions
-from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import access_contents_information
-from AccessControl.Permissions import delete_objects
-from AccessControl.Permissions import ftp_access
-from AccessControl.Permissions import import_export_objects
-from AccessControl import getSecurityManager
-from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_acquire, aq_parent
-from Acquisition import Implicit
-from DateTime import DateTime
-from DateTime.interfaces import DateTimeError
-from Persistence import Persistent
-from six import string_types
-from six import text_type
-from zExceptions import BadRequest, ResourceLockedError
-from zope.container.contained import notifyContainerModified
-from zope.event import notify
-from zope.interface import implementer
-from zope.interface.interfaces import ComponentLookupError
-from zope.lifecycleevent import ObjectAddedEvent
-from zope.lifecycleevent import ObjectRemovedEvent
 import zope.sequencesort
 
-from App.Common import is_acquired
-from App.config import getConfiguration
-from App.FactoryDispatcher import ProductDispatcher
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from OFS import bbb
-from OFS.CopySupport import CopyContainer
-from OFS.interfaces import IObjectManager
-from OFS.Traversable import Traversable
-from OFS.event import ObjectWillBeAddedEvent
-from OFS.event import ObjectWillBeRemovedEvent
-from OFS.Lockable import LockableItem
-from OFS.subscribers import compatibilityCall
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 try:
     from html import escape
@@ -154,15 +157,16 @@ _marker = []
 
 
 @implementer(IObjectManager)
-class ObjectManager(CopyContainer,
-                    Navigation,
-                    Tabs,
-                    Implicit,
-                    Persistent,
-                    Collection,
-                    LockableItem,
-                    Traversable):
-
+class ObjectManager(
+    CopyContainer,
+    Navigation,
+    Tabs,
+    Implicit,
+    Persistent,
+    Collection,
+    LockableItem,
+    Traversable
+):
     """Generic object manager
 
     This class provides core behavior for collections of heterogeneous objects.
@@ -179,13 +183,16 @@ class ObjectManager(CopyContainer,
 
     _objects = ()
 
-    security.declareProtected(view_management_screens, 'manage_main')
+    security.declareProtected(view_management_screens, 'manage_main')  # NOQA: D001,E501
     manage_main = PageTemplateFile('zpt/main', globals())
 
     manage_index_main = DTMLFile('dtml/index_main', globals())
 
     manage_options = (
-        {'label': 'Contents', 'action': 'manage_main'},
+        {
+            'label': 'Contents',
+            'action': 'manage_main',
+        },
     )
 
     isAnObjectManager = 1
@@ -195,13 +202,13 @@ class ObjectManager(CopyContainer,
     # IPossibleSite API
     _components = None
 
-    security.declarePublic('getSiteManager')
+    @security.public
     def getSiteManager(self):
         if self._components is None:
             raise ComponentLookupError('No component registry defined.')
         return self._components
 
-    security.declareProtected('Manage Site', 'setSiteManager')
+    @security.protected('Manage Site')
     def setSiteManager(self, components):
         self._components = components
 
@@ -306,7 +313,7 @@ class ObjectManager(CopyContainer,
             raise AttributeError(id)
         return default
 
-    security.declareProtected(access_contents_information, 'hasObject')
+    @security.protected(access_contents_information)
     def hasObject(self, id):
         # Indicate whether the folder has an item by ID.
         #
@@ -412,7 +419,7 @@ class ObjectManager(CopyContainer,
             notify(ObjectRemovedEvent(ob, self, id))
             notifyContainerModified(self)
 
-    security.declareProtected(access_contents_information, 'objectIds')
+    @security.protected(access_contents_information)
     def objectIds(self, spec=None):
         # Returns a list of subobject ids of the current object.
         # If 'spec' is specified, returns objects whose meta_type
@@ -427,14 +434,14 @@ class ObjectManager(CopyContainer,
             return set
         return [o['id'] for o in self._objects]
 
-    security.declareProtected(access_contents_information, 'objectValues')
+    @security.protected(access_contents_information)
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
         return [self._getOb(id) for id in self.objectIds(spec)]
 
-    security.declareProtected(access_contents_information, 'objectItems')
+    @security.protected(access_contents_information)
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
         # If 'spec' is specified, returns only objects whose meta_type match
@@ -445,7 +452,7 @@ class ObjectManager(CopyContainer,
         # Return a tuple of mappings containing subobject meta-data
         return tuple(d.copy() for d in self._objects)
 
-    security.declareProtected(access_contents_information, 'objectIds_d')
+    @security.protected(access_contents_information)
     def objectIds_d(self, t=None):
         if hasattr(self, '_reserved_names'):
             n = self._reserved_names
@@ -459,18 +466,18 @@ class ObjectManager(CopyContainer,
                 r.append(id)
         return r
 
-    security.declareProtected(access_contents_information, 'objectValues_d')
+    @security.protected(access_contents_information)
     def objectValues_d(self, t=None):
         return list(map(self._getOb, self.objectIds_d(t)))
 
-    security.declareProtected(access_contents_information, 'objectItems_d')
+    @security.protected(access_contents_information)
     def objectItems_d(self, t=None):
         r = []
         for id in self.objectIds_d(t):
             r.append((id, self._getOb(id)))
         return r
 
-    security.declareProtected(access_contents_information, 'objectMap_d')
+    @security.protected(access_contents_information)
     def objectMap_d(self, t=None):
         if hasattr(self, '_reserved_names'):
             n = self._reserved_names
@@ -484,7 +491,7 @@ class ObjectManager(CopyContainer,
                 r.append(d.copy())
         return r
 
-    security.declareProtected(access_contents_information, 'superValues')
+    @security.protected(access_contents_information)
     def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
@@ -521,7 +528,7 @@ class ObjectManager(CopyContainer,
 
     manage_addProduct = ProductDispatcher()
 
-    security.declareProtected(delete_objects, 'manage_delObjects')
+    @security.protected(delete_objects)
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
 
@@ -556,7 +563,7 @@ class ObjectManager(CopyContainer,
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declareProtected(access_contents_information, 'tpValues')
+    @security.protected(access_contents_information)
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
         r = []
@@ -581,9 +588,14 @@ class ObjectManager(CopyContainer,
                     r.append(o)
         return r
 
-    security.declareProtected(import_export_objects, 'manage_exportObject')
-    def manage_exportObject(self, id='', download=None,
-                            RESPONSE=None,REQUEST=None):
+    @security.protected(import_export_objects)
+    def manage_exportObject(
+        self,
+        id='',
+        download=None,
+        RESPONSE=None,
+        REQUEST=None
+    ):
         """Exports an object to a file and returns that file."""
         if not id:
             # can't use getId() here (breaks on "old" exported objects)
@@ -616,13 +628,16 @@ class ObjectManager(CopyContainer,
             return self.manage_main(
                 self, REQUEST,
                 manage_tabs_message='"%s" successfully exported to "%s"' % (
-                    id, f),
-                title='Object exported')
+                    id,
+                    f
+                ),
+                title='Object exported'
+            )
 
-    security.declareProtected(import_export_objects, 'manage_importExportForm')
+    security.declareProtected(import_export_objects, 'manage_importExportForm')  # NOQA: D001,E501
     manage_importExportForm = DTMLFile('dtml/importExport', globals())
 
-    security.declareProtected(import_export_objects, 'manage_importObject')
+    @security.protected(import_export_objects)
     def manage_importObject(self, file, REQUEST=None, set_owner=1):
         """Import an object from a file"""
         dirname, file = os.path.split(file)
@@ -644,10 +659,12 @@ class ObjectManager(CopyContainer,
 
         if REQUEST is not None:
             return self.manage_main(
-                self, REQUEST,
+                self,
+                REQUEST,
                 manage_tabs_message='"%s" successfully imported' % id,
                 title='Object imported',
-                update_menu=1)
+                update_menu=1
+            )
 
     def _importObjectFromFile(self, filepath, verify=1, set_owner=1):
         # locate a valid connection
@@ -691,16 +708,17 @@ class ObjectManager(CopyContainer,
         listing.sort()
         return listing
 
-    security.declareProtected(ftp_access, 'manage_hasId')
+    @security.protected(ftp_access)
     def manage_hasId(self, REQUEST):
-        """ check if the folder has an object with REQUEST['id'] """
+        """Check if the folder has an object with REQUEST['id']."""
 
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 
     if bbb.HAS_ZSERVER:
         # FTP support methods
-        security.declareProtected(ftp_access, 'manage_FTPlist')
+
+        @security.protected(ftp_access)
         def manage_FTPlist(self, REQUEST):
             """Directory listing for FTP.
             """
@@ -755,7 +773,7 @@ class ObjectManager(CopyContainer,
                     out = out + ((k, stat),)
             return marshal.dumps(out)
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')
+        @security.protected(ftp_access)
         def manage_FTPstat(self, REQUEST):
             """Psuedo stat, used by FTP for directory listings.
             """
@@ -826,48 +844,43 @@ class ObjectManager(CopyContainer,
     def __bool__(self):
         return True
 
-    security.declareProtected(access_contents_information, 'get')
+    @security.protected(access_contents_information)
     def get(self, key, default=None):
         if key in self:
             return self._getOb(key, default)
         return default
 
-    security.declareProtected(access_contents_information, 'keys')
+    @security.protected(access_contents_information)
     def keys(self):
         return self.objectIds()
 
-    security.declareProtected(access_contents_information, 'get')
+    @security.protected(access_contents_information)
     def items(self):
         return self.objectItems()
 
-    security.declareProtected(access_contents_information, 'values')
+    @security.protected(access_contents_information)
     def values(self):
         return self.objectValues()
 
-    security.declareProtected(access_contents_information, 'compute_size')
+    @security.protected(access_contents_information)
     def compute_size(self, ob):
-        #try:
-            if hasattr(ob, 'get_size'):
-                ob_size = ob.get_size()
-                if ob_size < 1024:
-                    return '1 KiB'
-                elif ob_size > 1048576:
-                    return "{:0.02f} MiB".format(ob_size / 1048576.0)
-                else:
-                    return "{:0.0f} KiB".format(ob_size / 1024.0)
-        #except:
-        #    pass
-        #return ''
+        if hasattr(ob, 'get_size'):
+            ob_size = ob.get_size()
+            if ob_size < 1024:
+                return '1 KiB'
+            elif ob_size > 1048576:
+                return "{:0.02f} MiB".format(ob_size / 1048576.0)
+            else:
+                return "{:0.0f} KiB".format(ob_size / 1024.0)
 
-    security.declareProtected(access_contents_information, 'last_modified')
+    @security.protected(access_contents_information)
     def last_modified(self, ob):
         try:
             return DateTime(ob._p_mtime).strftime("%Y-%m-%d %H:%M")
         except (DateTimeError, AttributeError):
             return ''
 
-    security.declareProtected(view_management_screens,
-                              'manage_get_sortedObjects')
+    @security.protected(view_management_screens)
     def manage_get_sortedObjects(self, sortkey, revkey):
         '''
         Return dictionaries used for the management page, sorted by sortkey
@@ -910,7 +923,10 @@ class ObjectManager(CopyContainer,
 
         # remove the additional attribute
         return [
-            {'id': item['id'], 'obj': item['obj']}
+            {
+                'id': item['id'],
+                'obj': item['obj'],
+            }
             for item in sorted_items
         ]
 

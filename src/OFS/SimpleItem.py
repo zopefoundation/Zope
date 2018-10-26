@@ -18,19 +18,11 @@ This module can also be used as a simple template for implementing new
 item types.
 """
 
-import logging
-import marshal
-import re
-import sys
-import time
-
-from six import reraise
-
 from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import Acquired
@@ -39,29 +31,36 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import Implicit
+from App.Management import Navigation
 from App.Management import Tabs
-from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
 from ComputedAttribute import ComputedAttribute
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
 from DocumentTemplate.ustr import ustr
 from ExtensionClass import Base
+from OFS import bbb
+from OFS.CopySupport import CopySource
+from OFS.interfaces import IItem
+from OFS.interfaces import IItemWithName
+from OFS.interfaces import ISimpleItem
+from OFS.Lockable import LockableItem
+from OFS.owner import Owned
+from OFS.role import RoleManager
+from OFS.Traversable import Traversable
 from Persistence import Persistent
+from six import reraise
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
 
-from App.Management import Navigation
-from OFS import bbb
-from OFS.interfaces import IItem
-from OFS.interfaces import IItemWithName
-from OFS.interfaces import ISimpleItem
-from OFS.owner import Owned
-from OFS.CopySupport import CopySource
-from OFS.Lockable import LockableItem
-from OFS.role import RoleManager
-from OFS.Traversable import Traversable
+import logging
+import marshal
+import re
+import sys
+import time
+
 
 if bbb.HAS_ZSERVER:
     from webdav.Resource import Resource
@@ -71,15 +70,48 @@ else:
 logger = logging.getLogger()
 
 
+class PathReprProvider(Base):
+    """Provides a representation that includes the physical path.
+
+    Should be in the MRO before persistent.Persistent as this provides an own
+    implementation of `__repr__` that includes information about connection and
+    oid.
+    """
+
+    def __repr__(self):
+        """Show the physical path of the object and context if available."""
+        try:
+            path = '/'.join(self.getPhysicalPath())
+        except Exception:
+            return super(PathReprProvider, self).__repr__()
+        context_path = None
+        context = aq_parent(self)
+        container = aq_parent(aq_inner(self))
+        if aq_base(context) is not aq_base(container):
+            try:
+                context_path = '/'.join(context.getPhysicalPath())
+            except Exception:
+                context_path = None
+        res = '<%s' % self.__class__.__name__
+        res += ' at %s' % path
+        if context_path:
+            res += ' used for %s' % context_path
+        res += '>'
+        return res
+
+
 @implementer(IItem)
-class Item(Base,
-           Navigation,
-           Resource,
-           LockableItem,
-           CopySource,
-           Tabs,
-           Traversable,
-           Owned):
+class Item(
+    PathReprProvider,
+    Base,
+    Navigation,
+    Resource,
+    LockableItem,
+    CopySource,
+    Tabs,
+    Traversable,
+    Owned
+):
     """A common base class for simple, non-container objects."""
 
     zmi_icon = 'far fa-file'
@@ -104,7 +136,7 @@ class Item(Base,
     # Direct use of the 'id' attribute is deprecated - use getId()
     id = ''
 
-    security.declarePublic('getId')
+    @security.public
     def getId(self):
         """Return the id of the object as a string.
 
@@ -168,15 +200,22 @@ class Item(Base,
         return ()
 
     _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
+
     def manage_editedDialog(self, REQUEST, **args):
         return self._manage_editedDialog(self, REQUEST, **args)
 
     def raise_standardErrorMessage(
-            self, client=None, REQUEST={},
-            error_type=None, error_value=None, tb=None,
-            error_tb=None, error_message='',
-            tagSearch=re.compile(r'[a-zA-Z]>').search,
-            error_log_url=''):
+        self,
+        client=None,
+        REQUEST={},
+        error_type=None,
+        error_value=None,
+        tb=None,
+        error_tb=None,
+        error_message='',
+        tagSearch=re.compile(r'[a-zA-Z]>').search,
+        error_log_url=''
+    ):
 
         try:
             if error_type is None:
@@ -226,12 +265,14 @@ class Item(Base,
                 # For backward compatibility, we pass 'error_name' as
                 # 'error_type' here as historically this has always
                 # been a string.
-                kwargs = {'error_type': error_name,
-                          'error_value': error_value,
-                          'error_tb': error_tb,
-                          'error_traceback': error_tb,
-                          'error_message': error_message,
-                          'error_log_url': error_log_url}
+                kwargs = {
+                    'error_type': error_name,
+                    'error_value': error_value,
+                    'error_tb': error_tb,
+                    'error_traceback': error_tb,
+                    'error_message': error_message,
+                    'error_log_url': error_log_url,
+                }
 
                 if getattr(aq_base(s), 'isDocTemp', 0):
                     v = s(client, REQUEST, **kwargs)
@@ -287,7 +328,11 @@ class Item(Base,
             if (hasattr(aq_base(self), 'manage_FTPget')):
                 try:
                     if getSecurityManager().validate(
-                            None, self, 'manage_FTPget', self.manage_FTPget):
+                        None,
+                        self,
+                        'manage_FTPget',
+                        self.manage_FTPget
+                    ):
                         mode = mode | 0o0440
                 except Unauthorized:
                     pass
@@ -358,33 +403,12 @@ class Item(Base,
     def __len__(self):
         return 1
 
-    def __repr__(self):
-        """Show the physical path of the object and its context if available.
-        """
-        try:
-            path = '/'.join(self.getPhysicalPath())
-        except Exception:
-            return Base.__repr__(self)
-        context_path = None
-        context = aq_parent(self)
-        container = aq_parent(aq_inner(self))
-        if aq_base(context) is not aq_base(container):
-            try:
-                context_path = '/'.join(context.getPhysicalPath())
-            except Exception:
-                context_path = None
-        res = '<%s' % self.__class__.__name__
-        res += ' at %s' % path
-        if context_path:
-            res += ' used for %s' % context_path
-        res += '>'
-        return res
-
-    security.declareProtected(access_contents_information, 'getParentNode')
+    @security.protected(access_contents_information)
     def getParentNode(self):
         """The parent of this node.  All nodes except Document
         DocumentFragment and Attr may have a parent"""
         return getattr(self, '__parent__', None)
+
 
 InitializeClass(Item)
 
@@ -436,11 +460,12 @@ def pretty_tb(t, v, tb, as_html=1):
 
 
 @implementer(ISimpleItem)
-class SimpleItem(Item,
-                 Persistent,
-                 Implicit,
-                 RoleManager,
-                 ):
+class SimpleItem(
+    Item,
+    Persistent,
+    Implicit,
+    RoleManager,
+):
     """Mix-in class combining the most common set of basic mix-ins
     """
 
@@ -448,7 +473,11 @@ class SimpleItem(Item,
     security.setPermissionDefault(View, ('Manager',))
 
     manage_options = Item.manage_options + (
-        {'label': 'Security', 'action': 'manage_access'},
+        {
+            'label': 'Security',
+            'action': 'manage_access',
+        },
     )
+
 
 InitializeClass(SimpleItem)

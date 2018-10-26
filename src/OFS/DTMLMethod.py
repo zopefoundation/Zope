@@ -12,37 +12,38 @@
 ##############################################################################
 """DTML Method objects.
 """
-import re
-
-from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import view_management_screens
+from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_proxy_roles
-from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import view as View  # NOQA
+from AccessControl.Permissions import view_management_screens
 from AccessControl.requestmethod import requestmethod
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
+from App.special_dtml import DTMLFile
+from App.special_dtml import HTML
+from DocumentTemplate.DT_Util import ParseError
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
+from OFS import bbb
+from OFS.Cache import Cacheable
+from OFS.role import RoleManager
+from OFS.SimpleItem import Item_w__name__
+from OFS.SimpleItem import PathReprProvider
+from six import binary_type
 from six import PY2
 from six import PY3
-from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
-from OFS import bbb
-from OFS.Cache import Cacheable
-from OFS.role import RoleManager
-from OFS.SimpleItem import Item_w__name__
 from ZPublisher.Iterators import IStreamIterator
+
+import re
 
 
 _marker = []  # Create a new marker object.
@@ -53,12 +54,15 @@ class Code(object):
     pass
 
 
-class DTMLMethod(RestrictedDTML,
-                 HTML,
-                 Implicit,
-                 RoleManager,
-                 Item_w__name__,
-                 Cacheable):
+class DTMLMethod(
+    PathReprProvider,
+    RestrictedDTML,
+    HTML,
+    Implicit,
+    RoleManager,
+    Item_w__name__,
+    Cacheable
+):
     """ DocumentTemplate.HTML objects that act as methods of their containers.
     """
     meta_type = 'DTML Method'
@@ -66,6 +70,7 @@ class DTMLMethod(RestrictedDTML,
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
+    _locked_error_text = 'This DTML Method is locked.'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -76,19 +81,32 @@ class DTMLMethod(RestrictedDTML,
     __defaults__ = None
 
     manage_options = ((
-        {'label': 'Edit', 'action': 'manage_main'},
-        {'label': 'View', 'action': ''},
-        {'label': 'Proxy', 'action': 'manage_proxyForm'},
+        {
+            'label': 'Edit',
+            'action': 'manage_main',
+        },
+        {
+            'label': 'View',
+            'action': '',
+        },
+        {
+            'label': 'Proxy',
+            'action': 'manage_proxyForm',
+        },
     ) +
-        RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
+        RoleManager.manage_options
+        + Item_w__name__.manage_options
+        + Cacheable.manage_options
     )
 
     # More reasonable default for content-type for http HEAD requests.
     default_content_type = 'text/html'
 
-    security.declareProtected(View, '__call__')
+    def errQuote(self, s):
+        # Quoting is done when rendering the error in the template.
+        return s
+
+    @security.protected(View)
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render using the given client object
 
@@ -178,7 +196,7 @@ class DTMLMethod(RestrictedDTML,
             for key in self._cache_namespace_keys:
                 try:
                     val = md[key]
-                except:
+                except Exception:
                     val = None
                 kw[key] = val
             return self.ZCacheable_get(keywords=kw, default=default)
@@ -191,20 +209,20 @@ class DTMLMethod(RestrictedDTML,
             for key in self._cache_namespace_keys:
                 try:
                     val = md[key]
-                except:
+                except Exception:
                     val = None
                 kw[key] = val
             self.ZCacheable_set(result, keywords=kw)
 
-    security.declareProtected(change_dtml_methods, 'ZCacheable_configHTML')
+    security.declareProtected(change_dtml_methods, 'ZCacheable_configHTML')  # NOQA: D001,E501
     ZCacheable_configHTML = DTMLFile('dtml/cacheNamespaceKeys', globals())
 
-    security.declareProtected(change_dtml_methods, 'getCacheNamespaceKeys')
+    @security.protected(change_dtml_methods)
     def getCacheNamespaceKeys(self):
         # Return the cacheNamespaceKeys.
         return self._cache_namespace_keys
 
-    security.declareProtected(change_dtml_methods, 'setCacheNamespaceKeys')
+    @security.protected(change_dtml_methods)
     def setCacheNamespaceKeys(self, keys, REQUEST=None):
         # Set the list of names looked up to provide a cache key.
         ks = []
@@ -217,35 +235,35 @@ class DTMLMethod(RestrictedDTML,
         if REQUEST is not None:
             return self.ZCacheable_manage(self, REQUEST)
 
-    security.declareProtected(View, 'get_size')
+    @security.protected(View)
     def get_size(self):
         return len(self.raw)
 
     # deprecated; use get_size!
     getSize = get_size
 
-    security.declareProtected(change_dtml_methods, 'manage')
+    security.declareProtected(change_dtml_methods, 'manage')  # NOQA: D001
 
-    security.declareProtected(change_dtml_methods, 'manage_editForm')
+    security.declareProtected(change_dtml_methods, 'manage_editForm')  # NOQA: D001,E501
     manage_editForm = DTMLFile('dtml/documentEdit', globals())
     manage_editForm._setName('manage_editForm')
 
     # deprecated!
     manage_uploadForm = manage_editForm
 
-    security.declareProtected(change_dtml_methods, 'manage_main')
+    security.declareProtected(change_dtml_methods, 'manage_main')  # NOQA: D001
     manage = manage_main = manage_editDocument = manage_editForm
 
-    security.declareProtected(change_proxy_roles, 'manage_proxyForm')
+    security.declareProtected(change_proxy_roles, 'manage_proxyForm')  # NOQA: D001,E501
     manage_proxyForm = DTMLFile('dtml/documentProxy', globals())
 
-    security.declareProtected(change_dtml_methods, 'manage_edit')
+    @security.protected(change_dtml_methods)
     def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
         """ Replace contents with 'data', title with 'title'.
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This item is locked.')
+            raise ResourceLockedError(self._locked_error_text)
 
         self.title = str(title)
         if isinstance(data, TaintedString):
@@ -253,13 +271,21 @@ class DTMLMethod(RestrictedDTML,
 
         if hasattr(data, 'read'):
             data = data.read()
-        self.munge(data)
+        try:
+            self.munge(data)
+        except ParseError as e:
+            if REQUEST:
+                return self.manage_main(
+                    self, REQUEST, manage_tabs_message=e,
+                    manage_tabs_type='warning')
+            else:
+                raise
         self.ZCacheable_invalidate()
         if REQUEST:
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
-    security.declareProtected(change_dtml_methods, 'manage_upload')
+    @security.protected(change_dtml_methods)
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
 
@@ -267,10 +293,18 @@ class DTMLMethod(RestrictedDTML,
         """
         self._validateProxy(REQUEST)
         if self.wl_isLocked():
-            raise ResourceLockedError('This DTML Method is locked.')
+            if REQUEST is not None:
+                return self.manage_main(
+                    self, REQUEST,
+                    manage_tabs_message=self._locked_error_text,
+                    manage_tabs_type='warning')
+            raise ResourceLockedError(self._locked_error_text)
 
-        if REQUEST and not file:
-            raise ValueError('No file specified')
+        if REQUEST is not None and not file:
+            return self.manage_main(
+                self, REQUEST,
+                manage_tabs_message='No file specified',
+                manage_tabs_type='warning')
 
         if hasattr(file, 'read'):
             file = file.read()
@@ -281,8 +315,8 @@ class DTMLMethod(RestrictedDTML,
 
         self.munge(file)
         self.ZCacheable_invalidate()
-        if REQUEST:
-            message = "Saved changes."
+        if REQUEST is not None:
+            message = "Content uploaded."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def manage_haveProxy(self, r):
@@ -308,7 +342,7 @@ class DTMLMethod(RestrictedDTML,
             'do not have proxy roles.\n<!--%s, %s-->' % (
                 self.__name__, u, roles))
 
-    security.declareProtected(change_proxy_roles, 'manage_proxy')
+    @security.protected(change_proxy_roles)
     @requestmethod('POST')
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
@@ -320,12 +354,12 @@ class DTMLMethod(RestrictedDTML,
             return self.manage_proxyForm(self, REQUEST,
                                          manage_tabs_message=message)
 
-    security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
+    @security.protected(view_management_screens)
     def PrincipiaSearchSource(self):
         # Support for searching - the document's contents are searched.
         return self.read()
 
-    security.declareProtected(view_management_screens, 'document_src')
+    @security.protected(view_management_screens)
     def document_src(self, REQUEST=None, RESPONSE=None):
         # Return unprocessed document source.
         if RESPONSE is not None:
@@ -333,7 +367,8 @@ class DTMLMethod(RestrictedDTML,
         return self.read()
 
     if bbb.HAS_ZSERVER:
-        security.declareProtected(change_dtml_methods, 'PUT')
+
+        @security.protected(change_dtml_methods)
         def PUT(self, REQUEST, RESPONSE):
             """ Handle FTP / HTTP PUT requests.
             """
@@ -346,14 +381,15 @@ class DTMLMethod(RestrictedDTML,
             RESPONSE.setStatus(204)
             return RESPONSE
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        security.declareProtected(ftp_access, 'manage_FTPlist')
+        security.declareProtected(ftp_access, 'manage_FTPstat')  # NOQA: D001
+        security.declareProtected(ftp_access, 'manage_FTPlist')  # NOQA: D001
 
-        security.declareProtected(ftp_access, 'manage_FTPget')
+        @security.protected(ftp_access)
         def manage_FTPget(self):
             """ Get source for FTP download.
             """
             return self.read()
+
 
 InitializeClass(DTMLMethod)
 

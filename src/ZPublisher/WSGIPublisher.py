@@ -223,7 +223,7 @@ def load_app(module_info):
     try:
         yield (app, realm, debug_mode)
     finally:
-        if transaction.manager._txn is not None:
+        if transaction.manager.manager._txn is not None:
             # Only abort a transaction, if one exists. Otherwise the
             # abort creates a new transaction just to abort it.
             transaction.abort()
@@ -241,16 +241,14 @@ def publish_module(environ, start_response,
     result = ()
 
     path_info = environ.get('PATH_INFO')
-    if path_info:
+    if path_info and PY3:
         # The WSGI server automatically treats the PATH_INFO as latin-1 encoded
         # bytestrings. Typically this is a false assumption as the browser
         # delivers utf-8 encoded PATH_INFO. We, therefore, need to encode it
-        # again with latin-1 to get a utf-8 encoded bytestring. This is
-        # sufficient for Python 2.
+        # again with latin-1 to get a utf-8 encoded bytestring.
         path_info = path_info.encode('latin-1')
-        if PY3:
-            # In Python 3 we need unicode here, so we decode the bytestring.
-            path_info = path_info.decode('utf-8')
+        # But in Python 3 we need text here, so we decode the bytestring.
+        path_info = path_info.decode('utf-8')
 
         environ['PATH_INFO'] = path_info
     with closing(BytesIO()) as stdout, closing(BytesIO()) as stderr:

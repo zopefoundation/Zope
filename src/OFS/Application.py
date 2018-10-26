@@ -13,35 +13,33 @@
 """Application support
 """
 
-import os
-import sys
-from logging import getLogger
-
-import Products
-import transaction
+from . import Folder
+from . import misc_
+from .interfaces import IApplication
+from .misc_ import Misc_
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from Acquisition import aq_base
-from App.ApplicationManager import ApplicationManager
 from App import FactoryDispatcher
+from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
 from DateTime import DateTime
+from logging import getLogger
 from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from zExceptions import (
-    Forbidden,
-    Redirect as RedirectException,
-)
+from zExceptions import Forbidden
+from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
 
-from . import Folder
-from . import misc_
-from .interfaces import IApplication
-from .misc_ import Misc_
+import os
+import Products
+import sys
+import transaction
+
 
 if bbb.HAS_ZSERVER:
     from webdav.NullResource import NullResource
@@ -190,6 +188,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         #
         # We're at the base of the path.
         return ('', )
+
 
 InitializeClass(Application)
 

@@ -5,6 +5,14 @@ from zExceptions import Unauthorized
 
 import unittest
 
+try:
+    from html import escape
+    import functools
+    # We do not want escaped " and ', as PageTemplate neither does it:
+    escape = functools.partial(escape, quote=False)
+except ImportError:  # PY2
+    from cgi import escape
+
 
 BAD_ATTR_STR = """
 <p tal:content="python:'class of {0} is {0.__class__}'.format(context)" />
@@ -132,6 +140,8 @@ class UnauthorizedSecurityPolicy(object):
 
 
 class FormatterFunctionalTest(FunctionalTestCase):
+
+    maxDiff = None
 
     def test_access_to_private_content_not_allowed_via_any_attribute(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
