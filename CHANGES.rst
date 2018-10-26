@@ -8,6 +8,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
+- ``HTTPRequest.text()`` now obscures values of fields those name
+  contain the string ``passw`` in the same way ``HTTPRequest.__str__`` already
+  did.
+  (`#375 <https://github.com/zopefoundation/Zope/issues/375>`_)
+
 4.0b6 (unreleased)
 ------------------
 
