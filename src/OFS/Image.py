@@ -31,7 +31,6 @@ from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
-from OFS.SimpleItem import PathReprProvider
 from Persistence import Persistent
 from six import binary_type
 from six import PY2
@@ -106,7 +105,6 @@ def manage_addFile(
 
 @implementer(IWriteLock, HTTPRangeSupport.HTTPRangeInterface)
 class File(
-    PathReprProvider,
     Persistent,
     Implicit,
     PropertyManager,

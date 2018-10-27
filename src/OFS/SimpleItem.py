@@ -73,9 +73,11 @@ logger = logging.getLogger()
 class PathReprProvider(Base):
     """Provides a representation that includes the physical path.
 
-    Should be in the MRO before persistent.Persistent as this provides an own
-    implementation of `__repr__` that includes information about connection and
-    oid.
+    Replaces the implementation of `__repr__` in persistent.Persistent that
+    that includes information about connection and oid but not physicalPath.
+    Persistent's __repr__ tries to delegate to a _p_repr. Setting _p_repr
+    works around the issue that in some MROs Persistent's __repr__
+    came before this one.
     """
 
     def __repr__(self):
@@ -98,6 +100,8 @@ class PathReprProvider(Base):
             res += ' used for %s' % context_path
         res += '>'
         return res
+
+    _p_repr = __repr__
 
 
 @implementer(IItem)
