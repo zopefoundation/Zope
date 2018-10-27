@@ -25,6 +25,7 @@ from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
+from OFS.SimpleItem import PathReprProvider
 from zope.interface import implementer
 
 
@@ -58,6 +59,7 @@ def manage_addFolder(
 @implementer(IFolder)
 class Folder(
     ObjectManager,
+    PathReprProvider,
     PropertyManager,
     RoleManager,
     Collection,
