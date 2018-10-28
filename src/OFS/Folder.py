@@ -58,8 +58,8 @@ def manage_addFolder(
 
 @implementer(IFolder)
 class Folder(
-    ObjectManager,
     PathReprProvider,
+    ObjectManager,
     PropertyManager,
     RoleManager,
     Collection,
