@@ -1,3 +1,4 @@
+Zope==4.0b7
 AccessControl==4.0b6
 Acquisition==4.5
 AuthEncoding==4.1
@@ -21,7 +22,6 @@ WebTest==2.0.32
 ZConfig==3.3.0
 ZEO==5.2.0
 ZODB==5.5.1
-ZServer==4.0b3 ; python_version < '3.0'
 Zope2==4.0b1
 five.globalrequest==99.1
 five.localsitemanager==3.2.1
