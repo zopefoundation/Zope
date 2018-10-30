@@ -117,11 +117,6 @@ setup(
         'zope.traversing',
         'zope.viewlet',
     ],
-    extras_require={
-        'test': [
-            'ZODB[test]',
-        ],
-    },
     include_package_data=True,
     zip_safe=False,
     entry_points={
