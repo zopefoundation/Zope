@@ -50,6 +50,11 @@ Steps for creating a new Zope release
 
   $ bin/tox
 
+- Check the future PyPI long description for ReST errors and for spelling
+  issues::
+
+  $ bin/longtest
+
 - Upload the tagged release to PyPI::
 
     $ git tag <TAG-NAME>
