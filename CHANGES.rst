@@ -8,7 +8,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b7 (unreleased)
+4.0b7 (2018-10-30)
 ------------------
 
 Security related fixes
