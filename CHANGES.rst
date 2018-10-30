@@ -44,7 +44,7 @@ Bugfixes
 
 - Fix KeyError on releasing resources of a Connection when closing the DB.
   This requires at least version 2.4 of the `transaction` package.
-  See `issue 208 <https://github.com/zopefoundation/ZODB/issues/208>`.
+  (See `ZODB#208 <https://github.com/zopefoundation/ZODB/issues/208>`_.)
 
 - Fix rendering of ordered folder icon in ZMI.
 
