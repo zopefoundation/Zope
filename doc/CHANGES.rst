@@ -8,7 +8,13 @@ http://docs.zope.org/zope2/
 2.13.29 (unreleased)
 --------------------
 
-- Nothing changed yet.
+Security related fixes
+++++++++++++++++++++++
+
+- ``HTTPRequest.text()`` now obscures values of fields those name
+  contain the string ``passw`` in the same way ``HTTPRequest.__str__`` already
+  did.
+  (`#375 <https://github.com/zopefoundation/Zope/issues/375>`_)
 
 
 2.13.28 (2018-04-23)

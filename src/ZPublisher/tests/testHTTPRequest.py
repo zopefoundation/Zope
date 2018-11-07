@@ -1054,6 +1054,22 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req._script = ['foo', 'bar']
         self.assertEquals(req.getVirtualRoot(), '/foo/bar')
 
+    def test___str____password_field(self):
+        # It obscures password fields.
+        req = self._makeOne()
+        req.form['passwd'] = 'secret'
+
+        self.assert_('secret' not in str(req))
+        self.assert_('password obscured' in str(req))
+
+    def test_text__password_field(self):
+        # It obscures password fields.
+        req = self._makeOne()
+        req.form['passwd'] = 'secret'
+
+        self.assert_('secret' not in str(req))
+        self.assert_('password obscured' in str(req))
+
 
 class TestHTTPRequestZope3Views(TestRequestZope3ViewsBase,):
 
