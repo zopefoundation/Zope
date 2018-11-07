@@ -97,12 +97,14 @@ class VHMRegressions(unittest.TestCase):
                       '/folder/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/')
+
     def testWildcardRewrite(self):
         ob = self.traverse('/VirtualHostBase/http/doc.example.com:80'
                       '/folder/*/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://doc.example.com/')
         self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
+
 
 def gen_cases():
     for vbase, ubase in (
