@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '4.0b7.dev0'
+version = '4.0b8.dev0'
 
 
 setup(
@@ -78,7 +78,7 @@ setup(
         'ipaddress ; python_version=="2.7"',
         'setuptools >= 36.2',
         'six',
-        'transaction',
+        'transaction >= 2.4',
         'waitress',
         'zExceptions >= 3.4',
         'z3c.pt',
@@ -117,11 +117,6 @@ setup(
         'zope.traversing',
         'zope.viewlet',
     ],
-    extras_require={
-        'test': [
-            'ZODB[test]',
-        ],
-    },
     include_package_data=True,
     zip_safe=False,
     entry_points={

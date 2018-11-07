@@ -41,13 +41,19 @@ Steps for creating a new Zope release
 
 - Pin the Zope version in ``versions-prod.cfg``.
 
-- Run ``bin/buildout`` to update ``requirements-full.txt``
+- Run ``bin/buildout`` to update ``requirements-full.txt`` and
+  ``constraints.txt``.
 
 - Commit the changes.
 
 - Run all tests::
 
   $ bin/tox
+
+- Check the future PyPI long description for ReST errors and for spelling
+  issues::
+
+  $ bin/longtest
 
 - Upload the tagged release to PyPI::
 

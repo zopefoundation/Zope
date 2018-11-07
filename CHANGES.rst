@@ -17,8 +17,16 @@ New features
 - Add wildcard rewrite to sub host name in virtualHostMonster.
 
 
-4.0b7 (unreleased)
+4.0b7 (2018-10-30)
 ------------------
+
+Security related fixes
+++++++++++++++++++++++
+
+- ``HTTPRequest.text()`` now obscures values of fields those name
+  contain the string ``passw`` in the same way ``HTTPRequest.__str__`` already
+  did.
+  (`#375 <https://github.com/zopefoundation/Zope/issues/375>`_)
 
 Bugfixes
 ++++++++
@@ -37,10 +45,18 @@ Bugfixes
   stdlib in Python 3.
   (`#368 <https://github.com/zopefoundation/Zope/issues/368>`_)
 
+- Fix KeyError on releasing resources of a Connection when closing the DB.
+  This requires at least version 2.4 of the `transaction` package.
+  (See `ZODB#208 <https://github.com/zopefoundation/ZODB/issues/208>`_.)
+
 - Fix rendering of ordered folder icon in ZMI.
 
 Other changes
 +++++++++++++
+
+- Restore old ``__repr__`` via ``OFS.SimpleItem.PathReprProvider``. Use this
+  as first base class for your custom classes, to restore the old behaviour.
+  (`#379 <https://github.com/zopefoundation/Zope/issues/379>`_)
 
 - Update dependencies to newest versions.
 
