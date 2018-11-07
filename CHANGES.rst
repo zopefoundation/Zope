@@ -11,7 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+New features
+++++++++++++
+
+- Add wildcard rewrite to sub host name in virtualHostMonster.
 
 
 4.0b7 (2018-10-30)
