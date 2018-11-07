@@ -8,6 +8,15 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
+4.0b8 (unreleased)
+------------------
+
+New features
+++++++++++++
+
+- Add wildcard rewrite to sub host name in virtualHostMonster.
+
+
 4.0b7 (unreleased)
 ------------------
 
@@ -34,11 +43,6 @@ Other changes
 +++++++++++++
 
 - Update dependencies to newest versions.
-
-New features
-++++++++++++
-
-- Add wildcard rewrite to sub host name in virtualHostMonster.
 
 
 4.0b6 (2018-10-11)
