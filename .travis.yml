@@ -47,7 +47,7 @@ after_success:
     - ./update_index.sh
 
 notifications:
-    email: false
+    email: mh@gocept.com
 
 cache:
   pip: true
