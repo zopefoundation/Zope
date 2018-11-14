@@ -24,6 +24,7 @@ Other changes
 - Add security declarations to ``SimpleItem.manage_FTPlist()`` and
   ``Simplified.manage_FTPstat()`` instead of requiring classes extending
   ``SimpleItem`` to do so.
+  (`#398 <https://github.com/zopefoundation/Zope/pull/398>`_)
 
 
 4.0b7 (2018-10-30)
