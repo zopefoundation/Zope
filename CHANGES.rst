@@ -15,6 +15,7 @@ New features
 ++++++++++++
 
 - Add wildcard rewrite to sub host name in virtualHostMonster.
+  (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
 
 Other changes
 +++++++++++++
