@@ -21,6 +21,10 @@ Other changes
 
 - Update dependencies to newest versions.
 
+- Add security declarations to ``SimpleItem.manage_FTPlist()`` and
+  ``Simplified.manage_FTPstat()`` instead of requiring classes extending
+  ``SimpleItem`` to do so.
+
 
 4.0b7 (2018-10-30)
 ------------------
