@@ -765,7 +765,12 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	color: white;
 	width: 100%;
 }
-
+@media (min-width: 768px) {
+	.zmi-Site-Error-Log table.zmi-errorlog-entry tr.value td,
+	.zmi-Site-Error-Log div.zmi-traceback.code p {
+		white-space:pre;
+	}
+}
 /* OBJECT CLASS ZCatalog */
 @media (min-width: 577px) {
 	body.zmi-ZCatalog {
