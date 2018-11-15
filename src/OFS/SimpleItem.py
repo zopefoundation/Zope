@@ -20,6 +20,7 @@ item types.
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
+from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -319,6 +320,7 @@ class Item(
     if bbb.HAS_ZSERVER:
         # FTP support methods
 
+        @security.protected(ftp_access)
         def manage_FTPstat(self, REQUEST):
             """Psuedo stat, used by FTP for directory listings.
             """
@@ -379,6 +381,7 @@ class Item(
             return marshal.dumps(
                 (mode, 0, 0, 1, owner, group, size, mtime, mtime, mtime))
 
+        @security.protected(ftp_access)
         def manage_FTPlist(self, REQUEST):
             """Directory listing for FTP.
 

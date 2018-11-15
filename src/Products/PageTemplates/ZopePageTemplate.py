@@ -137,7 +137,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             self.output_encoding = output_encoding
 
         text_decoded = text_decoded.strip()
-        
+
         self.ZCacheable_invalidate()
         super(ZopePageTemplate, self).pt_edit(text_decoded, content_type)
 
@@ -294,9 +294,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         security.declareProtected(change_page_templates, 'manage_FTPput')
         manage_FTPput = PUT
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        security.declareProtected(ftp_access, 'manage_FTPlist')
-        security.declareProtected(ftp_access, 'manage_FTPget')
+        @security.protected(ftp_access)
         def manage_FTPget(self):
             "Get source for FTP download"
             result = self.read()

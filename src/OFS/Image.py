@@ -707,9 +707,6 @@ class File(
             RESPONSE.setStatus(204)
             return RESPONSE
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')  # NOQA: D001
-        security.declareProtected(ftp_access, 'manage_FTPlist')  # NOQA: D001
-
         @security.protected(ftp_access)
         def manage_FTPget(self):
             """Return body for ftp."""
@@ -877,12 +874,6 @@ class Image(File):
     security.declareProtected(View, 'index_html')  # NOQA: D001
     security.declareProtected(View, 'get_size')  # NOQA: D001
     security.declareProtected(View, 'getContentType')  # NOQA: D001
-
-    if bbb.HAS_ZSERVER:
-        security.declareProtected(change_images_and_files, 'PUT')  # NOQA: D001
-        security.declareProtected(ftp_access, 'manage_FTPstat')  # NOQA: D001
-        security.declareProtected(ftp_access, 'manage_FTPlist')  # NOQA: D001
-        security.declareProtected(ftp_access, 'manage_FTPget')  # NOQA: D001
 
     _properties = (
         {'id': 'title', 'type': 'string'},
