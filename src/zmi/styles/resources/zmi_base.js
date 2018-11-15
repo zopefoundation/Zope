@@ -28,9 +28,8 @@ function setupShowHideTreeView() {
 			$a.attr('href', 'manage')
 		}
 		else {
-			$li.attr('title', $li.attr('data-title_inactive'))
-			$li.css('opacity', .5);
-			$a.addClass('disabled')
+			$li.attr('title', $li.attr('data-title_inactive'));
+			$a.addClass('disabled');
 		}
 	}
 }
@@ -227,11 +226,11 @@ $(function() {
 	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
 	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
-		$('#addItemSelect').css('opacity',1);
+		$('#addItemSelect').removeClass('disabled');
 		$('#addItemSelect').removeAttr('disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
 	} else {
-		$('#addItemSelect').css('opacity', 0.5);
+		$('#addItemSelect').addClass('disabled');
 		$('#addItemSelect').attr('disabled','disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
 	}
