@@ -16,6 +16,12 @@ Security related fixes
   did.
   (`#375 <https://github.com/zopefoundation/Zope/issues/375>`_)
 
+Features
+++++++++
+
+- Add wildcard rewrite to sub host name in virtualHostMonster.
+  (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
+
 
 2.13.28 (2018-04-23)
 --------------------
