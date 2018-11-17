@@ -304,13 +304,15 @@ class FileTests(unittest.TestCase):
 
     def testHistoryCompare(self):
         self.file.manage_edit('a', 'text/plain',
-                              filedata='a')
+                              filedata='content_of_a')
         getattr(self.app, self.factory)('b',
-                file='b', content_type='text/plain')
-        self.file.manage_historyCompare(
+                file='content_of_b', content_type='text/plain')
+        page = self.file.manage_historyCompare(
             self.file,
             self.app.b,
             self.app.REQUEST)
+        self.assertTrue('content_of_a' in page)
+        self.assertTrue('content_of_b' in page)
 
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
