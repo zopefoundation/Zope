@@ -59,8 +59,7 @@ version of ``requirements-full.txt`` in the URL, replacing 4.0b6 in the example 
 
 .. code-block:: sh
 
-   $ bin/pip install Zope==4.0b6\
-   -c https://zopefoundation.github.io/Zope/releases/4.0b6/constraints.txt
+   $ bin/pip install Zope==4.0b6 -c https://zopefoundation.github.io/Zope/releases/4.0b6/constraints.txt
    ...
    Obtaining Zope
    ...
