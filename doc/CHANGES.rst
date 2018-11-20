@@ -22,6 +22,9 @@ Features
 - Add wildcard rewrite to sub host name in virtualHostMonster.
   (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
 
+- Enable ZMI History tab for ``OFS.Image.File``.
+  (`#396 <https://github.com/zopefoundation/Zope/pull/396>`_)
+
 
 2.13.28 (2018-04-23)
 --------------------
