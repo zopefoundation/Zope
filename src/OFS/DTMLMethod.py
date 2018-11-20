@@ -454,6 +454,10 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """
     if hasattr(file, 'read'):
         file = file.read()
+    if PY3 and isinstance(file, binary_type):
+        file = file.decode('utf-8')
+    if PY2 and isinstance(file, text_type):
+        file = file.encode('utf-8')
     if not file:
         file = default_dm_html
     id = str(id)
