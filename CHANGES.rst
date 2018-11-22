@@ -20,6 +20,9 @@ New features
 - Add support for IPv6 hosts in VirtualHostMonster.
   (`#314 <https://github.com/zopefoundation/Zope/pull/314>`_)
 
+- Add TestBrowser ``login`` method to set basic auth header
+  (`#341 <https://github.com/zopefoundation/Zope/issues/341>_`)
+
 Other changes
 +++++++++++++
 
