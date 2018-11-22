@@ -29,6 +29,9 @@ Other changes
   ``Simplified.manage_FTPstat()`` instead of requiring classes extending
   ``SimpleItem`` to do so.
   (`#398 <https://github.com/zopefoundation/Zope/pull/398>`_)
+
+- Clarified prerequisites for building Zope.
+  (`#366 <https://github.com/zopefoundation/Zope/issues/366>`_)
   
 Fixes
 +++++

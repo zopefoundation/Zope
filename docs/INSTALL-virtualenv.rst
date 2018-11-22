@@ -7,6 +7,34 @@ This document describes how to install Zope into a ``virtualenv``
 using ``pip``.
 
 
+Prerequisites
+-------------
+
+In order to install Zope, you must have the following prerequisites
+available:
+
+- A supported version of Python, including the development support if
+  installed from system-level packages. Supported versions include:
+
+  * 2.7
+  * 3.5
+  * 3.6
+  * 3.7
+
+- Zope needs the Python ``zlib`` module to be importable.  If you are
+  building your own Python from source, please be sure that you have the
+  headers installed which correspond to your system's ``zlib``.
+
+- A C compiler capable of building extension modules for your Python
+  (gcc recommended).
+
+- If you are using a Python interpreter shipping with your Linux distribution,
+  you need to install the matching Python development package. As example, for
+  Python 3 on Ubuntu 18.04, you have to type the following::
+
+    $ sudo apt-get install python3-dev
+
+
 Create a Virtual Environment
 ----------------------------
 
@@ -64,13 +92,6 @@ version of ``requirements-full.txt`` in the URL, replacing 4.0b6 in the example 
    Obtaining Zope
    ...
    Successfully installed ...
-
-.. note::
-  In order to compile C code, you might need to install the Python development package.
-
-  For Ubuntu 18.04, you have to type the following::
-
-    $ sudo apt-get install python3-dev
 
 You can also install Zope using a single requirements file. Note that this
 installation method might install packages that are not actually needed (i. e.
