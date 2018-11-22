@@ -189,7 +189,9 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             raise ResourceLockedError("File is locked.")
 
         if not file:
-            raise ValueError('File not specified')
+            return self.pt_editForm(manage_tabs_message='No file specified',
+                                    manage_tabs_type='warning')
+
         if hasattr(file, 'read'):
             text = file.read()
             filename = file.filename
