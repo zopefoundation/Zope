@@ -5,6 +5,7 @@ ZopePageTemplate regression tests.
 Ensures that adding a page template works correctly.
 """
 
+import codecs
 import unittest
 import transaction
 
@@ -13,7 +14,10 @@ from zope.traversing.adapters import DefaultTraversable
 from zope.publisher.http import HTTPCharsets
 
 from Testing.makerequest import makerequest
-from Testing.ZopeTestCase import ZopeTestCase, installProduct
+from Testing.testbrowser import Browser
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import installProduct
+from Testing.ZopeTestCase import ZopeTestCase
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
@@ -500,6 +504,29 @@ class SrcTests(unittest.TestCase):
         response = object()
         self.assertEqual(src(request, response), 'TESTING')
 
+class ZPTBrowserTests(FunctionalTestCase):
+    """Browser testing ZopePageTemplate"""
+
+    def setUp(self):
+        from Products.PageTemplates.ZopePageTemplate import \
+            manage_addPageTemplate
+        super(ZPTBrowserTests, self).setUp()
+
+        Zope2.App.zcml.load_site(force=True)
+
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        manage_addPageTemplate(self.app, 'page_template')
+
+        self.browser = Browser()
+        self.browser.login('manager', 'manager_pass')
+        self.browser.open('http://localhost/page_template/manage_main')
+
+    def test_pt_upload__no_file(self):
+        """It renders an error message if no file is uploaded."""
+        self.browser.getControl('Upload File').click()
+        self.assertIn('No file specified', self.browser.contents)
+
 
 class DummyRequest(dict):
     pass
@@ -523,6 +550,7 @@ def test_suite():
         unittest.makeSuite(ZPTMacros),
         unittest.makeSuite(ZopePageTemplateFileTests),
         unittest.makeSuite(ZPTUnicodeEncodingConflictResolution),
+        unittest.makeSuite(ZPTBrowserTests),
         unittest.makeSuite(PreferredCharsetUnicodeResolverTests),
         unittest.makeSuite(SrcTests),
     ))
