@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import codecs
 import Testing.testbrowser
 import Testing.ZopeTestCase
 import Zope2.App
@@ -24,10 +23,7 @@ class SortingTests(Testing.ZopeTestCase.FunctionalTestCase):
             folder.File1.update_data(u'hällo'.encode('utf-8'))
 
         self.browser = Testing.testbrowser.Browser()
-        self.browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        self.browser.login('manager', 'manager_pass')
 
     def check_order(self, expect_1_before_2):
         found_1_before_2 = (
