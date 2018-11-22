@@ -19,8 +19,8 @@ Security related fixes
 Features
 ++++++++
 
-- Add wildcard rewrite to sub host name in virtualHostMonster.
-  (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
+- Add support for IPv6 hosts in VirtualHostMonster.
+  (`#395 <https://github.com/zopefoundation/Zope/pull/395>`_)
 
 - Enable ZMI History tab for ``OFS.Image.File``.
   (`#396 <https://github.com/zopefoundation/Zope/pull/396>`_)
