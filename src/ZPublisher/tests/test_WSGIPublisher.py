@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import codecs
 import io
 import unittest
 
@@ -555,10 +554,7 @@ class WSGIPublisherTests(FunctionalTestCase):
         manage_addFile(self.app, 'täst', u'çöńtêñt'.encode('utf-8'))
 
         browser = Testing.testbrowser.Browser()
-        browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        browser.login('manager', 'manager_pass')
 
         browser.open('http://localhost/{}'.format(quote('täst')))
         self.assertEqual(browser.contents.decode('utf-8'), u'çöńtêñt')

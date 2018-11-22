@@ -14,6 +14,7 @@
 """Support for using zope.testbrowser from Zope2.
 """
 
+import codecs
 import transaction
 from zope.testbrowser import browser
 
@@ -63,3 +64,12 @@ class Browser(browser.Browser):
         if wsgi_app is None:
             wsgi_app = WSGITestApp(self)
         super(Browser, self).__init__(url=url, wsgi_app=wsgi_app)
+
+    def login(self, username, password):
+        """Set up a correct HTTP Basic Auth Authorization header"""
+        if not isinstance(username, bytes):
+            username = username.encode('UTF-8')
+        if not isinstance(password, bytes):
+            password = password.encode('UTF-8')
+        hdr = codecs.encode(b'%s:%s' % (username, password), 'base64')
+        self.addHeader('Authorization', 'basic {}'.format(hdr.decode('UTF-8')))

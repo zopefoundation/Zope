@@ -15,7 +15,6 @@ from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
-import codecs
 import OFS.Image
 import os
 import six
@@ -347,10 +346,7 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
 
         transaction.commit()
         self.browser = Testing.testbrowser.Browser()
-        self.browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        self.browser.login('manager', 'manager_pass')
 
     def test_Image__manage_main__1(self):
         """It shows the content of text files as text."""
