@@ -519,10 +519,7 @@ class ZPTBrowserTests(FunctionalTestCase):
         manage_addPageTemplate(self.app, 'page_template')
 
         self.browser = Browser()
-        self.browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        self.browser.login('manager', 'manager_pass')
         self.browser.open('http://localhost/page_template/manage_main')
 
     def test_pt_upload__no_file(self):
