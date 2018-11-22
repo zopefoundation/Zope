@@ -23,6 +23,8 @@ def runscript(zopeconf, script_name, *extra_args):
 
 def debug(zopeconf):
     make_wsgi_app({}, zopeconf)
+    print('Starting debugger (the name "app" is bound to the top-level '
+          'Zope object)')
     return Zope2.app()
 
 

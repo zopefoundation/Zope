@@ -35,6 +35,8 @@ Fixes
 
 - Some CSS fixes in ZMI.
 
+- added note about the ``app`` toplevel object in the debugger
+
 
 4.0b7 (2018-10-30)
 ------------------
