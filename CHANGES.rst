@@ -40,7 +40,7 @@ Fixes
 
 - added note about the ``app`` toplevel object in the debugger
 
-- Show a message instead of excption for empty file into Page Template
+- Show a message instead of exception for empty file into Page Template
   (`#357 <https://github.com/zopefoundation/Zope/issues/357>`_)
 
 
