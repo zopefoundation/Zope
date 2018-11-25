@@ -331,7 +331,7 @@ class HTTPBaseResponse(BaseResponse):
         if 'value' in d:
             d.pop('value')
         d['max_age'] = 0
-        d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
+        d['expires'] = 'Wed, 31 Dec 1997 23:59:59 GMT'
 
         self.setCookie(name, value='deleted', **d)
 

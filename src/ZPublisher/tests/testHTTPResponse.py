@@ -208,7 +208,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
 
     def test_setCookie_w_expires(self):
-        EXPIRES = 'Wed, 31-Dec-97 23:59:59 GMT'
+        EXPIRES = 'Wed, 31 Dec 1997 23:59:59 GMT'
         response = self._makeOne()
         response.setCookie('foo', 'bar', expires=EXPIRES)
         cookie = response.cookies.get('foo', None)
@@ -383,7 +383,8 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('foo', path='/')
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
+        self.assertEqual(cookie.get('expires'),
+                         'Wed, 31 Dec 1997 23:59:59 GMT')
         self.assertEqual(cookie.get('max_age'), 0)
         self.assertEqual(cookie.get('path'), '/')
 
@@ -392,10 +393,11 @@ class HTTPResponseTests(unittest.TestCase):
         # http://zope.org/Collectors/Zope/1160
         response = self._makeOne()
         response.expireCookie('foo', path='/',
-                              expires='Mon, 22-Mar-2004 17:59 GMT', max_age=99)
+                              expires='Mon, 22 Mar 2004 17:59 GMT', max_age=99)
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
+        self.assertEqual(cookie.get('expires'),
+                         'Wed, 31 Dec 1997 23:59:59 GMT')
         self.assertEqual(cookie.get('max_age'), 0)
         self.assertEqual(cookie.get('path'), '/')
 
@@ -1068,7 +1070,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(
             set(cookie_header.split('; ')),
             set(['qux="deleted"', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+                 'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1223,7 +1225,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(
             set(cookie_value.split(b'; ')),
             set([b'qux="deleted"', b'Path=/', b'Max-Age=0',
-                 b'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+                 b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
         )
 
     def test___str__after_addHeader(self):
