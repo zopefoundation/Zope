@@ -41,17 +41,17 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.basic_auth = '%s:%s' % (user_name, user_password)
 
         # A simple document
-        self.folder.addDTMLDocument('index_html', file='index')
+        self.folder.addDTMLDocument('index_html', file=b'index')
 
         # A document accessible only to its owner
-        self.folder.addDTMLDocument('secret_html', file='secret')
+        self.folder.addDTMLDocument('secret_html', file=b'secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
         # A method redirecting to the Zope root
         url = self.app.absolute_url()
         self.folder.addDTMLMethod(
             'redirect',
-            file='<dtml-call "RESPONSE.redirect(\'' + url + '\')">')
+            file=b'<dtml-call "RESPONSE.redirect(\'%s\')">' % url.encode('ascii'))
 
         # A method setting a cookie
         self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)

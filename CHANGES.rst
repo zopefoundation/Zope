@@ -41,6 +41,8 @@ Fixes
 
 - Some CSS fixes in ZMI.
 
+- Sanitize file handling for uploading and adding DTML methods and documents
+
 - added note about the ``app`` toplevel object in the debugger
 
 - Show a message instead of exception for empty file into Page Template

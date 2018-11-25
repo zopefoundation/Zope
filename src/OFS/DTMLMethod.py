@@ -305,15 +305,8 @@ class DTMLMethod(
                 self, REQUEST,
                 manage_tabs_message='No file specified',
                 manage_tabs_type='warning')
-
-        if hasattr(file, 'read'):
-            file = file.read()
-        if PY3 and isinstance(file, binary_type):
-            file = file.decode('utf-8')
-        if PY2 and isinstance(file, text_type):
-            file = file.encode('utf-8')
-
-        self.munge(file)
+        
+        self.munge(safe_file_data(file))
         self.ZCacheable_invalidate()
         if REQUEST is not None:
             message = "Content uploaded."
@@ -429,6 +422,17 @@ def decapitate(html, RESPONSE=None):
     return html[spos + eolen:]
 
 
+def safe_file_data(data):
+    # Helper to convert upload file content into a safe value for saving
+    if hasattr(data, 'read'):
+        data = data.read()
+    if PY3 and isinstance(data, binary_type):
+        data = data.decode('utf-8')
+    if PY2 and isinstance(data, text_type):
+        data = data.encode('utf-8')
+    return data
+
+
 default_dm_html = """\
 <!DOCTYPE html>
 <html>
@@ -452,13 +456,12 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if hasattr(file, 'read'):
-        file = file.read()
-    if not file:
-        file = default_dm_html
+    data = safe_file_data(file)
+    if not data:
+        data = default_dm_html
     id = str(id)
     title = str(title)
-    ob = DTMLMethod(file, __name__=id)
+    ob = DTMLMethod(data, __name__=id)
     ob.title = title
     id = self._setObject(id, ob)
     if REQUEST is not None:

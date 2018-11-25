@@ -21,6 +21,7 @@ from DocumentTemplate.permissions import change_dtml_documents
 from DocumentTemplate.permissions import change_dtml_methods
 from OFS.DTMLMethod import decapitate
 from OFS.DTMLMethod import DTMLMethod
+from OFS.DTMLMethod import safe_file_data
 from OFS.PropertyManager import PropertyManager
 from six import binary_type
 from six import PY2
@@ -134,13 +135,12 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if hasattr(file, 'read'):
-        file = file.read()
-    if not file:
-        file = default_dd_html
+    data = safe_file_data(file)
+    if not data:
+        data = default_dd_html
     id = str(id)
     title = str(title)
-    ob = DTMLDocument(file, __name__=id)
+    ob = DTMLDocument(data, __name__=id)
     ob.title = title
     id = self._setObject(id, ob)
     if REQUEST is not None:
