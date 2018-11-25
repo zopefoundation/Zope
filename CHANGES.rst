@@ -35,6 +35,8 @@ Fixes
 
 - Some CSS fixes in ZMI.
 
+- Sanitize file handling for uploading and adding DTML methods and documents
+
 
 4.0b7 (2018-10-30)
 ------------------
