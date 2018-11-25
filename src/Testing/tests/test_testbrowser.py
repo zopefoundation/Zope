@@ -76,7 +76,7 @@ class TestTestbrowser(FunctionalTestCase):
         browser.open(url)
         self.assertTrue(browser.headers['status'].startswith('401'))
 
-        browser.addHeader('Authorization', 'Basic ' + basic_auth)
+        browser.login(user_name, user_password)
         browser.open(url)
         self.assertTrue(browser.headers['status'].startswith('200'))
         self.assertEqual(browser.contents, 'secret')

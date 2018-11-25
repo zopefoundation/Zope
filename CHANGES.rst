@@ -20,6 +20,9 @@ New features
 - Add support for IPv6 hosts in VirtualHostMonster.
   (`#314 <https://github.com/zopefoundation/Zope/pull/314>`_)
 
+- Add TestBrowser ``login`` method to set basic auth header
+  (`#341 <https://github.com/zopefoundation/Zope/issues/341>_`)
+
 Other changes
 +++++++++++++
 
@@ -29,6 +32,9 @@ Other changes
   ``Simplified.manage_FTPstat()`` instead of requiring classes extending
   ``SimpleItem`` to do so.
   (`#398 <https://github.com/zopefoundation/Zope/pull/398>`_)
+
+- Clarified prerequisites for building Zope.
+  (`#366 <https://github.com/zopefoundation/Zope/issues/366>`_)
   
 Fixes
 +++++
@@ -36,6 +42,11 @@ Fixes
 - Some CSS fixes in ZMI.
 
 - Sanitize file handling for uploading and adding DTML methods and documents
+
+- added note about the ``app`` toplevel object in the debugger
+
+- Show a message instead of exception for empty file into Page Template
+  (`#357 <https://github.com/zopefoundation/Zope/issues/357>`_)
 
 
 4.0b7 (2018-10-30)

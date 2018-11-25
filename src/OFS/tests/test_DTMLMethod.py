@@ -2,7 +2,6 @@
 import Testing.ZopeTestCase
 import Testing.testbrowser
 import Zope2.App.zcml
-import codecs
 import io
 import unittest
 import zExceptions
@@ -111,10 +110,7 @@ class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
         addDTMLMethod(self.app, 'dtml_meth')
 
         self.browser = Testing.testbrowser.Browser()
-        self.browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        self.browser.login('manager', 'manager_pass')
         self.browser.open('http://localhost/dtml_meth/manage_main')
 
     def test_manage_upload__Locked__REQUEST(self):

@@ -1,5 +1,4 @@
 import Testing.ZopeTestCase
-import codecs
 import os
 import shutil
 import sys
@@ -295,10 +294,7 @@ class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):
         uf = self.app.acl_users
         uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
         self.browser = Testing.testbrowser.Browser()
-        self.browser.addHeader(
-            'Authorization',
-            'basic {}'.format(codecs.encode(
-                b'manager:manager_pass', 'base64').decode()))
+        self.browser.login('manager', 'manager_pass')
 
     def test_menu_dtml__1(self):
         """It contains the databases in navigation."""

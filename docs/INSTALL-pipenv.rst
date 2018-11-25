@@ -9,6 +9,33 @@ Please note, that the support for Pipenv is considered experimental.
 
 Also, currently there is no support to update the Zope installation via ``pipenv``.
 
+Prerequisites
+-------------
+
+In order to install Zope, you must have the following prerequisites
+available:
+
+- A supported version of Python, including the development support if
+  installed from system-level packages. Supported versions include:
+
+  * 2.7
+  * 3.5
+  * 3.6
+  * 3.7
+
+- Zope needs the Python ``zlib`` module to be importable.  If you are
+  building your own Python from source, please be sure that you have the
+  headers installed which correspond to your system's ``zlib``.
+
+- A C compiler capable of building extension modules for your Python
+  (gcc recommended).
+
+- If you are using a Python interpreter shipping with your Linux distribution,
+  you need to install the matching Python development package. As example, for
+  Python 3 on Ubuntu 18.04, you have to type the following::
+
+    $ sudo apt-get install python3-dev
+
 
 Create a Virtual Environment
 ----------------------------

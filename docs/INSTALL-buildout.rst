@@ -17,7 +17,7 @@ Zope itself, as well as the underlying packages it uses.
 Prerequisites
 -------------
 
-In order to use Zope, you must have the following pre-requisites
+In order to install Zope, you must have the following prerequisites
 available:
 
 - A supported version of Python, including the development support if
@@ -34,6 +34,12 @@ available:
 
 - A C compiler capable of building extension modules for your Python
   (gcc recommended).
+
+- If you are using a Python interpreter shipping with your Linux distribution,
+  you need to install the matching Python development package. As example, for
+  Python 3 on Ubuntu 18.04, you have to type the following::
+
+    $ sudo apt-get install python3-dev
 
 
 Installing Zope using zc.buildout
