@@ -83,11 +83,11 @@ Install the Zope Software Packages
 
 Look for the release you want to install on
 https://zopefoundation.github.io/Zope/. Than use the specific
-version of ``requirements-full.txt`` in the URL, replacing 4.0b6 in the example below:
+version of ``requirements-full.txt`` in the URL, replacing 4.0b7 in the example below:
 
 .. code-block:: sh
 
-   $ bin/pip install Zope==4.0b6 -c https://zopefoundation.github.io/Zope/releases/4.0b6/constraints.txt
+   $ bin/pip install Zope==4.0b7 -c https://zopefoundation.github.io/Zope/releases/4.0b7/constraints.txt
    ...
    Obtaining Zope
    ...
@@ -100,7 +100,7 @@ are not listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: sh
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.0b6/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/4.0b7/requirements-full.txt
 
 
 If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
@@ -109,7 +109,7 @@ install that package seperately using the version spec in constraints.txt
 .. code-block:: sh
 
     $ bin/pip install \
-    -c https://zopefoundation.github.io/Zope/releases/4.0b6/constraints.txt \
+    -c https://zopefoundation.github.io/Zope/releases/4.0b7/constraints.txt \
     ZServer
 
 
