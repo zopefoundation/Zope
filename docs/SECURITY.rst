@@ -1,4 +1,4 @@
-Filesytem Permissions
+Filesystem Permissions
 =====================
 
 You need to set permissions on the directory Zope uses to store its
