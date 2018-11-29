@@ -1,5 +1,5 @@
 Filesystem Permissions
-=====================
+======================
 
 You need to set permissions on the directory Zope uses to store its
 data. This will normally be the `var` directory in the instance home.
