@@ -560,6 +560,10 @@ i.fa-folder.zmi-icon-folder-ordered:after {
 	position:absolute;
 	font-size:14px
 }
+.zmi-manage_menu i.fa-folder.zmi-icon-folder-ordered:after {
+	margin: .475rem 0 0 -.7rem;
+	font-size: 12px;
+}
 .zmi .breadcrumb i.fa-folder.zmi-icon-folder-ordered:after {
 	margin: 0.4rem 0 0 -0.74rem;
 }
