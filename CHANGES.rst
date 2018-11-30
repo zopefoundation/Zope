@@ -47,6 +47,9 @@ Fixes
 
 - Show a message instead of exception for empty file into Page Template
   (`#357 <https://github.com/zopefoundation/Zope/issues/357>`_)
+  
+- Update cookie expiration method in a way Firefox 63+ understands.
+  (`#405 <https://github.com/zopefoundation/Zope/pull/405>`_)
 
 
 4.0b7 (2018-10-30)
