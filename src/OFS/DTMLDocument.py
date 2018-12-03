@@ -45,7 +45,11 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     zmi_icon = 'far fa-file-alt'
     _locked_error_text = 'This document has been locked.'
 
-    manage_options = DTMLMethod.manage_options
+    manage_options = (
+        DTMLMethod.manage_options[:2] +
+        PropertyManager.manage_options +
+        DTMLMethod.manage_options[2:]
+        )
 
     # Replace change_dtml_methods by change_dtml_documents
     __ac_permissions__ = tuple([

@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 New features
 ++++++++++++
 
+- Restore missing Properties tab for DTML Documents
+  (`#409 <https://github.com/zopefoundation/Zope/issues/409>`_)
+
 - Add wildcard rewrite to sub host name in virtualHostMonster.
   (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
 
