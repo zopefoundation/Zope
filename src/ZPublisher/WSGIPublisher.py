@@ -252,15 +252,23 @@ def publish_module(environ, start_response,
 
         environ['PATH_INFO'] = path_info
     with closing(BytesIO()) as stdout, closing(BytesIO()) as stderr:
-        response = (_response if _response is not None else
-                    _response_factory(stdout=stdout, stderr=stderr))
-        response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
-        response._server_version = environ.get('SERVER_SOFTWARE')
+        new_response = (
+            _response
+            if _response is not None
+            else _response_factory(stdout=stdout, stderr=stderr))
+        new_response._http_version = environ['SERVER_PROTOCOL'].split('/')[1]
+        new_response._server_version = environ.get('SERVER_SOFTWARE')
 
-        request = (_request if _request is not None else
-                   _request_factory(environ['wsgi.input'], environ, response))
+        new_request = (
+            _request
+            if _request is not None
+            else _request_factory(environ['wsgi.input'],
+                                  environ,
+                                  new_response))
 
-        for i in range(getattr(request, 'retry_max_count', 3) + 1):
+        for i in range(getattr(new_request, 'retry_max_count', 3) + 1):
+            request = new_request
+            response = new_response
             setRequest(request)
             try:
                 with load_app(module_info) as new_mod_info:
@@ -270,9 +278,7 @@ def publish_module(environ, start_response,
             except (ConflictError, TransientError) as exc:
                 if request.supports_retry():
                     new_request = request.retry()
-                    request.close()
-                    request = new_request
-                    response = new_request.response
+                    new_response = new_request.response
                 else:
                     raise
             finally:

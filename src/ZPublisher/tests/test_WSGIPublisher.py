@@ -15,6 +15,7 @@ import io
 import unittest
 
 import transaction
+from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IUnauthorized
@@ -447,6 +448,27 @@ class TestPublishModule(ZopeTestCase):
                       _request_factory=_request_factory)
         self.assertTrue(_request._closed)
 
+    def test_handle_ConflictError(self):
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        def _publish(request, module_info):
+            if request.retry_count < 1:
+                raise ConflictError
+            response = DummyResponse()
+            response.setBody(request.other.get('method'))
+            return response
+
+        try:
+            from ZPublisher.HTTPRequest import HTTPRequest
+            original_retry_max_count =  HTTPRequest.retry_max_count
+            HTTPRequest.retry_max_count = 1
+            # After the retry the request has a filled `other` dict, thus the
+            # new request is not closed before processing it:
+            self.assertEqual(
+                self._callFUT(environ, start_response, _publish), (b'', 'GET'))
+        finally:
+            HTTPRequest.retry_max_count = original_retry_max_count
+
     def testCustomExceptionViewUnauthorized(self):
         from AccessControl import Unauthorized
         registerExceptionView(IUnauthorized)
@@ -506,6 +528,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '400 Bad Request')
         self.assertTrue(b'Exception View: BadRequest' in body)
+        unregisterExceptionView(IException)
 
     def testCustomExceptionViewInternalError(self):
         from zExceptions import InternalError
@@ -519,6 +542,7 @@ class TestPublishModule(ZopeTestCase):
         self.assertEqual(
             start_response._called_with[0][0], '500 Internal Server Error')
         self.assertTrue(b'Exception View: InternalError' in body)
+        unregisterExceptionView(IException)
 
     def testRedirectExceptionView(self):
         from zExceptions import Redirect
@@ -534,6 +558,7 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(b'Exception View: Redirect' in body)
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
+        unregisterExceptionView(IException)
 
     def testHandleErrorsFalseBypassesExceptionResponse(self):
         from AccessControl import Unauthorized
@@ -638,6 +663,18 @@ def registerExceptionView(for_):
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
     gsm = getGlobalSiteManager()
     gsm.registerAdapter(
+        CustomExceptionView,
+        required=(for_, IDefaultBrowserLayer),
+        provided=Interface,
+        name=u'index.html',
+    )
+
+def unregisterExceptionView(for_):
+    from zope.interface import Interface
+    from zope.component import getGlobalSiteManager
+    from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    gsm = getGlobalSiteManager()
+    gsm.unregisterAdapter(
         CustomExceptionView,
         required=(for_, IDefaultBrowserLayer),
         provided=Interface,

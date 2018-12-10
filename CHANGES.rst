@@ -54,6 +54,10 @@ Fixes
 - Update cookie expiration method in a way Firefox 63+ understands.
   (`#405 <https://github.com/zopefoundation/Zope/pull/405>`_)
 
+- Fix closing newly created request before processing it after a retryable
+  error has occurred.
+  (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
+
 
 4.0b7 (2018-10-30)
 ------------------
