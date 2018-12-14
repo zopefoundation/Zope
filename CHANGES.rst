@@ -14,29 +14,24 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 New features
 ++++++++++++
 
-- Restore missing Properties tab for DTML Documents
-  (`#409 <https://github.com/zopefoundation/Zope/issues/409>`_)
-
 - Add wildcard rewrite to sub host name in virtualHostMonster.
   (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
 
 - Add support for IPv6 hosts in VirtualHostMonster.
   (`#314 <https://github.com/zopefoundation/Zope/pull/314>`_)
 
-- Add TestBrowser ``login`` method to set basic auth header
-  (`#341 <https://github.com/zopefoundation/Zope/issues/341>_`)
+- Add TestBrowser ``login`` method to set basic auth header.
+  (`#341 <https://github.com/zopefoundation/Zope/issues/341>`_)
 
 Other changes
 +++++++++++++
-
-- Update dependencies to newest versions.
 
 - Add security declarations to ``SimpleItem.manage_FTPlist()`` and
   ``Simplified.manage_FTPstat()`` instead of requiring classes extending
   ``SimpleItem`` to do so.
   (`#398 <https://github.com/zopefoundation/Zope/pull/398>`_)
 
-- Clarified prerequisites for building Zope.
+- Clarify prerequisites for building Zope in documentation.
   (`#366 <https://github.com/zopefoundation/Zope/issues/366>`_)
 
 - Update dependencies to newest versions.
@@ -44,15 +39,18 @@ Other changes
 Fixes
 +++++
 
-- Some CSS fixes in ZMI.
+- Restore missing Properties tab for DTML Documents
+  (`#409 <https://github.com/zopefoundation/Zope/issues/409>`_)
 
-- Sanitize file handling for uploading and adding DTML methods and documents
+- Add some CSS fixes for ZMI.
 
-- added note about the ``app`` toplevel object in the debugger
+- Sanitize file handling for uploading and adding DTML methods and documents.
 
-- Show a message instead of exception for empty file into Page Template
+- Add a note about the ``app`` toplevel object in the debugger.
+
+- Show a message instead of an exception for empty file upload on PageTemplate.
   (`#357 <https://github.com/zopefoundation/Zope/issues/357>`_)
-  
+
 - Update cookie expiration method in a way Firefox 63+ understands.
   (`#405 <https://github.com/zopefoundation/Zope/pull/405>`_)
 
