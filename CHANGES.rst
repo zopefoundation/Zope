@@ -38,7 +38,9 @@ Other changes
 
 - Clarified prerequisites for building Zope.
   (`#366 <https://github.com/zopefoundation/Zope/issues/366>`_)
-  
+
+- Update dependencies to newest versions.
+
 Fixes
 +++++
 
