@@ -20,7 +20,7 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 New features
 ++++++++++++
 
-- Add wildcard rewrite to sub host name in virtualHostMonster.
+- Add wildcard rewrite to sub host name in VirtualHostMonster.
   (`#317 <https://github.com/zopefoundation/Zope/issues/317>`_)
 
 - Add support for IPv6 hosts in VirtualHostMonster.
