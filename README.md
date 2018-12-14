@@ -9,6 +9,13 @@
 * [requirements-full.txt](releases/master/requirements-full.txt)
 * [constraints.txt](releases/master/constraints.txt)
 
+## 4.0b8
+
+* [versions.cfg](releases/4.0b8/versions.cfg)
+* [versions-prod.cfg](releases/4.0b8/versions-prod.cfg)
+* [requirements-full.txt](releases/4.0b8/requirements-full.txt)
+* [constraints.txt](releases/4.0b8/constraints.txt)
+
 ## 4.0b7
 
 * [versions.cfg](releases/4.0b7/versions.cfg)
