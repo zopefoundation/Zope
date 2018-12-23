@@ -12,7 +12,7 @@ Object Publishing
   FTP and WebDAV. As those functionalities were provided by the now
   removed ZServer, the related information also has been removed.
 
-  Please directly refer to the ZServer package for furhter
+  Please directly refer to the ZServer package for further
   information.
 
 Introduction
