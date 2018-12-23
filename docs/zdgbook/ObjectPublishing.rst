@@ -2,7 +2,18 @@
 Object Publishing
 #################
 
-.. include:: includes/zope2_notice.rst
+.. attention::
+
+  This document is currently being reviewd and edited.
+
+.. note::
+
+  Previously, this document contained information about access by
+  FTP and WebDAV. As those functionalities were provided by the now
+  removed ZServer, the related information also has been removed.
+
+  Please directly refer to the ZServer package for furhter
+  information.
 
 Introduction
 ============
