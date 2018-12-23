@@ -250,7 +250,7 @@ chapter).  A common choice of character encoding is UTF-8.  To cause
 the publisher to send unicode results as UTF-8 you need to set a
 'Content-Type' header with the value 'text/html; charset=UTF-8'
 
-If the 'Content-Type' header does not include a charser property (or
+If the 'Content-Type' header does not include a charset property (or
 if this header has not been set by the published method) then the
 publisher will choose a default character encoding.  Today this
 default is ISO-8859-1 (also known as Latin-1) for compatability with
