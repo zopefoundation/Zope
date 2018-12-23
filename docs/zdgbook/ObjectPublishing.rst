@@ -18,7 +18,7 @@ In this chapter you'll find out exactly how Zope publishes objects.
 You'll learn all you need to know in order to design your objects for
 web publishing.
 
- 
+
 HTTP Publishing
 ===============
 
@@ -207,7 +207,7 @@ try in order to find the next object:
   3. 'a["next"]'
 
 
-Publishing Methods        
+Publishing Methods
 ==================
 
 Once the published object is located with traversal, Zope *publishes*
@@ -295,7 +295,7 @@ allow you to navigate between methods.  Consider this example::
                     <title>one</title>
                     </head>
                     <body>
-                    <a href="two">two</a> 
+                    <a href="two">two</a>
                     </body>
                     </html>"""
 
@@ -306,7 +306,7 @@ allow you to navigate between methods.  Consider this example::
                     <title>two</title>
                     </head>
                     <body>
-                    <a href="one">one</a> 
+                    <a href="one">one</a>
                     </body>
                     </html>"""
 
@@ -326,7 +326,7 @@ won't work right.  For example::
                               </head>
                               <body>
                               <a href="one">one</a><br>
-                              <a href="two">two</a> 
+                              <a href="two">two</a>
                               </body>
                               </html>"""
                  ...
@@ -560,7 +560,7 @@ wrap traversed objects manually when using '__getitem__' and
               def __bobo_traverse__(self, name, request):
                   ...
                   next_object=self._get_next_object(name)
-                  return  next_object.__of__(self)      
+                  return  next_object.__of__(self)
 
 
 Finally, traversal security can be circumvented with the
@@ -795,8 +795,8 @@ If you are not in one of those two easy categories, you first need to
 determine which character encoding will be used by the browser to
 encode the arguments in submitted forms.
 
-1. Forms submitted using GET, or using POST with 
-   "application/x-www-form-urlencoded" (the default) 
+1. Forms submitted using GET, or using POST with
+   "application/x-www-form-urlencoded" (the default)
 
    1. Page uses an encoding of unicode: Forms are submitted using
       UTF8, as required by RFC 2718 2.2.5
@@ -853,7 +853,7 @@ therefore, not contain method names.
 Only one method field should be provided.  If more than one method
 field is included in the request, the behavior is undefined.
 
-Record Arguments 
+Record Arguments
 ----------------
 
 Sometimes you may wish to consolidate form data into a structure
@@ -884,7 +884,7 @@ You can also provide default values for record elements with the
 'default' converter.  For example::
 
   <input type="hidden"
-         name="pizza.toppings:record:list:default" 
+         name="pizza.toppings:record:list:default"
          value="All">
   <select multiple name="pizza.toppings:record:list:ignore_empty">
   <option>Cheese</option>
@@ -1101,7 +1101,7 @@ that represents itself as a file using RFC 822 format::
       def writeState(self):
           "Returns object state as a string"
           return "Name: %s\nEmail: %s\nAge: %s" % (self.name,
-                                                   self.email, 
+                                                   self.email,
                                                    self.age)
       def readState(self, data):
           "Sets object state given a string"
