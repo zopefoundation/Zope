@@ -15,14 +15,15 @@ Object Publishing
   Please directly refer to the ZServer package for further
   information.
 
+
 Introduction
 ============
 
 Zope puts your objects on the web.  This is called *object
-publishing*.  One of Zope's unique characteristics is the way it
+publishing*. One of Zope's unique characteristics is the way it
 allows you to walk up to your objects and call methods on them with
-simple URLs.  In addition to HTTP, Zope makes your objects available
-to other network protocols including FTP, WebDAV and XML-RPC.
+simple URLs. In addition to HTTP, Zope makes your objects available
+via XML-RPC.
 
 
 In this chapter you'll find out exactly how Zope publishes objects.
