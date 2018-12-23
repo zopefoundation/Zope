@@ -95,7 +95,7 @@ URL Traversal
 =============
 
 Traversal is the process the publisher uses to locate the published
-object.  Typically the publisher locates the published object by
+object. Typically the publisher locates the published object by
 walking along the URL. Take for example a collection of objects::
 
       class Classification:
@@ -116,9 +116,9 @@ walking along the URL. Take for example a collection of objects::
 
 
 This collection of objects forms an object hierarchy. Using Zope you
-can publish objects with URLs.  For example, the URL
-'http://zope/vertebrates/mammals/monkey/screech', will traverse the
-object hierarchy, find the 'monkey' object and call its 'screech'
+can publish objects with URLs. For example, the URL
+http://zope/vertebrates/mammals/monkey/screech, will traverse the
+object hierarchy, find the *monkey* object and call its *screech*
 method.
 
 .. figure:: Figures/2-2.png
@@ -126,19 +126,20 @@ method.
    2.2 Traversal path through an object hierarchy
 
 The publisher starts from the root object and takes each step in the
-URL as a key to locate the next object.  It moves to the next object
+URL as a key to locate the next object. It moves to the next object
 and continues to move from object to object using the URL as a guide.
 
 Typically the next object is a sub-object of the current object that
-is named by the path segment.  So in the example above, when the
-publisher gets to the 'vertebrates' object, the next path segment is
-"mammals", and this tells the publisher to look for a sub-object of
-the current object with that name.  Traversal stops when Zope comes to
-the end of the URL.  If the final object is found, then it is
+is named by the path segment. So in the example above, when the
+publisher gets to the *vertebrates* object, the next path segment is
+*mammals*, and this tells the publisher to look for a sub-object of
+the current object with that name. Traversal stops when Zope comes to
+the end of the URL. If the final object is found, then it is
 published, otherwise an error is returned.
 
 
-Now let's take a more rigorous look at traversal.
+Now let's take a closer look at traversal.
+
 
 Traversal Interfaces
 ====================
