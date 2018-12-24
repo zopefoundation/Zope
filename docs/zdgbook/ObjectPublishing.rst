@@ -156,16 +156,17 @@ module interface.
 Publishable Object Requirements
 ===============================
 
-Zope has few restrictions on publishable objects.  The basic rule is
-that the object must have a doc string.  This requirement goes for
-method objects too.
+Zope has few restrictions on publishable objects. The basic rule is
+that the object must have a doc string. This requirement goes for
+methods, too.
 
 Another requirement is that a publishable object must not have a name
-that begin with an underscore.  These two restrictions are designed to
+that begins with an underscore. These two restrictions are designed to
 keep private objects from being published.
 
 
-Finally, published objects cannot be Python module objects.
+Finally, published objects cannot be Python modules.
+
 
 Traversal Methods
 =================
