@@ -255,25 +255,23 @@ publisher must interpret the results.
 Character Encodings for Responses
 =================================
 
-If the published method returns an object of type 'string', a plain
-8-bit character string, the publisher will use it directly as the
-body of the response.
+If the published method returns an object of type *binary*, the
+publisher will use it directly as the body of the response.
 
 Things are different if the published method returns a unicode string,
-because the publisher has to apply some character encoding.  The
+because the publisher has to apply some character encoding. The
 published method can choose which character encoding it uses by
-setting a 'Content-Type' response header which includes a 'charset'
+setting a *Content-Type* response header which includes a *charset*
 property (setting response headers is explained later in this
-chapter).  A common choice of character encoding is UTF-8.  To cause
-the publisher to send unicode results as UTF-8 you need to set a
-'Content-Type' header with the value 'text/html; charset=UTF-8'
+chapter). A common choice of character encoding is UTF-8, which is
+also the default encoding.
 
-If the 'Content-Type' header does not include a charser property (or
-if this header has not been set by the published method) then the
-publisher will choose a default character encoding.  Today this
-default is ISO-8859-1 (also known as Latin-1) for compatability with
-old versions of Zope which did not include Unicode support.  At some
-time in the future this default is likely to change to UTF-8.
+If the *Content-Type* header does not include a charset or is not set
+at all, the default encoding is set.
+
+If you want to manually set a *Content-Type* header you have to set a
+value like ``text/html; charset=UTF-8``.
+
 
 HTTP Responses
 ==============
