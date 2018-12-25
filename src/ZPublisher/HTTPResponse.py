@@ -77,10 +77,6 @@ status_codes['resourcelockederror'] = 423
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
 bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
-latin1_alias_match = re.compile(
-    r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
-    r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
-    r'(iso[-_]8859[-_]1(:1987)?)))?$', re.I).match
 charset_re_match = re.compile(
     r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
     r'charset=([-_0-9a-z]+' +
