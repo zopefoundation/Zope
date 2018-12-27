@@ -303,47 +303,45 @@ Controlling Base HREF
 =====================
 
 When you publish an object that returns HTML relative links should
-allow you to navigate between methods.  Consider this example::
+allow you to navigate between methods.
+
+Consider this example::
 
   class Example:
       "example"
 
       def one(self):
-          "method one"
+          """render page one"""
           return """<html>
-                    <head>
-                    <title>one</title>
-                    </head>
+                    <head><title>one</title></head>
                     <body>
                     <a href="two">two</a>
                     </body>
                     </html>"""
 
       def two(self):
-          "method two"
+          """render page two"""
           return """<html>
-                    <head>
-                    <title>two</title>
-                    </head>
+                    <head><title>two</title></head>
                     <body>
                     <a href="one">one</a>
                     </body>
                     </html>"""
 
 
-However, the default method, 'index_html' presents a problem.  Since
-you can access the 'index_html' method without specifying the method
-name in the URL, relative links returned by the 'index_html' method
-won't work right.  For example::
+However, the default method ``index_html`` presents a problem. Since
+you can access ``index_html`` without specifying the method name in
+the URL, relative links returned by ``index_html`` won't work right.
+
+For example::
 
             class Example:
-                "example"
+                """example class""""
 
                  def index_html(self):
+                     """render default view"""
                     return """<html>
-                              <head>
-                              <title>one</title>
-                              </head>
+                              <head><title>one</title></head>
                               <body>
                               <a href="one">one</a><br>
                               <a href="two">two</a>
@@ -351,19 +349,18 @@ won't work right.  For example::
                               </html>"""
                  ...
 
-If you publish an instance of the 'Example' class with the URL
-'http://zope/example', then the relative link to method 'one' will be
-'http://zope/one', instead of the correct link,
+If you publish an instance of the *Example* class with the URL
+'http://zope/example', then the relative link to method ``one`` will
+be 'http://zope/one', instead of the correct link,
 'http://zope/example/one'.
 
 
-Zope solves this problem for you by inserting a 'base' tag inside the
-'head' tag in the HTML output of 'index_html' method when it is
-accessed as the default method.  You will probably never notice this,
-but if you see a mysterious 'base' tag in your HTML output, know you
-know where it came from.  You can avoid this behavior by manually
-setting your own base with a 'base' tag in your 'index_html' method
-output.
+Zope solves this problem for you by inserting a *base* tag between the
+*head* tags in the HTML output of ``index_html`` when it is accessed
+as the default method. You will probably never notice this, but if you
+see a mysterious *base* tag in your HTML output, you know where it
+came from. You can avoid this behavior by manually setting your own
+base with a *base* tag in your ``index_html`` method output.
 
 
 Response Headers
