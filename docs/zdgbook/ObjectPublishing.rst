@@ -367,9 +367,10 @@ Response Headers
 ----------------
 
 The publisher and the web server take care of setting response headers
-such as 'Content-Length' and 'Content-Type'.  Later in the chapter
-you'll find out how to control these headers.  Later you'll also find
-out how exceptions are used to set the HTTP response code.
+such as 'Content-Length' and 'Content-Type'. Later in the chapter
+you'll find out how to control these headers and also how exceptions
+are used to set the HTTP response code.
+
 
 Pre-Traversal Hook
 ------------------
