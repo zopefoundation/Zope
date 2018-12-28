@@ -376,18 +376,18 @@ Pre-Traversal Hook
 ------------------
 
 The pre-traversal hook allows your objects to take special action
-before they are traversed.  This is useful for doing things like
-changing the request.  Applications of this include special
-authentication controls, and virtual hosting support.
+before they are traversed. This is useful for doing things like
+changing the request. Applications of this include special
+authentication controls and virtual hosting support.
 
-If your object has a method named '__before_publishing_traverse__',
-the publisher will call it with the current object and the request,
-before traversing your object.  Most often your method will change the
-request.  The publisher ignores anything you return from the
+If your object has a method named ``__before_publishing_traverse__``,
+the publisher will call it with the current object and the request
+before traversing your object. Most often your method will change the
+request. The publisher ignores anything you return from the
 pre-traversal hook method.
 
-The 'ZPublisher.BeforeTraverse' module contains some functions that
-help you register pre-traversal callbacks.  This allows you to perform
+The ``ZPublisher.BeforeTraverse`` module contains some functions that
+help you register pre-traversal callbacks. This allows you to perform
 fairly complex callbacks to multiple objects when a given object is
 about to be traversed.
 
