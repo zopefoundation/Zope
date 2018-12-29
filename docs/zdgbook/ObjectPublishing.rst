@@ -477,11 +477,11 @@ name 'REQUEST'.
 This means that you can normally acquire the request
 in the published object like so::
 
-        request=self.REQUEST # for implicit acquirers
+        request=self.REQUEST  # for implicit acquirers
 
 or like so::
 
-        request=self.aq_acquire('REQUEST') # for explicit acquirers
+        request=self.aq_acquire('REQUEST')  # for explicit acquirers
 
 Of course, this will not work if your objects do not support
 acquisition, or if any traversed objects have an attribute named
