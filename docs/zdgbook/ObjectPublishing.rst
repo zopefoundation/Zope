@@ -500,6 +500,7 @@ object along the traversal path. The publisher controls access in a
 number of ways. For more information about Zope security, see Chapter
 8 "Security".
 
+
 Basic Publisher Security
 ------------------------
 
