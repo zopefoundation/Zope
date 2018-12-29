@@ -495,10 +495,10 @@ Traversal and Security
 ----------------------
 
 As the publisher moves from object to object during traversal it makes
-security checks.  The current user must be authorized to access each
-object along the traversal path.  The publisher controls access in a
-number of ways.  For more information about Zope security, see Chapter
-6, "Security".
+security checks. The current user must be authorized to access each
+object along the traversal path. The publisher controls access in a
+number of ways. For more information about Zope security, see Chapter
+8 "Security".
 
 Basic Publisher Security
 ------------------------
