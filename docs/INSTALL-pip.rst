@@ -1,5 +1,5 @@
-Installing Zope in a ``virtualenv``
-===================================
+Installing Zope via ``pip``
+===========================
 
 .. highlight:: bash
 
