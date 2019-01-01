@@ -8,7 +8,7 @@ Contents:
 
    WHATSNEW
    INSTALL-buildout
-   INSTALL-virtualenv
+   INSTALL-pip
    INSTALL-pipenv
    operation
    USERS
