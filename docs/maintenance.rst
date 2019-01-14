@@ -30,6 +30,12 @@ Steps for creating a new Zope release
   packages and update version information where necessary::
 
   $ bin/checkversions buildout.cfg
+  
+.. note::
+
+    There is no version pin for `zc.buildout` as it has to be installed
+    in the virtual environment but `checkversions` also prints its
+    version number.
 
 - Run the tests::
 
@@ -41,8 +47,7 @@ Steps for creating a new Zope release
 
 - Pin the Zope version in ``versions-prod.cfg``.
 
-- Run ``bin/buildout`` to update ``requirements-full.txt`` and
-  ``constraints.txt``.
+- Run ``bin/buildout`` to update ``requirements-full.txt``.
 
 - Commit the changes.
 
@@ -57,12 +62,12 @@ Steps for creating a new Zope release
 
 - Upload the tagged release to PyPI::
 
+    $ bin/release
+    
+    or
+    
     $ git tag <TAG-NAME>
     $ bin/zopepy setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
-
-    or
-
-    $ bin/release
 
 - Update version information::
 
@@ -73,9 +78,7 @@ Steps for creating a new Zope release
 - Commit and push the changes.
 
 - Check the visible releases on readthedocs.org at (should default to
-  showing the active branches)::
-
-    https://readthedocs.org/projects/zope/versions/
+  showing the active branches): https://readthedocs.org/projects/zope/versions/
 
 - Update https://zopefoundation.github.io/Zope/ (This is needed until https://github.com/zopefoundation/Zope/issues/244 is fixed.)::
 

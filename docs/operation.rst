@@ -52,7 +52,7 @@ detach from the terminal.
 By default this command does not enable Zope's debug mode, so it can
 be used for production.
 
-In order to enable debug mode, you can add the additional `-d` or
+In order to enable debug mode, you can add the additional ``-d`` or
 ``--debug`` argument to the command:
 
 .. code-block:: sh
