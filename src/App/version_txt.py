@@ -36,13 +36,13 @@ def _prep_version_data():
         expr = re.compile(
             r'(?P<major>[0-9]+)\.(?P<minor>[0-9]+)(\.(?P<micro>[0-9]+))?'
             '(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
-        dict = expr.match(dist.version).groupdict()
+        version_dict = expr.match(dist.version).groupdict()
         _zope_version = ZopeVersion(
-            int(dict.get('major') or -1),
-            int(dict.get('minor') or -1),
-            int(dict.get('micro') or -1),
-            dict.get('status') or '',
-            int(dict.get('release') or -1),
+            int(version_dict.get('major') or -1),
+            int(version_dict.get('minor') or -1),
+            int(version_dict.get('micro') or -1),
+            version_dict.get('status') or '',
+            int(version_dict.get('release') or -1),
             )
         
         
