@@ -553,7 +553,7 @@ class BaseRequest(object):
         # or POST. Otherwise, you could never use
         # PUT to add a new object named 'test' if
         # an object 'test' existed above it in the
-        # heirarchy -- you'd always get the
+        # hierarchy -- you'd always get the
         # existing object :(
         if (no_acquire_flag and
                 hasattr(parents[1], 'aq_base') and
