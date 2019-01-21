@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes
++++++
+
+- Remove confusing and broken button to show/hide the left-hand tree pane
+  (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
 
 
 4.0b8 (2018-12-14)
