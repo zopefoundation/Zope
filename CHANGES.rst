@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes
++++++
+
+- Restore the `View` ZMI tab on folders and their subclasses
+  (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
 
 
 4.0b8 (2018-12-14)
