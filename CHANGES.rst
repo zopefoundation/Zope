@@ -13,6 +13,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 Fixes
 +++++
+
+- Restore the `View` ZMI tab on folders and their subclasses
+  (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
+
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
 
