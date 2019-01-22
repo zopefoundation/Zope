@@ -17,6 +17,9 @@ Fixes
 - Remove confusing and broken button to show/hide the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
 
+- Don't error out when showing permissions for a non-existent user
+  (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
+
 
 4.0b8 (2018-12-14)
 ------------------
