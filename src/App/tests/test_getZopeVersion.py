@@ -28,10 +28,5 @@ class Test(unittest.TestCase):
     def test_types(self):
         zv = getZopeVersion()
         for i in (0, 1, 2, 4):
-            self.assert_(isinstance(zv[i], int), str(i))
-        self.assert_(isinstance(zv[3], str), '3')
-
-
-
-  
-
+            self.assertIsInstance(zv[i], int, str(i))
+        self.assertIsInstance(zv[3], str, '3')
