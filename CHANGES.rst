@@ -15,7 +15,7 @@ Fixes
 +++++
 
 - Recreate ``App.version_txt.getZopeVersion``
-  (`#411 <https://github.com/zopefoundation/Zope/issues/411>` _)
+  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
 
 4.0b8 (2018-12-14)
