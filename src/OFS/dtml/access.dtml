@@ -57,13 +57,12 @@
 						><dtml-let permmission_title="name"
 						><dtml-if "not (_['sequence-index']%10)">
 							<tr class="zmi-table-head">
-								<th colspan="2" class="zmi-akcquire-title" title="Acquire permission settings">
+								<th class="zmi-akcquire-title" title="Acquire?">
 									<dtml-unless isTopLevelPrincipiaApplicationObject>
-										 <a href="manage_acquiredForm">Acquire
-											<dtml-unless sequence-index> <span class="d-none d-sm-block">permission settings</span></dtml-unless>
-										 </a>
+									  <a href="manage_acquiredForm">Acquire?</a>
 									</dtml-unless>
 								</th>
+                                <th class="zmi-permission" title="Permission">Permission</th>
 								<dtml-in valid_roles>
 									<th class="zmi-rolename" title="&dtml-sequence-item;"><div><span>&dtml-sequence-item;</span></div></th>
 								</dtml-in>
