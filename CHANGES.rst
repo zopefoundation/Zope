@@ -16,6 +16,12 @@ Fixes
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
 
+Other changes
++++++++++++++
+
+- Document filesystem caching for Chameleon page templates
+  (`#291 <https://github.com/zopefoundation/Zope/issues/291>`_)
+
 
 4.0b8 (2018-12-14)
 ------------------

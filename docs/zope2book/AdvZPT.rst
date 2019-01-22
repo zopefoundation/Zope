@@ -1202,6 +1202,27 @@ caching for performance-critical applications.
 For more information on caching in the context of Zope, see the
 chapter entitled `Zope Services <ZopeServices.html>`_.
 
+Filesystem caching for Chameleon-based templates
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Zope 4 introduced the `Chameleon HTML/XML template engine
+<https://chameleon.readthedocs.io/>`_ as new backend for Zope Page
+Templates. The Chameleon templating engine can compile templates and
+cache them on the file system for faster startup and execution.
+
+File system caching is activated by setting an environment variable
+named ``CHAMELEON_CACHE`` to the path of a folder on the filesystem
+where Chameleon can write its compiled template representation.
+
+Look for or add a section named ``environment`` in ``etc/wsgi.conf``
+and add a suitable filesystem path, for example::
+
+  <environment>
+    CHAMELEON_CACHE $INSTANCE/var
+  </environment>
+
+How to configure Zope is explained in `Configuring Zope <../operation.html>`_.
+
 Page Template Utilities
 -----------------------
 
