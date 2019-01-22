@@ -9,67 +9,72 @@
 		in the context of the current object.
 	</p>
 
-	<dtml-let result="manage_getUserRolesAndPermissions(user)">
-		<p>
-			<strong>User account </strong>: &dtml-user;<br/>
-			<strong>User account defined in</strong>: <dtml-var "result['user_defined_in']">
-		</p>
+    <dtml-try>
+	  <dtml-let result="manage_getUserRolesAndPermissions(user)">
+	  	<p>
+	  		<strong>User account </strong>: &dtml-user;<br/>
+	  		<strong>User account defined in</strong>: <dtml-var "result['user_defined_in']">
+	  	</p>
 
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col" class="w-50">Roles</th>
-					<th scope="col" class="w-50">Roles in context</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td valign="top">
-						<ul class="list-group zmi-roles">
-							<dtml-in "result['roles']">
-								<li class="list-group-item">&dtml-sequence-item;
-							</dtml-in>
-						</ul>
-					</td>
-					<td valign="top">
-						<ul class="list-group zmi-rolesincontext">
-							<dtml-in "result['roles_in_context']">
-								<li class="list-group-item">&dtml-sequence-item;
-							</dtml-in>
-						</ul>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col" class="w-50">Allowed permissions</th>
-					<th scope="col" class="w-50">Disallowed permissions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td valign="top">
-						<ul class="list-group zmi-allowed">
-							<dtml-in "result['allowed_permissions']">
-								<li class="list-group-item">&dtml-sequence-item;
-							</dtml-in>
-						</ul>
-					</td>
-					<td valign="top">
-						<ul class="list-group zmi-disallowed">
-							<dtml-in "result['disallowed_permissions']">
-								<li class="list-group-item">&dtml-sequence-item;
-							</dtml-in>
-						</ul>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+	  	<table class="table">
+	  		<thead>
+	  			<tr>
+	  				<th scope="col" class="w-50">Roles</th>
+	  				<th scope="col" class="w-50">Roles in context</th>
+	  			</tr>
+	  		</thead>
+	  		<tbody>
+	  			<tr>
+	  				<td valign="top">
+	  					<ul class="list-group zmi-roles">
+	  						<dtml-in "result['roles']">
+	  							<li class="list-group-item">&dtml-sequence-item;
+	  						</dtml-in>
+	  					</ul>
+	  				</td>
+	  				<td valign="top">
+	  					<ul class="list-group zmi-rolesincontext">
+	  						<dtml-in "result['roles_in_context']">
+	  							<li class="list-group-item">&dtml-sequence-item;
+	  						</dtml-in>
+	  					</ul>
+	  				</td>
+	  			</tr>
+	  		</tbody>
+	  	</table>
+	  	
+	  	<table class="table">
+	  		<thead>
+	  			<tr>
+	  				<th scope="col" class="w-50">Allowed permissions</th>
+	  				<th scope="col" class="w-50">Disallowed permissions</th>
+	  			</tr>
+	  		</thead>
+	  		<tbody>
+	  			<tr>
+	  				<td valign="top">
+	  					<ul class="list-group zmi-allowed">
+	  						<dtml-in "result['allowed_permissions']">
+	  							<li class="list-group-item">&dtml-sequence-item;
+	  						</dtml-in>
+	  					</ul>
+	  				</td>
+	  				<td valign="top">
+	  					<ul class="list-group zmi-disallowed">
+	  						<dtml-in "result['disallowed_permissions']">
+	  							<li class="list-group-item">&dtml-sequence-item;
+	  						</dtml-in>
+	  					</ul>
+	  				</td>
+	  			</tr>
+	  		</tbody>
+	  	</table>
 
-	</dtml-let>
+	  </dtml-let>
+
+    <dtml-except>
+      The user <i>&dtml-user;</i> does not exist.
+    </dtml-try>
 
 </main>
 

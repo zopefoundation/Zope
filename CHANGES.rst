@@ -16,6 +16,8 @@ Fixes
 
 - Recreate ``App.version_txt.getZopeVersion``
   (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
+- Don't error out when showing permissions for a non-existent user
+  (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
 
 
 4.0b8 (2018-12-14)
