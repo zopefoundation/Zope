@@ -307,7 +307,6 @@ form.zmi-upload {
 }
 .zmi th.zmi-akcquire-title {
 	white-space: nowrap;
-	vertical-align: bottom;
 }
 
 /* TITLE ROW */
@@ -320,6 +319,7 @@ form.zmi-upload {
 	width: 110px;
 	overflow: hidden;
 	display: inline-block;
+    text-align: center;
 }
 
 @media (max-width: 768px) {
