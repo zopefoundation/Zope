@@ -1218,8 +1218,10 @@ Look for or add a section named ``environment`` in ``etc/wsgi.conf``
 and add a suitable filesystem path, for example::
 
   <environment>
-    CHAMELEON_CACHE $INSTANCE/var
+    CHAMELEON_CACHE $INSTANCE/var/cache
   </environment>
+
+Make sure that folder exists before starting Zope.
 
 How to configure Zope is explained in `Configuring Zope <../operation.html>`_.
 

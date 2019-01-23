@@ -48,7 +48,7 @@ instancehome $INSTANCE
 # Example:
 #
 #    <environment>
-#      CHAMELEON_CACHE $INSTANCE/var
+#      CHAMELEON_CACHE $INSTANCE/var/cache
 #    </environment>
 
 
