@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Recreate ``App.version_txt.getZopeVersion``
+  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
+
 - Restore the `View` ZMI tab on folders and their subclasses
   (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
 
