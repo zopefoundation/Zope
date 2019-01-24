@@ -20,6 +20,11 @@ Fixes
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
 
+Breaking changes
+++++++++++++++++
+- Removed support for ``management_page_charset``
+ (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
+
 
 4.0b8 (2018-12-14)
 ------------------

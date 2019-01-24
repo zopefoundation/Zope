@@ -348,16 +348,12 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
     def testPreferredCharsetResolverWithoutRequestAndWithoutEncoding(self):
         # This test checks the edgecase where the unicode conflict resolver
         # is called with a context object having no REQUEST
+        # Since switching from ``management_page_charset`` set on the
+        # REQUEST to the ``default-zpublisher-encoding`` configuration
+        # setting that is always available, this test will return a
+        # correctly decoded value.
         context = object()
         result = PreferredCharsetResolver.resolve(context, 'üöä', None)
-        self.assertEqual(result, 'üöä')
-
-    def testPreferredCharsetResolverWithoutRequestAndWithEncoding(self):
-        # This test checks the edgecase where the unicode conflict resolver
-        # is called with a context object having no REQUEST
-        class ContextMock(object):
-            management_page_charset = 'utf-8'
-        result = PreferredCharsetResolver.resolve(ContextMock(), 'üöä', None)
         self.assertEqual(result, u'üöä')
 
 
