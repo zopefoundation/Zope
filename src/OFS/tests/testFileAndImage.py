@@ -356,18 +356,6 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.assertEqual(text, 'hällo')
 
     @unittest.skipIf(six.PY2, "feature not supported on Python 2")
-    def test_Image__manage_main__2(self):
-        """It shows the content of text files.
-
-        It respects the encoding in `management_page_charset`.
-        """
-        self.app.management_page_charset = 'latin-1'
-        self.app.file.update_data(u'hällo'.encode('latin-1'))
-        self.browser.open('http://localhost/file/manage_main')
-        text = self.browser.getControl(name='filedata:text').value
-        self.assertEqual(text, 'hällo')
-
-    @unittest.skipIf(six.PY2, "feature not supported on Python 2")
     def test_Image__manage_main__3(self):
         """It shows an error message if the file content cannot be decoded."""
         self.app.file.update_data(u'hällo'.encode('latin-1'))

@@ -19,6 +19,7 @@ from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
+import ZPublisher
 
 from six import text_type, binary_type
 
@@ -44,8 +45,8 @@ DefaultUnicodeEncodingConflictResolver = \
 @implementer(IUnicodeEncodingConflictResolver)
 class Z2UnicodeEncodingConflictResolver(object):
     """ This resolver tries to lookup the encoding from the
-        'management_page_charset' property and defaults to
-        sys.getdefaultencoding().
+        'default-zpublisher-encoding' setting in the Zope configuration
+        file and defaults to sys.getdefaultencoding().
     """
 
     def __init__(self, mode='strict'):
@@ -58,8 +59,7 @@ class Z2UnicodeEncodingConflictResolver(object):
         try:
             return text.decode('ascii')
         except UnicodeDecodeError:
-            encoding = getattr(
-                context, 'management_page_charset', default_encoding)
+            encoding = ZPublisher.HTTPRequest.default_encoding
             try:
                 return text.decode(encoding, errors=self.mode)
             except UnicodeDecodeError:
@@ -84,11 +84,8 @@ class PreferredCharsetResolver(object):
         # Python default encoding.
 
         if request is None:
-            charsets = [default_encoding]
-            management_charset = getattr(
-                context, 'management_page_charset', None)
-            if management_charset:
-                charsets.insert(0, management_charset)
+            charsets = [ZPublisher.HTTPRequest.default_encoding,
+                        default_encoding]
         else:
             # charsets might by cached within the request
             charsets = getattr(request, '__zpt_available_charsets', None)
