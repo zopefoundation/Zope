@@ -25,7 +25,6 @@ class EngineTestsBase(PlacelessSetup):
 
         class Dummy(object):
             __allow_access_to_unprotected_subobjects__ = 1
-            management_page_charset = 'utf-8'
 
             def __call__(self):
                 return 'dummy'
@@ -51,8 +50,7 @@ class EngineTestsBase(PlacelessSetup):
             dummy2=DummyDocumentTemplate(),
             eightbit=b'\xe4\xfc\xf6',
             # ZopeContext needs 'context' and 'template' keys for unicode
-            # conflict resolution, and 'context' needs a
-            # 'management_page_charset'
+            # conflict resolution
             context=Dummy(),
             template=DummyDocumentTemplate(),
         )

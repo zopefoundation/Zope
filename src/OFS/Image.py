@@ -506,11 +506,7 @@ class File(
 
     def _get_encoding(self):
         """Get the canonical encoding for ZMI."""
-        return getattr(
-            self,
-            'management_page_charset',
-            ZPublisher.HTTPRequest.default_encoding
-        )
+        return ZPublisher.HTTPRequest.default_encoding
 
     @security.protected(change_images_and_files)
     def manage_edit(

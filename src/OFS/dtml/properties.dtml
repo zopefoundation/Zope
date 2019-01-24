@@ -1,22 +1,4 @@
-<dtml-if management_page_charset>
-	<dtml-comment>
-		A site-global encoding specification in a property.
-		Note that this feature only works if there are no unicode objects
-		around. This means that this feature is not likely to be supported
-		in all future versions of zope.
-	</dtml-comment>
-	<dtml-call "REQUEST.set('management_page_charset',_['management_page_charset'])">
-	<dtml-call "REQUEST.set('management_page_charset_tag','')">
-<dtml-else>
-	<dtml-comment>
-		Thankfully no site-global encoding specification in a property.
-		We can set UTF-8, and unicode properties will work.
-	</dtml-comment>
-	<dtml-call "REQUEST.set('management_page_charset','UTF-8')">
-	<dtml-call "REQUEST.set('management_page_charset_tag','UTF-8:')">
-</dtml-if>
-
-<dtml-if "REQUEST.get('management_page_charset',None)=='UTF-8'"><dtml-var "u' '"></dtml-if>
+<dtml-if "REQUEST.charset.lower()=='utf-8'"><dtml-var "u' '"></dtml-if>
 
 <dtml-var manage_page_header>
 
@@ -44,7 +26,7 @@
 					<dtml-in propertyMap mapping>
 						<dtml-let type="not _.has_key('type') and 'string' or type"
 									pdesc="propertyDescription(id)"
-									charset_tag="REQUEST['management_page_charset_tag']">
+									charset_tag="REQUEST.charset.lower()=='utf-8' and 'UTF-8:' or ''">
 							<tr title="&dtml-pdesc;">
 							<!-- Checkbox column -->
 								<td>
@@ -188,7 +170,7 @@
 				property and click the <em>Add</em>-button.
 			</p>
 			<div class="form-group zmi-controls mt-2">
-				<input type="text" placeholder="Name" title="Name" class="form-control" name="id:<dtml-var "REQUEST['management_page_charset_tag']">string" value="" />
+				<input type="text" placeholder="Name" title="Name" class="form-control" name="id:<dtml-var "REQUEST.charset.lower()=='utf-8' and 'UTF-8:' or ''">string" value="" />
 				<select name="type" title="Data Type"placeholder="Type" class="form-control">
 					<option>boolean</option>
 					<option>date</option>
@@ -199,7 +181,7 @@
 					<option selected="selected">string</option>
 					<option>text</option>
 					<option>tokens</option>
-					<dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
+					<dtml-if "REQUEST.charset.lower() == 'utf-8'">
 						<option>ulines</option>
 						<option>ustring</option>
 						<option>utext</option>
@@ -209,7 +191,7 @@
 					<option>multiple selection</option>
 				</select>
 				<input type="text" title="Value" placeholder="Value" class="form-control"
-					<dtml-if "REQUEST['management_page_charset'] == 'UTF-8'"
+					<dtml-if "REQUEST.charset.lower() == 'utf-8'"
 						>name="value:UTF-8:ustring"
 					<dtml-else
 						>name="value:string"
