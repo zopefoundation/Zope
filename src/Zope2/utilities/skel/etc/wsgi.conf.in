@@ -35,6 +35,23 @@ instancehome $INSTANCE
 #    locale fr_FR
 
 
+# Directive: environment
+#
+# Description:
+#     A section which can be used to define arbitrary key-value pairs
+#     for use as environment variables during Zope's run cycle.  It
+#     is not recommended to set system-related environment variables such as
+#     PYTHONPATH within this section.
+#
+# Default: unset
+#
+# Example:
+#
+#    <environment>
+#      CHAMELEON_CACHE $INSTANCE/var/cache
+#    </environment>
+
+
 # Directive: debug-mode
 #
 # Description:
