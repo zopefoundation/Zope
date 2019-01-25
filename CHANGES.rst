@@ -35,6 +35,9 @@ Other changes
 Breaking changes
 ++++++++++++++++
 
+- Removed support for Bobo Call Interface
+ (`#462 <https://github.com/zopefoundation/Zope/pull/462>`_)
+
 - Removed support for ``management_page_charset``
  (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
 

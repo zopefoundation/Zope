@@ -841,32 +841,6 @@ class HTTPResponse(HTTPBaseResponse):
                 m = m + '\nNo Authorization header found.'
         raise Unauthorized(m)
 
-    def _setBCIHeaders(self, t, tb):
-        try:
-            # Try to capture exception info for bci calls
-            et = str(t).replace('\n', ' ')
-            self.setHeader('bobo-exception-type', et)
-
-            ev = 'See the server error log for details'
-            self.setHeader('bobo-exception-value', ev)
-
-            # Get the tb tail, which is the interesting part:
-            while tb.tb_next is not None:
-                tb = tb.tb_next
-            el = str(tb.tb_lineno)
-            ef = str(tb.tb_frame.f_code.co_filename)
-
-            # Do not give out filesystem information.
-            ef = ef.split(os.sep)[-1]
-
-            self.setHeader('bobo-exception-file', ef)
-            self.setHeader('bobo-exception-line', el)
-        except Exception:
-            # Don't try so hard that we cause other problems ;)
-            pass
-
-        del tb
-
     def exception(self, fatal=0, info=None, abort=1):
         if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
@@ -876,7 +850,6 @@ class HTTPResponse(HTTPBaseResponse):
         if issubclass(t, Unauthorized):
             self._unauthorized()
 
-        self._setBCIHeaders(t, tb)
         self.setStatus(t)
         if self.status >= 300 and self.status < 400:
             if isinstance(v, str) and absuri_match(v) is not None:
