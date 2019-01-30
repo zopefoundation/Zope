@@ -14,7 +14,7 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
-- Remove confusing and broken button to show/hide the left-hand tree pane
+- Improved showing/hiding of the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
 
 - Don't error out when showing permissions for a non-existent user
