@@ -156,7 +156,8 @@ styling.
 Unified encoding
 ----------------
 
-As it is reasonable to have one unified encoding in ZMI and frontend,
-``management_page_charset`` (as property of a folder) and ``default-zpublisher-
-encoding`` in `zope.conf` have to define the same encoding, which is `utf-8`
-by default for both.
+As it is reasonable to have one unified encoding in ZMI and frontend, support
+for ``management_page_charset`` (as property of a folder) has been removed.
+``default-zpublisher-encoding`` in `zope.conf` is the only place where to
+define the site encoding that governs how the ZPublisher and Zope Page
+Templates handle encoding and decoding of text.

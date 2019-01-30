@@ -47,7 +47,7 @@
 							name="filedata:text" wrap="off" rows="20"><dtml-var __str__ html_quote></textarea>
 					<dtml-except UnicodeDecodeError>
 						<div class="alert alert-warning" role="alert">
-							The file could not be decoded with '<dtml-var "error_value.encoding">'. Setting a different encoding as `management_page_charset` might help.
+							The file could not be decoded with '<dtml-var "error_value.encoding">'.
 						</div>
 					</dtml-try>
 				</div>

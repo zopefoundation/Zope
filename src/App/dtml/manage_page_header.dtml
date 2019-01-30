@@ -2,13 +2,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-<dtml-unless management_page_charset
-	><dtml-call "REQUEST.set('management_page_charset','utf-8')"
-></dtml-unless>
 
-<meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
-<dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
+<dtml-let charset="REQUEST.charset">
+<meta http-equiv="content-type" content="text/html;charset=&dtml-charset;" />
+<dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+charset)">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+</dtml-let>
 
 <title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
 <dtml-in css_urls>
