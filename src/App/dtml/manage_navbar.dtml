@@ -19,7 +19,7 @@
 			data-title_inactive="STATUS INACTIVE: Tree Menu Button is only active on List Views. Navigate up a level to show the tree view again."
 			data-is_folderish="<dtml-var "(manage_main != manage) and 1 or 0">"
 		>
-			<a href="#" target="_parent">
+			<a href="<dtml-var "(manage_main != manage) and './' or '../'">manage?came_from=<dtml-var URL>" target="_parent" onclick="javascript:if ( manage_menu ) {window.parent.frames[0].menu_toggle();return false;} else { return true; }">
 				<i class="fa fa-sitemap"></i>
 			</a>
 		</li>

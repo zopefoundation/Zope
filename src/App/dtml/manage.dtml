@@ -1,24 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html>
+<!DOCTYPE html>
 <head>
-<title>Zope on &dtml-BASE0;</title>
+	<title>Zope on &dtml-BASE0;</title>
+
+	<link rel="shortcut icon" type="image/x-icon" href="/++resource++zmi/logo/favicon/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/++resource++zmi/logo/favicon/apple-touch-icon.png" />
+	<link rel="icon" type="image/png" sizes="32x32" href="/++resource++zmi/logo/favicon/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="/++resource++zmi/logo/favicon/favicon-16x16.png" />
+	<link rel="manifest" href="/++resource++zmi/logo/favicon/site.webmanifest" />
+	<link rel="mask-icon" href="/++resource++zmi/logo/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+	<meta name="msapplication-config" content="/++resource++zmi/logo/favicon/browserconfig.xml"/>
+	<meta name="msapplication-TileColor" content="#2d89ef" />
+	<meta name="theme-color" content="#ffffff" />
+
 </head>
 
 <frameset cols="250, *">
-<frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu"
-       name="manage_menu"
-       marginwidth="2" marginheight="2"
-       />
-<frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_workspace"
-       name="manage_main"
-       marginwidth="2" marginheight="2"
-       />
-<noframes>
- <body>
-  <p>Management interfaces require the use of a <b>frames-capable</b> web
-  browser.</p>
- </body>
-</noframes>
+	<frame src="<dtml-var "REQUEST.URL1" html_quote>/manage_menu"
+		name="manage_menu"
+		marginwidth="2" marginheight="2"
+		/>
+	<frame src="<dtml-var "REQUEST.get('came_from',None)!=None and REQUEST.get('came_from',None) or '%s/manage_workspace'%(REQUEST.URL1)" html_quote>"
+		name="manage_main"
+		marginwidth="2" marginheight="2"
+		/>
+	<noframes>
+		<body>
+			<p>Management interfaces require the use of a <em>frames-capable</em> web browser.</p>
+		</body>
+	</noframes>
 </frameset>
 
 </html>

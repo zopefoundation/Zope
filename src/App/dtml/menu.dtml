@@ -58,5 +58,38 @@
 ></dtml-if>
 
 </main>
+
+<script src="/++resource++zmi/zmi.localstorage.api.js"></script>
+<script>
+	function menu_resize(init) {
+		var key = "ZMI.manage_menu.width";
+		$(window).resize(function() {
+				$ZMILocalStorageAPI.set(key,window.innerWidth);
+			});
+		var frmwidth = $ZMILocalStorageAPI.get(key,250);
+		var frmset = parent.document.getElementsByTagName('frameset');
+		var colval = frmwidth + ",*";
+		frmset[0].cols=colval;
+	}
+	function menu_toggle() {
+		var menu_width = "ZMI.manage_menu.width";
+		var menu_width_saved = "ZMI.manage_menu.width.saved";
+		if ( $ZMILocalStorageAPI.get(menu_width,0)==0 ) {
+			$ZMILocalStorageAPI.set(menu_width,$ZMILocalStorageAPI.get(menu_width_saved,250));
+		} else {
+			$ZMILocalStorageAPI.set(menu_width_saved,$ZMILocalStorageAPI.get(menu_width,250));
+			$ZMILocalStorageAPI.set(menu_width,0);
+		}
+		var frmwidth = $ZMILocalStorageAPI.get(menu_width,250);
+		var frmset = parent.document.getElementsByTagName('frameset');
+		var colval = frmwidth + ",*";
+		frmset[0].cols=colval;
+	}
+
+	$(function(){
+		menu_resize();
+	});
+</script>
+
 <dtml-var manage_page_footer>
 

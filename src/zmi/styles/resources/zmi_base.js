@@ -2,39 +2,7 @@
 
 // NAVBAR-FUNCTIONS
 
-function setupShowHideTreeView() {
-	/*
-	Disable the show sidebar button if the sidebar cannot be shown
-	without navigating away from the current view.
-	
-	It would be cool to get rid of this, but that would require
-	reworking the TreeTagView to understand that it could show the 
-	elements above the current object if it is not a folderish thing.
-	*/
-	var $li = $('#toggle_menu');
-	if (0 === $li.length) {
-		return // no menu toggle on this page
-	}
-	
-	var $a = $li.find('a');
-	// var isInFrameset = window.parent.location.href.endsWith('/manage');
-	var isShowingFrameset = window !== window.parent;
-	var isFolderish = !! $li.data().is_folderish
-	if (isShowingFrameset) {
-		$a.attr('href', 'manage_main')
-	}
-	else {
-		if ( isFolderish ) {
-			$a.attr('href', 'manage')
-		}
-		else {
-			$li.attr('title', $li.attr('data-title_inactive'));
-			$a.addClass('disabled');
-		}
-	}
-}
-
-// [2] Add New Object Item (with Modal Dialog)
+// Add New Object Item (with Modal Dialog)
 function addItem( elm, base_url ) {
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
@@ -235,7 +203,6 @@ $(function() {
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
 	}
 	
-	setupShowHideTreeView()
 
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});

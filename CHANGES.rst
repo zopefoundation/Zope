@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Improved showing/hiding of the left-hand tree pane
+  (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
+
 - Recreate ``App.version_txt.getZopeVersion``
   (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
