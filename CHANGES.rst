@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix faulty ZMI links due to missing URL-quoting
+  (`#391 <https://github.com/zopefoundation/Zope/issues/391>`_)
+
 - Fix configuring the maximum number of conflict retries
   (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
 

@@ -81,7 +81,7 @@
                 </i>
               </td>
               <td class="zmi-object-id">
-                <a tal:attributes="href python:'%s/manage_workspace'%(ob_dict['id'])">
+                <a tal:attributes="href python:'%s/manage_workspace'%(ob_dict['quoted_id'])">
                   <span tal:replace="ob_dict/id">Id</span>
                   <span class="badge badge-warning" title="This item has been locked by WebDAV" tal:condition="ob/wl_isLocked | nothing">
                     <i class="fa fa-lock"></i>
