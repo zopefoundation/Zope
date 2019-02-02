@@ -275,7 +275,7 @@ def publish_module(environ, start_response,
                     with transaction_pubevents(request, response):
                         response = _publish(request, new_mod_info)
                 break
-            except (ConflictError, TransientError) as exc:
+            except TransientError as exc:
                 if request.supports_retry():
                     new_request = request.retry()
                     new_response = new_request.response
