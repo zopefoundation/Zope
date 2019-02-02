@@ -193,7 +193,9 @@ $(function() {
 
 	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
-	if ($('.nav a[href="manage_findForm"]').length > 0 ) {
+    // List Page is assumed if the ZMI tabs contain a "manage_findForm"
+    // on folders or a "manage_catalogFind" on ZCatalogs
+    if ($('.nav a[href="manage_findForm"]').length > 0 || $('.nav a[href="manage_catalogFind"]').length > 0) {
 		$('#addItemSelect').removeClass('disabled');
 		$('#addItemSelect').removeAttr('disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );

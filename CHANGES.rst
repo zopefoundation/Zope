@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Show the content add widget again on ZCatalogs
+  (`ZCatalog#45 <https://github.com/zopefoundation/Products.ZCatalog/issues/45>`_)
+
 - Improved showing/hiding of the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
 
