@@ -87,7 +87,7 @@ def root_wsgi_handler(cfg):
         HTTPRequest.trusted_proxies = tuple(mapped)
 
     # set the maximum number of ConflictError retries
-    from ZPublisher import HTTPRequest
+    from ZPublisher.HTTPRequest import HTTPRequest
     if cfg.max_conflict_retries:
         HTTPRequest.retry_max_count = cfg.max_conflict_retries
     else:

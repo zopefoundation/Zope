@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix configuring the maximum number of conflict retries
+  (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
+
 - Show the content add widget again on ZCatalogs
   (`ZCatalog#45 <https://github.com/zopefoundation/Products.ZCatalog/issues/45>`_)
 

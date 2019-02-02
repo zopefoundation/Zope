@@ -91,6 +91,22 @@ class WSGIStarterTestCase(unittest.TestCase):
             # reset to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
 
+    def testSetupConflictRetries(self):
+        from Zope2.Startup.handlers import root_wsgi_handler
+        from ZPublisher.HTTPRequest import HTTPRequest
+
+        # If no value is provided, the default is 3 retries
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>""")
+        root_wsgi_handler(conf)
+        self.assertEqual(HTTPRequest.retry_max_count, 3)
+
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>
+            max-conflict-retries 25""")
+        root_wsgi_handler(conf)
+        self.assertEqual(HTTPRequest.retry_max_count, 25)
+
     @unittest.skipUnless(six.PY2, 'Python 2 specific checkinterval test.')
     def testConfigureInterpreter(self):
         oldcheckinterval = sys.getcheckinterval()
