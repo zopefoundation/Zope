@@ -168,9 +168,7 @@ def http(request_string, handle_errors=True):
         raise TypeError('')
 
     header_output = HTTPHeaderOutput(
-        protocol, ('x-content-type-warning', 'x-powered-by',
-                   'bobo-exception-type', 'bobo-exception-file',
-                   'bobo-exception-value', 'bobo-exception-line'))
+        protocol, ('x-content-type-warning', 'x-powered-by'))
 
     # With a HeaderParser the payload is always a string, Parser would create a
     # list of messages for multipart messages.
