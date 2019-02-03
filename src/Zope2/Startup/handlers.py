@@ -46,11 +46,6 @@ def _setenv(name, value):
         os.environ[name] = repr(value)
 
 
-def debug_mode(value):
-    value and _setenv('Z_DEBUG_MODE', '1')
-    return value
-
-
 def locale(value):
     import locale
     locale.setlocale(locale.LC_ALL, value)
