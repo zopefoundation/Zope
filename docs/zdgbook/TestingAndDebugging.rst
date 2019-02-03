@@ -20,40 +20,6 @@ Zope provides debugging information through a number of sources.  It
 also allows you a couple avenues for getting information about Zope
 as it runs.
 
-The Control Panel
------------------
-
-The control panel provides a number of views that can help you debug
-Zope, especially in the area of performance.  The *Debugging
-Information* link on the control panel provides two views, *Debugging
-Info* and *Profiling*.
-
-Debugging info provides information on the number of object
-references and the status of open requests.  The object references
-list displays the name of the object and the number of references to
-that object in Zope.  Understanding how reference counts help
-debugging is a lengthy subject, but in general you can spot memory
-leaks in your application if the number of references to certain
-objects increases without bound.  The busier your site is, or the
-more content it holds, the more reference counts you will tend to
-have.
-
-Profiling uses the standard Python profiler.  This is turned on by
-setting the 'PROFILE_PUBLISHER' environment variable before executing
-Zope.
-
-When the profiler is running, the performance of your Zope system
-will suffer a lot.  Profiling should only be used for short periods
-of time, or on a separate ZEO client so that your normal users to not
-experience this significant penalty.
-
-Profiling provides you with information about which methods in your
-Zope system are taking the most time to execute.  It builds a
-*profile*, which lists the busiest methods on your system, sorted by
-increasing resource usage.  For details on the meaning of the
-profiler's output, read the `standard Python documentation
-<http://www.python.org/doc/current/lib/profile.html>`_
-
 Product Refresh Settings
 ------------------------
 
