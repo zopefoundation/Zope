@@ -77,7 +77,7 @@ idea to only turn it on for a few products at a time.
 Debug Mode
 ----------
 
-Setting the 'Z_DEBUG_MODE=1' environment puts Zope into debug mode.
+Normally, debug mode is set using the '-D' switch when starting Zope.
 This mode reduces the performance of Zope a little bit.  Debug model
 has a number of wide ranging effects:
 
@@ -90,9 +90,6 @@ has a number of wide ranging effects:
 - Zope will not fork into the background in debug mode, instead, it
   will remain attached to the terminal that started it and the main
   logging information will be redirected to that terminal.
-
-Normally, debug mode is set using the '-D' switch when starting Zope,
-though you can set the environment variable directly if you wish.
 
 By using debug mode and product refresh together you will have little
 reason to restart Zope while developing.

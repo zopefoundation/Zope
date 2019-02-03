@@ -574,12 +574,6 @@ Environment Variables
 You can control some facets of the publisher's operation by setting
 environment variables.
 
-- 'Z_DEBUG_MODE' -- Sets debug mode. In debug mode tracebacks are not
-  hidden in error pages. Also debug mode causes 'DTMLFile' objects,
-  External Methods and help topics to reload their contents from disk
-  when changed. You can also set debug mode with the '-D' switch when
-  starting Zope.
-
 - 'Z_REALM' -- Sets the basic authorization realm. This controls the
   realm name as it appears in the web browser's username and password
   dialog. You can also set the realm with the '__bobo_realm__' module
@@ -971,10 +965,7 @@ There are two exceptions to the above rule:
    returned.
 
 When a body is returned, traceback information will be included in a
-comment in the output. As mentioned earlier, the environment variable
-'Z_DEBUG_MODE' can be used to control how tracebacks are included. If
-this variable is set then tracebacks are included in 'PRE' tags,
-rather than in comments. This is very handy during debugging.
+comment in the output.
 
 Exceptions and Transactions
 ---------------------------
