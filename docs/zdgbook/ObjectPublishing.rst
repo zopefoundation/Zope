@@ -579,11 +579,6 @@ environment variables.
   dialog. You can also set the realm with the '__bobo_realm__' module
   variable, as mentioned previously.
 
-- 'PROFILE_PUBLISHER' -- Turns on profiling and sets the name of the
-  profile file. See the Python documentation for more information
-  about the Python profiler.
-
-
 Many more options can be set using switches on the startup script.
 See the *Zope Administrator's Guide* for more information.
 
