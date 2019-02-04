@@ -2,17 +2,29 @@
 Object Publishing
 #################
 
-.. include:: includes/zope2_notice.rst
+.. attention::
+
+  This document is currently being reviewed and edited for the
+  upcoming release of Zope 4.
+
+.. note::
+
+  Previously, this document contained information about access by
+  FTP and WebDAV. As those functionalities were provided by the now
+  removed ZServer, the related information also has been removed.
+
+  Please directly refer to the ZServer package for further
+  information.
+
 
 Introduction
 ============
 
-Zope puts your objects on the web. This is called *object
-publishing*. One of Zope's unique characteristics is the way it
+Zope puts your objects on the web. This is called **object
+publishing**. One of Zope's unique characteristics is the way it
 allows you to walk up to your objects and call methods on them with
 simple URLs. In addition to HTTP, Zope makes your objects available
-to other network protocols including FTP, WebDAV and XML-RPC.
-
+via XML-RPC.
 
 In this chapter you'll find out exactly how Zope publishes objects.
 You'll learn all you need to know in order to design your objects for
