@@ -167,6 +167,11 @@ form.zmi-upload {
 }
 .zmi table.objectItems tbody .zmi-object-id {
 	font-weight: 600;
+	max-width: calc(100vw - 340px);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: silver;
 }
 .zmi table.objectItems .zmi-object-id #tablefilter {
 	padding:0 1.5em;
@@ -192,10 +197,6 @@ form.zmi-upload {
 .zmi table.objectItems .zmi-object-title {
 	font-weight: 400;
 	opacity:.5;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	max-width: 60%;
 }
 .zmi table.objectItems .zmi-object-type {
 	max-width:3rem;
