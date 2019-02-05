@@ -35,8 +35,7 @@ HTTP Publishing
 ===============
 
 Zope 4 no longer ships with a builtin web server, so when you want
-to interact with Zope via browser you have to setup a WSGI server as
-a middleware.
+to interact with Zope via browser you have to setup a WSGI server as.
 
 
 .. note::
