@@ -43,7 +43,7 @@ a:hover {
 	color:rgba(108, 117, 125, .5) !important;
 }
 
-.zmi a.btn.btn-primary, 
+.zmi a.btn.btn-primary,
 .zmi input.btn.btn-primary {
 	background-color:white !important;
 	color:#6c757d;
@@ -164,7 +164,7 @@ form.zmi-upload {
 }
 .zmi table.objectItems th.zmi-object-id {
 	width:100%;
-} 
+}
 .zmi table.objectItems tbody .zmi-object-id {
 	font-weight: 600;
 }
@@ -192,12 +192,10 @@ form.zmi-upload {
 .zmi table.objectItems .zmi-object-title {
 	font-weight: 400;
 	opacity:.5;
-	position: absolute;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	max-width: 60%;
-	padding-left: .25em;
 }
 .zmi table.objectItems .zmi-object-type {
 	max-width:3rem;
@@ -684,7 +682,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	}
 	.zmi nav[role="navigation"] .nav-tabs {
 		display:block;
-		list-style: none; 
+		list-style: none;
 		padding:1rem;
 		border-bottom:0;
 		height: calc(100vh - 42px);
@@ -703,9 +701,9 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 		margin-bottom: 0;
 	}
 	.zmi table#zmi-db_info tbody tr td {
-		display:block;	
+		display:block;
 		padding:.2rem .75rem .5rem
-	}	
+	}
 	.zmi table#zmi-db_cache tbody tr td:nth-child(1) {
 		color: black;
 	}
@@ -844,7 +842,7 @@ header.navbar select.form-control-sm,
 		background-size:97%;
 		background-position: bottom center;
 		background-repeat:no-repeat;
-		
+
 	}
 }
 /* EXAMPLE: IMPLANT YOUR LOGO */
