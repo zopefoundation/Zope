@@ -28,7 +28,6 @@ from zExceptions import (
     Unauthorized,
     upgradeException,
 )
-from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.globalrequest import setRequest, clearRequest
