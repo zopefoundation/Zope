@@ -34,21 +34,31 @@ web publishing.
 HTTP Publishing
 ===============
 
-When you contact Zope with a web browser, your browser sends an HTTP
-request to Zope's web server. After the request is completely
-received, it is processed by 'ZPublisher', which is Zope's object
-publisher. 'ZPublisher' is a kind of light-weight ORB (Object Request
+Zope 4 no longer ships with a builtin web server, so when you want
+to interact with Zope via browser you have to setup a WSGI server as
+a middleware.
+
+
+.. note::
+
+    For usage on a production server you will probably want to setup a
+    reverse proxy in front of the WSGI server.
+
+
+The WSGI server receives the request and hands it over to Zope, where
+it is processed by *ZPublisher*, which is Zope's object publisher.
+**ZPublisher** is a kind of light-weight ORB (Object Request
 Broker). It takes the request and locates an object to handle the
 request. The publisher uses the request URL as a map to locate the
 published object. Finding an object to handle the request is called
-*traversal*, since the publisher moves from object to object as it
+**traversal**, since the publisher moves from object to object as it
 looks for the right one. Once the published object is found, the
 publisher calls a method on the published object, passing it
 parameters as necessary. The publisher uses information in the
-request to determine which method to call, and what parameters to
+request to determine which method to call and what parameters to
 pass. The process of extracting parameters from the request is called
-*argument marshalling*. The published object then returns a response,
-which is passed back to Zope's web server. The web server, then
+**argument marshalling**. The published object then returns a response,
+which is passed back to the WSGI server. Finally, the WSGI server
 passes the response back to your web browser.
 
 
@@ -60,14 +70,16 @@ The publishing process is summarized in [2-1]
 
 
 Typically the published object is a persistent object that the
-published module loads from the ZODB. See Chapter 4 for more
+published module loads from the ZODB. See Chapter 6 for more
 information on the ZODB.
 
 
 This chapter will cover all the steps of object publishing in detail.
+
+
 To summarize, object publishing consists of the main steps:
 
-1. The client sends a request to the publisher
+1. A request is sent to the publisher.
 
 2. The publisher locates the published object using the request
    URL as a map.
@@ -75,8 +87,7 @@ To summarize, object publishing consists of the main steps:
 3. The publisher calls the published object with arguments from
    the request.
 
-4. The publisher interprets and returns the results to the
-   client.
+4. The publisher interprets the results and passes them back.
 
 The chapter will also cover all the technical details, special cases
 and extra-steps that this list glosses over.
