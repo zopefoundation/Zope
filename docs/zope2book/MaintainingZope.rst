@@ -35,14 +35,13 @@ Debug Mode and Automatic Startup
 If you are planning to run Zope on a Unix production system you should also
 disable *debug mode*. This means removing the `-D` option in startup scripts
 (e.g. the `start` script created by Zope at installation time which calls z2.py
-with the `-D` switch) and if you've manually set it, unsetting the
-`Z_DEBUG_MODE` environment variable. In debug mode, Zope does not detach itself
+with the `-D` switch). In debug mode, Zope does not detach itself
 from the terminal, which could cause startup scripts to malfunction.
 
 On Windows, running Zope as a service disables debug mode by default. You still
-can run Zope in debug mode by setting the `Z_DEBUG_MODE` environment variable
-or running Zope manually from a startup script with the `-D` option. Again,
-this is not recommended for production systems, since debug mode causes
+can run Zope in debug mode by running Zope manually from a startup script with
+the `-D` option.
+Again, this is not recommended for production systems, since debug mode causes
 performance loss.
 
 Automatic Startup for Custom-Built Zopes
