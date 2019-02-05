@@ -41,6 +41,9 @@ Other changes
 - Document filesystem caching for Chameleon page templates
   (`#291 <https://github.com/zopefoundation/Zope/issues/291>`_)
 
+- Remove obsolete environment variable "Z_DEBUG_MODE"
+  (`#445 <https://github.com/zopefoundation/Zope/issues/445>`_)
+
 Breaking changes
 ++++++++++++++++
 

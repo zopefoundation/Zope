@@ -2,17 +2,29 @@
 Object Publishing
 #################
 
-.. include:: includes/zope2_notice.rst
+.. attention::
+
+  This document is currently being reviewed and edited for the
+  upcoming release of Zope 4.
+
+.. note::
+
+  Previously, this document contained information about access by
+  FTP and WebDAV. As those functionalities were provided by the now
+  removed ZServer, the related information also has been removed.
+
+  Please directly refer to the ZServer package for further
+  information.
+
 
 Introduction
 ============
 
-Zope puts your objects on the web. This is called *object
-publishing*. One of Zope's unique characteristics is the way it
+Zope puts your objects on the web. This is called **object
+publishing**. One of Zope's unique characteristics is the way it
 allows you to walk up to your objects and call methods on them with
 simple URLs. In addition to HTTP, Zope makes your objects available
-to other network protocols including FTP, WebDAV and XML-RPC.
-
+via XML-RPC.
 
 In this chapter you'll find out exactly how Zope publishes objects.
 You'll learn all you need to know in order to design your objects for
@@ -574,21 +586,10 @@ Environment Variables
 You can control some facets of the publisher's operation by setting
 environment variables.
 
-- 'Z_DEBUG_MODE' -- Sets debug mode. In debug mode tracebacks are not
-  hidden in error pages. Also debug mode causes 'DTMLFile' objects,
-  External Methods and help topics to reload their contents from disk
-  when changed. You can also set debug mode with the '-D' switch when
-  starting Zope.
-
 - 'Z_REALM' -- Sets the basic authorization realm. This controls the
   realm name as it appears in the web browser's username and password
   dialog. You can also set the realm with the '__bobo_realm__' module
   variable, as mentioned previously.
-
-- 'PROFILE_PUBLISHER' -- Turns on profiling and sets the name of the
-  profile file. See the Python documentation for more information
-  about the Python profiler.
-
 
 Many more options can be set using switches on the startup script.
 See the *Zope Administrator's Guide* for more information.
@@ -971,10 +972,7 @@ There are two exceptions to the above rule:
    returned.
 
 When a body is returned, traceback information will be included in a
-comment in the output. As mentioned earlier, the environment variable
-'Z_DEBUG_MODE' can be used to control how tracebacks are included. If
-this variable is set then tracebacks are included in 'PRE' tags,
-rather than in comments. This is very handy during debugging.
+comment in the output.
 
 Exceptions and Transactions
 ---------------------------
