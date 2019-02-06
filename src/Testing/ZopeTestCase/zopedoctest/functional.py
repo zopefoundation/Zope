@@ -194,6 +194,8 @@ def http(request_string, handle_errors=True):
 
     if not handle_errors:
         # Tell the publisher to skip exception views
+        # XXX subscribe to pubevents.PubBeforeAbort/pubevents.PubFailure
+        # and evaluate the provided exception information instead
         env['x-wsgiorg.throw_errors'] = True
 
     outstream = BytesIO()

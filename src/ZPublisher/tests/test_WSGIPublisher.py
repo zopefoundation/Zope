@@ -562,6 +562,18 @@ class TestPublishModule(ZopeTestCase):
 
     def testHandleErrorsFalseBypassesExceptionResponse(self):
         from AccessControl import Unauthorized
+
+        from zope.component import adapter, getGlobalSiteManager
+        from ZPublisher.interfaces import IPubFailure
+        from six import reraise
+
+        @adapter(IPubFailure)
+        def skip_exception_views(event):
+            reraise(*event.exc_info)
+
+        gsm = getGlobalSiteManager()
+        gsm.registerHandler(skip_exception_views)
+
         environ = self._makeEnviron(**{
             'x-wsgiorg.throw_errors': True,
         })
@@ -570,6 +582,7 @@ class TestPublishModule(ZopeTestCase):
         _publish._raise = Unauthorized('argg')
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
+        gsm.unregisterHandler(skip_exception_views)
 
 
 class WSGIPublisherTests(FunctionalTestCase):

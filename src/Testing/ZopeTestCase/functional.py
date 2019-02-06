@@ -94,6 +94,8 @@ class Functional(sandbox.Sandboxed):
 
         if not handle_errors:
             # Tell the publisher to skip exception views
+            # XXX subscribe to pubevents.PubBeforeAbort/pubevents.PubFailure
+            # and evaluate the provided exception information instead
             env['x-wsgiorg.throw_errors'] = True
 
         if stdin is None:
