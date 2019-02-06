@@ -50,6 +50,7 @@ from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from six import string_types
 from six import text_type
+from six.moves.urllib.parse import quote
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -897,7 +898,7 @@ class ObjectManager(
 
         items = []
         for id, obj in self.objectItems():
-            item = {'id': id, 'obj': obj}
+            item = {'id': id, 'quoted_id': quote(id), 'obj': obj}
             if sortkey not in ['id', 'position'] and hasattr(obj, sortkey):
                 # add the attribute by which we need to sort
                 item[sortkey] = getattr(obj, sortkey)
@@ -925,6 +926,7 @@ class ObjectManager(
         return [
             {
                 'id': item['id'],
+                'quoted_id': item['quoted_id'],
                 'obj': item['obj'],
             }
             for item in sorted_items
