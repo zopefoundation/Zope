@@ -16,6 +16,12 @@ Security related fixes
   did.
   (`#375 <https://github.com/zopefoundation/Zope/issues/375>`_)
 
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- Drop support for Python 2.6. This means it is no longer tested from now on.
+  (`#475 <https://github.com/zopefoundation/Zope/issues/475>`_)
+
 Features
 ++++++++
 
