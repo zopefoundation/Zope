@@ -469,6 +469,48 @@ class TestPublishModule(ZopeTestCase):
         finally:
             HTTPRequest.retry_max_count = original_retry_max_count
 
+    def test_retry_ConflictError(self):
+        # Make sure requests are retried as often as configured
+        from zope.interface import directlyProvides
+        from zope.publisher.browser import IDefaultBrowserLayer
+        registerExceptionView(ConflictError)
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = ConflictError('oops')
+        _request = DummyRequest()
+        directlyProvides(_request, IDefaultBrowserLayer)
+        _request.response = DummyResponse()
+        _request.retry_count = 0
+        _request.retry_max_count = 3
+        _request.environ = {}
+
+        def _close():
+            pass
+        _request.close = _close
+
+        def _retry():
+            _request.retry_count += 1
+            return _request
+        _request.retry = _retry
+
+        def _supports_retry():
+            return _request.retry_count < _request.retry_max_count
+        _request.supports_retry = _supports_retry
+
+        def _request_factory(stdin, environ, response):
+            return _request
+
+        # At first, retry_count is zero. Request has never been retried.
+        self.assertEqual(_request.retry_count, 0)
+        app_iter = self._callFUT(environ, start_response, _publish,
+                                 _request_factory=_request_factory)
+
+        # In the end the error view is rendered, but the request should
+        # have been retried up to retry_max_count times
+        self.assertTrue(app_iter[1].startswith('Exception View: ConflictError'))
+        self.assertEqual(_request.retry_count, _request.retry_max_count)
+
     def testCustomExceptionViewUnauthorized(self):
         from AccessControl import Unauthorized
         registerExceptionView(IUnauthorized)
@@ -716,6 +758,11 @@ class DummyResponse(object):
         self._body = body
 
     body = property(lambda self: self._body, setBody)
+
+    def setStatus(self, status, reason=None, lock=None):
+        self._status = status
+
+    status = property(lambda self: self._status, setStatus)
 
 
 class DummyCallable(object):
