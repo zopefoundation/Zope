@@ -4,10 +4,17 @@ include *.rst
 include *.cfg
 exclude pyvenv.cfg
 
+include *.yml
 exclude *.yml
+
 exclude .*.cfg
+
+include .editorconfig
 exclude .editorconfig
+
+include .gitignore
 exclude .gitignore
+
 exclude MANIFEST.in
 
 prune docs/.build
