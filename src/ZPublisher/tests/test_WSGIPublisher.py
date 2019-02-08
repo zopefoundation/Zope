@@ -469,11 +469,13 @@ class TestPublishModule(ZopeTestCase):
         finally:
             HTTPRequest.retry_max_count = original_retry_max_count
 
-    def test_retry_ConflictError(self):
+    def testCustomExceptionViewConflictErrorHandling(self):
         # Make sure requests are retried as often as configured
+        # even if an exception view has been registered that
+        # matches ConflictError
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-        registerExceptionView(ConflictError)
+        registerExceptionView(Exception)
         environ = self._makeEnviron()
         start_response = DummyCallable()
         _publish = DummyCallable()
