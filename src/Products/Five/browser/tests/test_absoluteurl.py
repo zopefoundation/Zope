@@ -68,7 +68,7 @@ def test_absoluteurl():
       >>> request = self.app.REQUEST
       >>> request['PARENTS'] = [self.folder.test_folder_1_]
       >>> url = request.setServerURL(
-      ...     protocol='http', hostname='foo.bar.com', port='80')
+      ...     protocol='http', hostname='foo.bar.com', port=80)
       >>> request.setVirtualRoot('')
 
       >>> for crumb in view.breadcrumbs():
