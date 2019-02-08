@@ -13,9 +13,9 @@
 #
 ##############################################################################
 
-import unittest
-
 from six import PY2
+
+import unittest
 
 
 class SafeUnicodeTests(unittest.TestCase):

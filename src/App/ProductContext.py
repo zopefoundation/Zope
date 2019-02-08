@@ -13,20 +13,19 @@
 """Objects providing context for product initialization
 """
 
-from logging import getLogger
-import os
-import sys
-
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
+from App.FactoryDispatcher import FactoryDispatcher
+from logging import getLogger
 from OFS.ObjectManager import ObjectManager
-
 from zope.interface import implementedBy
 
-from App.FactoryDispatcher import FactoryDispatcher
-
+import os
 # Waaaa
 import Products
+import sys
+
+
 if not hasattr(Products, 'meta_types'):
     Products.meta_types = ()
 if not hasattr(Products, 'meta_classes'):

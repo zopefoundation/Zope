@@ -14,9 +14,10 @@
 """Component tests
 """
 
-import unittest
 from doctest import DocFileSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
+
+import unittest
 
 
 def test_suite():

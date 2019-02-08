@@ -12,11 +12,6 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-import os.path
-import stat
-import time
-import warnings
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
@@ -28,7 +23,13 @@ from DateTime.DateTime import DateTime
 from zope.contenttype import guess_content_type
 from ZPublisher.Iterators import filestream_iterator
 
+import os.path
+import stat
+import time
+import warnings
 import Zope2
+
+
 PREFIX = os.path.realpath(
     os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir))
 

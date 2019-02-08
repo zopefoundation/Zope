@@ -15,6 +15,7 @@
 from Acquisition import aq_base
 from logging import getLogger
 
+
 LOG = getLogger('ZPublisher')
 
 

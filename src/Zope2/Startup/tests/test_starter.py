@@ -12,18 +12,18 @@
 #
 ##############################################################################
 
+from Zope2.Startup import get_wsgi_starter
+from Zope2.Startup.options import ZopeWSGIOptions
+
 import io
 import os
 import shutil
+import six
 import sys
 import tempfile
 import unittest
-
-import six
 import ZConfig
 
-from Zope2.Startup import get_wsgi_starter
-from Zope2.Startup.options import ZopeWSGIOptions
 
 _SCHEMA = None
 

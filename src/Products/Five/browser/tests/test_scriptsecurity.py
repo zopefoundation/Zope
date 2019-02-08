@@ -1,6 +1,6 @@
-import unittest
-
 from AccessControl import Unauthorized
+
+import unittest
 
 
 def addPythonScript(folder, id, params='', body=''):

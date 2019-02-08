@@ -1,10 +1,13 @@
+from App.config import getConfiguration
+from App.config import setConfiguration
+from six import StringIO
+
 import os
 import shutil
 import sys
 import tempfile
 import unittest
-from App.config import setConfiguration, getConfiguration
-from six import StringIO
+
 
 zope_conf_template = """
 %define INSTANCE {}

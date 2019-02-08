@@ -13,9 +13,11 @@
 """Test for auth_header
 """
 
-from unittest import TestSuite, makeSuite
 from Testing.ZopeTestCase import TestCase
 from Testing.ZopeTestCase import zopedoctest
+from unittest import makeSuite
+from unittest import TestSuite
+
 
 auth_header = zopedoctest.functional.auth_header
 

@@ -11,18 +11,20 @@
 #
 ##############################################################################
 
-import re
-
-from six import exec_
-
 from AccessControl.class_init import InitializeClass
+from AccessControl.PermissionRole import _what_not_even_god_should_do
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.Permissions import view_management_screens
-from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import aq_base, aq_inner, aq_parent
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from six import exec_
+
+import re
+
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',

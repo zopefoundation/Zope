@@ -19,8 +19,9 @@ factory screen.
 (original: zope.app.container.browser.adding)
 """
 
-import operator
-
+from OFS.SimpleItem import SimpleItem
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from six import PY2
 from zExceptions import BadRequest
 from zope.browser.interfaces import IAdding
@@ -42,9 +43,7 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
 
-from OFS.SimpleItem import SimpleItem
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+import operator
 
 
 @implementer(IAdding, IPublishTraverse)

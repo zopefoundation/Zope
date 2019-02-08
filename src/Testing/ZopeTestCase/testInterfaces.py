@@ -13,21 +13,16 @@
 """Interface tests
 """
 
-from Testing.ZopeTestCase import (
-    Functional,
-    FunctionalTestCase,
-    PortalTestCase,
-    TestCase,
-    ZopeTestCase,
-)
-from Testing.ZopeTestCase.interfaces import (
-    IFunctional,
-    IPortalSecurity,
-    IPortalTestCase,
-    IZopeSecurity,
-    IZopeTestCase,
-)
-
+from Testing.ZopeTestCase import Functional
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import PortalTestCase
+from Testing.ZopeTestCase import TestCase
+from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase.interfaces import IFunctional
+from Testing.ZopeTestCase.interfaces import IPortalSecurity
+from Testing.ZopeTestCase.interfaces import IPortalTestCase
+from Testing.ZopeTestCase.interfaces import IZopeSecurity
+from Testing.ZopeTestCase.interfaces import IZopeTestCase
 from zope.interface.verify import verifyClass
 from zope.interface.verify import verifyObject
 

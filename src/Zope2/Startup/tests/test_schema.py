@@ -12,17 +12,17 @@
 #
 ##############################################################################
 
+from Zope2.Startup.options import ZopeWSGIOptions
+
 import codecs
-import os
 import io
+import os
 import tempfile
 import unittest
-
 import ZConfig
-import ZPublisher.HTTPRequest
 import Zope2.Startup.datatypes
+import ZPublisher.HTTPRequest
 
-from Zope2.Startup.options import ZopeWSGIOptions
 
 _SCHEMA = None
 TEMPNAME = tempfile.mktemp()

@@ -1,8 +1,9 @@
+from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase.sandbox import Sandboxed
+
 import os
 import unittest
 
-from Testing.ZopeTestCase import ZopeTestCase
-from Testing.ZopeTestCase.sandbox import Sandboxed
 
 path = os.path.dirname(__file__)
 

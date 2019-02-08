@@ -1,10 +1,13 @@
+from DateTime import DateTime
+
 import unittest
+
+
 try:
     import xmlrpc.client as xmlrpclib
 except ImportError:
     import xmlrpclib
 
-from DateTime import DateTime
 
 
 class FauxResponse(object):

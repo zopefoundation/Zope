@@ -11,8 +11,9 @@
 #
 ##############################################################################
 
-import unittest
 from zope.testing.cleanup import CleanUp
+
+import unittest
 
 
 class Zope2VocabularyRegistryTests(unittest.TestCase, CleanUp):

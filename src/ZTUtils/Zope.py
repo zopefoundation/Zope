@@ -20,14 +20,15 @@ from DateTime.DateTime import DateTime
 from six import binary_type
 from six import PY2
 from six import text_type
-from six.moves.urllib.parse import quote, unquote
-
+from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import unquote
 from ZTUtils.Batch import Batch
 from ZTUtils.Lazy import Lazy
 from ZTUtils.SimpleTree import SimpleTreeMaker
 from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion
 from ZTUtils.Tree import TreeMaker
+
 
 try:
     from html import escape

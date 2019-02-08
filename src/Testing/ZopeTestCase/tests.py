@@ -13,9 +13,10 @@
 """Test runner that works with zope.testrunner
 """
 
-import unittest
 import os
 import Testing.ZopeTestCase
+import unittest
+
 
 suite = unittest.TestSuite()
 

@@ -14,15 +14,15 @@
 """Support for using zope.testbrowser from Zope2.
 """
 
-import codecs
-import transaction
-from zope.testbrowser import browser
-
 from Testing.ZopeTestCase.functional import savestate
 from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.zopedoctest.functional import auth_header
+from zope.testbrowser import browser
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.WSGIPublisher import publish_module
+
+import codecs
+import transaction
 
 
 class WSGITestApp(object):

@@ -13,11 +13,11 @@
 """Unit tests of makequest.
 """
 
-import unittest
-
 from Acquisition import Implicit
-from Testing.makerequest import makerequest
 from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
+
+import unittest
 
 
 class MakerequestTests(unittest.TestCase):

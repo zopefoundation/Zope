@@ -11,9 +11,9 @@
 #
 ##############################################################################
 
-import unittest
-
 from six import text_type
+
+import unittest
 
 
 class ConvertersTests(unittest.TestCase):

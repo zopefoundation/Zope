@@ -14,15 +14,15 @@
 """A 'PageTemplateFile' without security restrictions.
 """
 
-from os.path import basename
-from zope.component import getMultiAdapter
-from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from zope.pagetemplate.engine import TrustedAppPT
-
-from Acquisition import aq_get
 from AccessControl import getSecurityManager
-from Products.PageTemplates.Expressions import SecureModuleImporter
+from Acquisition import aq_get
+from os.path import basename
 from Products.PageTemplates.Expressions import createTrustedZopeEngine
+from Products.PageTemplates.Expressions import SecureModuleImporter
+from zope.component import getMultiAdapter
+from zope.pagetemplate.engine import TrustedAppPT
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+
 
 _engine = createTrustedZopeEngine()
 

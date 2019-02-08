@@ -1,7 +1,8 @@
-import os
 from glob import glob
-import ZODB
 from ZODB.FileStorage import FileStorage
+
+import os
+import ZODB
 
 
 def makeDB():

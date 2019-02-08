@@ -12,14 +12,21 @@
 ##############################################################################
 """Package of template utility classes and functions.
 """
+from .Tree import a2b
+from .Tree import b2a
+from .Tree import decodeExpansion
+from .Tree import encodeExpansion
 from AccessControl.SecurityInfo import ModuleSecurityInfo
+from ZTUtils.Zope import Batch
+from ZTUtils.Zope import LazyFilter
+from ZTUtils.Zope import make_hidden_input
+from ZTUtils.Zope import make_query
+from ZTUtils.Zope import SimpleTreeMaker
+from ZTUtils.Zope import TreeMaker
+from ZTUtils.Zope import url_query
+
+
 security = ModuleSecurityInfo('ZTUtils')
-
 security.declarePublic('encodeExpansion', 'decodeExpansion', 'a2b', 'b2a')
-from .Tree import encodeExpansion, decodeExpansion, a2b, b2a  # NOQA
-
 security.declarePublic('Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter')
-from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter  # NOQA
-
 security.declarePublic('url_query', 'make_query', 'make_hidden_input')
-from ZTUtils.Zope import url_query, make_query, make_hidden_input  # NOQA

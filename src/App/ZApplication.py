@@ -19,6 +19,7 @@ and used when bobo publishes a bobo_application object.
 
 import sys
 
+
 if sys.version_info >= (3, ):
     basestring = str
 

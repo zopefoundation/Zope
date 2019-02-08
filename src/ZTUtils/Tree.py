@@ -13,12 +13,12 @@
 """Tree manipulation classes
 """
 
-import base64
-import zlib
-
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
+
+import base64
 import six
+import zlib
 
 
 class TreeNode(Explicit):

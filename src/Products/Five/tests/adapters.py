@@ -15,7 +15,8 @@
 """
 
 from zope.component import adapter
-from zope.interface import implementer, Interface
+from zope.interface import implementer
+from zope.interface import Interface
 
 
 class IAdaptable(Interface):

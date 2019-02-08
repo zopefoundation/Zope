@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from io import BytesIO
+from six import PY3
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import InternalError
+from zExceptions import NotFound
+from zExceptions import ResourceLockedError
+from zExceptions import Unauthorized
+
 import sys
 import traceback
 import unittest
-
-from six import PY3
-from zExceptions import (
-    BadRequest,
-    Forbidden,
-    InternalError,
-    NotFound,
-    ResourceLockedError,
-    Unauthorized,
-)
 
 
 class HTTPResponseTests(unittest.TestCase):

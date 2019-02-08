@@ -1,8 +1,8 @@
-import Testing.ZopeTestCase
 import os
 import shutil
 import sys
 import tempfile
+import Testing.ZopeTestCase
 import unittest
 
 

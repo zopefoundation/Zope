@@ -1,10 +1,10 @@
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from six import PY3
+from Testing.ZopeTestCase import ZopeTestCase
+
 import os
 import unittest
 
-from six import PY3
-
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from Testing.ZopeTestCase import ZopeTestCase
 
 path = os.path.dirname(__file__)
 

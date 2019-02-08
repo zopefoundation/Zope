@@ -11,9 +11,10 @@
 #
 ##############################################################################
 
-import sys
-from ZPublisher.HTTPRangeSupport import parseRange, expandRanges
+from ZPublisher.HTTPRangeSupport import expandRanges
+from ZPublisher.HTTPRangeSupport import parseRange
 
+import sys
 import unittest
 
 

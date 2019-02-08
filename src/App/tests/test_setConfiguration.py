@@ -13,9 +13,9 @@
 ##############################################################################
 """Tests for App.config.setConfiguration()
 """
-import unittest
-
 from Testing.ZopeTestCase.layer import ZopeLite
+
+import unittest
 
 
 class SetConfigTests(unittest.TestCase):

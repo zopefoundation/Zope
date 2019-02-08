@@ -12,13 +12,12 @@
 #
 ##############################################################################
 
-import unittest
+from six import PY2
+from ZPublisher.mapply import mapply
 
 import Acquisition
 import ExtensionClass
-from six import PY2
-
-from ZPublisher.mapply import mapply
+import unittest
 
 
 class MapplyTests(unittest.TestCase):

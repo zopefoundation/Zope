@@ -19,18 +19,16 @@ See testPythonScript.py and testShoppingCart.py for
 example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
-import gc
-
-import transaction
-
-from Testing.ZopeTestCase import base
-from Testing.ZopeTestCase import utils
-from Testing.ZopeTestCase import connections
-from Testing.ZopeTestCase import sandbox
-
-from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
+from Acquisition import aq_base
+from Testing.ZopeTestCase import base
+from Testing.ZopeTestCase import connections
+from Testing.ZopeTestCase import sandbox
+from Testing.ZopeTestCase import utils
+
+import gc
+import transaction
 
 
 class HookTest(base.TestCase):

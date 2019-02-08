@@ -1,6 +1,6 @@
-import unittest
-
 from ZTUtils import Tree
+
+import unittest
 
 
 class Item(object):

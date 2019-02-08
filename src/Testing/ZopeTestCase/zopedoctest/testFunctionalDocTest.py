@@ -12,10 +12,10 @@
 ##############################################################################
 """Example functional doctest
 """
-import unittest
-
-from Testing.ZopeTestCase import FunctionalDocTestSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
+from Testing.ZopeTestCase import FunctionalDocTestSuite
+
+import unittest
 
 
 class HTTPHeaderOutputTests(unittest.TestCase):

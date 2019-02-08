@@ -13,8 +13,9 @@
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import add_folders
-import OFS.DTMLMethod
+
 import OFS.DTMLDocument
+import OFS.DTMLMethod
 import OFS.Folder
 import OFS.Image
 import OFS.OrderedFolder

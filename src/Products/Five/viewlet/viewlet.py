@@ -14,10 +14,11 @@
 """Viewlet.
 """
 
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+
 import os
 import six
 import zope.viewlet.viewlet
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class ViewletBase(zope.viewlet.viewlet.ViewletBase):

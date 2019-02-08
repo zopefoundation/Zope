@@ -11,14 +11,16 @@
 #
 ##############################################################################
 
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from six import binary_type
+from six import PY3
+from six import text_type
+
 import base64
 import logging
-
-from Acquisition import aq_inner, aq_parent
-from six import PY3
-from six import binary_type
-from six import text_type
 import transaction
+
 
 AC_LOGGER = logging.getLogger('event.AccessControl')
 

@@ -1,7 +1,7 @@
-import io
-
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
+
+import io
 
 
 class IUnboundStreamIterator(Interface):

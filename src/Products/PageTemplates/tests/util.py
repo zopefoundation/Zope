@@ -11,11 +11,11 @@
 #
 ##############################################################################
 
+from ExtensionClass import Base
+
 import os
 import re
 import sys
-
-from ExtensionClass import Base
 
 
 class Bruce(Base):

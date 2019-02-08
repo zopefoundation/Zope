@@ -14,10 +14,10 @@
 """Tests class initialization.
 """
 
-import unittest
-
 from AccessControl.class_init import InitializeClass
+
 import ExtensionClass
+import unittest
 
 
 class TestInitializeClass(unittest.TestCase):

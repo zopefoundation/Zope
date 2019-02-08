@@ -15,7 +15,10 @@
 
 from six import PY2
 from six import text_type
-from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 
 
 class BaseResponse(object):

@@ -10,23 +10,21 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-
-# Implement the manage_addProduct method of object managers
-import sys
-import types
+"""Implement the manage_addProduct method of object managers"""
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
 from ExtensionClass import Base
+from OFS.metaconfigure import get_registered_packages
 from zExceptions import Redirect
 
-from OFS.metaconfigure import get_registered_packages
+import sys
+import types
 
 
 def _product_packages():

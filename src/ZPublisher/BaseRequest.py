@@ -13,11 +13,11 @@
 """ Basic ZPublisher request management.
 """
 
-import types
-
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_inner
+from Acquisition import aq_base
+from Acquisition import aq_inner
 from Acquisition.interfaces import IAcquirer
+from App.bbb import HAS_ZSERVER
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote as urllib_quote
 from zExceptions import Forbidden
@@ -34,11 +34,12 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
-from ZPublisher.xmlrpc import is_xmlrpc_response
-
-from App.bbb import HAS_ZSERVER
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
+from ZPublisher.xmlrpc import is_xmlrpc_response
+
+import types
+
 
 _marker = []
 UNSPECIFIED_ROLES = ''

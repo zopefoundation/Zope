@@ -1,11 +1,12 @@
-import os
-import sys
-import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SpecialUsers import system as user
 from Testing.makerequest import makerequest
 from Zope2.Startup.run import make_wsgi_app
 from zope.globalrequest import setRequest
+
+import os
+import sys
+import Zope2
 
 
 def runscript(zopeconf, script_name, *extra_args):

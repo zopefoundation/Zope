@@ -28,15 +28,14 @@ getPortal() returns a usable portal object to the setup code.
 from . import base
 from . import interfaces
 from . import utils
-
-from zope.interface import implementer
+from .ZopeTestCase import user_name
+from .ZopeTestCase import user_password
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
+from zope.interface import implementer
 
-from .ZopeTestCase import user_name
-from .ZopeTestCase import user_password
 
 portal_name = 'portal'
 

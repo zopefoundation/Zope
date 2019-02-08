@@ -14,15 +14,14 @@
 """Viewlet manager.
 """
 
-from operator import itemgetter
-
 from AccessControl.ZopeGuards import guarded_hasattr
-import zope.interface
-import zope.security
+from operator import itemgetter
+from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from zope.viewlet import interfaces
 from zope.viewlet.manager import ViewletManagerBase as origManagerBase
 
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+import zope.interface
+import zope.security
 
 
 class ViewletManagerBase(origManagerBase):

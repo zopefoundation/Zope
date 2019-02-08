@@ -8,12 +8,13 @@ e.g. request and error rate determination, writing high resolution logfiles
 for detailed time related analysis, inline request monitoring.
 '''
 from zope.interface import implementer
-
-from ZPublisher.interfaces import (
-    IPubStart, IPubSuccess, IPubFailure,
-    IPubAfterTraversal, IPubBeforeCommit, IPubBeforeAbort,
-    IPubBeforeStreaming,
-)
+from ZPublisher.interfaces import IPubAfterTraversal
+from ZPublisher.interfaces import IPubBeforeAbort
+from ZPublisher.interfaces import IPubBeforeCommit
+from ZPublisher.interfaces import IPubBeforeStreaming
+from ZPublisher.interfaces import IPubFailure
+from ZPublisher.interfaces import IPubStart
+from ZPublisher.interfaces import IPubSuccess
 
 
 class _Base(object):

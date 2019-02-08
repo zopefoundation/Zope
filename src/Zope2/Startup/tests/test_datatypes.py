@@ -12,14 +12,14 @@
 #
 ##############################################################################
 
+from Zope2.Startup.options import ZopeWSGIOptions
+
 import io
 import shutil
 import tempfile
 import unittest
-
 import ZConfig
 
-from Zope2.Startup.options import ZopeWSGIOptions
 
 _SCHEMA = None
 

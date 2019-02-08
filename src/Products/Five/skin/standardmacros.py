@@ -14,9 +14,10 @@
 """Mimick the zope.app.basicskin skinning system.
 """
 
-import zope.interface
-import zope.component
 from Products.Five.browser import BrowserView
+
+import zope.component
+import zope.interface
 
 
 @zope.interface.implementer(zope.interface.common.mapping.IItemMapping)

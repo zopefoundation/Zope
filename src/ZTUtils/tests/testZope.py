@@ -1,15 +1,12 @@
-import unittest
-
 from DateTime import DateTime
 from six import PY2
 from six.moves.urllib.parse import quote
+from ZTUtils.Zope import complex_marshal
+from ZTUtils.Zope import make_hidden_input
+from ZTUtils.Zope import make_query
+from ZTUtils.Zope import simple_marshal
 
-from ZTUtils.Zope import (
-    complex_marshal,
-    simple_marshal,
-    make_hidden_input,
-    make_query,
-)
+import unittest
 
 
 class QueryTests(unittest.TestCase):

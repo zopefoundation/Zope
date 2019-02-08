@@ -11,10 +11,10 @@
 #
 ##############################################################################
 import collections
+import pkg_resources
 import re
 import sys
 
-import pkg_resources
 
 _version_string = None
 _zope_version = None

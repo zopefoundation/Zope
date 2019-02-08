@@ -13,9 +13,9 @@
 """Example Zope doctest
 """
 
-from unittest import TestSuite
-from Testing.ZopeTestCase import ZopeDocTestSuite
 from Testing.ZopeTestCase import ZopeDocFileSuite
+from Testing.ZopeTestCase import ZopeDocTestSuite
+from unittest import TestSuite
 
 
 def setUp(self):

@@ -14,9 +14,9 @@
 Set up testing environment
 """
 
+import App.config
 import os
 
-import App.config
 
 cfg = App.config.getConfiguration()
 

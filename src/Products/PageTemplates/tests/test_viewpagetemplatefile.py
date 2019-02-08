@@ -1,8 +1,8 @@
-import unittest
-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
+
+import unittest
 
 
 class SimpleView(BrowserView):

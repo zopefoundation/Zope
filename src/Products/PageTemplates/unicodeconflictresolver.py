@@ -13,15 +13,16 @@
 """Unicode conflict resolution.
 """
 
-import sys
-
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from zope.interface import implementer
+from six import binary_type
+from six import text_type
 from zope.i18n.interfaces import IUserPreferredCharsets
+from zope.interface import implementer
+
+import sys
 import ZPublisher
 
-from six import text_type, binary_type
 
 default_encoding = sys.getdefaultencoding()
 

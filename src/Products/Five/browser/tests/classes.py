@@ -14,8 +14,9 @@
 """Test fixtures
 """
 
-from zope.interface import Interface, implementer
 from Products.Five import BrowserView
+from zope.interface import implementer
+from zope.interface import Interface
 
 
 class IOne(Interface):

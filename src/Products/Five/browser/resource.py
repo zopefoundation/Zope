@@ -14,19 +14,18 @@
 """Provide basic resource functionality
 """
 
-import os
-
+from Products.Five.browser import BrowserView
 from six.moves.urllib.parse import unquote
-import zope.browserresource.directory
-import zope.browserresource.file
 from zope.browserresource.file import File
 from zope.interface import implementer
-from zope.traversing.browser import absoluteURL
+from zope.ptresource.ptresource import PageTemplate
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.ptresource.ptresource import PageTemplate
+from zope.traversing.browser import absoluteURL
 
-from Products.Five.browser import BrowserView
+import os
+import zope.browserresource.directory
+import zope.browserresource.file
 
 
 _marker = object()

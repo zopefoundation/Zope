@@ -11,21 +11,20 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import io
-import unittest
-
-import transaction
+from six.moves.urllib_parse import quote
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
-from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
-from six.moves.urllib_parse import quote
-
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import ZopeTestCase
+from zope.security.interfaces import IUnauthorized
 from ZPublisher.WSGIPublisher import get_module_info
+
+import io
 import Testing.testbrowser
+import transaction
+import unittest
 
 
 class WSGIResponseTests(unittest.TestCase):

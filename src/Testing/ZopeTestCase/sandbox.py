@@ -13,13 +13,13 @@
 """Support for ZODB sandboxes in ZTC
 """
 
-import contextlib
-import transaction
-
-import ZPublisher.WSGIPublisher
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import ZopeLite as Zope2
+
+import contextlib
+import transaction
+import ZPublisher.WSGIPublisher
 
 
 class Sandboxed(object):

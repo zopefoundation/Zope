@@ -13,30 +13,29 @@
 """Support for (functional) doc tests
 """
 
-import doctest
-import email.parser
 from functools import partial
 from io import BytesIO
-import re
-import sys
-import warnings
-
 from six import text_type
-import transaction
-
-from Testing.ZopeTestCase import ZopeTestCase
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import folder_name
+from Testing.ZopeTestCase import Functional
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from Testing.ZopeTestCase import user_role
-from Testing.ZopeTestCase import standard_permissions
-from Testing.ZopeTestCase.sandbox import AppZapper
+from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
+from Testing.ZopeTestCase.sandbox import AppZapper
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
+
+import doctest
+import email.parser
+import re
+import sys
+import transaction
+import warnings
 
 
 if sys.version_info >= (3, ):

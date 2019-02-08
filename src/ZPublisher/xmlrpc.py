@@ -19,21 +19,23 @@ See http://www.xmlrpc.com/ and http://linux.userland.com/ for more
 information about XML-RPC and Zope.
 """
 
+from App.config import getConfiguration
+from DateTime.DateTime import DateTime
+from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
 import re
 import sys
+
 
 try:
     import xmlrpc.client as xmlrpclib
 except ImportError:
     import xmlrpclib
 
-from App.config import getConfiguration
-from zExceptions import Unauthorized
-from ZODB.POSException import ConflictError
 
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
-from DateTime.DateTime import DateTime
 WRAPPERS = xmlrpclib.WRAPPERS + (DateTime, )
 
 

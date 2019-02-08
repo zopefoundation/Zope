@@ -13,9 +13,10 @@
 ##############################################################################
 """Zope application package."""
 
+from zope.deferredimport import deprecated
+
 import os
 
-from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
 deprecated(

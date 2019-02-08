@@ -1,9 +1,9 @@
-import unittest
-
 from zExceptions import NotFound
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
+
+import unittest
 
 
 @implementer(IPublishTraverse)

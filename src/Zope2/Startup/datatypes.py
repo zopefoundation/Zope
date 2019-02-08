@@ -13,15 +13,16 @@
 ##############################################################################
 """Datatypes for the Zope schema for use with ZConfig."""
 
+from six import PY2
+from six import text_type
+from six.moves import UserDict
+from ZODB.config import ZODBDatabase
+from zope.deferredimport import deprecated
+
 import io
 import os
 import traceback
 
-from six.moves import UserDict
-from six import PY2, text_type
-
-from ZODB.config import ZODBDatabase
-from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
 _prefix = 'ZServer.Zope2.Startup.datatypes:'

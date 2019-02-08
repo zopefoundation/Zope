@@ -12,14 +12,17 @@
 ##############################################################################
 """Commonly used utility functions."""
 
+from Acquisition import aq_base
+from Acquisition import aq_parent
+# BBB
+from os.path import realpath  # NOQA
+
 import os
 import sys
 import time
 
-from Acquisition import aq_base, aq_parent
 
 # BBB
-from os.path import realpath  # NOQA
 attrget = getattr
 
 # These are needed because the various date formats below must

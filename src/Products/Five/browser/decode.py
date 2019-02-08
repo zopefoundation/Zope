@@ -15,13 +15,13 @@
     encoding.
 """
 
-import sys
+from six import binary_type
+from six import text_type
 from warnings import warn
-
-from ZPublisher.HTTPRequest import isCGI_NAMEs
 from zope.i18n.interfaces import IUserPreferredCharsets
+from ZPublisher.HTTPRequest import isCGI_NAMEs
 
-from six import text_type, binary_type
+import sys
 
 
 def _decode(text, charsets):

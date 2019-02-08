@@ -15,12 +15,11 @@
 Extensions currently include external methods.
 """
 from functools import total_ordering
-import os
-
 from six import exec_
-
-import Products
 from zExceptions import NotFound
+
+import os
+import Products
 
 
 @total_ordering

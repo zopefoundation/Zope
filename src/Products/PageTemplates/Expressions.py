@@ -16,10 +16,16 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-import logging
-from six import text_type, binary_type
-
+from Acquisition import aq_base
+from MultiMapping import MultiMapping
+from Products.PageTemplates import ZRPythonExpr
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from six import binary_type
+from six import text_type
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 from zope.component import queryUtility
+from zope.contentprovider.tales import TALESProviderExpression
 from zope.i18n import translate
 from zope.interface import implementer
 from zope.pagetemplate.engine import ZopeEngine as Z3Engine
@@ -34,18 +40,11 @@ from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import Context
 from zope.tales.tales import ErrorInfo as BaseErrorInfo
 from zope.tales.tales import Iterator
-from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
+from zope.traversing.interfaces import ITraversable
 
+import logging
 import OFS.interfaces
-from MultiMapping import MultiMapping
-from Acquisition import aq_base
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-
-from zope.contentprovider.tales import TALESProviderExpression
-from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()

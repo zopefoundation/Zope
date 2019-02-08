@@ -1,9 +1,9 @@
 # *-* coding: iso-8859-1 -*-
 
-import unittest
 from six import text_type
-
 from zope.component.testing import PlacelessSetup
+
+import unittest
 
 
 class EngineTestsBase(PlacelessSetup):

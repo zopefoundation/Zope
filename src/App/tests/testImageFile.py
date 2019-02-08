@@ -1,12 +1,12 @@
-import io
-import os.path
 from io import BytesIO
-import unittest
-
-import App
 from Testing.ZopeTestCase.warnhook import WarningsHook
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
+
+import App
+import io
+import os.path
+import unittest
 
 
 class TestImageFile(unittest.TestCase):

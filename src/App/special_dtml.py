@@ -11,23 +11,29 @@
 #
 ##############################################################################
 
-import os
-import sys
+from AccessControl import getSecurityManager
+from Acquisition import aq_acquire
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Acquisition import Explicit
+from App import Common
+from App.config import getConfiguration
+from ComputedAttribute import ComputedAttribute
+from DocumentTemplate.DT_String import _marker
+from DocumentTemplate.DT_String import DTReturn
+from DocumentTemplate.DT_String import render_blocks
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict
 from logging import getLogger
+from Shared.DC.Scripts.Bindings import Bindings
 
 import DocumentTemplate
 import MethodObject
+import os
 import Persistence
-from App import Common
-from App.config import getConfiguration
+import sys
 import Zope2
 
-from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit, aq_inner, aq_parent, aq_acquire
-from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
-from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from AccessControl import getSecurityManager
-from ComputedAttribute import ComputedAttribute
 
 LOG = getLogger('special_dtml')
 

@@ -1,6 +1,6 @@
-import unittest
-
 from ZTUtils import Batch
+
+import unittest
 
 
 class BatchTests(unittest.TestCase):

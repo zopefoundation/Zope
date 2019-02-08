@@ -11,12 +11,12 @@
 #
 ##############################################################################
 
+from Testing.ZopeTestCase import ZopeTestCase
+from zope.testing.loggingsupport import InstalledHandler
+
 import logging
 import unittest
 
-from Testing.ZopeTestCase import ZopeTestCase
-
-from zope.testing.loggingsupport import InstalledHandler
 
 logged = """Zope2.App.test_startup INFO
   <class 'zope.processlifetime.DatabaseOpened'>

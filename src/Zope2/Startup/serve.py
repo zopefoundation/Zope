@@ -15,13 +15,14 @@
 # (http://repoze.org/license.html).
 
 from logging.config import fileConfig
+from paste.deploy import loadapp
+from paste.deploy import loadserver
+
 import optparse
 import os
 import re
 import sys
 
-from paste.deploy import loadserver
-from paste.deploy import loadapp
 
 try:
     import configparser

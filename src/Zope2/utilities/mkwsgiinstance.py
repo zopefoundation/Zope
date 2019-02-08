@@ -26,11 +26,13 @@ When run without arguments, this script will ask for the information
 necessary to create a Zope WSGI instance home.
 """
 
+from . import copyzopeskel
+
 import getopt
 import os
 import subprocess
 import sys
-from . import copyzopeskel
+
 
 if sys.version_info > (3, ):
     raw_input = input

@@ -1,8 +1,9 @@
+from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
+from Testing.ZopeTestCase import ZopeTestCase
+
 import re
 import unittest
 
-from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
-from Testing.ZopeTestCase import ZopeTestCase
 
 try:
     from html import escape

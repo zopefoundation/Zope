@@ -17,7 +17,6 @@
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
-
 from zope.interface import implementer
 from zope.interface import Interface
 

@@ -13,9 +13,10 @@
 """Some helper methods
 """
 
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+
 import re
 
-from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 
 xml_preamble_reg = re.compile(
     br'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)

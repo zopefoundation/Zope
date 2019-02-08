@@ -20,17 +20,16 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 
-import transaction
-
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
 from OFS.userfolder import UserFolder
-
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import folder_name
+from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_role
-from Testing.ZopeTestCase import standard_permissions
+
+import transaction
 
 
 def hasattr_(ob, attr):

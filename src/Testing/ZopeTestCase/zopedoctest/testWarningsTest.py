@@ -13,8 +13,8 @@
 """Example doctest
 """
 
-from unittest import TestSuite
 from Testing.ZopeTestCase import ZopeDocFileSuite
+from unittest import TestSuite
 
 
 def test_suite():

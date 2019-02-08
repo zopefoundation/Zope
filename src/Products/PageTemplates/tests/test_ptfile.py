@@ -1,16 +1,15 @@
 # coding=utf-8
 """Tests of PageTemplateFile."""
 
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from Testing.makerequest import makerequest
+
 import os
 import os.path
 import tempfile
+import transaction
 import unittest
 import Zope2
-import transaction
-
-from Testing.makerequest import makerequest
-
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 
 class TypeSniffingTestCase(unittest.TestCase):

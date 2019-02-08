@@ -11,8 +11,10 @@
 #
 ##############################################################################
 
-import transaction
 from zope.deferredimport import deprecated
+
+import transaction
+
 
 # BBB Zope 5.0
 deprecated(

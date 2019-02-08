@@ -12,10 +12,12 @@
 #
 ##############################################################################
 
-import os.path
-
 from App.config import getConfiguration
 from zope.configuration import xmlconfig
+from zope.testing.cleanup import addCleanUp  # NOQA
+
+import os.path
+
 
 _initialized = False
 _context = None
@@ -68,6 +70,5 @@ def cleanUp():
     _context = None
 
 
-from zope.testing.cleanup import addCleanUp  # NOQA
 addCleanUp(cleanUp)
 del addCleanUp

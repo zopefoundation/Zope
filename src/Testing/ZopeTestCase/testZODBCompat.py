@@ -16,18 +16,17 @@ Demonstrates that cut/copy/paste/clone/rename and import/export
 work if a savepoint is made before performing the respective operation.
 """
 
-import os
-
-from Testing import ZopeTestCase
-
-from Testing.ZopeTestCase import layer
-from Testing.ZopeTestCase import utils
-from Testing.ZopeTestCase import transaction
-
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
 from OFS.SimpleItem import SimpleItem
+from Testing import ZopeTestCase
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import transaction
+from Testing.ZopeTestCase import utils
+
+import os
 import tempfile
+
 
 folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]

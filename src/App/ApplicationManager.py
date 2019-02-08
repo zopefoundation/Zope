@@ -11,14 +11,9 @@
 #
 ##############################################################################
 
-import os
-import sys
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
-from six.moves.urllib import parse
-
 from App.config import getConfiguration
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
@@ -27,6 +22,10 @@ from App.version_txt import version_txt
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from six.moves.urllib import parse
+
+import os
+import sys
 
 
 class FakeConnection(object):
