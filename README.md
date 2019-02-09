@@ -96,6 +96,11 @@
 * [versions-prod.cfg](releases/4.0a1/versions-prod.cfg)
 * [requirements.txt](releases/4.0a1/requirements.txt)
 
+## 2.13.29
+
+* [versions-prod.cfg](releases/2.13.29/versions-prod.cfg)
+* [requirements.txt](releases/2.13.29/requirements.txt)
+
 ## 2.13.28
 
 * [versions-prod.cfg](releases/2.13.28/versions-prod.cfg)
