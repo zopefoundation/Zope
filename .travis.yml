@@ -26,8 +26,6 @@ matrix:
           env: TOXENV=lint-py27
         - python: "3.6"
           env: TOXENV=lint-py36
-        - python: "3.8-dev"
-          env: TOXENV=py38
 
 install:
     - travis_retry pip install -U pip setuptools
