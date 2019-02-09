@@ -118,8 +118,8 @@ walking along the URL. Take for example a collection of objects::
 
 This collection of objects forms an object hierarchy. Using Zope you
 can publish objects with URLs. For example, the URL
-'http://zope/vertebrates/mammals/monkey/screech', will traverse the
-object hierarchy, find the 'monkey' object and call its 'screech'
+http://zope/vertebrates/mammals/monkey/screech will traverse the
+object hierarchy, find the *monkey* object and call its *screech*
 method.
 
 .. figure:: Figures/2-2.png
@@ -132,14 +132,14 @@ and continues to move from object to object using the URL as a guide.
 
 Typically the next object is a sub-object of the current object that
 is named by the path segment. So in the example above, when the
-publisher gets to the 'vertebrates' object, the next path segment is
-"mammals", and this tells the publisher to look for a sub-object of
+publisher gets to the *vertebrates* object, the next path segment is
+*mammals*, and this tells the publisher to look for a sub-object of
 the current object with that name. Traversal stops when Zope comes to
 the end of the URL. If the final object is found, then it is
 published, otherwise an error is returned.
 
+Now let's take a closer look at traversal.
 
-Now let's take a more rigorous look at traversal.
 
 Traversal Interfaces
 ====================
