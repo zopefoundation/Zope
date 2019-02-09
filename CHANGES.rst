@@ -42,6 +42,9 @@ Fixes
 
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
+  
+- Fix ZMI listing view for narrow displays.
+  (`#471 <https://github.com/zopefoundation/Zope/pull/471>`_)
 
 Other changes
 +++++++++++++
