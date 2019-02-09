@@ -48,8 +48,11 @@ instancehome $INSTANCE
 # Example:
 #
 #    <environment>
-#      CHAMELEON_CACHE $INSTANCE/var/cache
+#      MY_PRODUCT_ENVVAR foobar
 #    </environment>
+<environment>
+  CHAMELEON_CACHE $INSTANCE/var/cache
+</environment>
 
 
 # Directive: debug-mode
