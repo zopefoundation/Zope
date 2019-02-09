@@ -95,7 +95,7 @@ class WSGIResponseTests(unittest.TestCase):
         headers = response.listHeaders()
         whenstr = time.strftime('%a, %d %b %Y %H:%M:%S GMT',
                                 time.gmtime(time.mktime(WHEN)))
-        self.assertTrue(('Date', whenstr) in headers)
+        self.assertIn(('Date', whenstr), headers)
 
     def test_setBody_IUnboundStreamIterator(self):
         from ZPublisher.Iterators import IUnboundStreamIterator
