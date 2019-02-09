@@ -39,6 +39,7 @@ Other changes
 +++++++++++++
 
 - Document filesystem caching for Chameleon page templates
+  and activate it by default for new WSGI instances
   (`#291 <https://github.com/zopefoundation/Zope/issues/291>`_)
 
 - Remove obsolete environment variable "Z_DEBUG_MODE"
