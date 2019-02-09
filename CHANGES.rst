@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b9 (unreleased)
 ------------------
 
+Features
+++++++++
+
+- Add preliminary support for Python 3.8. as of 3.8.0a1 is released.
+
 Fixes
 +++++
 

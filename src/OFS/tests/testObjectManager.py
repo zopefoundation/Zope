@@ -510,9 +510,9 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om._setObject(hash_id, SimpleItem(hash_id))
 
         result = om.manage_get_sortedObjects('id', 'asc')
-        self.assertEquals(len(result), 1)
-        self.assertEquals(result[0]['id'], hash_id)
-        self.assertEquals(result[0]['quoted_id'], quote(hash_id))
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], hash_id)
+        self.assertEqual(result[0]['quoted_id'], quote(hash_id))
 
 _marker = object()
 
