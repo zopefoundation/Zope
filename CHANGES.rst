@@ -53,6 +53,8 @@ Other changes
 - Remove obsolete environment variable "Z_DEBUG_MODE"
   (`#445 <https://github.com/zopefoundation/Zope/issues/445>`_)
 
+- Update dependencies to newest versions.
+
 Breaking changes
 ++++++++++++++++
 
