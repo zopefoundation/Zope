@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Make sure conflicts are always retried and not masked by exception views
+  (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
+
 - Fix faulty ZMI links due to missing URL-quoting
   (`#391 <https://github.com/zopefoundation/Zope/issues/391>`_)
 
