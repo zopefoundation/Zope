@@ -11,11 +11,22 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b9 (unreleased)
 ------------------
 
+Features
+++++++++
+
+- Add preliminary support for Python 3.8. as of 3.8.0a1 is released.
+
 Fixes
 +++++
 
 - Fix display of ZMI breadcrumbs with non-ASCII path elements
   (`#401 <https://github.com/zopefoundation/Zope/issues/401>`_)
+
+- Make sure conflicts are always retried and not masked by exception views
+  (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
+
+- Fix faulty ZMI links due to missing URL-quoting
+  (`#391 <https://github.com/zopefoundation/Zope/issues/391>`_)
 
 - Fix configuring the maximum number of conflict retries
   (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
@@ -39,6 +50,7 @@ Other changes
 +++++++++++++
 
 - Document filesystem caching for Chameleon page templates
+  and activate it by default for new WSGI instances
   (`#291 <https://github.com/zopefoundation/Zope/issues/291>`_)
 
 - Remove obsolete environment variable "Z_DEBUG_MODE"

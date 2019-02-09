@@ -16,6 +16,7 @@ from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
 from six import PY2
+from six.moves.urllib.parse import quote
 from zExceptions import BadRequest
 from Zope2.App import zcml
 from zope.component.testing import PlacelessSetup
@@ -501,6 +502,17 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             self.assertTrue(filename.endswith('.zexp') or
                             filename.endswith('.xml'))
 
+    def test_manage_get_sortedObjects_quote_id(self):
+        # manage_get_sortedObjects now returns a urlquoted version
+        # of the object ID to create correct links in the ZMI
+        om = self._makeOne()
+        hash_id = '#999'
+        om._setObject(hash_id, SimpleItem(hash_id))
+
+        result = om.manage_get_sortedObjects('id', 'asc')
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], hash_id)
+        self.assertEqual(result[0]['quoted_id'], quote(hash_id))
 
 _marker = object()
 

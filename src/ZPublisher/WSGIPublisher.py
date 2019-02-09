@@ -28,7 +28,6 @@ from zExceptions import (
     Unauthorized,
     upgradeException,
 )
-from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.globalrequest import setRequest, clearRequest
@@ -166,6 +165,9 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             tm.abort()
             notify(pubevents.PubFailure(
                 request, exc_info, request.supports_retry()))
+
+            if isinstance(exc, TransientError) and request.supports_retry():
+                reraise(*exc_info)
 
             if not (exc_view_created or isinstance(exc, Unauthorized)):
                 reraise(*exc_info)
