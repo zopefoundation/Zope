@@ -31,6 +31,9 @@ Features
 
 - Add preliminary support for Python 3.8. as of 3.8.0a1 is released.
 
+- Recreate ``App.version_txt.getZopeVersion``
+  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
+
 Fixes
 +++++
 
@@ -48,9 +51,6 @@ Fixes
 
 - Improve showing/hiding of the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
-
-- Recreate ``App.version_txt.getZopeVersion``
-  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
 - Restore the `View` ZMI tab on folders and their subclasses
   (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
