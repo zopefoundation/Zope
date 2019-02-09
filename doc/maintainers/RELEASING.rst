@@ -65,8 +65,12 @@ Pin versions in a ``pip`` requirements file
 
 Copy the version pins from the ``[versions]`` section of ``buildout.cfg``
 into a ``requirements.txt`` file, to enable ``pip`` users to install
-without buildout (be sure to add the new ``Zope2`` release version to
-``requirements.txt`` and the ``[versions]`` section).
+without buildout. Be sure to:
+
+*  add the new ``Zope2`` release version to ``[versions]`` section
+*  add the new ``Zope2`` release version to ``requirements.txt``
+*  replace `` = `` in ``requirements.txt`` by ``==``.
+
 
 .. note::
 
