@@ -590,20 +590,6 @@ Finally, traversal security can be circumvented with the
 in Chapter 6, "Security".
 
 
-Environment Variables
-=====================
-
-You can control some facets of the publisher's operation by setting
-environment variables.
-
-- 'Z_REALM' -- Sets the basic authorization realm. This controls the
-  realm name as it appears in the web browser's username and password
-  dialog. You can also set the realm with the '__bobo_realm__' module
-  variable, as mentioned previously.
-
-Many more options can be set using switches on the startup script.
-See the *Zope Administrator's Guide* for more information.
-
 Testing
 -------
 
