@@ -141,19 +141,6 @@ published, otherwise an error is returned.
 Now let's take a closer look at traversal.
 
 
-Traversal Interfaces
-====================
-
-Zope defines interfaces for publishable objects, and publishable
-modules.
-
-
-When you are developing for Zope you almost always use the 'Zope'
-package as your published module. However, if you are using
-'ZPublisher' outside of Zope you'll be interested in the published
-module interface.
-
-
 Publishable Object Requirements
 ===============================
 
