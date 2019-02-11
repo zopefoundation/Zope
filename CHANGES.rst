@@ -8,13 +8,31 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b9 (unreleased)
+4.0b10 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
+4.0b9 (2019-02-09)
 ------------------
+
+Breaking changes
+++++++++++++++++
+
+- Remove support for Bobo Call Interface
+  (`#462 <https://github.com/zopefoundation/Zope/pull/462>`_)
+
+- Remove support for ``management_page_charset``
+  (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
 
 Features
 ++++++++
 
 - Add preliminary support for Python 3.8. as of 3.8.0a1 is released.
+
+- Recreate ``App.version_txt.getZopeVersion``
+  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
 Fixes
 +++++
@@ -31,17 +49,17 @@ Fixes
 - Show the content add widget again on ZCatalogs
   (`ZCatalog#45 <https://github.com/zopefoundation/Products.ZCatalog/issues/45>`_)
 
-- Improved showing/hiding of the left-hand tree pane
+- Improve showing/hiding of the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
-
-- Recreate ``App.version_txt.getZopeVersion``
-  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
 - Restore the `View` ZMI tab on folders and their subclasses
   (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
 
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
+
+- Fix ZMI listing view for narrow displays.
+  (`#471 <https://github.com/zopefoundation/Zope/pull/471>`_)
 
 Other changes
 +++++++++++++
@@ -53,14 +71,7 @@ Other changes
 - Remove obsolete environment variable "Z_DEBUG_MODE"
   (`#445 <https://github.com/zopefoundation/Zope/issues/445>`_)
 
-Breaking changes
-++++++++++++++++
-
-- Removed support for Bobo Call Interface
- (`#462 <https://github.com/zopefoundation/Zope/pull/462>`_)
-
-- Removed support for ``management_page_charset``
- (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
+- Update dependencies to newest versions.
 
 
 4.0b8 (2018-12-14)
