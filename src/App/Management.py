@@ -24,7 +24,6 @@ from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from six.moves.urllib.parse import quote, unquote
 from zExceptions import Redirect
-from ZPublisher.HTTPRequest import default_encoding
 from zope.interface import implementer
 import itertools
 import six
@@ -101,19 +100,13 @@ class Tabs(Base):
             return
         last = steps.pop()
         for step in steps:
-            title = escape(unquote(step))
-            if isinstance(title, bytes):
-                title = title.decode(default_encoding)
             script = '%s/%s' % (script, step)
             yield {'url': linkpat.format(escape(script, True)),
-                   'title': title,
+                   'title': escape(unquote(step)),
                    'last': False}
         script = '%s/%s' % (script, last)
-        title = escape(unquote(last))
-        if isinstance(title, bytes):
-            title = title.decode(default_encoding)
         yield {'url': linkpat.format(escape(script, True)),
-               'title': title,
+               'title': escape(unquote(last)),
                'last': True}
 
     def tabs_path_info(self, script, path):
