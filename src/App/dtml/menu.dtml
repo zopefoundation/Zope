@@ -29,7 +29,8 @@
 
 		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
 		<li role="separator" class="divider"></li>
-		<li><a id="menu_copyright" href="manage_copyright">&copy; Zope Foundation</a></li>
+		<li><a id="menu_copyright" href="zope_copyright"
+               target="manage_main">&copy; Zope Foundation</a></li>
 	</ul>
 </div>
 

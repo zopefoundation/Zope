@@ -174,6 +174,9 @@ class Navigation(Base):
     security.declareProtected(view_management_screens, 'manage_navbar')
     manage_navbar = DTMLFile('dtml/manage_navbar', globals())
 
+    security.declarePublic('zope_copyright')
+    zope_copyright = DTMLFile('dtml/copyright', globals())
+
     security.declarePublic('manage_zmi_logout')
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""

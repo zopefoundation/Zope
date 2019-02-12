@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Fixes
++++++
+
+- Resurrected copyright and license page
+  (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
 
 
 4.0b9 (2019-02-09)
