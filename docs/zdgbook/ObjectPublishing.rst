@@ -118,8 +118,8 @@ walking along the URL. Take for example a collection of objects::
 
 This collection of objects forms an object hierarchy. Using Zope you
 can publish objects with URLs. For example, the URL
-'http://zope/vertebrates/mammals/monkey/screech', will traverse the
-object hierarchy, find the 'monkey' object and call its 'screech'
+http://zope/vertebrates/mammals/monkey/screech will traverse the
+object hierarchy, find the *monkey* object and call its *screech*
 method.
 
 .. figure:: Figures/2-2.png
@@ -132,26 +132,13 @@ and continues to move from object to object using the URL as a guide.
 
 Typically the next object is a sub-object of the current object that
 is named by the path segment. So in the example above, when the
-publisher gets to the 'vertebrates' object, the next path segment is
-"mammals", and this tells the publisher to look for a sub-object of
+publisher gets to the *vertebrates* object, the next path segment is
+*mammals*, and this tells the publisher to look for a sub-object of
 the current object with that name. Traversal stops when Zope comes to
 the end of the URL. If the final object is found, then it is
 published, otherwise an error is returned.
 
-
-Now let's take a more rigorous look at traversal.
-
-Traversal Interfaces
-====================
-
-Zope defines interfaces for publishable objects, and publishable
-modules.
-
-
-When you are developing for Zope you almost always use the 'Zope'
-package as your published module. However, if you are using
-'ZPublisher' outside of Zope you'll be interested in the published
-module interface.
+Now let's take a closer look at traversal.
 
 
 Publishable Object Requirements
@@ -589,20 +576,6 @@ Finally, traversal security can be circumvented with the
 '__allow_access_to_unprotected_subobjects__' attribute as described
 in Chapter 6, "Security".
 
-
-Environment Variables
-=====================
-
-You can control some facets of the publisher's operation by setting
-environment variables.
-
-- 'Z_REALM' -- Sets the basic authorization realm. This controls the
-  realm name as it appears in the web browser's username and password
-  dialog. You can also set the realm with the '__bobo_realm__' module
-  variable, as mentioned previously.
-
-Many more options can be set using switches on the startup script.
-See the *Zope Administrator's Guide* for more information.
 
 Testing
 -------
