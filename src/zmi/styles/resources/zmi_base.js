@@ -141,11 +141,11 @@ function show_ace_editor() {
 			content_type = "text/html";
 		}
 	}
-	if ( 0 === value.indexOf("<html")) {
-		content_type = "text/html";
-	}
 	if ( 0 === value.indexOf("<html") && content_type != 'dtml') {
 		content_type = "text/html";
+	}
+	if ( 0 === value.indexOf("<?xml") || value.indexOf("tal:") >= 0) {
+		content_type = "text/xml";
 	}
 	if ( 0 === value.indexOf("#!/usr/bin/python") || 0 === value.indexOf("## Script (Python)") ) {
 		content_type = "python";
