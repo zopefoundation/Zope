@@ -11,9 +11,11 @@
 		<span class="product">ZOPE 4.0</span>
 	</a>
 	<ul class="navbar-nav flex-row ml-sm-auto d-flex">
-		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var AUTHENTICATED_USER missing="not logged-in">">
-			<span class="zmi-label"><dtml-var AUTHENTICATED_USER missing="not logged-in"></span>
+		<dtml-let authuser="REQUEST.get('AUTHENTICATED_USER', 'not logged-in')">
+		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var "str(authuser)">">
+			<span class="zmi-label"><dtml-var "str(authuser)"></span>
 		</li>
+		</dtml-let>
 		<li id="toggle_menu" class="form-inline desktop hidden-xs"
 			title="Show/Hide Tree Menu of the Navigation Context"
 			data-title_inactive="STATUS INACTIVE: Tree Menu Button is only active on List Views. Navigate up a level to show the tree view again."
