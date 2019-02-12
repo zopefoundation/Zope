@@ -105,9 +105,9 @@ function fix_modern_modal_gui() {
 function show_ace_editor() {
 	$('#content').wrap('<div id="editor_container" class="form-group"></div>');
 	$('#content').before('<div id="editor">ace editor text</div>');
-	var dom = require("ace/lib/dom");
+	var dom = ace.require("ace/lib/dom");
 	// add command to all new editor instances
-	require("ace/commands/default_commands").commands.push({
+	ace.require("ace/commands/default_commands").commands.push({
 		name: "Toggle Fullscreen",
 		bindKey: "F10",
 		exec: function(editor) {
@@ -168,6 +168,15 @@ function show_ace_editor() {
 	}
 	else if (content_type == "python") {
 		mode = 'python';
+	}
+	else if (content_type == "sql") {
+		mode = 'sql';
+	}
+	else if (content_type == "json") {
+		mode = 'json';
+	}
+	else if (content_type == "dtml") {
+		mode = 'markdown';
 	}
 	editor.setTheme("ace/theme/eclipse");
 	editor.getSession().setMode('ace/mode/'+mode);
