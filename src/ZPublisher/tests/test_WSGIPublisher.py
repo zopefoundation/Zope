@@ -484,7 +484,7 @@ class TestPublishModule(ZopeTestCase):
         directlyProvides(_request, IDefaultBrowserLayer)
         _request.response = DummyResponse()
         _request.retry_count = 0
-        _request.retry_max_count = 3
+        _request.retry_max_count = 2
         _request.environ = {}
 
         def _close():
@@ -512,6 +512,7 @@ class TestPublishModule(ZopeTestCase):
         # have been retried up to retry_max_count times
         self.assertTrue(app_iter[1].startswith('Exception View: ConflictError'))
         self.assertEqual(_request.retry_count, _request.retry_max_count)
+        unregisterExceptionView(Exception)
 
     def testCustomExceptionViewUnauthorized(self):
         from AccessControl import Unauthorized
@@ -524,6 +525,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '401 Unauthorized')
         self.assertTrue(b'Exception View: Unauthorized' in body)
+        unregisterExceptionView(IUnauthorized)
 
     def testCustomExceptionViewForbidden(self):
         from zExceptions import Forbidden
@@ -536,6 +538,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '403 Forbidden')
         self.assertTrue(b'Exception View: Forbidden' in body)
+        unregisterExceptionView(IForbidden)
 
     def testCustomExceptionViewNotFound(self):
         from zExceptions import NotFound
@@ -548,6 +551,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
         self.assertTrue(b'Exception View: NotFound' in body)
+        unregisterExceptionView(INotFound)
 
     def testCustomExceptionViewZTKNotFound(self):
         from zope.publisher.interfaces import NotFound as ZTK_NotFound
@@ -560,6 +564,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
         self.assertTrue(b'Exception View: NotFound' in body)
+        unregisterExceptionView(INotFound)
 
     def testCustomExceptionViewBadRequest(self):
         from zExceptions import BadRequest
@@ -614,6 +619,51 @@ class TestPublishModule(ZopeTestCase):
         _publish._raise = Unauthorized('argg')
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
+
+
+class ExcViewCreatedTests(ZopeTestCase):
+
+    def _callFUT(self, exc):
+        from zope.interface import directlyProvides
+        from zope.publisher.browser import IDefaultBrowserLayer
+        from ZPublisher.WSGIPublisher import _exc_view_created_response
+        req = DummyRequest()
+        req['PARENTS'] = [self.app]
+        directlyProvides(req, IDefaultBrowserLayer)
+        return _exc_view_created_response(exc, req, DummyResponse())
+
+    def _registerStandardErrorView(self):
+        from OFS.browser import StandardErrorMessageView
+        from zope.interface import Interface
+        registerExceptionView(Interface, factory=StandardErrorMessageView,
+                              name=u'standard_error_message')
+
+    def _unregisterStandardErrorView(self):
+        from OFS.browser import StandardErrorMessageView
+        from zope.interface import Interface
+        unregisterExceptionView(Interface, factory=StandardErrorMessageView,
+                                name=u'standard_error_message')
+
+    def testNoStandardErrorMessage(self):
+        from zExceptions import NotFound
+        self._registerStandardErrorView()
+
+        try:
+            self.assertFalse(self._callFUT(NotFound))
+        finally:
+            self._unregisterStandardErrorView()
+
+    def testWithStandardErrorMessage(self):
+        from OFS.DTMLMethod import addDTMLMethod
+        from zExceptions import NotFound
+        self._registerStandardErrorView()
+
+        addDTMLMethod(self.app, 'standard_error_message', file='OOPS')
+
+        try:
+            self.assertTrue(self._callFUT(NotFound))
+        finally:
+            self._unregisterStandardErrorView()
 
 
 class WSGIPublisherTests(FunctionalTestCase):
@@ -701,28 +751,29 @@ class CustomExceptionView(object):
                 self.__parent__.__class__.__name__))
 
 
-def registerExceptionView(for_):
+def registerExceptionView(for_, factory=CustomExceptionView, name=u'index.html'):
     from zope.interface import Interface
     from zope.component import getGlobalSiteManager
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
     gsm = getGlobalSiteManager()
     gsm.registerAdapter(
-        CustomExceptionView,
+        factory,
         required=(for_, IDefaultBrowserLayer),
         provided=Interface,
-        name=u'index.html',
+        name=name,
     )
 
-def unregisterExceptionView(for_):
+def unregisterExceptionView(for_, factory=CustomExceptionView,
+                            name=u'index.html'):
     from zope.interface import Interface
     from zope.component import getGlobalSiteManager
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
     gsm = getGlobalSiteManager()
     gsm.unregisterAdapter(
-        CustomExceptionView,
+        factory,
         required=(for_, IDefaultBrowserLayer),
         provided=Interface,
-        name=u'index.html',
+        name=name,
     )
 
 

@@ -19,6 +19,7 @@ import sys
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from Acquisition import aq_acquire
 from six import PY3
 from six import reraise
 from six.moves._thread import allocate_lock
@@ -96,9 +97,22 @@ def get_module_info(module_name='Zope2'):
 
 def _exc_view_created_response(exc, request, response):
     view = queryMultiAdapter((exc, request), name=u'index.html')
+    parents = request.get('PARENTS')
+
+    if view is None and parents:
+        # Try a fallback based on the old standard_error_message
+        # DTML Method in the ZODB
+        view = queryMultiAdapter((exc, request),
+                                 name=u'standard_error_message')
+        direct_parent = parents[0]
+        try:
+            standard_error_message = aq_acquire(direct_parent,
+                                                'standard_error_message')
+        except (AttributeError, KeyError):
+            view = None
+
     if view is not None:
         # Wrap the view in the context in which the exception happened.
-        parents = request.get('PARENTS')
         if parents:
             view.__parent__ = parents[0]
 
@@ -113,6 +127,7 @@ def _exc_view_created_response(exc, request, response):
         # Set the response body to the result of calling the view.
         response.setBody(view())
         return True
+
     return False
 
 

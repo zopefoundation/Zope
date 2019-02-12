@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Other changes
++++++++++++++
+
+- Resurrect automatic support for ``standard_error_message`` DTML Method
+  (`#238 <https://github.com/zopefoundation/Zope/issues/238>`_)
 
 
 4.0b9 (2019-02-09)
