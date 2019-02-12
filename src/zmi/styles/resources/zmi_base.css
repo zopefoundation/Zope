@@ -846,6 +846,12 @@ header.navbar select.form-control-sm,
 
 	}
 }
+.zmi-zope_copyright h2 {
+	font-size: 130%;
+	color: white;
+	margin: 0;
+}
+
 /* EXAMPLE: IMPLANT YOUR LOGO */
 /*
 	.zmi-manage_menu {
