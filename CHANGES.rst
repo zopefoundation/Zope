@@ -41,6 +41,9 @@ Features
 Fixes
 +++++
 
+- Fix display of ZMI breadcrumbs with non-ASCII path elements
+  (`#401 <https://github.com/zopefoundation/Zope/issues/401>`_)
+
 - Make sure conflicts are always retried and not masked by exception views
   (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
 
