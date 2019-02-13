@@ -11,7 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Fixes
++++++
+
+- Fix handling of DTML in Ace editor
+  (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
 
 
 4.0b9 (2019-02-09)
