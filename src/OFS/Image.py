@@ -553,14 +553,14 @@ class File(
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
-        try:
+        if file:
             data, size = self._read_data(file)
             content_type = self._get_content_type(file, data, self.__name__,
                                                   'application/octet-stream')
             self.update_data(data, content_type, size)
             notify(ObjectModifiedEvent(self))
             msg = 'Saved changes.'
-        except ValueError:
+        else:
             msg = 'Please select a file to upload.'
 
         if REQUEST:
