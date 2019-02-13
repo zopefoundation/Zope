@@ -228,6 +228,10 @@ class FileTests(unittest.TestCase):
         self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
+    def testManageUploadWithoutFileData(self):
+        self.file.manage_upload()
+        self.assertEqual(0, len(self.eventCatcher.modified))
+
     def testIfModSince(self):
         now = time.time()
         e = {'SERVER_NAME': 'foo',

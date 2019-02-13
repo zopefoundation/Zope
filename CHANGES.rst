@@ -17,6 +17,9 @@ Fixes
 - Fix handling of DTML in Ace editor
   (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
 
+- Fix error when not selecting a file for upload in Files and Images
+  (`#492 <https://github.com/zopefoundation/Zope/issues/492>`_)
+
 
 4.0b9 (2019-02-09)
 ------------------
