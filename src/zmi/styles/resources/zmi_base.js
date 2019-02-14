@@ -4,7 +4,7 @@
 // NAVBAR-FUNCTIONS
 
 // [1] Add New Object Item (with Modal Dialog)
-function addItem( elm, base_url ) {
+function addItem( elm, base_url, zmi_dialog='modal') {
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
 	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
@@ -16,7 +16,7 @@ function addItem( elm, base_url ) {
 	var product = parts[parts.length-2];
 	// http://localhost/myfolder/manage_addProduct/OFSP/
 	var modal_form_base = url_full.slice(0, -action.length);
-	var modal_body_url = url_full + '?zmi_dialog=modal';
+	var modal_body_url = url_full + '?zmi_dialog=' + zmi_dialog ;
 
 	// Inserting Without Modal Dialog
 	var no_modal_dialog = {
@@ -34,7 +34,7 @@ function addItem( elm, base_url ) {
 		]
 	};
 
-	if ( $.inArray(action, no_modal_dialog['action']) !== -1 || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
+	if ( zmi_dialog != 'modal' || $.inArray(action, no_modal_dialog['action']) !== -1 || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
 		window.location.href = url_full;
 		return
 	}
