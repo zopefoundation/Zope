@@ -1,12 +1,5 @@
 // zmi_base.js
 
-// HELPERS
-
-// Check if string is URL
-function isURL(str) {
-	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(str);
-};
-
 
 // NAVBAR-FUNCTIONS
 
@@ -15,25 +8,33 @@ function addItem( elm, base_url ) {
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
 	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
-	var url_full = ( isURL(url_action) ? url_action : base_url + '/' + url_action );
+	var url_full = base_url + '/' + url_action;
 	var parts = url_action.split('/');
 	// folderAdd
 	var action = parts[parts.length-1];
+	// OFSP
+	var product = parts[parts.length-2];
 	// http://localhost/myfolder/manage_addProduct/OFSP/
 	var modal_form_base = url_full.slice(0, -action.length);
 	var modal_body_url = url_full + '?zmi_dialog=modal';
 
-	// List of Object Types Inserting Without Modal Dialog
-	var no_modal_dialog = [
-		'manage_addRegistry',
-		'manage_addUserFolder',
-		'manage_addErrorLog',
-		'manage_addVirtualHostMonster',
-		'manage_addzmsform',
-		'addPluggableAuthService',
-	];
+	// Inserting Without Modal Dialog
+	var no_modal_dialog = {
+		'action':[
+			'manage_addRegistry',
+			'manage_addUserFolder',
+			'manage_addErrorLog',
+			'manage_addVirtualHostMonster',
+			'addPluggableAuthService',
+		],
+		'product':[
+			'CMFPlone',
+			'CMFEditions',
+			'zms',
+		]
+	};
 
-	if ( $.inArray(action, no_modal_dialog) !== -1 || isURL(url_action) ) {
+	if ( $.inArray(action, no_modal_dialog['action']) !== -1 || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
 		window.location.href = url_full;
 		return
 	}
