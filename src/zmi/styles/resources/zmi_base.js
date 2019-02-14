@@ -1,13 +1,21 @@
 // zmi_base.js
 
+// HELPERS
+
+// Check if string is URL
+function isURL(str) {
+	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(str);
+};
+
+
 // NAVBAR-FUNCTIONS
 
-// Add New Object Item (with Modal Dialog)
+// [1] Add New Object Item (with Modal Dialog)
 function addItem( elm, base_url ) {
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
 	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
-	var url_full = base_url + '/' + url_action;
+	var url_full = ( isURL(url_action) ? url_action : base_url + '/' + url_action );
 	var parts = url_action.split('/');
 	// folderAdd
 	var action = parts[parts.length-1];
@@ -25,11 +33,11 @@ function addItem( elm, base_url ) {
 		'addPluggableAuthService',
 	];
 
-	if ( $.inArray(action, no_modal_dialog) !== -1 ) {
+	if ( $.inArray(action, no_modal_dialog) !== -1 || isURL(url_action) ) {
 		window.location.href = url_full;
 		return
 	}
-	
+
 	// SHOW MODAL DIALOG
 	$('#zmi-modal').modal('show');
 	$('#zmi-modal').modal({ focus: true });
@@ -40,13 +48,13 @@ function addItem( elm, base_url ) {
 			window.location.href = url_full;
 				return;
 		}
-		
+
 		//Modify Form Action for Modal Use
 		$( '#zmi-modal form' ).each( function() {
 			var modal_form_url = modal_form_base + $( this ).attr( 'action' );
 			$( this ).attr( 'action', modal_form_url );
 		});
-		
+
 		fix_ancient_modal_gui();
 		fix_modern_modal_gui();
 	});
@@ -87,7 +95,7 @@ function fix_ancient_modal_gui() {
 function fix_modern_modal_gui() {
 	// Shift Title to Modal Header
 	$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
-	
+
 	// Aggregate multiple Help-Paragraphs
 	if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
 		var help_text = $('#zmi-modal .modal-body p.form-help').text();
@@ -202,9 +210,9 @@ $(function() {
 
 	// EXECUTE FUNCTIONAL WORKAROUNDS
 	// [1] Showing some Menu Elements only on List Page as Active
-    // List Page is assumed if the ZMI tabs contain a "manage_findForm"
-    // on folders or a "manage_catalogFind" on ZCatalogs
-    if ($('.nav a[href="manage_findForm"]').length > 0 || $('.nav a[href="manage_catalogFind"]').length > 0) {
+	// List Page is assumed if the ZMI tabs contain a "manage_findForm"
+	// on folders or a "manage_catalogFind" on ZCatalogs
+	if ($('.nav a[href="manage_findForm"]').length > 0 || $('.nav a[href="manage_catalogFind"]').length > 0) {
 		$('#addItemSelect').removeClass('disabled');
 		$('#addItemSelect').removeAttr('disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
@@ -213,11 +221,10 @@ $(function() {
 		$('#addItemSelect').attr('disabled','disabled');
 		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
 	}
-	
+
 
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});
 	}
 
 });
-
