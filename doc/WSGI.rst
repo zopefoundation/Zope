@@ -14,7 +14,7 @@ To run as a WSGI application, you need to install some additional software.
 
    $ bin/pip install \
     --no-binary zc.recipe.egg \
-    -r https://zopefoundation.github.io/Zope/releases/2.13.27/requirements.txt \
+    -r https://zopefoundation.github.io/Zope/releases/2.13.29/requirements.txt \
     repoze.who repoze.tm2 repoze.retry Paste PasteDeploy PasteScript
    Collecting repoze.who
    ...
