@@ -1,5 +1,12 @@
 // zmi_base.js
 
+// HELPERS
+
+// Check if string is URL
+function isURL(str) {
+	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(str);
+};
+
 
 // NAVBAR-FUNCTIONS
 
@@ -52,7 +59,8 @@ function addItem( elm, base_url, zmi_dialog='modal') {
 
 		//Modify Form Action for Modal Use
 		$( '#zmi-modal form' ).each( function() {
-			var modal_form_url = modal_form_base + $( this ).attr( 'action' );
+			var former_action = $( this ).attr( 'action' );
+			var modal_form_url = isURL(former_action) ? former_action : modal_form_base + former_action;
 			$( this ).attr( 'action', modal_form_url );
 		});
 
