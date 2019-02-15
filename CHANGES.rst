@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix subscript access on Page Template ``macros`` attribute
+  (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
+
 - Fix ``OFS.interfaces`` attribute declarations to match reality
   (`#498 <https://github.com/zopefoundation/Zope/issues/498`_)
 
