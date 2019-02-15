@@ -4,7 +4,7 @@
 
 // Check if string is URL
 function isURL(str) {
-	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(str);
+	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|.*?[\:?\d]*)\S*$/.test(str);
 };
 
 
