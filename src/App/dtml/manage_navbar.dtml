@@ -31,6 +31,7 @@
 				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
 		</li>
+		<dtml-if "aq_explicit"><dtml-with "aq_explicit" only>
 		<dtml-if filtered_meta_types>
 			<li class="form-inline zmi-addItemSelect">
 				<form method="get" class="form-group">
@@ -41,16 +42,15 @@
 							title="Select type to add"
 							onchange="addItem( elm=this, base_url='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
 							><option value="" selected="selected">Select type to add</option>
-							<dtml-if "_.len(filtered_meta_types) > 1"
 								><dtml-in filtered_meta_types mapping sort=name
 									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option>
 									</dtml-if
 								></dtml-in
-							></dtml-if>
 						</select>
 				</form>
 			</li>
 		</dtml-if>
+		</dtml-with></dtml-if>
 	</ul>
 
 	<a href="manage_zmi_logout" title="Logout"
