@@ -17,6 +17,7 @@ from Products.PageTemplates import ZRPythonExpr
 from chameleon.tales import StringExpr
 from chameleon.tales import NotExpr
 from chameleon.tal import RepeatDict
+from chameleon.zpt.template import Macros
 
 from z3c.pt.expressions import PythonExpr, ProviderExpr
 
@@ -32,6 +33,10 @@ RepeatDict.security.declareObjectPublic()
 RepeatDict.__allow_access_to_unprotected_subobjects__ = True
 
 InitializeClass(RepeatDict)
+
+# Declare Chameleon Macros object accessible
+# This makes subscripting work, as in template.macros['name']
+Macros.__allow_access_to_unprotected_subobjects__ = True
 
 re_match_pi = re.compile(r'<\?python([^\w].*?)\?>', re.DOTALL)
 logger = logging.getLogger('Products.PageTemplates')
