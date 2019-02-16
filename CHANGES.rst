@@ -23,6 +23,12 @@ Fixes
 - Fix error when not selecting a file for upload in Files and Images
   (`#492 <https://github.com/zopefoundation/Zope/issues/492>`_)
 
+- Fix ZMI add handling of ``len(filtered_meta_types()) == 1`` 
+  (`#505 <https://github.com/zopefoundation/Zope/issues/505>`_)
+
+- Fix ZMI add handling of ``addItemSelect`` form
+  (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
+
 Other changes
 +++++++++++++
 - Make sure the WSGI Response object respects lock semantics

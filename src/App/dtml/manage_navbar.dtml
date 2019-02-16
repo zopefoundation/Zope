@@ -31,7 +31,7 @@
 				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
 		</li>
-		<dtml-if "aq_explicit"><dtml-with "aq_explicit" only>
+		<dtml-if "aq_explicit"><dtml-if "hasattr(aq_explicit, 'filtered_meta_types')">
 		<dtml-if filtered_meta_types>
 			<li class="form-inline zmi-addItemSelect">
 				<form method="get" class="form-group">
@@ -50,7 +50,7 @@
 				</form>
 			</li>
 		</dtml-if>
-		</dtml-with></dtml-if>
+		</dtml-if></dtml-if>
 	</ul>
 
 	<a href="manage_zmi_logout" title="Logout"
