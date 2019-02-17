@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix FindSupport binary value handling
+  (`#406 https://github.com/zopefoundation/Zope/issues/406>`_)
+
 - Fix subscript access on Page Template ``macros`` attribute
   (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
 
