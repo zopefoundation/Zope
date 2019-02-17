@@ -17,6 +17,29 @@ Fixes
 - Resurrected copyright and license page
   (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
 
+- Fix subscript access on Page Template ``macros`` attribute
+  (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
+
+- Fix ``OFS.interfaces`` attribute declarations to match reality
+  (`#498 <https://github.com/zopefoundation/Zope/issues/498`_)
+
+- Fix handling of DTML in Ace editor
+  (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
+
+- Fix error when not selecting a file for upload in Files and Images
+  (`#492 <https://github.com/zopefoundation/Zope/issues/492>`_)
+
+- Fix ZMI add handling of ``len(filtered_meta_types()) == 1`` 
+  (`#505 <https://github.com/zopefoundation/Zope/issues/505>`_)
+
+- Fix ZMI add handling of ``addItemSelect`` form
+  (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
+
+Other changes
++++++++++++++
+- Make sure the WSGI Response object respects lock semantics
+  (`#216 <https://github.com/zopefoundation/Zope/issues/216>`_)
+
 
 4.0b9 (2019-02-09)
 ------------------
