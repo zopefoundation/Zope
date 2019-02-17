@@ -82,7 +82,7 @@ Steps for creating a new Zope release
 - Check that the changes have been propagated to https://zope.readthedocs.io/en/latest/changes.html.
   (This should be done automatically via web hooks defined in GitHub and RTD.)
 
-- Update https://zopefoundation.github.io/Zope/ (This is needed until https://github.com/zopefoundation/Zope/issues/244 is fixed.)::
+- Update https://zopefoundation.github.io/Zope/::
 
   $ git checkout gh-pages
   $ ./build_index.sh
