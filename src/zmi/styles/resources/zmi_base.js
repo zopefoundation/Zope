@@ -2,9 +2,9 @@
 
 // HELPERS
 
-// Check if string is URL
+// Simple Check for Absolute URL
 function isURL(str) {
-	return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|.*?[\:?\d]*)\S*$/.test(str);
+	return /^(?:\w+:)?\/\/\S*$/.test(str);
 };
 
 
