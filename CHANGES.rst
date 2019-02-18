@@ -34,8 +34,12 @@ Fixes
 
 Other changes
 +++++++++++++
+
 - Make sure the WSGI Response object respects lock semantics
   (`#216 <https://github.com/zopefoundation/Zope/issues/216>`_)
+
+- Specify supported Python versions using ``python_requires`` in setup.py
+  (`#481 <https://github.com/zopefoundation/Zope/issues/481>`_)
 
 
 4.0b9 (2019-02-09)
