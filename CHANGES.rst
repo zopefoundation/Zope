@@ -18,7 +18,7 @@ Fixes
   (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
 
 - Fix ``OFS.interfaces`` attribute declarations to match reality
-  (`#498 <https://github.com/zopefoundation/Zope/issues/498`_)
+  (`#498 <https://github.com/zopefoundation/Zope/issues/498>`_)
 
 - Fix handling of DTML in Ace editor
   (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
@@ -31,6 +31,9 @@ Fixes
 
 - Fix ZMI add handling of ``addItemSelect`` form
   (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
+ 
+- Don't always flag PubBeforeAbort and PubBeforeAbort as retry
+  (`#502 <https://github.com/zopefoundation/Zope/pull/502>`_)
 
 Other changes
 +++++++++++++
