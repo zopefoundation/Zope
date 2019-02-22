@@ -218,9 +218,9 @@ Once the published object is located with traversal, Zope *publishes*
 it in one of three possible ways:
 
 - Calling the published object -- If the published object is a
-  function or method or another callable object, the publisher calls
-  it. Later in the chapter you'll find out how the publisher figures
-  out what arguments to pass when calling.
+  function or method or other callable object, the publisher calls it.
+  Later in the chapter you'll find out how the publisher figures out
+  what arguments to pass when calling.
 
 - Calling the default method -- If the published object is not
   callable, the publisher uses the default method. For HTTP *GET* and
