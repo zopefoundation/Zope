@@ -215,7 +215,7 @@ Publishing Methods
 ==================
 
 Once the published object is located with traversal, Zope *publishes*
-it in one of three possible ways.
+it in one of three possible ways:
 
 - Calling the published object -- If the published object is a
   function or method or other callable object, the publisher calls it.
@@ -223,20 +223,21 @@ it in one of three possible ways.
   what arguments to pass when calling.
 
 - Calling the default method -- If the published object is not
-  callable, the publisher uses the default method. For HTTP 'GET' and
-  'POST' requests the default method is 'index_html'. For other HTTP
-  requests such as 'PUT' the publisher looks for a method named by the
-  HTTP method. So for an HTTP 'HEAD' request, the publisher would
-  call the 'HEAD' method on the published object.
+  callable, the publisher uses the default method. For HTTP *GET* and
+  *POST* requests the default method is 'index_html'. For other HTTP
+  requests such as *PUT* the publisher looks for a method named by the
+  HTTP method. So for an HTTP *HEAD* request, the publisher would
+  call the *HEAD* method on the published object.
 
 - Stringifying the published object -- If the published object isn't
   callable, and doesn't have a default method, the publisher
-  publishes it using the Python 'str' function to turn it into a
+  publishes it using the Python ``str`` function to turn it into a
   string.
 
 
 After the response method has been determined and called, the
 publisher must interpret the results.
+
 
 Character Encodings for Responses
 =================================
