@@ -25,6 +25,7 @@ from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 
+from ZPublisher.HTTPRequest import search_type
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
 
@@ -1237,6 +1238,34 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
             NotFound,
             self._makeOne(root).traverse, 'folder/@@meth/request'
         )
+
+
+class TestSearchType(unittest.TestCase):
+    """Test `ZPublisher.HTTPRequest.search_type`
+
+    see "https://github.com/zopefoundation/Zope/pull/512"
+    """
+    def check(self, val, expect):
+        mo = search_type(val)
+        if expect is None:
+            self.assertIsNone(mo)
+        else:
+            self.assertIsNotNone(mo)
+            self.assertEqual(mo.group(), expect)
+
+    def test_image_control(self):
+        self.check("abc.x", ".x")
+        self.check("abc.y", ".y")
+        self.check("abc.xy", None)
+
+    def test_type(self):
+        self.check("abc:int", ":int")
+
+    def test_leftmost(self):
+        self.check("abc:int:record", ":record")
+
+    def test_special(self):
+        self.check("abc:a-_0b", ":a-_0b")
 
 
 TEST_POST_ENVIRON = {
