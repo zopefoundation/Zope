@@ -146,75 +146,70 @@ Publishable Object Requirements
 
 Zope has few restrictions on publishable objects. The basic rule is
 that the object must have a doc string. This requirement goes for
-method objects too.
+methods, too.
 
 Another requirement is that a publishable object must not have a name
-that begin with an underscore. These two restrictions are designed to
+that begins with an underscore. These two restrictions are designed to
 keep private objects from being published.
 
+Finally, published objects cannot be Python modules.
 
-Finally, published objects cannot be Python module objects.
 
 Traversal Methods
 =================
 
-During traversal, 'ZPublisher' cuts the URL into path elements
+During traversal, *ZPublisher* cuts the URL into path elements
 delimited by slashes, and uses each path element to traverse from the
-current object to the next object. 'ZPublisher' locates the next
+current object to the next object. *ZPublisher* locates the next
 object in one of three ways:
 
-1. Using '__bobo_traverse__'
+1. Using ``__bobo_traverse__``.
 
-2. Using 'getattr'
+2. Using ``getattr``.
 
 3. Using dictionary access.
 
-First the publisher attempts to call the traversal hook method,
-'__bobo_traverse__'. If the current object has this method it is
+First, the publisher attempts to call the traversal hook method
+``__bobo_traverse__``. If the current object has this method it is
 called with the request and the current path element. The method
-should return the next object or 'None' to indicate that a next object
-can't be found. You can also return a tuple of objects from
-'__bobo_traverse__' indicating a sequence of sub-objects. This allows
-you to add additional parent objects into the request. This is almost
-never necessary.
+should return the next object or ``None`` to indicate that a next
+object can't be found. You can also return a tuple of objects from
+``__bobo_traverse__`` indicating a sequence of sub-objects. This
+allows you to add additional parent objects into the request. This is
+almost never necessary.
 
 
-Here's an example of how to use '__bobo_traverse__'::
+Here's an example of how to use ``__bobo_traverse__``::
 
           def __bobo_traverse__(self, request, key):
-              # if there is a special cookie set, return special
-              # subobjects, otherwise return normal subobjects
-
+              """Return subobjects depending on cookie contents."""
               if request.cookies.has_key('special'):
-                  # return a subobject from the special dict
                   return self.special_subobjects.get(key, None)
-
-              # otherwise return a subobject from the normal dict
               return self.normal_subobjects.get(key, None)
 
 
 This example shows how you can examine the request during the
 traversal process.
 
-If the current object does not define a '__bobo_traverse__' method,
-then the next object is searched for using 'getattr'. This locates
-sub-objects in the normal Python sense.
+If the current object does not define a ``__bobo_traverse__`` method,
+then the next object is searched for using ``getattr``. This locates
+subobjects in the normal Python sense.
 
-If the next object can't be found with 'getattr', 'ZPublisher' calls
+If the next object can't be found with ``getattr``, *ZPublisher* calls
 on the current object as though it were a dictionary. Note: the path
 element will be a string, not an integer, so you cannot traverse
 sequences using index numbers in the URL.
 
-For example, suppose 'a' is the current object, and 'next' is the name
-of the path element. Here are the three things that 'ZPublisher' will
-try in order to find the next object:
+For example, suppose ``a`` is the current object, and ``next`` is the
+name of the path element. Here are the three things that *ZPublisher*
+will try in order to find the next object:
 
-  1. 'a.__bobo_traverse__("next")'
+  1. ``a.__bobo_traverse__("next")``
 
-  2. 'a.next'
+  2. ``a.next``
 
-  3. 'a["next"]'
-
+  3. ``a["next"]``
+  
 
 Publishing Methods
 ==================
