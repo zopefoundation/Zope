@@ -158,69 +158,64 @@ Finally, published objects cannot be Python modules.
 Traversal Methods
 =================
 
-During traversal, 'ZPublisher' cuts the URL into path elements
+During traversal, *ZPublisher* cuts the URL into path elements
 delimited by slashes, and uses each path element to traverse from the
-current object to the next object. 'ZPublisher' locates the next
+current object to the next object. *ZPublisher* locates the next
 object in one of three ways:
 
-1. Using '__bobo_traverse__'
+1. Using ``__bobo_traverse__``.
 
-2. Using 'getattr'
+2. Using ``getattr``.
 
 3. Using dictionary access.
 
-First the publisher attempts to call the traversal hook method,
-'__bobo_traverse__'. If the current object has this method it is
+First, the publisher attempts to call the traversal hook method
+``__bobo_traverse__``. If the current object has this method it is
 called with the request and the current path element. The method
-should return the next object or 'None' to indicate that a next object
-can't be found. You can also return a tuple of objects from
-'__bobo_traverse__' indicating a sequence of sub-objects. This allows
-you to add additional parent objects into the request. This is almost
-never necessary.
+should return the next object or ``None`` to indicate that a next
+object can't be found. You can also return a tuple of objects from
+``__bobo_traverse__`` indicating a sequence of sub-objects. This
+allows you to add additional parent objects into the request. This is
+almost never necessary.
 
 
-Here's an example of how to use '__bobo_traverse__'::
+Here's an example of how to use ``__bobo_traverse__``::
 
           def __bobo_traverse__(self, request, key):
-              # if there is a special cookie set, return special
-              # subobjects, otherwise return normal subobjects
-
+              """Return subobjects depending on cookie contents."""
               if request.cookies.has_key('special'):
-                  # return a subobject from the special dict
                   return self.special_subobjects.get(key, None)
-
-              # otherwise return a subobject from the normal dict
               return self.normal_subobjects.get(key, None)
 
 
 This example shows how you can examine the request during the
 traversal process.
 
-If the current object does not define a '__bobo_traverse__' method,
-then the next object is searched for using 'getattr'. This locates
-sub-objects in the normal Python sense.
+If the current object does not define a ``__bobo_traverse__`` method,
+then the next object is searched for using ``getattr``. This locates
+subobjects in the normal Python sense.
 
-If the next object can't be found with 'getattr', 'ZPublisher' calls
+If the next object can't be found with ``getattr``, *ZPublisher* calls
 on the current object as though it were a dictionary. Note: the path
 element will be a string, not an integer, so you cannot traverse
 sequences using index numbers in the URL.
 
-For example, suppose 'a' is the current object, and 'next' is the name
-of the path element. Here are the three things that 'ZPublisher' will
-try in order to find the next object:
+For example, suppose ``a`` is the current object, and ``next`` is the
+name of the path element. Here are the three things that *ZPublisher*
+will try in order to find the next object:
 
-  1. 'a.__bobo_traverse__("next")'
+  1. ``a.__bobo_traverse__("next")``
 
-  2. 'a.next'
+  2. ``a.next``
 
-  3. 'a["next"]'
-
+  3. ``a["next"]``
+  
 
 Publishing Methods
 ==================
 
 Once the published object is located with traversal, Zope *publishes*
-it in one of three possible ways.
+it in one of three possible ways:
 
 - Calling the published object -- If the published object is a
   function or method or other callable object, the publisher calls it.
@@ -228,43 +223,42 @@ it in one of three possible ways.
   what arguments to pass when calling.
 
 - Calling the default method -- If the published object is not
-  callable, the publisher uses the default method. For HTTP 'GET' and
-  'POST' requests the default method is 'index_html'. For other HTTP
-  requests such as 'PUT' the publisher looks for a method named by the
-  HTTP method. So for an HTTP 'HEAD' request, the publisher would
-  call the 'HEAD' method on the published object.
+  callable, the publisher uses the default method. For HTTP *GET* and
+  *POST* requests the default method is 'index_html'. For other HTTP
+  requests such as *PUT* the publisher looks for a method named by the
+  HTTP method. So for an HTTP *HEAD* request, the publisher would
+  call the *HEAD* method on the published object.
 
 - Stringifying the published object -- If the published object isn't
   callable, and doesn't have a default method, the publisher
-  publishes it using the Python 'str' function to turn it into a
+  publishes it using the Python ``str`` function to turn it into a
   string.
 
 
 After the response method has been determined and called, the
 publisher must interpret the results.
 
+
 Character Encodings for Responses
 =================================
 
-If the published method returns an object of type 'string', a plain
-8-bit character string, the publisher will use it directly as the
-body of the response.
+If the published method returns an object of type *binary*, the
+publisher will use it directly as the body of the response.
 
 Things are different if the published method returns a unicode string,
 because the publisher has to apply some character encoding. The
 published method can choose which character encoding it uses by
-setting a 'Content-Type' response header which includes a 'charset'
+setting a *Content-Type* response header which includes a *charset*
 property (setting response headers is explained later in this
-chapter). A common choice of character encoding is UTF-8. To cause
-the publisher to send unicode results as UTF-8 you need to set a
-'Content-Type' header with the value 'text/html; charset=UTF-8'
+chapter). A common choice of character encoding is UTF-8, which is
+also the default encoding.
 
-If the 'Content-Type' header does not include a charser property (or
-if this header has not been set by the published method) then the
-publisher will choose a default character encoding. Today this
-default is ISO-8859-1 (also known as Latin-1) for compatability with
-old versions of Zope which did not include Unicode support. At some
-time in the future this default is likely to change to UTF-8.
+If the *Content-Type* header does not include a charset or is not set
+at all, the default encoding is set.
+
+If you want to manually set a *Content-Type* header you have to set a
+value like ``text/html; charset=UTF-8``.
+
 
 HTTP Responses
 ==============

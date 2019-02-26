@@ -36,6 +36,11 @@ setup(
     name='Zope',
     version=version,
     url='https://zope.readthedocs.io/en/latest/',
+    project_urls={
+        'Documentation': 'https://zope.readthedocs.io',
+        'Issue Tracker': 'https://github.com/zopefoundation/Zope/issues',
+        'Sources': 'https://github.com/zopefoundation/Zope',
+    },
     license='ZPL 2.1',
     description='Zope application server / web framework',
     author='Zope Foundation and Contributors',

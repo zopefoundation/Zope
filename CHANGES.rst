@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix remove double quoting in ``ZPublisher.HTTPRequest.search_type``
+  (`#511 <https://github.com/zopefoundation/Zope/issues/511>`_)
+
 - Fix subscript access on Page Template ``macros`` attribute
   (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
 
@@ -46,6 +49,9 @@ Other changes
 
 - Removed references to separate ``Products.ZCTextIndex``
   (`516 <https://github.com/zopefoundation/Zope/issues/516>`_)
+
+- Provide additional links on PyPI with ``project_urls`` in ``setup.py``
+  (`#434 <https://github.com/zopefoundation/Zope/issues/434>`_)
 
 
 4.0b9 (2019-02-09)
