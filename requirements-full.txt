@@ -12,7 +12,6 @@ MultiMapping==4.1
 PasteDeploy==2.0.1
 Persistence==3.0b4
 Products.BTreeFolder2==4.1
-Products.ZCTextIndex==4.0.3
 Products.ZCatalog==4.3
 Record==3.5
 RestrictedPython==4.0b8

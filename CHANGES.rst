@@ -47,6 +47,9 @@ Other changes
 - Specify supported Python versions using ``python_requires`` in setup.py
   (`#481 <https://github.com/zopefoundation/Zope/issues/481>`_)
 
+- Removed references to separate ``Products.ZCTextIndex``
+  (`516 <https://github.com/zopefoundation/Zope/issues/516>`_)
+
 - Provide additional links on PyPI with ``project_urls`` in ``setup.py``
   (`#434 <https://github.com/zopefoundation/Zope/issues/434>`_)
 
