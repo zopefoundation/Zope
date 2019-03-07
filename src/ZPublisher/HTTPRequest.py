@@ -95,7 +95,7 @@ default_port = {'http': '80', 'https': '443'}
 tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
 TAINTING_ENABLED = tainting_env not in ('disabled', '0', 'no')
 
-search_type = re.compile(r'(:[a-zA-Z][-a-zA-Z0-9_]+|\\.[xy])$').search
+search_type = re.compile(r'(:[a-zA-Z][-a-zA-Z0-9_]+|\.[xy])$').search
 
 _marker = []
 
