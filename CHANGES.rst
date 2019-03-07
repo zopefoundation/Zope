@@ -17,11 +17,14 @@ Fixes
 - Fix FindSupport binary value handling
   (`#406 https://github.com/zopefoundation/Zope/issues/406>`_)
 
+- Fix remove double quoting in ``ZPublisher.HTTPRequest.search_type``
+  (`#511 <https://github.com/zopefoundation/Zope/issues/511>`_)
+
 - Fix subscript access on Page Template ``macros`` attribute
   (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
 
 - Fix ``OFS.interfaces`` attribute declarations to match reality
-  (`#498 <https://github.com/zopefoundation/Zope/issues/498`_)
+  (`#498 <https://github.com/zopefoundation/Zope/issues/498>`_)
 
 - Fix handling of DTML in Ace editor
   (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
@@ -34,11 +37,24 @@ Fixes
 
 - Fix ZMI add handling of ``addItemSelect`` form
   (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
+ 
+- Don't always flag PubBeforeAbort and PubBeforeAbort as retry
+  (`#502 <https://github.com/zopefoundation/Zope/pull/502>`_)
 
 Other changes
 +++++++++++++
+
 - Make sure the WSGI Response object respects lock semantics
   (`#216 <https://github.com/zopefoundation/Zope/issues/216>`_)
+
+- Specify supported Python versions using ``python_requires`` in setup.py
+  (`#481 <https://github.com/zopefoundation/Zope/issues/481>`_)
+
+- Removed references to separate ``Products.ZCTextIndex``
+  (`516 <https://github.com/zopefoundation/Zope/issues/516>`_)
+
+- Provide additional links on PyPI with ``project_urls`` in ``setup.py``
+  (`#434 <https://github.com/zopefoundation/Zope/issues/434>`_)
 
 
 4.0b9 (2019-02-09)
