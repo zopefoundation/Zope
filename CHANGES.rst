@@ -17,7 +17,7 @@ Fixes
 - Resurrected copyright and license page
   (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
 
-- Fix FindSupport binary value handling 
+- Fix FindSupport binary value handling
   (`#406 <https://github.com/zopefoundation/Zope/issues/406>`_)
 
 - Fix remove double quoting in ``ZPublisher.HTTPRequest.search_type``
@@ -35,12 +35,12 @@ Fixes
 - Fix error when not selecting a file for upload in Files and Images
   (`#492 <https://github.com/zopefoundation/Zope/issues/492>`_)
 
-- Fix ZMI add handling of ``len(filtered_meta_types()) == 1`` 
+- Fix ZMI add handling of ``len(filtered_meta_types()) == 1``
   (`#505 <https://github.com/zopefoundation/Zope/issues/505>`_)
 
 - Fix ZMI add handling of ``addItemSelect`` form
   (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
- 
+
 - Don't always flag PubBeforeAbort and PubBeforeAbort as retry
   (`#502 <https://github.com/zopefoundation/Zope/pull/502>`_)
 
