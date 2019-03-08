@@ -61,6 +61,13 @@
 * [versions-prod.cfg](releases/4.0b2/versions-prod.cfg)
 * [requirements-full.txt](releases/4.0b2/requirements-full.txt)
 
+## 4.0b10
+
+* [versions.cfg](releases/4.0b10/versions.cfg)
+* [versions-prod.cfg](releases/4.0b10/versions-prod.cfg)
+* [requirements-full.txt](releases/4.0b10/requirements-full.txt)
+* [constraints.txt](releases/4.0b10/constraints.txt)
+
 ## 4.0b1
 
 * [versions.cfg](releases/4.0b1/versions.cfg)
