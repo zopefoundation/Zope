@@ -9,7 +9,7 @@
 		them to a different Zope installation. You can either choose
 		to download the export file to your local machine, or save it
 		in the <code>var</code> directory of your Zope installation
-		on the server. 
+		on the server.
 		<strong>Note:</strong>
 		Zope can export/import objects in a binary format (called
 		ZEXP). The ZEXP format is the officially supported export/import
@@ -69,7 +69,7 @@
 			<div class="col-sm-9 col-md-10">
 				<select class="form-control" id="file" name="file">
 					<dtml-in "list_imports()"
-						>option value="<dtml-var sequence-item>"><dtml-var sequence-item></option>
+						><option value="<dtml-var sequence-item>"><dtml-var sequence-item></option>
 					</dtml-in>
 				</select>
 			</div>
@@ -90,7 +90,7 @@
 		</div>
 
 		<div class="zmi-controls">
-			<input class="btn btn-primary" type="submit" name="submit" value="Export" />
+			<input class="btn btn-primary" type="submit" name="submit" value="Import" />
 		</div>
 
 	</form>

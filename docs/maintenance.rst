@@ -29,13 +29,21 @@ Steps for creating a new Zope release
 - Check the versions.cfg file for outdated or updated
   packages and update version information where necessary::
 
-  $ bin/checkversions buildout.cfg
+  $ bin/checkversions versions-prod.cfg
+  $ bin/checkversions versions.cfg
 
 .. note::
 
     There is no version pin for `zc.buildout` as it has to be installed
     in the virtual environment but `checkversions` also prints its
     version number.
+
+    There is no version pin for `zc.recipe.egg` in `versions-prod.cfg` as it is
+    only needed for buildout install and not for pip, so we do not want to
+    have it in `requirements.txt`.
+
+    The script is called two times so the rendered version updates can be
+    easily assigned to the correct file.
 
 - Garden the change log.
 
