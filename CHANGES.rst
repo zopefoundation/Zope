@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Resurrected copyright and license page
+  (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
+
 - Fix FindSupport binary value handling 
   (`#406 <https://github.com/zopefoundation/Zope/issues/406>`_)
 
