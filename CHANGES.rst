@@ -17,6 +17,9 @@ Fixes
 - Resurrected copyright and license page
   (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
 
+- Fix FindSupport binary value handling 
+  (`#406 <https://github.com/zopefoundation/Zope/issues/406>`_)
+
 - Fix remove double quoting in ``ZPublisher.HTTPRequest.search_type``
   (`#511 <https://github.com/zopefoundation/Zope/issues/511>`_)
 
