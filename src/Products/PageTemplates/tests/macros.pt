@@ -1,0 +1,1 @@
+<i metal:define-macro="foo">bar</i><i metal:use-macro="template/macros/foo" /><i metal:use-macro="python:template.macros['foo']" />

@@ -19,6 +19,7 @@ import sys
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from Acquisition import aq_acquire
 from six import PY3
 from six import reraise
 from six.moves._thread import allocate_lock
@@ -96,9 +97,22 @@ def get_module_info(module_name='Zope2'):
 
 def _exc_view_created_response(exc, request, response):
     view = queryMultiAdapter((exc, request), name=u'index.html')
+    parents = request.get('PARENTS')
+
+    if view is None and parents:
+        # Try a fallback based on the old standard_error_message
+        # DTML Method in the ZODB
+        view = queryMultiAdapter((exc, request),
+                                 name=u'standard_error_message')
+        root_parent = parents[0]
+        try:
+            standard_error_message = aq_acquire(root_parent,
+                                                'standard_error_message')
+        except (AttributeError, KeyError):
+            view = None
+
     if view is not None:
         # Wrap the view in the context in which the exception happened.
-        parents = request.get('PARENTS')
         if parents:
             view.__parent__ = parents[0]
 
@@ -113,6 +127,7 @@ def _exc_view_created_response(exc, request, response):
         # Set the response body to the result of calling the view.
         response.setBody(view())
         return True
+
     return False
 
 
@@ -160,13 +175,15 @@ def transaction_pubevents(request, response, tm=transaction.manager):
                 response._unauthorized()
                 response.setStatus(exc.getStatus())
 
-            notify(pubevents.PubBeforeAbort(
-                request, exc_info, request.supports_retry()))
-            tm.abort()
-            notify(pubevents.PubFailure(
-                request, exc_info, request.supports_retry()))
-
+            retry = False
             if isinstance(exc, TransientError) and request.supports_retry():
+                retry = True
+
+            notify(pubevents.PubBeforeAbort(request, exc_info, retry))
+            tm.abort()
+            notify(pubevents.PubFailure(request, exc_info, retry))
+
+            if retry:
                 reraise(*exc_info)
 
             if not (exc_view_created or isinstance(exc, Unauthorized)):

@@ -553,17 +553,19 @@ class File(
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
-        data, size = self._read_data(file)
-        content_type = self._get_content_type(file, data, self.__name__,
-                                              'application/octet-stream')
-        self.update_data(data, content_type, size)
-
-        notify(ObjectModifiedEvent(self))
+        if file:
+            data, size = self._read_data(file)
+            content_type = self._get_content_type(file, data, self.__name__,
+                                                  'application/octet-stream')
+            self.update_data(data, content_type, size)
+            notify(ObjectModifiedEvent(self))
+            msg = 'Saved changes.'
+        else:
+            msg = 'Please select a file to upload.'
 
         if REQUEST:
-            message = "Saved changes."
             return self.manage_main(
-                self, REQUEST, manage_tabs_message=message)
+                self, REQUEST, manage_tabs_message=msg)
 
     def _get_content_type(self, file, body, id, content_type=None):
         headers = getattr(file, 'headers', None)

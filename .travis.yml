@@ -2,8 +2,6 @@ language: python
 
 matrix:
     include:
-        - python: "2.7"
-          env: TOXENV=lint-py27
         - python: "3.6"
           env: TOXENV=lint-py36
         - python: "2.7"
@@ -15,15 +13,10 @@ matrix:
         - python: "3.7"
           env: TOXENV=py37
           dist: xenial
-        - python: "3.7-dev"
-          env: TOXENV=py37
-          dist: xenial
         - python: "3.8-dev"
           env: TOXENV=py38
           dist: xenial
     allow_failures:
-        - python: "2.7"
-          env: TOXENV=lint-py27
         - python: "3.6"
           env: TOXENV=lint-py36
 
@@ -37,8 +30,6 @@ script:
 after_success:
     - coverage combine
     - coveralls
-    # Bails out for non-tags
-    - ./update_index.sh
 
 notifications:
     email: mh@gocept.com

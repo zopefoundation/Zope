@@ -62,11 +62,6 @@ def automatically_quote_dtml_request_data(value):
     return value
 
 
-def http_realm(value):
-    value is not None and _setenv('Z_REALM', value)
-    return value
-
-
 def root_wsgi_handler(cfg):
     # Set environment variables
     for k, v in cfg.environment.items():

@@ -8,16 +8,86 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b9 (unreleased)
+4.0b10 (unreleased)
+-------------------
+
+Fixes
++++++
+
+- Resurrected copyright and license page
+  (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
+
+- Fix FindSupport binary value handling 
+  (`#406 <https://github.com/zopefoundation/Zope/issues/406>`_)
+
+- Fix remove double quoting in ``ZPublisher.HTTPRequest.search_type``
+  (`#511 <https://github.com/zopefoundation/Zope/issues/511>`_)
+
+- Fix subscript access on Page Template ``macros`` attribute
+  (`#210 <https://github.com/zopefoundation/Zope/issues/210>`_)
+
+- Fix ``OFS.interfaces`` attribute declarations to match reality
+  (`#498 <https://github.com/zopefoundation/Zope/issues/498>`_)
+
+- Fix handling of DTML in Ace editor
+  (`#489 <https://github.com/zopefoundation/Zope/issues/489>`_)
+
+- Fix error when not selecting a file for upload in Files and Images
+  (`#492 <https://github.com/zopefoundation/Zope/issues/492>`_)
+
+- Fix ZMI add handling of ``len(filtered_meta_types()) == 1`` 
+  (`#505 <https://github.com/zopefoundation/Zope/issues/505>`_)
+
+- Fix ZMI add handling of ``addItemSelect`` form
+  (`#506 <https://github.com/zopefoundation/Zope/issues/506>`_)
+ 
+- Don't always flag PubBeforeAbort and PubBeforeAbort as retry
+  (`#502 <https://github.com/zopefoundation/Zope/pull/502>`_)
+
+Other changes
++++++++++++++
+
+- Make sure the WSGI Response object respects lock semantics
+  (`#216 <https://github.com/zopefoundation/Zope/issues/216>`_)
+
+- Specify supported Python versions using ``python_requires`` in setup.py
+  (`#481 <https://github.com/zopefoundation/Zope/issues/481>`_)
+
+- Removed references to separate ``Products.ZCTextIndex``
+  (`516 <https://github.com/zopefoundation/Zope/issues/516>`_)
+
+- Provide additional links on PyPI with ``project_urls`` in ``setup.py``
+  (`#434 <https://github.com/zopefoundation/Zope/issues/434>`_)
+
+- Resurrect automatic support for ``standard_error_message`` DTML Method
+  (`#238 <https://github.com/zopefoundation/Zope/issues/238>`_)
+
+
+4.0b9 (2019-02-09)
 ------------------
+
+Breaking changes
+++++++++++++++++
+
+- Remove support for Bobo Call Interface
+  (`#462 <https://github.com/zopefoundation/Zope/pull/462>`_)
+
+- Remove support for ``management_page_charset``
+  (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
 
 Features
 ++++++++
 
 - Add preliminary support for Python 3.8. as of 3.8.0a1 is released.
 
+- Recreate ``App.version_txt.getZopeVersion``
+  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
+
 Fixes
 +++++
+
+- Fix display of ZMI breadcrumbs with non-ASCII path elements
+  (`#401 <https://github.com/zopefoundation/Zope/issues/401>`_)
 
 - Make sure conflicts are always retried and not masked by exception views
   (`#413 <https://github.com/zopefoundation/Zope/issues/413>`_)
@@ -31,17 +101,17 @@ Fixes
 - Show the content add widget again on ZCatalogs
   (`ZCatalog#45 <https://github.com/zopefoundation/Products.ZCatalog/issues/45>`_)
 
-- Improved showing/hiding of the left-hand tree pane
+- Improve showing/hiding of the left-hand tree pane
   (`#457 <https://github.com/zopefoundation/Zope/issues/457>`_)
-
-- Recreate ``App.version_txt.getZopeVersion``
-  (`#411 <https://github.com/zopefoundation/Zope/issues/411>`_)
 
 - Restore the `View` ZMI tab on folders and their subclasses
   (`#449 <https://github.com/zopefoundation/Zope/issues/449>`_)
 
 - Don't error out when showing permissions for a non-existent user
   (`#437 <https://github.com/zopefoundation/Zope/issues/437>`_)
+
+- Fix ZMI listing view for narrow displays.
+  (`#471 <https://github.com/zopefoundation/Zope/pull/471>`_)
 
 Other changes
 +++++++++++++
@@ -53,14 +123,7 @@ Other changes
 - Remove obsolete environment variable "Z_DEBUG_MODE"
   (`#445 <https://github.com/zopefoundation/Zope/issues/445>`_)
 
-Breaking changes
-++++++++++++++++
-
-- Removed support for Bobo Call Interface
- (`#462 <https://github.com/zopefoundation/Zope/pull/462>`_)
-
-- Removed support for ``management_page_charset``
- (`#313 <https://github.com/zopefoundation/Zope/issues/313>`_)
+- Update dependencies to newest versions.
 
 
 4.0b8 (2018-12-14)

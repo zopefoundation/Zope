@@ -4,6 +4,7 @@
 
   <include package="AccessControl" file="meta.zcml" />
   <include package="OFS" file="meta.zcml" />
+  <include package="Products.Five" file="meta.zcml" />
   <include package="zope.component" file="meta.zcml" />
   <include package="zope.i18n" file="meta.zcml" />
 
