@@ -1,24 +1,7 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
-matrix:
-  allow_failures:
-    - PROFILE: py27-conventions
-    - PROFILE: py35-conventions
-    - PROFILE: py36-conventions
-    - PROFILE: py237-conventions
-    - PROFILE: py37
-
 environment:
   matrix:
-    - PROFILE: py27-conventions
-      PYTHON_VERSION: 2.7"
-      TOXENV: "lint"
-    - PROFILE: py35-conventions
-      PYTHON_VERSION: 3.6"
-      TOXENV: "lint"
-    - PROFILE: py36-conventions
-      PYTHON_VERSION: 3.6"
-      TOXENV: "lint"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
       TOXENV: "lint"
@@ -50,5 +33,3 @@ test_script:
 
 after_test:
   - coveralls
-  # Bails out for non-tags
-  - ./update_index.sh
