@@ -6,7 +6,7 @@ rm -rf releases
 
 # 4.x: 'versions.cfg', 'versions-prod.cfg', and 'requirements-full.txt'
 # 4.0b6+: additionally 'constraints.txt'
-for tag in "master" $(git tag -l "4*" | sort -r); do
+for tag in "master" $(git tag -l "4*" | sort -Vr); do
     echo $tag
     mkdir -p releases/$tag
     git show $tag:versions.cfg > releases/$tag/versions.cfg
