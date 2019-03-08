@@ -175,13 +175,15 @@ def transaction_pubevents(request, response, tm=transaction.manager):
                 response._unauthorized()
                 response.setStatus(exc.getStatus())
 
-            notify(pubevents.PubBeforeAbort(
-                request, exc_info, request.supports_retry()))
-            tm.abort()
-            notify(pubevents.PubFailure(
-                request, exc_info, request.supports_retry()))
-
+            retry = False
             if isinstance(exc, TransientError) and request.supports_retry():
+                retry = True
+
+            notify(pubevents.PubBeforeAbort(request, exc_info, retry))
+            tm.abort()
+            notify(pubevents.PubFailure(request, exc_info, retry))
+
+            if retry:
                 reraise(*exc_info)
 
             if not (exc_view_created or isinstance(exc, Unauthorized)):

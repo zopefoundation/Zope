@@ -152,6 +152,13 @@ class WSGIResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'),
                          '%d' % len(TestStreamIterator.data))
 
+    def test_setBody_w_locking(self):
+        response = self._makeOne()
+        response.setBody(b'BEFORE', lock=True)
+        result = response.setBody(b'AFTER')
+        self.assertFalse(result)
+        self.assertEqual(response.body, b'BEFORE')
+
     def test___str___raises(self):
         response = self._makeOne()
         response.setBody('TESTING')

@@ -1065,6 +1065,10 @@ class WSGIResponse(HTTPBaseResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=False, lock=None):
+        # allow locking of the body in the same way as the status
+        if self._locked_body:
+            return
+
         if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
@@ -1080,6 +1084,11 @@ class WSGIResponse(HTTPBaseResponse):
             super(WSGIResponse, self).setBody(b'', title, is_error)
         else:
             super(WSGIResponse, self).setBody(body, title, is_error)
+
+        # Have to apply the lock at the end in case the super class setBody
+        # is called, which will observe the lock and do nothing
+        if lock:
+            self._locked_body = 1
 
     def __bytes__(self):
         raise NotImplementedError

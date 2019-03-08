@@ -85,6 +85,27 @@ class TestPatches(Sandboxed, ZopeTestCase):
         template.write(data)
         self.assertIn('world', template())
 
+    def test_macros_access(self):
+        from Products.PageTemplates.ZopePageTemplate import \
+            manage_addPageTemplate
+        from zExceptions import Unauthorized
+        template = manage_addPageTemplate(self.folder, 'test')
+
+        # aq-wrap before we proceed
+        template = template.__of__(self.folder)
+
+        # test rendering engine
+        with open(os.path.join(path, "macros.pt")) as fd:
+            data = fd.read()
+        template.write(data)
+        try:
+            output = template()
+            raised = False
+        except Unauthorized:
+            raised = True
+        self.assertFalse(raised, 'Unauthorized exception raised')
+        self.assertIn('<i>bar</i><i>bar</i><i>bar</i>', output)
+
 
 def test_suite():
     return unittest.TestSuite((

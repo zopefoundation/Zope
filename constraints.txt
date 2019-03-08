@@ -2,7 +2,7 @@ AccessControl==4.0b6
 Acquisition==4.5
 AuthEncoding==4.1
 BTrees==4.5.1
-Chameleon==3.5
+Chameleon==3.6
 DateTime==4.3
 DocumentTemplate==3.0b5
 ExtensionClass==4.4
@@ -11,7 +11,6 @@ MultiMapping==4.1
 PasteDeploy==2.0.1
 Persistence==3.0b4
 Products.BTreeFolder2==4.1
-Products.ZCTextIndex==4.0.2
 Products.ZCatalog==4.3
 Record==3.5
 RestrictedPython==4.0b8
