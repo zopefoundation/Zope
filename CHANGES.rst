@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix import file drop down on import export page.
+  (`#524 <https://github.com/zopefoundation/Zope/issues/524>`_)
+
 - Resurrected copyright and license page
   (`#482 <https://github.com/zopefoundation/Zope/issues/482>`_)
 
