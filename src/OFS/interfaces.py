@@ -26,7 +26,7 @@ from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
 from zope.location.interfaces import IRoot
 from zope.schema import Bool
-from zope.schema import BytesLine
+from zope.schema import NativeStringLine
 from zope.schema import Tuple
 
 
@@ -254,7 +254,7 @@ class IZopeObject(Interface):
         description=u"Should be false for simple items",
     )
 
-    meta_type = BytesLine(
+    meta_type = NativeStringLine(
         title=u"Meta type",
         description=u"The object's Zope2 meta type",
     )
@@ -503,9 +503,9 @@ class ILockItem(Interface):
 class IItem(IZopeObject, IManageable,
             ICopySource, ITraversable, IOwned):
 
-    __name__ = BytesLine(title=u"Name")
+    __name__ = NativeStringLine(title=u"Name")
 
-    title = BytesLine(title=u"Title")
+    title = NativeStringLine(title=u"Title")
 
     def getId():
         """Return the id of the object as a string.
@@ -842,7 +842,7 @@ class IPropertyManager(Interface):
     manage_propertiesForm = Attribute(""" """)
     manage_propertyTypeForm = Attribute(""" """)
 
-    title = BytesLine(title=u"Title")
+    title = NativeStringLine(title=u"Title")
 
     _properties = Tuple(title=u"Properties")
 

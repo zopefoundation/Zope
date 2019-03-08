@@ -177,6 +177,9 @@ class DTMLMethod(
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
+                if PY2 and not isinstance(r, text_type):
+                    # Prevent double-encoding edge cases under Python 2
+                    r = r.decode('utf-8')
                 c, e = guess_content_type(self.getId(), r.encode('utf-8'))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)

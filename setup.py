@@ -36,6 +36,11 @@ setup(
     name='Zope',
     version=version,
     url='https://zope.readthedocs.io/en/latest/',
+    project_urls={
+        'Documentation': 'https://zope.readthedocs.io',
+        'Issue Tracker': 'https://github.com/zopefoundation/Zope/issues',
+        'Sources': 'https://github.com/zopefoundation/Zope',
+    },
     license='ZPL 2.1',
     description='Zope application server / web framework',
     author='Zope Foundation and Contributors',
@@ -63,6 +68,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
     install_requires=[
         'AccessControl >= 4.0b4',
         'Acquisition',

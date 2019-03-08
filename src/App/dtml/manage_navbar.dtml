@@ -2,6 +2,7 @@
 
 <header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
 	<div id="toggle_tabs" class="collapsed"
+		role="button"
 		data-toggle="collapse"
 		data-target="#tabs_items"
 		aria-controls="tabs_items" aria-expanded="false" aria-label="Toggle Tab-Navigation">
@@ -11,15 +12,16 @@
 		<span class="product">ZOPE 4.0</span>
 	</a>
 	<ul class="navbar-nav flex-row ml-sm-auto d-flex">
-		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var AUTHENTICATED_USER missing="not logged-in">">
-			<span class="zmi-label"><dtml-var AUTHENTICATED_USER missing="not logged-in"></span>
+		<dtml-let authuser="REQUEST.get('AUTHENTICATED_USER', 'not logged-in')">
+		<li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user" title="Logged in as: <dtml-var "str(authuser)">">
+			<span class="zmi-label"><dtml-var "str(authuser)"></span>
 		</li>
+		</dtml-let>
 		<li id="toggle_menu" class="form-inline desktop hidden-xs"
 			title="Show/Hide Tree Menu of the Navigation Context"
 			data-title_inactive="STATUS INACTIVE: Tree Menu Button is only active on List Views. Navigate up a level to show the tree view again."
 			data-is_folderish="<dtml-var "(manage_main != manage) and 1 or 0">"
-		>
-			<a href="<dtml-var "(manage_main != manage) and './' or '../'">manage?came_from=<dtml-var URL>" target="_parent" onclick="javascript:if ( manage_menu ) {window.parent.frames[0].menu_toggle();return false;} else { return true; }">
+			><a href="<dtml-var "(manage_main != manage) and './' or '../'">manage?came_from=<dtml-var URL>" target="_parent" onclick="javascript:if ( manage_menu ) {window.parent.frames[0].menu_toggle();return false;} else { return true; }">
 				<i class="fa fa-sitemap"></i>
 			</a>
 		</li>
@@ -29,30 +31,32 @@
 				<i class="fa fa-cog"></i> <span class="zmi-label">Control&nbsp;Panel</span>
 			</a>
 		</li>
-		<dtml-if filtered_meta_types>
-			<li class="form-inline zmi-addItemSelect">
-				<form method="get" class="form-group">
-						<label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
-						<select id="addItemSelect" class="form-control-sm" name=":action"
-							data-title-active="Select type to add"
-							data-title-inactive="STATUS INACTIVE: New Object can only be Added in the List View"
-							title="Select type to add"
+		<li class="form-inline zmi-addItemSelect">
+			<form method="get" class="form-group">
+				<label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
+				<select id="addItemSelect" name=":action"
+					<dtml-if "aq_explicit"
+						><dtml-if "hasattr(aq_explicit, 'filtered_meta_types')"
+							>class="form-control-sm" title="Select type to add"
 							onchange="addItem( elm=this, base_url='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
-							><option value="" selected="selected">Select type to add</option>
-							<dtml-if "_.len(filtered_meta_types) > 1"
-								><dtml-in filtered_meta_types mapping sort=name
-									><dtml-if action><option value="&dtml.html_quote-action;">&dtml-name;</option>
-									</dtml-if
-								></dtml-in
-							></dtml-if>
-						</select>
-				</form>
-			</li>
-		</dtml-if>
+						<dtml-else
+							>class="form-control-sm disabled" title="No type to add" disabled="disabled"
+						</dtml-if>
+					</dtml-if>
+					><option value="" selected="selected">Select type to add</option>
+					<dtml-if "hasattr(aq_explicit, 'filtered_meta_types')"
+						><dtml-in filtered_meta_types mapping sort=name
+							><dtml-if action
+								><option value="&dtml.html_quote-action;">&dtml-name;</option>
+							</dtml-if>
+						</dtml-in>
+					</dtml-if>
+				</select>
+			</form>
+		</li>
 	</ul>
 
-	<a href="manage_zmi_logout" title="Logout"
-		class="ml-4">
+	<a href="manage_zmi_logout" title="Logout" class="ml-4">
 		<i class="fas fa-sign-out-alt"></i>
 	</a>
 

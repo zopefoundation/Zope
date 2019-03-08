@@ -12,6 +12,8 @@
 ##############################################################################
 """Find support
 """
+import six
+
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
@@ -27,6 +29,7 @@ from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
 from OFS.interfaces import IFindSupport
 from zope.interface import implementer
+from ZPublisher.HTTPRequest import default_encoding
 
 
 @implementer(IFindSupport)
@@ -122,14 +125,25 @@ class FindSupport(Base):
                 dflag = 1
 
             bs = aq_base(ob)
+            if obj_searchterm:
+                if hasattr(ob, 'PrincipiaSearchSource'):
+                    pss = ob.PrincipiaSearchSource()
+                    if six.PY3 and not isinstance(pss, str):
+                        pss = pss.decode(default_encoding)
+                if hasattr(ob, 'SearchableText'):
+                    st = ob.SearchableText()
+                    if six.PY3 and not isinstance(st, str):
+                        st = st.decode(default_encoding)
+            else:
+                pss = st = ''
+
             if ((not obj_ids or absattr(bs.getId()) in obj_ids) and
                 (not obj_metatypes or (hasattr(bs, 'meta_type') and
                  bs.meta_type in obj_metatypes)) and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  obj_searchterm in ob.PrincipiaSearchSource()) or
-                 (hasattr(ob, 'SearchableText') and
-                  obj_searchterm in ob.SearchableText())
+                  obj_searchterm in pss) or
+                 (hasattr(ob, 'SearchableText') and obj_searchterm in st)
                  ) and
                 (not obj_expr or expr_match(ob, obj_expr)) and
                 (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec)) and

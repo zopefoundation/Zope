@@ -379,6 +379,10 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, 'items', si)
         self.assertRaises(BadRequest, om._setObject, 'keys', si)
         self.assertRaises(BadRequest, om._setObject, 'values', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo&bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo>bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo<bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo/bar', si)
 
     def test_getsetitem(self):
         om = self._makeOne()

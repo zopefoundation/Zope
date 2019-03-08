@@ -1,9 +1,17 @@
 // zmi_base.js
 
+// HELPERS
+
+// Simple Check for Absolute URL
+function isURL(str) {
+	return /^(?:\w+:)?\/\/\S*$/.test(str);
+};
+
+
 // NAVBAR-FUNCTIONS
 
-// Add New Object Item (with Modal Dialog)
-function addItem( elm, base_url ) {
+// [1] Add New Object Item (with Modal Dialog)
+function addItem( elm, base_url, zmi_dialog='modal') {
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
 	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
@@ -11,25 +19,33 @@ function addItem( elm, base_url ) {
 	var parts = url_action.split('/');
 	// folderAdd
 	var action = parts[parts.length-1];
+	// OFSP
+	var product = parts[parts.length-2];
 	// http://localhost/myfolder/manage_addProduct/OFSP/
 	var modal_form_base = url_full.slice(0, -action.length);
-	var modal_body_url = url_full + '?zmi_dialog=modal';
+	var modal_body_url = url_full + '?zmi_dialog=' + zmi_dialog ;
 
-	// List of Object Types Inserting Without Modal Dialog
-	var no_modal_dialog = [
-		'manage_addRegistry',
-		'manage_addUserFolder',
-		'manage_addErrorLog',
-		'manage_addVirtualHostMonster',
-		'manage_addzmsform',
-		'addPluggableAuthService',
-	];
+	// Inserting Without Modal Dialog
+	var no_modal_dialog = {
+		'action':[
+			'manage_addRegistry',
+			'manage_addUserFolder',
+			'manage_addErrorLog',
+			'manage_addVirtualHostMonster',
+			'addPluggableAuthService',
+		],
+		'product':[
+			'CMFPlone',
+			'CMFEditions',
+			'zms',
+		]
+	};
 
-	if ( $.inArray(action, no_modal_dialog) !== -1 ) {
+	if ( zmi_dialog != 'modal' || $.inArray(action, no_modal_dialog['action']) !== -1 || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
 		window.location.href = url_full;
 		return
 	}
-	
+
 	// SHOW MODAL DIALOG
 	$('#zmi-modal').modal('show');
 	$('#zmi-modal').modal({ focus: true });
@@ -40,13 +56,14 @@ function addItem( elm, base_url ) {
 			window.location.href = url_full;
 				return;
 		}
-		
+
 		//Modify Form Action for Modal Use
 		$( '#zmi-modal form' ).each( function() {
-			var modal_form_url = modal_form_base + $( this ).attr( 'action' );
+			var former_action = $( this ).attr( 'action' );
+			var modal_form_url = isURL(former_action) ? former_action : modal_form_base + former_action;
 			$( this ).attr( 'action', modal_form_url );
 		});
-		
+
 		fix_ancient_modal_gui();
 		fix_modern_modal_gui();
 	});
@@ -87,7 +104,7 @@ function fix_ancient_modal_gui() {
 function fix_modern_modal_gui() {
 	// Shift Title to Modal Header
 	$('#zmi-modal .modal-body h2').detach().prependTo('#zmi-modal .modal-header');
-	
+
 	// Aggregate multiple Help-Paragraphs
 	if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
 		var help_text = $('#zmi-modal .modal-body p.form-help').text();
@@ -105,9 +122,9 @@ function fix_modern_modal_gui() {
 function show_ace_editor() {
 	$('#content').wrap('<div id="editor_container" class="form-group"></div>');
 	$('#content').before('<div id="editor">ace editor text</div>');
-	var dom = require("ace/lib/dom");
+	var dom = ace.require("ace/lib/dom");
 	// add command to all new editor instances
-	require("ace/commands/default_commands").commands.push({
+	ace.require("ace/commands/default_commands").commands.push({
 		name: "Toggle Fullscreen",
 		bindKey: "F10",
 		exec: function(editor) {
@@ -141,7 +158,7 @@ function show_ace_editor() {
 			content_type = "text/html";
 		}
 	}
-	if ( 0 === value.indexOf("<html")) {
+	if ( 0 === value.indexOf("<html") && content_type != 'dtml') {
 		content_type = "text/html";
 	}
 	if ( 0 === value.indexOf("<?xml") || value.indexOf("tal:") >= 0) {
@@ -169,6 +186,15 @@ function show_ace_editor() {
 	else if (content_type == "python") {
 		mode = 'python';
 	}
+	else if (content_type == "sql") {
+		mode = 'sql';
+	}
+	else if (content_type == "json") {
+		mode = 'json';
+	}
+	else if (content_type == "dtml") {
+		mode = 'markdown';
+	}
 	editor.setTheme("ace/theme/eclipse");
 	editor.getSession().setMode('ace/mode/'+mode);
 	editor.getSession().setValue(value);
@@ -192,23 +218,10 @@ $(function() {
 	fix_ancient_gui();
 
 	// EXECUTE FUNCTIONAL WORKAROUNDS
-	// [1] Showing some Menu Elements only on List Page as Active
-    // List Page is assumed if the ZMI tabs contain a "manage_findForm"
-    // on folders or a "manage_catalogFind" on ZCatalogs
-    if ($('.nav a[href="manage_findForm"]').length > 0 || $('.nav a[href="manage_catalogFind"]').length > 0) {
-		$('#addItemSelect').removeClass('disabled');
-		$('#addItemSelect').removeAttr('disabled');
-		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-active') );
-	} else {
-		$('#addItemSelect').addClass('disabled');
-		$('#addItemSelect').attr('disabled','disabled');
-		$('#addItemSelect').attr( 'title', $('#addItemSelect').attr('data-title-inactive') );
-	}
-	
+	//  empty for the moment
 
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});
 	}
 
 });
-
