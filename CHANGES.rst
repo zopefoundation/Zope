@@ -59,6 +59,9 @@ Other changes
 - Provide additional links on PyPI with ``project_urls`` in ``setup.py``
   (`#434 <https://github.com/zopefoundation/Zope/issues/434>`_)
 
+- Resurrect automatic support for ``standard_error_message`` DTML Method
+  (`#238 <https://github.com/zopefoundation/Zope/issues/238>`_)
+
 
 4.0b9 (2019-02-09)
 ------------------
