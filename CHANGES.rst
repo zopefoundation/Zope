@@ -62,6 +62,8 @@ Other changes
 - Resurrect automatic support for ``standard_error_message`` DTML Method
   (`#238 <https://github.com/zopefoundation/Zope/issues/238>`_)
 
+- Update dependencies to newest versions.
+
 
 4.0b9 (2019-02-09)
 ------------------
