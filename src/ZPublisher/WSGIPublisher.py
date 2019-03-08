@@ -104,9 +104,9 @@ def _exc_view_created_response(exc, request, response):
         # DTML Method in the ZODB
         view = queryMultiAdapter((exc, request),
                                  name=u'standard_error_message')
-        direct_parent = parents[0]
+        root_parent = parents[0]
         try:
-            standard_error_message = aq_acquire(direct_parent,
+            standard_error_message = aq_acquire(root_parent,
                                                 'standard_error_message')
         except (AttributeError, KeyError):
             view = None
