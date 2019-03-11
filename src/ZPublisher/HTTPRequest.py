@@ -30,6 +30,7 @@ from six import PY3
 from six import string_types
 from six import text_type
 from six.moves.urllib.parse import unquote
+from six.moves.urllib.parse import urlparse
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
 from zope.interface import directlyProvidedBy
@@ -46,12 +47,8 @@ from ZPublisher import xmlrpc
 
 if PY3:
     from html import escape
-    from urllib.parse import splitport
-    from urllib.parse import splittype
 else:
     from cgi import escape
-    from urllib import splitport
-    from urllib import splittype
 
 # Flags
 SEQUENCE = 1
@@ -90,7 +87,7 @@ isCGI_NAME = isCGI_NAMEs.__contains__
 
 hide_key = {'HTTP_AUTHORIZATION': 1, 'HTTP_CGI_AUTHORIZATION': 1}
 
-default_port = {'http': '80', 'https': '443'}
+default_port = {'http': 80, 'https': 443}
 
 tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
 TAINTING_ENABLED = tainting_env not in ('disabled', '0', 'no')
@@ -113,6 +110,28 @@ trusted_proxies = []
 
 class NestedLoopExit(Exception):
     pass
+
+
+def splitport(url):
+    """Return (hostname, port) from a URL
+
+    If it does not return a port, return the URL unchanged.
+    This mimics the behavior of the `splitport` function which was
+    in Python and got deprecated in Python 3.8.
+    """
+    parsed = urlparse(url)
+    if (not parsed.scheme
+            and parsed.port is None
+            and parsed.hostname is None):
+        # urlparse does not like URLs without a protocol, so add one:
+        parsed = urlparse('http://{}'.format(url))
+    if parsed.port is None:
+        return url, None
+    hostname = parsed.hostname
+    if parsed.netloc.startswith('['):
+        hostname = "[{}]".format(hostname)
+    return hostname, parsed.port
+
 
 
 @implementer(IBrowserRequest)
@@ -208,19 +227,18 @@ class HTTPRequest(BaseRequest):
         server_url = other.get('SERVER_URL', '')
         if protocol is None and hostname is None and port is None:
             return server_url
-        oldprotocol, oldhost = splittype(server_url)
-        oldhostname, oldport = splitport(oldhost[2:])
+        old_url = urlparse(server_url)
         if protocol is None:
-            protocol = oldprotocol
+            protocol = old_url.scheme
         if hostname is None:
-            hostname = oldhostname
+            hostname = old_url.hostname
         if port is None:
-            port = oldport
+            port = old_url.port
 
         if (port is None or default_port[protocol] == port):
             host = hostname
         else:
-            host = hostname + ':' + port
+            host = '{}:{}'.format(hostname, port)
         server_url = other['SERVER_URL'] = '%s://%s' % (protocol, host)
         self._resetURLS()
         return server_url
@@ -417,7 +435,7 @@ class HTTPRequest(BaseRequest):
 
             else:
                 hostname = environ['SERVER_NAME'].strip()
-                port = environ['SERVER_PORT']
+                port = int(environ['SERVER_PORT'])
             self.setServerURL(protocol=protocol, hostname=hostname, port=port)
             server_url = other['SERVER_URL']
 

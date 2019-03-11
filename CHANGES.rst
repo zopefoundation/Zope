@@ -11,7 +11,12 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Features
+++++++++
+
+- Replace usage of ``urllib.parse.splitport`` and ``urllib.parse.splittype``
+  which are deprecated in Python 3.8.
+  (`#476 <https://github.com/zopefoundation/Zope/pull/476>`_)
 
 
 4.0b10 (2019-03-08)
