@@ -30,6 +30,7 @@ from six import PY3
 from six import string_types
 from six import text_type
 from six.moves.urllib.parse import unquote
+from six.moves.urllib.parse import urlparse
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import locales, LoadLocaleError
 from zope.interface import directlyProvidedBy
@@ -46,10 +47,8 @@ from ZPublisher import xmlrpc
 
 if PY3:
     from html import escape
-    from urllib.parse import urlparse
 else:
     from cgi import escape
-    from urlparse import urlparse
 
 # Flags
 SEQUENCE = 1
