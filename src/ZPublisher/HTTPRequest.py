@@ -1684,6 +1684,9 @@ class FileUpload(object):
         self.headers = aFieldStorage.headers
         self.filename = aFieldStorage.filename
         self.name = aFieldStorage.name
+        # Keep a reference to the field storage to prevent it from closing
+        # its file during garbage collection:
+        self.__field_storage = aFieldStorage
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.

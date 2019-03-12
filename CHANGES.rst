@@ -18,6 +18,12 @@ Features
   which are deprecated in Python 3.8.
   (`#476 <https://github.com/zopefoundation/Zope/pull/476>`_)
 
+Fixes
++++++
+
+- Prevent ``ValueError: I/O operation on closed file.`` when using
+  ``ZPublisher.HTTPRequest.FileUpload`` in Python 3.
+
 
 4.0b10 (2019-03-08)
 -------------------
