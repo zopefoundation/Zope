@@ -23,6 +23,7 @@ Fixes
 
 - Prevent ``ValueError: I/O operation on closed file.`` when using
   ``ZPublisher.HTTPRequest.FileUpload`` in Python 3.
+  (`#527 <https://github.com/zopefoundation/Zope/pull/527>`_)
 
 
 4.0b10 (2019-03-08)
