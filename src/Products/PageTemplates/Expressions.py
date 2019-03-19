@@ -18,12 +18,12 @@ for Python expressions, string literals, and paths.
 
 import logging
 
-from MultiMapping import MultiMapping
 from six import binary_type
 from six import text_type
 
 import OFS.interfaces
 from Acquisition import aq_base
+from MultiMapping import MultiMapping
 from Products.PageTemplates import ZRPythonExpr
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zExceptions import NotFound

@@ -4,8 +4,6 @@ from ast import parse
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
 from chameleon.codegen import template
-from RestrictedPython import RestrictingNodeTransformer
-from RestrictedPython.Utilities import utility_builtins
 from six import class_types
 
 from AccessControl.ZopeGuards import guarded_apply
@@ -15,6 +13,8 @@ from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
 from Products.PageTemplates.Expressions import render
+from RestrictedPython import RestrictingNodeTransformer
+from RestrictedPython.Utilities import utility_builtins
 from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized

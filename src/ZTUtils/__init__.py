@@ -13,7 +13,6 @@
 """Package of template utility classes and functions.
 """
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from ZTUtils.Zope import Batch  # NOQA; NOQA
 from ZTUtils.Zope import LazyFilter
 from ZTUtils.Zope import make_hidden_input
 from ZTUtils.Zope import make_query
@@ -25,6 +24,10 @@ from .Tree import a2b  # NOQA
 from .Tree import b2a
 from .Tree import decodeExpansion
 from .Tree import encodeExpansion
+
+
+from ZTUtils.Zope import Batch  # NOQA; NOQA
+
 
 
 security = ModuleSecurityInfo('ZTUtils')
