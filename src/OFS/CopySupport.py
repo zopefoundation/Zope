@@ -13,6 +13,20 @@
 """Copy interface
 """
 
+import logging
+import re
+import tempfile
+import warnings
+from json import dumps
+from json import loads
+from zlib import compress
+from zlib import decompressobj
+
+import six
+from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import unquote
+
+import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
@@ -24,8 +38,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from json import dumps
-from json import loads
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import ICopyContainer
@@ -33,26 +45,15 @@ from OFS.interfaces import ICopySource
 from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
 from OFS.subscribers import compatibilityCall
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zExceptions import Unauthorized
-from zlib import compress
-from zlib import decompressobj
 from ZODB.POSException import ConflictError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
-
-import logging
-import re
-import six
-import tempfile
-import transaction
-import warnings
 
 
 class CopyError(Exception):

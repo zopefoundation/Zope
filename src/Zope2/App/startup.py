@@ -15,23 +15,24 @@
 
 import os
 import sys
-from time import asctime
 import types
+from time import asctime
+
+import six
 
 import AccessControl.User
+import App.ZApplication
+import OFS.Application
+import ZODB
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-import six
-import ZODB
+from App.config import getConfiguration
 from zope.deferredimport import deprecated
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
 
-from App.config import getConfiguration
-import App.ZApplication
-import OFS.Application
-import Zope2
 
 # BBB Zope 5.0
 deprecated(

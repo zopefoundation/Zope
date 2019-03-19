@@ -12,13 +12,16 @@
 ##############################################################################
 
 import os
-import six
 from logging import getLogger
+
+import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from Acquisition import aq_parent, aq_inner, aq_get
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.Common import package_home
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
@@ -30,12 +33,11 @@ from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zope.contenttype import guess_content_type
-from zope.pagetemplate.pagetemplatefile import (
-    sniff_type,
-    XML_PREFIX_MAX_LENGTH,
-    DEFAULT_ENCODING,
-    meta_pattern,
-)
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+from zope.pagetemplate.pagetemplatefile import meta_pattern
+from zope.pagetemplate.pagetemplatefile import sniff_type
+from zope.pagetemplate.pagetemplatefile import XML_PREFIX_MAX_LENGTH
+
 
 LOG = getLogger('PageTemplateFile')
 

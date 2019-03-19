@@ -14,7 +14,8 @@
 """Unit tests for the i18n framework
 """
 
-from zope.component.testing import setUp, tearDown
+from zope.component.testing import setUp
+from zope.component.testing import tearDown
 
 
 def test_directive():

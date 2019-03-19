@@ -11,12 +11,12 @@
 #
 ##############################################################################
 
+import time
+
 from Acquisition import aq_acquire
 from zExceptions import HTTPPreconditionFailed
 from zope.interface import implementer
 from zope.interface import Interface
-
-import time
 
 
 class EtagBaseInterface(Interface):

@@ -11,12 +11,12 @@
 #
 ##############################################################################
 
-from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from App.ImageFile import ImageFile
 from os.path import dirname
 
 import App
+from AccessControl.class_init import InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.ImageFile import ImageFile
 
 
 class misc_(object):

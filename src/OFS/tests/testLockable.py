@@ -1,7 +1,7 @@
+import unittest
+
 from OFS.interfaces import IWriteLock
 from zope.interface import implementer
-
-import unittest
 
 
 @implementer(IWriteLock)

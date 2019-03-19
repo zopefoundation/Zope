@@ -16,8 +16,8 @@
 
 import unittest
 
-from AccessControl.class_init import InitializeClass
 import ExtensionClass
+from AccessControl.class_init import InitializeClass
 
 
 class TestInitializeClass(unittest.TestCase):

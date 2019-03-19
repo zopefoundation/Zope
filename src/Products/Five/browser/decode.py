@@ -18,10 +18,11 @@
 import sys
 from warnings import warn
 
-from ZPublisher.HTTPRequest import isCGI_NAMEs
-from zope.i18n.interfaces import IUserPreferredCharsets
+from six import binary_type
+from six import text_type
 
-from six import text_type, binary_type
+from zope.i18n.interfaces import IUserPreferredCharsets
+from ZPublisher.HTTPRequest import isCGI_NAMEs
 
 
 def _decode(text, charsets):

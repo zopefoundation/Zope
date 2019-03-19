@@ -11,10 +11,10 @@
 #
 ##############################################################################
 
+import unittest
+
 from OFS.SimpleItem import SimpleItem
 from Testing.ZopeTestCase import base
-
-import unittest
 
 
 class ToBreak(SimpleItem):

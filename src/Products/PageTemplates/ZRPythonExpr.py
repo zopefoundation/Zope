@@ -17,11 +17,14 @@ Handler for Python expressions that uses the RestrictedPython package.
 
 import sys
 
-from AccessControl import safe_builtins
-from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
-from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from DocumentTemplate.security import RestrictedDTML
 from RestrictedPython import compile_restricted_eval
+
+from AccessControl import safe_builtins
+from AccessControl.ZopeGuards import get_safe_globals
+from AccessControl.ZopeGuards import guarded_getattr
+from DocumentTemplate.DT_Util import InstanceDict
+from DocumentTemplate.DT_Util import TemplateDict
+from DocumentTemplate.security import RestrictedDTML
 from zope.tales.pythonexpr import PythonExpr
 
 

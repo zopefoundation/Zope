@@ -11,15 +11,15 @@
 #
 ##############################################################################
 
+import random
+import time
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import ownerInfo
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.interfaces import ILockItem
 from Persistence import Persistent
 from zope.interface import implementer
-
-import random
-import time
 
 
 _randGen = random.Random(time.time())

@@ -14,8 +14,9 @@
 """
 
 from unittest import TestSuite
-from Testing.ZopeTestCase import ZopeDocTestSuite
+
 from Testing.ZopeTestCase import ZopeDocFileSuite
+from Testing.ZopeTestCase import ZopeDocTestSuite
 
 
 def setUp(self):

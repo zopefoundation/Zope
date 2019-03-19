@@ -14,14 +14,15 @@
 # licensed under the BSD-derived Repoze Public License
 # (http://repoze.org/license.html).
 
-from logging.config import fileConfig
 import optparse
 import os
 import re
 import sys
+from logging.config import fileConfig
 
-from paste.deploy import loadserver
 from paste.deploy import loadapp
+from paste.deploy import loadserver
+
 
 try:
     import configparser

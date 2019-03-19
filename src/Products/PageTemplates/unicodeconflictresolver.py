@@ -15,13 +15,15 @@
 
 import sys
 
+from six import binary_type
+from six import text_type
+
+import ZPublisher
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
-import ZPublisher
+from zope.interface import implementer
 
-from six import text_type, binary_type
 
 default_encoding = sys.getdefaultencoding()
 

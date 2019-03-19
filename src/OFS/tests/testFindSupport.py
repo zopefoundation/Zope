@@ -1,7 +1,8 @@
-from OFS.FindSupport import FindSupport
+import unittest
 
 import six
-import unittest
+
+from OFS.FindSupport import FindSupport
 
 
 class DummyItem(FindSupport):

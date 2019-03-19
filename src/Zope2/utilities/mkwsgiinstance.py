@@ -30,7 +30,9 @@ import getopt
 import os
 import subprocess
 import sys
+
 from . import copyzopeskel
+
 
 if sys.version_info > (3, ):
     raw_input = input

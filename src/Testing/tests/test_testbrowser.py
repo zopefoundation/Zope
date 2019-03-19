@@ -14,21 +14,19 @@
 """Tests for the testbrowser module.
 """
 
-from AccessControl.Permissions import view
-from ZPublisher.WSGIPublisher import publish_module
-from ZPublisher.httpexceptions import HTTPExceptionHandler
 from six.moves.urllib.error import HTTPError
-from zExceptions import NotFound
-import transaction
 
+import transaction
+from AccessControl.Permissions import view
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
 from Testing.testbrowser import WSGITestApp
-from Testing.ZopeTestCase import (
-    FunctionalTestCase,
-    user_name,
-    user_password,
-)
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
+from zExceptions import NotFound
+from ZPublisher.httpexceptions import HTTPExceptionHandler
+from ZPublisher.WSGIPublisher import publish_module
 
 
 class CookieStub(Item):

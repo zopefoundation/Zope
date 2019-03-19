@@ -13,10 +13,12 @@
 """Application support
 """
 
-from . import Folder
-from . import misc_
-from .interfaces import IApplication
-from .misc_ import Misc_
+import os
+import sys
+from logging import getLogger
+
+import Products
+import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
@@ -25,7 +27,6 @@ from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
 from DateTime import DateTime
-from logging import getLogger
 from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
@@ -35,10 +36,10 @@ from zExceptions import Forbidden
 from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
 
-import os
-import Products
-import sys
-import transaction
+from . import Folder
+from . import misc_
+from .interfaces import IApplication
+from .misc_ import Misc_
 
 
 if bbb.HAS_ZSERVER:

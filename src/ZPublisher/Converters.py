@@ -12,11 +12,14 @@
 ##############################################################################
 
 import re
-from DateTime import DateTime
-from DateTime.interfaces import SyntaxError
+
 import six
 from six import binary_type
 from six import text_type
+
+from DateTime import DateTime
+from DateTime.interfaces import SyntaxError
+
 
 try:
     from html import escape

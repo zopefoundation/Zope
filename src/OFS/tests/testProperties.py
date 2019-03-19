@@ -13,8 +13,9 @@
 """Properties unit tests.
 """
 
-import six
 import unittest
+
+import six
 
 
 class TestPropertyManager(unittest.TestCase):

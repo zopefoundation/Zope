@@ -18,15 +18,14 @@ import types
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
 from Acquisition import aq_base
 from Acquisition import Implicit
 from ExtensionClass import Base
-from zExceptions import Redirect
-
 from OFS.metaconfigure import get_registered_packages
+from zExceptions import Redirect
 
 
 def _product_packages():

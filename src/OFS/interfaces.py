@@ -13,11 +13,12 @@
 """OFS interfaces.
 """
 
+from persistent.interfaces import IPersistent
+
 from AccessControl.interfaces import IOwned
 from AccessControl.interfaces import IRoleManager
 from Acquisition.interfaces import IAcquirer
 from App.interfaces import INavigation
-from persistent.interfaces import IPersistent
 from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
 from zope.deferredimport import deprecated

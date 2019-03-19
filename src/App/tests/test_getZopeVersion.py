@@ -16,7 +16,9 @@
 import unittest
 
 from pkg_resources import get_distribution
+
 from App.version_txt import getZopeVersion
+
 
 class Test(unittest.TestCase):
     def test_major(self):

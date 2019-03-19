@@ -15,6 +15,7 @@
 
 from Testing import ZopeTestCase
 
+
 ZopeTestCase.installProduct('SomeProduct')
 
 

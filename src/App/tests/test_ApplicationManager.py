@@ -1,9 +1,10 @@
-import Testing.ZopeTestCase
 import os
 import shutil
 import sys
 import tempfile
 import unittest
+
+import Testing.ZopeTestCase
 
 
 class DummyConnection(object):

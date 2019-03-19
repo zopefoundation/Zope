@@ -12,10 +12,10 @@
 #
 ##############################################################################
 
+import os
+
 from setuptools import find_packages
 from setuptools import setup
-
-import os
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

@@ -60,10 +60,10 @@ the target directory, its ownership information and mode bit settings are left
 unchanged.
 """
 
+import getopt
 import os
 import shutil
 import sys
-import getopt
 
 
 def main():

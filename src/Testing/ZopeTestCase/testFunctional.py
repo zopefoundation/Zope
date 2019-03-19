@@ -18,14 +18,15 @@ requests against the ZPublisher and how to examine the response.
 
 from io import BytesIO
 
-from AccessControl import getSecurityManager
-from AccessControl.Permissions import view
-from AccessControl.Permissions import manage_properties
 from six.moves.urllib.parse import urlencode
 
+from AccessControl import getSecurityManager
+from AccessControl.Permissions import manage_properties
+from AccessControl.Permissions import view
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
+
 
 SET_COOKIE_DTML = '''\
 <dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''

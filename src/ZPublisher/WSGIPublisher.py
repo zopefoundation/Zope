@@ -12,35 +12,37 @@
 ##############################################################################
 """ Python Object Publisher -- Publish Python objects on web servers
 """
-from contextlib import contextmanager, closing
+import sys
+from contextlib import closing
+from contextlib import contextmanager
 from io import BytesIO
 from io import IOBase
-import sys
 
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_acquire
 from six import PY3
 from six import reraise
 from six.moves._thread import allocate_lock
+
 import transaction
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from Acquisition import aq_acquire
 from transaction.interfaces import TransientError
-from zExceptions import (
-    Unauthorized,
-    upgradeException,
-)
+from zExceptions import Unauthorized
+from zExceptions import upgradeException
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.globalrequest import setRequest, clearRequest
-from zope.security.management import newInteraction, endInteraction
+from zope.globalrequest import clearRequest
+from zope.globalrequest import setRequest
 from zope.publisher.skinnable import setDefaultSkin
-
+from zope.security.management import endInteraction
+from zope.security.management import newInteraction
+from ZPublisher import pubevents
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
 from ZPublisher.Iterators import IUnboundStreamIterator
 from ZPublisher.mapply import mapply
-from ZPublisher import pubevents
 from ZPublisher.utils import recordMetaData
+
 
 if sys.version_info >= (3, ):
     _FILE_TYPES = (IOBase, )

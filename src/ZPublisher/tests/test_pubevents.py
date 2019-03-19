@@ -1,8 +1,12 @@
 from io import BytesIO
-from sys import modules, exc_info
+from sys import exc_info
+from sys import modules
 from unittest import TestCase
 
 import zExceptions
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
 from ZODB.POSException import ConflictError
 from zope.component import adapter
 from zope.component import getSiteManager
@@ -12,23 +16,24 @@ from zope.interface import Interface
 from zope.interface.verify import verifyObject
 from zope.publisher.interfaces import INotFound
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import user_name
-from Testing.ZopeTestCase import user_password
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
-from ZPublisher.interfaces import (
-    IPubEvent, IPubStart, IPubEnd, IPubSuccess, IPubFailure,
-    IPubAfterTraversal, IPubBeforeCommit,
-    IPubBeforeStreaming,
-)
-from ZPublisher.pubevents import (
-    PubStart, PubSuccess, PubFailure,
-    PubAfterTraversal, PubBeforeCommit, PubBeforeAbort,
-    PubBeforeStreaming,
-)
+from ZPublisher.interfaces import IPubAfterTraversal
+from ZPublisher.interfaces import IPubBeforeCommit
+from ZPublisher.interfaces import IPubBeforeStreaming
+from ZPublisher.interfaces import IPubEnd
+from ZPublisher.interfaces import IPubEvent
+from ZPublisher.interfaces import IPubFailure
+from ZPublisher.interfaces import IPubStart
+from ZPublisher.interfaces import IPubSuccess
+from ZPublisher.pubevents import PubAfterTraversal
+from ZPublisher.pubevents import PubBeforeAbort
+from ZPublisher.pubevents import PubBeforeCommit
+from ZPublisher.pubevents import PubBeforeStreaming
+from ZPublisher.pubevents import PubFailure
+from ZPublisher.pubevents import PubStart
+from ZPublisher.pubevents import PubSuccess
 from ZPublisher.WSGIPublisher import publish_module
 
 

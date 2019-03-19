@@ -13,6 +13,22 @@
 """Object Manager
 """
 
+import copy
+import fnmatch
+import marshal
+import os
+import re
+import sys
+import time
+from io import BytesIO
+from logging import getLogger
+from operator import itemgetter
+
+from six import string_types
+from six import text_type
+from six.moves.urllib.parse import quote
+
+import zope.sequencesort
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
@@ -35,8 +51,6 @@ from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from DateTime.interfaces import DateTimeError
-from io import BytesIO
-from logging import getLogger
 from OFS import bbb
 from OFS.CopySupport import CopyContainer
 from OFS.event import ObjectWillBeAddedEvent
@@ -45,12 +59,8 @@ from OFS.interfaces import IObjectManager
 from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
 from OFS.Traversable import Traversable
-from operator import itemgetter
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from six import string_types
-from six import text_type
-from six.moves.urllib.parse import quote
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -59,15 +69,6 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
-
-import copy
-import fnmatch
-import marshal
-import os
-import re
-import sys
-import time
-import zope.sequencesort
 
 
 try:

@@ -13,6 +13,8 @@
 """User folders
 """
 
+import os
+
 from AccessControl import ClassSecurityInfo
 from AccessControl import userfolder as accesscontrol_userfolder
 from AccessControl.class_init import InitializeClass
@@ -30,8 +32,6 @@ from App.special_dtml import DTMLFile
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from zExceptions import BadRequest
-
-import os
 
 
 class BasicUserFolder(

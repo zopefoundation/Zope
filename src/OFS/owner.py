@@ -13,6 +13,8 @@
 """Support for owned objects
 """
 
+from six.moves.urllib import parse
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import ownableFilter
 from AccessControl.owner import Owned as BaseOwned
@@ -26,7 +28,6 @@ from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
-from six.moves.urllib import parse
 
 
 class Owned(BaseOwned):

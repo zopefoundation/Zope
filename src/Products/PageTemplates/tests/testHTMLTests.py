@@ -13,19 +13,19 @@
 
 import unittest
 
+from six import text_type
+
+import zope.component.testing
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import Implicit
-from six import text_type
-import zope.component.testing
-from zope.component import provideUtility
-from zope.traversing.adapters import DefaultTraversable
-
-from Products.PageTemplates.tests import util
-from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.PageTemplate import PageTemplate
+from Products.PageTemplates.tests import util
 from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
+from zope.component import provideUtility
+from zope.traversing.adapters import DefaultTraversable
 
 
 class AqPageTemplate(Implicit, PageTemplate):

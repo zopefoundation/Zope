@@ -12,33 +12,34 @@
 ##############################################################################
 """ CGI Response Output formatter
 """
-from io import BytesIO
 import os
 import re
 import struct
 import sys
 import time
 import zlib
+from io import BytesIO
 
 from six import class_types
 from six import PY2
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
-from zope.event import notify
-from zExceptions import (
-    BadRequest,
-    HTTPRedirection,
-    InternalError,
-    NotFound,
-    Redirect,
-    status_reasons,
-    Unauthorized,
-)
+
+from zExceptions import BadRequest
+from zExceptions import HTTPRedirection
+from zExceptions import InternalError
+from zExceptions import NotFound
+from zExceptions import Redirect
+from zExceptions import status_reasons
+from zExceptions import Unauthorized
 from zExceptions.ExceptionFormatter import format_exception
-from ZPublisher.BaseResponse import BaseResponse
-from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
+from zope.event import notify
 from ZPublisher import pubevents
+from ZPublisher.BaseResponse import BaseResponse
+from ZPublisher.Iterators import IStreamIterator
+from ZPublisher.Iterators import IUnboundStreamIterator
+
 
 try:
     from html import escape

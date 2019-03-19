@@ -21,7 +21,9 @@ For an implementation example, see the File class in OFS/Image.py.
 
 import re
 import sys
+
 from zope.interface import Interface
+
 
 WHITESPACE = re.compile(r'\s*', re.MULTILINE)
 

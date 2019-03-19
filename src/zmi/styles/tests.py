@@ -1,7 +1,7 @@
+import Testing.ZopeTestCase
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
 from Testing.ZopeTestCase.placeless import zcml
 from zope.security.management import endInteraction
-import Testing.ZopeTestCase
 
 
 basic_auth = "{0.user_name}:{0.user_password}".format(Testing.ZopeTestCase)

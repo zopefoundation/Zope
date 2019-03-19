@@ -16,16 +16,16 @@
 These directives are specific to Five and have no equivalents outside of it.
 """
 
+import glob
 import logging
 import os
-import glob
 import sys
 
 from App.config import getConfiguration
+from Products.Five.browser.metaconfigure import page
 from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
-from Products.Five.browser.metaconfigure import page
 
 if sys.version_info >= (3, ):
     basestring = str

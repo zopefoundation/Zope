@@ -6,6 +6,7 @@ from six import PY3
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
 
+
 path = os.path.dirname(__file__)
 
 
