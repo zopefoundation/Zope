@@ -13,20 +13,20 @@
 """DTML Document objects.
 """
 
-from six import binary_type
 from six import PY2
 from six import PY3
+from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from DocumentTemplate.permissions import change_dtml_documents
 from DocumentTemplate.permissions import change_dtml_methods
-from OFS.DTMLMethod import decapitate
 from OFS.DTMLMethod import DTMLMethod
+from OFS.DTMLMethod import decapitate
 from OFS.DTMLMethod import safe_file_data
 from OFS.PropertyManager import PropertyManager
 from zExceptions import ResourceLockedError

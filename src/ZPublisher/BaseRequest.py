@@ -27,8 +27,8 @@ from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent

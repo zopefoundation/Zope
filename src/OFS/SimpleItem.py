@@ -35,15 +35,15 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import Acquired
+from Acquisition import Implicit
 from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.Management import Navigation
 from App.Management import Tabs
-from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from ComputedAttribute import ComputedAttribute
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote

@@ -42,8 +42,8 @@ from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
-from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
+from OFS.Moniker import loadMoniker
 from OFS.subscribers import compatibilityCall
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError

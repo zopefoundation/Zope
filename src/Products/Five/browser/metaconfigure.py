@@ -45,8 +45,8 @@ from zope.component import queryMultiAdapter
 from zope.component.interface import provideInterface
 from zope.component.zcml import handler
 from zope.configuration.exceptions import ConfigurationError
-from zope.interface import classImplements
 from zope.interface import Interface
+from zope.interface import classImplements
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest

@@ -32,8 +32,8 @@ from OFS.interfaces import ITraversable
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse

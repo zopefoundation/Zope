@@ -19,13 +19,13 @@ from Products.PageTemplates.unicodeconflictresolver import \
     PreferredCharsetResolver
 from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import encodingFromXMLPreamble
-from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Testing.makerequest import makerequest
 from Testing.testbrowser import Browser
 from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import installProduct
 from zope.component import provideUtility
 from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 from zope.publisher.http import HTTPCharsets

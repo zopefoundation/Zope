@@ -21,8 +21,8 @@ from AccessControl.owner import UnownableOwner
 from AccessControl.PermissionMapping import aqwrap
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
-from Acquisition import aq_base
 from Acquisition import Implicit
+from Acquisition import aq_base
 from ExtensionClass import Base
 from OFS.metaconfigure import get_registered_packages
 from zExceptions import Redirect

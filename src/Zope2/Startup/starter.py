@@ -18,8 +18,8 @@ import logging
 import sys
 
 from six import PY2
-from ZConfig import ConfigurationError
 
+from ZConfig import ConfigurationError
 from Zope2.Startup.handlers import _name_to_ips
 from zope.event import notify
 from zope.processlifetime import ProcessStarting

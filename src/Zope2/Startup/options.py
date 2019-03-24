@@ -18,7 +18,6 @@ import xml.sax
 from ZConfig.loader import ConfigLoader
 from ZConfig.loader import SchemaLoader
 from ZConfig.schema import SchemaParser
-
 from zope.deferredimport import deprecated
 
 

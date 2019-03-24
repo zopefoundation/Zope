@@ -13,8 +13,8 @@ from AccessControl.SpecialUsers import emergency_user
 from AccessControl.SpecialUsers import nobody
 from AccessControl.SpecialUsers import system
 from AccessControl.User import User  # before SpecialUsers
-from Acquisition import aq_self
 from Acquisition import Implicit
+from Acquisition import aq_self
 from App.config import getConfiguration
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete

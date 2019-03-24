@@ -20,9 +20,9 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base

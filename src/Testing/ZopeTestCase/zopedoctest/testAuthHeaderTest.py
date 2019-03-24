@@ -13,8 +13,8 @@
 """Test for auth_header
 """
 
-from unittest import makeSuite
 from unittest import TestSuite
+from unittest import makeSuite
 
 from Testing.ZopeTestCase import TestCase
 from Testing.ZopeTestCase import zopedoctest

@@ -24,14 +24,14 @@ from io import BytesIO
 from six import text_type
 
 import transaction
-from Testing.ZopeTestCase import folder_name
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import folder_name
 from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from Testing.ZopeTestCase import user_role
-from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
 from Testing.ZopeTestCase.sandbox import AppZapper

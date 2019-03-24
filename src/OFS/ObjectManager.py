@@ -39,10 +39,10 @@ from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import import_export_objects
 from AccessControl.Permissions import view_management_screens
 from AccessControl.ZopeSecurityPolicy import getRoles
+from Acquisition import Implicit
 from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.Common import is_acquired
 from App.config import getConfiguration
 from App.FactoryDispatcher import ProductDispatcher

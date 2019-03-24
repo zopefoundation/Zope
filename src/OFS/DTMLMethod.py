@@ -14,9 +14,9 @@
 """
 import re
 
-from six import binary_type
 from six import PY2
 from six import PY3
+from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
 
@@ -30,8 +30,8 @@ from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
-from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import ParseError
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML

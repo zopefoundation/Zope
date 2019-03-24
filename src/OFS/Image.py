@@ -17,8 +17,8 @@ import struct
 from email.generator import _make_boundary
 from io import BytesIO
 
-from six import binary_type
 from six import PY2
+from six import binary_type
 from six import text_type
 
 import ZPublisher.HTTPRequest

@@ -18,10 +18,10 @@ import unittest
 import transaction
 from AccessControl.SecurityManagement import noSecurityManager
 from Testing.makerequest import makerequest
+from Testing.ZopeTestCase import ZopeLite as Zope2
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import layer
-from Testing.ZopeTestCase import ZopeLite as Zope2
 from zope.interface import implementer
 
 

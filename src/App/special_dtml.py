@@ -20,15 +20,15 @@ import MethodObject
 import Persistence
 import Zope2
 from AccessControl import getSecurityManager
+from Acquisition import Explicit
 from Acquisition import aq_acquire
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Acquisition import Explicit
 from App import Common
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
-from DocumentTemplate.DT_String import _marker
 from DocumentTemplate.DT_String import DTReturn
+from DocumentTemplate.DT_String import _marker
 from DocumentTemplate.DT_String import render_blocks
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict

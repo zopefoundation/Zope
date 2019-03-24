@@ -20,8 +20,8 @@ import time
 import zlib
 from io import BytesIO
 
-from six import class_types
 from six import PY2
+from six import class_types
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
@@ -31,8 +31,8 @@ from zExceptions import HTTPRedirection
 from zExceptions import InternalError
 from zExceptions import NotFound
 from zExceptions import Redirect
-from zExceptions import status_reasons
 from zExceptions import Unauthorized
+from zExceptions import status_reasons
 from zExceptions.ExceptionFormatter import format_exception
 from zope.event import notify
 from ZPublisher import pubevents

@@ -19,8 +19,8 @@ from Testing.ZopeTestCase.placeless import tearDown
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
 from Testing.ZopeTestCase.placeless import zcml
 from zope.component import adapter
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 def setupZCML():

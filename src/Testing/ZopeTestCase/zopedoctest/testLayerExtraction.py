@@ -16,10 +16,10 @@
 from unittest import TestSuite
 
 from Testing import ZopeTestCase
-from Testing.ZopeTestCase import layer
-from Testing.ZopeTestCase import transaction
 from Testing.ZopeTestCase import ZopeDocFileSuite
 from Testing.ZopeTestCase import ZopeDocTestSuite
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import transaction
 
 
 class TestLayer(layer.ZopeLite):

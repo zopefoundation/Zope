@@ -15,8 +15,8 @@
 """
 
 from Products.Five import BrowserView
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 class IOne(Interface):

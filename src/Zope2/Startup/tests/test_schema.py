@@ -19,7 +19,6 @@ import tempfile
 import unittest
 
 import ZConfig
-
 import Zope2.Startup.datatypes
 import ZPublisher.HTTPRequest
 from Zope2.Startup.options import ZopeWSGIOptions

@@ -22,9 +22,9 @@ import time
 from cgi import FieldStorage
 from copy import deepcopy
 
-from six import binary_type
 from six import PY2
 from six import PY3
+from six import binary_type
 from six import string_types
 from six import text_type
 from six.moves.urllib.parse import unquote

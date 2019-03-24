@@ -14,8 +14,8 @@
 import base64
 import logging
 
-from six import binary_type
 from six import PY3
+from six import binary_type
 from six import text_type
 
 import transaction

@@ -27,8 +27,8 @@ import os
 import sys
 import time
 
-from six import exec_
 from six import PY2
+from six import exec_
 
 import App.ProductContext  # NOQA
 import OFS.Application  # NOQA

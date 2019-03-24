@@ -14,10 +14,10 @@
 """
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from ZTUtils.Zope import LazyFilter
-from ZTUtils.Zope import make_hidden_input
-from ZTUtils.Zope import make_query
 from ZTUtils.Zope import SimpleTreeMaker
 from ZTUtils.Zope import TreeMaker
+from ZTUtils.Zope import make_hidden_input
+from ZTUtils.Zope import make_query
 from ZTUtils.Zope import url_query
 
 from .Tree import a2b  # NOQA

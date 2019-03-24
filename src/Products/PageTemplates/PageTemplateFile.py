@@ -34,9 +34,9 @@ from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+from zope.pagetemplate.pagetemplatefile import XML_PREFIX_MAX_LENGTH
 from zope.pagetemplate.pagetemplatefile import meta_pattern
 from zope.pagetemplate.pagetemplatefile import sniff_type
-from zope.pagetemplate.pagetemplatefile import XML_PREFIX_MAX_LENGTH
 
 
 LOG = getLogger('PageTemplateFile')

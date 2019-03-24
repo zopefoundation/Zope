@@ -15,9 +15,9 @@
 
 from Acquisition import aq_acquire
 
-from .Tree import b2a
 from .Tree import TreeMaker
 from .Tree import TreeNode
+from .Tree import b2a
 
 
 class SimpleTreeNode(TreeNode):
