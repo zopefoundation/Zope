@@ -43,7 +43,4 @@ class OrderedFolder(OrderSupport, Folder):
     meta_type = 'Folder (Ordered)'
     zmi_icon = 'far fa-folder zmi-icon-folder-ordered'
 
-    manage_options = (
-        OrderSupport.manage_options +
-        Folder.manage_options[1:]
-    )
+    manage_options = OrderSupport.manage_options + Folder.manage_options[1:]

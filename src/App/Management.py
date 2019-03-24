@@ -29,7 +29,6 @@ from App.interfaces import IJSPaths
 from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from zExceptions import Redirect
 from zope.interface import implementer
 
 
@@ -44,12 +43,12 @@ class Tabs(Base):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('manage_tabs')
+    security.declarePublic('manage_tabs')  # NOQA: D001
     manage_tabs = DTMLFile('dtml/manage_tabs', globals())
 
     manage_options = ()
 
-    security.declarePublic('filtered_manage_options')
+    @security.public
     def filtered_manage_options(self, REQUEST=None):
         result = []
         try:
@@ -64,7 +63,7 @@ class Tabs(Base):
 
             path = d.get('path', None)
             if path is None:
-                    path = d['action']
+                path = d['action']
 
             o = self.restrictedTraverse(path, None)
             if o is None:
@@ -137,6 +136,7 @@ class Tabs(Base):
         out.append(last)
         return '/'.join(out)
 
+
 InitializeClass(Tabs)
 
 
@@ -146,16 +146,18 @@ class Navigation(Base):
 
     security = ClassSecurityInfo()
 
-    security.declareProtected(view_management_screens, 'manage')
+    security.declareProtected(view_management_screens, 'manage')  # NOQA: D001
     manage = DTMLFile('dtml/manage', globals())
 
-    security.declareProtected(view_management_screens, 'manage_menu')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_menu')
     manage_menu = DTMLFile('dtml/menu', globals())
 
-    security.declareProtected(view_management_screens, 'manage_page_footer')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_page_footer')
     manage_page_footer = DTMLFile('dtml/manage_page_footer', globals())
 
-    security.declarePublic('manage_form_title')
+    security.declarePublic('manage_form_title')  # NOQA: D001
     manage_form_title = DTMLFile('dtml/manage_form_title', globals(),
                                  form_title='Add Form',
                                  help_product=None,
@@ -164,7 +166,8 @@ class Navigation(Base):
         varnames=('form_title', 'help_product', 'help_topic'))
 
     _manage_page_header = DTMLFile('dtml/manage_page_header', globals())
-    security.declareProtected(view_management_screens, 'manage_page_header')
+
+    @security.protected(view_management_screens)
     def manage_page_header(self, *args, **kw):
         """manage_page_header."""
         kw['css_urls'] = itertools.chain(
@@ -175,13 +178,14 @@ class Navigation(Base):
             self._get_zmi_additionals('zmi_additional_js_paths'))
         return self._manage_page_header(*args, **kw)
 
-    security.declareProtected(view_management_screens, 'manage_navbar')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_navbar')
     manage_navbar = DTMLFile('dtml/manage_navbar', globals())
 
-    security.declarePublic('zope_copyright')
+    security.declarePublic('zope_copyright')  # NOQA: D001
     zope_copyright = DTMLFile('dtml/copyright', globals())
 
-    security.declarePublic('manage_zmi_logout')
+    @security.public
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""
         p = getattr(REQUEST, '_logout_path', None)
@@ -208,7 +212,7 @@ You have been logged out.
             additionals = (additionals, )
         return additionals
 
+
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.
-
 InitializeClass(Navigation)

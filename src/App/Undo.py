@@ -33,7 +33,7 @@ class UndoSupport(Tabs, Implicit):
         {'label': 'Undo', 'action': 'manage_UndoForm'},
     )
 
-    security.declareProtected(undo_changes, 'manage_UndoForm')
+    security.declareProtected(undo_changes, 'manage_UndoForm')  # NOQA: D001
     manage_UndoForm = DTMLFile(
         'dtml/undo',
         globals(),
@@ -60,7 +60,7 @@ class UndoSupport(Tabs, Implicit):
                 v = default
             return v
 
-    security.declareProtected(undo_changes, 'undoable_transactions')
+    @security.protected(undo_changes)
     def undoable_transactions(self, first_transaction=None,
                               last_transaction=None,
                               PrincipiaUndoBatchSize=None):
@@ -97,7 +97,7 @@ class UndoSupport(Tabs, Implicit):
 
         return r
 
-    security.declareProtected(undo_changes, 'manage_undo_transactions')
+    @security.protected(undo_changes)
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """

@@ -26,16 +26,17 @@ class BindingsUI(Bindings):
         {'label': 'Bindings', 'action': 'ZBindingsHTML_editForm'},
     )
 
-    security.declareProtected(view_management_screens,
+    security.declareProtected(view_management_screens,  # NOQA: D001
                               'ZBindingsHTML_editForm')
     ZBindingsHTML_editForm = DTMLFile('dtml/scriptBindings', globals())
 
-    security.declareProtected('Change bindings', 'ZBindingsHTML_editAction')
+    @security.protected('Change bindings')
     def ZBindingsHTML_editAction(self, REQUEST):
         '''Changes binding names.
         '''
         self.ZBindings_edit(REQUEST)
         message = "Bindings changed."
         return self.manage_main(self, REQUEST, manage_tabs_message=message)
+
 
 InitializeClass(BindingsUI)

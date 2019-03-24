@@ -133,10 +133,12 @@ class PropertyManager(Base):
 
     @security.protected(access_contents_information)
     def valid_property_id(self, id):
-        if (not id or id[:1] == '_' or (id[:3] == 'aq_') or
-                (' ' in id) or
-                hasattr(aq_base(self), id) or
-                escape(id, True) != id):
+        if not id or \
+           id[:1] == '_' or \
+           id[:3] == 'aq_' or \
+           ' ' in id or \
+           hasattr(aq_base(self), id) or \
+           escape(id, True) != id:
             return 0
         return 1
 

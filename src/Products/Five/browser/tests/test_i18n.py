@@ -42,13 +42,15 @@ def test_zpt_i18n():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
+      >>> folder = self.folder  # NOQA: F821
+      >>> http = http  # NOQA: F821
 
     In order to be able to traverse to the PageTemplate view, we need
     a traversable object:
 
       >>> from Products.Five.tests.testing import (
       ... manage_addFiveTraversableFolder)
-      >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+      >>> manage_addFiveTraversableFolder(folder, 'testoid', 'Testoid')
 
     We tell Zope to translate the messages by passing the
     ``Accept-Language`` header which is processed by the

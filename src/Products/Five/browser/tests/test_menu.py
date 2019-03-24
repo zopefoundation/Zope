@@ -38,7 +38,8 @@ def test_menu():
       >>> from zope.browsermenu.menu import getMenu
 
       >>> request = TestRequest()
-      >>> menu = getMenu('testmenu', self.folder, request)
+      >>> folder = self.folder  # NOQA: F821
+      >>> menu = getMenu('testmenu', folder, request)
 
     It should have
 
@@ -91,12 +92,12 @@ def test_menu():
 
     Let's create a manager user account and log in.
 
-      >>> uf = self.folder.acl_users
+      >>> uf = folder.acl_users
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
-      >>> self.login('manager')
+      >>> self.login('manager')  # NOQA: F821
       >>> newInteraction()
 
-      >>> menu = getMenu('testmenu', self.folder, request)
+      >>> menu = getMenu('testmenu', folder, request)
 
     We should get the protected menu items now:
 

@@ -60,10 +60,11 @@ class Product(Base):
     def __init__(self, id):
         self.id = id
 
-    security.declarePublic('Destination')
+    @security.public
     def Destination(self):
         "Return the destination for factory output"
         return self
+
 
 InitializeClass(Product)
 
@@ -116,15 +117,15 @@ class FactoryDispatcher(Implicit):
                 v = v[:v.rfind('/')]
                 self._u = v[:v.rfind('/')]
 
-    security.declarePublic('Destination')
+    @security.public
     def Destination(self):
         "Return the destination for factory output"
         return self.__dict__['_d']  # we don't want to wrap the result!
 
-    security.declarePublic('this')
+    security.declarePublic('this')  # NOQA: D001
     this = Destination
 
-    security.declarePublic('DestinationURL')
+    @security.public
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
         url = getattr(self, '_u', None)

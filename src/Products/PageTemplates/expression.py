@@ -76,8 +76,8 @@ class BoboAwareZopeTraverse(object):
         if call is False:
             return base
 
-        if (getattr(base, '__call__', _marker) is not _marker or
-                callable(base)):
+        if getattr(base, '__call__', _marker) is not _marker or \
+           callable(base):
             base = render(base, econtext)
 
         return base
@@ -96,8 +96,8 @@ class TrustedBoboAwareZopeTraverse(BoboAwareZopeTraverse):
         if call is False:
             return base
 
-        if (getattr(base, '__call__', _marker) is not _marker or
-                isinstance(base, class_types)):
+        if getattr(base, '__call__', _marker) is not _marker or \
+           isinstance(base, class_types):
             return base()
 
         return base

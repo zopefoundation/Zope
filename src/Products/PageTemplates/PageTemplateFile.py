@@ -56,9 +56,11 @@ def guess_type(filename, body):
     return sniff_type(body) or 'text/html'
 
 
-# REFACT: Make this a subclass of zope.pagetemplate.pagetemplatefile.PageTemplateFile
-# That class has been forked off of this code and now we have duplication. They already
-# share a common superclass (zope.pagetemplate.pagetemplate.PageTemplate).
+# REFACT: Make this a subclass of
+# zope.pagetemplate.pagetemplatefile.PageTemplateFile
+# That class has been forked off of this code and now we have duplication.
+# They already share a common superclass
+# zope.pagetemplate.pagetemplate.PageTemplate
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
 
@@ -235,5 +237,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         from ZODB.POSException import StorageError
         raise StorageError("Instance of AntiPersistent class %s "
                            "cannot be stored." % self.__class__.__name__)
+
 
 InitializeClass(PageTemplateFile)

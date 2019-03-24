@@ -135,7 +135,6 @@ def splitport(url):
     return hostname, parsed.port
 
 
-
 @implementer(IBrowserRequest)
 class HTTPRequest(BaseRequest):
     """ Model HTTP request data.
@@ -372,8 +371,8 @@ class HTTPRequest(BaseRequest):
 
         if 'REMOTE_ADDR' in environ:
             self._client_addr = environ['REMOTE_ADDR']
-            if ('HTTP_X_FORWARDED_FOR' in environ and
-                    self._client_addr in trusted_proxies):
+            if 'HTTP_X_FORWARDED_FOR' in environ and \
+               self._client_addr in trusted_proxies:
                 # REMOTE_ADDR is one of our trusted local proxies.
                 # Not really very remote at all.  The proxy can tell us the
                 # IP of the real remote client in the forwarded-for header
@@ -414,8 +413,7 @@ class HTTPRequest(BaseRequest):
             https_environ = environ.get('HTTPS', False)
             if https_environ and https_environ in ('on', 'ON', '1'):
                 protocol = 'https'
-            elif ('SERVER_PORT_SECURE' in environ and
-                  environ['SERVER_PORT_SECURE'] == "1"):
+            elif environ.get('SERVER_PORT_SECURE', None) == 1:
                 protocol = 'https'
             else:
                 protocol = 'http'
@@ -533,9 +531,8 @@ class HTTPRequest(BaseRequest):
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
-            elif (method == 'POST' and
-                  ('content-type' in fs.headers and
-                   'text/xml' in fs.headers['content-type'])):
+            elif (method == 'POST'
+                  and 'text/xml' in fs.headers.get('content-type', '')):
                 # Ye haaa, XML-RPC!
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response = xmlrpc.response(response)
@@ -557,13 +554,10 @@ class HTTPRequest(BaseRequest):
                 if key is None:
                     continue
 
-                if (hasattr(item, 'file') and hasattr(item, 'filename') and
-                        hasattr(item, 'headers')):
-                    if (item.file and
-                        (item.filename is not None
-                         # RFC 1867 says that all fields get a content-type.
-                         # or 'content-type' in map(lower, item.headers.keys())
-                         )):
+                if hasattr(item, 'file') and \
+                   hasattr(item, 'filename') and \
+                   hasattr(item, 'headers'):
+                    if item.file and item.filename is not None:
                         item = FileUpload(item)
                         isFileUpload = 1
                     else:
@@ -583,17 +577,17 @@ class HTTPRequest(BaseRequest):
                 # do a string search, and then we'll check it with
                 # a re search.
 
-                l = key.rfind(':')
-                if l >= 0:
-                    mo = search_type(key, l)
+                delim = key.rfind(':')
+                if delim >= 0:
+                    mo = search_type(key, delim)
                     if mo:
-                        l = mo.start(0)
+                        delim = mo.start(0)
                     else:
-                        l = -1
+                        delim = -1
 
-                    while l >= 0:
-                        type_name = key[l + 1:]
-                        key = key[:l]
+                    while delim >= 0:
+                        type_name = key[delim + 1:]
+                        key = key[:delim]
                         c = get_converter(type_name, None)
 
                         if c is not None:
@@ -606,14 +600,14 @@ class HTTPRequest(BaseRequest):
                             tuple_items[key] = 1
                             flags = flags | SEQUENCE
                         elif (type_name == 'method' or type_name == 'action'):
-                            if l:
+                            if delim:
                                 meth = key
                             else:
                                 meth = item
-                        elif (type_name == 'default_method' or
-                              type_name == 'default_action'):
+                        elif (type_name == 'default_method'
+                              or type_name == 'default_action'):
                             if not meth:
-                                if l:
+                                if delim:
                                     meth = key
                                 else:
                                     meth = item
@@ -629,14 +623,14 @@ class HTTPRequest(BaseRequest):
                         elif has_codec(type_name):
                             character_encoding = type_name
 
-                        l = key.rfind(':')
-                        if l < 0:
+                        delim = key.rfind(':')
+                        if delim < 0:
                             break
-                        mo = search_type(key, l)
+                        mo = search_type(key, delim)
                         if mo:
-                            l = mo.start(0)
+                            delim = mo.start(0)
                         else:
-                            l = -1
+                            delim = -1
 
                 # Filter out special names from form:
                 if key in isCGI_NAMEs or key.startswith('HTTP_'):
@@ -690,7 +684,8 @@ class HTTPRequest(BaseRequest):
                             # Flag potentially unsafe values
                             if converter_type in ('string', 'required', 'text',
                                                   'ustring', 'utext'):
-                                if not isFileUpload and should_be_tainted(item):
+                                if not isFileUpload and \
+                                   should_be_tainted(item):
                                     tainted = taint_string(item)
                             elif converter_type in ('tokens', 'lines',
                                                     'utokens', 'ulines'):
@@ -704,8 +699,9 @@ class HTTPRequest(BaseRequest):
                                     tainted = None
 
                         except Exception:
-                            if (not item and not (flags & DEFAULT) and
-                                    key in defaults):
+                            if not item and \
+                               not (flags & DEFAULT) and \
+                               key in defaults:
                                 item = defaults[key]
                                 if flags & RECORD:
                                     item = getattr(item, attr)
@@ -1028,9 +1024,9 @@ class HTTPRequest(BaseRequest):
 
                         elif isinstance(value, list):
                             # the default value is a list
-                            l = form[key]
-                            if not isinstance(l, list):
-                                l = [l]
+                            val = form[key]
+                            if not isinstance(val, list):
+                                val = [val]
 
                             # First deal with tainted copies
                             if tainted_key in taintedform:
@@ -1055,7 +1051,7 @@ class HTTPRequest(BaseRequest):
                                         try:
                                             for k, v in \
                                                     defitem.__dict__.items():
-                                                for origitem in l:
+                                                for origitem in val:
                                                     if not hasattr(
                                                             origitem, k):
                                                         missesdefault = 1
@@ -1063,11 +1059,11 @@ class HTTPRequest(BaseRequest):
                                         except NestedLoopExit:
                                             break
                                     else:
-                                        if defitem not in l:
+                                        if defitem not in val:
                                             missesdefault = 1
                                             break
                                 if missesdefault:
-                                    tainted = deepcopy(l)
+                                    tainted = deepcopy(val)
                                     for defitem in tdefault:
                                         if isinstance(defitem, record):
                                             for k, v in (
@@ -1091,7 +1087,7 @@ class HTTPRequest(BaseRequest):
                                         # attribute and value in
                                         # the record
 
-                                        for y in l:
+                                        for y in val:
 
                                             # loop through each
                                             # record in the form
@@ -1104,9 +1100,9 @@ class HTTPRequest(BaseRequest):
                                                 setattr(y, k, v)
                                 else:
                                     # x is not a record
-                                    if x not in l:
-                                        l.append(x)
-                            form[key] = l
+                                    if x not in val:
+                                        val.append(x)
+                            form[key] = val
                         else:
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
@@ -1449,8 +1445,8 @@ class HTTPRequest(BaseRequest):
         keys.update(self._lazies)
 
         for key in self.environ.keys():
-            if ((key in isCGI_NAMEs or key[:5] == 'HTTP_') and
-                    (key not in hide_key)):
+            if (key in isCGI_NAMEs or key[:5] == 'HTTP_') and \
+               (key not in hide_key):
                 keys[key] = 1
 
         # Cache URLN and BASEN in self.other.
@@ -1752,7 +1748,7 @@ def parse_cookie(text,
 
     if mo_q:
         # Match quoted correct cookies
-        l = len(mo_q.group(1))
+        c_len = len(mo_q.group(1))
         name = mo_q.group(2)
         value = mo_q.group(3)
 
@@ -1761,14 +1757,14 @@ def parse_cookie(text,
         mo_p = parmre.match(text)
 
         if mo_p:
-            l = len(mo_p.group(1))
+            c_len = len(mo_p.group(1))
             name = mo_p.group(2)
             value = mo_p.group(3)
         else:
             # Broken Cookie without = nor value.
             broken_p = paramlessre.match(text)
             if broken_p:
-                l = len(broken_p.group(1))
+                c_len = len(broken_p.group(1))
                 name = broken_p.group(2)
                 value = ''
             else:
@@ -1777,7 +1773,7 @@ def parse_cookie(text,
     if name not in result:
         result[name] = unquote(value)
 
-    return parse_cookie(text[l:], result)
+    return parse_cookie(text[c_len:], result)
 
 
 class record(object):

@@ -23,7 +23,6 @@ from logging.config import fileConfig
 from paste.deploy import loadapp
 from paste.deploy import loadserver
 
-
 try:
     import configparser
 except ImportError:
@@ -215,6 +214,7 @@ and then use %(http_port)s in your config files.
 def main(argv=sys.argv, quiet=False):
     command = ServeCommand(argv, quiet=quiet)
     return command.run()
+
 
 if __name__ == '__main__':
     sys.exit(main() or 0)

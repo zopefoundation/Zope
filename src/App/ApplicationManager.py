@@ -78,6 +78,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
             return self[name]
         return getattr(self, name)
 
+
 InitializeClass(DatabaseChooser)
 
 

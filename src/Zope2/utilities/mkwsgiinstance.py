@@ -31,14 +31,10 @@ import os
 import subprocess
 import sys
 
+from six.moves import input
+from six.moves.configparser import RawConfigParser
+
 from . import copyzopeskel
-
-
-if sys.version_info > (3, ):
-    raw_input = input
-    from configparser import RawConfigParser
-else:
-    from ConfigParser import RawConfigParser
 
 
 def main():
@@ -121,8 +117,9 @@ def main():
     pythonexe = os.path.join(exedir, 'python.exe')
     pythonwexe = os.path.join(exedir, 'pythonw.exe')
 
-    if (os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
-            (python in [pythonwexe, pythonexe])):
+    if os.path.isfile(pythonwexe) and \
+       os.path.isfile(pythonexe) and \
+       python in [pythonwexe, pythonexe]:
         # we're using a Windows build with both python.exe and pythonw.exe
         # in the same directory
         PYTHON = pythonexe
@@ -160,7 +157,7 @@ def get_skeltarget():
     print('Zope "instance home" files such as database files, configuration')
     print('files, etc.\n')
     while 1:
-        skeltarget = raw_input("Directory: ").strip()
+        skeltarget = input("Directory: ").strip()
         if skeltarget == '':
             print('You must specify a directory')
             continue
@@ -174,7 +171,7 @@ def get_inituser():
     print('Please choose a username and password for the initial user.')
     print('These will be the credentials you use to initially manage')
     print('your new Zope instance.\n')
-    user = raw_input("Username: ").strip()
+    user = input("Username: ").strip()
     if user == '':
         return None, None
     while 1:
@@ -193,12 +190,7 @@ def write_inituser(fn, user, password):
     from hashlib import sha1 as sha
     pw = binascii.b2a_base64(sha(password.encode('utf-8')).digest())[:-1]
     with open(fn, "wb") as fp:
-        fp.write(
-            user.encode('utf-8') +
-            b':{SHA}' +
-            pw +
-            b'\n'
-        )
+        fp.write(user.encode('utf-8') + b':{SHA}' + pw + b'\n')
     os.chmod(fn, 0o644)
 
 

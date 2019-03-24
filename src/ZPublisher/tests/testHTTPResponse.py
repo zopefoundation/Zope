@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import traceback
 import unittest
 from io import BytesIO
@@ -782,8 +781,8 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
-                         b'<?xml version="1.0" encoding="latin1" ?>\n' +
-                         ELEMENT.encode('latin-1'))
+                         b'<?xml version="1.0" encoding="latin1" ?>\n'
+                         + ELEMENT.encode('latin-1'))
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test_quoteHTML(self):

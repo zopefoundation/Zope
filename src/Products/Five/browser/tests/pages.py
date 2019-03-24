@@ -104,19 +104,20 @@ class ProtectedView(object):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('public_method')
+    @security.public
     def public_method(self):
         """Docstring"""
         return u'PUBLIC'
 
-    security.declareProtected('View', 'protected_method')
+    @security.protected('View')
     def protected_method(self):
         """Docstring"""
         return u'PROTECTED'
 
-    security.declarePrivate('private_method')
+    @security.private
     def private_method(self):
         """Docstring"""
         return u'PRIVATE'
+
 
 InitializeClass(ProtectedView)

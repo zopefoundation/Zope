@@ -27,7 +27,7 @@ class TestLayer(layer.ZopeLite):
     If the layer is extracted properly, we should see the following
     variable
 
-    >>> getattr(self.app, 'LAYER_EXTRACTED', False)
+    >>> getattr(self.app, 'LAYER_EXTRACTED', False)  # NOQA: F821
     True
     """
 

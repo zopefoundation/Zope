@@ -41,7 +41,8 @@ class Script(SimpleItem, BindingsUI):
 
     _Bindings_ns_class = TemplateDict
 
-    security.declareProtected(view_management_screens, 'ZScriptHTML_tryForm')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'ZScriptHTML_tryForm')
     ZScriptHTML_tryForm = DTMLFile('dtml/scriptTry', globals())
 
     def ZScriptHTML_tryAction(self, REQUEST, argvars):
@@ -54,5 +55,6 @@ class Script(SimpleItem, BindingsUI):
         raise Redirect("%s?%s" % (REQUEST['URL1'], '&'.join(vv)))
 
     from .Signature import _setFuncSignature
+
 
 InitializeClass(Script)

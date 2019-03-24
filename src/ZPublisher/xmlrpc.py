@@ -162,7 +162,7 @@ class Response(object):
                     (body,), methodresponse=1, allow_none=True)
             except ConflictError:
                 raise
-            except:
+            except Exception:
                 self.exception()
                 return
         # Set our body to the XML-RPC message, and fix our MIME type.

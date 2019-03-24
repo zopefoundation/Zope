@@ -15,7 +15,6 @@
 
 import sys
 
-from six import binary_type
 from six import text_type
 
 import ZPublisher
@@ -39,6 +38,7 @@ class DefaultUnicodeEncodingConflictResolver(object):
         if isinstance(text, text_type):
             return text
         return text.decode('ascii')
+
 
 DefaultUnicodeEncodingConflictResolver = \
     DefaultUnicodeEncodingConflictResolver()

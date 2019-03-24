@@ -33,14 +33,14 @@ class FuncCode(object):
     def __eq__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) ==
-                (other.co_argcount, other.co_varnames))
+        return (self.co_argcount, self.co_varnames) == \
+               (other.co_argcount, other.co_varnames)
 
     def __lt__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) <
-                (other.co_argcount, other.co_varnames))
+        return (self.co_argcount, self.co_varnames) < \
+               (other.co_argcount, other.co_varnames)
 
 
 def _getPath(home, prefix, name, suffixes):
@@ -151,6 +151,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
 
 _modules = {}  # cache
 
+
 def getObject(module, name, reload=0):
     # The use of _modules here is not thread safe, however, there is
     # no real harm in a race condition here.  If two threads
@@ -180,7 +181,7 @@ def getObject(module, name, reload=0):
             execsrc = f.read()
     except Exception:
         raise NotFound("The specified module, '%s', "
-                        "couldn't be opened." % module)
+                       "couldn't be opened." % module)
     module_dict = {}
     exec_(execsrc, module_dict)
 

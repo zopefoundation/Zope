@@ -22,8 +22,7 @@ _zope_version = None
 
 ZopeVersion = collections.namedtuple(
     "ZopeVersion",
-    ["major", "minor", "micro", "status", "release"]
-    )
+    ["major", "minor", "micro", "status", "release"])
 
 
 def _prep_version_data():
@@ -43,15 +42,13 @@ def _prep_version_data():
             int(version_dict.get('minor') or -1),
             int(version_dict.get('micro') or -1),
             version_dict.get('status') or '',
-            int(version_dict.get('release') or -1),
-            )
-        
-        
+            int(version_dict.get('release') or -1))
 
 
 def version_txt():
     _prep_version_data()
     return '(%s)' % _version_string
+
 
 def getZopeVersion():
     """return information about the Zope version as a named tuple.

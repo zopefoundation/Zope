@@ -24,8 +24,7 @@ class Test(unittest.TestCase):
     def test_major(self):
         self.assertEqual(
             getZopeVersion().major,
-            int(get_distribution("Zope").version.split(".")[0])
-            )
+            int(get_distribution("Zope").version.split(".")[0]))
 
     def test_types(self):
         zv = getZopeVersion()

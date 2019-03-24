@@ -22,10 +22,10 @@ from Testing.ZopeTestCase import ZopeDocTestSuite
 def setUp(self):
     '''This method will run after the test_class' setUp.
 
-    >>> 'object' in folder.objectIds()
+    >>> 'object' in self.folder.objectIds()  # NOQA: F821
     True
 
-    >>> foo
+    >>> foo  # NOQA: F821
     1
     '''
     self.folder.manage_addFolder('object', '')

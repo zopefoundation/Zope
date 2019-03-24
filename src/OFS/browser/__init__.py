@@ -16,7 +16,7 @@ from Products.Five import BrowserView
 
 class StandardErrorMessageView(BrowserView):
     """ View rendered on SiteError.
-    
+
     Requires a DTML Method named ``standard_error_message``
     """
 

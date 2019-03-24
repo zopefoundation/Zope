@@ -469,8 +469,8 @@ class PropertySheets(Traversable, Implicit, Tabs):
     @security.protected(access_contents_information)
     def get(self, name, default=None):
         for propset in self.__propsets__():
-            if propset.id == name or (hasattr(propset, 'xml_namespace') and
-                                      propset.xml_namespace() == name):
+            if propset.id == name or \
+               getattr(propset, 'xml_namespace', None) == name:
                 return propset.__of__(self)
         return default
 

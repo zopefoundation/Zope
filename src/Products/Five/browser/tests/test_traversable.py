@@ -26,6 +26,8 @@ def test_traversable():
       >>> import Products.Five
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
+      >>> folder = self.folder  # NOQA: F821
+      >>> http = http  # NOQA: F821
 
     ``SimpleContent`` is a traversable class by default.  Its fallback
     traverser should raise NotFound when traversal fails.  (Note: If
@@ -35,7 +37,7 @@ def test_traversable():
 
       >>> from Products.Five.tests.testing.simplecontent import (
       ... manage_addSimpleContent)
-      >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+      >>> manage_addSimpleContent(folder, 'testoid', 'Testoid')
       >>> print(http(r'''
       ... GET /test_folder_1_/testoid/doesntexist HTTP/1.1
       ... '''))
@@ -82,7 +84,7 @@ def test_traversable():
 
       >>> from Products.Five.tests.testing.fancycontent import (
       ... manage_addFancyContent)
-      >>> info = manage_addFancyContent(self.folder, 'fancy', '')
+      >>> info = manage_addFancyContent(folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
     kick in:
@@ -140,8 +142,8 @@ def test_traversable():
       >>> from Products.Five.tests.testing.fancycontent import (
       ... manage_addNonTraversableFancyContent)
       >>> info = manage_addNonTraversableFancyContent(
-      ...     self.folder, 'fancy_zope2', '')
-      >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
+      ...     folder, 'fancy_zope2', '')
+      >>> folder.fancy_zope2.an_attribute = 'This is an attribute'
       >>> print(http(r'''
       ... GET /test_folder_1_/fancy_zope2/an_attribute HTTP/1.1
       ... '''))
@@ -153,7 +155,7 @@ def test_traversable():
     value 'This is an attribute'.  Let's make sure the same thing happens for
     an object that has been marked traversable by Five:
 
-      >>> self.folder.fancy.an_attribute = 'This is an attribute'
+      >>> folder.fancy.an_attribute = 'This is an attribute'
       >>> print(http(r'''
       ... GET /test_folder_1_/fancy/an_attribute HTTP/1.1
       ... '''))
@@ -218,18 +220,20 @@ def test_view_doesnt_shadow_attribute():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
+      >>> folder = self.folder  # NOQA: F821
+      >>> http = http  # NOQA: F821
 
     Then we create a traversable folder...
 
       >>> from Products.Five.tests.testing.folder import (
       ... manage_addFiveTraversableFolder)
-      >>> manage_addFiveTraversableFolder(self.folder, 'ftf')
+      >>> manage_addFiveTraversableFolder(folder, 'ftf')
 
     and add an object called ``eagle`` to it:
 
       >>> from Products.Five.tests.testing.simplecontent import (
       ... manage_addIndexSimpleContent)
-      >>> manage_addIndexSimpleContent(self.folder.ftf, 'eagle', 'Eagle')
+      >>> manage_addIndexSimpleContent(folder.ftf, 'eagle', 'Eagle')
 
     When we publish the ``ftf/eagle`` now, we expect the attribute to
     take precedence over the view during traversal:
@@ -274,7 +278,7 @@ def test_view_doesnt_shadow_attribute():
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
-      >>> manage_addIndexSimpleContent(self.folder, 'mouse', 'Mouse')
+      >>> manage_addIndexSimpleContent(folder, 'mouse', 'Mouse')
       >>> print(http(r'''
       ... GET /test_folder_1_/ftf/mouse HTTP/1.1
       ... '''))

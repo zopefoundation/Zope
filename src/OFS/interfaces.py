@@ -411,7 +411,7 @@ class ILockItem(Interface):
            of 'Seconds-nnn' where nnn is an integer.  The timeout value
            MUST be less than (2^32)-1.  *IF* timeout is the string value
            'Infinite', the timeout value will be set to 1800 (30 minutes).
-           (Timeout is the value in seconds from creation\modification
+           (Timeout is the value in seconds from creation/modification
            time until the lock MAY time out).
 
          - **locktype** not in set {'write'} *this may expand later*

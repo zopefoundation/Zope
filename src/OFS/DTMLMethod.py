@@ -94,10 +94,9 @@ class DTMLMethod(
             'label': 'Proxy',
             'action': 'manage_proxyForm',
         },
-    ) +
-        RoleManager.manage_options
-        + Item_w__name__.manage_options
-        + Cacheable.manage_options
+    ) + RoleManager.manage_options
+      + Item_w__name__.manage_options
+      + Cacheable.manage_options
     )
 
     # More reasonable default for content-type for http HEAD requests.
@@ -120,8 +119,8 @@ class DTMLMethod(
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:
-                if (IStreamIterator.isImplementedBy(data) and
-                        RESPONSE is not None):
+                if IStreamIterator.isImplementedBy(data) and \
+                   RESPONSE is not None:
                     # This is a stream iterator and we need to set some
                     # headers now before giving it to medusa
                     headers_get = RESPONSE.headers.get
@@ -129,10 +128,10 @@ class DTMLMethod(
                     if headers_get('content-length', None) is None:
                         RESPONSE.setHeader('content-length', len(data))
 
-                    if (headers_get('content-type', None) is None and
-                            headers_get('Content-type', None) is None):
-                        ct = (self.__dict__.get('content_type') or
-                              self.default_content_type)
+                    if headers_get('content-type', None) is None and \
+                       headers_get('Content-type', None) is None:
+                        ct = (self.__dict__.get('content_type')
+                              or self.default_content_type)
                         RESPONSE.setHeader('content-type', ct)
 
                 # Return cached results.
@@ -309,7 +308,7 @@ class DTMLMethod(
                 self, REQUEST,
                 manage_tabs_message='No file specified',
                 manage_tabs_type='warning')
-        
+
         self.munge(safe_file_data(file))
         self.ZCacheable_invalidate()
         if REQUEST is not None:
@@ -387,7 +386,7 @@ class DTMLMethod(
 
 InitializeClass(DTMLMethod)
 
-token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
+token = r"[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
 hdr_start = re.compile(r'(%s):(.*)' % token).match
 
 

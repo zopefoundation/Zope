@@ -137,18 +137,19 @@ class FindSupport(Base):
             else:
                 pss = st = ''
 
-            if ((not obj_ids or absattr(bs.getId()) in obj_ids) and
-                (not obj_metatypes or (hasattr(bs, 'meta_type') and
-                 bs.meta_type in obj_metatypes)) and
-                (not obj_searchterm or
-                 (hasattr(ob, 'PrincipiaSearchSource') and
-                  obj_searchterm in pss) or
-                 (hasattr(ob, 'SearchableText') and obj_searchterm in st)
-                 ) and
-                (not obj_expr or expr_match(ob, obj_expr)) and
-                (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec)) and
-                ((not obj_permission or not obj_roles) or
-                 role_match(ob, obj_permission, obj_roles))):
+            if ((not obj_ids or absattr(bs.getId()) in obj_ids)
+                and (not obj_metatypes
+                     or (hasattr(bs, 'meta_type')
+                         and bs.meta_type in obj_metatypes))
+                and (not obj_searchterm
+                     or (hasattr(ob, 'PrincipiaSearchSource')
+                         and obj_searchterm in pss)
+                     or (hasattr(ob, 'SearchableText')
+                         and obj_searchterm in st))
+                and (not obj_expr or expr_match(ob, obj_expr))
+                and (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec))
+                and ((not obj_permission or not obj_roles)
+                     or role_match(ob, obj_permission, obj_roles))):
 
                 if apply_func:
                     apply_func(ob, (apply_path + '/' + p))

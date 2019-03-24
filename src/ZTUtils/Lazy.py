@@ -42,14 +42,14 @@ class Lazy(object):
         # This is a worst-case len, subclasses should try to do better
         if self._len is not _marker:
             return self._len
-        l = len(self._data)
+        dl = len(self._data)
         while 1:
             try:
-                self[l]
-                l = l + 1
+                self[dl]
+                dl += 1
             except Exception:
-                self._len = l
-                return l
+                self._len = dl
+                return dl
 
     def __add__(self, other):
         if not isinstance(other, Lazy):
@@ -163,14 +163,14 @@ class LazyCat(Lazy):
         # of its underlying sequences
         if self._len is not _marker:
             return self._len
-        l = 0
+        ld = 0
         try:
             for s in self._seq:
-                l += len(s)
+                ld += len(s)
         except AttributeError:
-            l = len(self._data)
-        self._len = l
-        return l
+            ld = len(self._data)
+        self._len = ld
+        return ld
 
 
 class LazyMap(Lazy):

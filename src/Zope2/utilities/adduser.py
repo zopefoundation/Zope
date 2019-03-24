@@ -42,5 +42,6 @@ def main(argv=sys.argv):
         print("Maybe the user already exists and nothing is done then.")
         print("Or the implementation does not give info when it succeeds.")
 
+
 if __name__ == '__main__':
     main()

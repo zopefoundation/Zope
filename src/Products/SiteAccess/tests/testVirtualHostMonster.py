@@ -100,7 +100,7 @@ class VHMRegressions(unittest.TestCase):
 
     def testWildcardRewrite(self):
         ob = self.traverse('/VirtualHostBase/http/doc.example.com:80'
-                      '/folder/*/VirtualHostRoot')
+                           '/folder/*/VirtualHostRoot')
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://doc.example.com/')
         self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
@@ -146,6 +146,7 @@ for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
 
     setattr(VHMRegressions, 'testTraverse%s' % i, test)
 
+
 class VHMPort(unittest.TestCase):
 
     def setUp(self):
@@ -154,7 +155,7 @@ class VHMPort(unittest.TestCase):
         from Testing.ZopeTestCase.ZopeLite import app
         transaction.begin()
         self.app = makerequest(app())
-        if 'virtual_hosting' not in  self.app.objectIds():
+        if 'virtual_hosting' not in self.app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
             from Products.SiteAccess.VirtualHostMonster \

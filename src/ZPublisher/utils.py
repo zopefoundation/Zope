@@ -23,6 +23,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 
 
+
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
 
@@ -39,8 +40,7 @@ def recordMetaData(object, request):
             to_append = (object.__name__,)
             object = object.__self__
 
-        while (object is not None and
-               not hasattr(object, 'getPhysicalPath')):
+        while object is not None and not hasattr(object, 'getPhysicalPath'):
             if getattr(object, '__name__', None) is None:
                 object = None
                 break

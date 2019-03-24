@@ -67,9 +67,10 @@ class Test_TreeNode(unittest.TestCase):
     def test_walk_empty(self):
         node = self._makeOne()
         _called_with = []
-        datum = object()
+
         def _func(a_node, data=None):
             _called_with.append((a_node, data))
+
         node.walk(_func)
         self.assertEqual(_called_with, [(node, None)])
 
@@ -81,8 +82,10 @@ class Test_TreeNode(unittest.TestCase):
         child._add_child(grand)
         _called_with = []
         datum = object()
+
         def _func(a_node, data):
             _called_with.append((a_node, data))
+
         node.walk(_func, datum)
         self.assertEqual(
             _called_with,

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import unittest
 from logging import getLogger
 
@@ -504,8 +505,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # in skel/import. Tolerate both cases.
         self.assertIsInstance(om.list_imports(), list)
         for filename in om.list_imports():
-            self.assertTrue(filename.endswith('.zexp') or
-                            filename.endswith('.xml'))
+            self.assertTrue(os.path.splitext(filename)[1] in ('.zexp', '.xml'))
 
     def test_manage_get_sortedObjects_quote_id(self):
         # manage_get_sortedObjects now returns a urlquoted version
@@ -518,6 +518,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], hash_id)
         self.assertEqual(result[0]['quoted_id'], quote(hash_id))
+
 
 _marker = object()
 

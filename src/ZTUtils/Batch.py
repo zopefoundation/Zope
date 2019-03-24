@@ -36,8 +36,8 @@ class LazyNextBatch(Base):
 
 class LazySequenceLength(Base):
     def __of__(self, parent):
-        parent.sequence_length = l = len(parent._sequence)
-        return l
+        parent.sequence_length = psl = len(parent._sequence)
+        return psl
 
 
 class Batch(Base):

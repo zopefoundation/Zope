@@ -63,6 +63,7 @@ class TreeNode(Explicit):
     def __len__(self):
         return len(self._child_list)
 
+
 _marker = []
 
 
@@ -163,7 +164,6 @@ class TreeMaker(object):
     def node(self, object):
         node = TreeNode()
         node.object = object
-        obid = self.getId(object)
         node.id = b2a(self.getId(object))
         return node
 
@@ -191,8 +191,7 @@ class TreeMaker(object):
             return self._values_function(object)
 
         children = getattr(object, self._values)
-        if not (isinstance(children, list) or
-                isinstance(children, tuple)):
+        if not isinstance(children, (list, tuple)):
             # Assume callable; result not useful anyway otherwise.
             children = children()
 
@@ -229,6 +228,7 @@ class TreeMaker(object):
 
 
 _SIMPLE_TYPES = set([type(u''), type(b''), type(0), type(0.0), type(None)])
+
 
 def simple_type(ob):
     return type(ob) in _SIMPLE_TYPES
@@ -271,7 +271,7 @@ def encodeExpansion(nodes, compress=1):
         last_depth = node.depth
         if dd > 0:
             steps.append('_' * dd)
-        steps.append(node.id) # id is bytes
+        steps.append(node.id)  # id is bytes
         node.expansion_number = n
     result = b':'.join(steps)
     if compress and len(result) > 2:

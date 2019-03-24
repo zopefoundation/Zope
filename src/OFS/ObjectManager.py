@@ -237,8 +237,8 @@ class ObjectManager(
 
         # Look at all globally visible meta types.
         for entry in getattr(Products, 'meta_types', ()):
-            if ((interfaces is not None) or
-                    (entry.get("visibility", None) == "Global")):
+            if interfaces is not None or \
+               entry.get("visibility", None) == "Global":
                 external_candidates.append(entry)
 
         # Filter the list of external candidates based on the
@@ -322,10 +322,10 @@ class ObjectManager(
         # This doesn't try to be more intelligent than _getOb, and doesn't
         # consult _objects (for performance reasons). The common use case
         # is to check that an object does *not* exist.
-        if (id in ('.', '..') or
-                id.startswith('_') or
-                id.startswith('aq_') or
-                id.endswith('__')):
+        if id in ('.', '..') or \
+           id.startswith('_') or \
+           id.startswith('aq_') or \
+           id.endswith('__'):
             return False
         return getattr(aq_base(self), id, None) is not None
 
@@ -513,8 +513,7 @@ class ObjectManager(
                     try:
                         id = i['id']
                         physicalPath = relativePhysicalPath + (id,)
-                        if ((physicalPath not in seen) and
-                                (i['meta_type'] in t)):
+                        if physicalPath not in seen and i['meta_type'] in t:
                             vals.append(get(id))
                             seen[physicalPath] = 1
                     except Exception:
@@ -743,8 +742,8 @@ class ObjectManager(
             if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
                 all_files = copy.copy(files)
                 for f in files:
-                    if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
-                            f[1].isPrincipiaFolderish):
+                    if hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and \
+                       f[1].isPrincipiaFolderish:
                         all_files.extend(findChildren(f[1]))
                 files = all_files
 
@@ -756,8 +755,8 @@ class ObjectManager(
 
             files.sort()
 
-            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
-                    self.isTopLevelPrincipiaApplicationObject):
+            if not hasattr(self, 'isTopLevelPrincipiaApplicationObject') and \
+               self.isTopLevelPrincipiaApplicationObject:
                 files.insert(0, ('..', aq_parent(self)))
             files.insert(0, ('.', self))
             for k, v in files:
@@ -782,8 +781,8 @@ class ObjectManager(
             mode = 0o0040000
             from AccessControl.User import nobody
             # check to see if we are acquiring our objectValues or not
-            if not (len(REQUEST.PARENTS) > 1 and
-                    self.objectValues() == REQUEST.PARENTS[1].objectValues()):
+            if not len(REQUEST.PARENTS) > 1 and \
+               self.objectValues() == REQUEST.PARENTS[1].objectValues():
                 try:
                     if getSecurityManager().validate(
                             None, self, 'manage_FTPlist', self.manage_FTPlist):
@@ -816,8 +815,7 @@ class ObjectManager(
         request = getattr(self, 'REQUEST', None)
         if not (isinstance(request, str) or request is None):
             method = request.get('REQUEST_METHOD', 'GET')
-            if (request.maybe_webdav_client and
-                    method not in ('GET', 'POST')):
+            if request.maybe_webdav_client and method not in ('GET', 'POST'):
                 if bbb.HAS_ZSERVER:
                     from webdav.NullResource import NullResource
                     return NullResource(self, key, request).__of__(self)
@@ -944,8 +942,8 @@ def findChildren(obj, dirname=''):
 
     lst = []
     for name, child in obj.objectItems():
-        if (hasattr(aq_base(child), 'isPrincipiaFolderish') and
-                child.isPrincipiaFolderish):
+        if hasattr(aq_base(child), 'isPrincipiaFolderish') and \
+           child.isPrincipiaFolderish:
             lst.extend(findChildren(child, dirname + obj.id + '/'))
         else:
             lst.append((dirname + obj.id + "/" + name, child))

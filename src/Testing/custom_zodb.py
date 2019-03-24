@@ -33,4 +33,5 @@ def getStorage():
         LOG.info('Using DemoStorage')
         return DemoStorage()
 
+
 Storage = getStorage()

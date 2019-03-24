@@ -82,6 +82,7 @@ def _exec(cmd):
         exec_(cmd)
         _print('(%.3fs)' % (time.time() - start))
 
+
 _write('Loading Zope, please stand by ')
 _start = time.time()
 
@@ -113,6 +114,7 @@ def _configure_client_cache():
     config = App.config.getConfiguration()
     config.zeo_client_name = None
     App.config.setConfiguration(config)
+
 
 _configure_logging()
 _configure_debug_mode()
@@ -159,6 +161,7 @@ def _apply_patches():
     global _patched
     _patched = True
 
+
 _apply_patches()
 
 _theApp = None
@@ -168,6 +171,7 @@ _theApp = None
 def _startup():
     global _theApp
     _theApp = Zope2.app()
+
 
 # Start ZopeLite
 _startup()
@@ -243,6 +247,7 @@ def _installPackage(name, quiet=0):
             if not quiet:
                 _print('Installing %s ... NOT FOUND\n' % name)
 
+
 installProduct('OFSP', 1)
 
 # So people can use ZopeLite.app()
@@ -255,6 +260,7 @@ configure = Zope2.Startup.run.configure_wsgi
 def startup():
     pass
 
+
 Zope = Zope2
 active = _patched
 
@@ -266,5 +272,6 @@ def sandbox(base=None):
         base = Zope2.DB
     storage = DemoStorage(base=base._storage)
     return ZODB.DB(storage)
+
 
 _write(' done (%.3fs)\n' % (time.time() - _start))

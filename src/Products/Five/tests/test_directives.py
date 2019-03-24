@@ -58,7 +58,7 @@ def test_directives():
 
     Check the result of the <class> directives
 
-      >>> from Products.Five.tests.classes import One, Two, IOne, ITwo
+      >>> from Products.Five.tests.classes import One, IOne, ITwo
       >>> IOne.implementedBy(One)
       True
       >>> ITwo.implementedBy(One)

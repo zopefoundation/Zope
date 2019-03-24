@@ -14,7 +14,6 @@
 """
 
 import os
-import sys
 
 from six import binary_type
 from six import text_type
@@ -39,12 +38,12 @@ from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
-from Products.PageTemplates.utils import charsetFromMetaEquiv
 from Products.PageTemplates.utils import convertToUnicode
 from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zExceptions import ResourceLockedError
+
 
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
@@ -67,6 +66,7 @@ class Src(Explicit):
     def __call__(self, REQUEST, RESPONSE):
         " "
         return self.document_src(REQUEST)
+
 
 InitializeClass(Src)
 
@@ -104,8 +104,8 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
     security.declareObjectProtected(view)
 
     # protect methods from base class(es)
-    security.declareProtected(view, '__call__')
-    security.declareProtected(view_management_screens,
+    security.declareProtected(view, '__call__')  # NOQA: D001
+    security.declareProtected(view_management_screens,  # NOQA: D001
                               'read', 'ZScriptHTML_tryForm')
 
     def __init__(self, id, text=None, content_type='text/html', strict=True,
@@ -121,12 +121,12 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             content_type = 'text/html'
         self.pt_edit(text, content_type)
 
-    security.declareProtected(change_page_templates, 'pt_edit')
+    @security.protected(change_page_templates)
     def pt_edit(self, text, content_type, keep_output_encoding=False):
         if not isinstance(text, text_type):
-            text_decoded, source_encoding = convertToUnicode(text,
-                                               content_type,
-                                               preferred_encodings)
+            (text_decoded,
+             source_encoding) = convertToUnicode(text, content_type,
+                                                 preferred_encodings)
             output_encoding = source_encoding
         else:
             text_decoded = text
@@ -149,7 +149,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
     source_dot_xml = Src()
 
-    security.declareProtected(change_page_templates, 'pt_editAction')
+    @security.protected(change_page_templates)
     def pt_editAction(self, REQUEST, title, text, content_type, expand=0):
         """Change the title and document."""
 
@@ -171,7 +171,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
                        % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
 
-    security.declareProtected(change_page_templates, 'pt_setTitle')
+    @security.protected(change_page_templates)
     def pt_setTitle(self, title, encoding='utf-8'):
         if not isinstance(title, text_type):
             title = title.decode(encoding)
@@ -182,7 +182,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         PropertyManager._setPropValue(self, id, value)
         self.ZCacheable_invalidate()
 
-    security.declareProtected(change_page_templates, 'pt_upload')
+    @security.protected(change_page_templates)
     def pt_upload(self, REQUEST, file='', encoding='utf-8'):
         """Replace the document with the text in file."""
 
@@ -202,9 +202,9 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
 
         if isinstance(text, binary_type):
             content_type = guess_type(filename, text)
-            text, source_encoding = convertToUnicode(text,
-                                               content_type,
-                                               preferred_encodings)
+            (text,
+             source_encoding) = convertToUnicode(text, content_type,
+                                                 preferred_encodings)
         elif isinstance(text, text_type):
             content_type = guess_type(filename, text.encode('utf-8'))
 
@@ -282,7 +282,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             security.removeContext(self)
 
     if bbb.HAS_ZSERVER:
-        security.declareProtected(change_page_templates, 'PUT')
+        @security.protected(change_page_templates)
         def PUT(self, REQUEST, RESPONSE):
             """ Handle HTTP PUT requests """
 
@@ -294,7 +294,8 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             RESPONSE.setStatus(204)
             return RESPONSE
 
-        security.declareProtected(change_page_templates, 'manage_FTPput')
+        security.declareProtected(change_page_templates,  # NOQA: D001
+                                  'manage_FTPput')
         manage_FTPput = PUT
 
         @security.protected(ftp_access)
@@ -303,23 +304,23 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             result = self.read()
             return result.encode(self.output_encoding)
 
-    security.declareProtected(view_management_screens, 'html')
+    @security.protected(view_management_screens)
     def html(self):
         return self.content_type == 'text/html'
 
-    security.declareProtected(view_management_screens, 'get_size')
+    @security.protected(view_management_screens)
     def get_size(self):
         return len(self.read())
 
-    security.declareProtected(view_management_screens, 'getSize')
+    security.declareProtected(view_management_screens, 'getSize')  # NOQA: D001
     getSize = get_size
 
-    security.declareProtected(view_management_screens, 'PrincipiaSearchSource')
+    @security.protected(view_management_screens)
     def PrincipiaSearchSource(self):
         "Support for searching - the document's contents are searched."
         return self.read()
 
-    security.declareProtected(view_management_screens, 'document_src')
+    @security.protected(view_management_screens)
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
         if RESPONSE is not None:
@@ -328,7 +329,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             return self._text
         return self.read()
 
-    security.declareProtected(view, 'pt_source_file')
+    @security.protected(view)
     def pt_source_file(self):
         """Returns a file name to be compiled into the TAL code."""
         try:

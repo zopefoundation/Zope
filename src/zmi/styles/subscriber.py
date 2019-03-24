@@ -20,5 +20,4 @@ def js_paths(context):
         '/++resource++zmi/bootstrap-4.1.1/bootstrap.bundle.min.js',
         '/++resource++zmi/ace.ajax.org/ace.js',
         '/++resource++zmi/zmi_base.js',
-        
     )

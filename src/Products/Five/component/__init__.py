@@ -61,6 +61,7 @@ class LocalSiteHook(ExtensionClass.Base):
     def __call__(self, container, request):
         zope.event.notify(BeforeTraverseEvent(container, request))
 
+
 HOOK_NAME = '__local_site_hook__'
 
 

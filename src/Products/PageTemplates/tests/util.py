@@ -44,8 +44,7 @@ class Bruce(Base):
         return 7
 
     def __getitem__(self, index):
-        if (isinstance(index, int) and
-                (index < 0 or index > 6)):
+        if isinstance(index, int) and (index < 0 or index > 6):
             raise IndexError(index)
         return self
 
@@ -53,6 +52,7 @@ class Bruce(Base):
         if name[:1] == '_':
             raise AttributeError(name)
         return self
+
 
 bruce = Bruce()
 

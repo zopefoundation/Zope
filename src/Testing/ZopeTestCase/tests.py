@@ -23,8 +23,7 @@ suite = unittest.TestSuite()
 
 names = os.listdir(os.path.dirname(__file__))
 tests = [x[:-3] for x in names
-         if x.startswith('test') and x.endswith('.py') and
-         x != 'tests.py']
+         if x.startswith('test') and x.endswith('.py') and x != 'tests.py']
 
 for test in tests:
     m = __import__('Testing.ZopeTestCase.%s' % test)

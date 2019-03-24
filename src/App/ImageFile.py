@@ -121,7 +121,7 @@ class ImageFile(Explicit):
         return filestream_iterator(self.path, mode='rb')
 
     if bbb.HAS_ZSERVER:
-        security.declarePublic('HEAD')
+        @security.public
         def HEAD(self, REQUEST, RESPONSE):
             """ """
             RESPONSE.setHeader('Content-Type', self.content_type)
@@ -134,5 +134,6 @@ class ImageFile(Explicit):
 
     def __str__(self):
         return '<img src="%s" alt="" />' % self.__name__
+
 
 InitializeClass(ImageFile)

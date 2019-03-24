@@ -285,7 +285,7 @@ class TestTraverse(unittest.TestCase):
         self._setupSecurity(UnitTestSecurityPolicy())
         bb = self._makeBoboTraversable()
         self.assertTrue(
-            bb.restrictedTraverse('manufactured') is 42)
+            bb.restrictedTraverse('manufactured') == 42)
 
     def testBoboTraverseToAcquiredObject(self):
         # Verify it's possible to use a __bobo_traverse__ which retrieves
@@ -423,7 +423,7 @@ class TestTraverse(unittest.TestCase):
     def testTraverseToNameStartingWithPlus(self):
         # Verify it's possible to traverse to a name such as +something
         self.assertTrue(
-            self.folder1.unrestrictedTraverse('+something') is 'plus')
+            self.folder1.unrestrictedTraverse('+something') == 'plus')
 
 
 class SimpleClass(object):
@@ -439,7 +439,8 @@ def test_traversable():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> from Testing.makerequest import makerequest
-      >>> self.app = makerequest(self.app)
+      >>> self.app = makerequest(self.app)  # NOQA: F821
+      >>> folder = self.folder  # NOQA: F821
 
     ``SimpleContent`` is a traversable class by default.  Its fallback
     traverser should raise NotFound when traversal fails.  (Note: If
@@ -448,11 +449,10 @@ def test_traversable():
     raises NotFoundError.)
 
       >>> from Products.Five.tests.testing import simplecontent
-      >>> simplecontent.manage_addSimpleContent(self.folder, 'testoid',
-      ...                                       'Testoid')
+      >>> simplecontent.manage_addSimpleContent(folder, 'testoid', 'Testoid')
       >>> from zExceptions import NotFound
       >>> try:
-      ...    self.folder.testoid.unrestrictedTraverse('doesntexist')
+      ...    folder.testoid.unrestrictedTraverse('doesntexist')
       ... except NotFound:
       ...    pass
 
@@ -502,12 +502,12 @@ def test_traversable():
       >>> zcml.load_string(configure_zcml)
 
       >>> from Products.Five.tests.testing import fancycontent
-      >>> info = fancycontent.manage_addFancyContent(self.folder, 'fancy', '')
+      >>> info = fancycontent.manage_addFancyContent(folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
     kick in:
 
-      >>> self.folder.fancy.unrestrictedTraverse('something-else'
+      >>> folder.fancy.unrestrictedTraverse('something-else'
       ...                                       ).index_html({})
       'something-else'
 
@@ -515,23 +515,23 @@ def test_traversable():
     takes over.  Therefore, unless it raises AttributeError or
     KeyError, it will be the only way traversal is done.
 
-      >>> self.folder.fancy.unrestrictedTraverse('fancyview').index_html({})
+      >>> folder.fancy.unrestrictedTraverse('fancyview').index_html({})
       'fancyview'
 
     Note that during publishing, if the original __bobo_traverse__ method
     *does* raise AttributeError or KeyError, we can get normal view look-up.
     In unrestrictedTraverse, we don't. Maybe we should? Needs discussing.
 
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.unrestrictedTraverse(
       ...     'raise-attributeerror')() == 'Fancy, fancy'
       True
 
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.unrestrictedTraverse(
       ...     'raise-keyerror')() == 'Fancy, fancy'
       True
 
       >>> try:
-      ...     self.folder.fancy.unrestrictedTraverse('raise-valueerror')
+      ...     folder.fancy.unrestrictedTraverse('raise-valueerror')
       ... except ValueError:
       ...     pass
 
@@ -542,9 +542,9 @@ def test_traversable():
 
       >>> from Products.Five.tests.testing import fancycontent
       >>> info = fancycontent.manage_addNonTraversableFancyContent(
-      ...                                      self.folder, 'fancy_zope2', '')
-      >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
-      >>> self.folder.fancy_zope2.unrestrictedTraverse(
+      ...                                      folder, 'fancy_zope2', '')
+      >>> folder.fancy_zope2.an_attribute = 'This is an attribute'
+      >>> folder.fancy_zope2.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
       'an_attribute'
 
@@ -552,8 +552,8 @@ def test_traversable():
     value 'This is an attribute'.  Let's make sure the same thing happens for
     an object that has been marked traversable:
 
-      >>> self.folder.fancy.an_attribute = 'This is an attribute'
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.an_attribute = 'This is an attribute'
+      >>> folder.fancy.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
       'an_attribute'
 
@@ -561,7 +561,7 @@ def test_traversable():
     IAcquirer, it should get acquisition-wrapped so we can acquire
     attributes implicitly:
 
-      >>> acquirer = self.folder.unrestrictedTraverse('acquirer')
+      >>> acquirer = folder.unrestrictedTraverse('acquirer')
       >>> acquirer.fancy
       <FancyContent ...>
 
@@ -621,27 +621,28 @@ def test_view_doesnt_shadow_attribute():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
+      >>> folder = self.folder  # NOQA: F821
 
     Then we create a traversable folder...
 
       >>> from Products.Five.tests.testing import folder as ftf
-      >>> ftf.manage_addFiveTraversableFolder(self.folder, 'ftf')
+      >>> ftf.manage_addFiveTraversableFolder(folder, 'ftf')
 
     and add an object called ``eagle`` to it:
 
       >>> from Products.Five.tests.testing import simplecontent
-      >>> simplecontent.manage_addIndexSimpleContent(self.folder.ftf,
+      >>> simplecontent.manage_addIndexSimpleContent(folder.ftf,
       ...                                            'eagle', 'Eagle')
 
     When we publish the ``ftf/eagle`` now, we expect the attribute to
     take precedence over the view during traversal:
 
-      >>> self.folder.ftf.unrestrictedTraverse('eagle').index_html({})
+      >>> folder.ftf.unrestrictedTraverse('eagle').index_html({})
       'Default index_html called'
 
     Of course, unless we explicitly want to lookup the view using @@:
 
-      >>> self.folder.ftf.unrestrictedTraverse(
+      >>> folder.ftf.unrestrictedTraverse(
       ...     '@@eagle')() == 'The eagle has landed'
       True
 
@@ -649,16 +650,16 @@ def test_view_doesnt_shadow_attribute():
     found in OFS.Application, raise NotFound.  Five still knows how to
     deal with this, hence views work there too:
 
-      >>> self.app.unrestrictedTraverse(
-      ...     '@@eagle')() == 'The eagle has landed'
+      >>> res = self.app.unrestrictedTraverse('@@eagle')()  # NOQA: F821
+      >>> res == 'The eagle has landed'
       True
 
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
-      >>> simplecontent.manage_addIndexSimpleContent(self.folder,
+      >>> simplecontent.manage_addIndexSimpleContent(folder,
       ...                                            'mouse', 'Mouse')
-      >>> self.folder.ftf.unrestrictedTraverse(
+      >>> folder.ftf.unrestrictedTraverse(
       ...     'mouse')() == 'The mouse has been eaten by the eagle'
       True
 

@@ -390,8 +390,8 @@ class BaseRequest(object):
 
         # Probably a browser
         no_acquire_flag = 0
-        if (method in ('GET', 'POST', 'PURGE') and
-                not is_xmlrpc_response(response)):
+        if method in ('GET', 'POST', 'PURGE') and \
+           not is_xmlrpc_response(response):
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
@@ -468,9 +468,10 @@ class BaseRequest(object):
                     # This is webdav support. The last object in the path
                     # should not be acquired. Instead, a NullResource should
                     # be given if it doesn't exist:
-                    if (NullResource is not None and no_acquire_flag and
-                            hasattr(object, 'aq_base') and
-                            not hasattr(object, '__bobo_traverse__')):
+                    if NullResource is not None and \
+                       no_acquire_flag and \
+                       hasattr(object, 'aq_base') and \
+                       not hasattr(object, '__bobo_traverse__'):
 
                         if (object.__parent__ is not
                                 aq_inner(object).__parent__):
@@ -497,9 +498,10 @@ class BaseRequest(object):
                             continue
                         else:
                             entry_name = default_path[0]
-                    elif (method and hasattr(object, method) and
-                          entry_name != method and
-                          getattr(object, method) is not None):
+                    elif (method
+                          and hasattr(object, method)
+                          and entry_name != method
+                          and getattr(object, method) is not None):
                         request._hacked_path = 1
                         entry_name = method
                         method = 'index_html'
@@ -519,8 +521,8 @@ class BaseRequest(object):
 
                 try:
                     subobject = self.traverseName(object, entry_name)
-                    if (hasattr(object, '__bobo_traverse__') or
-                            hasattr(object, entry_name)):
+                    if hasattr(object, '__bobo_traverse__') or \
+                       hasattr(object, entry_name):
                         check_name = entry_name
                     else:
                         check_name = None
@@ -557,9 +559,9 @@ class BaseRequest(object):
         # an object 'test' existed above it in the
         # hierarchy -- you'd always get the
         # existing object :(
-        if (no_acquire_flag and
-                hasattr(parents[1], 'aq_base') and
-                not hasattr(parents[1], '__bobo_traverse__')):
+        if no_acquire_flag and \
+           hasattr(parents[1], 'aq_base') and \
+           not hasattr(parents[1], '__bobo_traverse__'):
             base = aq_base(parents[1])
             if not hasattr(base, entry_name):
                 try:

@@ -43,15 +43,16 @@ class SimpleContent(SimpleItem):
         self.id = id
         self.title = title
 
-    security.declarePublic('mymethod')
+    @security.public
     def mymethod(self):
         return "Hello world"
 
-    security.declarePublic('direct')
+    @security.public
     def direct(self):
         """Should be able to traverse directly to this as there is no view.
         """
         return "Direct traversal worked"
+
 
 InitializeClass(SimpleContent)
 
@@ -66,6 +67,7 @@ class CallableSimpleContent(SimpleItem):
         """ """
         return "Default __call__ called"
 
+
 InitializeClass(CallableSimpleContent)
 
 
@@ -78,6 +80,7 @@ class IndexSimpleContent(SimpleItem):
     def index_html(self, *args, **kw):
         """ """
         return "Default index_html called"
+
 
 InitializeClass(IndexSimpleContent)
 

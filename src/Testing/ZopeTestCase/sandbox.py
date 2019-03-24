@@ -75,5 +75,5 @@ def load_app(module_info):
 
 
 if not hasattr(ZPublisher.WSGIPublisher, '__old_load_app__'):
-    ZPublisher.WSGIPublisher.__old_load_app__ = ZPublisher.WSGIPublisher.load_app
+    ZPublisher.WSGIPublisher.__old_load_app__ = ZPublisher.WSGIPublisher.load_app  # NOQA: E501
     ZPublisher.WSGIPublisher.load_app = load_app

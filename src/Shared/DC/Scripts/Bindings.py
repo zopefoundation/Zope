@@ -214,13 +214,13 @@ class Bindings(object):
 
     _Bindings_client = None
 
-    security.declareProtected('Change bindings', 'ZBindings_edit')
+    @security.protected('Change bindings')
     def ZBindings_edit(self, mapping):
         self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
 
-    security.declareProtected('Change bindings', 'ZBindings_setClient')
+    @security.protected('Change bindings')
     def ZBindings_setClient(self, clientname):
         '''Name the binding to be used as the "client".
 
@@ -236,7 +236,7 @@ class Bindings(object):
         self._bind_names = names = NameAssignments(names)
         return names
 
-    security.declareProtected(view_management_screens, 'getBindingAssignments')
+    @security.protected(view_management_screens)
     def getBindingAssignments(self):
         if not hasattr(self, '_bind_names'):
             self._setupBindings()
@@ -245,8 +245,8 @@ class Bindings(object):
     def __before_publishing_traverse__(self, self2, request):
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
-        if (not names.isNameAssigned('name_subpath') or
-                (path and hasattr(aq_base(self), path[-1]))):
+        if not names.isNameAssigned('name_subpath') or \
+           (path and hasattr(aq_base(self), path[-1])):
             return
         subpath = path[:]
         path[:] = []
@@ -370,5 +370,6 @@ class Bindings(object):
             return self._exec(bound_data, args, kw)
         finally:
             security.removeContext(self)
+
 
 InitializeClass(Bindings)

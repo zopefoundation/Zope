@@ -26,10 +26,8 @@ class SortingTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.browser.login('manager', 'manager_pass')
 
     def check_order(self, expect_1_before_2):
-        found_1_before_2 = (
-            self.browser.contents.find('File2') >
-            self.browser.contents.find('File1')
-        )
+        source = self.browser.contents
+        found_1_before_2 = source.find('File2') > source.find('File1')
         self.assertEqual(found_1_before_2, expect_1_before_2)
 
     def test_sortby(self):
