@@ -45,7 +45,6 @@ from Shared.DC.Scripts.Signature import FuncCode
 from zExceptions import ResourceLockedError
 
 
-
 preferred_encodings = ['utf-8', 'iso-8859-15']
 if 'ZPT_PREFERRED_ENCODING' in os.environ:
     preferred_encodings.insert(0, os.environ['ZPT_PREFERRED_ENCODING'])

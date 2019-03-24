@@ -23,7 +23,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 
 
-
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
 

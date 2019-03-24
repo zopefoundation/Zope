@@ -31,7 +31,6 @@ from zope.publisher.http import HTTPCharsets
 from zope.traversing.adapters import DefaultTraversable
 
 
-
 ascii_binary = b'<html><body>hello world</body></html>'
 iso885915_binary = u'<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
 utf8_text = iso885915_binary.decode('iso-8859-15').encode('utf-8')

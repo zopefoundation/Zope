@@ -19,8 +19,8 @@ import re
 import sys
 import warnings
 from doctest import ELLIPSIS
-from doctest import REPORT_NDIFF
 from doctest import NORMALIZE_WHITESPACE
+from doctest import REPORT_NDIFF
 from functools import partial
 from io import BytesIO
 
