@@ -5,7 +5,6 @@ ZopePageTemplate regression tests.
 Ensures that adding a page template works correctly.
 """
 
-import codecs
 import unittest
 import transaction
 
@@ -32,6 +31,7 @@ import Zope2
 
 from six import text_type
 
+
 ascii_binary = b'<html><body>hello world</body></html>'
 iso885915_binary = u'<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
 utf8_text = iso885915_binary.decode('iso-8859-15').encode('utf-8')
@@ -56,7 +56,8 @@ html_template_w_header = u'''
 </html>
 '''
 
-html_binary_iso_8859_15_w_header = (html_template_w_header % 'iso-8859-15').encode('iso-8859-15')
+html_binary_iso_8859_15_w_header = (
+    html_template_w_header % 'iso-8859-15').encode('iso-8859-15')
 html_binary_utf8_w_header = (html_template_w_header % 'utf-8').encode('utf-8')
 
 html_template_wo_header = u'''
@@ -162,9 +163,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.assertFalse(result.startswith(u'<div>üöä</div>'))
 
     def testStructureWithAccentedChars(self):
+        raw = u'<div tal:content="structure python: \'üöä\'" />'
         manage_addPageTemplate(self.app, 'test',
-                               text=((u'<div tal:content="structure '
-                                     u'python: \'üöä\'" />').encode('iso-8859-15')),
+                               text=raw.encode('iso-8859-15'),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
@@ -172,9 +173,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.assertTrue(result.startswith(u'<div>üöä</div>'))
 
     def testBug151020(self):
+        raw = u'<div tal:content="structure python: \'üöä\'" />'
         manage_addPageTemplate(self.app, 'test',
-                               text=((u'<div tal:content="structure '
-                                     u'python: \'üöä\'" />').encode('iso-8859-15')),
+                               text=raw.encode('iso-8859-15'),
                                encoding='iso-8859-15')
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
@@ -260,7 +261,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         zpt = self.app['test']
         result = zpt.pt_render()
         # use startswith() because the renderer appends a trailing \n
-        self.assertTrue(result.encode('iso-8859-15').startswith(iso885915_binary))
+        res_encoded = result.encode('iso-8859-15')
+        self.assertTrue(res_encoded.startswith(iso885915_binary))
         self.assertEqual(zpt.output_encoding, 'utf-8')
 
     def testPT_RenderWithUTF8(self):
@@ -281,7 +283,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual(isinstance(zpt.read(), text_type), True)
 
     def testEditWithContentTypeCharset(self):
-        manage_addPageTemplate(self.app, 'test', xml_binary_utf8, encoding='utf-8')
+        manage_addPageTemplate(self.app, 'test', xml_binary_utf8,
+                               encoding='utf-8')
         zpt = self.app['test']
         xml_unicode = xml_binary_utf8.decode('utf-8').strip()
         zpt.pt_edit(xml_unicode, 'text/xml')
@@ -499,6 +502,7 @@ class SrcTests(unittest.TestCase):
         request = DummyRequest()
         response = object()
         self.assertEqual(src(request, response), 'TESTING')
+
 
 class ZPTBrowserTests(FunctionalTestCase):
     """Browser testing ZopePageTemplate"""

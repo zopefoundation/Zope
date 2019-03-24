@@ -20,8 +20,8 @@ import os
 import re
 import sys
 
-from paste.deploy import loadserver
 from paste.deploy import loadapp
+from paste.deploy import loadserver
 
 try:
     import configparser
@@ -214,6 +214,7 @@ and then use %(http_port)s in your config files.
 def main(argv=sys.argv, quiet=False):
     command = ServeCommand(argv, quiet=quiet)
     return command.run()
+
 
 if __name__ == '__main__':
     sys.exit(main() or 0)

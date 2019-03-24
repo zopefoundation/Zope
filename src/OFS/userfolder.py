@@ -51,10 +51,7 @@ class BasicUserFolder(
     manage_options = ((
         {'label': 'Contents', 'action': 'manage_main'},
         {'label': 'Properties', 'action': 'manage_userFolderProperties'},
-    ) +
-        RoleManager.manage_options +
-        Item.manage_options
-    )
+    ) + RoleManager.manage_options + Item.manage_options)
 
     @security.protected(ManageUsers)
     @requestmethod('POST')
@@ -164,8 +161,8 @@ class BasicUserFolder(
         if not password or not confirm:
             if not domains:
                 raise BadRequest('Password and confirmation must be specified')
-        if self.getUser(name) or (self._emergency_user and
-                                  name == self._emergency_user.getUserName()):
+        em_user = self._emergency_user
+        if self.getUser(name) or (em_user and name == em_user.getUserName()):
             raise BadRequest('A user with the specified name already exists')
         if (password or confirm) and (password != confirm):
             raise BadRequest('Password and confirmation do not match')

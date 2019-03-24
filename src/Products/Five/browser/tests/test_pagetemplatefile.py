@@ -201,6 +201,7 @@ class ViewMapperTests(unittest.TestCase):
         mapper = self._makeOne()
         self.assertTrue(mapper['test'] is self)
 
+
 _marker = object()
 
 
@@ -258,6 +259,7 @@ class BoundPageTemplateTests(unittest.TestCase):
         rendered = bpt('abc', 'def', foo='bar')
         self.assertEqual(rendered, '<h1>Dummy</h1>')
         self.assertEqual(pt._called_with, ('abc', ('def',), {'foo': 'bar'}))
+
 
 DIRPAGE1 = """\
 <html>

@@ -15,7 +15,6 @@
     encoding.
 """
 
-import sys
 from warnings import warn
 
 from ZPublisher.HTTPRequest import isCGI_NAMEs

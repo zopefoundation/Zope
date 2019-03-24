@@ -20,6 +20,7 @@ from six import binary_type
 from six import text_type
 import transaction
 
+
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
 
@@ -36,8 +37,7 @@ def recordMetaData(object, request):
             to_append = (object.__name__,)
             object = object.__self__
 
-        while (object is not None and
-               not hasattr(object, 'getPhysicalPath')):
+        while object is not None and not hasattr(object, 'getPhysicalPath'):
             if getattr(object, '__name__', None) is None:
                 object = None
                 break

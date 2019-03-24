@@ -204,16 +204,16 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def _onlyTaintedformHoldsTaintedStrings(self, req):
         for key, val in list(req.taintedform.items()):
             self.assertTrue(
-                self._valueIsOrHoldsTainted(key) or
-                self._valueIsOrHoldsTainted(val),
+                self._valueIsOrHoldsTainted(key)
+                or self._valueIsOrHoldsTainted(val),
                 'Tainted form holds item %s that is not tainted' % key)
 
         for key, val in list(req.form.items()):
             if key in req.taintedform:
                 continue
             self.assertFalse(
-                self._valueIsOrHoldsTainted(key) or
-                self._valueIsOrHoldsTainted(val),
+                self._valueIsOrHoldsTainted(key)
+                or self._valueIsOrHoldsTainted(val),
                 'Normal form holds item %s that is tainted' % key)
 
     def _taintedKeysAlsoInForm(self, req):
@@ -307,12 +307,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             reg_char = '\xae'
 
         inputs = (('ustring:ustring:utf8', 'test' + reg_char),
-                  ('utext:utext:utf8', 'test' + reg_char +
-                   '\ntest' + reg_char + '\n'),
-                  ('utokens:utokens:utf8', 'test' + reg_char +
-                   ' test' + reg_char),
-                  ('ulines:ulines:utf8', 'test' + reg_char +
-                   '\ntest' + reg_char),
+                  ('utext:utext:utf8',
+                   'test' + reg_char + '\ntest' + reg_char + '\n'),
+                  ('utokens:utokens:utf8',
+                   'test' + reg_char + ' test' + reg_char),
+                  ('ulines:ulines:utf8',
+                   'test' + reg_char + '\ntest' + reg_char),
                   ('nouconverter:string:utf8', 'test' + reg_char))
         req = self._processInputs(inputs)
 
@@ -993,7 +993,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
 
-        env = {'HTTP_ACCEPT_LANGUAGE': 'en', 'HTTP_ACCEPT_LANGUAGE': 'xx'}
+        env = {'HTTP_ACCEPT_LANGUAGE': 'xx'}
 
         # Now test for non-existant locale fallback
         request = self._makeOne(environ=env)

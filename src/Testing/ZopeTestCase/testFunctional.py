@@ -27,6 +27,7 @@ from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 
+
 SET_COOKIE_DTML = '''\
 <dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
 
@@ -48,10 +49,10 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
         # A method redirecting to the Zope root
-        url = self.app.absolute_url()
+        url = self.app.absolute_url().encode('ascii')
         self.folder.addDTMLMethod(
             'redirect',
-            file=b'<dtml-call "RESPONSE.redirect(\'%s\')">' % url.encode('ascii'))
+            file=b'<dtml-call "RESPONSE.redirect(\'%s\')">' % url)
 
         # A method setting a cookie
         self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)

@@ -77,10 +77,9 @@ status_codes['resourcelockederror'] = 423
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
 bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
-charset_re_match = re.compile(
-    r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
-    r'charset=([-_0-9a-z]+' +
-    r')(?:(?:\s*;)|\Z)', re.IGNORECASE).match
+charset_re_str = (r'(?:application|text)/[-+0-9a-z]+\s*;\s*'
+                  r'charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)')
+charset_re_match = re.compile(charset_re_str, re.IGNORECASE).match
 absuri_match = re.compile(r'\w+://[\w\.]+').match
 tag_search = re.compile('[a-zA-Z]>').search
 
@@ -226,8 +225,7 @@ class HTTPBaseResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, class_types) and
-                issubclass(status, Exception)):
+        if isinstance(status, class_types) and issubclass(status, Exception):
             status = status.__name__
 
         if isinstance(status, str):
@@ -433,13 +431,9 @@ class HTTPBaseResponse(BaseResponse):
                 index = match.start(0) + len(match.group(0))
                 ibase = base_re_search(text)
                 if ibase is None:
-                    text = (
-                        text[:index] +
-                        '\n<base href="' +
-                        escape(self.base, True) +
-                        '" />\n' +
-                        text[index:]
-                    )
+                    text = (text[:index] + '\n<base href="'
+                            + escape(self.base, True) + '" />\n'
+                            + text[index:])
                     self.text = text
                     self.setHeader('content-length', len(self.body))
 
@@ -452,8 +446,8 @@ class HTTPBaseResponse(BaseResponse):
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().
-        if (text[:6].lower() == '<html>' or
-                text[:14].lower() == '<!doctype html'):
+        if text[:6].lower() == '<html>' or \
+           text[:14].lower() == '<!doctype html':
             return True
         if text.find('</') > 0:
             return True
@@ -511,9 +505,11 @@ class HTTPBaseResponse(BaseResponse):
                 body = self._encode_unicode(text_type(body))
 
         # At this point body is always binary
-        l = len(body)
-        if ((l < 200) and body[:1] == b'<' and body.find(b'>') == l - 1 and
-                bogus_str_search(body) is not None):
+        b_len = len(body)
+        if b_len < 200 and \
+           body[:1] == b'<' and \
+           body.find(b'>') == b_len - 1 and \
+           bogus_str_search(body) is not None:
             self.notFoundError(body[1:-1].decode(self.charset))
         else:
             if title:
@@ -536,8 +532,8 @@ class HTTPBaseResponse(BaseResponse):
                 content_type = 'text/plain; charset=%s' % self.charset
             self.setHeader('content-type', content_type)
         else:
-            if (content_type.startswith('text/') and
-                    'charset=' not in content_type):
+            if content_type.startswith('text/') and \
+               'charset=' not in content_type:
                 content_type = '%s; charset=%s' % (content_type,
                                                    self.charset)
                 self.setHeader('content-type', content_type)
@@ -546,8 +542,8 @@ class HTTPBaseResponse(BaseResponse):
 
         self.insertBase()
 
-        if (self.use_HTTP_content_compression and
-                self.headers.get('content-encoding', 'gzip') == 'gzip'):
+        if self.use_HTTP_content_compression and \
+           self.headers.get('content-encoding', 'gzip') == 'gzip':
             # use HTTP content encoding to compress body contents unless
             # this response already has another type of content encoding
             if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
@@ -622,8 +618,7 @@ class HTTPBaseResponse(BaseResponse):
             # compression is off
             self.use_HTTP_content_compression = 0
 
-        elif (force or
-              (REQUEST.get('HTTP_ACCEPT_ENCODING', '').find('gzip') != -1)):
+        elif force or 'gzip' in REQUEST.get('HTTP_ACCEPT_ENCODING', ''):
             if force:
                 self.use_HTTP_content_compression = 2
             else:
@@ -636,10 +631,8 @@ class HTTPBaseResponse(BaseResponse):
         # to the charset specified in the content-type header.
         if text.startswith('<?xml'):
             pos_right = text.find('?>')  # right end of the XML preamble
-            text = ('<?xml version="1.0" encoding="' +
-                    self.charset +
-                    '" ?>' +
-                    text[pos_right + 2:])
+            text = ('<?xml version="1.0" encoding="' + self.charset
+                    + '" ?>' + text[pos_right + 2:])
 
         # Encode the text data using the response charset
         text = text.encode(self.charset, 'replace')
@@ -797,12 +790,9 @@ class HTTPResponse(HTTPBaseResponse):
         self.setStatus(404)
         raise NotFound(self._error_html(
             "Resource not found",
-            "Sorry, the requested resource does not exist." +
-            "<p>Check the URL and try again.</p>" +
-            "<p><b>Resource:</b> " +
-            escape(entry) +
-            "</p>"
-        ))
+            ("Sorry, the requested resource does not exist."
+             "<p>Check the URL and try again.</p>"
+             "<p><b>Resource:</b> " + escape(entry) + "</p>")))
 
     # If a resource is forbidden, why reveal that it exists?
     forbiddenError = notFoundError
@@ -810,10 +800,8 @@ class HTTPResponse(HTTPBaseResponse):
     def debugError(self, entry):
         raise NotFound(self._error_html(
             "Debugging Notice",
-            "Zope has encountered a problem publishing your object.<p>"
-            "\n" +
-            entry +
-            "</p>"))
+            ("Zope has encountered a problem publishing your object.<p>"
+             "\n" + entry + "</p>")))
 
     def badRequestError(self, name):
         self.setStatus(400)
@@ -824,13 +812,10 @@ class HTTPResponse(HTTPBaseResponse):
 
         raise BadRequest(self._error_html(
             "Invalid request",
-            "The parameter, <em>" +
-            name +
-            "</em>, " +
-            "was omitted from the request.<p>" +
-            "Make sure to specify all required parameters, " +
-            "and try the request again.</p>"
-        ))
+            ("The parameter, <em>" + name + "</em>, "
+             "was omitted from the request.<p>"
+             "Make sure to specify all required parameters, "
+             "and try the request again.</p>")))
 
     def unauthorized(self):
         m = "You are not authorized to access this resource."
@@ -891,8 +876,8 @@ class HTTPResponse(HTTPBaseResponse):
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
                 (text_type(t),
-                 'Zope has exited normally.<p>' +
-                 self._traceback(t, v, tb) + '</p>'),
+                 'Zope has exited normally.<p>'
+                 + self._traceback(t, v, tb) + '</p>'),
                 is_error=True)
         else:
             try:
@@ -903,8 +888,8 @@ class HTTPResponse(HTTPBaseResponse):
             if match is None:
                 body = self.setBody(
                     (text_type(t),
-                     'Sorry, a site error occurred.<p>' +
-                     self._traceback(t, v, tb) + '</p>'),
+                     'Sorry, a site error occurred.<p>'
+                     + self._traceback(t, v, tb) + '</p>'),
                     is_error=True)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
@@ -925,8 +910,8 @@ class HTTPResponse(HTTPBaseResponse):
         """ Set headers required by various parts of protocol.
         """
         body = self.body
-        if ('content-length' not in self.headers and
-                'transfer-encoding' not in self.headers):
+        if 'content-length' not in self.headers and \
+           'transfer-encoding' not in self.headers:
             self.setHeader('content-length', len(body))
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
 
@@ -1029,9 +1014,10 @@ class WSGIResponse(HTTPBaseResponse):
     def finalize(self):
         # Set 204 (no content) status if 200 and response is empty
         # and not streaming.
-        if ('content-type' not in self.headers and
-                'content-length' not in self.headers and
-                not self._streaming and self.status == 200):
+        if 'content-type' not in self.headers and \
+           'content-length' not in self.headers and \
+           not self._streaming and \
+           self.status == 200:
             self.setStatus('nocontent')
 
         # Add content length if not streaming.

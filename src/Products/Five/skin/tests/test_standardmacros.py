@@ -18,13 +18,14 @@
 def test_standard_macros():
     """Test standard macros
 
-      >>> uf = self.folder.acl_users
+      >>> folder = self.folder  # NOQA: F821
+      >>> uf = folder.acl_users
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
-      >>> self.login('manager')
+      >>> self.login('manager')  # NOQA: F821
 
       >>> from Products.Five.tests.testing import (
       ... manage_addFiveTraversableFolder)
-      >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+      >>> manage_addFiveTraversableFolder(folder, 'testoid', 'Testoid')
 
       >>> import Products.Five.skin.tests
       >>> from Zope2.App import zcml
@@ -34,7 +35,7 @@ def test_standard_macros():
     Test macro access through our flavour of StandardMacros.  First,
     when looking up a non-existing macro, we get a KeyError:
 
-      >>> view = self.folder.unrestrictedTraverse('testoid/@@fivetest_macros')
+      >>> view = folder.unrestrictedTraverse('testoid/@@fivetest_macros')
       >>> view['non-existing-macro']
       Traceback (most recent call last):
       ...
@@ -60,7 +61,7 @@ def test_standard_macros():
 
       >>> base = 'testoid/@@fivetest_macros/%s'
       >>> for macro in ('birdmacro', 'dogmacro', 'flying', 'walking'):
-      ...     view = self.folder.unrestrictedTraverse(base % macro)
+      ...     view = folder.unrestrictedTraverse(base % macro)
       ...     view is not None
       True
       True

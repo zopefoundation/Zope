@@ -14,7 +14,8 @@
 """Unit tests for the i18n framework
 """
 
-from zope.component.testing import setUp, tearDown
+from zope.component.testing import setUp
+from zope.component.testing import tearDown
 
 
 def test_directive():
@@ -48,7 +49,7 @@ def test_directive():
 
       >>> translate(msg) == u'This is an explicit message'
       True
-      >>> translate(msg, target_language='de') == u'Dies ist eine explizite Nachricht'
+      >>> translate(msg, target_language='de') == u'Dies ist eine explizite Nachricht'  # NOQA: E501
       True
     """
 

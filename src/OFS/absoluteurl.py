@@ -107,9 +107,9 @@ class OFSTraversableAbsoluteURL(BrowserView):
 
         name = context.getId()
 
-        if (container is None or
-                self._isVirtualHostRoot() or
-                not ITraversable.providedBy(container)):
+        if container is None or \
+           self._isVirtualHostRoot() or \
+           not ITraversable.providedBy(container):
             return ({'name': name, 'url': context.absolute_url()},)
 
         view = getMultiAdapter((container, request), IAbsoluteURL)

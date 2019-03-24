@@ -35,10 +35,11 @@ class FancyAttribute(Explicit):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('index_html')
+    @security.public
     def index_html(self, REQUEST):
         """Doc test fanatics"""
         return self.name
+
 
 InitializeClass(FancyAttribute)
 
@@ -66,6 +67,7 @@ class FancyContent(SimpleItem):
     def get_size(self):
         return 43
 
+
 InitializeClass(FancyContent)
 
 
@@ -91,6 +93,7 @@ class NonTraversableFancyContent(SimpleItem):
 
     def get_size(self):
         return 43
+
 
 InitializeClass(NonTraversableFancyContent)
 

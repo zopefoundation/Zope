@@ -15,8 +15,6 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-import sys
-
 from AccessControl import safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict

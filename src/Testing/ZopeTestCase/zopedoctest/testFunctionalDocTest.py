@@ -97,6 +97,7 @@ SHOW_COOKIES_DTML = '''\
 def setUp(self):
     '''This method will run after the test_class' setUp.
 
+    >>> http = http  # NOQA: F821
     >>> response = http(r"""
     ... GET /test_folder_1_/index_html HTTP/1.1
     ... """)
@@ -108,7 +109,7 @@ def setUp(self):
     >>> response.getBody() == b'index'
     True
 
-    >>> foo
+    >>> foo  # NOQA: F821
     1
     '''
     from Testing.ZopeTestCase.testFunctional import CHANGE_TITLE_DTML

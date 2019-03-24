@@ -64,7 +64,7 @@ def apply_patches():
     for klass in [Element, Attribute, Interface, Method]:
         try:
             del klass.__doc__
-        except:
+        except Exception:
             pass
         for method_name in element_methods:
             delete_method_docstring(klass, method_name)

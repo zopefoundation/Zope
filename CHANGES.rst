@@ -18,6 +18,10 @@ Features
   which are deprecated in Python 3.8.
   (`#476 <https://github.com/zopefoundation/Zope/pull/476>`_)
 
+Other changes
++++++++++++++
+- full PEP-8 compliance with the exception of import sorting
+
 
 4.0b10 (2019-03-08)
 -------------------

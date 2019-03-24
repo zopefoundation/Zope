@@ -24,11 +24,7 @@ from OFS.DTMLMethod import DTMLMethod
 from OFS.DTMLMethod import safe_file_data
 from OFS.PropertyManager import PropertyManager
 from six import binary_type
-from six import PY2
-from six import PY3
-from six import text_type
 from six.moves.urllib.parse import quote
-from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
 
@@ -45,15 +41,13 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     zmi_icon = 'far fa-file-alt'
     _locked_error_text = 'This document has been locked.'
 
-    manage_options = (
-        DTMLMethod.manage_options[:2] +
-        PropertyManager.manage_options +
-        DTMLMethod.manage_options[2:]
-        )
+    manage_options = (DTMLMethod.manage_options[:2]
+                      + PropertyManager.manage_options
+                      + DTMLMethod.manage_options[2:])
 
     # Replace change_dtml_methods by change_dtml_documents
     __ac_permissions__ = tuple([
-        (perms[0] == change_dtml_methods) and
+        (perms[0] == change_dtml_methods) and  # NOQA: W504
         (change_dtml_documents, perms[1]) or perms
         for perms in DTMLMethod.__ac_permissions__])
 

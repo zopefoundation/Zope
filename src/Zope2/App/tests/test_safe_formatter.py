@@ -3,8 +3,6 @@
 from Testing.ZopeTestCase import FunctionalTestCase
 from zExceptions import Unauthorized
 
-import unittest
-
 try:
     from html import escape
     import functools
@@ -24,7 +22,8 @@ BAD_KEY_STR = """
 <p tal:content="python:'access by key: {0[test_folder_1_]}'.format(context)" />
 """
 BAD_KEY_UNICODE = """
-<p tal:content="python:u'access by key: {0[test_folder_1_]}'.format(context)" />
+<p tal:content="python:u'access by key:
+{0[test_folder_1_]}'.format(context)" />
 """
 BAD_ITEM_STR = """
 <p tal:content="python:'access by item: {0[0]}'.format(context)" />
@@ -64,6 +63,8 @@ class UnauthorizedSecurityPolicy:
 
 
 class FormatterFunctionalTest(FunctionalTestCase):
+
+    maxDiff = None
 
     def test_cook_zope2_page_templates_bad_attr_str(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
@@ -130,18 +131,6 @@ class FormatterFunctionalTest(FunctionalTestCase):
         self.assertEqual(
             pt.pt_render().strip(),
             '<p>title of &lt;Application at &gt; is Zope</p>')
-
-class UnauthorizedSecurityPolicy(object):
-    """Policy which denies every access."""
-
-    def validate(self, *args, **kw):
-        from AccessControl.unauthorized import Unauthorized
-        raise Unauthorized('Nothing is allowed!')
-
-
-class FormatterFunctionalTest(FunctionalTestCase):
-
-    maxDiff = None
 
     def test_access_to_private_content_not_allowed_via_any_attribute(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
@@ -283,34 +272,6 @@ class FormatterFunctionalTest(FunctionalTestCase):
         self.assertEqual(
             "You are not allowed to access 'test_folder_1_' in this context",
             str(err.exception))
-
-    def assert_is_checked_via_security_manager(self, pt_content):
-        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-        from AccessControl.SecurityManager import setSecurityPolicy
-        from AccessControl.SecurityManagement import noSecurityManager
-        from AccessControl.SecurityManagement import getSecurityManager
-
-        pt = ZopePageTemplate('mytemplate', pt_content)
-        noSecurityManager()
-        old_security_policy = setSecurityPolicy(UnauthorizedSecurityPolicy())
-        try:
-            hack_pt(pt, context=self.app)
-            with self.assertRaises(Unauthorized) as err:
-                pt.pt_render()
-            self.assertEqual(
-                'Nothing is allowed!',
-                str(err.exception))
-        finally:
-            setSecurityPolicy(old_security_policy)
-
-    def test_getattr_access_is_checked_via_security_manager(self):
-        self.assert_is_checked_via_security_manager(
-            """<p tal:content="python:'{0.acl_users}'.format(context)" />""")
-
-    def test_getitem_access_is_checked_via_security_manager(self):
-        self.assert_is_checked_via_security_manager(
-            """<p tal:content="python:'{c[acl_users]}'.format(c=context)" />"""
-        )
 
     def test_key_access_is_checked_via_security_manager(self):
         self.assert_is_checked_via_security_manager(

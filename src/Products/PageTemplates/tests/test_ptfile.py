@@ -101,7 +101,9 @@ class TypeSniffingTestCase(unittest.TestCase):
 
     def test_sniffer_html_ascii(self):
         self.check_content_type(
-            b"<!DOCTYPE html [ SYSTEM '" + self.HTML_SYSTEM_ID + b"' ]><html></html>",
+            (b"<!DOCTYPE html [ SYSTEM '"
+             + self.HTML_SYSTEM_ID
+             + b"' ]><html></html>"),
             "text/html")
         self.check_content_type(
             b"<html><head><title>sample document</title></head></html>",

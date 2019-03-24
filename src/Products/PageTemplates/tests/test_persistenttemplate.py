@@ -94,6 +94,7 @@ def generate_capture_source(names):
                        for name in names)
     return options_capture_update_base % (params,)
 
+
 textarea_content_search = re.compile(
     r'<textarea[^>]*>([^<]+)</textarea>',
     re.IGNORECASE | re.MULTILINE
@@ -104,6 +105,7 @@ def get_editable_content(template):
     edit_form = template.pt_editForm()
     editable_text = textarea_content_search(edit_form).group(1)
     return editable_text
+
 
 _marker = object()
 

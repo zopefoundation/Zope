@@ -12,7 +12,6 @@
 ##############################################################################
 
 import os
-import sys
 from logging import getLogger
 
 import DocumentTemplate
@@ -92,6 +91,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
         self._cook_check()
         return HTMLFile.inheritedAttribute('__call__')(
             *(self,) + args[1:], **kw)
+
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',

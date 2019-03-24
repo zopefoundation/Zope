@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 
 LOG = logging.getLogger('Testing')
 
@@ -31,5 +32,6 @@ def getStorage():
         from ZODB.DemoStorage import DemoStorage
         LOG.info('Using DemoStorage')
         return DemoStorage()
+
 
 Storage = getStorage()

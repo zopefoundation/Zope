@@ -134,16 +134,12 @@ class File(
     manage = manage_main = manage_editForm
     manage_uploadForm = manage_editForm
 
-    manage_options = (
-        (
-            {'label': 'Edit', 'action': 'manage_main'},
-            {'label': 'View', 'action': ''},
-        ) +
-        PropertyManager.manage_options +
-        RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
-    )
+    manage_options = (({'label': 'Edit', 'action': 'manage_main'},
+                       {'label': 'View', 'action': ''})
+                      + PropertyManager.manage_options
+                      + RoleManager.manage_options
+                      + Item_w__name__.manage_options
+                      + Cacheable.manage_options)
 
     _properties = (
         {'id': 'title', 'type': 'string'},
@@ -308,14 +304,15 @@ class File(
                     boundary = _make_boundary()
 
                     # Calculate the content length
-                    size = (8 + len(boundary) +  # End marker length
-                            len(ranges) * (  # Constant lenght per set
-                            49 + len(boundary) + len(self.content_type) +
-                            len('%d' % self.size)))
+                    size = (8 + len(boundary)  # End marker length
+                            + len(ranges) * (  # Constant lenght per set
+                                49 + len(boundary)
+                                + len(self.content_type)
+                                + len('%d' % self.size)))
                     for start, end in ranges:
                         # Variable length per set
-                        size = (size + len('%d%d' % (start, end - 1)) +
-                                end - start)
+                        size = (size + len('%d%d' % (start, end - 1))
+                                + end - start)
 
                     # Some clients implement an earlier draft of the spec, they
                     # will only accept x-byteranges.
@@ -808,8 +805,9 @@ def getImageInfo(data):
     # See PNG v1.2 spec (http://www.cdrom.com/pub/png/spec/)
     # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
     # and finally the 4-byte width, height
-    elif ((size >= 24) and (data[:8] == b'\211PNG\r\n\032\n') and
-          (data[12:16] == b'IHDR')):
+    elif (size >= 24
+          and data[:8] == b'\211PNG\r\n\032\n'
+          and data[12:16] == b'IHDR'):
         content_type = 'image/png'
         w, h = struct.unpack(">LL", data[16:24])
         width = int(w)

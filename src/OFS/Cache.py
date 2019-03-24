@@ -58,8 +58,8 @@ def filterCacheManagers(orig, container, name, value, extra):
     It causes objects to be found only if they are
     in the list of cache managers.
     """
-    if (hasattr(aq_base(container), ZCM_MANAGERS) and
-            name in getattr(container, ZCM_MANAGERS)):
+    if hasattr(aq_base(container), ZCM_MANAGERS) and \
+       name in getattr(container, ZCM_MANAGERS):
         return 1
     return 0
 

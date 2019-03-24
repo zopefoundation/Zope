@@ -122,7 +122,8 @@ class NameCaller(object):
     attribute from the container and calls it.  If the name is not
     found, it fails silently.
 
-    >>> registerBeforeTraverse(folder, NameCaller('preop'), 'XApp')
+    >>> registerBeforeTraverse(self.folder,  # NOQA: F821
+    ...                        NameCaller('preop'), 'XApp')
     """
 
     def __init__(self, name='<undefined name>'):

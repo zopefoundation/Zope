@@ -23,7 +23,6 @@ import transaction
 
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
-from Testing.testbrowser import WSGITestApp
 from Testing.ZopeTestCase import (
     FunctionalTestCase,
     user_name,

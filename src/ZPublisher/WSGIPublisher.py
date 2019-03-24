@@ -106,8 +106,7 @@ def _exc_view_created_response(exc, request, response):
                                  name=u'standard_error_message')
         root_parent = parents[0]
         try:
-            standard_error_message = aq_acquire(root_parent,
-                                                'standard_error_message')
+            aq_acquire(root_parent, 'standard_error_message')
         except (AttributeError, KeyError):
             view = None
 
@@ -294,7 +293,7 @@ def publish_module(environ, start_response,
                     with transaction_pubevents(request, response):
                         response = _publish(request, new_mod_info)
                 break
-            except TransientError as exc:
+            except TransientError:
                 if request.supports_retry():
                     new_request = request.retry()
                     new_response = new_request.response
@@ -308,8 +307,8 @@ def publish_module(environ, start_response,
         status, headers = response.finalize()
         start_response(status, headers)
 
-        if (isinstance(response.body, _FILE_TYPES) or
-                IUnboundStreamIterator.providedBy(response.body)):
+        if isinstance(response.body, _FILE_TYPES) or \
+           IUnboundStreamIterator.providedBy(response.body):
             result = response.body
         else:
             # If somebody used response.write, that data will be in the

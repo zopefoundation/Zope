@@ -339,9 +339,9 @@ def _is_package(product_dir, product_name):
         return False
 
     init_py = os.path.join(package_dir, '__init__.py')
-    if (not os.path.exists(init_py) and
-            not os.path.exists(init_py + 'c') and
-            not os.path.exists(init_py + 'o')):
+    if not os.path.exists(init_py) and \
+       not os.path.exists(init_py + 'c') and \
+       not os.path.exists(init_py + 'o'):
         return False
     return True
 

@@ -76,9 +76,9 @@ def _configure_z2security(_context, new_class, required):
         )
     # Make everything else private
     private_attrs = [name for name in dir(new_class)
-                     if ((not name.startswith('_')) and
-                         (name not in required) and
-                         is_method(getattr(new_class, name)))]
+                     if ((not name.startswith('_'))
+                         and (name not in required)
+                         and is_method(getattr(new_class, name)))]
     for attr in private_attrs:
         _context.action(
             discriminator=('five:protectName', new_class, attr),
@@ -332,17 +332,19 @@ _factory_map = {'image': {'prefix': 'ImageResource',
 def resource(_context, name, layer=IDefaultBrowserLayer,
              permission='zope.Public', file=None, image=None, template=None):
 
-    if ((file and image) or (file and template) or
-            (image and template) or not (file or image or template)):
+    if (file and image) or \
+       (file and template) or \
+       (image and template) or \
+       not (file or image or template):
         raise ConfigurationError(
             "Must use exactly one of file or image or template"
             "attributes for resource directives"
         )
 
     res = file or image or template
-    res_type = ((file and 'file') or
-                (image and 'image') or
-                (template and 'template'))
+    res_type = (file and 'file') or \
+               (image and 'image') or \
+               (template and 'template')
     factory_info = _factory_map.get(res_type)
     factory_info['count'] += 1
     res_factory = factory_info['factory']

@@ -169,7 +169,7 @@ class TestPubEvents(TestCase):
 class ExceptionView(object):
 
     def __init__(self, context, request):
-        self.context = context # exception instance
+        self.context = context  # exception instance
         self.__parent__ = None
         self.request = request
 
@@ -230,7 +230,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             exception_type, exception_instance, traceback = event.exc_info
             self.assertIsInstance(exception_instance, exception_type)
             self.assertIsInstance(exception_instance,
-                 self.expected_exception_type)
+                                  self.expected_exception_type)
 
     def test_all_pub_events_have_access_to_valid_global_request(self):
         self.folder.addDTMLDocument('index_html', file='index')
@@ -249,7 +249,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
-    def test_BeforeAbort_and_Failure_events_can_access_zope_globalRequest(self):
+    def test_BeforeAbort_and_Failure_events_can_access_zope_globalReq(self):
         self.expected_exception_type = zExceptions.NotFound
         response = self.publish('/notexisting')
         self.assertEqual(response.getStatus(), 404)
@@ -267,7 +267,8 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost/notexisting>")
+            (b"Exception: <class 'zExceptions.NotFound'>\n"
+             b"Request: <WSGIRequest, URL=http://nohost/notexisting>"))
 
     def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
         self.expected_exception_type = zExceptions.HTTPVersionNotSupported
@@ -278,8 +279,10 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
                 pass
             raise HTTPVersionNotSupported()
         self.folder.__class__.index_html = raiser
+
         def cleanup():
             del self.folder.__class__.index_html
+
         self.addCleanup(cleanup)
 
         from zope.publisher.interfaces.http import IHTTPException
@@ -291,7 +294,9 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 505)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.HTTPVersionNotSupported'>\nRequest: <WSGIRequest, URL=http://nohost/test_folder_1_/index_html>")
+            (b"Exception: <class 'zExceptions.HTTPVersionNotSupported'>\n"
+             b"Request: <WSGIRequest, "
+             b"URL=http://nohost/test_folder_1_/index_html>"))
 
 
 def _succeed():
@@ -346,6 +351,7 @@ class _Request(BaseRequest):
     def close(self):
         # override to get rid of the 'EndRequestEvent' notification
         pass
+
 
 # define things necessary for publication
 bobo_application = _Application()

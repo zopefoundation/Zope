@@ -314,11 +314,13 @@ class TestPublishModule(ZopeTestCase):
         from ZPublisher.HTTPResponse import WSGIResponse
         environ = self._makeEnviron()
         start_response = DummyCallable()
+
         def _publish(request, mod_info):
             response = WSGIResponse()
             response.write(b'WRITTEN')
             response.body = b'BODY'
             return response
+
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertEqual(app_iter, (b'WRITTEN', b'BODY'))
 
@@ -458,6 +460,7 @@ class TestPublishModule(ZopeTestCase):
     def test_handle_ConflictError(self):
         environ = self._makeEnviron()
         start_response = DummyCallable()
+
         def _publish(request, module_info):
             if request.retry_count < 1:
                 raise ConflictError
@@ -467,7 +470,7 @@ class TestPublishModule(ZopeTestCase):
 
         try:
             from ZPublisher.HTTPRequest import HTTPRequest
-            original_retry_max_count =  HTTPRequest.retry_max_count
+            original_retry_max_count = HTTPRequest.retry_max_count
             HTTPRequest.retry_max_count = 1
             # After the retry the request has a filled `other` dict, thus the
             # new request is not closed before processing it:
@@ -517,7 +520,8 @@ class TestPublishModule(ZopeTestCase):
 
         # In the end the error view is rendered, but the request should
         # have been retried up to retry_max_count times
-        self.assertTrue(app_iter[1].startswith('Exception View: ConflictError'))
+        self.assertTrue(app_iter[1].startswith(
+            'Exception View: ConflictError'))
         self.assertEqual(_request.retry_count, _request.retry_max_count)
         unregisterExceptionView(Exception)
 
@@ -758,7 +762,8 @@ class CustomExceptionView(object):
                 self.__parent__.__class__.__name__))
 
 
-def registerExceptionView(for_, factory=CustomExceptionView, name=u'index.html'):
+def registerExceptionView(for_, factory=CustomExceptionView,
+                          name=u'index.html'):
     from zope.interface import Interface
     from zope.component import getGlobalSiteManager
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -769,6 +774,7 @@ def registerExceptionView(for_, factory=CustomExceptionView, name=u'index.html')
         provided=Interface,
         name=name,
     )
+
 
 def unregisterExceptionView(for_, factory=CustomExceptionView,
                             name=u'index.html'):

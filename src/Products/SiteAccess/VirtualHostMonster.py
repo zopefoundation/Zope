@@ -38,14 +38,14 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         {'label': 'Mappings', 'action': 'manage_edit'},
     )
 
-    security.declareProtected(View, 'manage_main')
+    security.declareProtected(View, 'manage_main')  # NOQA: D001
     manage_main = DTMLFile('www/VirtualHostMonster', globals(),
                            __name__='manage_main')
 
-    security.declareProtected('Add Site Roots', 'manage_edit')
+    security.declareProtected('Add Site Roots', 'manage_edit')  # NOQA: D001
     manage_edit = DTMLFile('www/manage_edit', globals())
 
-    security.declareProtected('Add Site Roots', 'set_map')
+    @security.protected('Add Site Roots')
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."
         lines = map_text.split('\n')
@@ -61,7 +61,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 line = line.split('://')[-1]
                 try:
                     host, path = [x.strip() for x in line.split('/', 1)]
-                except:
+                except Exception:
                     raise ValueError(
                         'Line needs a slash between host and path: %s' % line)
                 pp = filter(None, path.split('/'))
@@ -78,7 +78,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     if obpath:
                         try:
                             ob = self.unrestrictedTraverse(obpath)
-                        except:
+                        except Exception:
                             raise ValueError(
                                 'Path not found: %s' % obpath)
                         if not getattr(ob.aq_base, 'isAnObjectManager', 0):
@@ -174,7 +174,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         stack.insert(ii, '/')
                         ii += 1
                     if '*' in stack:
-                      stack[stack.index('*')] = host.split('.')[0]
+                        stack[stack.index('*')] = host.split('.')[0]
                     path = stack[:ii]
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
@@ -201,8 +201,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     request['VIRTUAL_URL'] = '/'.join(vup)
 
                     # new ACTUAL_URL
-                    add = (path and
-                           request['ACTUAL_URL'].endswith('/')) and '/' or ''
+                    add = path and \
+                        request['ACTUAL_URL'].endswith('/') and '/' or ''
                     request['ACTUAL_URL'] = request['VIRTUAL_URL'] + add
 
                 return
@@ -247,6 +247,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
             request.setVirtualRoot([])
         return parents.pop()  # He'll get put back on
 
+
 InitializeClass(VirtualHostMonster)
 
 
@@ -260,6 +261,7 @@ def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
         goto = '%s/manage_main' % self.absolute_url()
         qs = 'manage_tabs_message=Virtual+Host+Monster+added.'
         REQUEST['RESPONSE'].redirect('%s?%s' % (goto, qs))
+
 
 constructors = (
     ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),

@@ -15,6 +15,9 @@
 
 import doctest
 import email.parser
+from doctest import ELLIPSIS
+from doctest import REPORT_NDIFF
+from doctest import NORMALIZE_WHITESPACE
 from functools import partial
 from io import BytesIO
 import re
@@ -146,9 +149,9 @@ def http(request_string, handle_errors=True):
     request_string = request_string.lstrip()
 
     # Split off and parse the command line
-    l = request_string.find('\n')
-    command_line = request_string[:l].rstrip()
-    request_string = request_string[l + 1:]
+    newline = request_string.find('\n')
+    command_line = request_string[:newline].rstrip()
+    request_string = request_string[newline + 1:]
     method, path, protocol = command_line.split()
     path = unquote(path)
 
@@ -309,8 +312,7 @@ class ZopeSuiteFactory(object):
 
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
-            self._kw['optionflags'] = (
-                doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+            self._kw['optionflags'] = (ELLIPSIS | NORMALIZE_WHITESPACE)
 
 
 class FunctionalSuiteFactory(ZopeSuiteFactory):
@@ -343,8 +345,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
             self._kw['optionflags'] = (
-                doctest.ELLIPSIS | doctest.REPORT_NDIFF |
-                doctest.NORMALIZE_WHITESPACE)
+                ELLIPSIS | REPORT_NDIFF | NORMALIZE_WHITESPACE)
 
 
 def ZopeDocTestSuite(module=None, **kw):

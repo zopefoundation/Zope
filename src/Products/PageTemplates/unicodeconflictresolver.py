@@ -21,7 +21,7 @@ from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
 import ZPublisher
 
-from six import text_type, binary_type
+from six import text_type
 
 default_encoding = sys.getdefaultencoding()
 
@@ -37,6 +37,7 @@ class DefaultUnicodeEncodingConflictResolver(object):
         if isinstance(text, text_type):
             return text
         return text.decode('ascii')
+
 
 DefaultUnicodeEncodingConflictResolver = \
     DefaultUnicodeEncodingConflictResolver()
