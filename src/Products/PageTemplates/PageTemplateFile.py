@@ -76,7 +76,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
     security = ClassSecurityInfo()
-    security.declareProtected(
+    security.declareProtected(  # NOQA: D001
         'View management screens', 'read', 'document_src')
 
     def __init__(
