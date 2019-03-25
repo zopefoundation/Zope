@@ -1,7 +1,5 @@
 """This module contains integration tests for AccessControl.safe_formatter."""
 
-import unittest
-
 from Testing.ZopeTestCase import FunctionalTestCase
 from zExceptions import Unauthorized
 

@@ -265,7 +265,6 @@ Zope = Zope2
 active = _patched
 
 
-
 def sandbox(base=None):
     '''Returns a sandbox copy of the base ZODB.'''
     if base is None:

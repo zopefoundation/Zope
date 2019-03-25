@@ -4,8 +4,6 @@ import traceback
 import unittest
 from io import BytesIO
 
-from six import PY3
-
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import InternalError

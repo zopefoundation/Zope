@@ -25,7 +25,6 @@ from Acquisition import Implicit
 from Acquisition import aq_base
 from ExtensionClass import Base
 from OFS.metaconfigure import get_registered_packages
-from zExceptions import Redirect
 
 
 def _product_packages():

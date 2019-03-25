@@ -13,8 +13,6 @@
 """DTML Document objects.
 """
 
-from six import PY2
-from six import PY3
 from six import binary_type
 from six.moves.urllib.parse import quote
 

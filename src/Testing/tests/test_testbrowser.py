@@ -20,7 +20,6 @@ import transaction
 from AccessControl.Permissions import view
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
-from Testing.testbrowser import WSGITestApp
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password

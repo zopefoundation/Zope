@@ -9,7 +9,6 @@ except ImportError:
     import xmlrpclib
 
 
-
 class FauxResponse(object):
 
     def __init__(self):
