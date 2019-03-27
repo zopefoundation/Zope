@@ -1,31 +1,29 @@
-import re
 import logging
+import re
 
-from zope.interface import implementer
-from zope.interface import provider
-
-from zope.pagetemplate.interfaces import IPageTemplateEngine
-from zope.pagetemplate.interfaces import IPageTemplateProgram
-
-from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
+from chameleon.tal import RepeatDict
+from chameleon.tales import NotExpr
+from chameleon.tales import StringExpr
+from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Products.PageTemplates.Expressions import getEngine
 from Products.PageTemplates import ZRPythonExpr
+from Products.PageTemplates.Expressions import getEngine
+from z3c.pt.expressions import ProviderExpr
+from z3c.pt.expressions import PythonExpr
+from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
+from zope.interface import implementer
+from zope.interface import provider
+from zope.pagetemplate.interfaces import IPageTemplateEngine
+from zope.pagetemplate.interfaces import IPageTemplateProgram
 
-from chameleon.tales import StringExpr
-from chameleon.tales import NotExpr
-from chameleon.tal import RepeatDict
-from chameleon.zpt.template import Macros
-
-from z3c.pt.expressions import PythonExpr, ProviderExpr
-
+from .expression import ExistsExpr
+from .expression import NocallExpr
 from .expression import PathExpr
 from .expression import TrustedPathExpr
-from .expression import NocallExpr
-from .expression import ExistsExpr
 from .expression import UntrustedPythonExpr
+
 
 # Declare Chameleon's repeat dictionary public
 RepeatDict.security = ClassSecurityInfo()

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import Testing.ZopeTestCase
-import Testing.testbrowser
-import Zope2.App.zcml
 import io
 import unittest
+
+import Testing.testbrowser
+import Testing.ZopeTestCase
 import zExceptions
+import Zope2.App.zcml
 
 
 def _lock_item(item):

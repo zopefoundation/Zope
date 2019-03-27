@@ -20,7 +20,7 @@ Features
 
 Other changes
 +++++++++++++
-- full PEP-8 compliance with the exception of import sorting
+- full PEP-8 compliance
 
 
 4.0b10 (2019-03-08)

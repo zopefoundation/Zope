@@ -1,30 +1,26 @@
 from ast import NodeTransformer
 from ast import parse
+
+from chameleon.astutil import Static
+from chameleon.astutil import Symbol
+from chameleon.codegen import template
 from six import class_types
 
+from AccessControl.ZopeGuards import guarded_apply
+from AccessControl.ZopeGuards import guarded_getattr
+from AccessControl.ZopeGuards import guarded_getitem
+from AccessControl.ZopeGuards import guarded_iter
+from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
+from Products.PageTemplates.Expressions import render
+from RestrictedPython import RestrictingNodeTransformer
+from RestrictedPython.Utilities import utility_builtins
+from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython import RestrictingNodeTransformer
-
-from Products.PageTemplates.Expressions import render
-
-from AccessControl.ZopeGuards import guarded_getattr
-from AccessControl.ZopeGuards import guarded_getitem
-from AccessControl.ZopeGuards import guarded_apply
-from AccessControl.ZopeGuards import guarded_iter
-from AccessControl.ZopeGuards import protected_inplacevar
-
-from chameleon.astutil import Symbol
-from chameleon.astutil import Static
-from chameleon.codegen import template
-
-from z3c.pt import expressions
 
 _marker = object()
 

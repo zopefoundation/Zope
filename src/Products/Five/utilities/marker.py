@@ -16,11 +16,15 @@
 Allows for arbitrary application of marker interfaces to objects.
 """
 
-from zope.interface import implementer, implementedBy, providedBy
-from zope.interface import directlyProvides, directlyProvidedBy
-from zope.interface.interfaces import IInterface
-from zope.component.interface import getInterface, interfaceToName
+from zope.component.interface import getInterface
+from zope.component.interface import interfaceToName
 from zope.component.interface import searchInterface
+from zope.interface import directlyProvidedBy
+from zope.interface import directlyProvides
+from zope.interface import implementedBy
+from zope.interface import implementer
+from zope.interface import providedBy
+from zope.interface.interfaces import IInterface
 
 from .interfaces import IMarkerInterfaces
 

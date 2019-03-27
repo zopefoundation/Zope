@@ -15,33 +15,33 @@
 
 import os
 
+from six import binary_type
+from six import text_type
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_page_templates
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view
 from AccessControl.Permissions import view_management_screens
-from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Acquired
-from Acquisition import aq_get
 from Acquisition import Explicit
-from zExceptions import ResourceLockedError
-
+from Acquisition import aq_get
 from App.Common import package_home
 from OFS.Cache import Cacheable
-from OFS.SimpleItem import SimpleItem
 from OFS.PropertyManager import PropertyManager
+from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
-from Shared.DC.Scripts.Script import Script
-from Shared.DC.Scripts.Signature import FuncCode
 from Products.PageTemplates import bbb
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.utils import convertToUnicode
-
-from six import text_type, binary_type
+from Shared.DC.Scripts.Script import Script
+from Shared.DC.Scripts.Signature import FuncCode
+from zExceptions import ResourceLockedError
 
 
 preferred_encodings = ['utf-8', 'iso-8859-15']

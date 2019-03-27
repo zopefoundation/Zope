@@ -14,8 +14,8 @@
 
 Extensions currently include external methods.
 """
-from functools import total_ordering
 import os
+from functools import total_ordering
 
 from six import exec_
 

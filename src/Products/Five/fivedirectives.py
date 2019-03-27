@@ -14,9 +14,9 @@
 """Five ZCML directive schemas
 """
 
-from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
 from zope.schema import TextLine
 
 

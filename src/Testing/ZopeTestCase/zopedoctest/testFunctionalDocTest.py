@@ -14,8 +14,8 @@
 """
 import unittest
 
-from Testing.ZopeTestCase import FunctionalDocTestSuite
 from Testing.ZopeTestCase import FunctionalDocFileSuite
+from Testing.ZopeTestCase import FunctionalDocTestSuite
 
 
 class HTTPHeaderOutputTests(unittest.TestCase):

@@ -5,12 +5,11 @@ import os
 import os.path
 import tempfile
 import unittest
-import Zope2
+
 import transaction
-
-from Testing.makerequest import makerequest
-
+import Zope2
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from Testing.makerequest import makerequest
 
 
 class TypeSniffingTestCase(unittest.TestCase):

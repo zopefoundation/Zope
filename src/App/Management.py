@@ -13,20 +13,24 @@
 """Standard management interface support
 """
 
-from AccessControl import Unauthorized
+import itertools
+
+import six
+from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import unquote
+
+import zope.event
 from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
-from App.interfaces import INavigation
 from App.interfaces import ICSSPaths
 from App.interfaces import IJSPaths
+from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from six.moves.urllib.parse import quote, unquote
 from zope.interface import implementer
-import itertools
-import six
-import zope.event
+
 
 try:
     from html import escape

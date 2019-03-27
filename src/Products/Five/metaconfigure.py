@@ -2,6 +2,7 @@
 
 from zope.deferredimport import deprecated
 
+
 deprecated(
     'Please import from AccessControl.metaconfigure',
     ClassDirective='AccessControl.metaconfigure:ClassDirective',

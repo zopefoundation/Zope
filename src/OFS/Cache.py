@@ -13,6 +13,10 @@
 """Cacheable object and cache management base classes.
 """
 
+import sys
+import time
+from logging import getLogger
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -24,10 +28,6 @@ from Acquisition import aq_get
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
-from logging import getLogger
-
-import sys
-import time
 
 
 ZCM_MANAGERS = '__ZCacheManager_ids__'

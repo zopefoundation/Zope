@@ -1,7 +1,7 @@
 import io
 import os.path
-from io import BytesIO
 import unittest
+from io import BytesIO
 
 import App
 from Testing.ZopeTestCase.warnhook import WarningsHook

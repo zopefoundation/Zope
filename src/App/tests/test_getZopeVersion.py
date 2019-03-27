@@ -16,6 +16,7 @@
 import unittest
 
 from pkg_resources import get_distribution
+
 from App.version_txt import getZopeVersion
 
 

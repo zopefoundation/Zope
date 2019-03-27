@@ -15,8 +15,11 @@
 Zope 2 objects.
 """
 
+from Products.Five import fivemethod
+from Products.Five import isFiveMethod
 from zope.size.interfaces import ISized
-from Products.Five import fivemethod, isFiveMethod
+from zope.testing.cleanup import addCleanUp  # NOQA
+
 
 # holds classes that were monkeyed with; for clean up
 _monkied = []
@@ -84,6 +87,5 @@ def cleanUp():
         unsizable(class_)
 
 
-from zope.testing.cleanup import addCleanUp  # NOQA
 addCleanUp(cleanUp)
 del addCleanUp

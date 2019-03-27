@@ -14,10 +14,10 @@
 
 import unittest
 
-import Acquisition
-import ExtensionClass
 from six import PY2
 
+import Acquisition
+import ExtensionClass
 from ZPublisher.mapply import mapply
 
 

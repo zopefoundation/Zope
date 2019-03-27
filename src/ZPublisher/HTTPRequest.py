@@ -14,36 +14,38 @@
 """ HTTP request management.
 """
 
-from cgi import FieldStorage
 import codecs
-from copy import deepcopy
 import os
 import random
 import re
 import time
+from cgi import FieldStorage
+from copy import deepcopy
 
-from AccessControl.tainted import should_be_tainted
-from AccessControl.tainted import taint_string
-from six import binary_type
 from six import PY2
 from six import PY3
+from six import binary_type
 from six import string_types
 from six import text_type
 from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
+
+from AccessControl.tainted import should_be_tainted
+from AccessControl.tainted import taint_string
 from zope.i18n.interfaces import IUserPreferredLanguages
-from zope.i18n.locales import locales, LoadLocaleError
+from zope.i18n.locales import LoadLocaleError
+from zope.i18n.locales import locales
 from zope.interface import directlyProvidedBy
 from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.publisher.base import DebugFlags
 from zope.publisher.interfaces.browser import IBrowserRequest
-
+from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.utils import basic_auth_decode
-from ZPublisher import xmlrpc
+
 
 if PY3:
     from html import escape

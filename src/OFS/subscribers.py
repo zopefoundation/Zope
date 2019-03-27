@@ -15,19 +15,19 @@
 Subscriber definitions.
 """
 
-from AccessControl import getSecurityManager
-from Acquisition import aq_base
-from App.config import getConfiguration
 from logging import getLogger
-from ZODB.POSException import ConflictError
-from zope.container.contained import dispatchToSublocations
-from zope.lifecycleevent.interfaces import IObjectCopiedEvent
-from zope.lifecycleevent.interfaces import IObjectMovedEvent
 
 import OFS.interfaces
 import zope.component
 import zope.interface
 import zope.location.interfaces
+from AccessControl import getSecurityManager
+from Acquisition import aq_base
+from App.config import getConfiguration
+from ZODB.POSException import ConflictError
+from zope.container.contained import dispatchToSublocations
+from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+from zope.lifecycleevent.interfaces import IObjectMovedEvent
 
 
 deprecatedManageAddDeleteClasses = []

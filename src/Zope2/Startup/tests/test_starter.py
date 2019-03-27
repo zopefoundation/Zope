@@ -20,10 +20,11 @@ import tempfile
 import unittest
 
 import six
-import ZConfig
 
+import ZConfig
 from Zope2.Startup import get_wsgi_starter
 from Zope2.Startup.options import ZopeWSGIOptions
+
 
 _SCHEMA = None
 

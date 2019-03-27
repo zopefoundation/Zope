@@ -1,3 +1,7 @@
+import unittest
+
+import transaction
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from OFS.Folder import Folder
@@ -6,10 +10,6 @@ from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from Zope2.App import zcml
 from zope.testing import cleanup
-
-import transaction
-import unittest
-import Zope2
 
 
 Zope2.startup_wsgi()

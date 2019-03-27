@@ -1,16 +1,16 @@
+import io
+import unittest
+
+import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_base
 from Acquisition import Implicit
+from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
-
-import io
-import transaction
-import unittest
 
 
 ADD_IMAGES_AND_FILES = 'Add images and files'

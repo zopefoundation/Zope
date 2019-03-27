@@ -12,8 +12,10 @@
 ##############################################################################
 """BeforeTraverse interface and helper classes"""
 
-from Acquisition import aq_base
 from logging import getLogger
+
+from Acquisition import aq_base
+
 
 LOG = getLogger('ZPublisher')
 

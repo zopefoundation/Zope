@@ -13,14 +13,16 @@
 """
 Objects for packages that have been uninstalled.
 """
+from logging import getLogger
+
+from six import exec_
+from six.moves._thread import allocate_lock
+
 from Acquisition import Acquired
 from Acquisition import Explicit
 from App.special_dtml import DTMLFile
-from logging import getLogger
 from OFS.SimpleItem import Item
 from Persistence import Overridable
-from six import exec_
-from six.moves._thread import allocate_lock
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
 

@@ -22,18 +22,20 @@ information about XML-RPC and Zope.
 import re
 import sys
 
+from App.config import getConfiguration
+# Make DateTime.DateTime marshallable via XML-RPC
+# http://www.zope.org/Collectors/Zope/2109
+from DateTime.DateTime import DateTime
+from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
+
 try:
     import xmlrpc.client as xmlrpclib
 except ImportError:
     import xmlrpclib
 
-from App.config import getConfiguration
-from zExceptions import Unauthorized
-from ZODB.POSException import ConflictError
 
-# Make DateTime.DateTime marshallable via XML-RPC
-# http://www.zope.org/Collectors/Zope/2109
-from DateTime.DateTime import DateTime
 WRAPPERS = xmlrpclib.WRAPPERS + (DateTime, )
 
 

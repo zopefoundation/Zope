@@ -13,6 +13,7 @@
 
 import os
 
+
 try:
     chome = os.environ['INSTANCE_HOME']
 except KeyError:

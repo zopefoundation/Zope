@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from io import BytesIO
 import traceback
 import unittest
+from io import BytesIO
 
-from zExceptions import (
-    BadRequest,
-    Forbidden,
-    InternalError,
-    NotFound,
-    ResourceLockedError,
-    Unauthorized,
-)
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import InternalError
+from zExceptions import NotFound
+from zExceptions import ResourceLockedError
+from zExceptions import Unauthorized
 
 
 class HTTPResponseTests(unittest.TestCase):

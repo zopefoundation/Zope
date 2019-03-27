@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+import time
+import unittest
+from io import BytesIO
+
+import six
+from six import PY3
+
+import OFS.Image
+import Testing.testbrowser
+import Testing.ZopeTestCase
+import transaction
+import Zope2
 from Acquisition import aq_base
 from App.Common import rfc1123_date
-from io import BytesIO
 from OFS.Application import Application
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
 from OFS.SimpleItem import SimpleItem
-from six import PY3
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
 from zope.component import adapter
@@ -14,17 +26,6 @@ from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
-
-import OFS.Image
-import os
-import six
-import sys
-import Testing.testbrowser
-import Testing.ZopeTestCase
-import time
-import transaction
-import unittest
-import Zope2
 
 
 here = os.path.dirname(os.path.abspath(__file__))

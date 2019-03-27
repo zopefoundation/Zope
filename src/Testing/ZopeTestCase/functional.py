@@ -15,15 +15,15 @@
 After Marius Gedminas' functional.py module for Zope3.
 """
 
-from functools import partial
 import sys
+from functools import partial
 
 from six import PY2
-import transaction
-from zope.interface import implementer
 
+import transaction
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
+from zope.interface import implementer
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 

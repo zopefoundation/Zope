@@ -6,30 +6,29 @@ Ensures that adding a page template works correctly.
 """
 
 import unittest
+
+from six import text_type
+
 import transaction
-
+import Zope2
 import zope.component.testing
-from zope.traversing.adapters import DefaultTraversable
-from zope.publisher.http import HTTPCharsets
-
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.PageTemplateFile import guess_type
+from Products.PageTemplates.unicodeconflictresolver import \
+    PreferredCharsetResolver
+from Products.PageTemplates.utils import charsetFromMetaEquiv
+from Products.PageTemplates.utils import encodingFromXMLPreamble
+from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Testing.makerequest import makerequest
 from Testing.testbrowser import Browser
 from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-from Products.PageTemplates.PageTemplateFile import guess_type
-from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
-from Products.PageTemplates.utils import encodingFromXMLPreamble
-from Products.PageTemplates.utils import charsetFromMetaEquiv
+from Testing.ZopeTestCase import installProduct
 from zope.component import provideUtility
 from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from Products.PageTemplates.unicodeconflictresolver \
-    import PreferredCharsetResolver
-import Zope2
-
-from six import text_type
+from zope.publisher.http import HTTPCharsets
+from zope.traversing.adapters import DefaultTraversable
 
 
 ascii_binary = b'<html><body>hello world</body></html>'

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import unittest
+from logging import getLogger
+
+from six import PY2
+from six.moves.urllib.parse import quote
 
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
@@ -9,22 +14,17 @@ from AccessControl.SpecialUsers import emergency_user
 from AccessControl.SpecialUsers import nobody
 from AccessControl.SpecialUsers import system
 from AccessControl.User import User  # before SpecialUsers
-from Acquisition import aq_self
 from Acquisition import Implicit
+from Acquisition import aq_self
 from App.config import getConfiguration
-from logging import getLogger
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
-from six import PY2
-from six.moves.urllib.parse import quote
 from zExceptions import BadRequest
 from Zope2.App import zcml
 from zope.component.testing import PlacelessSetup
 from zope.interface import implementer
-
-import unittest
 
 
 logger = getLogger('OFS.subscribers')

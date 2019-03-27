@@ -11,11 +11,12 @@
 #
 ##############################################################################
 
-from io import BytesIO
 import sys
 import unittest
+from io import BytesIO
 
 from six import PY2
+
 from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
 from zope.component import provideAdapter
@@ -24,10 +25,10 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
-
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
+
 
 if sys.version_info >= (3, ):
     unicode = str

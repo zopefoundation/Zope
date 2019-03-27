@@ -17,9 +17,9 @@ ZODB objects
 
 from io import BytesIO
 
+from ZPublisher.BaseRequest import RequestContainer
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
-from ZPublisher.BaseRequest import RequestContainer
 
 
 def makerequest(app, stdout=None, environ=None):

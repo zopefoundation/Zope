@@ -16,9 +16,10 @@
 import base64
 import zlib
 
+import six
+
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
-import six
 
 
 class TreeNode(Explicit):

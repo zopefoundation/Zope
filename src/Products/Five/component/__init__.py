@@ -14,22 +14,22 @@
 """Five local component look-up support
 """
 
+import ExtensionClass
 import zope.component
 import zope.event
 import zope.interface
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+# Hook up custom component architecture calls
+from zope.component.hooks import setHooks
 from zope.component.interfaces import IPossibleSite
 from zope.component.interfaces import ISite
 from zope.interface.interfaces import IComponentLookup
 from zope.traversing.interfaces import BeforeTraverseEvent
-
-import ExtensionClass
-from Acquisition import aq_base, aq_inner, aq_parent
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
-
-# Hook up custom component architecture calls
-from zope.component.hooks import setHooks
 
 
 setHooks()

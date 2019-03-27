@@ -14,11 +14,13 @@
 import base64
 import logging
 
-from Acquisition import aq_inner, aq_parent
 from six import PY3
 from six import binary_type
 from six import text_type
+
 import transaction
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 
 
 AC_LOGGER = logging.getLogger('event.AccessControl')

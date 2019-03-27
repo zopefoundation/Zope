@@ -13,6 +13,7 @@
 
 from six.moves import xrange
 
+
 _marker = object()
 
 

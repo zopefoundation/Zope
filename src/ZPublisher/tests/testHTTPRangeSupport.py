@@ -12,9 +12,10 @@
 ##############################################################################
 
 import sys
-from ZPublisher.HTTPRangeSupport import parseRange, expandRanges
-
 import unittest
+
+from ZPublisher.HTTPRangeSupport import expandRanges
+from ZPublisher.HTTPRangeSupport import parseRange
 
 
 class TestRangeHeaderParse(unittest.TestCase):

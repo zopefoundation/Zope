@@ -15,17 +15,20 @@
 
 import types
 
-from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_inner
-from Acquisition.interfaces import IAcquirer
-from ExtensionClass import Base
 from six.moves.urllib.parse import quote as urllib_quote
+
+from AccessControl.ZopeSecurityPolicy import getRoles
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition.interfaces import IAcquirer
+from App.bbb import HAS_ZSERVER
+from ExtensionClass import Base
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent
@@ -34,11 +37,10 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
-from ZPublisher.xmlrpc import is_xmlrpc_response
-
-from App.bbb import HAS_ZSERVER
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
+from ZPublisher.xmlrpc import is_xmlrpc_response
+
 
 _marker = []
 UNSPECIFIED_ROLES = ''

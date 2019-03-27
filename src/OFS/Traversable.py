@@ -13,6 +13,8 @@
 """This module implements a mix-in for traversable objects.
 """
 
+from six.moves.urllib.parse import quote
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -27,12 +29,11 @@ from Acquisition.interfaces import IAcquirer
 from OFS import bbb
 from OFS.interfaces import IApplication
 from OFS.interfaces import ITraversable
-from six.moves.urllib.parse import quote
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse

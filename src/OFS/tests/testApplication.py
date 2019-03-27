@@ -1,6 +1,6 @@
-from Testing.ZopeTestCase import FunctionalTestCase
-
 import unittest
+
+from Testing.ZopeTestCase import FunctionalTestCase
 
 
 class ApplicationTests(unittest.TestCase):

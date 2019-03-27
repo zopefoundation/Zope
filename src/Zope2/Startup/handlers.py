@@ -12,11 +12,13 @@
 #
 ##############################################################################
 
-import ipaddress
 import os
 from socket import gethostbyaddr
 
+import ipaddress
+
 from zope.deferredimport import deprecated
+
 
 # BBB Zope 5.0
 _prefix = 'ZServer.Zope2.Startup.handlers:'

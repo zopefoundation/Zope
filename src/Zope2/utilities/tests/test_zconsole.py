@@ -3,8 +3,12 @@ import shutil
 import sys
 import tempfile
 import unittest
-from App.config import setConfiguration, getConfiguration
+
 from six import StringIO
+
+from App.config import getConfiguration
+from App.config import setConfiguration
+
 
 zope_conf_template = """
 %define INSTANCE {}

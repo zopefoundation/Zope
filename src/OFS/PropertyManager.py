@@ -13,6 +13,8 @@
 """Property management
 """
 
+import six
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -26,8 +28,6 @@ from OFS.PropertySheets import vps
 from zExceptions import BadRequest
 from zope.interface import implementer
 from ZPublisher.Converters import type_converters
-
-import six
 
 
 try:

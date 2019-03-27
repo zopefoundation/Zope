@@ -9,13 +9,13 @@ from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Persistent
+from zExceptions import BadRequest
+from ZPublisher.BaseRequest import quote
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
-from ZPublisher.BaseRequest import quote
 from ZPublisher.HTTPRequest import splitport
-from zExceptions import BadRequest
 
 
 class VirtualHostMonster(Persistent, Item, Implicit):

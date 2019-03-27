@@ -22,20 +22,18 @@ import sys
 from inspect import isfunction
 from inspect import ismethod
 
-from zope.component import queryMultiAdapter
-from zope.component.interface import provideInterface
-from zope.component.zcml import handler
-from zope.configuration.exceptions import ConfigurationError
-from zope.interface import classImplements
-from zope.interface import Interface
-from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from zope.security.zcml import Permission
-
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
+from AccessControl.class_init import InitializeClass
+from AccessControl.security import CheckerPrivateId
+from AccessControl.security import getSecurityInfo
+from AccessControl.security import protectClass
+from AccessControl.security import protectName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Five.browser.resource import DirectoryResourceFactory
+from Products.Five.browser.resource import FileResourceFactory
+from Products.Five.browser.resource import ImageResourceFactory
+from Products.Five.browser.resource import PageTemplateResourceFactory
 from zope.browserpage.metaconfigure import _handle_allowed_attributes
 from zope.browserpage.metaconfigure import _handle_allowed_interface
 from zope.browserpage.metaconfigure import _handle_for
@@ -43,18 +41,17 @@ from zope.browserpage.metaconfigure import _handle_menu
 from zope.browserpage.metaconfigure import _handle_permission
 from zope.browserpage.metaconfigure import providesCallable
 from zope.browserpage.metadirectives import IViewDirective
-
-from AccessControl.class_init import InitializeClass
-from AccessControl.security import getSecurityInfo
-from AccessControl.security import protectClass
-from AccessControl.security import protectName
-from AccessControl.security import CheckerPrivateId
-
-from Products.Five.browser.resource import FileResourceFactory
-from Products.Five.browser.resource import ImageResourceFactory
-from Products.Five.browser.resource import PageTemplateResourceFactory
-from Products.Five.browser.resource import DirectoryResourceFactory
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import queryMultiAdapter
+from zope.component.interface import provideInterface
+from zope.component.zcml import handler
+from zope.configuration.exceptions import ConfigurationError
+from zope.interface import Interface
+from zope.interface import classImplements
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.security.zcml import Permission
 
 
 def is_method(func):

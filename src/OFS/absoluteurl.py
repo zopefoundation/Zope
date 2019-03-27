@@ -12,10 +12,11 @@
 #
 ##############################################################################
 
-from Acquisition import aq_parent
-from OFS.interfaces import ITraversable
 from six.moves.urllib.parse import quote
 from six.moves.urllib.parse import unquote
+
+from Acquisition import aq_parent
+from OFS.interfaces import ITraversable
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.publisher.browser import BrowserView

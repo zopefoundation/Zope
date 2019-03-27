@@ -14,12 +14,12 @@
 """
 
 import contextlib
-import transaction
 
+import transaction
 import ZPublisher.WSGIPublisher
 from Testing.makerequest import makerequest
-from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import ZopeLite as Zope2
+from Testing.ZopeTestCase import connections
 
 
 class Sandboxed(object):

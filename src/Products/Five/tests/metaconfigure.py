@@ -14,8 +14,8 @@
 """Parrot directive and support classes
 """
 
-from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
 from zope.schema import TextLine
 
 

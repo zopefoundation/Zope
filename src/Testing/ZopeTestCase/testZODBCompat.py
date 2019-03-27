@@ -17,17 +17,16 @@ work if a savepoint is made before performing the respective operation.
 """
 
 import os
-
-from Testing import ZopeTestCase
-
-from Testing.ZopeTestCase import layer
-from Testing.ZopeTestCase import utils
-from Testing.ZopeTestCase import transaction
+import tempfile
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
 from OFS.SimpleItem import SimpleItem
-import tempfile
+from Testing import ZopeTestCase
+from Testing.ZopeTestCase import layer
+from Testing.ZopeTestCase import transaction
+from Testing.ZopeTestCase import utils
+
 
 folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]

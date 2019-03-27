@@ -14,18 +14,18 @@
 import io
 import unittest
 
+from six.moves.urllib_parse import quote
+
+import Testing.testbrowser
 import transaction
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
-from zope.security.interfaces import IUnauthorized
 from zope.security.interfaces import IForbidden
-from six.moves.urllib_parse import quote
-
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import ZopeTestCase
+from zope.security.interfaces import IUnauthorized
 from ZPublisher.WSGIPublisher import get_module_info
-import Testing.testbrowser
 
 
 class WSGIResponseTests(unittest.TestCase):

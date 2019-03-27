@@ -27,10 +27,30 @@ import os
 import sys
 import time
 
-from six import exec_
 from six import PY2
+from six import exec_
 
+import App.ProductContext  # NOQA
+import OFS.Application  # NOQA
+import OFS.ObjectManager  # NOQA
+import OFS.SimpleItem  # NOQA
+import Products  # NOQA
+import ZODB  # NOQA
+import Zope2  # NOQA
+import Zope2.Startup.run  # NOQA
+from OFS.Application import get_products
+from OFS.Application import install_package
+from OFS.Application import install_product
+from OFS.Folder import Folder  # NOQA
 from Testing.ZopeTestCase import layer
+# ZODB sandbox factory
+from ZODB.DemoStorage import DemoStorage  # NOQA
+
+
+# Allow test authors to install Zope products into the test environment. Note
+# that installProduct() must be called at module level -- never from tests.
+from OFS.Application import get_folder_permissions  # NOQA; NOQA
+
 
 # Allow code to tell it is run by the test framework
 os.environ['ZOPETESTCASE'] = '1'
@@ -101,21 +121,14 @@ _configure_debug_mode()
 _configure_client_cache()
 
 _exec('import Zope2')
-import Zope2  # NOQA
-import Zope2.Startup.run  # NOQA
 _exec('import ZODB')
-import ZODB  # NOQA
 _write('.')
 
 _exec('import OFS.SimpleItem')
-import OFS.SimpleItem  # NOQA
 _exec('import OFS.ObjectManager')
-import OFS.ObjectManager  # NOQA
 _write('.')
 
 _exec('import OFS.Application')
-import OFS.Application  # NOQA
-import App.ProductContext  # NOQA
 _write('.')
 
 _patched = False
@@ -163,12 +176,6 @@ def _startup():
 # Start ZopeLite
 _startup()
 
-# Allow test authors to install Zope products into the test environment. Note
-# that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products  # NOQA
-from OFS.Application import install_product, install_package  # NOQA
-from OFS.Folder import Folder  # NOQA
-import Products  # NOQA
 
 _installedProducts = {}
 _installedPackages = {}
@@ -256,9 +263,6 @@ def startup():
 
 Zope = Zope2
 active = _patched
-
-# ZODB sandbox factory
-from ZODB.DemoStorage import DemoStorage  # NOQA
 
 
 def sandbox(base=None):

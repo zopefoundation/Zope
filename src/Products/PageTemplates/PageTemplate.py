@@ -15,13 +15,15 @@
 
 import sys
 
-from Acquisition import aq_base, aq_inner, aq_parent
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
-from zope.pagetemplate.pagetemplate import PTRuntimeError
-from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
-from zope.tales.expressions import SimpleModuleImporter
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from Products.PageTemplates.Expressions import getEngine
+from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
+from zope.pagetemplate.pagetemplate import PTRuntimeError
+from zope.tales.expressions import SimpleModuleImporter
 
 
 class PageTemplate(ExtensionClass.Base,

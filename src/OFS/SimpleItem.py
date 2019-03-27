@@ -18,6 +18,14 @@ This module can also be used as a simple template for implementing new
 item types.
 """
 
+import logging
+import marshal
+import re
+import sys
+import time
+
+from six import reraise
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import ftp_access
@@ -27,15 +35,15 @@ from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import Acquired
+from Acquisition import Implicit
 from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.Management import Navigation
 from App.Management import Tabs
-from App.special_dtml import DTMLFile
 from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from ComputedAttribute import ComputedAttribute
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
@@ -51,16 +59,9 @@ from OFS.owner import Owned
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 from Persistence import Persistent
-from six import reraise
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
-
-import logging
-import marshal
-import re
-import sys
-import time
 
 
 if bbb.HAS_ZSERVER:

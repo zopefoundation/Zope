@@ -13,10 +13,10 @@
 ##############################################################################
 
 
-from six import StringIO
-
 import logging
 import unittest
+
+from six import StringIO
 
 
 class TestMaybeWarnDeprecated(unittest.TestCase):
