@@ -16,9 +16,6 @@ matrix:
         - python: "3.8-dev"
           env: TOXENV=py38
           dist: xenial
-    allow_failures:
-        - python: "3.6"
-          env: TOXENV=lint-py36
 
 install:
     - travis_retry pip install -U pip setuptools
