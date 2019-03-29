@@ -92,6 +92,9 @@ class Tabs(Base):
 
         return getattr(self, m)(self, REQUEST)
 
+    def tabs_path_length(self, REQUEST):
+        return len(list(self.tabs_path_default(REQUEST)))
+
     def tabs_path_default(self, REQUEST):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']

@@ -41,3 +41,31 @@ class TestNavigation(Testing.ZopeTestCase.ZopeTestCase):
         self.folder.manage_addProperty(
             'zmi_additional_css_paths', '', 'string')
         self.assertNotIn('href=""', self.folder.manage_page_header())
+
+
+class TestTabs(Testing.ZopeTestCase.ZopeTestCase):
+
+    def setUp(self):
+        from OFS.DTMLMethod import addDTMLMethod
+        super(TestTabs, self).setUp()
+        self.app.REQUEST['PARENTS'] = [self.app]
+        addDTMLMethod(self.folder, 'page')
+
+    def test_Tabs_tabs_path_default(self):
+        path = '/%s/page' % self.folder.getId()
+        self.app.REQUEST.traverse(path)
+
+        crumbs = list(self.folder.tabs_path_default(self.app.REQUEST))
+        self.assertDictEqual(crumbs[0],
+                             {'url': '/manage_workspace', 'title': 'Root',
+                              'last': False})
+        self.assertDictEqual(crumbs[1],
+                             {'url': '/test_folder_1_/manage_workspace',
+                              'title': 'test_folder_1_',
+                              'last': True})
+
+    def test_Tabs_tabs_path_length(self):
+        path = '/%s/page' % self.folder.getId()
+        self.app.REQUEST.traverse(path)
+
+        self.assertEqual(self.folder.tabs_path_length(self.app.REQUEST), 2)

@@ -25,6 +25,9 @@ Other changes
 - fixed ZMI font rendering on macOS
   (`#531 <https://github.com/zopefoundation/Zope/issues/531>`_)
 
+- provided method to get breadcrumb length to prevent ZMI errors
+  (`#533 <https://github.com/zopefoundation/Zope/issues/533>`_)
+
 
 4.0b10 (2019-03-08)
 -------------------

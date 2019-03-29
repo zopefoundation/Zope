@@ -41,7 +41,7 @@
 </dtml-comment>
 
 		<nav aria-label="breadcrumb">
-		<dtml-let breadcrumb_length="len(list(tabs_path_default(REQUEST)))">
+		<dtml-let breadcrumb_length="tabs_path_length(REQUEST)">
 			<ol class="breadcrumb <dtml-var "'zmi-' + title_or_id().replace(' ','')">"
 				data-length="<dtml-var breadcrumb_length>">
 				<li class="breadcrumb-item meta_type">
