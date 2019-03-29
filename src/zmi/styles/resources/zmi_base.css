@@ -9,6 +9,10 @@
 	}
 }
 
+body.zmi {
+    font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
 .zmi:not(.zmi-manage_menu) main,
 .zmi main.container-fluid {
 	width: 100%;

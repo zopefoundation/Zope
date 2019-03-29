@@ -22,6 +22,9 @@ Other changes
 +++++++++++++
 - full PEP-8 compliance
 
+- fixed ZMI font rendering on macOS
+  (`#531 <https://github.com/zopefoundation/Zope/issues/531>`_)
+
 
 4.0b10 (2019-03-08)
 -------------------
