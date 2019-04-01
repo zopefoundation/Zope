@@ -4,7 +4,7 @@ Zope2 Book
 Background
 ----------
 
-The `Zope2 Book` has been the canonical source of information about Zope2 for
+The `Zope Book` has been the canonical source of information about Zope2 for
 a long time.
 
 During its lifetime it has seen many different places. The original location

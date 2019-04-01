@@ -1,8 +1,8 @@
-The Zope2 Book
-==============
+The Zope Book
+=============
 
 Welcome to *The Zope Book*.  This book is designed to introduce you
-to `Zope2`, an open-source web application server.
+to `Zope`, an open-source web application server.
 
 
 Contents

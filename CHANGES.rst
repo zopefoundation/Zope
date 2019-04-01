@@ -21,6 +21,9 @@ Features
 Other changes
 +++++++++++++
 
+- renamed/moved the `Zope 2 Book` to `Zope Book`
+  (`#443 <https://github.com/zopefoundation/Zope/issues/443>`_)
+
 - show item icons on ZMI `Find` tab results
   (`#534 <https://github.com/zopefoundation/Zope/issues/534>`_)
 

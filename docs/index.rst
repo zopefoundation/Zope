@@ -17,5 +17,5 @@ Contents:
    ZODB-migration
    maintenance
    changes
-   zope2book/index
+   zopebook/index
    zdgbook/index

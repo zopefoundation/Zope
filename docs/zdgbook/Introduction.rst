@@ -32,7 +32,7 @@ simply written as Zope.  It has three distinct audiences.
 This guide is intended to document Zope for the second audience,
 Developers, as defined above.  If you fit more into the "user"
 audience defined above, you'll probably want to start by reading `The
-Zope Book <https://zope.readthedocs.io/en/latest/zope2book/>`_ .
+Zope Book <https://zope.readthedocs.io/en/latest/zopebook/>`_ .
 
 Throughout this guide, it is assumed that you know how to program in
 the Python programming language.  Most of the examples in this guide

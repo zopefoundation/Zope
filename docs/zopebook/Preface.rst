@@ -1,7 +1,7 @@
 Preface
 =======
 
-Welcome to *The Zope2 Book*.  This book is designed to introduce you
+Welcome to *The Zope Book*.  This book is designed to introduce you
 to ``Zope2``, an open-source web application server.
 
 To make effective use of the book, you should know how to use a web
