@@ -76,10 +76,13 @@
 
 
 <ul class="zmi-find-results list-group mb-5">
-<dtml-in results size="batch_size" start="query_start" sort_expr="skey" reverse_expr="rkey">
+<dtml-in results size="batch_size" start="query_start" sort_expr="skey"
+         reverse_expr="rkey">
 	<li class="list-group-item">
-		<a href="&dtml.url_quote-sequence-key;/manage_workspace">&dtml-sequence-key;
-			<dtml-if title>(&dtml-title;)</dtml-if>
+		<a href="&dtml.url_quote-sequence-key;/manage_workspace">
+            <i title="&dtml-meta_type;"
+               class="&dtml-zmi_icon;">&nbsp;</i>
+            &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
 		</a>
 	</li>
 </dtml-in>
@@ -143,7 +146,7 @@
 	</td>
 </tr>
 
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
 	<td>
 	<label for="expr" class="form-label">Expr:</label>
 	</td>
@@ -153,7 +156,7 @@
 	</td>
 </tr>
 
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
 	<td>
 	<label for="roles" class="form-label">Where the roles:</label>
 	</td>
@@ -172,7 +175,7 @@
 	</td>
 </tr>
 
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
 	<td>
 	<label for="perm" class="form-label">Have permission:</label>
 	</td>
@@ -188,7 +191,7 @@
 	</td>
 </tr>
 
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>">
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
 	<td>
 	<label for="skey" class="form-label">Sort results by:</label>
 	</td>

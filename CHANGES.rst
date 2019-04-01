@@ -20,6 +20,10 @@ Features
 
 Other changes
 +++++++++++++
+
+- show item icons on ZMI `Find` tab results
+  (`#534 <https://github.com/zopefoundation/Zope/issues/534>`_)
+
 - full PEP-8 compliance
 
 - fixed ZMI font rendering on macOS
