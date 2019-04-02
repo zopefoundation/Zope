@@ -55,8 +55,18 @@ class TestFindSupport(unittest.TestCase):
         self.assertEqual(self.base['2'].id, 'foo2')
         self.assertEqual(self.base['3'].id, '3')
 
+    def test_find_text(self):
+        # Make sure ZopeFind can handle normal text
+        findme = 'findme'
+        self.base['doc1'] = DummyItem('doc1', text=findme)
+        self.base['doc2'] = DummyItem('doc2', text=findme)
+
+        res = self.base.ZopeFind(self.base, obj_searchterm=findme)
+        self.assertEqual(len(res), 2)
+        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
+
     @unittest.skipIf(six.PY2, 'Not applicable under Python 2')
-    def test_find_apply_text(self):
+    def test_find_text_nonascii(self):
         # Make sure ZopeFind can handle text and encoded text (binary) data
         unencoded = u'\xfcml\xe4\xfct'
         encoded = u'\xfcml\xe4\xfct'.encode('UTF-8')
@@ -66,3 +76,25 @@ class TestFindSupport(unittest.TestCase):
         res = self.base.ZopeFind(self.base, obj_searchterm=unencoded)
         self.assertEqual(len(res), 2)
         self.assertEqual(set([x[0] for x in res]), set(['text', 'bytes']))
+
+    def test_find_text_tainted(self):
+        # Make sure ZopeFind can handle "Tainted" text for searches
+        # Tainted strings are created when the publisher sees what appears
+        # to be HTML code in the input, e.g. when you enter a HTML tag into
+        # the Find tab form in "containing"
+        from AccessControl.tainted import TaintedBytes
+        from AccessControl.tainted import TaintedString
+
+        findme = 'findme'
+        self.base['doc1'] = DummyItem('doc1', text=findme)
+        self.base['doc2'] = DummyItem('doc2', text=findme)
+
+        tainted_string = TaintedString(findme)
+        res = self.base.ZopeFind(self.base, obj_searchterm=tainted_string)
+        self.assertEqual(len(res), 2)
+        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
+
+        tainted_bytes = TaintedBytes(six.b(findme))
+        res = self.base.ZopeFind(self.base, obj_searchterm=tainted_bytes)
+        self.assertEqual(len(res), 2)
+        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))

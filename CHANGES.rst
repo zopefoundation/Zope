@@ -11,6 +11,12 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0b11 (unreleased)
 -------------------
 
+Fixes
++++++
+
+- make the ZMI `Find` tab work for searching HTML tags
+  by adding support for `Tainted` strings in ``ZopeFind``
+
 Features
 ++++++++
 

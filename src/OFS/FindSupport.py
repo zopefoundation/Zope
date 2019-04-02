@@ -18,6 +18,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
 from AccessControl.Permissions import view_management_screens
+from AccessControl.tainted import TaintedString
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
@@ -126,6 +127,11 @@ class FindSupport(Base):
 
             bs = aq_base(ob)
             if obj_searchterm:
+                if isinstance(obj_searchterm, TaintedString):
+                    obj_searchterm = str(obj_searchterm)
+                    if six.PY3 and not isinstance(obj_searchterm, str):
+                        obj_searchterm = obj_searchterm.decode(
+                            default_encoding)
                 if hasattr(ob, 'PrincipiaSearchSource'):
                     pss = ob.PrincipiaSearchSource()
                     if six.PY3 and not isinstance(pss, str):
