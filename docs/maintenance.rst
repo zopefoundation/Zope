@@ -100,3 +100,39 @@ Steps for creating a new Zope release
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
 
 - Announce the release to the world via zope-announce@zope.org and https://community.plone.org/c/announcements.
+
+
+Maintaining the Zope documentation
+----------------------------------
+
+Contributing to the documentation
++++++++++++++++++++++++++++++++++
+Any signed Zope contributor may contribute to the Sphinx-based documentation
+in the ``docs`` subfolder, including `The Zope Book` and the `Zope Developer's
+guide`.
+
+Just like with code contributions, please follow best practice. Test your
+changes locally before creating a push request or pushing to the repository.
+Use a reasonable line length (<80).
+
+Building the documentation
+++++++++++++++++++++++++++
+After you have bootstrapped and run the buildout, you can build the
+documentation using the script ``bin/make-docs`` to create the documentation
+HTML output. The script will tell you where it saves the output.
+
+The official documentation site on `Read the Docs`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Pushes to the Zope repository on GitHub will automatically trigger an automatic
+documentation refresh on the official documentation site at
+https://zope.readthedocs.io. This is true for the ``master`` branch, but also
+for versions 2.12 and 2.13. The trigger is implemented as a GitHub Webhook, see
+`Settings` | `Webhooks` in the GitHub repository.
+
+The RTD configuration at https://readthedocs.org/projects/zope/ is currently
+maintained by the following people:
+
+- Hanno Schlichting
+- Michael Howitz
+- Tres Seaver
+- Jens Vagelpohl
