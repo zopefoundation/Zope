@@ -112,7 +112,7 @@ in the ``docs`` subfolder, including `The Zope Book` and the `Zope Developer's
 guide`.
 
 Just like with code contributions, please follow best practice. Test your
-changes locally before creating a push request or pushing to the repository.
+changes locally before creating a pull request or pushing to the repository.
 Use a reasonable line length (<80).
 
 Building the documentation
