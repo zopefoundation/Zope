@@ -1,7 +1,6 @@
 Zope documentation
 ==================
-
-Contents:
+This is the official home for all Zope documentation.
 
 .. toctree::
    :maxdepth: 2
