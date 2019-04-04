@@ -1,5 +1,5 @@
-Changelog
-=========
+Change log
+==========
 
 This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
