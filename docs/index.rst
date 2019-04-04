@@ -9,7 +9,6 @@ Contents:
    WHATSNEW
    INSTALL
    operation
-   USERS
    ZMI
    SECURITY
    ZODB-migration

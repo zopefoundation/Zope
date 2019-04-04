@@ -3,6 +3,8 @@ Configuring and Running Zope
 
 .. highlight:: bash
 
+.. contents::
+
 
 Whichever method you used to install Zope and create a server instance (see
 :doc:`INSTALL-buildout` and :doc:`INSTALL-virtualenv`), the end result is
@@ -131,6 +133,51 @@ of the frame.
 
 To create content to be rendered at http://yourhost:8080/ create a `Page
 Template` or `DTML Document` named ``index_html``.
+
+
+Adding Users
+------------
+
+Adding users with full administrative access ("Managers")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you need to add a Manager to an existing Zope instance, you can do
+this using `addzope2user` as follows::
+
+  $ bin/addzope2user user password
+
+The script expects to find the configuration file at ``etc/wsgi.conf``.
+
+
+The Initial User
+~~~~~~~~~~~~~~~~
+An initial username and password is needed to "bootstrap" the creation of
+normal managers of your Zope site. This is accomplished through the
+use of the 'inituser' file in the directory specified as the instance
+home.
+
+The first time Zope starts, it will detect that no users have been
+defined in the root user folder.  It will search for the 'inituser'
+file and, if it exists, will add the user defined in the file to the
+root user folder.
+
+Normally, 'inituser' is created by the ``makewsgiinstance`` install
+script.
+
+
+The super user ("break glass in emergency" user)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you find yourself locked out of your Zope instance you can create a user
+by placing a file named ``access`` in the directory specified as the instance
+home. The file has one line with a colon-separated login and password, like::
+
+  superuser:mysecretpassword
+
+Now restart Zope and use these credentials to log in. This type of user account
+cannot create any content, but it can add new users to the user folder or edit
+existing users to get you out of a bind.
+
+Do not forget to delete the ``access`` file and restart Zope when you are
+done.
 
 
 Troubleshooting
