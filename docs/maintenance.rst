@@ -1,5 +1,5 @@
-Maintenance information
-=======================
+Maintainer information
+======================
 
 .. note::
 
