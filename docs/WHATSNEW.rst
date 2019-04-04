@@ -1,6 +1,5 @@
 What's new in Zope 4.0
 ======================
-
 The article explains the new high-level features and changes found in this
 version of Zope.
 
@@ -10,7 +9,6 @@ about all minor new features and bugs being solved in this release.
 
 Version numbering increase
 --------------------------
-
 Version numbers for Zope have been confusing in the past. The original Zope
 project iterated through version one to two up to version 2.13. In parallel
 a separate project was launched using the name Zope 3. Zope 3 wasn't a new
@@ -26,11 +24,7 @@ found in this release.
 
 Python versions
 ---------------
-
-Zope 4 supports both Python 2.7 and Python 3.5 or 3.6. While PyPy
-is supported by some of the underlying dependencies, it is incompatible
-with a couple of the foundational C extensions and with `RestrictedPython`.
-As a result Zope as a whole is not compatible with PyPy.
+Zope 4 supports Python 2.7 and Python 3.5 and higher.
 
 The Python 3 support currently covers the core dependencies shipped
 with Zope and is limited to the new WSGI based publisher. The new
@@ -43,9 +37,9 @@ see `zodb.py3migrate`_.
 
 .. _`zodb.py3migrate` : https://pypi.org/project/zodb.py3migrate
 
+
 Recommended WSGI setup
 ----------------------
-
 Zope 2.13 first gained support for running Zope as a WSGI application,
 using any WSGI capable web server instead of the built-in ZServer.
 
@@ -59,7 +53,7 @@ support, please make sure to install ZServer and use its ``mkzopeinstance``
 script to create a Zope instance.
 
 The ZServer project also includes limited functional testing support
-in the `ZServer.Testing` sub-package. testbrowser support is exclusively
+in the ``ZServer.Testing`` sub-package. testbrowser support is exclusively
 available based on the WSGI publisher, as a result of a switch from
 the unmaintained mechanize project to WebTest.
 
@@ -72,8 +66,8 @@ To make running Zope easier, a new ``runwsgi`` command line script got
 added, which can read a PasteDeploy configuration and create and run
 the WSGI pipeline specified in it. By default such a configuration is
 created in the ``etc/zope.ini`` file. The ``runwsgi`` script supports
-both `-v` / `--verbose` and `-d` / `--debug` arguments to print out
-more information on the console. The debug argument enables Zope's
+both ``-v`` / ``--verbose`` and ``-d`` / ``--debug`` arguments to print
+out more information on the console. The debug argument enables Zope's
 debug mode and disables the catch-all part of the httpexceptions
 WSGI middleware. This means unexpected and uncaught exceptions show
 their full traceback on the console and make it easier to debug them.
@@ -112,7 +106,6 @@ based publisher.
 
 View components without Acquisition
 -----------------------------------
-
 In Zope 2.12 Zope Toolkit view components changed and stopped inheriting
 from Acquisition base classes, as Acquisition got aware of `__parent__`
 pointers, which meant that ``aq_parent(view)`` worked, without the view
@@ -126,7 +119,6 @@ view page template files or viewlets.
 
 Chameleon based page templates
 ------------------------------
-
 Chameleon is an alternative implementation of the page template language
 supporting additional features and impressive template rendering speed.
 
@@ -135,10 +127,17 @@ from `five.pt` has been merged into Zope core and the Chameleon based
 engine is now the default, removing the need to install `five.pt`
 manually.
 
+.. note::
+
+   The page template language parser in Chameleon is extremely strict.
+   For example, in Zope 2, the parser does not care about opening and closing
+   tags that are not matched in terms of being uppercase/lowercase, or
+   unmatched opening/closing tags in general. All this will now cause template
+   compilation to fail.
+
 
 Memory use
 ----------
-
 Zope 4 depends on a new DateTime release. The new release has been optimized
 for better memory use. Applications using a lot of DateTime values like the
 Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
@@ -147,7 +146,6 @@ to large deployments.
 
 ZMI overhaul
 ------------
-
 The ZMI (Zope Management Interface) is now styled with Bootstrap.
 See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
 styling.
@@ -155,7 +153,6 @@ styling.
 
 Unified encoding
 ----------------
-
 As it is reasonable to have one unified encoding in ZMI and frontend, support
 for ``management_page_charset`` (as property of a folder) has been removed.
 ``default-zpublisher-encoding`` in `zope.conf` is the only place where to
