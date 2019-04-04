@@ -5,9 +5,6 @@ Welcome to *The Zope Book*.  This book is designed to introduce you
 to `Zope`, an open-source web application server.
 
 
-Contents
---------
-
 .. toctree::
    :numbered:
    :maxdepth: 2
