@@ -6,10 +6,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   WHATSNEW
+   zope4/index
    INSTALL
    operation
-   zope4migration/index
    maintenance
    changes
    zopebook/index

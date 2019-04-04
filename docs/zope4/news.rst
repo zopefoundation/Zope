@@ -1,9 +1,9 @@
-What's new in Zope 4.0
-======================
+What's new in Zope 4
+====================
 The article explains the new high-level features and changes found in this
 version of Zope.
 
-You can have a look at the `detailed change log <changes.html>`_ to learn
+You can have a look at the `detailed change log <../changes.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
 

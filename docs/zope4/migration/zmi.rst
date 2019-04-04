@@ -1,11 +1,7 @@
-Migrating ZMI code and templates
-================================
-
-
 .. _ZMI-label:
 
-Bootstrap ZMI
--------------
+Migrating to the new bootstrap-based ZMI
+----------------------------------------
 Since Zope 4.0b6 the ZMI is styled using Bootstrap. The previously used
 GIF icons were replaced by font glyphs which are stored in the package
 `zmi.styles`_ (part of Zope) together with the CSS and JavaScript needed
