@@ -10,6 +10,17 @@ Whichever method you used to install Zope and create a server instance (see
 :doc:`INSTALL-buildout` and :doc:`INSTALL-virtualenv`), the end result is
 configured and operated the same way.
 
+Filesystem Permissions
+----------------------
+You need to set permissions on the directory Zope uses to store its
+data. This will normally be the `var` directory in the instance home.
+Zope needs to read and write data to this directory. Before
+running Zope you should ensure that you give adequate permissions
+to this directory for the user id Zope will run under.
+
+Do not run Zope as root. Either create a user specifically for Zope or use
+an existing account with non-admin privileges.
+
 
 Configuring Zope
 ----------------

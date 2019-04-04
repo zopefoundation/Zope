@@ -10,7 +10,6 @@ Contents:
    INSTALL
    operation
    ZMI
-   SECURITY
    ZODB-migration
    maintenance
    changes
