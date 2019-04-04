@@ -1,5 +1,5 @@
-Migrating from Zope 2 to Zope 4
-===============================
+Migrating ZMI code and templates
+================================
 
 
 .. _ZMI-label:

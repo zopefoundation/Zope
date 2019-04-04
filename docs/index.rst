@@ -9,8 +9,7 @@ Contents:
    WHATSNEW
    INSTALL
    operation
-   zope4migration
-   ZODB-migration
+   zope4migration/index
    maintenance
    changes
    zopebook/index
