@@ -9,7 +9,7 @@ Contents:
    WHATSNEW
    INSTALL
    operation
-   ZMI
+   zope4migration
    ZODB-migration
    maintenance
    changes
