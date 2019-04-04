@@ -7,9 +7,7 @@ Contents:
    :maxdepth: 2
 
    WHATSNEW
-   INSTALL-buildout
-   INSTALL-pip
-   INSTALL-pipenv
+   INSTALL
    operation
    USERS
    ZMI
