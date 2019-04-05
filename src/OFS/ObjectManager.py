@@ -274,6 +274,12 @@ class ObjectManager(
                 if container_filter(self):
                     meta_types.append(entry)
 
+        # Synthesize a new key into each item that decides whether to show
+        # the modal add dialog in the Zope 4 ZMI
+        for mt in meta_types:
+            want_modal = getattr(mt.get('instance', None), 'zmi_modal', True)
+            mt['zmi_modal'] = (want_modal and 'modal') or ''
+
         return meta_types
 
     def _subobject_permissions(self):

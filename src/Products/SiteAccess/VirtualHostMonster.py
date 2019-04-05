@@ -24,6 +24,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     meta_type = 'Virtual Host Monster'
     zmi_icon = 'fa fa-code-branch'
+    zmi_modal = False
     priority = 25
 
     id = 'virtual_hosting'

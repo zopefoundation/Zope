@@ -11,7 +11,8 @@ function isURL(str) {
 // NAVBAR-FUNCTIONS
 
 // [1] Add New Object Item (with Modal Dialog)
-function addItem( elm, base_url, zmi_dialog='modal') {
+function addItem( elm, base_url ) {
+    var zmi_dialog = elm.options[elm.selectedIndex].data-dialog;
 	// e.g. manage_addProduct/OFSP/folderAdd
 	var url_action =  elm.options[elm.selectedIndex].value;
 	// http://localhost/myfolder/manage_addProduct/OFSP/folderAdd
