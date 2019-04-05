@@ -32,7 +32,6 @@ function addItem( elm, base_url ) {
 			'manage_addRegistry',
 			'manage_addUserFolder',
 			'manage_addErrorLog',
-			'manage_addVirtualHostMonster',
 			'addPluggableAuthService',
 		],
 		'product':[
