@@ -102,8 +102,6 @@ Creating a Zope instance
   the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
   changed since that version.
 
-.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-buildout.html#creating-a-zope-instance
-
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a
 Zope server process.  The instance home is created using the
@@ -216,9 +214,6 @@ Creating a Zope instance
   2 only!) follow  the documentation
   `Creating a Zope instance for Zope 2.13`_, .
 
-.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-virtualenv.html#creating-a-zope-instance
-
-
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a
 Zope server process.  The instance home is created using the
@@ -319,3 +314,7 @@ with the generated configuration:
 .. code-block:: sh
 
     $ bin/pipenv run runwsgi etc/zope.ini
+
+.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-buildout.html#creating-a-zope-instance
+
+
