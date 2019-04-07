@@ -27,6 +27,8 @@ Features
 Other changes
 +++++++++++++
 
+- refreshed Sphinx configuration and switched to the ReadTheDocs theme
+
 - expanded the Zope 4 migration documentation
 
 - renamed/moved the `Zope 2 Book` to `Zope Book`
