@@ -27,6 +27,9 @@ Features
 Other changes
 +++++++++++++
 
+- Added a few Zope 4 ZMI screenshots to the documentation
+  (`#378 <https://github.com/zopefoundation/Zope/issues/378>`_)
+
 - refreshed Sphinx configuration and switched to the ReadTheDocs theme
 
 - expanded the Zope 4 migration documentation

@@ -136,28 +136,53 @@ manually.
    For example, in Zope 2, the parser does not care about opening and closing
    tags that are not matched in terms of being uppercase/lowercase, or
    unmatched opening/closing tags in general. All this will now cause template
-   compilation to fail.
+   compilation to fail. See :ref:`zope4pagetemplatemigration` for help.
 
 
-Memory use
-----------
+Lower memory consumption at runtime
+-----------------------------------
 Zope 4 depends on a new DateTime release. The new release has been optimized
 for better memory use. Applications using a lot of DateTime values like the
 Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
 to large deployments.
 
 
-ZMI overhaul
-------------
-The ZMI (Zope Management Interface) is now styled with Bootstrap.
-See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
-styling.
-
-
-Unified encoding
-----------------
+Simplified encoding configuration
+---------------------------------
 As it is reasonable to have one unified encoding in ZMI and frontend, support
 for ``management_page_charset`` (as property of a folder) has been removed.
 ``default-zpublisher-encoding`` in `zope.conf` is the only place where to
 define the site encoding that governs how the ZPublisher and Zope Page
 Templates handle encoding and decoding of text.
+
+
+Restyled Zope Management Interface (ZMI)
+----------------------------------------
+The ZMI (Zope Management Interface) is now styled with Bootstrap.
+See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
+styling.
+
+.. figure:: /_static/folder_list.png
+   :width: 1024
+   :alt: The newly styled ZMI root
+
+   The newly styled ZMI root
+
+.. figure:: /_static/editor.png
+   :width: 1024
+   :alt: The `Ace` editor on a Page Template
+
+   The `Ace` editor on a page template. The editor is also used for Python
+   Scripts, DTML Methods/Documents and Z SQL Methods.
+
+.. figure:: /_static/undo.png
+   :width: 1024
+   :alt: The central `Undo` view is reached from the new left-side menu
+
+   The central `Undo` view is reached from the new left-side menu
+
+.. figure:: /_static/properties.png
+   :width: 1024
+   :alt: The restyled `Properties` view
+
+   The restyled `Properties` view
