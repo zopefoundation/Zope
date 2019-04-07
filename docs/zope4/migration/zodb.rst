@@ -1,17 +1,39 @@
-Migrating the ZODB from Python 2 to Python 3
-============================================
+Migrating the ZODB from Zope 2 to Zope 4
+========================================
+This document describes the process of migrating a ZODB created with Zope 2
+into a Zope 4 environment.
+
+.. warning::
+   As soon as you open a ZODB from Zope 2 under Zope 4 you cannot use it under
+   Zope 2 anymore, regardless of how the ZODB is opened (direct access to a
+   ``Data.fs`` file or indirect access through a ``ZEO`` server). Always work
+   on a copy of your ZODB so you retain a working copy for Zope 2 if you need
+   to go back.
+
+.. contents::
+   :local:
+
+
+Migrating to Zope 4 under Python 2
+----------------------------------
+There are no specific ZODB-related migration steps to take when moving to a
+Python 2-based Zope 4 environment, but the warning shown above still applies.
+
+
+Migrating to Zope 4 under Python 3
+----------------------------------
 
 .. highlight:: python
 
-This document describes the process of migrating a ZODB created
+This part describes the process of migrating a ZODB created
 with Python 2 (using Zope 2 or 4) to Python 3 (using Zope 4).
 As there are significant changes between the two platforms,
 there is no automated process to cover all edge cases, so it is
 necessary to prepare and test your migration well in advance.
 
 
-The string Problem
-------------------
+The string problem
+~~~~~~~~~~~~~~~~~~
 
 A ZODB ``Data.fs`` which was created under Python 2 cannot be
 opened under Python 3. This is prevented by using a different
@@ -28,8 +50,8 @@ impossible to give Python 3 the class it expects for binary data.
 A Python 2 ``str`` with any non-ascii characters will break, too.
 
 
-The string Solution
--------------------
+The string solution
+~~~~~~~~~~~~~~~~~~~
 
 The ``Data.fs`` has to be migrated: each ``str`` which actually
 contains ``bytes`` has to be converted into a ``zodbpickle.binary``
@@ -38,8 +60,8 @@ actually containing text have to be decoded to ``str`` (known as ``unicode``
 in Python 2).
 
 
-The code Problem
-----------------
+The code problem
+~~~~~~~~~~~~~~~~
 
 Python 3 is not backwards-compatible to Python 2 in terms of its syntax,
 which is a problem for ``Persistent`` objects in the ZODB containing
@@ -48,8 +70,8 @@ and ``TAL`` or ``DTML`` templates that contain Python statements or
 expressions.
 
 
-The code Solution
------------------
+The code solution
+~~~~~~~~~~~~~~~~~
 
 There are several tools that help with getting your code ready for Python 3,
 especially in large code bases:
@@ -71,7 +93,7 @@ restoring it back to the ZODB while keeping changes under version control.
 
 
 Migration example
------------------
+~~~~~~~~~~~~~~~~~
 
 - Backup your `Data.fs` before proceeding.
 
@@ -108,7 +130,7 @@ Migration example
   - Verify that the Application works as expected.
 
 In case of ``UnicodeDecodeError``
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If ``zodbupdate`` or the Application raises a ``UnicodeDecodeError`` after
 the start, there are several things to consider:
@@ -125,7 +147,7 @@ or `a code example in PythonScripts <https://github.com/zopefoundation/Products.
 
 
 Further reading
----------------
+~~~~~~~~~~~~~~~
 
 This guide is adapted from several sources that contain further information
 and examples.

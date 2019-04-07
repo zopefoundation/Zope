@@ -30,6 +30,8 @@ Other changes
 - Make showing the ZMI modal add dialog configurable per product
   (`#535 <https://github.com/zopefoundation/Zope/issues/535>`_)
 
+- expanded the Zope 4 migration documentation
+
 - renamed/moved the `Zope 2 Book` to `Zope Book`
   (`#443 <https://github.com/zopefoundation/Zope/issues/443>`_)
 

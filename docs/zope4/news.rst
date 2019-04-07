@@ -6,6 +6,9 @@ version of Zope.
 You can have a look at the `detailed change log <../changes.html>`_ to learn
 about all minor new features and bugs being solved in this release.
 
+.. contents::
+   :local:
+
 
 Version numbering increase
 --------------------------

@@ -10,6 +10,9 @@ by Bootstrap.
 The free Font Awesome glyphs are used as icons, see the table of
 `available icons`_.
 
+.. contents::
+   :local:
+
 Update existing package code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you have a Product or package which contains types, which can be added via
