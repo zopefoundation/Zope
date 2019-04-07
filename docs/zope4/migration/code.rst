@@ -1,3 +1,5 @@
+.. _zope4codemigration:
+
 Migrating Zope product code
 ===========================
 The following list shows a few common migration issues independent of the

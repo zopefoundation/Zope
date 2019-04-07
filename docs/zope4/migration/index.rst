@@ -1,3 +1,5 @@
+.. _zope4migration:
+
 Migrating to Zope 4
 ===================
 

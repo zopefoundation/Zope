@@ -4,14 +4,16 @@ The article explains the new high-level features and changes found in this
 version of Zope.
 
 You can have a look at the `detailed change log <../changes.html>`_ to learn
-about all minor new features and bugs being solved in this release.
+about all minor new features and bugs being solved in this release. When you
+are ready to migrate, make sure you study the :ref:`zope4migration`
+documentation.
 
 .. contents::
    :local:
 
 
-Version numbering increase
---------------------------
+Restored sane version numbering
+-------------------------------
 Version numbers for Zope have been confusing in the past. The original Zope
 project iterated through version one to two up to version 2.13. In parallel
 a separate project was launched using the name Zope 3. Zope 3 wasn't a new
@@ -25,8 +27,8 @@ the version also indicates the number of backwards incompatible changes
 found in this release.
 
 
-Python versions
----------------
+Extended Python version support
+-------------------------------
 Zope 4 supports Python 2.7 and Python 3.5 and higher.
 
 The Python 3 support currently covers the core dependencies shipped
@@ -34,15 +36,12 @@ with Zope and is limited to the new WSGI based publisher. The new
 external ZServer project is currently limited to Python 2.7 compatibility
 and likely to stay that way.
 
-Python 3 support is mainly offered for new installations of Zope,
-as there is so far only an experimental database migration tool in place,
-see `zodb.py3migrate`_.
-
-.. _`zodb.py3migrate` : https://pypi.org/project/zodb.py3migrate
+Migrating an existing ZODB to Python 3 is not an automated process. Please
+consult :ref:`zope4zodbmigration` for details.
 
 
-Recommended WSGI setup
-----------------------
+WSGI as the new default server type
+-----------------------------------
 Zope 2.13 first gained support for running Zope as a WSGI application,
 using any WSGI capable web server instead of the built-in ZServer.
 
@@ -107,8 +106,8 @@ instead have to use Zope specific hooks like you do in the ZServer
 based publisher.
 
 
-View components without Acquisition
------------------------------------
+View component Acquisition changes
+----------------------------------
 In Zope 2.12 Zope Toolkit view components changed and stopped inheriting
 from Acquisition base classes, as Acquisition got aware of `__parent__`
 pointers, which meant that ``aq_parent(view)`` worked, without the view
@@ -120,8 +119,8 @@ in Zope 4, so ``view.aq_parent`` no longer works and you have to use
 view page template files or viewlets.
 
 
-Chameleon based page templates
-------------------------------
+Page Templates now rendered by Chameleon
+----------------------------------------
 Chameleon is an alternative implementation of the page template language
 supporting additional features and impressive template rendering speed.
 

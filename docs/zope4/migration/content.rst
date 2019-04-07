@@ -1,3 +1,5 @@
+.. _zope4contentmigration:
+
 Migrating content
 =================
 These issues may appear when rendering content (templates, scripts or
@@ -6,6 +8,8 @@ other built-in Zope code objects) created with Zope 2 in Zope 4.
 .. contents::
    :local:
 
+
+.. _zope4pagetemplatemigration:
 
 Page Template parsing issues
 ----------------------------

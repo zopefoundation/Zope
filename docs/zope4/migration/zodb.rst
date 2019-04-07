@@ -1,3 +1,5 @@
+.. _zope4zodbmigration:
+
 Migrating the ZODB
 ==================
 This document describes the process of migrating a ZODB created with Zope 2
