@@ -1,43 +1,10 @@
-Common migration issues
-=======================
-The following list shows a few common migration issues independent of the
-Python version used. Suggestions for additions are always welcome.
+Migrating content
+=================
+These issues may appear when rendering content (templates, scripts or
+other built-in Zope code objects) created with Zope 2 in Zope 4.
 
 .. contents::
    :local:
-
-
-Changed import paths
---------------------
-Several commonly used Zope code modules have moved. Here's a short list of
-corrections you will have to make in your code. Many of these changed paths
-have already existed under Zope 2, so you can make those corrections ahead of
-time.
-
-.. code-block:: python
-
-   from Globals import InitializeClass  # OLD
-   from AccessControl.class_init import InitializeClass  # NEW
-
-
-``implementer`` versus ``implements``
--------------------------------------
-How to signal that a class implements a specific interface has moved from a
-function called at class level into a class decorator and changed its name:
-
-.. code-block:: python
-
-   from zope.interface import implementer
-   from zope.interface import implements
-   from .interfaces import IMyClass
-
-   class MyClass:
-       implements(IMyClass)  # OLD
-       ...
-
-   @implementer(IMyClass)  # NEW
-   class AnotherClass:
-       ...
 
 
 Page Template parsing issues

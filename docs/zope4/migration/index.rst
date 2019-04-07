@@ -5,6 +5,6 @@ Migrating to Zope 4
    :maxdepth: 2
 
    removed
-   common
-   zmi
+   code
+   content
    zodb
