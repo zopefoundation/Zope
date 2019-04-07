@@ -127,7 +127,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-      'docs': ['Sphinx', 'sphinx_rtd_theme', 'repoze.sphinx.autointerface'],
+        'docs': ['Sphinx', 'sphinx_rtd_theme', 'repoze.sphinx.autointerface'],
     },
     entry_points={
         'paste.app_factory': [
