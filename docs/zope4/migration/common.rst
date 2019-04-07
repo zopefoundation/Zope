@@ -3,6 +3,9 @@ Common migration issues
 The following list shows a few common migration issues independent of the
 Python version used. Suggestions for additions are always welcome.
 
+.. contents::
+   :local:
+
 
 Changed import paths
 --------------------

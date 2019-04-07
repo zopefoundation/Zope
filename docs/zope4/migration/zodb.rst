@@ -5,10 +5,13 @@ into a Zope 4 environment.
 
 .. warning::
    As soon as you open a ZODB from Zope 2 under Zope 4 you cannot use it under
-   Zope 2 anymore, irregardless of how the ZODB is opened (direct access to a
+   Zope 2 anymore, regardless of how the ZODB is opened (direct access to a
    ``Data.fs`` file or indirect access through a ``ZEO`` server). Always work
    on a copy of your ZODB so you retain a working copy for Zope 2 if you need
    to go back.
+
+.. contents::
+   :local:
 
 
 Migrating to Zope 4 under Python 2
