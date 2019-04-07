@@ -7,6 +7,7 @@
 # name "find_bad_templates". Execute is by visiting its "Test" tab
 from zope.pagetemplate.pagetemplate import PTRuntimeError
 
+
 RESULT_HTML = """\
 <html>
   <head>
@@ -27,6 +28,7 @@ ERROR_HTML = """
 %(broken)s
 </pre>
 """
+
 
 def find_bad_templates(self):
     pt_errors = {}
