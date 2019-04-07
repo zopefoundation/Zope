@@ -3,8 +3,8 @@ Maintainer information
 
 .. note::
 
-   This is internal documentation for Zope developers having
-   to create official Zope releases.
+  This is internal documentation, mostly for Zope maintainers who manage
+  software releases and the documentation
 
 .. contents::
 
