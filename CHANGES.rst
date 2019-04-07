@@ -27,6 +27,9 @@ Features
 Other changes
 +++++++++++++
 
+- Always keep action buttons visible on the content list for large folders
+  (`#537 <https://github.com/zopefoundation/Zope/issues/537>`_)
+
 - Added a few Zope 4 ZMI screenshots to the documentation
   (`#378 <https://github.com/zopefoundation/Zope/issues/378>`_)
 

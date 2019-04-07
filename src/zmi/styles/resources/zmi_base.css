@@ -239,6 +239,16 @@ form.zmi-upload {
     padding: .375rem .25rem;
     min-width: initial;
 }
+.zmi form[name="objectItems"].xl-list {
+    margin-bottom:90px;
+}
+.zmi form[name="objectItems"].xl-list .form-group.zmi-controls {
+    position: fixed;
+    bottom: 0;
+    height: 60px;
+    line-height: 60px;
+    background: rgba(252, 252, 252, 0.50)
+}
 
 
 /* Table Object-Items: Sorting Links*/

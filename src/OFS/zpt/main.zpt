@@ -3,8 +3,7 @@
 <tal:tabs replace="structure here/manage_tabs" />
 
 <main class="container-fluid">
-  <form name="objectItems"
-        method="post"
+  <form name="objectItems" method="post" class="xl-list"
         tal:define="has_order_support python:getattr(here.aq_explicit, 'has_order_support', 0);
                     sm modules/AccessControl/SecurityManagement/getSecurityManager;
                     default_sort python: 'position' if has_order_support else 'id';
