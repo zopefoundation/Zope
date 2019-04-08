@@ -10,7 +10,7 @@
 }
 
 body.zmi {
-    font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+	font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 
 .zmi:not(.zmi-manage_menu) main,
@@ -236,19 +236,23 @@ form.zmi-upload {
 	background-color:#007bff1c !important;
 }
 .zmi form[name="objectItems"] div.zmi-controls.row span {
-    padding: .375rem .25rem;
-    min-width: initial;
+	padding: .375rem .25rem;
+	min-width: initial;
 }
-.zmi form[name="objectItems"].xl-list {
-    margin-bottom:90px;
+.zmi form#objectItems.selected {
+	margin-bottom: 60px;
 }
-.zmi form[name="objectItems"].xl-list .form-group.zmi-controls {
-    position: fixed;
-    bottom: 0;
-    height: 60px;
-    line-height: 60px;
-    background: rgba(252, 252, 252, 0.50)
+.zmi form#objectItems.selected .form-group.zmi-controls {
+	position: fixed;
+	bottom: 0;
+	height: 4rem;
+	line-height: 4rem;
+	background: rgb(233, 236, 239);
+	width: 100vw;
+	margin: 0 -1rem;
+	padding: .3rem 1rem;
 }
+
 
 
 /* Table Object-Items: Sorting Links*/

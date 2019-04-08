@@ -3,7 +3,7 @@
 <tal:tabs replace="structure here/manage_tabs" />
 
 <main class="container-fluid">
-  <form name="objectItems" method="post" class="xl-list"
+  <form id="objectItems" name="objectItems" method="post"
         tal:define="has_order_support python:getattr(here.aq_explicit, 'has_order_support', 0);
                     sm modules/AccessControl/SecurityManagement/getSecurityManager;
                     default_sort python: 'position' if has_order_support else 'id';
@@ -72,7 +72,8 @@
           <tr tal:repeat="ob_dict obs">
             <tal:obj define="ob nocall:ob_dict/obj">
               <td class="zmi-object-check text-right" onclick="$(this).children('input').trigger('click');">
-                <input type="checkbox" class="checkbox-list-item" name="ids:list" tal:attributes="value ob_dict/id" onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');" />
+                <input type="checkbox" class="checkbox-list-item" name="ids:list" tal:attributes="value ob_dict/id" 
+                  onclick="event.stopPropagation();select_objectitem($(this));" />
               </td>
               <td class="zmi-object-type" onclick="$(this).prev().children('input').trigger('click')">
                 <i title="Broken object" class="fas fa-ban text-danger" tal:attributes="class ob/zmi_icon | default; title ob/meta_type | default">
@@ -145,7 +146,7 @@
 
 <script>
   // +++++++++++++++++++++++++++
-  // checkbox_all: Item  Selection
+  // Item  Selection
   // +++++++++++++++++++++++++++
   function checkbox_all() {
     var checkboxes = document.getElementsByClassName('checkbox-list-item');
@@ -158,6 +159,22 @@
     // Set Checkbox like checkAll-Box
     for (i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = document.getElementById('checkAll').checked;
+    }
+  };
+
+  function zmicontrols_visible() {
+    var zmicontrols = $('form#objectItems .zmi-controls');
+    var zmicontrols_top = zmicontrols.offset().top;
+    var zmicontrols_bottom = zmicontrols_top + zmicontrols.outerHeight();
+    var viewport_top = $(window).scrollTop();
+    var viewport_bottom = viewport_top + $(window).height();
+    return zmicontrols_bottom > viewport_top && zmicontrols_top < viewport_bottom;
+  };
+
+  function select_objectitem(ob) {
+    ob.parent().parent().toggleClass('checked');
+    if ( !zmicontrols_visible() ) {
+      $('form#objectItems').addClass('selected');
     }
   };
 
