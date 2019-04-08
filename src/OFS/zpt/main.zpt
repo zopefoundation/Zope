@@ -175,7 +175,7 @@
     ob.parent().parent().toggleClass('checked');
     if ( !zmicontrols_visible() ) {
       $('form#objectItems').addClass('selected');
-    }
+     }
   };
 
 
