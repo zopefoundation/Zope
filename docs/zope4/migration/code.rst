@@ -65,12 +65,12 @@ Example to use the info icon (i in a circle)::
 
     zmi_icon = 'fas fa-info-circle'
 
-If your product does not need to show a form when adding an object in the ZMI
-using the `Select type to add` dropdown, which only applies to a small
-percentage of available Zope products, you need to add another class variable
-to prevent the modal dialog from appearing::
+A few Zope products provide content that can be added in the ZMI without
+showing a dialog to collect data such as an id or title. These will now
+default to showing the new modal dialog as well. You can prevent that by
+adding another class variable::
 
-    zmi_modal = False
+    zmi_show_add_dialog = False
 
 .. _`zmi.styles` : https://github.com/zopefoundation/Zope/tree/master/src/zmi/styles
 .. _`available icons` : https://fontawesome.com/icons?d=gallery&m=free

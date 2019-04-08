@@ -140,11 +140,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om.meta_types = ({'name': 'Foo'}, {'name': 'Bar'}, {'name': 'Baz'})
         amt = om.all_meta_types()
         for mt in [x for x in amt if x['name'] in ('foo', 'bar', 'baz')]:
-            self.assertEqual(mt['zmi_modal'], 'modal')
+            self.assertEqual(mt['zmi_show_add_dialog'], 'modal')
 
         # Pick an example that will be different
         for mt in [x for x in amt if x['name'] == 'Virtual Host Monster']:
-            self.assertEqual(mt['zmi_modal'], '')
+            self.assertEqual(mt['zmi_show_add_dialog'], '')
 
     def test_setObject_set_owner_with_no_user(self):
         om = self._makeOne()

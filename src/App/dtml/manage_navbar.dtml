@@ -55,7 +55,7 @@
           <dtml-if "hasattr(aq_explicit, 'filtered_meta_types')">
             <dtml-in filtered_meta_types mapping sort=name>
               <dtml-if action>
-                <option  data-dialog="&dtml-zmi_modal;"
+                <option  data-dialog="&dtml-zmi_show_add_dialog;"
                          value="&dtml.html_quote-action;">&dtml-name;</option>
               </dtml-if>
             </dtml-in>
