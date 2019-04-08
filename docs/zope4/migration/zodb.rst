@@ -1,5 +1,7 @@
-Migrating the ZODB from Zope 2 to Zope 4
-========================================
+.. _zope4zodbmigration:
+
+Migrating the ZODB
+==================
 This document describes the process of migrating a ZODB created with Zope 2
 into a Zope 4 environment.
 

@@ -1,3 +1,5 @@
+.. _zope4migration:
+
 Migrating to Zope 4
 ===================
 
@@ -5,6 +7,6 @@ Migrating to Zope 4
    :maxdepth: 2
 
    removed
-   common
-   zmi
+   code
+   content
    zodb
