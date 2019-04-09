@@ -93,7 +93,7 @@ and extra-steps that this list glosses over.
 
 
 URL Traversal
-=============
+-------------
 
 Traversal is the process the publisher uses to locate the published
 object. Typically the publisher locates the published object by
@@ -142,7 +142,7 @@ Now let's take a closer look at traversal.
 
 
 Publishable Object Requirements
-===============================
+-------------------------------
 
 Zope has few restrictions on publishable objects. The basic rule is
 that the object must have a doc string. This requirement goes for
@@ -156,7 +156,7 @@ Finally, published objects cannot be Python modules.
 
 
 Traversal Methods
-=================
+-----------------
 
 During traversal, *ZPublisher* cuts the URL into path elements
 delimited by slashes, and uses each path element to traverse from the
@@ -212,7 +212,7 @@ will try in order to find the next object:
   
 
 Publishing Methods
-==================
+------------------
 
 Once the published object is located with traversal, Zope *publishes*
 it in one of three possible ways:
@@ -240,7 +240,7 @@ publisher must interpret the results.
 
 
 Character Encodings for Responses
-=================================
+---------------------------------
 
 If the published method returns an object of type *binary*, the
 publisher will use it directly as the body of the response.
@@ -261,7 +261,7 @@ value like ``text/html; charset=UTF-8``.
 
 
 HTTP Responses
-==============
+--------------
 
 Usually, the published method returns a string which is considered
 the body of the HTTP response. The response headers can be controlled
@@ -297,7 +297,7 @@ is turned into this HTML page::
 
 
 Controlling Base HREF
-=====================
+---------------------
 
 When you publish an object that returns HTML relative links should
 allow you to navigate between methods.
@@ -364,9 +364,10 @@ Response Headers
 ----------------
 
 The publisher and the web server take care of setting response headers
-such as 'Content-Length' and 'Content-Type'. Later in the chapter
-you'll find out how to control these headers. Later you'll also find
-out how exceptions are used to set the HTTP response code.
+such as *Content-Length* and *Content-Type*. Later in the chapter
+you'll find out how to control these headers and also how exceptions
+are used to set the HTTP response code.
+
 
 Pre-Traversal Hook
 ------------------
@@ -374,15 +375,15 @@ Pre-Traversal Hook
 The pre-traversal hook allows your objects to take special action
 before they are traversed. This is useful for doing things like
 changing the request. Applications of this include special
-authentication controls, and virtual hosting support.
+authentication controls and virtual hosting support.
 
-If your object has a method named '__before_publishing_traverse__',
-the publisher will call it with the current object and the request,
+If your object has a method named ``__before_publishing_traverse__``,
+the publisher will call it with the current object and the request
 before traversing your object. Most often your method will change the
 request. The publisher ignores anything you return from the
 pre-traversal hook method.
 
-The 'ZPublisher.BeforeTraverse' module contains some functions that
+The ``ZPublisher.BeforeTraverse`` module contains some functions that
 help you register pre-traversal callbacks. This allows you to perform
 fairly complex callbacks to multiple objects when a given object is
 about to be traversed.
@@ -557,6 +558,7 @@ restriction on user objects.
 
 
 Zope Security
+-------------
 
 When using Zope rather than publishing your own modules, the publisher
 uses acquisition to locate user folders and perform security checks.
