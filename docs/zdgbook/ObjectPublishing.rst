@@ -361,28 +361,29 @@ base with a *base* tag in your ``index_html`` method output.
 
 
 Response Headers
-----------------
+================
 
 The publisher and the web server take care of setting response headers
-such as 'Content-Length' and 'Content-Type'. Later in the chapter
-you'll find out how to control these headers. Later you'll also find
-out how exceptions are used to set the HTTP response code.
+such as *Content-Length* and *Content-Type*. Later in the chapter
+you'll find out how to control these headers and also how exceptions
+are used to set the HTTP response code.
+
 
 Pre-Traversal Hook
-------------------
+==================
 
 The pre-traversal hook allows your objects to take special action
 before they are traversed. This is useful for doing things like
 changing the request. Applications of this include special
-authentication controls, and virtual hosting support.
+authentication controls and virtual hosting support.
 
-If your object has a method named '__before_publishing_traverse__',
-the publisher will call it with the current object and the request,
+If your object has a method named ``__before_publishing_traverse__``,
+the publisher will call it with the current object and the request
 before traversing your object. Most often your method will change the
 request. The publisher ignores anything you return from the
 pre-traversal hook method.
 
-The 'ZPublisher.BeforeTraverse' module contains some functions that
+The ``ZPublisher.BeforeTraverse`` module contains some functions that
 help you register pre-traversal callbacks. This allows you to perform
 fairly complex callbacks to multiple objects when a given object is
 about to be traversed.
