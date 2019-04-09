@@ -17,6 +17,8 @@ Fixes
 - make the ZMI `Find` tab work for searching HTML tags
   by adding support for `Tainted` strings in ``ZopeFind``
 
+- prevent ``mkwsgiinstance`` from blowing up parsing ``buildout.cfg``
+
 Features
 ++++++++
 
