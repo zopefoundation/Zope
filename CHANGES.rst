@@ -27,6 +27,9 @@ Features
 Other changes
 +++++++++++++
 
+- Make showing the ZMI modal add dialog configurable per product
+  (`#535 <https://github.com/zopefoundation/Zope/issues/535>`_)
+
 - Added a few Zope 4 ZMI screenshots to the documentation
   (`#378 <https://github.com/zopefoundation/Zope/issues/378>`_)
 
