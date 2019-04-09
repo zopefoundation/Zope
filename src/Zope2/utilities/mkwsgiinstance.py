@@ -32,6 +32,7 @@ import subprocess
 import sys
 
 from six.moves import input
+from six.moves.configparser import ParsingError
 from six.moves.configparser import RawConfigParser
 
 from . import copyzopeskel
@@ -200,9 +201,18 @@ def check_buildout(script_path):
     buildout_cfg = os.path.join(os.path.dirname(script_path), 'buildout.cfg')
     if os.path.exists(buildout_cfg):
         parser = RawConfigParser()
-        parser.read(buildout_cfg)
-        return 'zopepy' in parser.sections()
-
+        try:
+            parser.read(buildout_cfg)
+            return 'zopepy' in parser.sections()
+        except ParsingError:
+            # zc.buildout uses its own parser and it allows syntax that
+            # ConfigParser does not like. Here's one really stupid workaround.
+            # The alternative is using the zc.buildout parser, which would
+            # introduce a hard dependency.
+            zope_py = os.path.join(os.path.dirname(script_path),
+                                   'bin', 'zopepy')
+            if os.path.isfile(zope_py) and os.access(zope_py, os.X_OK):
+                return True
 
 def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.

@@ -93,7 +93,7 @@ and extra-steps that this list glosses over.
 
 
 URL Traversal
-=============
+-------------
 
 Traversal is the process the publisher uses to locate the published
 object. Typically the publisher locates the published object by
@@ -142,7 +142,7 @@ Now let's take a closer look at traversal.
 
 
 Publishable Object Requirements
-===============================
+-------------------------------
 
 Zope has few restrictions on publishable objects. The basic rule is
 that the object must have a doc string. This requirement goes for
@@ -156,7 +156,7 @@ Finally, published objects cannot be Python modules.
 
 
 Traversal Methods
-=================
+-----------------
 
 During traversal, *ZPublisher* cuts the URL into path elements
 delimited by slashes, and uses each path element to traverse from the
@@ -212,7 +212,7 @@ will try in order to find the next object:
   
 
 Publishing Methods
-==================
+------------------
 
 Once the published object is located with traversal, Zope *publishes*
 it in one of three possible ways:
@@ -240,7 +240,7 @@ publisher must interpret the results.
 
 
 Character Encodings for Responses
-=================================
+---------------------------------
 
 If the published method returns an object of type *binary*, the
 publisher will use it directly as the body of the response.
@@ -261,101 +261,113 @@ value like ``text/html; charset=UTF-8``.
 
 
 HTTP Responses
-==============
+--------------
 
-Normally the published method returns a string which is considered the
-body of the HTTP response. The response headers can be controlled by
-calling methods on the response object, which is described later in
-the chapter. Optionally, the published method can return a tuple with
-the title, and body of the response. In this case, the publisher
-returns an generated HTML page, with the first item of the tuple used
-for the HTML 'title' of the page, and the second item as the contents
-of the HTML 'body' tag. For example a response of::
+Usually, the published method returns a string which is considered
+the body of the HTTP response. The response headers can be controlled
+by calling methods on the response object, which is described later in
+the chapter.
 
-  ('response', 'the response')
+.. note::
+
+  When the return value is empty, e.g. an empty list, instead of
+  returning an empty page, Zope issues a header with a 204 status code.
+
+  Depending on the used client, it looks like nothing happens.
+
+
+Optionally, the published method can return a tuple with
+the title and the body of the response. In this case, the publisher
+returns a generated HTML page, with the first item of the tuple used
+for the value of the HTML ``title`` tag of the page, and the second
+item as the content of the HTML ``body`` tag.
+
+
+For example a response of::
+
+  ("my_title", "my_text")
 
 
 is turned into this HTML page::
 
   <html>
-  <head><title>response</title></head>
-  <body>the response</body>
+  <head><title>my_title</title></head>
+  <body>my_text</body>
   </html>
 
+
 Controlling Base HREF
-=====================
+---------------------
 
 When you publish an object that returns HTML relative links should
-allow you to navigate between methods. Consider this example::
+allow you to navigate between methods.
+
+Consider this example::
 
   class Example:
-      "example"
+      """example class"""
 
       def one(self):
-          "method one"
+          """render page one"""
           return """<html>
-                    <head>
-                    <title>one</title>
-                    </head>
+                    <head><title>one</title></head>
                     <body>
-                    <a href="two">two</a> 
+                    <a href="two">two</a>
                     </body>
                     </html>"""
 
       def two(self):
-          "method two"
+          """render page two"""
           return """<html>
-                    <head>
-                    <title>two</title>
-                    </head>
+                    <head><title>two</title></head>
                     <body>
-                    <a href="one">one</a> 
+                    <a href="one">one</a>
                     </body>
                     </html>"""
 
 
-However, the default method, 'index_html' presents a problem. Since
-you can access the 'index_html' method without specifying the method
-name in the URL, relative links returned by the 'index_html' method
-won't work right. For example::
+However, the default method ``index_html`` presents a problem. Since
+you can access ``index_html`` without specifying the method name in
+the URL, relative links returned by ``index_html`` won't work right.
+
+For example::
 
             class Example:
-                "example"
+                """example class""""
 
                  def index_html(self):
+                     """render default view"""
                     return """<html>
-                              <head>
-                              <title>one</title>
-                              </head>
+                              <head><title>one</title></head>
                               <body>
                               <a href="one">one</a><br>
-                              <a href="two">two</a> 
+                              <a href="two">two</a>
                               </body>
                               </html>"""
                  ...
 
-If you publish an instance of the 'Example' class with the URL
-'http://zope/example', then the relative link to method 'one' will be
-'http://zope/one', instead of the correct link,
+If you publish an instance of the *Example* class with the URL
+'http://zope/example', then the relative link to method ``one`` will
+be 'http://zope/one', instead of the correct link,
 'http://zope/example/one'.
 
 
-Zope solves this problem for you by inserting a 'base' tag inside the
-'head' tag in the HTML output of 'index_html' method when it is
-accessed as the default method. You will probably never notice this,
-but if you see a mysterious 'base' tag in your HTML output, know you
-know where it came from. You can avoid this behavior by manually
-setting your own base with a 'base' tag in your 'index_html' method
-output.
+Zope solves this problem for you by inserting a *base* tag between the
+*head* tags in the HTML output of ``index_html`` when it is accessed
+as the default method. You will probably never notice this, but if you
+see a mysterious *base* tag in your HTML output, you know where it
+came from. You can avoid this behavior by manually setting your own
+base with a *base* tag in your ``index_html`` method output.
 
 
 Response Headers
 ----------------
 
 The publisher and the web server take care of setting response headers
-such as 'Content-Length' and 'Content-Type'. Later in the chapter
-you'll find out how to control these headers. Later you'll also find
-out how exceptions are used to set the HTTP response code.
+such as *Content-Length* and *Content-Type*. Later in the chapter
+you'll find out how to control these headers and also how exceptions
+are used to set the HTTP response code.
+
 
 Pre-Traversal Hook
 ------------------
@@ -363,15 +375,15 @@ Pre-Traversal Hook
 The pre-traversal hook allows your objects to take special action
 before they are traversed. This is useful for doing things like
 changing the request. Applications of this include special
-authentication controls, and virtual hosting support.
+authentication controls and virtual hosting support.
 
-If your object has a method named '__before_publishing_traverse__',
-the publisher will call it with the current object and the request,
+If your object has a method named ``__before_publishing_traverse__``,
+the publisher will call it with the current object and the request
 before traversing your object. Most often your method will change the
 request. The publisher ignores anything you return from the
 pre-traversal hook method.
 
-The 'ZPublisher.BeforeTraverse' module contains some functions that
+The ``ZPublisher.BeforeTraverse`` module contains some functions that
 help you register pre-traversal callbacks. This allows you to perform
 fairly complex callbacks to multiple objects when a given object is
 about to be traversed.
@@ -546,6 +558,7 @@ restriction on user objects.
 
 
 Zope Security
+-------------
 
 When using Zope rather than publishing your own modules, the publisher
 uses acquisition to locate user folders and perform security checks.

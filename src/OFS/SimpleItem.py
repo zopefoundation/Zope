@@ -117,6 +117,7 @@ class Item(
     """A common base class for simple, non-container objects."""
 
     zmi_icon = 'far fa-file'
+    zmi_show_add_dialog = True
 
     security = ClassSecurityInfo()
 
