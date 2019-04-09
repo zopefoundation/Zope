@@ -263,24 +263,38 @@ value like ``text/html; charset=UTF-8``.
 HTTP Responses
 ==============
 
-Normally the published method returns a string which is considered the
-body of the HTTP response. The response headers can be controlled by
-calling methods on the response object, which is described later in
-the chapter. Optionally, the published method can return a tuple with
-the title, and body of the response. In this case, the publisher
-returns an generated HTML page, with the first item of the tuple used
-for the HTML 'title' of the page, and the second item as the contents
-of the HTML 'body' tag. For example a response of::
+Usually, the published method returns a string which is considered
+the body of the HTTP response. The response headers can be controlled
+by calling methods on the response object, which is described later in
+the chapter.
 
-  ('response', 'the response')
+.. note::
+
+  When the return value is empty, e.g. an empty list, instead of
+  returning an empty page, Zope issues a header with a 204 status code.
+
+  Depending on the used client, it looks like nothing happens.
+
+
+Optionally, the published method can return a tuple with
+the title and the body of the response. In this case, the publisher
+returns a generated HTML page, with the first item of the tuple used
+for the value of the HTML ``title`` tag of the page, and the second
+item as the content of the HTML ``body`` tag.
+
+
+For example a response of::
+
+  ("my_title", "my_text")
 
 
 is turned into this HTML page::
 
   <html>
-  <head><title>response</title></head>
-  <body>the response</body>
+  <head><title>my_title</title></head>
+  <body>my_text</body>
   </html>
+
 
 Controlling Base HREF
 =====================
