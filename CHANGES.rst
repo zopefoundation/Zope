@@ -22,6 +22,9 @@ Fixes
 Features
 ++++++++
 
+- Better default logging configuration for simple waitress WSGI setups
+  (`#526 <https://github.com/zopefoundation/Zope/issues/526>`_)
+
 - Replace usage of ``urllib.parse.splitport`` and ``urllib.parse.splittype``
   which are deprecated in Python 3.8.
   (`#476 <https://github.com/zopefoundation/Zope/pull/476>`_)
