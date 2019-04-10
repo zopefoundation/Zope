@@ -214,6 +214,7 @@ def check_buildout(script_path):
             if os.path.isfile(zope_py) and os.access(zope_py, os.X_OK):
                 return True
 
+
 def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
