@@ -29,6 +29,9 @@ Features
 Other changes
 +++++++++++++
 
+- Always keep action buttons visible on the content list for large folders
+  (`#537 <https://github.com/zopefoundation/Zope/issues/537>`_)
+  
 - Make showing the ZMI modal add dialog configurable per product
   (`#535 <https://github.com/zopefoundation/Zope/issues/535>`_)
 
