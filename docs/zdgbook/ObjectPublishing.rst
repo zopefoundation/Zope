@@ -392,15 +392,21 @@ about to be traversed.
 Traversal and Acquisition
 -------------------------
 
-Acquisition affects traversal in several ways. See Chapter 5,
-"Acquisition" for more information on acquisition. The most obvious
-way in which acquisition affects traversal is in locating the next
-object in a path. As we discussed earlier, the next object during
-traversal is often found using 'getattr'. Since acquisition affects
-'getattr', it will affect traversal. The upshot is that when you are
-traversing objects that support implicit acquisition, you can use
-traversal to walk over acquired objects. Consider the object
-hierarchy rooted in 'fruit'::
+.. note::
+
+  Simply put, acquisition means that a Zope object can acquire any
+  attribute of its parents.
+
+  For detailed information about acquisition please refer to chapter 7.
+
+Acquisition affects traversal in several ways. The most obvious
+way is in locating the next object in a path. As we discussed earlier,
+the next object during traversal is often found using ``getattr``.
+Since acquisition affects ``getattr``, it will affect traversal. The
+upshot is that when you are traversing objects that support implicit
+acquisition, you can use traversal to walk over acquired objects.
+
+Consider the the following object hierarchy::
 
         from Acquisition import Implicit
 
@@ -415,66 +421,65 @@ hierarchy rooted in 'fruit'::
 
 When publishing these objects, acquisition can come into play. For
 example, consider the URL */fruit/apple/orange*. The publisher would
-traverse from 'fruit', to 'apple', and then using acquisition, it
-would traverse to 'orange'.
+traverse from *fruit*, to *apple*, and then using acquisition, it
+would traverse to *orange*.
 
-Mixing acquisition and traversal can get complex. Consider the URL
-*/fruit/apple/orange/strawberry/banana*. This URL is functional but
-confusing. Here's an even more perverse but legal URL
-*/fruit/apple/orange/orange/apple/apple/banana*.
+Mixing acquisition and traversal can get complex. In general you
+should limit yourself to constructing URLs which use acquisition to
+acquire along containment, rather than context lines.
 
-
-In general you should limit yourself to constructing URLs which use
-acquisition to acquire along containment, rather than context lines.
 It's reasonable to publish an object or method that you acquire from
 your container, but it's probably a bad idea to publish an object or
-method that your acquire from outside your container. For example::
+method that your acquire from outside your container.
+
+For example::
 
         from Acquisition import Implicit
 
         class Basket(Implicit):
             ...
-            def numberOfItems(self):
-                "Returns the number of contained items"
+            def number_of_items(self):
+                """Returns the number of contained items."""
                 ...
 
         class Vegetable(Implicit):
             ...
             def texture(self):
-                "Returns the texture of the vegetable."
+                """Returns the texture of the vegetable."""
 
         class Fruit(Implicit):
             ...
             def color(self):
-                "Returns the color of the fruit."
+                """Returns the color of the fruit."""
 
          basket=Basket()
          basket.apple=Fruit()
          basket.carrot=Vegetable()
 
-The URL */basket/apple/numberOfItems* uses acquisition along
-containment lines to publish the 'numberOfItems' method (assuming that
-'apple' doesn't have a 'numberOfItems' attribute). However, the URL
-*/basket/carrot/apple/texture* uses acquisition to locate the
-'texture' method from the 'apple' object's context, rather than from
+The URL */basket/apple/number_of_items* uses acquisition along
+containment lines to publish the ``number_of_items`` method (assuming
+that *apple* doesn't have a ``number_of_items`` attribute). However,
+the URL */basket/carrot/apple/texture* uses acquisition to locate the
+``texture`` method from the *apple* object's context, rather than from
 its container. While this distinction may be obscure, the guiding
 idea is to keep URLs as simple as possible. By keeping acquisition
 simple and along containment lines your application increases in
 clarity, and decreases in fragility.
 
-
 A second usage of acquisition in traversal concerns the request. The
 publisher tries to make the request available to the published object
 via acquisition. It does this by wrapping the first object in an
 acquisition wrapper that allows it to acquire the request with the
-name 'REQUEST'. This means that you can normally acquire the request
+name 'REQUEST'.
+
+This means that you can normally acquire the request
 in the published object like so::
 
-        request=self.REQUEST # for implicit acquirers
+        request=self.REQUEST  # for implicit acquirers
 
 or like so::
 
-        request=self.aq_acquire('REQUEST') # for explicit acquirers
+        request=self.aq_acquire('REQUEST')  # for explicit acquirers
 
 Of course, this will not work if your objects do not support
 acquisition, or if any traversed objects have an attribute named
@@ -482,6 +487,7 @@ acquisition, or if any traversed objects have an attribute named
 
 Finally, acquisition has a totally different role in object
 publishing related to security which we'll examine next.
+
 
 Traversal and Security
 ----------------------
