@@ -3,8 +3,7 @@
 <tal:tabs replace="structure here/manage_tabs" />
 
 <main class="container-fluid">
-  <form name="objectItems"
-        method="post"
+  <form id="objectItems" name="objectItems" method="post"
         tal:define="has_order_support python:getattr(here.aq_explicit, 'has_order_support', 0);
                     sm modules/AccessControl/SecurityManagement/getSecurityManager;
                     default_sort python: 'position' if has_order_support else 'id';
@@ -73,7 +72,8 @@
           <tr tal:repeat="ob_dict obs">
             <tal:obj define="ob nocall:ob_dict/obj">
               <td class="zmi-object-check text-right" onclick="$(this).children('input').trigger('click');">
-                <input type="checkbox" class="checkbox-list-item" name="ids:list" tal:attributes="value ob_dict/id" onclick="event.stopPropagation();$(this).parent().parent().toggleClass('checked');" />
+                <input type="checkbox" class="checkbox-list-item" name="ids:list" tal:attributes="value ob_dict/id" 
+                  onclick="event.stopPropagation();select_objectitem($(this));" />
               </td>
               <td class="zmi-object-type" onclick="$(this).prev().children('input').trigger('click')">
                 <i title="Broken object" class="fas fa-ban text-danger" tal:attributes="class ob/zmi_icon | default; title ob/meta_type | default">
@@ -100,32 +100,44 @@
         </tbody>
       </table>
 
-      <div class="form-group zmi-controls" tal:define="
-      delete_allowed python:sm.checkPermission('Delete objects', context)" tal:condition="obs">
-        <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
-          <input class="btn btn-primary" type="submit" name="manage_renameForm:method" value="Rename" />
-          <input class="btn btn-primary" type="submit" name="manage_cutObjects:method" value="Cut" tal:condition="delete_allowed" />
-          <input class="btn btn-primary" type="submit" name="manage_copyObjects:method" value="Copy" />
-          <input class="btn btn-primary" type="submit" name="manage_pasteObjects:method" value="Paste" tal:condition="here/cb_dataValid" />
-        </tal:copy-paste>
-        <input class="btn btn-primary" type="submit" name="manage_delObjects:method" value="Delete" tal:condition="delete_allowed" />
-        <input class="btn btn-primary" type="submit" name="manage_importExportForm:method" value="Import/Export" tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
-      </div>
-      <div class="container-fluid">
-        <div class="form-group row zmi-controls" tal:condition="python: has_order_support and sm.checkPermission('Manage properties', context)">
-          <input type="submit" name="manage_move_objects_up:method" value="Move up" title="Move selected items up" class="btn btn-primary" />
-          <span>/</span>
-          <input type="submit" name="manage_move_objects_down:method" value="Move down" title="Move selected items down" class="btn btn-primary" />
-          <span>by</span>
-          <div class="col-xs-2">
-            <select class="form-control" name="delta:int">
+      <div class="form-group form-inline zmi-controls" tal:define="
+        delete_allowed python:sm.checkPermission('Delete objects', context)" tal:condition="obs">
+        <div class="input-group">
+          <tal:copy-paste condition="not:context/dontAllowCopyAndPaste|nothing">
+            <input class="btn btn-primary mr-2" type="submit" name="manage_renameForm:method" value="Rename" />
+            <input class="btn btn-primary mr-2" type="submit" name="manage_cutObjects:method" value="Cut" tal:condition="delete_allowed" />
+            <input class="btn btn-primary mr-2" type="submit" name="manage_copyObjects:method" value="Copy" />
+            <input class="btn btn-primary mr-2" type="submit" name="manage_pasteObjects:method" value="Paste" tal:condition="here/cb_dataValid" />
+          </tal:copy-paste>
+          <input class="btn btn-primary mr-2" type="submit" name="manage_delObjects:method" value="Delete" tal:condition="delete_allowed" />
+          <input class="btn btn-primary mr-2" type="submit" name="manage_importExportForm:method" value="Import/Export" tal:condition="python:sm.checkPermission('Import/Export objects', context)" />
+
+          <div class="input-group" tal:condition="python: has_order_support and sm.checkPermission('Manage properties', context)">
+            <select class="form-control btn btn-primary" name="delta:int">
               <option tal:repeat="val python:range(1,min(5,len(obs)))" tal:content="val" />
               <option tal:repeat="val python:range(5,len(obs),5)" tal:content="val" />
             </select>
+            <div class="input-group-append">
+              <button type="submit" name="manage_move_objects_up:method" value="Move up" 
+                title="Move selected items up" class="btn btn-primary">
+                <i class="fas fa-arrow-up"></i>
+              </button>
+              <button type="submit" name="manage_move_objects_down:method" value="Move down" 
+                title="Move selected items down" class="btn btn-primary rounded-right">
+                <i class="fas fa-arrow-down"></i>
+              </button>
+            </div>
+            <button type="submit" name="manage_move_objects_to_top:method" value="Move to top" 
+              title="Move selected items to top" class="btn btn-primary ml-2 mr-2">
+              <i class="fas fa-arrow-up" style="border-top: 0.2rem solid silver;"></i>
+            </button>
+            <button type="submit" name="manage_move_objects_to_bottom:method" value="Move to bottom" 
+               title="Move selected items to bottom" class="btn btn-primary">
+              <i class="fas fa-arrow-down" style="border-bottom: 0.2rem solid silver;"></i>
+            </button>
           </div>
-          <input type="submit" name="manage_move_objects_to_top:method" value="Move to top" class="btn btn-primary" title="Move selected items to top" />
-          <input type="submit" name="manage_move_objects_to_bottom:method" value="Move to bottom" class="btn btn-primary" title="Move selected items to bottom" />
         </div>
+
       </div>
     </tal:not-empty>
 
@@ -146,7 +158,7 @@
 
 <script>
   // +++++++++++++++++++++++++++
-  // checkbox_all: Item  Selection
+  // Item  Selection
   // +++++++++++++++++++++++++++
   function checkbox_all() {
     var checkboxes = document.getElementsByClassName('checkbox-list-item');
@@ -159,6 +171,35 @@
     // Set Checkbox like checkAll-Box
     for (i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = document.getElementById('checkAll').checked;
+    }
+  };
+
+  function zmicontrols_visible() {
+    var zmicontrols = $('form#objectItems .zmi-controls');
+    var zmicontrols_top = zmicontrols.offset().top;
+    var zmicontrols_bottom = zmicontrols_top + zmicontrols.outerHeight();
+    var viewport_top = $(window).scrollTop();
+    var viewport_bottom = viewport_top + $(window).height();
+    return zmicontrols_bottom > viewport_top && zmicontrols_top < viewport_bottom;
+  };
+
+  function select_objectitem(ob) {
+    ob.parent().parent().toggleClass('checked');
+    if ( !zmicontrols_visible() ) {
+      $('form#objectItems').addClass('selected');
+    }
+    // Anything selected?
+    var checkboxes = document.getElementsByClassName('checkbox-list-item');
+    var selected = false;
+    for (i = 0; i < checkboxes.length; i++) {
+      if ( checkboxes[i].checked ) {
+        selected = true;
+        break;
+      }
+    }
+    if ( !selected ) {
+      $('form#objectItems').removeClass('selected');
+      console.log('form#objectItems removed .selected');
     }
   };
 
