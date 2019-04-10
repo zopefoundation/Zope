@@ -81,7 +81,7 @@ function fix_ancient_gui() {
 		return;
 	}
 	// WRAP FORM ELEMENT with fluid-container (if missing)
-	$('body>form,body>textarea,body>table,body>h2,body>p').wrapAll('<main class="container-fluid zmi-patch"></main>');
+    $('body>form,body>textarea,body>table,body>h2,body>h3,body>p,body.zmi-Generic-Setup-Tool>div:not(.modal)').wrapAll('<main class="container-fluid zmi-patch"></main>');
 	// ADD BOOTSTRAP CLASSES
 	$('input[type="text"], input[type="file"], textarea, select').addClass('form-control zmi-patch');
 	$('input[type="submit"]').addClass('btn btn-primary zmi-patch');
@@ -92,7 +92,7 @@ function fix_ancient_gui() {
 // [3] GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_modal_gui() {
 	if ( 0 === $('.modal-body main').length ) {
-		$('.modal-body>form,.modal-body>table,.modal-body>h2,.modal-body>p,.modal-body>i.zmi-help-icon').wrapAll('<main class="container-fluid zmi-patch"></main>');
+        $('.modal-body>form,.modal-body>table,.modal-body>h2,.modal-body>h3,.modal-body>p,.modal-body>i.zmi-help-icon').wrapAll('<main class="container-fluid zmi-patch"></main>');
 		// ADD BOOTSTRAP CLASSES
 		$('.modal-body input[type="text"],.modal-body input[type="file"],.modal-body textarea,.modal-body select').addClass('form-control zmi-patch');
 		$('.modal-body input[type="submit"]').addClass('btn btn-primary zmi-patch');

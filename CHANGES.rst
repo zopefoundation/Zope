@@ -29,6 +29,9 @@ Features
 Other changes
 +++++++++++++
 
+- Increase link visibility in old ZMI forms
+  (`#530 <https://github.com/zopefoundation/Zope/issues/530>`_)
+
 - Always keep action buttons visible on the content list for large folders
   (`#537 <https://github.com/zopefoundation/Zope/issues/537>`_)
   

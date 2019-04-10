@@ -106,7 +106,12 @@ form.zmi-upload {
 .zmi p.form-help {
 	margin-bottom:2rem;
 }
-
+.zmi p.form-help a {
+	color:#007bff
+}
+.zmi p.form-help a:hover {
+	border-bottom:1px dotted #007bff
+}
 
 /* TAB NAVIGATION */
 .zmi nav .nav-tabs .nav-item:first-child {
