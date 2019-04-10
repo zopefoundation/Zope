@@ -511,23 +511,23 @@ The following details are not important if you are using the Zope
 framework. However, if your are publishing your own modules, the rest
 of this section will be helpful.
 
-The publisher checks authorization by examining the '__roles__'
+The publisher checks authorization by examining the ``__roles__``
 attribute of each object as it performs traversal. If present, the
-'__roles__' attribute should be 'None' or a list of role names. If it
-is None, the object is considered public. Otherwise the access to the
-object requires validation.
+``__roles__`` attribute should be ``None`` or a list of role names. If
+it is ``None``, the object is considered public. Otherwise the access to
+the object requires validation.
 
-Some objects such as functions and methods do not support creating
-attributes (at least they didn't before Python 2). Consequently, if
-the object has no '__roles__' attribute, the publisher will look for
-an attribute on the object's parent with the name of the object
-followed by '__roles__'. For example, a function named 'getInfo'
-would store its roles in its parent's 'getInfo__roles__' attribute.
+Some objects such as functions and methods historically did not support
+creating attributes. Consequently, if the object has no ``__roles__``
+attribute, the publisher will look for an attribute on the object's
+parent with the name of the object followed by ``__roles__``.
+For example, a function named ``getInfo`` would store its roles in its
+parent's ``getInfo__roles__`` attribute.
 
-If an object has a '__roles__' attribute that is not empty and not
-'None', the publisher tries to find a user database to authenticate
+If an object has a ``__roles__`` attribute that is not empty and not
+``None``, the publisher tries to find a user database to authenticate
 the user. It searches for user databases by looking for an
-'__allow_groups__' attribute, first in the published object, then in
+``__allow_groups__`` attribute, first in the published object, then in
 the previously traversed object, and so on until a user database is
 found.
 
@@ -541,27 +541,23 @@ method::
 
   validate(request, http_authorization, roles)
 
-where 'request' is a mapping object that contains request information,
-'http_authorization' is the value of the HTTP 'Authorization' header
-or 'None' if no authorization header was provided, and 'roles' is a
+where ``request`` is a mapping object that contains request information,
+``http_authorization`` is the value of the *HTTP Authorization* header
+or ``None`` if no authorization header was provided, and ``roles`` is a
 list of user role names.
 
-The validate method returns a user object if succeeds, and 'None' if
-it cannot validate the user. See Chapter 6 for more information on
-user objects. Normally, if the validate method returns 'None', the
+The validate method returns a user object if succeeds, and ``None`` if
+it cannot validate the user. See Chapter 8 for more information on
+user objects. Normally, if the validate method returns ``'None``, the
 publisher will try to use other user databases, however, a user
 database can prevent this by raising an exception.
 
-
 If validation fails, Zope will return an HTTP header that causes your
-browser to display a user name and password dialog. You can control
-the realm name used for basic authentication by providing a module
-variable named '__bobo_realm__'. Most web browsers display the realm
-name in the user name and password dialog box.
+browser to display a user name and password dialog.
 
 If validation succeeds the publisher assigns the user object to the
-request variable, 'AUTHENTICATED_USER'. The publisher places no
-restriction on user objects.
+request variable ``AUTHENTICATED_USER``. The publisher places no
+restrictions on user objects.
 
 
 Zope Security
