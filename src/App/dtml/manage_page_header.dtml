@@ -29,5 +29,5 @@
 
 </head>
 <!-- REFACT what is a better way to get the last part of the current URL? -->
-<body id="nodeid-<dtml-var "getId()">" class="zmi zmi-<dtml-var "this().meta_type.replace(' ', '-')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
+<body id="nodeid-<dtml-var "getId()">" class="zmi zmi-<dtml-var "this().meta_type.replace(' ', '-').replace('(', '').replace(')', '')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
 </dtml-unless>
