@@ -566,12 +566,29 @@ Zope Security
 When using Zope rather than publishing your own modules, the publisher
 uses acquisition to locate user folders and perform security checks.
 The upshot of this is that your published objects must inherit from
-'Acquisition.Implicit' or 'Acquisition.Explicit'. See Chapter 5,
-"Acquisition", for more information about these classes. Also when
-traversing each object must be returned in an acquisition context.
-This is done automatically when traversing via 'getattr', but you must
-wrap traversed objects manually when using '__getitem__' and
-'__bobo_traverse__'. For example::
+``Acquisition.Implicit`` or ``Acquisition.Explicit``.
+
+
+.. note::
+  For more information on *Acquisition*, visit one of the following
+  resources:
+
+  - chapter 7 "Acquisition" of this Zope Developer's Guide
+  - chapter 8
+    `"Acquisition" <https://zope.readthedocs.io/en/latest/zopebook/Acquisition.html>`_
+    of *The Zope Book*
+  - the excellent
+    `readme <https://github.com/zopefoundation/Acquisition>`__
+    of the "Acquisition" package
+
+Also, when traversing, each object must be returned in an acquisition
+context.
+This is done automatically when traversing via ``getattr``, but you
+must wrap traversed objects manually when using ``__getitem__`` and
+``__bobo_traverse__``.
+
+
+For example::
 
           class Example(Acquisition.Explicit):
               ...
@@ -579,12 +596,12 @@ wrap traversed objects manually when using '__getitem__' and
               def __bobo_traverse__(self, name, request):
                   ...
                   next_object=self._get_next_object(name)
-                  return  next_object.__of__(self)      
+                  return  next_object.__of__(self)
 
 
 Finally, traversal security can be circumvented with the
-'__allow_access_to_unprotected_subobjects__' attribute as described
-in Chapter 6, "Security".
+``__allow_access_to_unprotected_subobjects__`` attribute as described
+in Chapter 8, "Security".
 
 
 Testing
