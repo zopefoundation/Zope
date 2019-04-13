@@ -30,8 +30,6 @@ function addItem( elm, base_url ) {
 	var no_modal_dialog = {
 		'action':[
 			'manage_addUserFolder',
-			'manage_addErrorLog',
-			'addPluggableAuthService',
 		],
 		'product':[
 			'CMFPlone',
