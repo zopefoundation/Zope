@@ -563,8 +563,8 @@ restrictions on user objects.
 Zope Security
 -------------
 
-When using Zope rather than publishing your own modules, the publisher
-uses acquisition to locate user folders and perform security checks.
+The publisher uses acquisition to locate user folders and perform
+security checks.
 The upshot of this is that your published objects must inherit from
 ``Acquisition.Implicit`` or ``Acquisition.Explicit``.
 
