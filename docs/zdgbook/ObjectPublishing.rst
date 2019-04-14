@@ -604,30 +604,6 @@ Finally, traversal security can be circumvented with the
 in Chapter 8, "Security".
 
 
-Publishable Module
-------------------
-
-If you are using the Zope framework, this section will be irrelevant
-to you. However, if you are publishing your own modules with
-'ZPublisher' read on.
-
-The publisher begins the traversal process by locating an object in
-the module's global namespace that corresponds to the first element of
-the path. Alternately the first object can be located by one of two
-hooks.
-
-If the module defines a 'web_objects' or 'bobo_application' object,
-the first object is searched for in those objects. The search happens
-according to the normal rules of traversal, using '__bobo_traverse__',
-'getattr', and '__getitem__'.
-
-The module can receive callbacks before and after traversal. If the
-module defines a '__bobo_before__' object, it will be called with no
-arguments before traversal. Its return value is ignored. Likewise,
-if the module defines a '__bobo_after__' object, it will be called
-after traversal with no arguments. These callbacks can be used for
-things like acquiring and releasing locks.
-
 Calling the Published Object
 ----------------------------
 
