@@ -607,10 +607,6 @@ in Chapter 8, "Security".
 Calling the Published Object
 ----------------------------
 
-Now that we've covered how the publisher located the published object
-and what it does with the results of calling it, let's take a closer
-look at how the published object is called.
-
 The publisher marshals arguments from the request and automatically
 makes them available to the published object. This allows you to
 accept parameters from web forms without having to parse the
