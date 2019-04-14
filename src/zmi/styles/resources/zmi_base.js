@@ -28,12 +28,6 @@ function addItem( elm, base_url ) {
 
 	// Inserting Without Modal Dialog
 	var no_modal_dialog = {
-		'action':[
-			'manage_addRegistry',
-			'manage_addUserFolder',
-			'manage_addErrorLog',
-			'addPluggableAuthService',
-		],
 		'product':[
 			'CMFPlone',
 			'CMFEditions',
@@ -41,7 +35,7 @@ function addItem( elm, base_url ) {
 		]
 	};
 
-	if ( zmi_dialog != 'modal' || $.inArray(action, no_modal_dialog['action']) !== -1 || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
+	if ( zmi_dialog != 'modal' || $.inArray(product, no_modal_dialog['product']) !== -1 ) {
 		window.location.href = url_full;
 		return
 	}

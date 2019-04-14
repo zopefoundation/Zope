@@ -32,6 +32,9 @@ Features
 Other changes
 +++++++++++++
 
+- Remove hardcoded list of factories that don't want an add dialog
+  (`#540 <https://github.com/zopefoundation/Zope/issues/540>`_)
+
 - Increase link visibility in old ZMI forms
   (`#530 <https://github.com/zopefoundation/Zope/issues/530>`_)
 
