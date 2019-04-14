@@ -61,7 +61,7 @@ steps:
 - Run the buildout
 
 You may need to replace the used Zope version used in the examples (4.0b6) with
- he one you actually want to install.
+the one you actually want to install.
 
 On Linux, this can be done as follows::
 
