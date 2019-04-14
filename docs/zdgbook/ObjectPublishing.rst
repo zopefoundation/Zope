@@ -604,13 +604,6 @@ Finally, traversal security can be circumvented with the
 in Chapter 8, "Security".
 
 
-Testing
--------
-
-ZPublisher comes with built-in support for testing and working with
-the Python debugger. This topic is covered in more detail in Chapter
-7, "Testing and Debugging".
-
 Publishable Module
 ------------------
 
