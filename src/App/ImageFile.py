@@ -95,7 +95,6 @@ class ImageFile(Explicit):
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Last-Modified', self.lmh)
         RESPONSE.setHeader('Cache-Control', self.cch)
-        RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         header = REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header = header.split(';')[0]
@@ -115,9 +114,11 @@ class ImageFile(Explicit):
                 else:
                     last_mod = int(0)
                 if last_mod > 0 and last_mod <= mod_since:
+                    RESPONSE.setHeader('Content-Length', '0')
                     RESPONSE.setStatus(304)
                     return ''
 
+        RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         return filestream_iterator(self.path, mode='rb')
 
     if bbb.HAS_ZSERVER:

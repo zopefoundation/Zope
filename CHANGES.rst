@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix wrong `Content-Length` set by ``App.ImageFile`` on 304 responses
+  (`#513 <https://github.com/zopefoundation/Zope/issues/513>`_)
+
 - make the ZMI `Find` tab work for searching HTML tags
   by adding support for `Tainted` strings in ``ZopeFind``
 
