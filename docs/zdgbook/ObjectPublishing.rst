@@ -611,18 +611,22 @@ The publisher marshals arguments from the request and automatically
 makes them available to the published object. This allows you to
 accept parameters from web forms without having to parse the
 forms. Your objects usually don't have to do anything special to be
-called from the web. Consider this function::
+called from the web.
+
+
+Consider this function::
 
       def greet(name):
-          "greet someone"
-          return "Hello, %s" % name
+          """Greet someone by name."""
+          return "Hello, %s!" % name
 
-You can provide the 'name' argument to this function by calling it
-with a URL like *greet?name=World*. You can also call it with a HTTP
-'POST' request which includes 'name' as a form variable.
+You can provide the ``name`` argument to this function by calling it
+with a **URL** like ``greet?name=World``. You can also call it with a **HTTP
+POST request** which includes ``name`` as a form variable.
 
 In the next sections we'll take a closer look at how the publisher
 marshals arguments.
+
 
 Marshalling Arguments from the Request
 --------------------------------------
@@ -630,10 +634,10 @@ Marshalling Arguments from the Request
 The publisher marshals form data from GET and POST requests. Simple
 form fields are made available as Python strings. Multiple fields
 such as form check boxes and multiple selection lists become sequences
-of strings. File upload fields are represented with 'FileUpload'
-objects. File upload objects behave like normal Python file objects
-and additionally have a 'filename' attribute which is the name of the
-file and a 'headers' attribute which is a dictionary of file upload
+of strings. File upload fields are represented with **FileUpload**
+objects. **FileUpload** objects behave like normal Python file objects
+and additionally have a **filename** attribute which is the name of the
+file and a **headers** attribute which is a dictionary of file upload
 headers.
 
 The publisher also marshals arguments from CGI environment variables
@@ -641,13 +645,16 @@ and cookies. When locating arguments, the publisher first looks in
 CGI environment variables, then other request variables, then form
 data, and finally cookies. Once a variable is found, no further
 searching is done. So for example, if your published object expects
-to be called with a form variable named 'SERVER_URL', it will fail,
-since this argument will be marshaled from the CGI environment first,
+to be called with a form variable named ``SERVER_URL``, it will fail,
+since this argument will be marshalled from the CGI environment first,
 before the form data.
 
 The publisher provides a number of additional special variables such
-as 'URL0' which are derived from the request. These are covered in
-the 'HTTPRequest' API documentation.
+as ``URL``, ``URLn``, ``URLPATHn``, ``BASEPATHn`` and others, which are
+derived from the request.
+
+Unfortunately, there is no current documentation for those variables.
+
 
 Argument Conversion
 -------------------
