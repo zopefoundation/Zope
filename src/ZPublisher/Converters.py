@@ -91,7 +91,9 @@ def field2int(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "An integer was expected in the value %r" % escape(v, True)
+                "An integer was expected in the value %r" % escape(
+                    v, quote=True
+                )
             )
     raise ValueError('Empty entry when <strong>integer</strong> expected')
 

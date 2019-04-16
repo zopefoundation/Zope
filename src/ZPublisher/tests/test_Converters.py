@@ -54,6 +54,28 @@ class ConvertersTests(unittest.TestCase):
         expected = False
         self.assertEqual(field2boolean(to_convert), expected)
 
+    def test_field2int_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2int
+        to_convert = ["1", "2", "3"]
+        expected = [1, 2, 3]
+        self.assertEqual(field2int(to_convert), expected)
+
+    def test_field2int_with_regular_number(self):
+        from ZPublisher.Converters import field2int
+        to_convert = "1"
+        expected = 1
+        self.assertEqual(field2int(to_convert), expected)
+
+    def test_field2int_with_illegal_value(self):
+        from ZPublisher.Converters import field2int
+        to_convert = "<"
+        self.assertRaises(ValueError, field2int, to_convert)
+
+    def test_field2int_with_empty_value(self):
+        from ZPublisher.Converters import field2int
+        to_convert = ""
+        self.assertRaises(ValueError, field2int, to_convert)
+
     def test_field2string_with_string(self):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
