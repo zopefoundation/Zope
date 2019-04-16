@@ -650,8 +650,8 @@ since this argument will be marshalled from the CGI environment first,
 before the form data.
 
 The publisher provides a number of additional special variables such
-as ``URL``, ``URLn``, ``URLPATHn``, ``BASEPATHn`` and others, which are
-derived from the request.
+as ``URL``, ``URLn``, ``BASEn`` and others, which are derived from the
+request.
 
 Unfortunately, there is no current documentation for those variables.
 
