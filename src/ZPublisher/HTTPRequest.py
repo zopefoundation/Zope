@@ -1195,7 +1195,7 @@ class HTTPRequest(BaseRequest):
         # or raise the same HTTP error that would be raised in
         # the case of a real web request. If the passed in url
         # does not appear to describe an object in the system
-        # namespace (e.g. the host, port or script name dont
+        # namespace (e.g. the host, port or script name don't
         # match that of the current request), a ValueError will
         # be raised.
         if url.find(self.script) != 0:
