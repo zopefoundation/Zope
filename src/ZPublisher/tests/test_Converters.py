@@ -18,6 +18,42 @@ from six import text_type
 
 class ConvertersTests(unittest.TestCase):
 
+    def test_field2boolean_with_empty_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u''
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_False_as_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u'False'
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_some_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u'to_convert'
+        expected = True
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_positive_int(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = 1
+        expected = True
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_zero(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = 0
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_emtpy_list(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = []
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
     def test_field2string_with_string(self):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'

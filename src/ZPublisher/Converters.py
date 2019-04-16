@@ -163,8 +163,8 @@ def field2date_international(v):
 
 def field2boolean(v):
     if v == 'False':
-        return not 1
-    return not not v
+        return False
+    return bool(v)
 
 
 class _unicode_converter(object):
