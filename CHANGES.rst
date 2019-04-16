@@ -69,7 +69,7 @@ Other changes
   (`#533 <https://github.com/zopefoundation/Zope/issues/533>`_)
 
 - add zodbupdate_rename_dict to move webdav.LockItem to OFS.LockItem
-  (https://github.com/plone/Products.CMFPlone/issues/2800>)
+  (`Products.CMFPlone#2800 <https://github.com/plone/Products.CMFPlone/issues/2800>`_)
 
 
 4.0b10 (2019-03-08)
