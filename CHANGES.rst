@@ -43,7 +43,7 @@ Other changes
 
 - Always keep action buttons visible on the content list for large folders
   (`#537 <https://github.com/zopefoundation/Zope/issues/537>`_)
-  
+
 - Make showing the ZMI modal add dialog configurable per product
   (`#535 <https://github.com/zopefoundation/Zope/issues/535>`_)
 
@@ -67,6 +67,9 @@ Other changes
 
 - provided method to get breadcrumb length to prevent ZMI errors
   (`#533 <https://github.com/zopefoundation/Zope/issues/533>`_)
+
+- add zodbupdate_rename_dict to move webdav.LockItem to OFS.LockItem
+  (https://github.com/plone/Products.CMFPlone/issues/2800>)
 
 
 4.0b10 (2019-03-08)
