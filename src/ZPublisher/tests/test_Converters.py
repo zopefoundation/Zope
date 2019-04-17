@@ -171,6 +171,13 @@ class ConvertersTests(unittest.TestCase):
         expected = b'to_convert'
         self.assertEqual(field2bytes(to_convert), expected)
 
+    def test_field2date_international_with_proper_date_string(self):
+        from ZPublisher.Converters import field2date_international
+        to_convert = "2.1.2019"
+        from DateTime import DateTime
+        expected = DateTime(2019, 1, 2)
+        self.assertEqual(field2date_international(to_convert), expected)
+
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
         to_convert = ['one', b'two']
