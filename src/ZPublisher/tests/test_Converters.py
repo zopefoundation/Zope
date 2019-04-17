@@ -129,6 +129,17 @@ class ConvertersTests(unittest.TestCase):
         expected = 2
         self.assertEqual(field2long(to_convert), expected)
 
+    def test_field2required_returns_string(self):
+        from ZPublisher.Converters import field2required
+        to_convert = "to_convert"
+        expected = "to_convert"
+        self.assertEqual(field2required(to_convert), expected)
+
+    def test_field2required_raises_ValueError(self):
+        from ZPublisher.Converters import field2required
+        value = ""
+        self.assertRaises(ValueError, field2required, value)
+
     def test_field2string_with_string(self):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
