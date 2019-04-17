@@ -13,6 +13,8 @@
 
 import unittest
 
+from six import PY2
+from six import PY3
 from six import text_type
 
 
@@ -206,6 +208,16 @@ class ConvertersTests(unittest.TestCase):
         to_convert = 'abc\ndef\nghi'
         expected = [b'abc', b'def', b'ghi']
         self.assertEqual(field2lines(to_convert), expected)
+
+    def test_field2text_with_string_with_newlines(self):
+        from ZPublisher.Converters import field2text
+        to_convert = 'abc\r\ndef\r\nghi'
+        if PY3:
+            expected = 'abc\ndef\nghi'
+            self.assertEqual(field2text(to_convert), expected)
+        if PY2:
+            expected = b'abc\ndef\nghi'
+            self.assertEqual(field2text(to_convert), expected)
 
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines
