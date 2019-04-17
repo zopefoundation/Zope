@@ -145,5 +145,8 @@ setup(
         'zodbupdate.decode': [
             'decodes = OFS:zodbupdate_decode_dict',
         ],
+        'zodbupdate': [
+            'renames = OFS:zodbupdate_rename_dict',
+        ],
     },
 )

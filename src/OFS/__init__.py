@@ -13,3 +13,7 @@ zodbupdate_decode_dict = {
     'OFS.OrderedFolder OrderedFolder title': 'utf-8',
     'OFS.userfolder UserFolder title': 'utf-8',
 }
+
+zodbupdate_rename_dict = {
+    'webdav.LockItem LockItem': 'OFS.LockItem LockItem',
+}
