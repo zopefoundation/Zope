@@ -31,8 +31,10 @@ default_encoding = 'utf-8'
 
 
 def field2string(v):
-    """Converts value to native strings (so always to `str` no matter which
-    python version you are on)"""
+    """Converts value to native strings.
+
+    So always to `str` no matter which Python version you are on.
+    """
     if hasattr(v, 'read'):
         return v.read()
     elif six.PY2 and isinstance(v, text_type):
