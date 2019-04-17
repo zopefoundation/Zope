@@ -54,6 +54,31 @@ class ConvertersTests(unittest.TestCase):
         expected = False
         self.assertEqual(field2boolean(to_convert), expected)
 
+    def test_field2float_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2float
+        to_convert = ["1.1", "2.2", "3.3"]
+        expected = [1.1, 2.2, 3.3]
+        rv = field2float(to_convert)
+        self.assertEqual(rv[0], expected[0])
+        self.assertEqual(rv[1], expected[1])
+        self.assertEqual(rv[2], expected[2])
+
+    def test_field2float_with_regular_number(self):
+        from ZPublisher.Converters import field2float
+        to_convert = "1"
+        expected = 1.0
+        self.assertAlmostEqual(field2float(to_convert), expected)
+
+    def test_field2float_with_illegal_value(self):
+        from ZPublisher.Converters import field2float
+        to_convert = "<"
+        self.assertRaises(ValueError, field2float, to_convert)
+
+    def test_field2float_with_empty_value(self):
+        from ZPublisher.Converters import field2float
+        to_convert = ""
+        self.assertRaises(ValueError, field2float, to_convert)
+
     def test_field2int_with_list_of_numbers(self):
         from ZPublisher.Converters import field2int
         to_convert = ["1", "2", "3"]
