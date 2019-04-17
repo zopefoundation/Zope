@@ -81,6 +81,34 @@ class ConvertersTests(unittest.TestCase):
         to_convert = 'to_convert'
         self.assertEqual(field2string(to_convert), to_convert)
 
+    def test_field2long_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2long
+        to_convert = ["1", "2", "3"]
+        expected = [1, 2, 3]
+        self.assertEqual(field2long(to_convert), expected)
+
+    def test_field2long_with_regular_number(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "1"
+        expected = 1
+        self.assertEqual(field2long(to_convert), expected)
+
+    def test_field2long_with_illegal_value(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "<"
+        self.assertRaises(ValueError, field2long, to_convert)
+
+    def test_field2long_with_empty_value(self):
+        from ZPublisher.Converters import field2long
+        to_convert = ""
+        self.assertRaises(ValueError, field2long, to_convert)
+
+    def test_field2long_strips_trailing_long_symbol(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "2L"
+        expected = 2
+        self.assertEqual(field2long(to_convert), expected)
+
     def test_field2string_with_unicode_default_encoding(self):
         from ZPublisher.Converters import field2string
         to_convert = u'to_convert'
