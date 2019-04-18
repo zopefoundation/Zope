@@ -1,10 +1,11 @@
 Installing Zope
 ===============
-This document describes three ways to install Zope.
+This document describes installing Zope with
+`zc.buildout <https://pypi.python.org/pypi/zc.buildout>`_
+(the **recommended** method) or via ``pip``.
 
 .. contents::
-
-.. highlight:: bash
+   :local:
 
 
 Prerequisites
@@ -16,10 +17,7 @@ available:
   installed from system-level packages.  Supported versions include:
 
   * 2.7
-  * 3.5
-  * 3.6
-  * 3.7
-  * 3.8
+  * 3.5 - 3.8
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -30,44 +28,46 @@ available:
 
 - If you are using a Python interpreter shipping with your Linux distribution,
   you need to install the matching Python development package. As example, for
-  Python 3 on Ubuntu 18.04, you have to type the following::
+  Python 3 on Ubuntu 18.04, you have to type the following:
+
+  .. code-block:: console
 
     $ sudo apt-get install python3-dev
 
 
 Installing Zope with ``zc.buildout``
 ------------------------------------
-In this configuration, we use ``zc.buildout`` to install the Zope software,
-and then generate a server "instance" inside the buildout environment.
-
-About ``zc.buildout``
-~~~~~~~~~~~~~~~~~~~~~
 `zc.buildout <https://pypi.python.org/pypi/zc.buildout>`_ is a powerful
 tool for creating repeatable builds of a given software configuration
 and environment.  The Zope developers use ``zc.buildout`` to develop
-Zope itself, as well as the underlying packages it uses.
+Zope itself, as well as the underlying packages it uses. **This is the
+recommended way of installing Zope**.
 
-Installing the Zope software
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Installing the Zope software using ``zc.buildout`` involves the following
 steps:
 
-- Download the Zope source distribution from `PyPI`__
+- Download and uncompress the Zope source distribution from `PyPI`__ if you
+  are using the built-in standard buildout configuration
 
   __ https://pypi.org/project/Zope/
 
-- Bootstrap the buildout
+- Create a virtual environment
+
+- Install ``zc.buildout`` into the virtual environment
 
 - Run the buildout
 
-You may need to replace the used Zope version used in the examples (4.0b6) with
-the one you actually want to install.
+The following examples are from Linux and use Zope version 4.0b10. Just replace
+that version number with your desired version.
 
-On Linux, this can be done as follows::
+Built-in standard buildout configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-4.0b6.tar.gz
-  $ tar xfvz Zope-<Zope version>.tar.gz
-  $ cd Zope-<Zope version>
+.. code-block:: console
+
+  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-4.0b10.tar.gz
+  $ tar xfvz Zope-4.0b10.tar.gz
+  $ cd Zope-4.0b10
   $ python3.7 -m venv .
   $ bin/pip install -U pip zc.buildout
   $ bin/buildout
@@ -75,14 +75,35 @@ On Linux, this can be done as follows::
 .. note::
 
   When using Python 2.7 instead of calling ``python3.7 -m venv .`` you have to
-  install `virtualenv` and then call ``virtualenv-2.7 .``.
+  install `virtualenv` and then call ``python2.7 -m virtualenv .``.
 
+
+Custom buildout configurations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instead of using the buildout configuration shipping with Zope itself, you
-can also start with a minimum configuration like this::
+can also start with your own buildout configuration file.
+
+The installation with a custom buildout configuration does not require you
+to download Zope first:
+
+.. code-block:: console
+
+   $ python3.7 -m venv zope
+   $ cd zope
+   <create buildout.cfg in this folder>
+   $ bin/pip install -U pip zc.buildout
+   $ bin/buildout
+
+
+Minimum configuration
++++++++++++++++++++++
+Here's a minimum ``buildout.cfg`` configuration  example:
+
+.. code-block:: ini
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.0b6/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.0b10/versions-prod.cfg
     parts =
         zopescripts
     
@@ -92,229 +113,111 @@ can also start with a minimum configuration like this::
     eggs =
         Zope
 
-Creating a Zope instance
-~~~~~~~~~~~~~~~~~~~~~~~~
+Using ``plone.recipe.zope2instance``
+++++++++++++++++++++++++++++++++++++
+To make your life a lot easier, you can use ``plone.recipe.zope2instance``
+to automate a lot of the configuration tasks from in the following document,
+:doc:`operation`. ``plone.recipe.zope2instance`` has a myriad configuration
+options, please see the
+`PyPI page <https://pypi.org/project/plone.recipe.zope2instance/>`_.
 
-.. attention::
+.. code-block:: ini
 
-  The following steps describe how to install a WSGI based Zope instance.
-  If you want/have to use ZServer instead of WSGI (Python 2 only!) follow
-  the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
-  changed since that version.
+    [buildout]
+    extends =
+        https://zopefoundation.github.io/Zope/releases/4.0b10/versions-prod.cfg
+    parts =
+        zopeinstance
 
-Once you've installed Zope, you will need to create an "instance
-home". This is a directory that contains configuration and data for a
-Zope server process.  The instance home is created using the
-``mkwsgiinstance`` script::
+    [zopeinstance]
+    recipe = plone.recipe.zope2instance
+    eggs =
+        Products.TemporaryFolder
+    user = admin:adminpassword
+    http-address = 8080
 
-  $ bin/mkwsgiinstance -d .
+One feature this kind of installation offers is the easy integration of WSGI
+servers other than the built-in ``waitress``. You can specify a file path to a
+WSGI configuration file to use when starting the Zope instance. This works for
+WSGI servers that offer a PasteDeply-compatible entry point, like ``gunicorn``.
+You will need to create the ``.ini`` file yourself, and don't forget to
+include the WSGI server software egg in the ``eggs`` specification:
 
-You will be asked to provide a user name and password for an
-administrator's account during ``mkwsgiinstance``.  To see the available
-command-line options, run the script with the ``--help`` option::
+.. code-block:: ini
 
-  $ bin/mkwsgiinstance --help
+    [zopeinstance]
+    recipe = plone.recipe.zope2instance
+    eggs =
+        Products.TemporaryFolder
+        gunicorn
+    user = admin:adminpassword
+    http-address = 8080
+    wsgi = /path/to/wsgi.ini
 
-After installation, refer to :doc:`operation` for documentation on
-configuring and running Zope.
+On Python 2 you can also forego the use of WSGI and create an old-fashioned
+ZServer-based installation by pulling in the ``ZServer`` egg and setting
+``wsgi = off`` explicitly:
+
+.. code-block:: ini
+
+    [zopeinstance]
+    recipe = plone.recipe.zope2instance
+    eggs =
+        Products.TemporaryFolder
+        ZServer
+    user = admin:adminpassword
+    http-address = 8080
+    wsgi = off
 
 
-Building the documentation with ``Sphinx``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To build the HTML documentation, run the :command:`make-docs` script (installed
-by the buildout)::
+Installing Zope with ``pip``
+----------------------------
+Installing the Zope software using ``pip`` involves the following
+steps:
 
-   $ bin/make-docs
+- Create a virtual environment
 
+- Install Zope and its dependencies
 
-Installing Zope via ``pip``
----------------------------
-This document describes how to install Zope into a ``virtualenv``
-using ``pip``.
+Example steps on Linux. Replace the version number "4.0b10" with the latest
+version you find on https://zopefoundation.github.io/Zope/:
 
-Create a Virtual Environment (Python 3)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: console
 
-.. code-block:: sh
-
-   $ python3.6 -m venv zope
-   $ cd zope
+  $ python3.7 -m venv zope
+  $ cd zope
+  $ bin/pip install -U pip
+  $ bin/pip install Zope==4.0b10 \
+    -c https://zopefoundation.github.io/Zope/releases/4.0b10/constraints.txt
 
 .. note::
-  You might need to install ``virtualenv``.
 
-  For example, on Ubuntu 18.04 you have to type the following::
-
-    $ sudo apt-get install python3-venv
-
-Create a Virtual Environment (Python 2.7)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you are still using Python 2.7, install `virtualenv` onto your
-system, then call:
-
-.. code-block:: sh
-
-   $ virtualenv --python=python2.7 zope
-   New python executable in zope/bin/python2.7
-   Installing setuptools, pip, wheel...done.
-   $ cd zope
-
-Make sure you use at least version ``12.0.1`` of `virtualenv` (Calling
-``virtualenv --version`` tells you the used version number.).
-Older versions install a `pip` version which is not compatible with
-the file format of ``requirements-full.txt`` used in `Zope`.
-
-.. note::
-  It is recommended to update pip to the lastest version. ::
-
-    $ path/to/your/pip install --upgrade pip
-
-
-Installing the Zope software
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Look for the release you want to install on
-https://zopefoundation.github.io/Zope/. Than use the specific version of
-``requirements-full.txt`` in the URL, replacing 4.0b7 in the example below:
-
-.. code-block:: sh
-
-   $ bin/pip install Zope==4.0b7 -c https://zopefoundation.github.io/Zope/releases/4.0b7/constraints.txt
-   ...
-   Obtaining Zope
-   ...
-   Successfully installed ...
+  When using Python 2.7 instead of calling ``python3.7 -m venv zope`` you have
+  to install `virtualenv` and then call ``python2.7 -m virtualenv zope``.
 
 You can also install Zope using a single requirements file. Note that this
 installation method might install packages that are not actually needed (i. e.
-are not listed in the ``install_requires`` section of ``setup.py``):
+more than are listed in the ``install_requires`` section of ``setup.py``):
 
-.. code-block:: sh
+.. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.0b7/requirements-full.txt
-
+    -r https://zopefoundation.github.io/Zope/releases/4.0b10/requirements-full.txt
 
 If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
 install that package seperately using the version spec in constraints.txt
 
-.. code-block:: sh
+.. code-block:: console
 
     $ bin/pip install \
-    -c https://zopefoundation.github.io/Zope/releases/4.0b7/constraints.txt \
+    -c https://zopefoundation.github.io/Zope/releases/4.0b10/constraints.txt \
     ZServer
 
+Building the documentation with ``Sphinx``
+------------------------------------------
+If you have used ``zc.buildout`` for installation, you can build the HTML
+documentation locally:
 
-Creating a Zope instance
-~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: console
 
-.. attention::
-
-  The following steps describe how to install a WSGI based Zope
-  instance.   If you want/have to use ZServer instead of WSGI (Python
-  2 only!) follow  the documentation
-  `Creating a Zope instance for Zope 2.13`_, .
-
-Once you've installed Zope, you will need to create an "instance
-home". This is a directory that contains configuration and data for a
-Zope server process.  The instance home is created using the
-``mkwsgiinstance`` script:
-
-.. code-block:: sh
-
-  $ bin/mkwsgiinstance -d .
-
-You will be asked to provide a user name and password for an
-administrator's account during ``mkwsgiinstance``.  To see the
-available command-line options, run the script with the ``--help``
-option:
-
-.. code-block:: sh
-
-   $ bin/mkwsgiinstance --help
-
-The `-d .` argument specifies the directory to create the instance
-home in.
-If you follow the example and choose the current directory, you'll
-find the instances files in the subdirectories of the ``virtualenv``:
-
-- ``etc/`` will hold the configuration files.
-- ``var/`` will hold the database files.
-
-
-Installing Zope via ``pipenv``
-------------------------------
-This document describes how to install Zope via ``pipenv`` (Python 3 only).
-Please note, that the support for Pipenv is considered experimental.
-Also, currently there is no support to update the Zope installation via
-``pipenv``.
-
-Create a Virtual Environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: sh
-
-   $ python3.6 -m venv zope
-   $ cd zope
-
-
-Install pipenv
-~~~~~~~~~~~~~~
-
-.. code-block:: sh
-    
-    $ bin/pip install pipenv
-
-
-Install the Zope software
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-Look for the release you want to install on
-https://zopefoundation.github.io/Zope/. Then use the specific version of
-``requirements-full.txt`` in the URL, replacing 4.0b4 in the example below.
-(Remove the --pre option for final releases.)
-
-.. code-block:: sh
-
-   $ bin/pipenv install -r https://zopefoundation.github.io/Zope/releases/4.0b4/requirements-full.txt --pre
-   ...
-   Successfully installed ...
-
-
-Creating a Zope instance
-~~~~~~~~~~~~~~~~~~~~~~~~
-Once you've installed Zope, you will need to create an "instance
-home". This is a directory that contains configuration and data for a
-Zope server process.  The instance home is created using the
-``mkwsgiinstance`` script:
-
-.. code-block:: sh
-
-  $ bin/pipenv run mkwsgiinstance -d .
-
-You will be asked to provide a user name and password for an
-administrator's account during ``mkwsgiinstance``.  To see the available
-command-line options, run the script with the ``--help`` option:
-
-.. code-block:: sh
-
-   $ bin/pipenv run mkwsgiinstance --help
-
-The `-d .` specifies the directory to create the instance home in.
-If you follow the example and choose the current directory, you'll
-find the instances files in the subdirectories of the ``virtualenv``:
-
-- ``etc/`` will hold the configuration files.
-- ``var/`` will hold the database files.
-
-
-Starting your created instance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To start your newly created instance, run the provided runwsgi script 
-with the generated configuration:
-
-.. code-block:: sh
-
-    $ bin/pipenv run runwsgi etc/zope.ini
-
-.. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-buildout.html#creating-a-zope-instance
-
-
+   $ bin/make-docs
