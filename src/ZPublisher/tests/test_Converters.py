@@ -13,10 +13,134 @@
 
 import unittest
 
+from six import PY2
+from six import PY3
 from six import text_type
 
 
 class ConvertersTests(unittest.TestCase):
+
+    def test_field2boolean_with_empty_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u''
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_False_as_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u'False'
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_some_string(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = u'to_convert'
+        expected = True
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_positive_int(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = 1
+        expected = True
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_zero(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = 0
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2boolean_with_emtpy_list(self):
+        from ZPublisher.Converters import field2boolean
+        to_convert = []
+        expected = False
+        self.assertEqual(field2boolean(to_convert), expected)
+
+    def test_field2float_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2float
+        to_convert = ["1.1", "2.2", "3.3"]
+        expected = [1.1, 2.2, 3.3]
+        rv = field2float(to_convert)
+        self.assertEqual(rv[0], expected[0])
+        self.assertEqual(rv[1], expected[1])
+        self.assertEqual(rv[2], expected[2])
+
+    def test_field2float_with_regular_number(self):
+        from ZPublisher.Converters import field2float
+        to_convert = "1"
+        expected = 1.0
+        self.assertAlmostEqual(field2float(to_convert), expected)
+
+    def test_field2float_with_illegal_value(self):
+        from ZPublisher.Converters import field2float
+        to_convert = "<"
+        self.assertRaises(ValueError, field2float, to_convert)
+
+    def test_field2float_with_empty_value(self):
+        from ZPublisher.Converters import field2float
+        to_convert = ""
+        self.assertRaises(ValueError, field2float, to_convert)
+
+    def test_field2int_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2int
+        to_convert = ["1", "2", "3"]
+        expected = [1, 2, 3]
+        self.assertEqual(field2int(to_convert), expected)
+
+    def test_field2int_with_regular_number(self):
+        from ZPublisher.Converters import field2int
+        to_convert = "1"
+        expected = 1
+        self.assertEqual(field2int(to_convert), expected)
+
+    def test_field2int_with_illegal_value(self):
+        from ZPublisher.Converters import field2int
+        to_convert = "<"
+        self.assertRaises(ValueError, field2int, to_convert)
+
+    def test_field2int_with_empty_value(self):
+        from ZPublisher.Converters import field2int
+        to_convert = ""
+        self.assertRaises(ValueError, field2int, to_convert)
+
+    def test_field2long_with_list_of_numbers(self):
+        from ZPublisher.Converters import field2long
+        to_convert = ["1", "2", "3"]
+        expected = [1, 2, 3]
+        self.assertEqual(field2long(to_convert), expected)
+
+    def test_field2long_with_regular_number(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "1"
+        expected = 1
+        self.assertEqual(field2long(to_convert), expected)
+
+    def test_field2long_with_illegal_value(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "<"
+        self.assertRaises(ValueError, field2long, to_convert)
+
+    def test_field2long_with_empty_value(self):
+        from ZPublisher.Converters import field2long
+        to_convert = ""
+        self.assertRaises(ValueError, field2long, to_convert)
+
+    def test_field2long_strips_trailing_long_symbol(self):
+        from ZPublisher.Converters import field2long
+        to_convert = "2L"
+        expected = 2
+        self.assertEqual(field2long(to_convert), expected)
+
+    def test_field2required_returns_string(self):
+        from ZPublisher.Converters import field2required
+        to_convert = "to_convert"
+        expected = "to_convert"
+        self.assertEqual(field2required(to_convert), expected)
+
+    def test_field2required_raises_ValueError(self):
+        from ZPublisher.Converters import field2required
+        value = ""
+        self.assertRaises(ValueError, field2required, value)
 
     def test_field2string_with_string(self):
         from ZPublisher.Converters import field2string
@@ -49,6 +173,13 @@ class ConvertersTests(unittest.TestCase):
         expected = b'to_convert'
         self.assertEqual(field2bytes(to_convert), expected)
 
+    def test_field2date_international_with_proper_date_string(self):
+        from ZPublisher.Converters import field2date_international
+        to_convert = "2.1.2019"
+        from DateTime import DateTime
+        expected = DateTime(2019, 1, 2)
+        self.assertEqual(field2date_international(to_convert), expected)
+
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
         to_convert = ['one', b'two']
@@ -77,6 +208,16 @@ class ConvertersTests(unittest.TestCase):
         to_convert = 'abc\ndef\nghi'
         expected = [b'abc', b'def', b'ghi']
         self.assertEqual(field2lines(to_convert), expected)
+
+    def test_field2text_with_string_with_newlines(self):
+        from ZPublisher.Converters import field2text
+        to_convert = 'abc\r\ndef\r\nghi'
+        if PY3:
+            expected = 'abc\ndef\nghi'
+            self.assertEqual(field2text(to_convert), expected)
+        if PY2:
+            expected = b'abc\ndef\nghi'
+            self.assertEqual(field2text(to_convert), expected)
 
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines

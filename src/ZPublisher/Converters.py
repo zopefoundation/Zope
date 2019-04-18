@@ -31,8 +31,10 @@ default_encoding = 'utf-8'
 
 
 def field2string(v):
-    """Converts value to native strings (so always to `str` no matter which
-    python version you are on)"""
+    """Converts value to native strings.
+
+    So always to `str` no matter which Python version you are on.
+    """
     if hasattr(v, 'read'):
         return v.read()
     elif six.PY2 and isinstance(v, text_type):
@@ -91,7 +93,9 @@ def field2int(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "An integer was expected in the value %r" % escape(v, True)
+                "An integer was expected in the value %r" % escape(
+                    v, quote=True
+                )
             )
     raise ValueError('Empty entry when <strong>integer</strong> expected')
 
@@ -163,8 +167,8 @@ def field2date_international(v):
 
 def field2boolean(v):
     if v == 'False':
-        return not 1
-    return not not v
+        return False
+    return bool(v)
 
 
 class _unicode_converter(object):

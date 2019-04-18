@@ -662,70 +662,87 @@ Argument Conversion
 The publisher supports argument conversion. For example consider this
 function::
 
-        def onethird(number):
-            "returns the number divided by three"
+        def one_third(number):
+            """returns the number divided by three"""
             return number / 3.0
 
 This function cannot be called from the web because by default the
 publisher marshals arguments into strings, not numbers. This is why
 the publisher provides a number of converters. To signal an argument
 conversion you name your form variables with a colon followed by a
-type conversion code. For example, to call the above function with 66
-as the argument you can use this URL *onethird?number:int=66* The
-publisher supports many converters:
+type conversion code.
 
-- boolean -- Converts a variable to true or false. Variables that are
-  0, None, an empty string, or an empty sequence are false, all others
-  are true.
+For example, to call the above function with 66 as the argument you
+can use this URL ``one_third?number:int=66`` The publisher supports
+many converters:
 
-- int -- Converts a variable to a Python integer.
+- **boolean** -- Converts a variable to ``True`` or ``False``.
+  Variables that are  0, None, an empty string, or an empty sequence
+  are ``False``, all others are ``True``.
 
-- long -- Converts a variable to a Python long integer.
+- **int** -- Converts a variable to a Python integer. Also converts a
+  list/tuple of variables to a list/tuple of integers.
 
-- float -- Converts a variable to a Python floating point number.
+- **long** -- Converts a variable to a Python integer. Strips the
+  trailing "L" symbol at the end of the value. Also converts a
+  list/tuple of variables to a list/tuple of integers.
 
-- string -- Converts a variable to a Python string.
+- **float** -- Converts a variable to a Python floating point number.
+  Also converts a list/tuple of variables to a list/tuple of floats.
 
-- ustring -- Converts a variable to a Python unicode string.
+- **string** -- Converts a variable to a native string. So the result
+  is ``str``, no matter which Python version you are on.
 
-- required -- Raises an exception if the variable is not present or
+- **ustring** -- Converts a variable to a Python unicode string.
+
+- **bytes** -- Converts a variable to a Python bytes object/string.
+
+- **required** -- Raises an exception if the variable is not present or
   is an empty string.
 
-- ignore_empty -- Excludes a variable from the request if the
+- **ignore_empty** -- Excludes a variable from the request if the
   variable is an empty string.
 
-- date -- Converts a string to a *DateTime* object. The formats
-  accepted are fairly flexible, for example '10/16/2000', '12:01:13
-  pm'.
+- **date** -- Converts a string to a **DateTime** object. The formats
+  accepted are fairly flexible, for example ``10/16/2000``, ``12:01:13
+  pm``.
 
-- list -- Converts a variable to a Python list of values, even if
+- **date_international** -- Converts a string to a **DateTime** object,
+  but especially treats ambiguous dates as "days before month before
+  year". This useful if you need to parse non-US dates.
+
+- **list** -- Converts a variable to a Python list of values, even if
   there is only one value.
 
-- tuple -- Converts a variable to a Python tuple of values, even if
+- **tuple** -- Converts a variable to a Python tuple of values, even if
   there is only one value.
 
-- lines -- Converts a string to a Python list of values by splitting
-  the string on line breaks.
+- **lines** -- Converts a variable to a Python list of native strings
+  by splitting the string on line breaks. Also converts list/tuple of
+  variables to list/tuple of native strings.
 
-- tokens -- Converts a string to a Python list of values by splitting
-  the string on spaces.
+- **tokens** -- Converts a variable to a Python list of native strings
+  by splitting the variable on spaces.
 
-- text -- Converts a variable to a string with normalized line
+- **text** -- Converts a variable to a native string with normalized line
   breaks. Different browsers on various platforms encode line
   endings differently, so this converter makes sure the line endings
   are consistent, regardless of how they were encoded by the browser.
 
-- ulines, utokens, utext -- like lines, tokens, text, but using
-  unicode strings instead of plain strings.
+- **ulines**, **utokens**, **utext** -- like **lines**, **tokens**,
+  **text**, but always converts into unicode strings.
 
 If the publisher cannot coerce a request variable into the type
 required by the type converter it will raise an error. This is useful
 for simple applications, but restricts your ability to tailor error
 messages. If you wish to provide your own error messages, you should
 convert arguments manually in your published objects rather than
-relying on the publisher for coercion. Another possibility is to use
-JavaScript to validate input on the client-side before it is submitted
-to the server.
+relying on the publisher for coercion.
+
+.. note::
+  Client-side validation with HTML 5 and/or JavaScript may improve
+  the usability of the application, but it is never a replacement for
+  server side validation.
 
 You can combine type converters to a limited extent. For example you
 could create a list of integers like so::
@@ -734,8 +751,9 @@ could create a list of integers like so::
         <input type="checkbox" name="numbers:list:int" value="2">
         <input type="checkbox" name="numbers:list:int" value="3">
 
-In addition to these type converters, the publisher also supports
-method and record arguments.
+In addition to the mentioned type converters, the publisher also supports
+both method and record arguments and specifying character encodings.
+
 
 Character Encodings for Arguments
 ---------------------------------

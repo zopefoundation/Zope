@@ -599,7 +599,7 @@ class HTTPRequest(BaseRequest):
                         elif type_name == 'tuple':
                             tuple_items[key] = 1
                             flags = flags | SEQUENCE
-                        elif (type_name == 'method' or type_name == 'action'):
+                        elif type_name == 'method' or type_name == 'action':
                             if delim:
                                 meth = key
                             else:
