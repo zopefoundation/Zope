@@ -48,19 +48,19 @@ def field2string(value):
         return str(value)
 
 
-def field2bytes(v):
+def field2bytes(value):
     """Converts a value into bytes.
 
     That means:
     - str / byte string for Python 2
     - bytes for Python 3
     """
-    if hasattr(v, 'read'):
-        v = v.read()
-    if isinstance(v, text_type):
-        return v.encode(default_encoding)
+    if hasattr(value, 'read'):
+        value = value.read()
+    if isinstance(value, text_type):
+        return value.encode(default_encoding)
     else:
-        return v
+        return value
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
