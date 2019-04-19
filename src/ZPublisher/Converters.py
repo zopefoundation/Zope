@@ -56,11 +56,11 @@ def field2bytes(v):
     - bytes for Python 3
     """
     if hasattr(v, 'read'):
-        return v.read()
-    elif isinstance(v, text_type):
+        v = v.read()
+    if isinstance(v, text_type):
         return v.encode(default_encoding)
     else:
-        return bytes(v)
+        return v
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
