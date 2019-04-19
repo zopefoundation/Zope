@@ -8,7 +8,7 @@ can be used.
 
 The WSGI application entry points
 ---------------------------------
-To use Zope as an application in a PasteDeply-style ``.ini`` configuration
+To use Zope as an application in a PasteDeploy-style ``.ini`` configuration
 file, use the ``Zope#main`` entry point and specify a path to a Zope
 configuration file:
 
