@@ -31,9 +31,12 @@ default_encoding = 'utf-8'
 
 
 def field2string(v):
-    """Converts value to native strings.
+    """Converts a value into a native string.
 
     So always to `str` no matter which Python version you are on.
+    That means:
+    - str / byte string for Python 2
+    - str / "unicode string" for Python 3
     """
     if hasattr(v, 'read'):
         return v.read()
