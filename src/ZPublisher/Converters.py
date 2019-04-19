@@ -59,8 +59,7 @@ def field2bytes(value):
         value = value.read()
     if isinstance(value, text_type):
         return value.encode(default_encoding)
-    else:
-        return value
+    return value
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
