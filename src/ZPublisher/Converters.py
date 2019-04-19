@@ -30,7 +30,7 @@ except ImportError:  # PY2
 default_encoding = 'utf-8'
 
 
-def field2string(v):
+def field2string(value):
     """Converts a value into a native string.
 
     So always to `str` no matter which Python version you are on.
@@ -38,14 +38,14 @@ def field2string(v):
     - str / byte string for Python 2
     - str / "unicode string" for Python 3
     """
-    if hasattr(v, 'read'):
-        return v.read()
-    elif six.PY2 and isinstance(v, text_type):
-        return v.encode(default_encoding)
-    elif six.PY3 and isinstance(v, binary_type):
-        return v.decode(default_encoding)
+    if hasattr(value, 'read'):
+        return value.read()
+    elif six.PY2 and isinstance(value, text_type):
+        return value.encode(default_encoding)
+    elif six.PY3 and isinstance(value, binary_type):
+        return value.decode(default_encoding)
     else:
-        return str(v)
+        return str(value)
 
 
 def field2bytes(v):
