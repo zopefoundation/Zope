@@ -155,12 +155,20 @@ class ConvertersTests(unittest.TestCase):
 
     def test_field2string_with_filelike_object(self):
         from ZPublisher.Converters import field2string
-        to_convert = 'to_convert'
 
         class Filelike(object):
-            def read(self):
-                return to_convert
-        self.assertEqual(field2string(Filelike()), to_convert)
+            @staticmethod
+            def read():
+                if PY2:
+                    return b"to_convert"
+                if PY3:
+                    return "to_convert"
+        if PY2:
+            expected = b'to_convert'
+            self.assertEqual(field2string(Filelike()), expected)
+        if PY3:
+            expected = 'to_convert'
+            self.assertEqual(field2string(Filelike()), expected)
 
     def test_field2bytes_with_bytes(self):
         from ZPublisher.Converters import field2bytes
