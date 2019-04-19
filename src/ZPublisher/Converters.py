@@ -49,7 +49,12 @@ def field2string(value):
 
 
 def field2bytes(v):
-    # Converts value to bytes.
+    """Converts a value into bytes.
+
+    That means:
+    - str / byte string for Python 2
+    - bytes for Python 3
+    """
     if hasattr(v, 'read'):
         return v.read()
     elif isinstance(v, text_type):
