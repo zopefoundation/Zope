@@ -116,7 +116,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
 Using ``plone.recipe.zope2instance``
 ++++++++++++++++++++++++++++++++++++
 To make your life a lot easier, you can use ``plone.recipe.zope2instance``
-to automate a lot of the configuration tasks from in the following document,
+to automate a lot of the configuration tasks from the following document,
 :doc:`operation`. ``plone.recipe.zope2instance`` has a myriad configuration
 options, please see the
 `PyPI page <https://pypi.org/project/plone.recipe.zope2instance/>`_.
