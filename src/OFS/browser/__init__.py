@@ -21,7 +21,7 @@ class StandardErrorMessageView(BrowserView):
     """
 
     def __call__(self):
-        root = self.request['PARENTS'][-1]
+        root = self.request['PARENTS'][0]
         return root.standard_error_message(
             error_type=self.context.__class__.__name__,
             error_value=str(self.context))
