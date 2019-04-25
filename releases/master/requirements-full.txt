@@ -1,11 +1,11 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
-AccessControl==4.0b6
+AccessControl==4.0b7
 Acquisition==4.5
 AuthEncoding==4.1
 BTrees==4.5.1
 Chameleon==3.6
 DateTime==4.3
-DocumentTemplate==3.0b6
+DocumentTemplate==3.0b7
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
@@ -31,6 +31,7 @@ mock==2.0.0
 pbr==5.1.3
 persistent==4.4.3
 pytz==2018.9
+roman==3.2
 shutilwhich==1.1.0
 six==1.12.0
 transaction==2.4.0
