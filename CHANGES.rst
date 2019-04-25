@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Fix broken ZMI DTML rendering for mixed unicode/bytes content
+  (`#271 <https://github.com/zopefoundation/Zope/issues/271>`_)
+
 - Fix wrong `Content-Length` set by ``App.ImageFile`` on 304 responses
   (`#513 <https://github.com/zopefoundation/Zope/issues/513>`_)
 

@@ -208,7 +208,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             value = self.ZDocumentTemplate_beforeRender(ns, _marker)
             if value is _marker:
                 try:
-                    result = render_blocks(self._v_blocks, ns)
+                    result = render_blocks(self._v_blocks, ns,
+                                           encoding=self.encoding)
                 except DTReturn as v:
                     result = v.v
 
