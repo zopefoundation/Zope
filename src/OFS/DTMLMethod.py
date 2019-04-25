@@ -44,6 +44,7 @@ from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 
 
@@ -68,6 +69,7 @@ class DTMLMethod(
     """
     meta_type = 'DTML Method'
     zmi_icon = 'far fa-file-alt'
+    encoding = default_encoding
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()

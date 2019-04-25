@@ -32,6 +32,7 @@ from DocumentTemplate.DT_String import render_blocks
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
 from Shared.DC.Scripts.Bindings import Bindings
+from ZPublisher.HTTPRequest import default_encoding
 
 
 LOG = getLogger('special_dtml')
@@ -61,6 +62,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     _v_last_read = 0
 
     def __init__(self, name, _prefix=None, **kw):
+        self.encoding = default_encoding
         if _prefix is None:
             _prefix = PREFIX
         elif not isinstance(_prefix, str):
