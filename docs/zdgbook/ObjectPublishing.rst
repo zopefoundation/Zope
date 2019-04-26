@@ -759,67 +759,58 @@ Character Encodings for Arguments
 ---------------------------------
 
 The publisher needs to know what character encoding was used by the
-browser to encode form fields into the request. That depends on
-whether the form was submitted using GET or POST (which the publisher
-can work out for itself) and on the character encoding used by the
-page which contained the form (for which the publisher needs your
-help).
+browser to encode the submitted form fields. In the past, this could
+have been a complicated topic.
 
-In some cases you need to add a specification of the character
-encoding to each fields type converter. The full details of how this
-works are explained below, however most users do not need to deal with
-the full details:
+Nowadays, as UTF-8 is the de facto standard for encoding on the
+Internet, things became much simpler.
 
-1. If your pages all use the UTF-8 character encoding (or at least all
-   the pages that contain forms) the browsers will always use UTF-8
-   for arguments. You need to add ':utf8' into all argument type
-   converts. For example:
+**Best practice**
 
-   <input type="text" name="name:utf8:ustring">
-   <input type="checkbox" name="numbers:list:int:utf8" value="1">
-   <input type="checkbox" name="numbers:list:int:utf8" value="1">
+If you are using Python 3 and set the the ``charset`` meta tag to
+``utf-8``, the publisher takes ``utf-8`` as the default encoding, and
+thus you do not have to set it manually.
 
-     % Anonymous User - Apr. 6, 2004 5:56 pm:
-      121
 
-2. If your pages all use a character encoding which has ASCII as a
-   subset (such as Latin-1, UTF-8, etc) then you do not need to
-   specify any chatacter encoding for boolean, int, long, float, and
-   date types. You can also omit the character encoding type
-   converter from string, tokens, lines, and text types if you only
-   need to handle ASCII characters in that form field.
+.. note::
 
-Character Encodings for Arguments; The Full Story
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Further information on how to set the charset:
 
-If you are not in one of those two easy categories, you first need to
-determine which character encoding will be used by the browser to
-encode the arguments in submitted forms.
+    https://developer.mozilla.org/de/docs/Web/HTML/Element/meta#attr-charset
 
-1. Forms submitted using GET, or using POST with 
-   "application/x-www-form-urlencoded" (the default) 
 
-   1. Page uses an encoding of unicode: Forms are submitted using
-      UTF8, as required by RFC 2718 2.2.5
+.. attention::
 
-   2. Page uses another regional 8 bit encoding: Forms are often
-      submitted using the same encoding as the page. If you choose to
-      use such an encoding then you should also verify how browsers
-      behave.
+    The encoding also can be set by the web server, which would take
+    precedence over the meta tag.
 
-2. Forms submitted using "multipart/form-data":
+**Special cases**
 
-   According to HTML 4.01 (section 17.13.4) browsers should state
-   which character encoding they are using for each field in a
-   Content-Type header, however this is poorly supported. The current
-   crop of browsers appear to use the same encoding as the page
-   containing the form.
+If you are still on Python 2 or your pages use a different encoding,
+such as ``Windows-1252`` or ``ISO-8859-1``, which was the default
+encoding for HTML 4, you have to add the encoding, eg ``:cp1252``, for
+all argument type converts, such as follows::
 
-   Every field needs that character encoding name appended to is
-   converter. The tag parser insists that tags must only use
-   alphanumberic characters or an underscore, so you might need to
-   use a short form of the encoding name from the Python 'encodings'
-   library package (such as utf8 rather than UTF-8).
+    <input type="text" name="name:cp1252:ustring">
+    <input type="checkbox" name="numbers:list:int:cp1252" value="1">
+    <input type="checkbox" name="numbers:list:int:cp1252" value="1">
+
+.. note::
+
+    For a full list of supported encodings, please have a look at:
+
+    https://docs.python.org/3.7/library/codecs.html#standard-encodings
+
+If your pages all use a character encoding which has ASCII as a subset,
+such as Latin-1, UTF-8, etc., then you do not need to specify any
+character encoding for boolean, int, long, float and date types.
+
+.. note::
+
+    The **form submission encoding** can be overridden by the
+    ``accept-charset`` attribute of the ``form`` tag:
+
+    https://www.w3.org/TR/html5/sec-forms.html#selecting-a-form-submission-encoding
 
 
 Method Arguments
