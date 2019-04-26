@@ -636,6 +636,30 @@ class TestPublishModule(ZopeTestCase):
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
 
+    def testDebugModeBypassesExceptionResponse(self):
+        from zExceptions import BadRequest
+
+        # Register an exception view for BadRequest
+        registerExceptionView(IException)
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = BadRequest('debugbypass')
+
+        # Responses will always have debug_mode set
+        def response_factory(stdout, stderr):
+            response = DummyResponse()
+            response.debug_mode = True
+            return response
+
+        # With debug_mode, the exception view is not called.
+        with self.assertRaises(BadRequest):
+            self._callFUT(environ, start_response, _publish,
+                          _response_factory=response_factory)
+
+        # Clean up view registration
+        unregisterExceptionView(IException)
+
 
 class ExcViewCreatedTests(ZopeTestCase):
 

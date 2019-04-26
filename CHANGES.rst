@@ -38,6 +38,9 @@ Features
 Other changes
 +++++++++++++
 
+- Exceptions during publishing are now re-raised when in debug mode
+  (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
+
 - Remove hardcoded list of factories that don't want an add dialog
   (`#540 <https://github.com/zopefoundation/Zope/issues/540>`_)
 
