@@ -823,27 +823,25 @@ Similarly, you might want to have multiple submit buttons which invoke
 a different method for each button.
 
 The publisher provides a way to select methods using form variables
-through use of the *method* argument type. The method type allows the
-request 'PATH_INFO' to be augmented using information from a form item
-name or value.
+through the use of the ``method`` argument type. The method type allows
+the request variable ``PATH_INFO`` to be augmented using information
+from a form item's name or value.
 
-If the name of a form field is ':method', then the value of the field
-is added to 'PATH_INFO'. For example, if the original 'PATH_INFO' is
-'foo/bar' and the value of a ':method' field is 'x/y', then
-'PATH_INFO' is transformed to 'foo/bar/x/y'. This is useful when
+If the name of a form field is ``:method``, then the value of the field
+is added to ``PATH_INFO``. For example, if the original ``PATH_INFO``
+is ``foo/bar`` and the value of a ``:method`` field is ``x/y``, then
+``PATH_INFO`` is transformed to ``foo/bar/x/y``. This is useful when
 presenting a select list. Method names can be placed in the select
 option values.
 
-If the name of a form field ends in ':method' then the part of the
-name before ':method' is added to 'PATH_INFO'. For example, if the
-original 'PATH_INFO' is 'foo/bar' and there is a 'x/y:method' field,
-then 'PATH_INFO' is transformed to 'foo/bar/x/y'. In this case, the
-form value is ignored. This is useful for mapping submit buttons to
-methods, since submit button values are displayed and should,
-therefore, not contain method names.
+If the name of a form field **ends** in ``:method`` then the part of
+the name before ``:method`` is added to ``PATH_INFO``. For example, if
+the original ``PATH_INFO`` is ``foo/bar`` and there is a ``x/y:method``
+field, then ``PATH_INFO`` is transformed to ``foo/bar/x/y``. In this
+case, the form value is ignored. This is useful for mapping submit
+buttons to methods, since submit button values are displayed and
+should therefore not contain method names.
 
-Only one method field should be provided. If more than one method
-field is included in the request, the behavior is undefined.
 
 Record Arguments 
 ----------------
