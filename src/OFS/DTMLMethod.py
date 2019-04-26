@@ -69,7 +69,6 @@ class DTMLMethod(
     """
     meta_type = 'DTML Method'
     zmi_icon = 'far fa-file-alt'
-    encoding = default_encoding
     _proxy_roles = ()
     index_html = None  # Prevent accidental acquisition
     _cache_namespace_keys = ()
@@ -118,6 +117,7 @@ class DTMLMethod(
         o If supplied, use the REQUEST mapping, Response, and key word
         arguments.
         """
+        self.encoding = default_encoding
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:
@@ -181,8 +181,9 @@ class DTMLMethod(
             else:
                 if PY2 and not isinstance(r, text_type):
                     # Prevent double-encoding edge cases under Python 2
-                    r = r.decode('utf-8')
-                c, e = guess_content_type(self.getId(), r.encode('utf-8'))
+                    r = r.decode(self.encoding)
+                c, e = guess_content_type(self.getId(),
+                                          r.encode(self.encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:
