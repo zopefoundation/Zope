@@ -221,15 +221,20 @@ class TestPublishModule(ZopeTestCase):
         if _publish is not None:
             if _response_factory is not None:
                 if _request_factory is not None:
-                    return publish_module(environ, start_response, _publish,
-                                          _response_factory, _request_factory)
-                return publish_module(environ, start_response, _publish,
-                                      _response_factory)
+                    return publish_module(environ, start_response,
+                                          _publish=_publish,
+                                          _response_factory=_response_factory,
+                                          _request_factory=_request_factory)
+                return publish_module(environ, start_response,
+                                      _publish=_publish,
+                                      _response_factory=_response_factory)
             else:
                 if _request_factory is not None:
-                    return publish_module(environ, start_response, _publish,
+                    return publish_module(environ, start_response,
+                                          _publish=_publish,
                                           _request_factory=_request_factory)
-                return publish_module(environ, start_response, _publish)
+                return publish_module(environ, start_response,
+                                      _publish=_publish)
         return publish_module(environ, start_response)
 
     def _registerView(self, factory, name, provides=None):
