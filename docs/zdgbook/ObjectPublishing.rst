@@ -826,7 +826,7 @@ Method Arguments
 ----------------
 
 Sometimes you may wish to control which object is published based on
-the form data. For example, you might want to have a form with a select
+form data. For example, you might want to have a form with a select
 list that calls different methods depending on the item chosen.
 Similarly, you might want to have multiple submit buttons which invoke
 a different method for each button.
@@ -841,7 +841,7 @@ is added to ``PATH_INFO``. For example, if the original ``PATH_INFO``
 is ``foo/bar`` and the value of a ``:method`` field is ``x/y``, then
 ``PATH_INFO`` is transformed to ``foo/bar/x/y``. This is useful when
 presenting a select list. Method names can be placed in the select
-option's values.
+option values.
 
 If the name of a form field **ends** in ``:method`` then the part of
 the name before ``:method`` is added to ``PATH_INFO``. For example, if
