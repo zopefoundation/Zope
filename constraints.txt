@@ -1,10 +1,10 @@
 AccessControl==4.0b7
-Acquisition==4.5
+Acquisition==4.6
 AuthEncoding==4.1
 BTrees==4.5.1
-Chameleon==3.6
+Chameleon==3.6.1
 DateTime==4.3
-DocumentTemplate==3.0b7
+DocumentTemplate==3.0b8
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
@@ -82,9 +82,9 @@ zope.site==4.2.2
 zope.size==4.3
 zope.structuredtext==4.3
 zope.tal==4.4
-zope.tales==4.3
+zope.tales==5.0
 zope.testbrowser==5.3.2
 zope.testing==4.7
-zope.testrunner==4.9.2
+zope.testrunner==5.0
 zope.traversing==4.3.1
 zope.viewlet==4.2.1
