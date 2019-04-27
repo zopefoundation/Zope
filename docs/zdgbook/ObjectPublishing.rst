@@ -832,97 +832,95 @@ Similarly, you might want to have multiple submit buttons which invoke
 a different method for each button.
 
 The publisher provides a way to select methods using form variables
-through use of the *method* argument type. The method type allows the
-request 'PATH_INFO' to be augmented using information from a form item
-name or value.
+through the use of the ``method`` argument type. The method type allows
+the request variable ``PATH_INFO`` to be augmented using information
+from a form item's name or value.
 
-If the name of a form field is ':method', then the value of the field
-is added to 'PATH_INFO'. For example, if the original 'PATH_INFO' is
-'foo/bar' and the value of a ':method' field is 'x/y', then
-'PATH_INFO' is transformed to 'foo/bar/x/y'. This is useful when
+If the name of a form field is ``:method``, then the value of the field
+is added to ``PATH_INFO``. For example, if the original ``PATH_INFO``
+is ``foo/bar`` and the value of a ``:method`` field is ``x/y``, then
+``PATH_INFO`` is transformed to ``foo/bar/x/y``. This is useful when
 presenting a select list. Method names can be placed in the select
 option values.
 
-If the name of a form field ends in ':method' then the part of the
-name before ':method' is added to 'PATH_INFO'. For example, if the
-original 'PATH_INFO' is 'foo/bar' and there is a 'x/y:method' field,
-then 'PATH_INFO' is transformed to 'foo/bar/x/y'. In this case, the
-form value is ignored. This is useful for mapping submit buttons to
-methods, since submit button values are displayed and should,
-therefore, not contain method names.
+If the name of a form field **ends** in ``:method`` then the part of
+the name before ``:method`` is added to ``PATH_INFO``. For example, if
+the original ``PATH_INFO`` is ``foo/bar`` and there is a ``x/y:method``
+field, then ``PATH_INFO`` is transformed to ``foo/bar/x/y``. In this
+case, the form value is ignored. This is useful for mapping submit
+buttons to methods, since submit button values are displayed and
+should therefore not contain method names.
 
-Only one method field should be provided. If more than one method
-field is included in the request, the behavior is undefined.
 
 Record Arguments 
 ----------------
 
 Sometimes you may wish to consolidate form data into a structure
-rather than pass arguments individually. Record arguments allow you
+rather than pass arguments individually. **Record arguments** allow you
 to do this.
 
-The 'record' type converter allows you to combine multiple form
+The ``record`` type converter allows you to combine multiple form
 variables into a single input variable. For example::
 
   <input name="date.year:record:int">
   <input name="date.month:record:int">
   <input name="date.day:record:int">
 
-This form will result in a single variable, 'date', with
-attributes 'year', 'month', and 'day'.
+This form will result in a single variable, ``date``, with the
+attributes ``year``, ``month``, and ``day``.
 
-You can skip empty record elements with the 'ignore_empty' converter.
+You can skip empty record elements with the ``ignore_empty`` converter.
 For example::
 
   <input type="text" name="person.email:record:ignore_empty">
 
 When the email form field is left blank the publisher skips over the
-variable rather than returning a null string as its value. When the
-record 'person' is returned it will not have an 'email' attribute if
-the user did not enter one.
+variable rather than returning an empty string as its value. When the
+record ``person`` is returned it will not have an ``email`` attribute
+if the user did not enter one.
 
 You can also provide default values for record elements with the
-'default' converter. For example::
+``default`` converter. For example::
 
   <input type="hidden"
          name="pizza.toppings:record:list:default" 
          value="All">
   <select multiple name="pizza.toppings:record:list:ignore_empty">
-  <option>Cheese</option>
-  <option>Onions</option>
-  <option>Anchovies</option>
-  <option>Olives</option>
-  <option>Garlic<option>
+    <option>Cheese</option>
+    <option>Onions</option>
+    <option>Anchovies</option>
+    <option>Olives</option>
+    <option>Garlic<option>
   </select>
 
-The 'default' type allows a specified value to be inserted when the
+The ``default`` type allows a specified value to be inserted when the
 form field is left blank. In the above example, if the user does not
 select values from the list of toppings, the default value will be
-used. The record 'pizza' will have the attribute 'toppings' and its
+used. The record ``pizza`` will have the attribute ``toppings`` and its
 value will be the list containing the word "All" (if the field is
 empty) or a list containing the selected toppings.
 
 You can even marshal large amounts of form data into multiple records
-with the 'records' type converter. Here's an example::
+with the ``records`` type converter. Here's an example::
 
   <h2>Member One</h2>
   Name:
-  <input type="text" name="members.name:records"><BR>
+  <input type="text" name="members.name:records"><br>
   Email:
-  <input type="text" name="members.email:records"><BR>
+  <input type="text" name="members.email:records"><br>
   Age:
-  <input type="text" name="members.age:int:records"><BR>
+  <input type="text" name="members.age:int:records"><br>
 
-  <H2>Member Two</H2>
+  <h2>Member Two</h2>
   Name:
-  <input type="text" name="members.name:records"><BR>
+  <input type="text" name="members.name:records"><br>
   Email:
-  <input type="text" name="members.email:records"><BR>
+  <input type="text" name="members.email:records"><br>
   Age:
-  <input type="text" name="members.age:int:records"><BR>
+  <input type="text" name="members.age:int:records"><br>
 
-This form data will be marshaled into a list of records named
-'members'. Each record will have a 'name', 'email', and 'age'
+This form data will be marshalled into a list of records named
+``members``. Each record will have a ``name``, ``email``, and ``age``
 attribute.
 
 Record marshalling provides you with the ability to create complex
