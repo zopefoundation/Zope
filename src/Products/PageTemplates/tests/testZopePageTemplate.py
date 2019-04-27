@@ -48,7 +48,7 @@ html_template_w_header = u'''
 <html>
     <head>
         <META http-equiv="content-type" content="text/html; charset=%s">
-    </hed>
+    </head>
     <body>
     test üöäÜÖÄß
     </body>
