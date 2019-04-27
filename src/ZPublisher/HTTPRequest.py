@@ -776,7 +776,7 @@ class HTTPRequest(BaseRequest):
 
                             if not hasattr(x, attr):
                                 # If the attribute does not
-                                # exist, setit
+                                # exist, set it
                                 if flags & SEQUENCE:
                                     item = [item]
                                 setattr(x, attr, item)
@@ -1170,7 +1170,7 @@ class HTTPRequest(BaseRequest):
                     path = path[:-1]
             else:
                 path = ''
-            other['PATH_INFO'] = path = "%s/%s" % (path, meth)
+            other['PATH_INFO'] = "%s/%s" % (path, meth)
             self._hacked_path = 1
 
     def postProcessInputs(self):

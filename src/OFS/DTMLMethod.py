@@ -44,6 +44,7 @@ from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 
 
@@ -116,6 +117,7 @@ class DTMLMethod(
         o If supplied, use the REQUEST mapping, Response, and key word
         arguments.
         """
+        self.encoding = default_encoding
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:
@@ -179,8 +181,9 @@ class DTMLMethod(
             else:
                 if PY2 and not isinstance(r, text_type):
                     # Prevent double-encoding edge cases under Python 2
-                    r = r.decode('utf-8')
-                c, e = guess_content_type(self.getId(), r.encode('utf-8'))
+                    r = r.decode(self.encoding)
+                c, e = guess_content_type(self.getId(),
+                                          r.encode(self.encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:
