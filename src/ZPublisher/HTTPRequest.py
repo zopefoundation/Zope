@@ -785,7 +785,7 @@ class HTTPRequest(BaseRequest):
 
                             if not hasattr(x, attr):
                                 # If the attribute does not
-                                # exist, setit
+                                # exist, set it
                                 if flags & SEQUENCE:
                                     item = [item]
                                 setattr(x, attr, item)
