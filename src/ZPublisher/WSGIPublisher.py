@@ -49,6 +49,7 @@ if sys.version_info >= (3, ):
 else:
     _FILE_TYPES = (IOBase, file)  # NOQA
 
+_DEFAULT_DEBUG_EXCEPTIONS = False
 _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
 _MODULE_LOCK = allocate_lock()
@@ -73,6 +74,11 @@ def validate_user(request, user):
     newSecurityManager(request, user)
 
 
+def set_default_debug_exceptions(debug_exceptions):
+    global _DEFAULT_DEBUG_EXCEPTIONS
+    _DEFAULT_DEBUG_EXCEPTIONS = debug_exceptions
+
+
 def set_default_debug_mode(debug_mode):
     global _DEFAULT_DEBUG_MODE
     _DEFAULT_DEBUG_MODE = debug_mode
@@ -93,7 +99,8 @@ def get_module_info(module_name='Zope2'):
         module = __import__(module_name)
         app = getattr(module, 'bobo_application', module)
         realm = _DEFAULT_REALM if _DEFAULT_REALM is not None else module_name
-        _MODULES[module_name] = info = (app, realm, _DEFAULT_DEBUG_MODE)
+        _MODULES[module_name] = info = (app, realm, _DEFAULT_DEBUG_MODE,
+                                        _DEFAULT_DEBUG_EXCEPTIONS)
     return info
 
 
@@ -162,7 +169,7 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             # Raise exception from app if handle-errors is False
             # (set by zope.testbrowser in some cases)
             if request.environ.get('x-wsgiorg.throw_errors', False) or \
-               response.debug_mode:
+               _DEFAULT_DEBUG_EXCEPTIONS:
                 reraise(*exc_info)
 
             # Handle exception view
@@ -198,10 +205,13 @@ def transaction_pubevents(request, response, tm=transaction.manager):
 
 
 def publish(request, module_info):
-    obj, realm, debug_mode = module_info
+    obj, realm, debug_mode, debug_exceptions = module_info
 
     request.processInputs()
     response = request.response
+
+    if debug_exceptions:
+        response.debug_exceptions = debug_exceptions
 
     if debug_mode:
         response.debug_mode = debug_mode
@@ -237,12 +247,12 @@ def publish(request, module_info):
 
 @contextmanager
 def load_app(module_info):
-    app_wrapper, realm, debug_mode = module_info
+    app_wrapper, realm, debug_mode, debug_exceptions = module_info
     # Loads the 'OFS.Application' from ZODB.
     app = app_wrapper()
 
     try:
-        yield (app, realm, debug_mode)
+        yield (app, realm, debug_mode, debug_exceptions)
     finally:
         if transaction.manager.manager._txn is not None:
             # Only abort a transaction, if one exists. Otherwise the

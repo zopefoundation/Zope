@@ -238,28 +238,33 @@ Debugging Zope applications under WSGI
 --------------------------------------
 You can debug a WSGI-based Zope application the same way you have debugged
 ZServer-based installations in the past. In addition, you can now take
-advantage of WSGI middleware for debugging as well, or debugging facilities
-built into the chosen WSGI server.
+advantage of WSGI middleware or debugging facilities built into the chosen
+WSGI server.
 
 When developing your application or debugging, which is the moment you want to
-use debugging tools, you can start your Zope instance in `debug mode`. This
-will run it in the foreground and won't detach from the console so you get error
-output right in your console window. It will also disable all registered
-exception views including ``standard_error_message`` so that exceptions are not
-masked or hidden.
+use debugging tools, you can start your Zope instance in `exceptions debug
+mode`. This will disable all registered exception views including
+``standard_error_message`` so that exceptions are not masked or hidden.
 
-This is how you run Zope in debug mode using the built-in ``runwsgi`` script:
+This is how you run Zope in exceptions debug mode using the built-in
+``runwsgi`` script:
 
 .. code-block:: console
 
-   $ bin/runwsgi -dv etc/zope.ini
+   $ bin/runwsgi -ev etc/zope.ini
 
-If you built your environment using ``plone.recipe.zope2instance`` this is even
-easier (the example presumes the start script is named ``zopeinstance``):
+If you built your environment using ``plone.recipe.zope2instance`` you will
+need to do a manual change to your Zope configuration file. Enable exceptions
+debug mode by adding the ``debug-exceptions on`` setting before starting your
+application. The example presumes the Zope instance was named ``zopeinstance``,
+your Zope configuration file will be at `parts/zopeinstance/etc/zope.conf`.
 
 .. code-block:: console
 
    bin/zopeinstance fg
+
+With Zope set up to let WSGI handle exceptions, these are a few options for the
+WSGI pipeline:
 
 If you use ``waitress``, you can make it output exception tracebacks in the
 browser by configuring ``expose_tracebacks``. The keyword works in both

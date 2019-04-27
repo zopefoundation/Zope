@@ -191,7 +191,9 @@ class TestPublish(unittest.TestCase):
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        returned = self._callFUT(request, (_object, _realm, _debug_mode))
+        _debug_exceptions = False
+        returned = self._callFUT(request, (_object, _realm, _debug_mode,
+                                           _debug_exceptions))
         self.assertTrue(returned is response)
         self.assertTrue(request._processedInputs)
         self.assertTrue(response.debug_mode)
@@ -209,7 +211,9 @@ class TestPublish(unittest.TestCase):
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        self._callFUT(request, (_object, _realm, _debug_mode))
+        _debug_exceptions = False
+        self._callFUT(request, (_object, _realm, _debug_mode,
+                                _debug_exceptions))
         self.assertEqual(response.realm, None)
 
 
@@ -636,7 +640,7 @@ class TestPublishModule(ZopeTestCase):
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
 
-    def testDebugModeBypassesExceptionResponse(self):
+    def testDebugExceptionsBypassesExceptionResponse(self):
         from zExceptions import BadRequest
 
         # Register an exception view for BadRequest
@@ -649,7 +653,7 @@ class TestPublishModule(ZopeTestCase):
         # Responses will always have debug_mode set
         def response_factory(stdout, stderr):
             response = DummyResponse()
-            response.debug_mode = True
+            response.debug_exceptions = True
             return response
 
         # With debug_mode, the exception view is not called.
@@ -733,7 +737,7 @@ class TestLoadApp(unittest.TestCase):
         class App(object):
             _p_jar = Connection()
 
-        return (App, 'Zope', False)
+        return (App, 'Zope', False, False)
 
     def test_open_transaction_is_aborted(self):
         load_app = self._getTarget()

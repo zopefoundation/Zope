@@ -62,6 +62,9 @@ def make_wsgi_app(global_config, zope_conf):
     if 'debug_mode' in global_config:
         if global_config['debug_mode'] in ('true', 'on', '1'):
             opts.configroot.debug_mode = True
+    if 'debug_exceptions' in global_config:
+        if global_config['debug_exceptions'] in ('true', 'on', '1'):
+            opts.configroot.debug_exceptions = True
     handleWSGIConfig(opts.configroot, opts.confighandlers)
     setConfiguration(opts.configroot)
     starter.setConfiguration(opts.configroot)
