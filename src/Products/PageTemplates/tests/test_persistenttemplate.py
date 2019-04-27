@@ -1,7 +1,9 @@
+import io
 import re
 import unittest
 
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
+from Testing.utils import capture_stdout
 from Testing.ZopeTestCase import ZopeTestCase
 
 
@@ -211,7 +213,10 @@ class TestPersistent(ZopeTestCase):
         self.assertEqual(template().strip(), u'012')
 
     def test_edit_with_errors(self):
-        template = self._makeOne('foo', simple_error)
+        # Prevent error output to the console
+        with capture_stdout(io.StringIO()):
+            template = self._makeOne('foo', simple_error)
+
         # this should not raise:
         editable_text = get_editable_content(template)
         # and the errors should be in an xml comment at the start of
