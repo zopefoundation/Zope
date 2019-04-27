@@ -642,6 +642,9 @@ class TestPublishModule(ZopeTestCase):
 
     def testDebugExceptionsBypassesExceptionResponse(self):
         from zExceptions import BadRequest
+        from ZPublisher.WSGIPublisher import set_default_debug_exceptions
+
+        set_default_debug_exceptions(True)
 
         # Register an exception view for BadRequest
         registerExceptionView(IException)
@@ -650,19 +653,13 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._raise = BadRequest('debugbypass')
 
-        # Responses will always have debug_mode set
-        def response_factory(stdout, stderr):
-            response = DummyResponse()
-            response.debug_exceptions = True
-            return response
-
         # With debug_mode, the exception view is not called.
         with self.assertRaises(BadRequest):
-            self._callFUT(environ, start_response, _publish,
-                          _response_factory=response_factory)
+            self._callFUT(environ, start_response, _publish)
 
         # Clean up view registration
         unregisterExceptionView(IException)
+        set_default_debug_exceptions(False)
 
 
 class ExcViewCreatedTests(ZopeTestCase):
