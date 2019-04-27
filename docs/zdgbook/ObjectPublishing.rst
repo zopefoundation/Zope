@@ -763,7 +763,7 @@ browser to encode the submitted form fields. In the past, this could
 have been a complicated topic.
 
 Nowadays, as UTF-8 is the de facto standard for encoding on the
-Internet, things became much simpler.
+Internet, things are much simpler.
 
 **Best practice**
 
