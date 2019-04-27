@@ -68,7 +68,7 @@ def load_app(module_info):
     """Let the Publisher use the current app object."""
     app = AppZapper().app()
     if app is not None:
-        yield app, module_info[1], module_info[2], module_info[3]
+        yield app, module_info[1], module_info[2]
     else:
         with ZPublisher.WSGIPublisher.__old_load_app__(module_info) as ret:
             yield ret

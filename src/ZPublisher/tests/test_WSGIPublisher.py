@@ -191,9 +191,7 @@ class TestPublish(unittest.TestCase):
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        _debug_exceptions = False
-        returned = self._callFUT(request, (_object, _realm, _debug_mode,
-                                           _debug_exceptions))
+        returned = self._callFUT(request, (_object, _realm, _debug_mode))
         self.assertTrue(returned is response)
         self.assertTrue(request._processedInputs)
         self.assertTrue(response.debug_mode)
@@ -211,9 +209,7 @@ class TestPublish(unittest.TestCase):
         request._traverse_to = _object
         _realm = 'TESTING'
         _debug_mode = True
-        _debug_exceptions = False
-        self._callFUT(request, (_object, _realm, _debug_mode,
-                                _debug_exceptions))
+        self._callFUT(request, (_object, _realm, _debug_mode))
         self.assertEqual(response.realm, None)
 
 
@@ -642,9 +638,6 @@ class TestPublishModule(ZopeTestCase):
 
     def testDebugExceptionsBypassesExceptionResponse(self):
         from zExceptions import BadRequest
-        from ZPublisher.WSGIPublisher import set_default_debug_exceptions
-
-        set_default_debug_exceptions(True)
 
         # Register an exception view for BadRequest
         registerExceptionView(IException)
@@ -653,13 +646,19 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._raise = BadRequest('debugbypass')
 
-        # With debug_mode, the exception view is not called.
+        # Responses will always have debug_exceptions set
+        def response_factory(stdout, stderr):
+            response = DummyResponse()
+            response.debug_exceptions = True
+            return response
+
+        # With debug_exceptions, the exception view is not called.
         with self.assertRaises(BadRequest):
-            self._callFUT(environ, start_response, _publish)
+            self._callFUT(environ, start_response, _publish,
+                          _response_factory=response_factory)
 
         # Clean up view registration
         unregisterExceptionView(IException)
-        set_default_debug_exceptions(False)
 
 
 class ExcViewCreatedTests(ZopeTestCase):
@@ -734,7 +733,7 @@ class TestLoadApp(unittest.TestCase):
         class App(object):
             _p_jar = Connection()
 
-        return (App, 'Zope', False, False)
+        return (App, 'Zope', False)
 
     def test_open_transaction_is_aborted(self):
         load_app = self._getTarget()
