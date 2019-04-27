@@ -15,6 +15,7 @@
 import contextlib
 import sys
 
+
 @contextlib.contextmanager
 def capture_stdout(file):
     old_out = sys.stdout
