@@ -11,6 +11,7 @@
 #
 ##############################################################################
 
+from Acquisition import aq_parent
 from Products.Five import BrowserView
 
 
@@ -21,7 +22,13 @@ class StandardErrorMessageView(BrowserView):
     """
 
     def __call__(self):
-        root = self.request['PARENTS'][0]
+        published = getattr(self.request, 'PUBLISHED', None)
+        if published is not None:
+            root = aq_parent(published)
+        else:
+            root = self.request['PARENTS'][0]
+
         return root.standard_error_message(
+            client=root,
             error_type=self.context.__class__.__name__,
             error_value=str(self.context))
