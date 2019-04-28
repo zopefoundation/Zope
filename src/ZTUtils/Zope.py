@@ -182,7 +182,7 @@ _DEFAULT_ENCODING = None
 
 
 def _default_encoding():
-    ''' Retreive default encoding from config '''
+    ''' Retrieve default encoding from config '''
     global _DEFAULT_ENCODING
     if _DEFAULT_ENCODING is None:
         from App.config import getConfiguration
@@ -359,5 +359,5 @@ def url_query(request, req_name="URL", omit=None):
 
         qs = '&'.join([part for part in qsparts if part])
 
-    # We alway append '?' since arguments will be appended to the URL
+    # We always append '?' since arguments will be appended to the URL
     return '%s?%s' % (base, qs)
