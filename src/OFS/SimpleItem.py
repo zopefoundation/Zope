@@ -124,6 +124,8 @@ class Item(
     isPrincipiaFolderish = 0
     isTopLevelPrincipiaApplicationObject = 0
 
+    manage_options = ({'label': 'Interfaces', 'action': 'manage_interfaces'},)
+
     def manage_afterAdd(self, item, container):
         pass
     manage_afterAdd.__five_method__ = True

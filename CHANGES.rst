@@ -28,6 +28,9 @@ Fixes
 Features
 ++++++++
 
+- Resurrect the Interfaces ZMI tab
+  (`#450 <https://github.com/zopefoundation/Zope/issues/450>`_)
+
 - Better default logging configuration for simple waitress WSGI setups
   (`#526 <https://github.com/zopefoundation/Zope/issues/526>`_)
 
