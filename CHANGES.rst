@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Hardeded ``RESPONSE.redirect`` to deal with any unencoded or encoded input
+  (`#435 <https://github.com/zopefoundation/Zope/issues/435>`_)
+
 - Fix broken ``title_and_id`` behavior
   (`#574 <https://github.com/zopefoundation/Zope/issues/574>`_)
 
