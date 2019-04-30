@@ -1,5 +1,7 @@
 import unittest
 
+import six
+
 
 class TestItem(unittest.TestCase):
 
@@ -80,16 +82,56 @@ class TestItem_w__name__(unittest.TestCase):
 
 class TestSimpleItem(unittest.TestCase):
 
+    def _getTargetClass(self):
+        from OFS.SimpleItem import SimpleItem
+        return SimpleItem
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
+
     def test_interfaces(self):
         from OFS.interfaces import ISimpleItem
-        from OFS.SimpleItem import SimpleItem
         from zope.interface.verify import verifyClass
 
-        verifyClass(ISimpleItem, SimpleItem)
+        verifyClass(ISimpleItem, self._getTargetClass())
+
+    def test_title_or_id_nonascii(self):
+        unencoded_id = u'\xfc\xe4\xee\xe9\xdf_id'
+        unencoded_title = u'\xfc\xe4\xee\xe9\xdf Title'
+        item = self._makeOne()
+
+        item.id = unencoded_id
+        self.assertEqual(item.title_or_id(), unencoded_id)
+
+        item.title = unencoded_title
+        self.assertEqual(item.title_or_id(), unencoded_title)
+
+    def test_title_and_id_nonascii(self):
+        unencoded_id = u'\xfc\xe4\xee\xe9\xdf_id'
+        encoded_id = unencoded_id.encode('UTF-8')
+        unencoded_title = u'\xfc\xe4\xee\xe9\xdf Title'
+        encoded_title = unencoded_title.encode('UTF-8')
+        item = self._makeOne()
+
+        item.id = unencoded_id
+        self.assertEqual(item.title_and_id(), unencoded_id)
+
+        item.title = unencoded_title
+        self.assertIn(unencoded_id, item.title_and_id())
+        self.assertIn(unencoded_title, item.title_and_id())
+
+        # Now mix encoded and unencoded. The combination is a native
+        # string, meaning encoded on Python 2 and unencoded on Python 3
+        item.id = encoded_id
+        if six.PY3:
+            self.assertIn(unencoded_id, item.title_and_id())
+            self.assertIn(unencoded_title, item.title_and_id())
+        else:
+            self.assertIn(encoded_id, item.title_and_id())
+            self.assertIn(encoded_title, item.title_and_id())
 
     def test_standard_error_message_is_called(self):
         from zExceptions import BadRequest
-        from OFS.SimpleItem import SimpleItem
 
         # handle_errors should default to True. It is a flag used for
         # functional doctests. See ZPublisher/Test.py and
@@ -106,7 +148,7 @@ class TestSimpleItem(unittest.TestCase):
                 self.kw.clear()
                 self.kw.update(kw)
 
-        item = SimpleItem()
+        item = self._makeOne()
         item.standard_error_message = sem = StandardErrorMessage()
 
         try:

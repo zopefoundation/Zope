@@ -81,6 +81,7 @@ class DTMLMethod(
     __code__.co_varnames = 'self', 'REQUEST', 'RESPONSE'
     __code__.co_argcount = 3
     __defaults__ = None
+    encoding = None
 
     manage_options = ((
         {

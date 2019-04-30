@@ -21,10 +21,14 @@ import zlib
 from io import BytesIO
 
 from six import PY2
+from six import PY3
+from six import binary_type
 from six import class_types
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib.parse import urlunparse
 
 from zExceptions import BadRequest
 from zExceptions import HTTPRedirection
@@ -131,7 +135,7 @@ class HTTPBaseResponse(BaseResponse):
 
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
-    A published object may receive the response abject as an argument
+    A published object may receive the response object as an argument
     named 'RESPONSE'.  A published object may also create it's own
     response object.  Normally, published objects use response objects
     to:
@@ -201,7 +205,20 @@ class HTTPBaseResponse(BaseResponse):
         """Cause a redirection without raising an error"""
         if isinstance(location, HTTPRedirection):
             status = location.getStatus()
-        location = str(location)
+            location = location.headers['Location']
+
+        if PY2 and isinstance(location, text_type):
+            location = location.encode(self.charset)
+        elif PY3 and isinstance(location, binary_type):
+            location = location.decode(self.charset)
+
+        # To be entirely correct, we must make sure that all non-ASCII
+        # characters in the path part are quoted correctly. This is required
+        # as we now allow non-ASCII IDs
+        parsed = list(urlparse(location))
+        parsed[2] = quote(parsed[2])
+        location = urlunparse(parsed)
+
         self.setStatus(status, lock=lock)
         self.setHeader('Location', location)
         return location
