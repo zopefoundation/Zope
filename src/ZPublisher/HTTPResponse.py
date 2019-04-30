@@ -460,7 +460,7 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 text = text.decode(self.charset)
             except UnicodeDecodeError:
-                pass
+                return False
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().
