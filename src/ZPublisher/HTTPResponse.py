@@ -99,7 +99,7 @@ _gzip_header = (b"\037\213"  # magic
 uncompressableMimeMajorTypes = ('image',)
 
 # The environment variable DONT_GZIP_MAJOR_MIME_TYPES can be set to a list
-# of comma seperated mime major types which should also not be compressed
+# of comma separated mime major types which should also not be compressed
 
 otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES', '').lower()
 if otherTypes:
