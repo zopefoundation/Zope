@@ -427,7 +427,7 @@ class HTTPBaseResponse(BaseResponse):
 
         If base is None, set to the empty string.
 
-        If base is not None, ensure that it has a trailing slach.
+        If base is not None, ensure that it has a trailing slash.
         """
         if base is None:
             base = ''
