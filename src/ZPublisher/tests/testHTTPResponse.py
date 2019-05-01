@@ -783,6 +783,14 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Location'), ENC_URL)
         self.assertEqual(result, ENC_URL)
 
+    def test_redirect_alreadyquoted(self):
+        # If a URL is already quoted, don't double up on the quoting
+        ENC_URL = 'http://example.com/M%C3%A4H'
+        response = self._makeOne()
+        result = response.redirect(ENC_URL)
+        self.assertEqual(result, ENC_URL)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()

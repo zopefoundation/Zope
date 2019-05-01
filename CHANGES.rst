@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Ensure a redirect path does not get URL-encoded twice
+
 - Prevent inability to log into the ZMI due to failing exception views
 
 - Hardeded ``RESPONSE.redirect`` to deal with any unencoded or encoded input
