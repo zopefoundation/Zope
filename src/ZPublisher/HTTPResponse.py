@@ -723,7 +723,8 @@ class HTTPBaseResponse(BaseResponse):
         if realm:
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
-    def _html(self, title, body):
+    @staticmethod
+    def _html(title, body):
         return ("<html>\n"
                 "<head>\n<title>%s</title>\n</head>\n"
                 "<body>\n%s\n</body>\n"
