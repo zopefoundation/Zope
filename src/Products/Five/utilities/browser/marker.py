@@ -30,19 +30,13 @@ class EditView(object):
     def __call__(self, SAVE=None, add=(), remove=()):
         if SAVE:
             self.update(add, remove)
-            self.request.response.redirect(self.request.ACTUAL_URL)
+            url = '%s?manage_tabs_message=Changes+applied.'
+            self.request.response.redirect(url % self.request.ACTUAL_URL)
             return ''
         return self.index()
 
-    def _getLinkToInterfaceDetailsView(self, interfaceName):
-        return (self.context_url + (
-            '/views-details.html?iface=%s&type=zope.publisher.'
-            'interfaces.browser.IBrowserRequest' % interfaceName))
-
     def _getNameLinkDicts(self, interfaceNames):
-        return [dict(name=name,
-                     link=self._getLinkToInterfaceDetailsView(name))
-                for name in interfaceNames]
+        return [dict(name=name) for name in interfaceNames]
 
     def getAvailableInterfaceNames(self):
         return self._getNameLinkDicts(
