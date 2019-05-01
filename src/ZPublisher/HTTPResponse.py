@@ -437,7 +437,7 @@ class HTTPBaseResponse(BaseResponse):
         self.base = str(base)
 
     def insertBase(self):
-        # Only insert a base tag if content appears to be html.
+        # Only insert a base tag if content appears to be HTML.
         content_type = self.headers.get('content-type', '').split(';')[0]
         if content_type and (content_type != 'text/html'):
             return
