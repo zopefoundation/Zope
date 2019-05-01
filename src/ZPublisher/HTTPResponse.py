@@ -1044,7 +1044,7 @@ class WSGIResponse(HTTPBaseResponse):
         if content_length is None and not self._streaming:
             self.setHeader('content-length', len(self.body))
 
-        return ('%s %s' % (self.status, self.errmsg), self.listHeaders())
+        return '%s %s' % (self.status, self.errmsg), self.listHeaders()
 
     def listHeaders(self):
         result = []
