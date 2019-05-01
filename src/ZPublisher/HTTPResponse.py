@@ -414,7 +414,7 @@ class HTTPBaseResponse(BaseResponse):
 
         Retain any previously set headers with the same name.
 
-        Note that this API appneds to the 'accumulated_headers' attribute;
+        Note that this API appends to the 'accumulated_headers' attribute;
         it does not update the 'headers' mapping.
         """
         name, value = _scrubHeader(name, value)
