@@ -855,7 +855,7 @@ class HTTPResponse(HTTPBaseResponse):
             self._unauthorized()
 
         self.setStatus(t)
-        if self.status >= 300 and self.status < 400:
+        if 300 <= self.status < 400:
             if isinstance(v, str) and absuri_match(v) is not None:
                 if self.status == 300:
                     self.setStatus(302)
@@ -872,7 +872,7 @@ class HTTPResponse(HTTPBaseResponse):
             else:
                 try:
                     l, b = v
-                    if (isinstance(l, str) and absuri_match(l) is not None):
+                    if isinstance(l, str) and absuri_match(l) is not None:
                         if self.status == 300:
                             self.setStatus(302)
                         self.setHeader('location', l)
