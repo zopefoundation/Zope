@@ -1354,3 +1354,7 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertTrue(expected in bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
+
+    def test_isHTML_not_decodable_bytes(self):
+        response = self._makeOne()
+        self.assertFalse(response.isHTML(u'bïñårÿ'.encode('latin1')))
