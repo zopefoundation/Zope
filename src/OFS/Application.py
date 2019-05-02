@@ -111,7 +111,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def __bobo_traverse__(self, REQUEST, name=None):
         if name is None:
             # Make this more explicit, otherwise getattr(self, name)
-            # would raise a TypeErorr getattr(): attribute name must be string
+            # would raise a TypeError getattr(): attribute name must be string
             return None
 
         if name == 'Control_Panel':
@@ -131,7 +131,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
             return NullResource(self, name, REQUEST).__of__(self)
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
-        # There is proabably a better fix for this.
+        # There is probably a better fix for this.
         try:
             REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
         except AttributeError:
