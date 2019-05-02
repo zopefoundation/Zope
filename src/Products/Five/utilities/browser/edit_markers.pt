@@ -12,9 +12,7 @@
       Change the behavior of this object by adding or removing marker
       interfaces. You can choose one or more interfaces to be added to the
       list of provided interfaces for this object.
-    </p>
-    
-    <p class="form-help formHelp" i18n:translate="">
+      <br />
       A marker interface is used to identify an instance of a piece of
       content. This allows you to enable and disable views based on marker
       interfaces for example.
@@ -65,15 +63,11 @@
           <td class="zmi-object-id"
               tal:content="interface/name">Interface Name</td>
         </tr>
-        <tr tal:condition="view/getAvailableInterfaceNames">
-          <td class="zmi-object-check text-right">&nbsp;</td>
-          <td class="zmi-controls">
+      </table>
+      <div class="zmi-controls form-group form-inline" tal:condition="view/getAvailableInterfaceNames">
             <input class="btn btn-primary" type="submit" name="SAVE"
                    value="Add" i18n:attributes="value"/>
-          </td>
-        </tr>
-      </table>
-
+      </div>
     </form>
   </metal:macro>
 </metal:slot>

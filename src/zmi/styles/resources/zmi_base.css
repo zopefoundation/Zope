@@ -272,9 +272,10 @@ form.zmi-upload {
   }
 }
 @media (min-width: 960px) {
-   .zmi form#objectItems .zmi-controls > .input-group input.btn {
-    min-width:7rem;
-   }
+	.zmi.zmi-manage_interfaces .zmi-controls > input.btn
+	.zmi form#objectItems .zmi-controls > .input-group input.btn {
+		min-width:7rem;
+	}
 }
 
 /* Table Object-Items: Sorting Links*/
