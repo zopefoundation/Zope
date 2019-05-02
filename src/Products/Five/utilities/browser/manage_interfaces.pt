@@ -1,0 +1,10 @@
+<h1 tal:replace="structure context/manage_page_header">PAGE HEADER</h1>
+<h2 tal:replace="structure context/manage_tabs">TABS</h2>
+
+<main class="container-fluid">
+
+<metal:macro metal:use-macro="context/@@edit-markers.html/main" />
+
+</main>
+
+<h1 tal:replace="structure context/manage_page_footer">PAGE FOOTER</h1>
