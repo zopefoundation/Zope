@@ -652,13 +652,14 @@ class TestPublishModule(ZopeTestCase):
             response.debug_exceptions = True
             return response
 
-        # With debug_exceptions, the exception view is not called.
-        with self.assertRaises(BadRequest):
-            self._callFUT(environ, start_response, _publish,
-                          _response_factory=response_factory)
-
-        # Clean up view registration
-        unregisterExceptionView(IException)
+        try:
+            # With debug_exceptions, the exception view is not called.
+            with self.assertRaises(BadRequest):
+                self._callFUT(environ, start_response, _publish,
+                              _response_factory=response_factory)
+        finally:
+            # Clean up view registration
+            unregisterExceptionView(IException)
 
 
 class ExcViewCreatedTests(ZopeTestCase):

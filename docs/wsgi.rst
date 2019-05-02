@@ -251,7 +251,7 @@ This is how you run Zope in exceptions debug mode using the built-in
 
 .. code-block:: console
 
-   $ bin/runwsgi -ev etc/zope.ini
+   $ bin/runwsgi -e etc/zope.ini
 
 If you built your environment using ``plone.recipe.zope2instance`` you will
 need to do a manual change to your Zope configuration file. Enable exceptions
