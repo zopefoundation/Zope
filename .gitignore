@@ -1,6 +1,7 @@
 *.egg-info
 *.py?
 *.profraw
+*.swp
 .Python
 .coverage
 .coverage.*
@@ -22,6 +23,7 @@
 /htmlcov/
 /include/
 /lib/
+/lib64
 /log/
 /parts/
 /var/

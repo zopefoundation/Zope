@@ -74,7 +74,7 @@ setup(
         'Acquisition',
         'BTrees',
         'DateTime',
-        'DocumentTemplate >= 3.0b5.dev0',
+        'DocumentTemplate >= 3.0b9',
         'ExtensionClass',
         'MultiMapping',
         'PasteDeploy',

@@ -14,6 +14,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Be more careful when guessing at encoding for document template types
+
+- Ensure a redirect path does not get URL-encoded twice
+
 - Prevent inability to log into the ZMI due to failing exception views
 
 - Hardeded ``RESPONSE.redirect`` to deal with any unencoded or encoded input
@@ -33,8 +37,15 @@ Fixes
 
 - prevent ``mkwsgiinstance`` from blowing up parsing ``buildout.cfg``
 
+- Fix ``ZPublisher.HTTPResponse.HTTPBaseResponse.isHTML`` for binary data on
+  Python 3.
+  (`#577 <https://github.com/zopefoundation/Zope/pull/577>`_)
+
 Features
 ++++++++
+
+- Resurrect the Interfaces ZMI tab
+  (`#450 <https://github.com/zopefoundation/Zope/issues/450>`_)
 
 - Better default logging configuration for simple waitress WSGI setups
   (`#526 <https://github.com/zopefoundation/Zope/issues/526>`_)
@@ -45,6 +56,11 @@ Features
 
 Other changes
 +++++++++++++
+
+- Exceptions during publishing are now re-raised in a new exceptions debug
+  mode to allow WSGI middleware to handle/debug it. See the `documentation
+  <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_ for examples.
+  (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
 
 - Remove hardcoded list of factories that don't want an add dialog
   (`#540 <https://github.com/zopefoundation/Zope/issues/540>`_)

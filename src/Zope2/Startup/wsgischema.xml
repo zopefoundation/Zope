@@ -131,6 +131,22 @@
     <metadefault>off</metadefault>
   </key>
 
+  <key name="debug-exceptions" datatype="boolean" default="off">
+    <description>
+    This switch controls how exceptions are handled. If it is set to
+    "off" (the default), Zope's own exception handling is active.
+    Exception views or a standard_error_message are used to handle them.
+
+    If set to "on", exceptions are not handled by Zope and can propagate
+    into the WSGI pipeline, where they may be handled by debugging
+    middleware.
+
+    This setting should always be "off" in production. It is useful for
+    developers and while debugging site issues.
+    </description>
+    <metadefault>off</metadefault>
+  </key>
+
   <key name="locale" datatype="locale" handler="locale">
     <description>
      Locale name to be used. See your operating system documentation for locale

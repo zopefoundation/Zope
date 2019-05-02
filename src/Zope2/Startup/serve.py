@@ -130,6 +130,12 @@ and then use %(http_port)s in your config files.
         const=1,
         dest='debug',
         help="Enable debug mode.")
+    parser.add_option(
+        '-e', '--debug-exceptions',
+        action='store_const',
+        const=1,
+        dest='debug_exceptions',
+        help="Enable exceptions debug mode.")
 
     _scheme_re = re.compile(r'^[a-z][a-z]+:', re.I)
 
@@ -180,6 +186,8 @@ and then use %(http_port)s in your config files.
 
         if 'debug_mode' not in vars and self.options.debug:
             vars['debug_mode'] = 'true'
+        if 'debug_exceptions' not in vars and self.options.debug_exceptions:
+            vars['debug_exceptions'] = 'true'
         app = self.loadapp(app_spec, name=app_name, relative_to=base,
                            global_conf=vars)
 

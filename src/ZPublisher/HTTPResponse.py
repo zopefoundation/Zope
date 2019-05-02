@@ -27,6 +27,7 @@ from six import class_types
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
+from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.parse import urlunparse
 
@@ -216,7 +217,7 @@ class HTTPBaseResponse(BaseResponse):
         # characters in the path part are quoted correctly. This is required
         # as we now allow non-ASCII IDs
         parsed = list(urlparse(location))
-        parsed[2] = quote(parsed[2])
+        parsed[2] = quote(unquote(parsed[2]))
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)
@@ -460,7 +461,7 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 text = text.decode(self.charset)
             except UnicodeDecodeError:
-                pass
+                return False
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().

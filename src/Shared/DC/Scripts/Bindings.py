@@ -25,6 +25,7 @@ from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from zope.component import queryMultiAdapter as qma
 
 
 defaultBindings = {'name_context': 'context',
@@ -246,7 +247,8 @@ class Bindings(object):
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
         if not names.isNameAssigned('name_subpath') or \
-           (path and hasattr(aq_base(self), path[-1])):
+           (path and hasattr(aq_base(self), path[-1])) or \
+           (path and qma((self, request), name=path[-1]) is not None):
             return
         subpath = path[:]
         path[:] = []
