@@ -221,15 +221,20 @@ class TestPublishModule(ZopeTestCase):
         if _publish is not None:
             if _response_factory is not None:
                 if _request_factory is not None:
-                    return publish_module(environ, start_response, _publish,
-                                          _response_factory, _request_factory)
-                return publish_module(environ, start_response, _publish,
-                                      _response_factory)
+                    return publish_module(environ, start_response,
+                                          _publish=_publish,
+                                          _response_factory=_response_factory,
+                                          _request_factory=_request_factory)
+                return publish_module(environ, start_response,
+                                      _publish=_publish,
+                                      _response_factory=_response_factory)
             else:
                 if _request_factory is not None:
-                    return publish_module(environ, start_response, _publish,
+                    return publish_module(environ, start_response,
+                                          _publish=_publish,
                                           _request_factory=_request_factory)
-                return publish_module(environ, start_response, _publish)
+                return publish_module(environ, start_response,
+                                      _publish=_publish)
         return publish_module(environ, start_response)
 
     def _registerView(self, factory, name, provides=None):
@@ -630,6 +635,31 @@ class TestPublishModule(ZopeTestCase):
         _publish._raise = Unauthorized('argg')
         with self.assertRaises(Unauthorized):
             self._callFUT(environ, start_response, _publish)
+
+    def testDebugExceptionsBypassesExceptionResponse(self):
+        from zExceptions import BadRequest
+
+        # Register an exception view for BadRequest
+        registerExceptionView(IException)
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = BadRequest('debugbypass')
+
+        # Responses will always have debug_exceptions set
+        def response_factory(stdout, stderr):
+            response = DummyResponse()
+            response.debug_exceptions = True
+            return response
+
+        try:
+            # With debug_exceptions, the exception view is not called.
+            with self.assertRaises(BadRequest):
+                self._callFUT(environ, start_response, _publish,
+                              _response_factory=response_factory)
+        finally:
+            # Clean up view registration
+            unregisterExceptionView(IException)
 
 
 class ExcViewCreatedTests(ZopeTestCase):

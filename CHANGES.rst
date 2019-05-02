@@ -57,6 +57,11 @@ Features
 Other changes
 +++++++++++++
 
+- Exceptions during publishing are now re-raised in a new exceptions debug
+  mode to allow WSGI middleware to handle/debug it. See the `documentation
+  <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_ for examples.
+  (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
+
 - Remove hardcoded list of factories that don't want an add dialog
   (`#540 <https://github.com/zopefoundation/Zope/issues/540>`_)
 

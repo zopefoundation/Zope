@@ -74,6 +74,7 @@ class WSGIStarter(object):
         import ZPublisher.HTTPRequest
         from ZPublisher import WSGIPublisher
         WSGIPublisher.set_default_debug_mode(self.cfg.debug_mode)
+        WSGIPublisher.set_default_debug_exceptions(self.cfg.debug_exceptions)
         WSGIPublisher.set_default_authentication_realm(
             self.cfg.http_realm)
         if self.cfg.trusted_proxies:

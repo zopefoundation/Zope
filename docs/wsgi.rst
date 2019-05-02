@@ -30,8 +30,8 @@ To compose your pipeline in Python code:
    app = make_wsgi_app({}, '/path/to/zope.conf')
 
 
-WSGI tools and helpers for Zope
--------------------------------
+Building a Zope instance with WSGI support
+------------------------------------------
 Zope ships with several helper scripts to set up a default WSGI-enabled
 environment. The document :doc:`operation` walks you through using
 ``mkwsgiinstance`` for a default configuration that you can use in conjunction
@@ -68,8 +68,8 @@ starting point for changes. The `Python Logging Cookbook
 of topics for advanced configurations.
 
 
-WSGI server integrations
-------------------------
+Compatible WSGI servers
+-----------------------
 This section describes how to integrate specific WSGI servers into your Zope
 instance. These servers were chosen because they either have a `PasteDeploy`
 entry point or have one provided by shim software, which means they work with
@@ -208,6 +208,92 @@ section will pull in the correct dependencies:
    user = admin:password
    http-address = 8080
    wsgi = ${buildout:directory}/etc/bjoern.ini
+
+
+werkzeug
+~~~~~~~~
+`werkzeug <https://palletsprojects.com/p/werkzeug/>`_ is a WSGI library that
+contains not just a WSGI server, but also a powerful debugger. It can
+easily integrate wth Zope using a shim package called `dataflake.wsgi.werkzeug 
+<https://dataflakewsgiwerkzeug.readthedocs.io/>`_. See the `Using this package`
+section for how to integrate `werkzeug` using Zope's own ``runwsgi`` script and
+how to create a suitable WSGI configuration.
+
+If you use ``plone.recipe.zope2instance``, the following section will pull in
+the correct dependencies, after you have created a WSGI configuration file:
+
+.. code-block:: ini
+
+   [zopeinstance]
+   recipe = plone.recipe.zope2instance
+   eggs =
+       dataflake.wsgi.werkzeug
+   zodb-temporary-storage = off
+   user = admin:password
+   http-address = 8080
+   wsgi = ${buildout:directory}/etc/werkzeug.ini
+
+
+Debugging Zope applications under WSGI
+--------------------------------------
+You can debug a WSGI-based Zope application the same way you have debugged
+ZServer-based installations in the past. In addition, you can now take
+advantage of WSGI middleware or debugging facilities built into the chosen
+WSGI server.
+
+When developing your application or debugging, which is the moment you want to
+use debugging tools, you can start your Zope instance in `exceptions debug
+mode`. This will disable all registered exception views including
+``standard_error_message`` so that exceptions are not masked or hidden.
+
+This is how you run Zope in exceptions debug mode using the built-in
+``runwsgi`` script:
+
+.. code-block:: console
+
+   $ bin/runwsgi -e etc/zope.ini
+
+If you built your environment using ``plone.recipe.zope2instance`` you will
+need to do a manual change to your Zope configuration file. Enable exceptions
+debug mode by adding the ``debug-exceptions on`` setting before starting your
+application. The example presumes the Zope instance was named ``zopeinstance``,
+your Zope configuration file will be at `parts/zopeinstance/etc/zope.conf`.
+
+.. code-block:: console
+
+   bin/zopeinstance fg
+
+With Zope set up to let WSGI handle exceptions, these are a few options for the
+WSGI pipeline:
+
+If you use ``waitress``, you can make it output exception tracebacks in the
+browser by configuring ``expose_tracebacks``. The keyword works in both
+standard and ``plone.recipe.zope2instance`` configurations:
+
+.. code-block:: ini
+
+   [server:main]
+   use = egg:waitress#main
+   host = 127.0.0.1
+   port = 8080
+   expose_tracebacks = True
+
+   ... or ...
+
+   [server:main]
+   paste.server_factory = plone.recipe.zope2instance:main
+   use = egg:plone.recipe.zope2instance#main
+   listen = 0.0.0.0:8080
+   threads = 2
+   expose_tracebacks = True
+
+``werkzeug`` includes a full-featured debugging tool. See the
+`dataflake.wsgi.werkzeug documentation
+<https://dataflakewsgiwerkzeug.readthedocs.io/en/latest/usage.html#using-the-werkzeug-debugger>`_
+for how to enable the debugger. Once you're up and running, the `werkzeug
+debugger documentation
+<https://werkzeug.palletsprojects.com/en/0.15.x/debug/#using-the-debugger>`_
+will show you how to use it.
 
 
 WSGI documentation links

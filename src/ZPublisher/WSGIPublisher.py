@@ -49,6 +49,7 @@ if sys.version_info >= (3, ):
 else:
     _FILE_TYPES = (IOBase, file)  # NOQA
 
+_DEFAULT_DEBUG_EXCEPTIONS = False
 _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
 _MODULE_LOCK = allocate_lock()
@@ -71,6 +72,16 @@ def missing_name(name, request):
 
 def validate_user(request, user):
     newSecurityManager(request, user)
+
+
+def set_default_debug_exceptions(debug_exceptions):
+    global _DEFAULT_DEBUG_EXCEPTIONS
+    _DEFAULT_DEBUG_EXCEPTIONS = debug_exceptions
+
+
+def get_debug_exceptions():
+    global _DEFAULT_DEBUG_EXCEPTIONS
+    return _DEFAULT_DEBUG_EXCEPTIONS
 
 
 def set_default_debug_mode(debug_mode):
@@ -191,7 +202,8 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if retry:
                 reraise(*exc_info)
 
-            if not (exc_view_created or isinstance(exc, Unauthorized)):
+            if not (exc_view_created or isinstance(exc, Unauthorized)) or \
+               getattr(response, 'debug_exceptions', False):
                 reraise(*exc_info)
         finally:
             # Avoid traceback / exception reference cycle.
@@ -205,6 +217,8 @@ def publish(request, module_info):
 
     request.processInputs()
     response = request.response
+
+    response.debug_exceptions = get_debug_exceptions()
 
     if debug_mode:
         response.debug_mode = debug_mode
