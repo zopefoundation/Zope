@@ -219,7 +219,7 @@ $(function() {
 	}
 	
 	// EXPAND LONG ERROR ALERTS
-	$('main.container-fluid .alert.alert-danger pre').click( function() {
+	$('main.container-fluid .alert pre').click( function() {
 		$(this).toggleClass('fullheight');
 	})
 

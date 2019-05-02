@@ -27,14 +27,14 @@ body.zmi {
 main.container-fluid .alert {
 	margin: 0 0 1rem;
 }
-main.container-fluid .alert.alert-danger pre {
+main.container-fluid .alert pre {
 	margin:0;
 	max-height:4em;
 	overflow-y:scroll;
 	overflow-x:hidden;
 	cursor:pointer;
 }
-main.container-fluid .alert.alert-danger pre.fullheight {
+main.container-fluid .alert pre.fullheight {
 	max-height: fit-content;
 	overflow-y: hidden;
 }
