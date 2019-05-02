@@ -7,7 +7,7 @@ def css_paths(context):
     """Return paths to CSS files needed for the Zope 4 ZMI."""
     return (
         '/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css',
-        '/++resource++zmi/fontawesome-free-5.1.0/css/all.css',
+        '/++resource++zmi/fontawesome-free-5.8.1/css/all.css',
         '/++resource++zmi/zmi_base.css',
     )
 

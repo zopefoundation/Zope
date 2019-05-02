@@ -44,7 +44,6 @@ from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 
 
@@ -117,7 +116,6 @@ class DTMLMethod(
         o If supplied, use the REQUEST mapping, Response, and key word
         arguments.
         """
-        self.encoding = default_encoding
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:

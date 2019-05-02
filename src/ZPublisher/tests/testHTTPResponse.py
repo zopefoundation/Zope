@@ -750,6 +750,47 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Location'), URL)
         self.assertTrue(response._locked_status)
 
+    def test_redirect_nonascii(self):
+        URL = u'http://example.com/\xe4'
+        BYTES_URL = URL.encode('UTF-8')
+        ENC_URL = 'http://example.com/%C3%A4'
+
+        # Pass in an unencoded string as URL
+        response = self._makeOne()
+        result = response.redirect(URL)
+        self.assertEqual(result, ENC_URL)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+
+        # Pass in an encoded string as URL
+        response = self._makeOne()
+        result = response.redirect(BYTES_URL)
+        self.assertEqual(result, ENC_URL)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+
+        # Pass in a HTTPException with an unencoded string as URL
+        from zExceptions import HTTPMovedPermanently
+        exc = HTTPMovedPermanently(URL)
+        response = self._makeOne()
+        result = response.redirect(exc)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+        self.assertEqual(result, ENC_URL)
+
+        # Pass in a HTTPException with an encoded string as URL
+        from zExceptions import HTTPMovedPermanently
+        exc = HTTPMovedPermanently(BYTES_URL)
+        response = self._makeOne()
+        result = response.redirect(exc)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+        self.assertEqual(result, ENC_URL)
+
+    def test_redirect_alreadyquoted(self):
+        # If a URL is already quoted, don't double up on the quoting
+        ENC_URL = 'http://example.com/M%C3%A4H'
+        response = self._makeOne()
+        result = response.redirect(ENC_URL)
+        self.assertEqual(result, ENC_URL)
+        self.assertEqual(response.getHeader('Location'), ENC_URL)
+
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()

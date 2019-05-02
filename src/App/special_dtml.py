@@ -26,13 +26,13 @@ from Acquisition import aq_parent
 from App import Common
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
+from DocumentTemplate import OLD_DEFAULT_ENCODING
 from DocumentTemplate.DT_String import DTReturn
 from DocumentTemplate.DT_String import _marker
 from DocumentTemplate.DT_String import render_blocks
 from DocumentTemplate.DT_Util import InstanceDict
 from DocumentTemplate.DT_Util import TemplateDict
 from Shared.DC.Scripts.Bindings import Bindings
-from ZPublisher.HTTPRequest import default_encoding
 
 
 LOG = getLogger('special_dtml')
@@ -62,7 +62,6 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     _v_last_read = 0
 
     def __init__(self, name, _prefix=None, **kw):
-        self.encoding = default_encoding
         if _prefix is None:
             _prefix = PREFIX
         elif not isinstance(_prefix, str):
@@ -145,6 +144,9 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         # Cook if we haven't already
         self._cook_check()
 
+        # If this object has no encoding set, we use the old default
+        encoding = getattr(self, 'encoding', OLD_DEFAULT_ENCODING)
+
         # Get our caller's namespace, and set up our own.
         cns = bound_data['caller_namespace']
         ns = self._Bindings_ns_class()
@@ -209,7 +211,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             if value is _marker:
                 try:
                     result = render_blocks(self._v_blocks, ns,
-                                           encoding=self.encoding)
+                                           encoding=encoding)
                 except DTReturn as v:
                     result = v.v
 

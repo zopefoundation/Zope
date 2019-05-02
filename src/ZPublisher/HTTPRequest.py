@@ -52,15 +52,6 @@ if PY3:
 else:
     from cgi import escape
 
-# Flags
-SEQUENCE = 1
-DEFAULT = 2
-RECORD = 4
-RECORDS = 8
-REC = RECORD | RECORDS
-EMPTY = 16
-CONVERTED = 32
-
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
 
@@ -785,7 +776,7 @@ class HTTPRequest(BaseRequest):
 
                             if not hasattr(x, attr):
                                 # If the attribute does not
-                                # exist, setit
+                                # exist, set it
                                 if flags & SEQUENCE:
                                     item = [item]
                                 setattr(x, attr, item)

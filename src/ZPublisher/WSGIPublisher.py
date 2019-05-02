@@ -175,9 +175,13 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
-            # Handle exception view
-            exc_view_created = _exc_view_created_response(
-                exc, request, response)
+            # Handle exception view. Make sure an exception view that
+            # blows up doesn't leave the user e.g. unable to log in.
+            try:
+                exc_view_created = _exc_view_created_response(
+                    exc, request, response)
+            except Exception:
+                exc_view_created = False
 
             if isinstance(exc, Unauthorized):
                 # _unauthorized modifies the response in-place. If this hook

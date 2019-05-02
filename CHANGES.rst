@@ -14,6 +14,18 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Be more careful when guessing at encoding for document template types
+
+- Ensure a redirect path does not get URL-encoded twice
+
+- Prevent inability to log into the ZMI due to failing exception views
+
+- Hardeded ``RESPONSE.redirect`` to deal with any unencoded or encoded input
+  (`#435 <https://github.com/zopefoundation/Zope/issues/435>`_)
+
+- Fix broken ``title_and_id`` behavior
+  (`#574 <https://github.com/zopefoundation/Zope/issues/574>`_)
+
 - Fix broken ZMI DTML rendering for mixed unicode/bytes content
   (`#271 <https://github.com/zopefoundation/Zope/issues/271>`_)
 
