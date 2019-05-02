@@ -86,7 +86,7 @@ function fix_ancient_gui() {
 // [3] GUI FIX FOR MODAL DIALOG: Add Minimal Style Patches to Ancient Zope Forms
 function fix_ancient_modal_gui() {
 	if ( 0 === $('.modal-body main').length ) {
-        $('.modal-body>form,.modal-body>table,.modal-body>h2,.modal-body>h3,.modal-body>p,.modal-body>i.zmi-help-icon').wrapAll('<main class="container-fluid zmi-patch"></main>');
+		$('.modal-body>form,.modal-body>table,.modal-body>h2,.modal-body>h3,.modal-body>p,.modal-body>i.zmi-help-icon').wrapAll('<main class="container-fluid zmi-patch"></main>');
 		// ADD BOOTSTRAP CLASSES
 		$('.modal-body input[type="text"],.modal-body input[type="file"],.modal-body textarea,.modal-body select').addClass('form-control zmi-patch');
 		$('.modal-body input[type="submit"]').addClass('btn btn-primary zmi-patch');
@@ -217,5 +217,10 @@ $(function() {
 	if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
 		$('.zmi header.navbar li.zmi-authenticated_user').tooltip({'placement':'bottom'});
 	}
+	
+	// EXPAND LONG ERROR ALERTS
+	$('main.container-fluid .alert.alert-danger pre').click( function() {
+		$(this).toggleClass('fullheight');
+	})
 
 });
