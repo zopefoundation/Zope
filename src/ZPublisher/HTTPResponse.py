@@ -100,7 +100,7 @@ _gzip_header = (b"\037\213"  # magic
 uncompressableMimeMajorTypes = ('image',)
 
 # The environment variable DONT_GZIP_MAJOR_MIME_TYPES can be set to a list
-# of comma seperated mime major types which should also not be compressed
+# of comma separated mime major types which should also not be compressed
 
 otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES', '').lower()
 if otherTypes:
@@ -415,7 +415,7 @@ class HTTPBaseResponse(BaseResponse):
 
         Retain any previously set headers with the same name.
 
-        Note that this API appneds to the 'accumulated_headers' attribute;
+        Note that this API appends to the 'accumulated_headers' attribute;
         it does not update the 'headers' mapping.
         """
         name, value = _scrubHeader(name, value)
@@ -428,7 +428,7 @@ class HTTPBaseResponse(BaseResponse):
 
         If base is None, set to the empty string.
 
-        If base is not None, ensure that it has a trailing slach.
+        If base is not None, ensure that it has a trailing slash.
         """
         if base is None:
             base = ''
@@ -438,7 +438,7 @@ class HTTPBaseResponse(BaseResponse):
         self.base = str(base)
 
     def insertBase(self):
-        # Only insert a base tag if content appears to be html.
+        # Only insert a base tag if content appears to be HTML.
         content_type = self.headers.get('content-type', '').split(';')[0]
         if content_type and (content_type != 'text/html'):
             return
@@ -724,7 +724,8 @@ class HTTPBaseResponse(BaseResponse):
         if realm:
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
-    def _html(self, title, body):
+    @staticmethod
+    def _html(title, body):
         return ("<html>\n"
                 "<head>\n<title>%s</title>\n</head>\n"
                 "<body>\n%s\n</body>\n"
@@ -855,7 +856,7 @@ class HTTPResponse(HTTPBaseResponse):
             self._unauthorized()
 
         self.setStatus(t)
-        if self.status >= 300 and self.status < 400:
+        if 300 <= self.status < 400:
             if isinstance(v, str) and absuri_match(v) is not None:
                 if self.status == 300:
                     self.setStatus(302)
@@ -872,7 +873,7 @@ class HTTPResponse(HTTPBaseResponse):
             else:
                 try:
                     l, b = v
-                    if (isinstance(l, str) and absuri_match(l) is not None):
+                    if isinstance(l, str) and absuri_match(l) is not None:
                         if self.status == 300:
                             self.setStatus(302)
                         self.setHeader('location', l)
@@ -1044,7 +1045,7 @@ class WSGIResponse(HTTPBaseResponse):
         if content_length is None and not self._streaming:
             self.setHeader('content-length', len(self.body))
 
-        return ('%s %s' % (self.status, self.errmsg), self.listHeaders())
+        return '%s %s' % (self.status, self.errmsg), self.listHeaders()
 
     def listHeaders(self):
         result = []
