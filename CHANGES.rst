@@ -37,6 +37,10 @@ Fixes
 
 - prevent ``mkwsgiinstance`` from blowing up parsing ``buildout.cfg``
 
+- Fix ``ZPublisher.HTTPResponse.HTTPBaseResponse.isHTML`` for binary data on
+  Python 3.
+  (`#577 <https://github.com/zopefoundation/Zope/pull/577>`_)
+
 Features
 ++++++++
 
