@@ -58,8 +58,9 @@ Other changes
 +++++++++++++
 
 - Exceptions during publishing are now re-raised in a new exceptions debug
-  mode to allow WSGI middleware to handle/debug it. See the `documentation
-  <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_ for examples.
+  mode to allow WSGI middleware to handle/debug it. See the `debug
+  documentation <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_
+  for examples.
   (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
 
 - Remove hardcoded list of factories that don't want an add dialog
@@ -339,7 +340,8 @@ New features
   `#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
 - Add zconsole module for running scripts and interactive mode.
-  See `documentation <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
+  See the `document Running Zope 
+  <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
 
 - Add support for Python 3.7.
 
