@@ -219,8 +219,11 @@ $(function() {
 	}
 	
 	// EXPAND LONG ERROR ALERTS
-	$('main.container-fluid .alert pre').click( function() {
-		$(this).toggleClass('fullheight');
-	})
+	if ($('main.container-fluid .alert pre').text().split(/\n/).length > 2) {
+		$('main.container-fluid .alert pre').addClass('alert_xl');
+		$('main.container-fluid .alert pre').click( function() {
+			$(this).toggleClass('fullheight');
+		})
+	}
 
 });
