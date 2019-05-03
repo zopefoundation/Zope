@@ -28,23 +28,24 @@ main.container-fluid .alert {
 	margin: 0 0 1rem;
 }
 main.container-fluid .alert pre {
-	margin:0;
-	max-height:4em;
-	overflow:hidden;
-	cursor:pointer;
+	margin: 0;
+	max-height: 4em;
+	overflow: hidden;
+	cursor: pointer;
 }
 main.container-fluid .alert pre.alert_xl:after {
 	content: "\f078";
+	font-family: "Font Awesome\ 5 Free",Fontawesome;
+	font-weight: bold;
 	position:absolute;
 	display:block;
 	white-space:normal;
 	bottom: .5em;
 	right: 1em;
-	font-family: fontawesome;
 	opacity: .5;
 }
 main.container-fluid .alert pre.fullheight.alert_xl {
-	max-height: fit-content;
+	max-height: inherit;
 }
 main.container-fluid .alert pre.fullheight.alert_xl:after {
 	content: "\f077";
