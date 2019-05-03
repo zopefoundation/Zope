@@ -27,6 +27,28 @@ body.zmi {
 main.container-fluid .alert {
 	margin: 0 0 1rem;
 }
+main.container-fluid .alert pre {
+	margin:0;
+	max-height:4em;
+	overflow:hidden;
+	cursor:pointer;
+}
+main.container-fluid .alert pre.alert_xl:after {
+	content: "\f078";
+	position:absolute;
+	display:block;
+	white-space:normal;
+	bottom: .5em;
+	right: 1em;
+	font-family: fontawesome;
+	opacity: .5;
+}
+main.container-fluid .alert pre.fullheight.alert_xl {
+	max-height: fit-content;
+}
+main.container-fluid .alert pre.fullheight.alert_xl:after {
+	content: "\f077";
+}
 
 /* BUTTONS / CONTROLS */
 
