@@ -726,7 +726,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Vary'), None)
 
     def test_redirect_defaults(self):
-        URL = 'http://example.com'
+        URL = 'http://example.com/@@login'
         response = self._makeOne()
         result = response.redirect(URL)
         self.assertEqual(result, URL)

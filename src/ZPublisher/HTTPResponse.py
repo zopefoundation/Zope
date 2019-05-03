@@ -217,7 +217,7 @@ class HTTPBaseResponse(BaseResponse):
         # characters in the path part are quoted correctly. This is required
         # as we now allow non-ASCII IDs
         parsed = list(urlparse(location))
-        parsed[2] = quote(unquote(parsed[2]))
+        parsed[2] = quote(unquote(parsed[2]), safe='/@')
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)
