@@ -28,9 +28,11 @@
 			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
 
 		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
-		<li role="separator" class="divider"></li>
+		<li role="separator" class="divider">&nbsp;</li>
 		<li><a id="menu_copyright" href="zope_copyright"
 			target="manage_main">&copy; Zope Foundation</a></li>
+		<li><a id="menu_zope" href="http://www.zope.org"
+			target="_blank">www.zope.org</a></li>
 	</ul>
 </div>
 
