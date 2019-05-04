@@ -1,5 +1,6 @@
 <h1 tal:replace="structure context/manage_page_header" />
-<h2 tal:replace="structure context/manage_tabs" />
+<h2 tal:define="management_view string:Databases"
+    tal:replace="structure context/manage_tabs" />
 
 <main class="container-fluid">
 

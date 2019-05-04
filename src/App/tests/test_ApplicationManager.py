@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 
 import Testing.ZopeTestCase
@@ -90,6 +91,35 @@ class FakeConnectionTests(unittest.TestCase):
         parent_jar = object()
         fc = self._makeOne(db, parent_jar)
         self.assertTrue(fc.db() is db)
+
+
+class ConfigurationViewerTests(ConfigTestBase, unittest.TestCase):
+
+    def _getTargetClass(self):
+        from App.ApplicationManager import ConfigurationViewer
+        return ConfigurationViewer
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_defaults(self):
+        cv = self._makeOne()
+        self.assertEqual(cv.id, 'Configuration')
+        self.assertEqual(cv.meta_type, 'Configuration Viewer')
+        self.assertEqual(cv.title, 'Configuration Viewer')
+
+    def test_manage_getSysPath(self):
+        cv = self._makeOne()
+        self.assertEqual(cv.manage_getSysPath(), sorted(sys.path))
+
+    def test_manage_getConfiguration(self):
+        from App.config import getConfiguration
+        cv = self._makeOne()
+        cfg = getConfiguration()
+
+        for info_dict in cv.manage_getConfiguration():
+            self.assertEqual(info_dict['value'],
+                             str(getattr(cfg, info_dict['name'])))
 
 
 class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
@@ -229,6 +259,21 @@ class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
         config = self._makeConfig()
         cldir = config.clienthome = self._makeTempdir()
         self.assertEqual(am.getCLIENT_HOME(), cldir)
+
+    def test_process_time(self):
+        am = self._makeOne()
+        now = time.time()
+
+        measure, unit = am.process_time(_when=now).strip().split()
+        self.assertEqual(unit, 'sec')
+
+        ret_str = am.process_time(_when=now + 90061).strip()
+        secs = 1 + int(measure)
+        self.assertEqual(ret_str, '1 day 1 hour 1 min %i sec' % secs)
+
+        ret_str = am.process_time(_when=now + 180122).strip()
+        secs = 2 + int(measure)
+        self.assertEqual(ret_str, '2 days 2 hours 2 min %i sec' % secs)
 
 
 class AltDatabaseManagerTests(unittest.TestCase):

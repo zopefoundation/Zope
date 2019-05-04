@@ -13,6 +13,7 @@
 
 import os
 import sys
+import time
 
 from six.moves.urllib import parse
 
@@ -49,10 +50,14 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
     name = title = 'Database Management'
     meta_type = 'Database Management'
 
-    manage_main = PageTemplateFile('www/chooseDatabase.pt', globals())
+    manage_main = manage_workspace = PageTemplateFile('www/chooseDatabase.pt',
+                                                      globals())
+    manage_main.__name__ = 'manage_main'
+    manage_main._need__name__ = 0
     manage_options = (
         {'label': 'Control Panel', 'action': '../manage_main'},
         {'label': 'Databases', 'action': 'manage_main'},
+        {'label': 'Configuration', 'action': '../Configuration/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -82,6 +87,50 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
 InitializeClass(DatabaseChooser)
 
 
+class ConfigurationViewer(Tabs, Traversable, Implicit):
+    """ Provides information about the running configuration
+    """
+    manage = manage_main = manage_workspace = DTMLFile('dtml/cpConfiguration',
+                                                       globals())
+    manage_main._setName('manage_main')
+    id = 'Configuration'
+    name = title = 'Configuration Viewer'
+    meta_type = name
+    zmi_icon = 'fa fa-cog'
+    manage_options = (
+        {'label': 'Control Panel', 'action': '../manage_main'},
+        {'label': 'Databases', 'action': '../Database/manage_main'},
+        {'label': 'Configuration', 'action': 'manage_main'},
+    )
+    MANAGE_TABS_NO_BANNER = True
+
+    def manage_getSysPath(self):
+        return sorted(sys.path)
+
+    def manage_getConfiguration(self):
+        config_results = []
+        config = getConfiguration()
+
+        try:
+            keys = config.getSectionAttributes()
+        except AttributeError:
+            # This happens in unit tests with a DefaultConfiguration object
+            keys = config.__dict__.keys()
+
+        for key in keys:
+
+            # Databases are visible on the Database Chooser already
+            if key == 'databases':
+                continue
+
+            config_results.append({'name': key,
+                                   'value': str(getattr(config, key))})
+        return config_results
+
+
+InitializeClass(ConfigurationViewer)
+
+
 class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
     """System management
     """
@@ -92,14 +141,17 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
     name = title = 'Control Panel'
     meta_type = 'Control Panel'
     zmi_icon = 'fa fa-cog'
+    process_start = int(time.time())
 
     Database = DatabaseChooser()
+    Configuration = ConfigurationViewer()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
     manage_options = (
         {'label': 'Control Panel', 'action': 'manage_main'},
         {'label': 'Databases', 'action': 'Database/manage_main'},
+        {'label': 'Configuration', 'action': 'Configuration/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -111,6 +163,22 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
 
     def process_id(self):
         return os.getpid()
+
+    def process_time(self, _when=None):
+        if _when is None:
+            _when = time.time()
+        s = int(_when) - self.process_start
+        d = int(s / 86400)
+        s = s - (d * 86400)
+        h = int(s / 3600)
+        s = s - (h * 3600)
+        m = int(s / 60)
+        s = s - (m * 60)
+        d = d and ('%d day%s' % (d, (d != 1 and 's' or ''))) or ''
+        h = h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
+        m = m and ('%d min' % m) or ''
+        s = '%d sec' % s
+        return '%s %s %s %s' % (d, h, m, s)
 
     def sys_version(self):
         return sys.version
