@@ -514,6 +514,10 @@ textarea.zmi-code {
 	font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
+.code.syspath {
+	font-size: .75em;
+}
+
 /* MANAGE MENU */
 
 table#menu_title,

@@ -44,6 +44,8 @@ Fixes
 Features
 ++++++++
 
+- Add a Configuration details tab to the Control_Panel
+
 - Resurrect the Interfaces ZMI tab
   (`#450 <https://github.com/zopefoundation/Zope/issues/450>`_)
 

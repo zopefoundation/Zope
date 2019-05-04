@@ -1,0 +1,32 @@
+<dtml-var manage_page_header>
+
+<dtml-with "_(management_view='Configuration')">
+  <dtml-var manage_tabs>
+</dtml-with>
+
+<main class="container-fluid">
+
+  <p class="form-help mt-4">
+    Configuration information for the running Zope process.
+  </p>
+
+  <table class="table">
+    <dtml-in manage_getConfiguration mapping sort="name">
+      <tr>
+        <th class="text-muted">&dtml-name;</th>
+        <td class="code syspath">&dtml-value;</td>
+      </tr>
+    </dtml-in>
+    <tr>
+      <th class="text-muted">Python path (sys.path)</th>
+      <td class="code syspath">
+        <dtml-in manage_getSysPath>
+          <dtml-var sequence-item><br/>
+        </dtml-in>
+      </td>
+    </tr>
+  </table>
+
+</main>
+
+<dtml-var manage_page_footer>
