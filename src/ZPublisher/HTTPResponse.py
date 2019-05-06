@@ -224,7 +224,7 @@ class HTTPBaseResponse(BaseResponse):
             # The list of "safe" characters is from RFC 2396 section 2.3
             # (unreserved characters that should not be escaped) plus
             # section 3.3 (reserved characters in path components)
-            parsed[2] = quote(parsed[2], safe="/@!*'();,=+$")
+            parsed[2] = quote(parsed[2], safe="/@!*'~();,=+$")
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)
