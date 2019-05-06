@@ -725,29 +725,31 @@ class HTTPResponseTests(unittest.TestCase):
         response.setBody(b'foo' * 100)  # body must get smaller on compression
         self.assertEqual(response.getHeader('Vary'), None)
 
+    def _redirectURLCheck(self, url, expected=None, lock=False, status=302):
+        if not expected:
+            expected = url
+        response = self._makeOne()
+        result = response.redirect(url, lock=lock, status=status)
+        self.assertEqual(result, expected)
+        self.assertEqual(response.getHeader('Location'), expected)
+        return response
+
     def test_redirect_defaults(self):
         URL = 'http://example.com/@@login'
-        response = self._makeOne()
-        result = response.redirect(URL)
-        self.assertEqual(result, URL)
+        response = self._redirectURLCheck(URL)
         self.assertEqual(response.status, 302)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertFalse(response._locked_status)
 
     def test_redirect_explicit_status(self):
         URL = 'http://example.com'
-        response = self._makeOne()
-        response.redirect(URL, status=307)
+        response = self._redirectURLCheck(URL, status=307)
         self.assertEqual(response.status, 307)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertFalse(response._locked_status)
 
     def test_redirect_w_lock(self):
         URL = 'http://example.com'
-        response = self._makeOne()
-        response.redirect(URL, lock=True)
+        response = self._redirectURLCheck(URL, lock=True)
         self.assertEqual(response.status, 302)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertTrue(response._locked_status)
 
     def test_redirect_nonascii(self):
@@ -756,40 +758,35 @@ class HTTPResponseTests(unittest.TestCase):
         ENC_URL = 'http://example.com/%C3%A4'
 
         # Pass in an unencoded string as URL
-        response = self._makeOne()
-        result = response.redirect(URL)
-        self.assertEqual(result, ENC_URL)
-        self.assertEqual(response.getHeader('Location'), ENC_URL)
+        self._redirectURLCheck(URL, expected=ENC_URL)
 
         # Pass in an encoded string as URL
-        response = self._makeOne()
-        result = response.redirect(BYTES_URL)
-        self.assertEqual(result, ENC_URL)
-        self.assertEqual(response.getHeader('Location'), ENC_URL)
+        self._redirectURLCheck(BYTES_URL, expected=ENC_URL)
 
         # Pass in a HTTPException with an unencoded string as URL
         from zExceptions import HTTPMovedPermanently
         exc = HTTPMovedPermanently(URL)
-        response = self._makeOne()
-        result = response.redirect(exc)
-        self.assertEqual(response.getHeader('Location'), ENC_URL)
-        self.assertEqual(result, ENC_URL)
+        self._redirectURLCheck(exc, expected=ENC_URL)
 
         # Pass in a HTTPException with an encoded string as URL
         from zExceptions import HTTPMovedPermanently
         exc = HTTPMovedPermanently(BYTES_URL)
-        response = self._makeOne()
-        result = response.redirect(exc)
-        self.assertEqual(response.getHeader('Location'), ENC_URL)
-        self.assertEqual(result, ENC_URL)
+        self._redirectURLCheck(exc, expected=ENC_URL)
 
     def test_redirect_alreadyquoted(self):
         # If a URL is already quoted, don't double up on the quoting
         ENC_URL = 'http://example.com/M%C3%A4H'
-        response = self._makeOne()
-        result = response.redirect(ENC_URL)
-        self.assertEqual(result, ENC_URL)
-        self.assertEqual(response.getHeader('Location'), ENC_URL)
+        self._redirectURLCheck(ENC_URL)
+
+    def test_redirect_unreserved_chars(self):
+        # RFC 2396 section 2.3, characters that should not be encoded
+        url = "http://example.com/-_.!~*'()"
+        self._redirectURLCheck(url)
+
+    def test_redirect_reserved_chars(self):
+        # RFC 2396 section 3.3, characters with reserved meaning in a path
+        url = 'http://example.com/+/$/;/,/=/?/&/@@index.html'
+        self._redirectURLCheck(url)
 
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
         UNICODE = u'<h1>Tr\u0039s Bien</h1>'
