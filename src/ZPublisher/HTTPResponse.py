@@ -27,7 +27,6 @@ from six import class_types
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.parse import urlunparse
 
