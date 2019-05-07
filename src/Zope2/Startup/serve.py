@@ -22,12 +22,9 @@ from logging.config import fileConfig
 
 from paste.deploy import loadapp
 from paste.deploy import loadserver
+from six.moves import configparser
 
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+from App.config import getConfiguration
 
 
 def parse_vars(args):
@@ -199,6 +196,8 @@ and then use %(http_port)s in your config files.
             self.out(msg)
 
         def serve():
+            self.makePidFile()
+
             try:
                 server(app)
             except (SystemExit, KeyboardInterrupt) as e:
@@ -209,6 +208,8 @@ and then use %(http_port)s in your config files.
                 else:
                     msg = ''
                 self.out('Exiting%s (-v to see traceback)' % msg)
+            finally:
+                self.unlinkPidFile()
 
         serve()
 
@@ -218,6 +219,28 @@ and then use %(http_port)s in your config files.
     def loadserver(self, server_spec, name, relative_to, **kw):
         return loadserver(
             server_spec, name=name, relative_to=relative_to, **kw)
+
+    def makePidFile(self):
+        options = getConfiguration()
+        try:
+            IO_ERRORS = (IOError, OSError, WindowsError)
+        except NameError:
+            IO_ERRORS = (IOError, OSError)
+
+        try:
+            if os.path.exists(options.pid_filename):
+                os.unlink(options.pid_filename)
+            with open(options.pid_filename, 'w') as fp:
+                fp.write(str(os.getpid()))
+        except IO_ERRORS:
+            pass
+
+    def unlinkPidFile(self):
+        options = getConfiguration()
+        try:
+            os.unlink(options.pid_filename)
+        except OSError:
+            pass
 
 
 def main(argv=sys.argv, quiet=False):

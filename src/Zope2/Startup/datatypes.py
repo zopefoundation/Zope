@@ -109,6 +109,8 @@ def root_wsgi_config(section):
         section.environment = ZDaemonEnvironDict()
     if section.clienthome is None:
         section.clienthome = os.path.join(section.instancehome, "var")
+    if getattr(section, 'pid_filename', None) is None:
+        section.pid_filename = os.path.join(section.clienthome, 'Z4.pid')
 
     if not section.databases:
         section.databases = []

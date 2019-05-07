@@ -62,6 +62,11 @@ Features
 Other changes
 +++++++++++++
 
+- Make Zope write a PID file again under WSGI.
+  This makes interaction with sysadmin tools easier.
+  The PID file path can be set in the Zope configuration with ``pid-filename``,
+  just like in ``ZServer``-based configurations.
+
 - Exceptions during publishing are now re-raised in a new exceptions debug
   mode to allow WSGI middleware to handle/debug it. See the `debug
   documentation <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_
