@@ -115,6 +115,19 @@ instancehome $INSTANCE
 #    http-realm Slipknot
 
 
+# Directive: pid-filename
+#
+# Description:
+#     The path to the file in which the Zope process id(s) will be written.
+#     This defaults to client-home/Z4.pid.
+#
+# Default: CLIENT_HOME/Z2.pid
+#
+# Example:
+#
+#    pid-filename /home/chrism/projects/sessions/var/Z4.pid
+
+
 # Directive: trusted-proxy
 #
 # Description:
