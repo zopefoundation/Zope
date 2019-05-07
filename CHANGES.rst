@@ -44,6 +44,9 @@ Fixes
 Features
 ++++++++
 
+- Add a configuration flag to show bookmarkable URLs in the ZMI
+  (`#580 <https://github.com/zopefoundation/Zope/issues/580>`_)
+
 - Add a Configuration details tab to the Control_Panel
 
 - Resurrect the Interfaces ZMI tab

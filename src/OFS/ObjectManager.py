@@ -87,6 +87,7 @@ REPLACEABLE = 1
 UNIQUE = 2
 
 LOG = getLogger('ObjectManager')
+CONFIG = getConfiguration()
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
@@ -627,8 +628,7 @@ class ObjectManager(
                                    'inline;filename=%s.%s' % (id, suffix))
             return result
 
-        cfg = getConfiguration()
-        f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
+        f = os.path.join(CONFIG.clienthome, '%s.%s' % (id, suffix))
         with open(f, 'w+b') as fd:
             ob._p_jar.exportFile(ob._p_oid, fd)
 
@@ -697,12 +697,11 @@ class ObjectManager(
         return ob
 
     def _getImportPaths(self):
-        cfg = getConfiguration()
         paths = []
-        if cfg.instancehome not in paths:
-            paths.append(cfg.instancehome)
-        if cfg.clienthome not in paths:
-            paths.append(cfg.clienthome)
+        if CONFIG.instancehome not in paths:
+            paths.append(CONFIG.instancehome)
+        if CONFIG.clienthome not in paths:
+            paths.append(CONFIG.clienthome)
         return paths
 
     def list_imports(self):
@@ -937,6 +936,11 @@ class ObjectManager(
             }
             for item in sorted_items
         ]
+
+    @security.protected(view_management_screens)
+    def getBookmarkableURLs(self):
+        """ Helper method to expose a configuration flag """
+        return getattr(CONFIG, 'zmi_bookmarkable_urls', False)
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

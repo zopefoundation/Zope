@@ -530,6 +530,23 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual(result[0]['id'], hash_id)
         self.assertEqual(result[0]['quoted_id'], quote(hash_id))
 
+    def test_getBookmarkableURLs(self):
+        saved_state = getattr(getConfiguration(),
+                              'zmi_bookmarkable_urls',
+                              False)
+        om = self._makeOne()
+
+        # Configuration flag OFF
+        getConfiguration().zmi_bookmarkable_urls = False
+        self.assertFalse(om.getBookmarkableURLs())
+
+        # Configuration flag ON
+        getConfiguration().zmi_bookmarkable_urls = True
+        self.assertTrue(om.getBookmarkableURLs())
+
+        # Cleanup
+        getConfiguration().zmi_bookmarkable_urls = saved_state
+
 
 _marker = object()
 
