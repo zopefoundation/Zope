@@ -22,14 +22,9 @@ from logging.config import fileConfig
 
 from paste.deploy import loadapp
 from paste.deploy import loadserver
+from six.moves import configparser
 
 from App.config import getConfiguration
-
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
 
 
 def parse_vars(args):
