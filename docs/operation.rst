@@ -67,13 +67,13 @@ an existing account with non-admin privileges.
 Configuring Zope
 ----------------
 
-Your instance's configuration is defined in its ``etc/wsgi.conf``
-and ``etc/zope.ini`` configuration files.
+Your instance's configuration is defined in its ``etc/zope.conf``
+and ``etc/zopewsgi.ini`` configuration files.
 
 When starting Zope, if you see errors indicating that an address is in
 use, then you may have to change the ports Zope uses for HTTP.
 The default HTTP port used by Zope is 8080. You can change the port
-used by editing ./etc/zope.ini appropriately.
+used by editing ./etc/zopewsgi.ini appropriately.
 
 The section in the configuration file looks like this:
 
@@ -88,7 +88,7 @@ After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
 For a full description of the supported sections and directives for
-``wsgi.conf``, refer to the machine readable schema description file
+``zope.conf``, refer to the machine readable schema description file
 ``https://rawgit.com/zopefoundation/Zope/master/src/Zope2/Startup/wsgischema.xml``.
 
 
@@ -101,7 +101,7 @@ To run Zope without detaching from the console, use:
 
 .. code-block:: console
 
-   $ bin/runwsgi -v etc/zope.ini
+   $ bin/runwsgi -v etc/zopewsgi.ini
    Starting server in PID 24934.
    serving on http://127.0.0.1:8080
 
@@ -116,7 +116,7 @@ In order to enable debug mode, you can add the additional ``-d`` or
 
 .. code-block:: console
 
-   $ bin/runwsgi -dv etc/zope.ini
+   $ bin/runwsgi -dv etc/zopewsgi.ini
    Starting server in PID 55111.
    serving on http://127.0.0.1:8080
 
@@ -152,7 +152,7 @@ works with the ``runwsgi`` script. It assumes your buildout is located at
    [Service]
    Type=simple
    User=zope
-   ExecStart=/opt/zopeinstance/bin/runwsgi /opt/zopeinstance/etc/zope.ini
+   ExecStart=/opt/zopeinstance/bin/runwsgi /opt/zopeinstance/etc/zopewsgi.ini
    KillMode=control-group
    TimeoutStartSec=10
    TimeoutStopSec=10
@@ -184,7 +184,7 @@ module and console script:
 
 .. code-block:: console
 
-  $ bin/zconsole debug etc/wsgi.conf
+  $ bin/zconsole debug etc/zope.conf
   >>> app
   <Application at >
 
@@ -204,7 +204,7 @@ Again in the WSGI setup the `zconsole` module and console script can be used:
 
 .. code-block:: console
 
-  $ bin/zconsole run etc/wsgi.conf <path_to_script> <scriptarg1> ...
+  $ bin/zconsole run etc/zope.conf <path_to_script> <scriptarg1> ...
 
 
 Adding users
@@ -216,7 +216,7 @@ this using `addzope2user` as follows:
 
   $ bin/addzope2user user password
 
-The script expects to find the configuration file at ``etc/wsgi.conf``.
+The script expects to find the configuration file at ``etc/zope.conf``.
 
 
 Running Zope (plone.recipe.zope2instance install)

@@ -109,8 +109,8 @@ Migration example
 
   - Create a new Zope instance using ``mkwsgiinstance``
 
-  - Update configuration in ``zope.ini`` and ``wsgi.conf`` to match previous
-    Zope2 instance configuration.
+  - Update configuration in ``zopewsgi.ini`` and ``zope.conf`` to match
+    previous Zope2 instance configuration.
 
   - Run ``zodb-py3migrate-analyze Data.fs`` to determine if third party
     products have serialized objects into the ZODB that would cause decoding
@@ -122,7 +122,7 @@ Migration example
 - Prepare a Python 3 environment with Zope 4 (latest) and all relevant
   applications.
 
-  - Start the Application using ``runwsgi etc/zope.ini``.
+  - Start the Application using ``runwsgi etc/zopewsgi.ini``.
   
   - ``Data.fs.index`` will be discarded at the first start, you can ignore
     the error message telling that it cannot be read.
