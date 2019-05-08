@@ -127,3 +127,17 @@ class WSGIStartupTestCase(unittest.TestCase):
         self.assertEqual(
             ZPublisher.HTTPRequest.default_encoding, 'iso-8859-15')
         self.assertEqual(type(ZPublisher.HTTPRequest.default_encoding), str)
+
+    def test_pid_filename(self):
+        conf, dummy = self.load_config_text(u"""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        default = os.path.join(conf.clienthome, 'Z4.pid')
+        self.assertEqual(conf.pid_filename, default)
+
+        conf, dummy = self.load_config_text(u"""\
+            instancehome <<INSTANCE_HOME>>
+            pid-filename <<INSTANCE_HOME>>/Z5.pid
+            """)
+        expected = os.path.join(conf.instancehome, 'Z5.pid')
+        self.assertEqual(conf.pid_filename, expected)

@@ -202,6 +202,14 @@
      <metadefault>on</metadefault>
   </key>
 
+  <key name="pid-filename" datatype="existing-dirpath">
+    <description>
+      The full path to which the Zope process will write its
+      OS process id at startup.
+    </description>
+    <metadefault>$clienthome/Z4.pid</metadefault>
+  </key>
+
   <multikey name="trusted-proxy" datatype="ipaddr-or-hostname"
        attribute="trusted_proxies">
      <description>

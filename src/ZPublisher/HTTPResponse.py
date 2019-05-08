@@ -27,7 +27,6 @@ from six import class_types
 from six import reraise
 from six import text_type
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.parse import urlunparse
 
@@ -217,7 +216,14 @@ class HTTPBaseResponse(BaseResponse):
         # characters in the path part are quoted correctly. This is required
         # as we now allow non-ASCII IDs
         parsed = list(urlparse(location))
-        parsed[2] = quote(unquote(parsed[2]))
+
+        # Make a hacky guess whether the path component is already
+        # URL-encoded by checking for %. If it is, we don't touch it.
+        if '%' not in parsed[2]:
+            # The list of "safe" characters is from RFC 2396 section 2.3
+            # (unreserved characters that should not be escaped) plus
+            # section 3.3 (reserved characters in path components)
+            parsed[2] = quote(parsed[2], safe="/@!*'~();,=+$")
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)

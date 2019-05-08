@@ -175,36 +175,39 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
-            # Handle exception view. Make sure an exception view that
-            # blows up doesn't leave the user e.g. unable to log in.
-            try:
-                exc_view_created = _exc_view_created_response(
-                    exc, request, response)
-            except Exception:
-                exc_view_created = False
-
-            if isinstance(exc, Unauthorized):
-                # _unauthorized modifies the response in-place. If this hook
-                # is used, an exception view for Unauthorized has to merge
-                # the state of the response and the exception instance.
-                exc.setRealm(response.realm)
-                response._unauthorized()
-                response.setStatus(exc.getStatus())
-
+            # If the exception is transient and the request can be retried,
+            # shortcut further processing. It makes no sense to have an
+            # exception view registered for this type of exception.
             retry = False
             if isinstance(exc, TransientError) and request.supports_retry():
                 retry = True
+            else:
+                # Handle exception view. Make sure an exception view that
+                # blows up doesn't leave the user e.g. unable to log in.
+                try:
+                    exc_view_created = _exc_view_created_response(
+                        exc, request, response)
+                except Exception:
+                    exc_view_created = False
 
+                # _unauthorized modifies the response in-place. If this hook
+                # is used, an exception view for Unauthorized has to merge
+                # the state of the response and the exception instance.
+                if isinstance(exc, Unauthorized):
+                    exc.setRealm(response.realm)
+                    response._unauthorized()
+                    response.setStatus(exc.getStatus())
+
+            # Notify subscribers that this request is failing.
             notify(pubevents.PubBeforeAbort(request, exc_info, retry))
             tm.abort()
             notify(pubevents.PubFailure(request, exc_info, retry))
 
-            if retry:
-                reraise(*exc_info)
-
-            if not (exc_view_created or isinstance(exc, Unauthorized)) or \
+            if retry or \
+               not (exc_view_created or isinstance(exc, Unauthorized)) or \
                getattr(response, 'debug_exceptions', False):
                 reraise(*exc_info)
+
         finally:
             # Avoid traceback / exception reference cycle.
             del exc, exc_info
