@@ -300,7 +300,12 @@ def publish_module(environ, start_response,
         # We now have a latin-1 decoded text, which was actually utf-8 encoded.
         # To reverse this we have to encode with latin-1 first.
         path_info = path_info.encode('latin-1')
+
         # So we can now decode with the right (utf-8) encoding to get text.
+        # This encode/decode two-step with different encodings works because
+        # of the way PEP-3333 restricts the type of string allowable for
+        # request and response metadata. The allowed characters match up in
+        # both latin-1 and utf-8.
         path_info = path_info.decode('utf-8')
 
         environ['PATH_INFO'] = path_info
