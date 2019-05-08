@@ -5,6 +5,7 @@ zodbupdate_decode_dict = {
     'OFS.Application Application title': 'utf-8',
     'OFS.DTMLDocument DTMLDocument title': 'utf-8',
     'OFS.DTMLMethod DTMLMethod title': 'utf-8',
+    'OFS.DTMLMethod DTMLMethod raw': 'utf-8',
     'OFS.Folder Folder title': 'utf-8',
     'OFS.Image File title': 'utf-8',
     'OFS.Image Image title': 'utf-8',
