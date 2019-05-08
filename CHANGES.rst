@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Fixes
 +++++
 
+- Make sure new object IDs don't clash with the views lookup mechanism
+  (`#591 <https://github.com/zopefoundation/Zope/issues/591>`_)
+
 - Be more careful when guessing at encoding for document template types
 
 - Ensure a redirect path does not get URL-encoded twice
