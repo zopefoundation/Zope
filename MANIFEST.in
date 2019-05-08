@@ -1,13 +1,13 @@
-include *.txt
+include *.py
 include *.rst
-
-include *.cfg
-exclude pyvenv.cfg
+include *.txt
+include buildout.cfg
+include sources.cfg
+include versions-prod.cfg
+include versions.cfg
 
 include *.yml
 exclude *.yml
-
-exclude .*.cfg
 
 include .editorconfig
 exclude .editorconfig
@@ -16,9 +16,6 @@ include .gitignore
 exclude .gitignore
 
 exclude MANIFEST.in
-
-prune docs/.build
-prune docs/_build
 
 recursive-include docs *.bat
 recursive-include docs *.css
@@ -55,9 +52,3 @@ recursive-include src *.woff2
 recursive-include src *.xml
 recursive-include src *.zcml
 recursive-include src *.zpt
-
-include *.py
-include buildout.cfg
-include sources.cfg
-include versions-prod.cfg
-include versions.cfg
