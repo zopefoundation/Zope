@@ -283,10 +283,16 @@ def publish_module(environ, start_response,
 
     path_info = environ.get('PATH_INFO')
     if path_info and PY3:
-        # The WSGI server automatically treats the PATH_INFO as latin-1 encoded
-        # bytestrings. Typically this is a false assumption as the browser
-        # delivers utf-8 encoded PATH_INFO. We, therefore, need to encode it
-        # again with latin-1 to get a utf-8 encoded bytestring.
+        # BIG Comment, see discussion at
+        # https://github.com/zopefoundation/Zope/issues/575
+        #
+        # The WSGI server automatically treats headers, including the
+        # PATH_INFO, as latin-1 encoded bytestrings, according to PEP-3333.
+        # Typically this is a false assumption nowadays as the browser delivers
+        # utf-8 url-encoded PATH_INFO, like '/t%C3%A4st', resulting in '/tÃ¤st'
+        # after latin-1 decode by the wsgi-server at this point. We, therefore,
+        # need to encode it again with latin-1 to get a utf-8 encoded
+        # bytestring.
         path_info = path_info.encode('latin-1')
         # But in Python 3 we need text here, so we decode the bytestring.
         path_info = path_info.decode('utf-8')
