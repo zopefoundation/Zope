@@ -38,10 +38,10 @@ class ZopeFinder(object):
 
     def get_zope_conf(self):
         # the default config file path is assumed to live in
-        # $instance_home/etc/wsgi.conf, and the console scripts that use this
+        # $instance_home/etc/zope.conf, and the console scripts that use this
         # are assumed to live in $instance_home/bin; override if the
         # environ contains "ZOPE_CONF".
         ihome = os.path.dirname(os.path.abspath(os.path.dirname(self.cmd)))
-        default_config_file = os.path.join(ihome, 'etc', 'wsgi.conf')
+        default_config_file = os.path.join(ihome, 'etc', 'zope.conf')
         zope_conf = os.environ.get('ZOPE_CONF', default_config_file)
         return zope_conf

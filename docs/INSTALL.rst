@@ -152,7 +152,7 @@ include the WSGI server software egg in the ``eggs`` specification:
         gunicorn
     user = admin:adminpassword
     http-address = 8080
-    wsgi = /path/to/wsgi.ini
+    wsgi = /path/to/zope.ini
 
 On Python 2 you can also forego the use of WSGI and create an old-fashioned
 ZServer-based installation by pulling in the ``ZServer`` egg and setting

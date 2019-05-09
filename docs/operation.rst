@@ -67,7 +67,7 @@ an existing account with non-admin privileges.
 Configuring Zope
 ----------------
 
-Your instance's configuration is defined in its ``etc/wsgi.conf``
+Your instance's configuration is defined in its ``etc/zope.conf``
 and ``etc/zope.ini`` configuration files.
 
 When starting Zope, if you see errors indicating that an address is in
@@ -88,7 +88,7 @@ After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
 For a full description of the supported sections and directives for
-``wsgi.conf``, refer to the machine readable schema description file
+``zope.conf``, refer to the machine readable schema description file
 ``https://rawgit.com/zopefoundation/Zope/master/src/Zope2/Startup/wsgischema.xml``.
 
 
@@ -184,7 +184,7 @@ module and console script:
 
 .. code-block:: console
 
-  $ bin/zconsole debug etc/wsgi.conf
+  $ bin/zconsole debug etc/zope.conf
   >>> app
   <Application at >
 
@@ -204,7 +204,7 @@ Again in the WSGI setup the `zconsole` module and console script can be used:
 
 .. code-block:: console
 
-  $ bin/zconsole run etc/wsgi.conf <path_to_script> <scriptarg1> ...
+  $ bin/zconsole run etc/zope.conf <path_to_script> <scriptarg1> ...
 
 
 Adding users
@@ -216,7 +216,7 @@ this using `addzope2user` as follows:
 
   $ bin/addzope2user user password
 
-The script expects to find the configuration file at ``etc/wsgi.conf``.
+The script expects to find the configuration file at ``etc/zope.conf``.
 
 
 Running Zope (plone.recipe.zope2instance install)
