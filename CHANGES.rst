@@ -47,6 +47,9 @@ Fixes
 Features
 ++++++++
 
+- Add a configuration flag to show bookmarkable URLs in the ZMI
+  (`#580 <https://github.com/zopefoundation/Zope/issues/580>`_)
+
 - Add a flag for suppressing object events during file import
   (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
 
@@ -64,6 +67,9 @@ Features
 
 Other changes
 +++++++++++++
+
+- Changed the WSGI configuration template so those annoying waitress queue
+  messages only go into the event log, but not onto the console.
 
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
   ``zope.ini`` to match existing documentation for Zope configurations.

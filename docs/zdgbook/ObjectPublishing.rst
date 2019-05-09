@@ -918,10 +918,43 @@ Record marshalling provides you with the ability to create complex
 forms. However, it is a good idea to keep your web interfaces as
 simple as possible.
 
-Please note, that records do not work with input fields of type radio as you
-might expect, as all radio fields with the same name are considered as one
-group - even if they are in different records. That means, activating one radio
-button will also deactivate all other radio buttons from the other records.
+.. note::
+
+  Records do not work with input fields of type radio as you might
+  expect, as all radio fields with the same name are considered as one
+  group - even if they are in different records. That means, activating
+  one radio button will also deactivate all other radio buttons from
+  the other records.
+
+.. attention::
+
+    When using records please note that there is a known issue when
+    you use a form, where checkboxes are used in the first "column".
+
+    As browsers leave out empty checkboxes when sending a request, the
+    **object publisher** may not be able to match checked checkboxes
+    with the correct record.
+
+    This behaviour cannot not be fixed.
+
+    If you want a checkbox as the first form field, you can work
+    around the problem by using a hidden input field.
+
+    **Code example with applied workaround**::
+
+      <form action="records_parse">
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="1" checked="checked" />
+          <input type="text" name="index.name:records" value="index 1" />
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="2" />
+          <input type="text" name="index.name:records" value="index 2" />
+          <p>
+          <input type="submit" name="submit" value="send" />
+      </form>
+
 
 Exceptions
 ----------
