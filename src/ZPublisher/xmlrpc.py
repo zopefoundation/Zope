@@ -117,7 +117,7 @@ def is_xmlrpc_response(response):
 class Response(object):
     """Customized Response that handles XML-RPC-specific details.
 
-    We override setBody to marhsall Python objects into XML-RPC. We
+    We override setBody to marshall Python objects into XML-RPC. We
     also override exception to convert errors to XML-RPC faults.
 
     If these methods stop getting called, make sure that ZPublisher is
@@ -179,7 +179,7 @@ class Response(object):
         else:
             t, v, tb = sys.exc_info()
 
-        # Don't mask 404 respnses, as some XML-RPC libraries rely on the HTTP
+        # Don't mask 404 responses, as some XML-RPC libraries rely on the HTTP
         # mechanisms for detecting when authentication is required. Fixes Zope
         # Collector issue 525.
         if issubclass(t, Unauthorized):
