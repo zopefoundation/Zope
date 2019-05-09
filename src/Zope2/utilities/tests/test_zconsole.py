@@ -88,6 +88,6 @@ class ZConsoleTestCase(unittest.TestCase):
             sys.argv = self.stored_sys_argv
             sys.stdout = self.stored_stdout
         expected = (
-            "42\n['run', '{}', '{}', 'bar', 'baz']\nPropertyManager\n").format(
-                self.zopeconf, script)
+            r"42\n['run', '{}', '{}', 'bar', 'baz']"
+            r"\nPropertyManager\n").format(self.zopeconf, script)
         self.assertEqual(expected, got)
