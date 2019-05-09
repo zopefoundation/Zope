@@ -1,7 +1,7 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
 environment:
-  WIN_SEP: '\'
+  WIN_COV: ''
   matrix:
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
@@ -31,6 +31,3 @@ build: off
 
 test_script:
   - "tox.exe"
-
-after_test:
-  - coveralls
