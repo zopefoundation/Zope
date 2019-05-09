@@ -946,8 +946,8 @@ browser, including an appropriate HTTP status code.
 .. attention::
 
     When you create a custom exception, please make sure not to inherit
-    from **BaseException**, but e.g. from **Exception**, otherwise you'll
-    run into an waitress exception.
+    from **BaseException**, but from **Exception** or one of its child
+    classes, otherwise you'll run into an exception in waitress.
 
 .. note::
 
@@ -956,14 +956,14 @@ browser, including an appropriate HTTP status code.
 
     There are two ways to catch and render an exception:
 
-    - create a ``standard_error_message``, which can be a **DTML Method**, **DTML Document**, **Python Script** or **Page Template**
+    - create a ``standard_error_message``, which can be a **DTML Method**, **DTML Document**, **Script (Python)** or **Page Template**
     - create an ``exception view``, see blog post `Catching and rendering exceptions <https://blog.gocept.com/2017/10/24/zope4-errorhandling/>`_
 
 If the exception is not handled, it travels up the WSGI stack.
 
-What happens then depends entirely on the WSGI middleware. By default
-Zope comes with **waitress** and by default **waitress** returns an error
-message as follows::
+What happens then depends entirely on the possibly installed WSGI
+middleware or the WSGI server. By default Zope uses **waitress**
+and by default **waitress** returns an error message as follows::
 
   Internal Server Error
 
