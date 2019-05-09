@@ -1,6 +1,6 @@
 [app:zope]
 use = egg:Zope#main
-zope_conf = %(here)s/wsgi.conf
+zope_conf = %(here)s/zope.conf
 
 [server:main]
 use = egg:waitress#main

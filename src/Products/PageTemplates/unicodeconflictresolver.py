@@ -48,7 +48,7 @@ DefaultUnicodeEncodingConflictResolver = \
 class Z2UnicodeEncodingConflictResolver(object):
     """ This resolver tries to lookup the encoding from the
         'default-zpublisher-encoding' setting in the Zope configuration
-        file and defaults to sys.getdefaultencoding().
+        file and defaults to the old ZMI encoding iso-8859-15.
     """
 
     def __init__(self, mode='strict'):

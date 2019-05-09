@@ -1214,7 +1214,7 @@ File system caching is activated by setting an environment variable
 named ``CHAMELEON_CACHE`` to the path of a folder on the filesystem
 where Chameleon can write its compiled template representation.
 
-Look for or add a section named ``environment`` in ``etc/wsgi.conf``
+Look for or add a section named ``environment`` in ``etc/zope.conf``
 and add a suitable filesystem path, for example::
 
   <environment>
