@@ -535,7 +535,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_getBookmarkableURLs(self):
         saved_state = getattr(getConfiguration(),
                               'zmi_bookmarkable_urls',
-                              False)
+                              True)
         om = self._makeOne()
 
         # Configuration flag OFF

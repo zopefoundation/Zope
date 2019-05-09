@@ -948,7 +948,7 @@ class ObjectManager(
     @security.protected(view_management_screens)
     def getBookmarkableURLs(self):
         """ Helper method to expose a configuration flag """
-        return getattr(CONFIG, 'zmi_bookmarkable_urls', False)
+        return getattr(CONFIG, 'zmi_bookmarkable_urls', True)
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)

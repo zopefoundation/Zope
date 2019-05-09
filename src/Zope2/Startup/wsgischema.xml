@@ -203,15 +203,15 @@
   </key>
 
   <key name="zmi-bookmarkable-urls" datatype="boolean"
-       default="off">
+       default="on">
      <description>
      Set this directive to 'on' to cause Zope to show the ZMI right hand
      frame's URL in the browser navigation bar as opposed to the static
-     '/manage'. The default is 'off' to smooth the transition from Zope 2,
+     '/manage'. The default is 'on'. To restore the behavior of Zope 2
      where the URL was always static unless you opened the right-hand frame in
-     its own browser window.
+     its own browser window, set this to off.
      </description>
-     <metadefault>off</metadefault>
+     <metadefault>on</metadefault>
   </key>
 
   <key name="pid-filename" datatype="existing-dirpath">
