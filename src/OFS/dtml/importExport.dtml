@@ -66,6 +66,10 @@
     that you are importing. If you wish the imported objects to retain
     their existing ownership information, select "retain existing
     ownership information".
+    <br />
+    Suppressing events during an import will prevent e.g. the addition of
+    records for imported objects to a Catalog. Only select this if you are
+    aware of the consequences.
   </p>
 
   <form action="manage_importObject" method="post" class="zmi-import">
@@ -99,6 +103,22 @@
                  value="0" id="owner_retain" />
           <label for="owner_retain" class="form-check-label">
             Retain existing ownership information
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="suppress_events" class="col-sm-3 col-md-2">
+        Suppress events
+      </label>
+      <div class="col-sm-9 col-md-10" id="Ownership">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input"
+                 name="suppress_events:int"
+                 value="1" id="suppress_events" />
+          <label for="suppress_events" class="form-check-label">
+            Suppress events during import. Dangerous, see comment above.
           </label>
         </div>
       </div>
