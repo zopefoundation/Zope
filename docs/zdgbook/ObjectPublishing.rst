@@ -984,26 +984,18 @@ When Zope receives a request it begins a transaction. Then it begins
 the process of traversal. Zope automatically commits the transaction
 after the published object is found and called. So normally each web
 request constitutes one transaction which Zope takes care of for you.
-See Chapter 4. for more information on transactions.
 
 If an unhandled exception is raised during the publishing process,
-Zope aborts the transaction. As detailed in Chapter
-4. Zope handles 'ConflictErrors' by re-trying the request up to three
-times. This is done with the 'zpublisher_exception_hook'.
+Zope aborts the transaction.
+When **ConflictErrors** occur, Zope retries the request up to three
+times by default. You can change that number in the **zope.conf** by
+adding a ``max_conflict_retries`` directive.
 
-In addition, the error hook is used to return an error message to the
-user. In Zope the error hook creates error messages by calling the
-'raise_standardErrorMessage' method. This method is implemented by
-'SimpleItem.Item'. It acquires the 'standard_error_message' DTML
-object, and calls it with information about the exception.
+.. note::
 
-You will almost never need to override the
-'raise_standardErrorMessage' method in your own classes, since it is
-only needed to handle errors that are raised by other components. For
-most errors, you can simply catch the exceptions normally in your code
-and log error messages as needed. If you need to, you should be able
-to customize application error reporting by overriding the
-'standard_error_message' DTML object in your application.
+  For further information on transactions please refer to chapter 6
+  `ZODB Persistent Components <https://zope.readthedocs.io/en/latest/zdgbook/ZODBPersistentComponents.html>`_.
+
 
 Manual Access to Request and Response
 -------------------------------------
