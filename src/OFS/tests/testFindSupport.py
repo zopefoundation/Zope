@@ -83,9 +83,14 @@ class TestFindSupport(unittest.TestCase):
         encoded = b'\xf6'
         self.base['bytes'] = DummyItem('bytes', text=encoded)
 
+        def SearchableText():
+            return encoded
+        st_item = DummyItem('text')
+        st_item.SearchableText = SearchableText
+        self.base['text'] = st_item
         try:
             self.base.ZopeFind(self.base, obj_searchterm='anything')
-        except UnicodeDecodeError:
+        except UnicodeDecodeError:  # pragma: no cover
             self.fail('ZopeFind in undecodable data raises UnicodeDecodeError')
 
     def test_find_text_tainted(self):
