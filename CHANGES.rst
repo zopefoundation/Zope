@@ -47,6 +47,9 @@ Fixes
 Features
 ++++++++
 
+- Add a flag for suppressing object events during file import
+  (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
+
 - Add a Configuration details tab to the Control_Panel
 
 - Resurrect the Interfaces ZMI tab
@@ -61,6 +64,10 @@ Features
 
 Other changes
 +++++++++++++
+
+- Change naming for the generated WSGI configurations to ``zope.conf`` and
+  ``zope.ini`` to match existing documentation for Zope configurations.
+  (`#571 <https://github.com/zopefoundation/Zope/issues/571>`_)
 
 - Make Zope write a PID file again under WSGI.
   This makes interaction with sysadmin tools easier.

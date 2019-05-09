@@ -650,7 +650,8 @@ class ObjectManager(
     manage_importExportForm = DTMLFile('dtml/importExport', globals())
 
     @security.protected(import_export_objects)
-    def manage_importObject(self, file, REQUEST=None, set_owner=1):
+    def manage_importObject(self, file, REQUEST=None, set_owner=1,
+                            suppress_events=False):
         """Import an object from a file"""
         dirname, file = os.path.split(file)
         if dirname:
@@ -664,7 +665,8 @@ class ObjectManager(
             raise BadRequest('File does not exist: %s' % escape(file, True))
 
         imported = self._importObjectFromFile(
-            filepath, verify=bool(REQUEST), set_owner=set_owner)
+            filepath, verify=bool(REQUEST), set_owner=set_owner,
+            suppress_events=suppress_events)
         id = imported.id
         if getattr(id, '__func__', None) is not None:
             id = id()
@@ -678,7 +680,8 @@ class ObjectManager(
                 update_menu=1
             )
 
-    def _importObjectFromFile(self, filepath, verify=1, set_owner=1):
+    def _importObjectFromFile(self, filepath, verify=1, set_owner=1,
+                              suppress_events=False):
         # locate a valid connection
         connection = self._p_jar
         obj = self
@@ -692,7 +695,8 @@ class ObjectManager(
         id = ob.id
         if getattr(id, '__func__', None) is not None:
             id = id()
-        self._setObject(id, ob, set_owner=set_owner)
+        self._setObject(id, ob, set_owner=set_owner,
+                        suppress_events=suppress_events)
 
         # try to make ownership implicit if possible in the context
         # that the object was imported into.

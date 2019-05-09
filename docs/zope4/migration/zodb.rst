@@ -109,8 +109,8 @@ Migration example
 
   - Create a new Zope instance using ``mkwsgiinstance``
 
-  - Update configuration in ``zope.ini`` and ``wsgi.conf`` to match previous
-    Zope2 instance configuration.
+  - Update configuration in ``zope.ini`` and ``zope.conf`` to match
+    previous Zope2 instance configuration.
 
   - Run ``zodb-py3migrate-analyze Data.fs`` to determine if third party
     products have serialized objects into the ZODB that would cause decoding
