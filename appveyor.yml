@@ -1,7 +1,7 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
 environment:
-  WIN_COV: ''
+  WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
