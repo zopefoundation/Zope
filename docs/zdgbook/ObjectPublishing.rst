@@ -933,7 +933,7 @@ match it with a set of predifined exceptions coming from the
 
 If there is a match, the exception gets upgraded to the matching
 **zException**, which then results in a proper response returned to the
-browser, including a HTTP status code.
+browser, including an appropriate HTTP status code.
 
 .. note::
 
