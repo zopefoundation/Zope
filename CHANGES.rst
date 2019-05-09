@@ -65,6 +65,8 @@ Features
 Other changes
 +++++++++++++
 
+- Update ZODB migration documentation.
+
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
   ``zope.ini`` to match existing documentation for Zope configurations.
   (`#571 <https://github.com/zopefoundation/Zope/issues/571>`_)

@@ -2,6 +2,7 @@
 
 Migrating the ZODB
 ==================
+
 This document describes the process of migrating a ZODB created with Zope 2
 into a Zope 4 environment.
 
@@ -16,14 +17,18 @@ into a Zope 4 environment.
    :local:
 
 
-Migrating to Zope 4 under Python 2
-----------------------------------
-There are no specific ZODB-related migration steps to take when moving to a
-Python 2-based Zope 4 environment, but the warning shown above still applies.
+Python 2
+
+    There are no specific ZODB-related migration steps to take when moving to a
+    Python 2-based Zope 4 environment, but the warning shown above still applies.
+
+Python 3
+
+    Due to a string/bytes/unicode incompatibilities, additional steps are needed.
 
 
-Migrating to Zope 4 under Python 3
-----------------------------------
+Migrating the ZODB from Python 2 to 3
+-------------------------------------
 
 .. highlight:: python
 
@@ -44,12 +49,16 @@ purpose because ``str`` has a different meaning for the two
 Python versions: Under Python 2, a ``str`` is a container for
 characters with an arbitrary encoding (aka ``bytes​``). Python 3
 knows ``str`` as a text datatype which was called ``unicode``
-in Python 2. Trying to load a ``str`` object in Python 3
+in Python 2.
+
+Trying to load a ``str`` object in Python 3
 which actually contains binary data will fail. It has to be
 bytes, but ``bytes`` is an alias for ``str`` in Python 2.
 This means Python 2 replaces ``bytes`` with ``str``, making it
 impossible to give Python 3 the class it expects for binary data.
 A Python 2 ``str`` with any non-ascii characters will break, too.
+
+For more details, read the `Saltlab-Sprint notes from Harald Frisnegger <https://github.com/frisi/coredev52multipy/blob/3e440d6bd918adba3e6f2557f7281ce448a9c3cc/README.rst>`_
 
 
 The string solution
@@ -104,30 +113,42 @@ Migration example
 
 - Test that converted code works as expected
 
-- Prepare a Python 2 environment containing Zope 4 (latest), all relevant
-  applications for your ZODB as well as ``zodbupdate`` and ``zodb.py3migrate``
+- Prepare a Python 3 environment, containing:
+
+  - Zope 4 (latest),
+  - all relevant applications and addons for your ZODB,
+  - `zodbupdate <https://pypi.org/project/zodbupdate/>`_,
+  - `zodbverify <https://pypi.org/project/zodbverify/>`_,
+
+- Prepare a Zope configuration
 
   - Create a new Zope instance using ``mkwsgiinstance``
 
   - Update configuration in ``zope.ini`` and ``zope.conf`` to match
     previous Zope2 instance configuration.
 
-  - Run ``zodb-py3migrate-analyze Data.fs`` to determine if third party
-    products have serialized objects into the ZODB that would cause decoding
-    errors in Python 3.
-    Note: This functionality might be rolled into zodbupdate, see https://github.com/zopefoundation/zodbupdate/issues/10.
+- Migrate the database:
 
-  - Run ``zodbupdate --pack --convert-py3 --file Data.fs`` to migrate the ZODB.
+  - Make sure no zope instance is running.
 
-- Prepare a Python 3 environment with Zope 4 (latest) and all relevant
-  applications.
+  - Dry-run the migration with
+    ``zodbupdate --pack --convert-py3 --dry-run path/to/Data.fs``.
+    This may take a while.
+
+  - If no errors are shown, start the in-place migration of the ZODB
+    ``zodbupdate --pack --convert-py3 path/to/Data.fs``.
+    This may take a while.
+
+- Check the migrated database:
+
+  - Verify th ZODB by iterative loading every pickle using
+    ``zodbverify --zodbfile path/to/Data.fs``.
 
   - Start the Application using ``runwsgi etc/zope.ini``.
-  
-  - ``Data.fs.index`` will be discarded at the first start, you can ignore
+    ``Data.fs.index`` will be discarded at the first start, you can ignore
     the error message telling that it cannot be read.
 
-  - Delete and recreate all ZCatalog/Index objects.
+  - If any ZCatalog is in the ZODB, do a clear and rebuild for all of them.
 
   - Verify that the Application works as expected.
 
@@ -152,7 +173,7 @@ Further reading
 ~~~~~~~~~~~~~~~
 
 This guide is adapted from several sources that contain further information
-and examples.
+and examples. Be aware those sources may be outdated.
 
 * https://blog.gocept.com/2018/06/07/migrate-a-zope-zodb-data-fs-to-python-3/
 * https://github.com/frisi/coredev52multipy/tree/zodbupdate
