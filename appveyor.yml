@@ -1,6 +1,7 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
 environment:
+  WIN_SEP: '\'
   matrix:
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
