@@ -125,6 +125,10 @@ def checkValidId(self, id, allow_dup=0):
         raise BadRequest(
             'The id "%s" is invalid because it '
             'ends with two underscores.' % id)
+    if id.startswith('@@') or id.startswith('++'):
+        raise BadRequest(
+            'The id "%s" is invalid because it starts with characters '
+            'reserved for Zope views lookup.' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
         if obj is not None:
