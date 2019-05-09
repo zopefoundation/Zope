@@ -60,7 +60,7 @@ Other changes
 +++++++++++++
 
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
-  ``zopewsgi.ini`` to match existing documentation for Zope configurations.
+  ``zope.ini`` to match existing documentation for Zope configurations.
   (`#571 <https://github.com/zopefoundation/Zope/issues/571>`_)
 
 - Make Zope write a PID file again under WSGI.

@@ -68,12 +68,12 @@ Configuring Zope
 ----------------
 
 Your instance's configuration is defined in its ``etc/zope.conf``
-and ``etc/zopewsgi.ini`` configuration files.
+and ``etc/zope.ini`` configuration files.
 
 When starting Zope, if you see errors indicating that an address is in
 use, then you may have to change the ports Zope uses for HTTP.
 The default HTTP port used by Zope is 8080. You can change the port
-used by editing ./etc/zopewsgi.ini appropriately.
+used by editing ./etc/zope.ini appropriately.
 
 The section in the configuration file looks like this:
 
@@ -101,7 +101,7 @@ To run Zope without detaching from the console, use:
 
 .. code-block:: console
 
-   $ bin/runwsgi -v etc/zopewsgi.ini
+   $ bin/runwsgi -v etc/zope.ini
    Starting server in PID 24934.
    serving on http://127.0.0.1:8080
 
@@ -116,7 +116,7 @@ In order to enable debug mode, you can add the additional ``-d`` or
 
 .. code-block:: console
 
-   $ bin/runwsgi -dv etc/zopewsgi.ini
+   $ bin/runwsgi -dv etc/zope.ini
    Starting server in PID 55111.
    serving on http://127.0.0.1:8080
 
@@ -152,7 +152,7 @@ works with the ``runwsgi`` script. It assumes your buildout is located at
    [Service]
    Type=simple
    User=zope
-   ExecStart=/opt/zopeinstance/bin/runwsgi /opt/zopeinstance/etc/zopewsgi.ini
+   ExecStart=/opt/zopeinstance/bin/runwsgi /opt/zopeinstance/etc/zope.ini
    KillMode=control-group
    TimeoutStartSec=10
    TimeoutStopSec=10
