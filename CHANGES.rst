@@ -44,6 +44,9 @@ Fixes
 Features
 ++++++++
 
+- Add a flag for suppressing object events during file import
+  (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
+
 - Add a Configuration details tab to the Control_Panel
 
 - Resurrect the Interfaces ZMI tab
