@@ -47,6 +47,9 @@ Fixes
 Features
 ++++++++
 
+- Add a configuration flag to show bookmarkable URLs in the ZMI
+  (`#580 <https://github.com/zopefoundation/Zope/issues/580>`_)
+
 - Add a flag for suppressing object events during file import
   (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
 
