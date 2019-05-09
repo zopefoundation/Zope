@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
@@ -175,36 +176,39 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
-            # Handle exception view. Make sure an exception view that
-            # blows up doesn't leave the user e.g. unable to log in.
-            try:
-                exc_view_created = _exc_view_created_response(
-                    exc, request, response)
-            except Exception:
-                exc_view_created = False
-
-            if isinstance(exc, Unauthorized):
-                # _unauthorized modifies the response in-place. If this hook
-                # is used, an exception view for Unauthorized has to merge
-                # the state of the response and the exception instance.
-                exc.setRealm(response.realm)
-                response._unauthorized()
-                response.setStatus(exc.getStatus())
-
+            # If the exception is transient and the request can be retried,
+            # shortcut further processing. It makes no sense to have an
+            # exception view registered for this type of exception.
             retry = False
             if isinstance(exc, TransientError) and request.supports_retry():
                 retry = True
+            else:
+                # Handle exception view. Make sure an exception view that
+                # blows up doesn't leave the user e.g. unable to log in.
+                try:
+                    exc_view_created = _exc_view_created_response(
+                        exc, request, response)
+                except Exception:
+                    exc_view_created = False
 
+                # _unauthorized modifies the response in-place. If this hook
+                # is used, an exception view for Unauthorized has to merge
+                # the state of the response and the exception instance.
+                if isinstance(exc, Unauthorized):
+                    exc.setRealm(response.realm)
+                    response._unauthorized()
+                    response.setStatus(exc.getStatus())
+
+            # Notify subscribers that this request is failing.
             notify(pubevents.PubBeforeAbort(request, exc_info, retry))
             tm.abort()
             notify(pubevents.PubFailure(request, exc_info, retry))
 
-            if retry:
-                reraise(*exc_info)
-
-            if not (exc_view_created or isinstance(exc, Unauthorized)) or \
+            if retry or \
+               not (exc_view_created or isinstance(exc, Unauthorized)) or \
                getattr(response, 'debug_exceptions', False):
                 reraise(*exc_info)
+
         finally:
             # Avoid traceback / exception reference cycle.
             del exc, exc_info
@@ -280,12 +284,28 @@ def publish_module(environ, start_response,
 
     path_info = environ.get('PATH_INFO')
     if path_info and PY3:
-        # The WSGI server automatically treats the PATH_INFO as latin-1 encoded
-        # bytestrings. Typically this is a false assumption as the browser
-        # delivers utf-8 encoded PATH_INFO. We, therefore, need to encode it
-        # again with latin-1 to get a utf-8 encoded bytestring.
+        # BIG Comment, see discussion at
+        # https://github.com/zopefoundation/Zope/issues/575
+        #
+        # The WSGI server automatically treats headers, including the
+        # PATH_INFO, as latin-1 encoded bytestrings, according to PEP-3333. As
+        # this causes headache I try to show the steps a URI takes in WebOb,
+        # which is similar in other wsgi server implementations.
+        # UTF-8 URL-encoded object-id 'täst':
+        #   http://localhost/t%C3%A4st
+        # unquote('/t%C3%A4st'.decode('ascii')) results in utf-8 encoded bytes
+        #   b'/t\xc3\xa4st'
+        # b'/t\xc3\xa4st'.decode('latin-1') latin-1 decoding due to PEP-3333
+        #   '/tÃ¤st'
+        # We now have a latin-1 decoded text, which was actually utf-8 encoded.
+        # To reverse this we have to encode with latin-1 first.
         path_info = path_info.encode('latin-1')
-        # But in Python 3 we need text here, so we decode the bytestring.
+
+        # So we can now decode with the right (utf-8) encoding to get text.
+        # This encode/decode two-step with different encodings works because
+        # of the way PEP-3333 restricts the type of string allowable for
+        # request and response metadata. The allowed characters match up in
+        # both latin-1 and utf-8.
         path_info = path_info.decode('utf-8')
 
         environ['PATH_INFO'] = path_info

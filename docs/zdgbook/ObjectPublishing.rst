@@ -918,50 +918,97 @@ Record marshalling provides you with the ability to create complex
 forms. However, it is a good idea to keep your web interfaces as
 simple as possible.
 
-Please note, that records do not work with input fields of type radio as you
-might expect, as all radio fields with the same name are considered as one
-group - even if they are in different records. That means, activating one radio
-button will also deactivate all other radio buttons from the other records.
+.. note::
+
+  Records do not work with input fields of type radio as you might
+  expect, as all radio fields with the same name are considered as one
+  group - even if they are in different records. That means, activating
+  one radio button will also deactivate all other radio buttons from
+  the other records.
+
+.. attention::
+
+    When using records please note that there is a known issue when
+    you use a form, where checkboxes are used in the first "column".
+
+    As browsers leave out empty checkboxes when sending a request, the
+    **object publisher** may not be able to match checked checkboxes
+    with the correct record.
+
+    This behaviour cannot not be fixed.
+
+    If you want a checkbox as the first form field, you can work
+    around the problem by using a hidden input field.
+
+    **Code example with applied workaround**::
+
+      <form action="records_parse">
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="1" checked="checked" />
+          <input type="text" name="index.name:records" value="index 1" />
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="2" />
+          <input type="text" name="index.name:records" value="index 2" />
+          <p>
+          <input type="submit" name="submit" value="send" />
+      </form>
+
 
 Exceptions
 ----------
 
-Unhandled exceptions are caught by the object publisher and are
-translated automatically to nicely formatted HTTP output.
+When the object publisher catches an unhandled exception, it tries to
+match it with a set of predifined exceptions coming from the
+**zExceptions** package, such as **HTTPNoContent**, **HTTPNotFound**,
+**HTTPUnauthorized**.
 
-When an exception is raised, the exception type is mapped to an HTTP
-code by matching the value of the exception type with a list of
-standard HTTP status names. Any exception types that do not match
-standard HTTP status names are mapped to "Internal Error" (500). The
-standard HTTP status names are: "OK", "Created", "Accepted", "No
-Content", "Multiple Choices", "Redirect", "Moved Permanently", "Moved
-Temporarily", "Not Modified", "Bad Request", "Unauthorized",
-"Forbidden", "Not Found", "Internal Error", "Not Implemented", "Bad
-Gateway", and "Service Unavailable". Variations on these names with
-different cases and without spaces are also valid.
+If there is a match, the exception gets upgraded to the matching
+**zException**, which then results in a proper response returned to the
+browser, including an appropriate HTTP status code.
 
-An attempt is made to use the exception value as the body of the
-returned response. The object publisher will examine the exception
-value. If the value is a string that contains some white space, then
-it will be used as the body of the return error message. If it
-appears to be HTML, the error content type will be set to 'text/html',
-otherwise, it will be set to 'text/plain'. If the exception value is
-not a string containing white space, then the object publisher will
-generate its own error message.
+.. note::
 
-There are two exceptions to the above rule:
+     For a full list of exceptions please directly refer to the
+     implemented exception classes within the
+     `zExceptions package
+     <https://github.com/zopefoundation/zExceptions/blob/master/src/zExceptions/__init__.py>`_.
 
-1. If the exception type is: "Redirect", "Multiple Choices" "Moved
-   Permanently", "Moved Temporarily", or "Not Modified", and the
-   exception value is an absolute URI, then no body will be provided
-   and a 'Location' header will be included in the output with the
-   given URI.
 
-2. If the exception type is "No Content", then no body will be
-   returned.
+.. attention::
 
-When a body is returned, traceback information will be included in a
-comment in the output.
+    When you create a custom exception, please make sure not to inherit
+    from **BaseException**, but from **Exception** or one of its child
+    classes, otherwise you'll run into an exception in waitress.
+
+.. note::
+
+    Beginning with Zope 4, a standard installation no longer comes with
+    a ``standard_error_message``.
+
+    There are two ways to catch and render an exception:
+
+    - create a ``standard_error_message``, which can be a **DTML Method**, **DTML Document**, **Script (Python)** or **Page Template**
+    - create an ``exception view``, see blog post `Catching and rendering exceptions <https://blog.gocept.com/2017/10/24/zope4-errorhandling/>`_
+
+If the exception is not handled, it travels up the WSGI stack.
+
+What happens then depends entirely on the possibly installed WSGI
+middleware or the WSGI server. By default Zope uses **waitress**
+and by default **waitress** returns an error message as follows::
+
+  Internal Server Error
+
+  The server encountered an unexpected internal server error
+
+  (generated by waitress)
+
+.. note:: **Further information:**
+
+    `Debugging Zope applications under WSGI
+    <https://zope.readthedocs.io/en/latest/wsgi.html#debugging-zope-applications-under-wsgi>`_
+
 
 Exceptions and Transactions
 ---------------------------

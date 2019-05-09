@@ -67,7 +67,7 @@ class WSGIStartupTestCase(unittest.TestCase):
     def test_load_config_template(self):
         import Zope2.utilities
         base = os.path.dirname(Zope2.utilities.__file__)
-        fn = os.path.join(base, "skel", "etc", "wsgi.conf.in")
+        fn = os.path.join(base, "skel", "etc", "zope.conf.in")
         with codecs.open(fn, encoding='utf-8') as f:
             text = f.read()
         self.load_config_text(text)
