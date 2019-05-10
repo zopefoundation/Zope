@@ -77,6 +77,22 @@ class TestFindSupport(unittest.TestCase):
         self.assertEqual(len(res), 2)
         self.assertEqual(set([x[0] for x in res]), set(['text', 'bytes']))
 
+    @unittest.skipIf(six.PY2, 'Not applicable under Python 2')
+    def test_find_text_nondecodable(self):
+        # Make sure ZopeFind does not crash searching text in nondecodable data
+        encoded = b'\xf6'
+        self.base['bytes'] = DummyItem('bytes', text=encoded)
+
+        def SearchableText():
+            return encoded
+        st_item = DummyItem('text')
+        st_item.SearchableText = SearchableText
+        self.base['text'] = st_item
+        try:
+            self.base.ZopeFind(self.base, obj_searchterm='anything')
+        except UnicodeDecodeError:  # pragma: no cover
+            self.fail('ZopeFind in undecodable data raises UnicodeDecodeError')
+
     def test_find_text_tainted(self):
         # Make sure ZopeFind can handle "Tainted" text for searches
         # Tainted strings are created when the publisher sees what appears
