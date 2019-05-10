@@ -70,6 +70,9 @@ Other changes
 
 - Update ZODB migration documentation.
 
+- Changed the WSGI configuration template so those annoying waitress queue
+  messages only go into the event log, but not onto the console.
+
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
   ``zope.ini`` to match existing documentation for Zope configurations.
   (`#571 <https://github.com/zopefoundation/Zope/issues/571>`_)
