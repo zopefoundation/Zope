@@ -3,7 +3,6 @@
 environment:
   WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
-    fast_finish: true
     - PROFILE: py37
       PYTHON_VERSION: 3.7"
       TOXENV: "py37"
@@ -31,6 +30,9 @@ install:
 build: off
 
 max_jobs: 2
+
+matrix:
+  fast_finish: true
 
 test_script:
   - "tox.exe"
