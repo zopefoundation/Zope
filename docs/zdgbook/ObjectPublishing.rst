@@ -10,10 +10,10 @@ Object Publishing
 .. note::
 
   Previously, this document contained information about access by
-  FTP and WebDAV. As those functionalities were provided by the now
-  removed ZServer, the related information also has been removed.
+  **FTP** and **WebDAV**. As those functionalities were provided by the
+  now removed **ZServer**, the related information also has been removed.
 
-  Please directly refer to the ZServer package for further
+  Please directly refer to the **ZServer** package for further
   information.
 
 
@@ -1020,7 +1020,7 @@ request constitutes one transaction which Zope takes care of for you.
 
 If an unhandled exception is raised during the publishing process,
 Zope aborts the transaction.
-When **ConflictErrors** occur, Zope retries the request up to three
+When a **ConflictError** occurs, Zope retries the request up to three
 times by default. You can change that number in the **zope.conf** by
 adding a ``max_conflict_retries`` directive.
 
@@ -1090,152 +1090,6 @@ the web.
 
 Other Network Protocols
 =======================
-
-FTP
----
-
-Zope comes with an FTP server which allows users to treat the Zope
-object hierarchy like a file server. As covered in Chapter 3, Zope
-comes with base classes ('SimpleItem' and 'ObjectManager') which
-provide simple FTP support for all Zope objects. The FTP API is
-covered in the API reference.
-
-To support FTP in your objects you'll need to find a way to represent
-your object's state as a file. This is not possible or reasonable for
-all types of objects. You should also consider what users will do
-with your objects once they access them via FTP. You should find out
-which tools users are likely to edit your object files. For example,
-XML may provide a good way to represent your object's state, but it
-may not be easily editable by your users. Here's an example class
-that represents itself as a file using RFC 822 format::
-
-  from rfc822 import Message
-  from cStringIO import StringIO
-
-  class Person(...):
-
-      def __init__(self, name, email, age):
-          self.name=name
-          self.email=email
-          self.age=age
-
-      def writeState(self):
-          "Returns object state as a string"
-          return "Name: %s\nEmail: %s\nAge: %s" % (self.name,
-                                                   self.email, 
-                                                   self.age)
-      def readState(self, data):
-          "Sets object state given a string"
-          m=Message(StringIO(data))
-          self.name=m['name']
-          self.email=m['email']
-          self.age=int(m['age'])
-
-The 'writeState' and 'readState' methods serialize and unserialize the
-'name', 'age', and 'email' attributes to and from a string. There are
-more efficient ways besides RFC 822 to store instance attributes in a
-file, however RFC 822 is a simple format for users to edit with text
-editors.
-
-To support FTP all you need to do at this point is implement the
-'manage_FTPget' and 'PUT' methods. For example::
-
-  def manage_FTPget(self):
-      "Returns state for FTP"
-      return self.writeState()
-
-  def PUT(self, REQUEST):
-      "Sets state from FTP"
-       self.readState(REQUEST['BODY'])
-
-You may also choose to implement a 'get_size' method which returns the
-size of the string returned by 'manage_FTPget'. This is only
-necessary if calling 'manage_FTPget' is expensive, and there is a more
-efficient way to get the size of the file. In the case of this
-example, there is no reason to implement a 'get_size' method.
-
-One side effect of implementing 'PUT' is that your object now supports
-HTTP PUT publishing. See the next section on WebDAV for more
-information on HTTP PUT.
-
-That's all there is to making your object work with FTP. As you'll
-see next WebDAV support is similar.
-
-WebDAV
-------
-
-WebDAV is a protocol for collaboratively edit and manage files on
-remote servers. It provides much the same functionality as FTP, but
-it works over HTTP.
-
-It is not difficult to implement WebDAV support for your objects.
-Like FTP, the most difficult part is to figure out how to represent
-your objects as files.
-
-Your class must inherit from 'webdav.Resource' to get basic DAV
-support. However, since 'SimpleItem' inherits from 'Resource', your
-class probably already inherits from 'Resource'. For container
-classes you must inherit from 'webdav.Collection'. However, since
-'ObjectManager' inherits from 'Collection' you are already set so long
-as you inherit from 'ObjectManager'.
-
-In addition to inheriting from basic DAV classes, your classes must
-implement 'PUT' and 'manage_FTPget'. These two methods are also
-required for FTP support. So by implementing WebDAV support, you also
-implement FTP support.
-
-The permissions that you assign to these two methods will control the
-ability to read and write to your class through WebDAV, but the
-ability to see your objects is controlled through the "WebDAV access"
-permission.
-
-Supporting Write Locking
-------------------------
-
-Write locking is a feature of WebDAV that allows users to put lock on
-objects they are working on. Support write locking s easy. To
-implement write locking you must assert that your lass implements the
-'WriteLockInterface'. For example::
-
-  from webdav.WriteLockInterface import WriteLockInterface
-
-  class MyContentClass(OFS.SimpleItem.Item, Persistent):
-      __implements__ = (WriteLockInterface,)
-
-It's sufficient to inherit from 'SimpleItem.Item', since it inherits
-from 'webdav.Resource', which provides write locking long with other
-DAV support.
-
-In addition, your 'PUT' method should begin with calls to dav__init'
-and 'dav_simpleifhandler'. For example::
-
- def PUT(self, REQUEST, RESPONSE):
-     """
-     Implement WebDAV/HTTP PUT/FTP put method for this object.
-     """
-     self.dav__init(REQUEST, RESPONSE)
-     self.dav__simpleifhandler(REQUEST, RESPONSE)
-     ...
-
-Finally your class's edit methods should check to determine whether
-your object is locked using the 'ws_isLocked' method. If someone
-attempts to change your object when it is locked you should raise the
-'ResourceLockedError'. For example::
-
-  from webdav import ResourceLockedError
-
-  class MyContentClass(...):
-      ...
-
-      def edit(self, ...):
-          if self.ws_isLocked():
-              raise ResourceLockedError
-          ...
-
-WebDAV support is not difficult to implement, and as more WebDAV
-editors become available, it will become more valuable. If you choose
-to add FTP support to your class you should probably go ahead and
-support WebDAV too since it is so easy once you've added FTP support.
 
 XML-RPC
 -------
