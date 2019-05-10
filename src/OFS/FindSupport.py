@@ -135,11 +135,17 @@ class FindSupport(Base):
                 if hasattr(ob, 'PrincipiaSearchSource'):
                     pss = ob.PrincipiaSearchSource()
                     if six.PY3 and not isinstance(pss, str):
-                        pss = pss.decode(default_encoding)
+                        try:
+                            pss = pss.decode(default_encoding)
+                        except UnicodeDecodeError:
+                            pss = ''
                 if hasattr(ob, 'SearchableText'):
                     st = ob.SearchableText()
                     if six.PY3 and not isinstance(st, str):
-                        st = st.decode(default_encoding)
+                        try:
+                            st = st.decode(default_encoding)
+                        except UnicodeDecodeError:
+                            st = ''
             else:
                 pss = st = ''
 

@@ -44,6 +44,9 @@ Fixes
   Python 3.
   (`#577 <https://github.com/zopefoundation/Zope/pull/577>`_)
 
+- Prevent ``FindSupport.ZopeFind`` from throwing ``UnicodeDecodeErrors``
+  (`#594 <https://github.com/zopefoundation/Zope/issues/594>`_)
+
 Features
 ++++++++
 
@@ -363,7 +366,7 @@ New features
   `#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
 - Add zconsole module for running scripts and interactive mode.
-  See the `document Running Zope 
+  See the `document Running Zope
   <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
 
 - Add support for Python 3.7.
