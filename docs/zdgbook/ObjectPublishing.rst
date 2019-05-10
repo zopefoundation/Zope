@@ -1094,33 +1094,41 @@ Other Network Protocols
 XML-RPC
 -------
 
-`XML-RPC <http://www.xmlrpc.com>`_ is a light-weight Remote Procedure
-Call protocol that uses XML for encoding and HTTP for transport.
-Fredrick Lund maintains a Python <XML-RPC module
-<http://www.pythonware.com/products/xmlrpc>`_ .
+.. note::
+
+  Code examples are valid for Python 3 only.
+
+  If you want to use Python 2, please refer to the
+  `offcial documentation <https://docs.python.org/2/library/xmlrpclib.html>`_
+
+**XML-RPC** is a light-weight remote procedure call (RPC) protocol
+that uses **XML** to encode its calls and **HTTP** as a transport
+mechanism.
 
 All objects in Zope support XML-RPC publishing. Generally you will
 select a published object as the end-point and select one of its
-methods as the method. For example you can call the 'getId' method on
-a Zope folder at 'http://example.com/myfolder' like so::
+methods as the method. For example you can call the ``getId`` method
+on a Zope folder at ``http://example.com/myfolder`` like so::
 
-  import xmlrpclib
-  folder = xmlrpclib.Server('http://example.com/myfolder')
-  ids = folder.getId()
+  from xmlrpc.client import ServerProxy as proxy
+  folder = proxy("http://example.com/myfolder")
+  folder_id = folder.getId()
 
-You can also do traversal via a dotted method name. For example::
+You can also do traversal via a dot notation.
 
-  import xmlrpclib
+For example::
+
+  from xmlrpc.client import ServerProxy as proxy
 
   # traversal via dotted method name
-  app = xmlrpclib.Server('http://example.com/app')
+  app = proxy("http://example.com/app")
   id1 = app.folderA.folderB.getId()
 
   # walking directly up to the published object
-  folderB = xmlrpclib.Server('http://example.com/app/folderA/folderB')
+  folderB = proxy("http://example.com/app/folderA/folderB")
   id2 = folderB.getId()
 
-  print id1 == id2
+  print(id1 == id2)
 
 This example shows different routes to the same object publishing
 call.
@@ -1132,36 +1140,10 @@ arguments and return values to simple values such as Python strings,
 lists, numbers and dictionaries. You should not accept or return Zope
 objects from methods that will be called via XML-RPC.
 
+.. note::
 
-XML-RPC does not support keyword arguments. This is a problem if your
-method expect keyword arguments. This problem is noticeable when
-calling DTMLMethods and DTMLDocuments with XML-RPC. Normally a DTML
-object should be called with the request as the first argument, and
-additional variables as keyword arguments. You can get around this
-problem by passing a dictionary as the first argument. This will
-allow your DTML methods and documents to reference your variables with
-the 'var' tag. However, you cannot do the following::
+  **XML-RPC** does not support keyword arguments.
 
-  <dtml-var expr="REQUEST['argument']">
-
-Although the following will work::
-
-  <dtml-var expr="_['argument']">
-
-This is because in this case arguments *are* in the DTML namespace,
-but they are not coming from the web request.
-
-In general it is not a good idea to call DTML from XML-RPC since DTML
-usually expects to be called from normal HTTP requests.
-
-One thing to be aware of is that Zope returns 'false' for published
-objects which return None since XML-RPC has no concept of null.
-
-Another issue you may run into is that 'xmlrpclib' does not yet
-support HTTP basic authentication. This makes it difficult to call
-protected web resources. One solution is to patch 'xmlrpclib'.
-Another solution is to accept authentication credentials in the
-signature of your published method.
 
 Summary
 =======
