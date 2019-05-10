@@ -3,6 +3,10 @@
 environment:
   WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
+    fast_finish: true
+    - PROFILE: py37
+      PYTHON_VERSION: 3.7"
+      TOXENV: "py37"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
       TOXENV: "lint"
@@ -15,9 +19,6 @@ environment:
     - PROFILE: py36
       PYTHON_VERSION: 3.6"
       TOXENV: "py36"
-    - PROFILE: py37
-      PYTHON_VERSION: 3.7"
-      TOXENV: "py37"
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
@@ -28,6 +29,8 @@ install:
   - "python.exe -m pip install tox"
 
 build: off
+
+max_jobs: 2
 
 test_script:
   - "tox.exe"
