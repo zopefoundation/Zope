@@ -44,8 +44,14 @@ Fixes
   Python 3.
   (`#577 <https://github.com/zopefoundation/Zope/pull/577>`_)
 
+- Prevent ``FindSupport.ZopeFind`` from throwing ``UnicodeDecodeErrors``
+  (`#594 <https://github.com/zopefoundation/Zope/issues/594>`_)
+
 Features
 ++++++++
+
+- Add a configuration flag to show bookmarkable URLs in the ZMI
+  (`#580 <https://github.com/zopefoundation/Zope/issues/580>`_)
 
 - Add a flag for suppressing object events during file import
   (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
@@ -64,6 +70,9 @@ Features
 
 Other changes
 +++++++++++++
+
+- Changed the WSGI configuration template so those annoying waitress queue
+  messages only go into the event log, but not onto the console.
 
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
   ``zope.ini`` to match existing documentation for Zope configurations.
@@ -357,7 +366,7 @@ New features
   `#307 <https://github.com/zopefoundation/Zope/pull/307>`_)
 
 - Add zconsole module for running scripts and interactive mode.
-  See the `document Running Zope 
+  See the `document Running Zope
   <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
 
 - Add support for Python 3.7.

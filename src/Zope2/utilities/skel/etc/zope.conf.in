@@ -115,6 +115,22 @@ instancehome $INSTANCE
 #    http-realm Slipknot
 
 
+# Directive:  zmi-bookmarkable-urls
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to show the ZMI right hand
+#     frame's URL in the browser navigation bar as opposed to the static
+#     '/manage'. The default is 'on'. To restore the behavior of Zope 2
+#     where the URL was always static unless you opened the right-hand frame in
+#     its own browser window, set this to off.
+#
+#     Default: on
+#
+# Example:
+#
+#     zmi-bookmarkable-urls off
+
+
 # Directive: pid-filename
 #
 # Description:

@@ -918,10 +918,43 @@ Record marshalling provides you with the ability to create complex
 forms. However, it is a good idea to keep your web interfaces as
 simple as possible.
 
-Please note, that records do not work with input fields of type radio as you
-might expect, as all radio fields with the same name are considered as one
-group - even if they are in different records. That means, activating one radio
-button will also deactivate all other radio buttons from the other records.
+.. note::
+
+  Records do not work with input fields of type radio as you might
+  expect, as all radio fields with the same name are considered as one
+  group - even if they are in different records. That means, activating
+  one radio button will also deactivate all other radio buttons from
+  the other records.
+
+.. attention::
+
+    When using records please note that there is a known issue when
+    you use a form, where checkboxes are used in the first "column".
+
+    As browsers leave out empty checkboxes when sending a request, the
+    **object publisher** may not be able to match checked checkboxes
+    with the correct record.
+
+    This behaviour cannot not be fixed.
+
+    If you want a checkbox as the first form field, you can work
+    around the problem by using a hidden input field.
+
+    **Code example with applied workaround**::
+
+      <form action="records_parse">
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="1" checked="checked" />
+          <input type="text" name="index.name:records" value="index 1" />
+          <p>
+          <input type="hidden" name="index.dummy:records" value="dummy" />
+          <input type="checkbox" name="index.enabled:records" value="2" />
+          <input type="text" name="index.name:records" value="index 2" />
+          <p>
+          <input type="submit" name="submit" value="send" />
+      </form>
+
 
 Exceptions
 ----------
@@ -984,26 +1017,18 @@ When Zope receives a request it begins a transaction. Then it begins
 the process of traversal. Zope automatically commits the transaction
 after the published object is found and called. So normally each web
 request constitutes one transaction which Zope takes care of for you.
-See Chapter 4. for more information on transactions.
 
 If an unhandled exception is raised during the publishing process,
-Zope aborts the transaction. As detailed in Chapter
-4. Zope handles 'ConflictErrors' by re-trying the request up to three
-times. This is done with the 'zpublisher_exception_hook'.
+Zope aborts the transaction.
+When a **ConflictError** occurs, Zope retries the request up to three
+times by default. You can change that number in the **zope.conf** by
+adding a ``max_conflict_retries`` directive.
 
-In addition, the error hook is used to return an error message to the
-user. In Zope the error hook creates error messages by calling the
-'raise_standardErrorMessage' method. This method is implemented by
-'SimpleItem.Item'. It acquires the 'standard_error_message' DTML
-object, and calls it with information about the exception.
+.. note::
 
-You will almost never need to override the
-'raise_standardErrorMessage' method in your own classes, since it is
-only needed to handle errors that are raised by other components. For
-most errors, you can simply catch the exceptions normally in your code
-and log error messages as needed. If you need to, you should be able
-to customize application error reporting by overriding the
-'standard_error_message' DTML object in your application.
+  For further information on transactions please refer to chapter 6
+  `ZODB Persistent Components <https://zope.readthedocs.io/en/latest/zdgbook/ZODBPersistentComponents.html>`_.
+
 
 Manual Access to Request and Response
 -------------------------------------

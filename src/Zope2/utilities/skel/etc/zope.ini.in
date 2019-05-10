@@ -18,7 +18,7 @@ pipeline =
     zope
 
 [loggers]
-keys = root, waitress, wsgi
+keys = root, waitress.queue, waitress, wsgi
 
 [handlers]
 keys = console, accesslog, eventlog
@@ -36,6 +36,12 @@ format = %(message)s
 [logger_root]
 level = INFO
 handlers = console, eventlog
+
+[logger_waitress.queue]
+level = INFO
+handlers = eventlog
+qualname = waitress.queue
+propagate = 0
 
 [logger_waitress]
 level = INFO
