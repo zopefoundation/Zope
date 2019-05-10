@@ -148,9 +148,9 @@ Migration example
     ``Data.fs.index`` will be discarded at the first start, you can ignore
     the error message telling that it cannot be read.
 
-  - If any ZCatalog is in the ZODB, do a clear and rebuild for all of them.
-
   - Verify that the Application works as expected.
+
+  - If there are problems with one of the ZCatalogs in the ZODB, do a clear and rebuild.
 
 In case of ``UnicodeDecodeError``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,11 +172,4 @@ or `a code example in PythonScripts <https://github.com/zopefoundation/Products.
 Further reading
 ~~~~~~~~~~~~~~~
 
-This guide is adapted from several sources that contain further information
-and examples. Be aware those sources may be outdated.
-
-* https://blog.gocept.com/2018/06/07/migrate-a-zope-zodb-data-fs-to-python-3/
-* https://github.com/frisi/coredev52multipy/tree/zodbupdate
-* https://github.com/plone/Products.CMFPlone/issues/2525
-* https://github.com/plone/documentation/pull/1022
-* https://github.com/zopefoundation/Zope/pull/285
+The Plone project documentation contains a section `Migrate a ZODB from Python 2.7 to Python 3 <https://github.com/plone/documentation/blob/5.2/manage/upgrading/version_specific_migration/upgrade_zodb_to_python3.rst>`_
