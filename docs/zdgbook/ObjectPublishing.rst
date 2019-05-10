@@ -1033,13 +1033,6 @@ adding a ``max_conflict_retries`` directive.
 Manual Access to Request and Response
 -------------------------------------
 
-You do not need to access the request and response directly most of
-the time. In fact, it is a major design goal of the publisher that
-most of the time your objects need not even be aware that they are
-being published on the web. However, you have the ability to exert
-more precise control over reading the request and returning the
-response.
-
 Normally published objects access the request and response by listing
 them in the signature of the published method. If this is not
 possible you can usually use acquisition to get a reference to the
@@ -1048,9 +1041,11 @@ from the request like so::
 
   response=REQUEST.RESPONSE
 
-The APIs of the request and response are covered in the API
-documentation. Here we'll look at a few common uses of the request
-and response.
+The APIs of request and response can be looked up in the source code.
+
+We'll look at a few common uses of the request and response. If you
+need access to the complete API, please directly refer to the source
+code.
 
 One reason to access the request is to get more precise information
 about form data. As we mentioned earlier, argument marshalling comes
@@ -1069,7 +1064,7 @@ control headers::
   RESPONSE.setHeader('Pragma', 'No-Cache')
 
 Another reason to access the response is to stream response data. You
-can do this with the 'write' method::
+can do this with the ``write`` method::
 
   while 1:
       data=getMoreData() #this call may block for a while
@@ -1080,18 +1075,18 @@ can do this with the 'write' method::
 Here's a final example that shows how to detect if your method is
 being called from the web. Consider this function::
 
-  def feedParrot(parrot_id, REQUEST=None):
+  def calculate(data, REQUEST=None):
       ...
-
+      result = ...
       if REQUEST is not None:
-          return "<html><p>Parrot %s fed</p></html>" % parrot_id
+          return "<html><p>Result: %s </p></html>" % result
+      return result
 
-The 'feedParrot' function can be called from Python, and also from the
-web. By including 'REQUEST=None' in the signature you can
+The ``calculate`` function can be called from Python, and also from
+the web. By including ``REQUEST=None`` in the signature you can
 differentiate between being called from Python and being called form
-the web. When the function is called from Python nothing is returned,
-but when it is called from the web the function returns an HTML
-confirmation message.
+the web.
+
 
 Other Network Protocols
 =======================
