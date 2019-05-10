@@ -70,6 +70,8 @@ class ZConsoleTestCase(unittest.TestCase):
 
     def test_runscript(self):
         script = os.path.join(self.instancedir, 'test_script.py')
+        # Use a backslash to fake windows paths under linux
+        bar = r'\bar'
         with open(script, 'w') as scriptfile:
             scriptfile.write(test_script)
         try:
@@ -79,7 +81,7 @@ class ZConsoleTestCase(unittest.TestCase):
                 'run',
                 self.zopeconf,
                 script,
-                'bar', 'baz']
+                bar, 'baz']
             sys.stdout = StringIO()
             runscript(self.zopeconf, script, 'bar', 'baz')
             sys.stdout.seek(0)
@@ -91,6 +93,6 @@ class ZConsoleTestCase(unittest.TestCase):
         # so we have the raw string in there.
         expected = (
             "42\n"
-            r"['run', '{}', '{}', 'bar', 'baz']"
-            "\nPropertyManager\n".format(self.zopeconf, script))
+            r"['run', {!r}, {!r}, {!r}, 'baz']"
+            "\nPropertyManager\n".format(self.zopeconf, script, bar))
         self.assertEqual(expected, got)
