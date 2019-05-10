@@ -2,22 +2,25 @@
 Zope Products
 #############
 
-.. include:: includes/zope2_notice.rst
+.. attention::
+
+  This document is currently being reviewed and edited for the
+  upcoming release of Zope 4.
+
 
 Introduction
 ============
 
-Zope *products* extend Zope with new functionality.  Products most
-often provide new addable objects.  In this chapter, we are going to
-look at building products on the file system.  Filesystem products
-require more overhead to build, but offer more power and flexibility,
-and they can be developed with familiar tools such as text editors
-and version controlling systems.
+In this chapter we are looking at building Python packages that are
+**Zope Products**. Products most often provide new addable objects.
 
-Soon we will make the examples referenced in this chapter available
-for download as an example product.  Until that time, you will see
-references to files in this chapter that are not available yet.  This
-will be made available soon.
+.. note:: 
+  In the early days of Zope development, it was quite common to
+  develop "through the web". This is still possible but no longer
+  recommended.
+  For further information please refer to the
+  `Zope Book <https://zope.readthedocs.io/en/latest/zopebook/index.html>`_.
+
 
 Development Process
 ===================
