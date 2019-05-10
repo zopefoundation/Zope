@@ -87,7 +87,10 @@ class ZConsoleTestCase(unittest.TestCase):
         finally:
             sys.argv = self.stored_sys_argv
             sys.stdout = self.stored_stdout
+        # We get double escape for backslash \ on windows from test script,
+        # so we have the raw string in there.
         expected = (
-            r"42\n['run', '{}', '{}', 'bar', 'baz']"
-            r"\nPropertyManager\n").format(self.zopeconf, script)
+            "42\n"
+            r"['run', '{}', '{}', 'bar', 'baz']"
+            "\nPropertyManager\n".format(self.zopeconf, script))
         self.assertEqual(expected, got)
