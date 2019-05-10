@@ -71,6 +71,8 @@ Features
 Other changes
 +++++++++++++
 
+- Update ZODB migration documentation.
+
 - Changed the WSGI configuration template so those annoying waitress queue
   messages only go into the event log, but not onto the console.
 
