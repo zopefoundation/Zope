@@ -66,6 +66,43 @@ def test_view_with_unwrapped_context():
     """
 
 
+def test_publishTraverse_to_allowed_name():
+    """
+    The ``eagle.method`` view has a method ``eagle`` that is registered
+    with ``allowed_attributes`` in pages.zcml. This attribute should be
+    reachable through ``publishTraverse`` on the view.
+
+    >>> import Products.Five.browser.tests
+    >>> from Zope2.App import zcml
+    >>> zcml.load_config("configure.zcml", Products.Five)
+    >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+
+    >>> from Products.Five.tests.testing.simplecontent import (
+    ... manage_addSimpleContent)
+    >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+
+    >>> view = folder.unrestrictedTraverse('testoid/eagle.method')
+    >>> request = self.folder.REQUEST
+
+    Publishing traversal with the default adapter should work:
+
+    >>> from ZPublisher.BaseRequest import DefaultPublishTraverse
+    >>> adapter = DefaultPublishTraverse(view, request)
+    >>> adapter.publishTraverse(request, 'eagle')()
+    'The eagle has landed'
+
+    Publishing traversal should also work directly:
+
+    >>> view.publishTraverse(request, 'eagle')()
+    'The eagle has landed'
+
+    Clean up:
+
+    >>> from zope.component.testing import tearDown
+    >>> tearDown()
+    """
+
+
 def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
