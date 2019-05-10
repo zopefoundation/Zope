@@ -16,9 +16,9 @@ import re
 import sys
 import unittest
 
-from ExtensionClass import Base
-
 import six
+
+from ExtensionClass import Base
 
 
 # Dummy TestCase to use the assertions outside the actual tests.
