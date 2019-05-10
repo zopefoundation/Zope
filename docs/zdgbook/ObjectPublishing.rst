@@ -1020,7 +1020,7 @@ request constitutes one transaction which Zope takes care of for you.
 
 If an unhandled exception is raised during the publishing process,
 Zope aborts the transaction.
-When **ConflictErrors** occur, Zope retries the request up to three
+When a **ConflictError** occurs, Zope retries the request up to three
 times by default. You can change that number in the **zope.conf** by
 adding a ``max_conflict_retries`` directive.
 
