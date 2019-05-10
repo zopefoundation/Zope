@@ -137,7 +137,7 @@ class WSGIStartupTestCase(unittest.TestCase):
 
         conf, dummy = self.load_config_text(u"""\
             instancehome <<INSTANCE_HOME>>
-            pid-filename <<INSTANCE_HOME>>/Z5.pid
-            """)
+            pid-filename <<INSTANCE_HOME>>{sep}Z5.pid
+            """.format(sep=os.path.sep))
         expected = os.path.join(conf.instancehome, 'Z5.pid')
         self.assertEqual(conf.pid_filename, expected)
