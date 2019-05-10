@@ -2,11 +2,6 @@
 Object Publishing
 #################
 
-.. attention::
-
-  This document is currently being reviewed and edited for the
-  upcoming release of Zope 4.
-
 .. note::
 
   Previously, this document contained information about access by
