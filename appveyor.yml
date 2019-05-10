@@ -1,7 +1,11 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
 environment:
+  WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
+    - PROFILE: py37
+      PYTHON_VERSION: 3.7"
+      TOXENV: "py37"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
       TOXENV: "lint"
@@ -14,9 +18,6 @@ environment:
     - PROFILE: py36
       PYTHON_VERSION: 3.6"
       TOXENV: "py36"
-    - PROFILE: py37
-      PYTHON_VERSION: 3.7"
-      TOXENV: "py37"
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
@@ -28,8 +29,10 @@ install:
 
 build: off
 
+max_jobs: 2
+
+matrix:
+  fast_finish: true
+
 test_script:
   - "tox.exe"
-
-after_test:
-  - coveralls
