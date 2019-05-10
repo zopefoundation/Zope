@@ -22,6 +22,7 @@ import sys
 from inspect import isfunction
 from inspect import ismethod
 
+import zope.publisher.browser
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
 from AccessControl.class_init import InitializeClass
@@ -440,7 +441,7 @@ class ViewNotCallableError(AttributeError, NotImplementedError):
     pass
 
 
-class simple(zope.browserpage.metaconfigure.simple):
+class simple(zope.publisher.browser.BrowserView):
 
     # __call__ should have the same signature as the original method
     @property

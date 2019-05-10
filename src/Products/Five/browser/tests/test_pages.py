@@ -91,11 +91,6 @@ def test_publishTraverse_to_allowed_name():
     >>> adapter.publishTraverse(request, 'eagle')()
     'The eagle has landed'
 
-    Publishing traversal should also work directly:
-
-    >>> view.publishTraverse(request, 'eagle')()
-    'The eagle has landed'
-
     Clean up:
 
     >>> from zope.component.testing import tearDown
