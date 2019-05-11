@@ -79,17 +79,17 @@ def test_publishTraverse_to_allowed_name():
 
     >>> from Products.Five.tests.testing.simplecontent import (
     ... manage_addSimpleContent)
-    >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
-
+    >>> manage_addSimpleContent(self.folder, 'testoid', 'x')  # NOQA: F821
+    >>> folder = self.folder  # NOQA: F821
     >>> view = folder.unrestrictedTraverse('testoid/eagle.method')
-    >>> request = self.folder.REQUEST
 
     Publishing traversal with the default adapter should work:
 
     >>> from ZPublisher.BaseRequest import DefaultPublishTraverse
-    >>> adapter = DefaultPublishTraverse(view, request)
-    >>> adapter.publishTraverse(request, 'eagle')()
-    'The eagle has landed'
+    >>> adapter = DefaultPublishTraverse(view, folder.REQUEST)
+    >>> result = adapter.publishTraverse(folder.REQUEST, 'eagle')()
+    >>> 'The eagle has landed' in result
+    True
 
     Clean up:
 
