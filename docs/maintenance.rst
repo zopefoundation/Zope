@@ -33,6 +33,7 @@ Steps for creating a new Zope release
 
   $ bin/checkversions versions-prod.cfg
   $ bin/checkversions versions.cfg
+  $ bin/buildout
 
 .. note::
 
@@ -48,6 +49,8 @@ Steps for creating a new Zope release
     easily assigned to the correct file.
 
 - Garden the change log.
+
+- Check in the changes.
 
 - Run the tests::
 

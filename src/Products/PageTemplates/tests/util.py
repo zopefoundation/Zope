@@ -14,8 +14,15 @@
 import os
 import re
 import sys
+import unittest
+
+import six
 
 from ExtensionClass import Base
+
+
+# Dummy TestCase to use the assertions outside the actual tests.
+TEST_CASE = unittest.TestCase('__init__')
 
 
 class Bruce(Base):
@@ -88,13 +95,13 @@ class argv(Base):
 def check_html(s1, s2):
     s1 = normalize_html(s1)
     s2 = normalize_html(s2)
-    assert s1 == s2
+    TEST_CASE.assertEqual(s1, s2)
 
 
 def check_xml(s1, s2):
     s1 = normalize_xml(s1)
     s2 = normalize_xml(s2)
-    assert s1 == s2, "XML Output Changed"
+    TEST_CASE.assertEqual(s1, s2, "XML Output Changed")
 
 
 def normalize_html(s):
@@ -115,15 +122,23 @@ input_dir = os.path.join(HERE, 'input')
 output_dir = os.path.join(HERE, 'output')
 
 
+def _open(filename, mode):
+    if six.PY3:
+        # Define explicit encoding for windows platform
+        return open(filename, mode, encoding='utf-8')
+    else:
+        return open(filename, mode)
+
+
 def read_input(filename):
     filename = os.path.join(input_dir, filename)
-    with open(filename, 'r') as fd:
+    with _open(filename, 'r') as fd:
         data = fd.read()
     return data
 
 
 def read_output(filename):
     filename = os.path.join(output_dir, filename)
-    with open(filename, 'r') as fd:
+    with _open(filename, 'r') as fd:
         data = fd.read()
     return data

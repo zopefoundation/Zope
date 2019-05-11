@@ -8,60 +8,66 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.0b11 (unreleased)
--------------------
+4.0.1 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+4.0 (2019-05-10)
+----------------
 
 Fixes
 +++++
 
-- Make sure new object IDs don't clash with the views lookup mechanism
+- Make sure new object IDs don't clash with the views lookup mechanism.
   (`#591 <https://github.com/zopefoundation/Zope/issues/591>`_)
 
-- Be more careful when guessing at encoding for document template types
+- Be more careful when guessing at encoding for document template types.
 
-- Ensure a redirect path does not get URL-encoded twice
+- Ensure a redirect path does not get URL-encoded twice.
 
-- Prevent inability to log into the ZMI due to failing exception views
+- Prevent inability to log into the ZMI due to failing exception views.
 
-- Hardeded ``RESPONSE.redirect`` to deal with any unencoded or encoded input
+- Harden ``RESPONSE.redirect`` to deal with any unencoded or encoded input.
   (`#435 <https://github.com/zopefoundation/Zope/issues/435>`_)
 
-- Fix broken ``title_and_id`` behavior
+- Fix broken ``title_and_id`` behaviour.
   (`#574 <https://github.com/zopefoundation/Zope/issues/574>`_)
 
-- Fix broken ZMI DTML rendering for mixed unicode/bytes content
+- Fix broken ZMI DTML rendering for mixed unicode/bytes content.
   (`#271 <https://github.com/zopefoundation/Zope/issues/271>`_)
 
-- Fix wrong `Content-Length` set by ``App.ImageFile`` on 304 responses
+- Fix wrong `Content-Length` set by ``App.ImageFile`` on 304 responses.
   (`#513 <https://github.com/zopefoundation/Zope/issues/513>`_)
 
-- make the ZMI `Find` tab work for searching HTML tags
-  by adding support for `Tainted` strings in ``ZopeFind``
+- Make the ZMI `Find` tab work for searching HTML tags
+  by adding support for `Tainted` strings in ``ZopeFind``.
 
-- prevent ``mkwsgiinstance`` from blowing up parsing ``buildout.cfg``
+- Prevent ``mkwsgiinstance`` from blowing up parsing ``buildout.cfg``.
 
 - Fix ``ZPublisher.HTTPResponse.HTTPBaseResponse.isHTML`` for binary data on
   Python 3.
   (`#577 <https://github.com/zopefoundation/Zope/pull/577>`_)
 
-- Prevent ``FindSupport.ZopeFind`` from throwing ``UnicodeDecodeErrors``
+- Prevent ``FindSupport.ZopeFind`` from throwing ``UnicodeDecodeErrors``.
   (`#594 <https://github.com/zopefoundation/Zope/issues/594>`_)
 
 Features
 ++++++++
 
-- Add a configuration flag to show bookmarkable URLs in the ZMI
+- Add a configuration flag to show bookmarkable URLs in the ZMI.
   (`#580 <https://github.com/zopefoundation/Zope/issues/580>`_)
 
-- Add a flag for suppressing object events during file import
+- Add a flag for suppressing object events during file import.
   (`#42 <https://github.com/zopefoundation/Zope/issues/42>`_)
 
-- Add a Configuration details tab to the Control_Panel
+- Add a Configuration details tab to the Control_Panel.
 
-- Resurrect the Interfaces ZMI tab
+- Resurrect the Interfaces ZMI tab.
   (`#450 <https://github.com/zopefoundation/Zope/issues/450>`_)
 
-- Better default logging configuration for simple waitress WSGI setups
+- Better default logging configuration for simple waitress WSGI setups.
   (`#526 <https://github.com/zopefoundation/Zope/issues/526>`_)
 
 - Replace usage of ``urllib.parse.splitport`` and ``urllib.parse.splittype``
@@ -71,7 +77,11 @@ Features
 Other changes
 +++++++++++++
 
-- Changed the WSGI configuration template so those annoying waitress queue
+- Update ZODB migration documentation.
+
+- Expand the Zope 4 migration documentation.
+
+- Change the WSGI configuration template so those annoying waitress queue
   messages only go into the event log, but not onto the console.
 
 - Change naming for the generated WSGI configurations to ``zope.conf`` and
@@ -89,40 +99,39 @@ Other changes
   for examples.
   (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
 
-- Remove hardcoded list of factories that don't want an add dialog
+- Remove hardcoded list of factories that don't want an add dialog.
   (`#540 <https://github.com/zopefoundation/Zope/issues/540>`_)
 
-- Increase link visibility in old ZMI forms
+- Increase link visibility in old ZMI forms.
   (`#530 <https://github.com/zopefoundation/Zope/issues/530>`_)
 
-- Always keep action buttons visible on the content list for large folders
+- Always keep action buttons visible on the content list for large folders.
   (`#537 <https://github.com/zopefoundation/Zope/issues/537>`_)
 
-- Make showing the ZMI modal add dialog configurable per product
+- Make showing the ZMI modal add dialog configurable per product.
   (`#535 <https://github.com/zopefoundation/Zope/issues/535>`_)
 
-- Added a few Zope 4 ZMI screenshots to the documentation
+- Added a few Zope 4 ZMI screenshots to the documentation.
   (`#378 <https://github.com/zopefoundation/Zope/issues/378>`_)
 
-- refreshed Sphinx configuration and switched to the ReadTheDocs theme
+- Refresh Sphinx configuration and switched to the ReadTheDocs theme.
 
-- expanded the Zope 4 migration documentation
-
-- renamed/moved the `Zope 2 Book` to `Zope Book`
+- Rename/move the `Zope 2 Book` to `Zope Book`.
   (`#443 <https://github.com/zopefoundation/Zope/issues/443>`_)
 
-- show item icons on ZMI `Find` tab results
+- Show item icons on ZMI `Find` tab results.
   (`#534 <https://github.com/zopefoundation/Zope/issues/534>`_)
 
-- full PEP-8 compliance
+- Full PEP-8 compliance.
 
-- fixed ZMI font rendering on macOS
+- Fix ZMI font rendering on macOS.
   (`#531 <https://github.com/zopefoundation/Zope/issues/531>`_)
 
-- provided method to get breadcrumb length to prevent ZMI errors
+- Provide a method to get breadcrumb length to prevent ZMI errors.
   (`#533 <https://github.com/zopefoundation/Zope/issues/533>`_)
 
-- add zodbupdate_rename_dict to move webdav.LockItem to OFS.LockItem
+- Add ``zodbupdate_rename_dict`` to move ``webdav.LockItem`` to
+  ``OFS.LockItem``.
   (`Products.CMFPlone#2800 <https://github.com/plone/Products.CMFPlone/issues/2800>`_)
 
 
