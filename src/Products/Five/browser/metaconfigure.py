@@ -22,9 +22,9 @@ import sys
 from inspect import isfunction
 from inspect import ismethod
 
-import zope.publisher.browser
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
+import zope.publisher.browser
 from AccessControl.class_init import InitializeClass
 from AccessControl.security import CheckerPrivateId
 from AccessControl.security import getSecurityInfo
