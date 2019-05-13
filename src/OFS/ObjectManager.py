@@ -795,8 +795,8 @@ class ObjectManager(
             mode = 0o0040000
             from AccessControl.User import nobody
             # check to see if we are acquiring our objectValues or not
-            if not len(REQUEST.PARENTS) > 1 and \
-               self.objectValues() == REQUEST.PARENTS[1].objectValues():
+            if not (len(REQUEST.PARENTS) > 1 and
+                    self.objectValues() == REQUEST.PARENTS[1].objectValues()):
                 try:
                     if getSecurityManager().validate(
                             None, self, 'manage_FTPlist', self.manage_FTPlist):
