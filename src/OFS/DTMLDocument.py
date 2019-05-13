@@ -13,7 +13,7 @@
 """DTML Document objects.
 """
 
-from six import binary_type
+import six
 from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
@@ -28,6 +28,7 @@ from OFS.DTMLMethod import safe_file_data
 from OFS.PropertyManager import PropertyManager
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+from ZPublisher.HTTPRequest import default_encoding
 
 
 done = 'done'
@@ -88,7 +89,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
             r = HTML.__call__(self, (client, bself), REQUEST, **kw)
 
-            if RESPONSE is None or not isinstance(r, binary_type):
+            if RESPONSE is None or not isinstance(r, str):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -101,10 +102,11 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
-                if isinstance(r, binary_type):
-                    c, e = guess_content_type(self.__name__, r)
-                else:
-                    c, e = guess_content_type(self.__name__, r.encode('utf-8'))
+                encoding = getattr(self, 'encoding', default_encoding)
+                if six.PY2 and not isinstance(r, six.text_type):
+                    # Prevent double-encoding edge cases under Python 2
+                    r = r.decode(encoding)
+                c, e = guess_content_type(self.getId(), r.encode(encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:

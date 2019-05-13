@@ -44,6 +44,7 @@ from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 
 
@@ -162,6 +163,7 @@ class DTMLMethod(
                 return result
 
             r = HTML.__call__(self, client, REQUEST, **kw)
+
             if RESPONSE is None or not isinstance(r, str):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
@@ -177,11 +179,11 @@ class DTMLMethod(
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
+                encoding = getattr(self, 'encoding', default_encoding)
                 if PY2 and not isinstance(r, text_type):
                     # Prevent double-encoding edge cases under Python 2
-                    r = r.decode(self.encoding)
-                c, e = guess_content_type(self.getId(),
-                                          r.encode(self.encoding))
+                    r = r.decode(encoding)
+                c, e = guess_content_type(self.getId(), r.encode(encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:

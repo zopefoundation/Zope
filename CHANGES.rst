@@ -16,8 +16,13 @@ Features
 
 - Optionally control the use of Zope's built-in XML-RPC support for
   POST requests with Content-Type ``text/xml`` via the
-  registration of a ``ZPublisher.interfaces.IXmlrpcChecker` utility
+  registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility
   (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_).
+
+Fixes
++++++
+
+- Prevent encoding issues in existing DTML Method and Document objects
 
 
 4.0 (2019-05-10)
