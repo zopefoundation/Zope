@@ -89,12 +89,12 @@ class IXmlrpcChecker(Interface):
 
         Only called for a non-SOAP POST request whose `Content-Type`
         contains `text/xml` (any other request automatically does not
-        use Zope's buildin XML-RPC).
+        use Zope's built-in XML-RPC).
 
         Note: this is called very early during request handling when most
         typical attributes of *request* are not yet set up -- e.g. it
         cannot rely on information in `form` or `other`.
         Usually, it will look up information in `request.environ`
-        which at this time is garanteed (only) to contain the
+        which at this time is guaranteed (only) to contain the
         typical CGI information, such as `PATH_INFO` and `QUERY_STRING`.
         """
