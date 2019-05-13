@@ -4,86 +4,92 @@
 
 <main class="container-fluid">
 
-	<p class="form-help mt-4">
-		The Database Manager allows you to view database status information.
-	</p>
+  <p class="form-help mt-4">
+    The Database Manager allows you to view database status information.
+  </p>
 
-	<table id="zmi-db_info" class="table table-striped">
-		<thead>
-			<tr>
-				<th colspan="2">Database information <i class="fa fa-database text-secondary ml-1 mr-1"></i> <em>&dtml-id;</em></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Database Location</td>
-				<td class="code">&dtml-db_name;</td>
-			</tr>
-			<tr>
-				<td>Database Size</td>
-				<td class="code">&dtml-db_size;</td>
-			</tr>
-			<tr>
-				<td>Total number of objects in the database</td>
-				<td class="code">&dtml-database_size;</td>
-			</tr>
-			<tr>
-				<td>Total number of objects in memory from all caches</td>
-				<td class="code">&dtml-cache_length;</td>
-			</tr>
-			<tr>
-				<td>Target number of objects in memory per cache</td>
-				<td class="code">&dtml-cache_size;</td>
-			</tr>
-			<tr>
-				<td>Target memory size per cache in bytes</td>
-				<td class="code">&dtml-cache_length_bytes;</td>
-			</tr>
-		</tbody>
-	</table>
-
-
-	<table id="zmi-db_cache" class="table table-striped mt-5">
-		<thead>
-			<tr>
-				<th colspan="3">Total number of objects in each cache</th>
-			</tr>
-			<tr>
-					<th>
-						<em>Cache Name</em></th>
-					<th>
-						<em class="d-none d-md-block">Number of active objects</em>
-						<em class="d-sm-block d-md-none">Active</em>
-					</th>
-					<th>
-						<em class="d-none d-md-block">Total active and non-active objects</em>
-						<em class="d-sm-block d-md-none">Total</em>
-					</th>
-			</tr>
-		</thead>
-		<tbody>
-			<dtml-in cache_detail_length mapping>
-				<tr>
-					<td>&dtml-connection;</td>
-					<td class="code">&dtml-ngsize;</td>
-					<td class="code">&dtml-size;</td>
-				</tr>
-			</dtml-in>
-			<tr>
-					<th>Total</th>
-					<th>&dtml-cache_length;</th>
-					<th>&nbsp;</th>
-			</tr>
-		</tbody>
-	</table>
+  <table id="zmi-db_info" class="table table-striped">
+    <thead>
+      <tr>
+        <th colspan="2">
+          Database information
+          <i class="fa fa-database text-secondary ml-1 mr-1"></i>
+          <em>&dtml-id;</em>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Database Location</td>
+        <td class="code">&dtml-db_name;</td>
+      </tr>
+      <tr>
+        <td>Database Size</td>
+        <td class="code">&dtml-db_size;</td>
+      </tr>
+      <tr>
+        <td>Total number of objects in the database</td>
+        <td class="code">&dtml-database_size;</td>
+      </tr>
+      <tr>
+        <td>Total number of objects in memory from all caches</td>
+        <td class="code">&dtml-cache_length;</td>
+      </tr>
+      <tr>
+        <td>Target number of objects in memory per cache</td>
+        <td class="code">&dtml-cache_size;</td>
+      </tr>
+      <tr>
+        <td>Target memory size per cache in bytes</td>
+        <td class="code">&dtml-cache_length_bytes;</td>
+      </tr>
+    </tbody>
+  </table>
 
 
-	<div class="zmi-controls mb-5">
-		<form action="&dtml-URL1;/manage_minimize" method="post">
-			<input class="btn btn-primary" id="minimize" type="submit" name="submit" value="Minimize" />
-			<small class="form-text text-muted">Minimize: Remove all objects from all ZODB in-memory caches.</small>
-		</form>
-	</div>
+  <table id="zmi-db_cache" class="table table-striped mt-5">
+    <thead>
+      <tr>
+        <th colspan="3">Total number of objects in each cache</th>
+      </tr>
+      <tr>
+          <th>
+            <em>Cache Name</em></th>
+          <th>
+            <em class="d-none d-md-block">Number of active objects</em>
+            <em class="d-sm-block d-md-none">Active</em>
+          </th>
+          <th>
+            <em class="d-none d-md-block">Total active and non-active objects</em>
+            <em class="d-sm-block d-md-none">Total</em>
+          </th>
+      </tr>
+    </thead>
+    <tbody>
+      <dtml-in cache_detail_length mapping>
+        <tr>
+          <td>&dtml-connection;</td>
+          <td class="code">&dtml-ngsize;</td>
+          <td class="code">&dtml-size;</td>
+        </tr>
+      </dtml-in>
+      <tr>
+          <th>Total</th>
+          <th>&dtml-cache_length;</th>
+          <th>&nbsp;</th>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="zmi-controls mb-5">
+    <form action="&dtml-URL1;/manage_minimize" method="post">
+      <input class="btn btn-primary" id="minimize" type="submit"
+             name="submit" value="Minimize" />
+      <small class="form-text text-muted">
+        Minimize: Remove all objects from all ZODB in-memory caches.
+      </small>
+    </form>
+  </div>
 
 </main>
 
