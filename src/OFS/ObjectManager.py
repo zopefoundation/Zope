@@ -769,8 +769,8 @@ class ObjectManager(
 
             files.sort()
 
-            if not hasattr(self, 'isTopLevelPrincipiaApplicationObject') and \
-               self.isTopLevelPrincipiaApplicationObject:
+            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
+                    self.isTopLevelPrincipiaApplicationObject):
                 files.insert(0, ('..', aq_parent(self)))
             files.insert(0, ('.', self))
             for k, v in files:
