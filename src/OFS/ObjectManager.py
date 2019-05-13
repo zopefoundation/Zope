@@ -769,8 +769,8 @@ class ObjectManager(
 
             files.sort()
 
-            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
-                    self.isTopLevelPrincipiaApplicationObject):
+            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject')
+                    and self.isTopLevelPrincipiaApplicationObject):
                 files.insert(0, ('..', aq_parent(self)))
             files.insert(0, ('.', self))
             for k, v in files:
@@ -795,8 +795,9 @@ class ObjectManager(
             mode = 0o0040000
             from AccessControl.User import nobody
             # check to see if we are acquiring our objectValues or not
-            if not (len(REQUEST.PARENTS) > 1 and
-                    self.objectValues() == REQUEST.PARENTS[1].objectValues()):
+            parents = REQUEST.PARENTS
+            if not (len(parents) > 1
+                    and self.objectValues() == parents.objectValues()):
                 try:
                     if getSecurityManager().validate(
                             None, self, 'manage_FTPlist', self.manage_FTPlist):
