@@ -46,6 +46,17 @@
     </tbody>
   </table>
 
+  <div class="zmi-controls mb-5">
+    <form action="&dtml-URL1;/manage_pack" method="post">
+      <input class="btn btn-primary" id="pack" type="submit"
+             name="submit" value="Pack" />
+      <input type="text" name="days:float" value="0" size="3"> days
+      <small class="form-text text-muted">
+        Pack: Remove previous object revisions older than the selected
+        number of days.
+      </small>
+    </form>
+  </div>
 
   <table id="zmi-db_cache" class="table table-striped mt-5">
     <thead>
