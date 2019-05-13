@@ -77,3 +77,24 @@ class UseTraversalDefault(Exception):
     indicate that it has no special casing for the given name and that standard
     traversal logic should be applied.
     """
+
+
+###############################################################################
+# XML-RPC control
+
+class IXmlrpcChecker(Interface):
+    """Utility interface controlling the use of Zope's built-in XML-RPC support."""
+    def __call__(request):
+        """return true, when Zope's internal XML-RPC support should be used.
+
+        Only called for a non-SOAP POST request whose `Content-Type`
+        contains `text/xml` (any other request automatically does not
+        use Zope's buildin XML-RPC).
+
+        Note: this is called very early during request handling when most
+        typical attributes of *request* are not yet set up -- e.g. it
+        cannot rely on information in `form` or `other`.
+        Usually, it will look up information in `request.environ`
+        which at this time is garanteed (only) to contain the
+        typical CGI information, such as `PATH_INFO` and `QUERY_STRING`.
+        """
