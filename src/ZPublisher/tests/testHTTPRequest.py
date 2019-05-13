@@ -13,8 +13,8 @@
 
 import sys
 import unittest
-from io import BytesIO
 from contextlib import contextmanager
+from io import BytesIO
 
 from six import PY2
 
@@ -1217,7 +1217,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertNotIn('secret', req.text())
         self.assertIn('password obscured', req.text())
 
-
     _xmlrpc_call = b"""<?xml version="1.0"?>
     <methodCall>
       <methodName>examples.getStateName</methodName>
@@ -1228,8 +1227,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
          </params>
       </methodCall>
     """
-    
-    def test_processInputs_xmlrpc(self):
+
+    def test_processInputs_xmlrpc_with_args(self):
         req = self._makeOne(
             stdin=BytesIO(self._xmlrpc_call),
             environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))

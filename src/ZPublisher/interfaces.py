@@ -83,7 +83,7 @@ class UseTraversalDefault(Exception):
 # XML-RPC control
 
 class IXmlrpcChecker(Interface):
-    """Utility interface controlling the use of Zope's built-in XML-RPC support."""
+    """Utility interface to control Zope's built-in XML-RPC support."""
     def __call__(request):
         """return true, when Zope's internal XML-RPC support should be used.
 
