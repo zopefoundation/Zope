@@ -32,6 +32,7 @@ from six.moves.urllib.parse import urlparse
 
 from AccessControl.tainted import should_be_tainted
 from AccessControl.tainted import taint_string
+from zope.component import queryUtility
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import LoadLocaleError
 from zope.i18n.locales import locales
@@ -44,6 +45,7 @@ from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
+from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
 
 
@@ -523,7 +525,8 @@ class HTTPRequest(BaseRequest):
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
             elif (method == 'POST'
-                  and 'text/xml' in fs.headers.get('content-type', '')):
+                  and 'text/xml' in fs.headers.get('content-type', '')
+                  and use_builtin_xmlrpc(self)):
                 # Ye haaa, XML-RPC!
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response = xmlrpc.response(response)
@@ -1837,3 +1840,8 @@ def _decode(value, charset):
     elif isinstance(value, binary_type):
         return text_type(value, charset, 'replace')
     return value
+
+
+def use_builtin_xmlrpc(request):
+    checker = queryUtility(IXmlrpcChecker)
+    return checker is None or checker(request)
