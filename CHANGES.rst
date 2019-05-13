@@ -24,6 +24,9 @@ Fixes
 
 - Prevent encoding issues in existing DTML Method and Document objects
 
+- Fixed logic error in exceptions handling during publishing. This error would
+  prevent correct Unauthorized handling when exceptions debug mode was set.
+
 
 4.0 (2019-05-10)
 ----------------
