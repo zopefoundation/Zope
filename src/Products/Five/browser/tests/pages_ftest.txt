@@ -86,7 +86,7 @@ accessible TTW, even if we have the permission to render the view:
 
   >>> response = self.publish('/test_folder_1_/testoid/eagle.method/mouse',
   ...                         basic='viewer:secret')
-  >>> self.assertEqual(response.getStatus(), 401)
+  >>> self.assertEqual(response.getStatus(), 404)
 
 The same should apply for the user if he has all other permissions
 except 'View management screens':

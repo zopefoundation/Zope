@@ -30,6 +30,8 @@ from AccessControl.security import CheckerPrivateId
 from AccessControl.security import getSecurityInfo
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
+from AccessControl.unauthorized import Unauthorized
+from AccessControl.ZopeGuards import guarded_getattr
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.resource import FileResourceFactory
@@ -48,6 +50,7 @@ from zope.component.zcml import handler
 from zope.configuration.exceptions import ConfigurationError
 from zope.interface import Interface
 from zope.interface import classImplements
+from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
@@ -441,7 +444,15 @@ class ViewNotCallableError(AttributeError, NotImplementedError):
     pass
 
 
+@zope.interface.implementer(IPublishTraverse)
 class simple(zope.publisher.browser.BrowserView):
+
+    def publishTraverse(self, request, name):
+        try:
+            return guarded_getattr(self, name)
+        except Unauthorized:
+            # attribute exists but is not published, so hide it from access:
+            raise AttributeError(name)
 
     # __call__ should have the same signature as the original method
     @property

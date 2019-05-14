@@ -86,9 +86,15 @@ def test_publishTraverse_to_allowed_name():
     Publishing traversal with the default adapter should work:
 
     >>> from ZPublisher.BaseRequest import DefaultPublishTraverse
-    >>> adapter = DefaultPublishTraverse(view, folder.REQUEST)
-    >>> result = adapter.publishTraverse(folder.REQUEST, 'eagle')()
+    >>> request = folder.REQUEST
+    >>> adapter = DefaultPublishTraverse(view, request)
+    >>> result = adapter.publishTraverse(request, 'eagle')()
     >>> 'The eagle has landed' in result
+    True
+
+    Publishing traversal also works directly:
+
+    >>> view.publishTraverse(request, 'eagle')() == 'The eagle has landed'
     True
 
     Clean up:
