@@ -13,12 +13,14 @@
 
 import sys
 import unittest
+from contextlib import contextmanager
 from io import BytesIO
 
 from six import PY2
 
 from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
+from zope.component import getGlobalSiteManager
 from zope.component import provideAdapter
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.interfaces.locales import ILocale
@@ -26,8 +28,10 @@ from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 from ZPublisher.HTTPRequest import search_type
+from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
+from ZPublisher.xmlrpc import is_xmlrpc_response
 
 
 if sys.version_info >= (3, ):
@@ -1212,6 +1216,48 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         self.assertNotIn('secret', req.text())
         self.assertIn('password obscured', req.text())
+
+    _xmlrpc_call = b"""<?xml version="1.0"?>
+    <methodCall>
+      <methodName>examples.getStateName</methodName>
+      <params>
+         <param>
+            <value><i4>41</i4></value>
+            </param>
+         </params>
+      </methodCall>
+    """
+
+    def test_processInputs_xmlrpc_with_args(self):
+        req = self._makeOne(
+            stdin=BytesIO(self._xmlrpc_call),
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        req.processInputs()
+        self.assertTrue(is_xmlrpc_response(req.response))
+        self.assertEqual(req.args, (41,))
+        self.assertEqual(req.other["PATH_INFO"], "/examples/getStateName")
+
+    def test_processInputs_xmlrpc_controlled_allowed(self):
+        req = self._makeOne(
+            stdin=BytesIO(self._xmlrpc_call),
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        with self._xmlrpc_control(lambda request: True):
+            req.processInputs()
+        self.assertTrue(is_xmlrpc_response(req.response))
+
+    def test_processInputs_xmlrpc_controlled_disallowed(self):
+        req = self._makeOne(
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        with self._xmlrpc_control(lambda request: False):
+            req.processInputs()
+        self.assertFalse(is_xmlrpc_response(req.response))
+
+    @contextmanager
+    def _xmlrpc_control(self, allow):
+        gsm = getGlobalSiteManager()
+        gsm.registerUtility(allow, IXmlrpcChecker)
+        yield
+        gsm.unregisterUtility(allow, IXmlrpcChecker)
 
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):

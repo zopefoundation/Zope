@@ -11,7 +11,21 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Features
+++++++++
+
+- Optionally control the use of Zope's built-in XML-RPC support for
+  POST requests with Content-Type ``text/xml`` via the
+  registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility
+  (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_).
+
+Fixes
++++++
+
+- Prevent encoding issues in existing DTML Method and Document objects
+
+- Fixed logic error in exceptions handling during publishing. This error would
+  prevent correct Unauthorized handling when exceptions debug mode was set.
 
 
 4.0 (2019-05-10)

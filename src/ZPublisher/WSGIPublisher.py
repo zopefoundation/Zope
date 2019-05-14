@@ -176,10 +176,13 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             if request.environ.get('x-wsgiorg.throw_errors', False):
                 reraise(*exc_info)
 
+            retry = False
+            unauth = False
+            debug_exc = getattr(response, 'debug_exceptions', False)
+
             # If the exception is transient and the request can be retried,
             # shortcut further processing. It makes no sense to have an
             # exception view registered for this type of exception.
-            retry = False
             if isinstance(exc, TransientError) and request.supports_retry():
                 retry = True
             else:
@@ -195,6 +198,7 @@ def transaction_pubevents(request, response, tm=transaction.manager):
                 # is used, an exception view for Unauthorized has to merge
                 # the state of the response and the exception instance.
                 if isinstance(exc, Unauthorized):
+                    unauth = True
                     exc.setRealm(response.realm)
                     response._unauthorized()
                     response.setStatus(exc.getStatus())
@@ -205,8 +209,7 @@ def transaction_pubevents(request, response, tm=transaction.manager):
             notify(pubevents.PubFailure(request, exc_info, retry))
 
             if retry or \
-               not (exc_view_created or isinstance(exc, Unauthorized)) or \
-               getattr(response, 'debug_exceptions', False):
+               (not unauth and (debug_exc or not exc_view_created)):
                 reraise(*exc_info)
 
         finally:

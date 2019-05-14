@@ -6,6 +6,7 @@ import Testing.testbrowser
 import Testing.ZopeTestCase
 import zExceptions
 import Zope2.App.zcml
+from Testing.makerequest import makerequest
 
 
 def _lock_item(item):
@@ -95,6 +96,19 @@ class DTMLMethodTests(unittest.TestCase):
         self.assertEqual(
             'unexpected end tag, for tag </dtml-let>, on line 1 of <string>',
             str(err.exception))
+
+    def test__call__missing_encoding_old_instances(self):
+        """ Existing DTML methods have no "encoding" attribute """
+        from OFS.Folder import Folder
+        client = makerequest(Folder('client'))
+        response = client.REQUEST['RESPONSE']
+        doc = self._makeOne(source_string='foo')
+
+        # In order to test the issue I need to delete the "encoding" attribute
+        # that existing instances did not have.
+        del doc.encoding
+
+        self.assertEqual(doc(client=client, RESPONSE=response), u'foo')
 
 
 class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):

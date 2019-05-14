@@ -2,6 +2,8 @@
 import io
 import unittest
 
+from Testing.makerequest import makerequest
+
 
 class DTMLDocumentTests(unittest.TestCase):
 
@@ -49,6 +51,19 @@ class DTMLDocumentTests(unittest.TestCase):
         doc.manage_upload(data)
         self.assertEqual(doc.read(), 'bÿtës')
         self.assertIsInstance(doc.read(), str)
+
+    def test__call__missing_encoding_old_instances(self):
+        """ Existing DTML documents have no "encoding" attribute """
+        from OFS.Folder import Folder
+        client = makerequest(Folder('client'))
+        response = client.REQUEST['RESPONSE']
+        doc = self._makeOne(source_string='foo')
+
+        # In order to test the issue I need to delete the "encoding" attribute
+        # that existing instances did not have.
+        del doc.encoding
+
+        self.assertEqual(doc(client=client, RESPONSE=response), u'foo')
 
 
 class FactoryTests(unittest.TestCase):
