@@ -256,11 +256,9 @@ class AltDatabaseManager(Traversable, UndoSupport):
             REQUEST.RESPONSE.redirect(url)
 
     @requestmethod('POST')
-    def manage_pack(self, days=0, REQUEST=None, _when=None):
+    def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
-        if _when is None:
-            _when = time.time()
-        t = _when - (days * 86400)
+        t = time.time() - (days * 86400)
 
         self._getDB().pack(t)
 
