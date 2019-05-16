@@ -3,8 +3,10 @@
     <script>
       // Helpers for Menu Handling <dtml-var "REQUEST.URL">
       var manage_menu = typeof window.parent.frames!="undefined"&&typeof window.parent.frames.manage_menu!="undefined";
-      <dtml-if "getBookmarkableURLs() and REQUEST.get('method','') == 'GET'">
-        window.parent.history.replaceState('','Main','<dtml-var URL>')
+      <dtml-if getBookmarkableURLs>
+        <dtml-if "REQUEST.get('method','') == 'GET'">
+          window.parent.history.replaceState('','Main','<dtml-var URL>')
+        </dtml-if>
       </dtml-if>
     </script>
   </dtml-unless>
