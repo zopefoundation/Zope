@@ -797,7 +797,7 @@ class ObjectManager(
             # check to see if we are acquiring our objectValues or not
             parents = REQUEST.PARENTS
             if not (len(parents) > 1
-                    and self.objectValues() == parents.objectValues()):
+                    and self.objectValues() == parents[1].objectValues()):
                 try:
                     if getSecurityManager().validate(
                             None, self, 'manage_FTPlist', self.manage_FTPlist):
