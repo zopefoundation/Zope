@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Features
 ++++++++
 
+- Resurrect ZODB packing from the ZMI
+  (`#623 <https://github.com/zopefoundation/Zope/issues/623>`_)
+
 - Optionally control the use of Zope's built-in XML-RPC support for
   POST requests with Content-Type ``text/xml`` via the
   registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility

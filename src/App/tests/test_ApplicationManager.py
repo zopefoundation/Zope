@@ -331,6 +331,40 @@ class AltDatabaseManagerTests(unittest.TestCase):
         am._p_jar = self._makeJar('foo', (2048 * 1024) + 123240)
         self.assertEqual(am.db_size(), '2.1M')
 
+    def test_manage_pack(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', '')
+
+        # The default value for days is 0, meaning pack to now
+        pack_to = time.time()
+        am.manage_pack()
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+
+        # Try a float value
+        pack_to = time.time() - 10800  # 3 hrs, 0.125 days
+        packed_to = am.manage_pack(days=.125)
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Try an integer
+        pack_to = time.time() - 86400  # 1 day
+        packed_to = am.manage_pack(days=1)
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Pass a string
+        pack_to = time.time() - 97200  # 27 hrs, 1.125 days
+        packed_to = am.manage_pack(days='1.125')
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Set the dummy storage pack indicator manually
+        am._getDB()._packed = None
+        # Pass an invalid value
+        self.assertIsNone(am.manage_pack(days='foo'))
+        # The dummy storage value should not change because pack was not called
+        self.assertIsNone(am._getDB()._packed)
+
 
 class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):
     """Browser testing ..dtml.menu.dtml."""

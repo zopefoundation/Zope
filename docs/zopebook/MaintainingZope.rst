@@ -607,59 +607,6 @@ manually by opening Zopes Control_Panel and clicking on the "Database
 Management" link. Zope offers you the option of removing only object version
 older than an adjustable amount of days.
 
-If you want to automatically pack the ZODB you could tickle the appropriate URL
-with a small python script (the traditional filesystem based kind, not Zopes
-"Script (Python)")::
-
-  #!/usr/bin/python
-  import sys, urllib
-  host = sys.argv[1]
-  days = sys.argv[2]
-  url = "%s/Control_Panel/Database/manage_pack?days:float=%s" % (host, days)
-  try: 
-      f = urllib.urlopen(url).read()
-  except IOError:
-      print "Cannot open URL %s, aborting" % url
-      print "Successfully packed ZODB on host %s" % host
-
-The script takes two arguments, the URL of your server (eg.
-http://mymachine.com) and the number of days old an object version has to be to
-get discarded.
-
-On Unix, put this in eg. the file::
-
-  /usr/local/sbin/zope_pack
-
-and make it executable with::
-
-  chmod +x zope_pack
-
-Then you can put in into your crontab with eg.::
-
-  5 4 * * sun     /usr/local/sbin/zope_pack http://localhost 7
-
-This would instruct your system to pack the ZODB on 4:05 every sunday. It would
-connect to the local machine, and leave object versions younger than 7 days in
-the ZODB.
-
-Under Windows, you should use the scheduler to periodically start the script.
-Put the above script in eg.::
-
-  c:\Program Files\zope_pack.py
-
-or whereever you keep custom scripts, and create a batch file::
-
-  zope_pack.bat
-
-with contents similar to the following:::
-
-  "C:\Program Files\zope\bin\python.exe" "C:\Program Files\zope_pack.py" "http://localhost" 7
-
-The first parameter to python is the path to the python script we just created.
-The second is the root URL of the machine you want to pack, and the third is
-the maximum age of object versions you want to keep. Now instruct the scheduler
-to run this `.bat` file every week.
-
 Zope backup is quite straightforward. If you are using the default storage
 (FileStorage), all you need to do is to save the file::
 
