@@ -258,12 +258,21 @@ class AltDatabaseManager(Traversable, UndoSupport):
     @requestmethod('POST')
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
-        t = time.time() - (days * 86400)
+        if not isinstance(days, (int, float)):
+            try:
+                days = float(days)
+            except ValueError:
+                days = None
 
-        self._getDB().pack(t)
+        if days is not None:
+            t = time.time() - (days * 86400)
+            self._getDB().pack(t)
+            msg = 'Database packed to %s days' % str(days)
+        else:
+            t = None
+            msg = 'Invalid days value %s' % str(days)
 
         if REQUEST is not None:
-            msg = 'Database packed to %s days' % str(days)
             url = '%s/manage_main?manage_tabs_message=%s' % (REQUEST['URL1'],
                                                              msg)
             REQUEST['RESPONSE'].redirect(url)
