@@ -103,6 +103,31 @@ class TestPropertyManager(unittest.TestCase):
         self.assertEqual(pm.getProperty('test_lines'), (b'uni', b'code'))
 
 
+class TestPropertySheets(unittest.TestCase):
+
+    def _makePropSheet(self, *args, **kw):
+        from OFS.PropertySheets import PropertySheet
+        return PropertySheet(*args, **kw)
+
+    def _makeFolder(self):
+        from OFS.Folder import Folder
+        fldr = Folder('testfolder')
+        return fldr
+
+    def test_get(self):
+        parent = self._makeFolder()
+        pss = parent.propertysheets
+        sheet_w_name = self._makePropSheet(id='test1')
+        sheet_w_xml = self._makePropSheet(id='foobar',
+                                          md={'xmlns': 'test2'})
+        parent.__propsets__ += (sheet_w_name, sheet_w_xml)
+
+        self.assertIsNone(pss.get('unknown'))
+        self.assertEqual(pss.get('unknown', default='moep'), 'moep')
+        self.assertEqual(pss.get('test1').getId(), 'test1')
+        self.assertEqual(pss.get('test2').getId(), 'foobar')
+
+
 class TestPropertySheet(unittest.TestCase):
 
     def _makeOne(self, *args, **kw):

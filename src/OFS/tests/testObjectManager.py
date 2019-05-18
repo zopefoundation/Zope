@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import marshal
 import os
 import unittest
 from logging import getLogger
@@ -17,10 +18,12 @@ from AccessControl.User import User  # before SpecialUsers
 from Acquisition import Implicit
 from Acquisition import aq_self
 from App.config import getConfiguration
+from OFS import bbb
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
 from zExceptions import BadRequest
 from Zope2.App import zcml
 from zope.component.testing import PlacelessSetup
@@ -548,6 +551,34 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
         # Cleanup
         getConfiguration().zmi_bookmarkable_urls = saved_state
+
+    @unittest.skipUnless(bbb.HAS_ZSERVER, 'Test requires ZServer')
+    def test_FTPList(self):
+        from OFS.Folder import Folder
+        om = makerequest(self._makeOne())
+        om.isTopLevelPrincipiaApplicationObject = True
+        om._setObject('sub', Folder('sub'))
+        om.sub._setObject('subsub', Folder('subsub'))
+        req = om.REQUEST
+        req.PARENTS = [om]
+
+        # At the root we only see a single entry for the subfolder
+        data = marshal.loads(om.manage_FTPlist(req))
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0][0], 'sub')
+
+        # In the subfolder, we see an entry for the current folder
+        # and the folder in it
+        data = marshal.loads(om.sub.manage_FTPlist(req))
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0][0], '.')
+        self.assertEqual(data[1][0], 'subsub')
+
+        # In the leaf node we see entries for the parent and grandparent
+        data = marshal.loads(om.sub.subsub.manage_FTPlist(req))
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0][0], '.')
+        self.assertEqual(data[1][0], '..')
 
 
 _marker = object()
