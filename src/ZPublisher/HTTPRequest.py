@@ -1277,15 +1277,29 @@ class HTTPRequest(BaseRequest):
             ):
         """Get a variable value
 
-        Return a value for the required variable name.
-        The value will be looked up from one of the request data
-        categories. The search order is environment variables,
-        other variables, form data, and then cookies.
+        Return a value for the variable key, or default if not found.
+
+        If key is "REQUEST", return the request.
+        Otherwise, the value will be looked up from one of the request data
+        categories. The search order is:
+        other (the target for explicitly set variables),
+        the special URL and BASE variables,
+        environment variables,
+        common variables (defined by the request class),
+        lazy variables (set with set_lazy),
+        form data and cookies.
+
+        If returnTaints has a true value, then the access to
+        form and cookie variables returns values with special
+        protection against embedded HTML fragments to counter
+        some cross site scripting attacks.
         """
+
+        if key == 'REQUEST':
+            return self
+
         other = self.other
         if key in other:
-            if key == 'REQUEST':
-                return self
             return other[key]
 
         if key[:1] == 'U':
@@ -1312,9 +1326,6 @@ class HTTPRequest(BaseRequest):
             if key in environ and (key not in hide_key):
                 return environ[key]
             return ''
-
-        if key == 'REQUEST':
-            return self
 
         if key[:1] == 'B':
             match = BASEmatch(key)

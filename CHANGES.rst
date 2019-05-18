@@ -30,6 +30,11 @@ Fixes
 - Fixed logic error in exceptions handling during publishing. This error would
   prevent correct Unauthorized handling when exceptions debug mode was set.
 
+- Bring request lookup order related documentation in line with the
+  actual implementation
+  (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
+  Minor cleanup of ``HTTPRequest.get``.
+
 
 4.0 (2019-05-10)
 ----------------
