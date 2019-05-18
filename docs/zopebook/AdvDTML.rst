@@ -260,22 +260,24 @@ of places for variables, so too the request looks up variables
 in a number of places. When the request looks for a variable it
 consults these sources in order:
 
-1. The CGI environment. The `Common Gateway Interface
+1. Variables explicitly set on the request.
+
+2. Special variables. The REQUEST namespace provides you
+   with special information, such as the URL of
+   the current object and all of its parents.
+
+3. The CGI environment. The `Common Gateway Interface
    <http://www.w3.org/CGI/>`_, or CGI interface defines
    a standard set of environment variables to be used by
    dynamic web scripts.  These variables are provided by Zope
    in the REQUEST namespace.
 
-2. Form data. If the current request is a form action, then
+4. Form data. If the current request is a form action, then
    any form input data that was submitted with the request can
    be found in the REQUEST object.
 
-3. Cookies. If the client of the current request has any cookies
+5. Cookies. If the client of the current request has any cookies
    these can be found in the current REQUEST object.
-
-4. Additional variables. The REQUEST namespace provides you
-   with lots of other useful information, such as the URL of
-   the current object and all of its parents.
 
 The request namespace is very useful in Zope since it is the
 primary way that clients (in this case, web browsers)
