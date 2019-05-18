@@ -1371,26 +1371,30 @@ class HTTPRequest(BaseRequest):
         if returnTaints:
             v = self.taintedform.get(key, _marker)
             if v is not _marker:
-                other[key] = v
+                # Issue 630
+                # other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.form.get(key, _marker)
         if v is not _marker:
-            other[key] = v
+            # Issue 630
+            # other[key] = v
             return v
 
         # Return tainted data first (marked as suspect)
         if returnTaints:
             v = self.taintedcookies.get(key, _marker)
             if v is not _marker:
-                other[key] = v
+                # Issue 630
+                # other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.cookies.get(key, _marker)
         if v is not _marker:
-            other[key] = v
+            # Issue 630
+            # other[key] = v
             return v
 
         return default
