@@ -145,10 +145,8 @@ class HTTPRequest(BaseRequest):
       - Environment variables
 
         These variables include input headers, server data, and other
-        request-related data.  The variable names are as <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        in the <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
+        request-related data.  The variable names are as specified
+        in the <a href="https://tools.ietf.org/html/rfc3875">CGI
         specification</a>
 
       - Form data
@@ -1382,26 +1380,22 @@ class HTTPRequest(BaseRequest):
         if returnTaints:
             v = self.taintedform.get(key, _marker)
             if v is not _marker:
-                other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.form.get(key, _marker)
         if v is not _marker:
-            other[key] = v
             return v
 
         # Return tainted data first (marked as suspect)
         if returnTaints:
             v = self.taintedcookies.get(key, _marker)
             if v is not _marker:
-                other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.cookies.get(key, _marker)
         if v is not _marker:
-            other[key] = v
             return v
 
         return default

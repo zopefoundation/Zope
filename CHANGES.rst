@@ -30,6 +30,9 @@ Fixes
 - Fixed logic error in exceptions handling during publishing. This error would
   prevent correct Unauthorized handling when exceptions debug mode was set.
 
+- Do not cache (implicit) request access to form data and cookies in ``other``
+  (`#630 <https://github.com/zopefoundation/Zope/issues/630>`_).
+
 - Bring request lookup order related documentation in line with the
   actual implementation
   (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
