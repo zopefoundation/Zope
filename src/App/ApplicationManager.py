@@ -250,7 +250,34 @@ class AltDatabaseManager(Traversable, UndoSupport):
         self._getDB().cacheMinimize()
 
         if REQUEST is not None:
-            REQUEST.RESPONSE.redirect(REQUEST['URL1'] + '/manage_main')
+            msg = 'ZODB in-memory caches minimized.'
+            url = '%s/manage_main?manage_tabs_message=%s' % (REQUEST['URL1'],
+                                                             msg)
+            REQUEST.RESPONSE.redirect(url)
+
+    @requestmethod('POST')
+    def manage_pack(self, days=0, REQUEST=None):
+        """Pack the database"""
+        if not isinstance(days, (int, float)):
+            try:
+                days = float(days)
+            except ValueError:
+                days = None
+
+        if days is not None:
+            t = time.time() - (days * 86400)
+            self._getDB().pack(t)
+            msg = 'Database packed to %s days' % str(days)
+        else:
+            t = None
+            msg = 'Invalid days value %s' % str(days)
+
+        if REQUEST is not None:
+            url = '%s/manage_main?manage_tabs_message=%s' % (REQUEST['URL1'],
+                                                             msg)
+            REQUEST['RESPONSE'].redirect(url)
+
+        return t
 
 
 InitializeClass(AltDatabaseManager)
