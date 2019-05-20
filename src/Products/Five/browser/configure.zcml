@@ -25,6 +25,8 @@
       provides="zope.container.interfaces.INameChooser"
       />
 
+  <adapter factory=".metaconfigure.SimplePublishTraverse" />
+
   <!-- Menu access -->
   <browser:page
       for="*"

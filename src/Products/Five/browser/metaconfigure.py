@@ -444,15 +444,7 @@ class ViewNotCallableError(AttributeError, NotImplementedError):
     pass
 
 
-@zope.interface.implementer(IPublishTraverse)
 class simple(zope.publisher.browser.BrowserView):
-
-    def publishTraverse(self, request, name):
-        try:
-            return guarded_getattr(self, name)
-        except Unauthorized:
-            # attribute exists but is not published, so hide it from access:
-            raise AttributeError(name)
 
     # __call__ should have the same signature as the original method
     @property
@@ -465,6 +457,23 @@ class simple(zope.publisher.browser.BrowserView):
             raise ViewNotCallableError('__call__')
 
         return getattr(self, attr)
+
+
+@zope.interface.implementer(IPublishTraverse)
+@zope.component.adapter(simple, IBrowserRequest)
+class SimplePublishTraverse(object):
+    """Default PublishTraverse implementation attributes of class `simple`."""
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def publishTraverse(self, request, name):
+        try:
+            return guarded_getattr(self.context, name)
+        except Unauthorized:
+            # attribute exists but is not published, so hide it from access:
+            raise AttributeError(name)
 
 
 class ViewMixinForTemplates(zope.browserpage.simpleviewclass.simple):

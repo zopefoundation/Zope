@@ -92,11 +92,6 @@ def test_publishTraverse_to_allowed_name():
     >>> 'The eagle has landed' in result
     True
 
-    Publishing traversal also works directly:
-
-    >>> view.publishTraverse(request, 'eagle')() == 'The eagle has landed'
-    True
-
     Clean up:
 
     >>> from zope.component.testing import tearDown

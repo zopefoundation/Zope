@@ -234,11 +234,12 @@ Other attributes are private:
   >>> aq_acquire(view, 'mouse__roles__') is ACCESS_PRIVATE
   True
 
-In zope.browserpage this is just protected with the specified permission. Not
-sure if this has to be private in Zope 2:
+A view does not have a ``publishTraverse`` method, traversal to attributes
+of the view is done via an adapter.
 
-  >>> aq_acquire(view, 'publishTraverse__roles__') is ACCESS_PRIVATE
-  True
+  >>> aq_acquire(view, 'publishTraverse')
+  Traceback (most recent call last):
+  AttributeError: 'RequestContainer' object has no attribute 'publishTraverse'
 
 Check to see if view's context properly acquires its true
 parent
