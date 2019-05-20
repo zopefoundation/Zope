@@ -15,6 +15,12 @@
 """
 import unittest
 
+import Products.Five.browser.tests
+import Testing.ZopeTestCase
+import zope.component.testing
+from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+from Zope2.App import zcml
+
 
 def test_view_with_unwrapped_context():
     """
@@ -66,37 +72,33 @@ def test_view_with_unwrapped_context():
     """
 
 
-def test_publishTraverse_to_allowed_name():
-    """
-    The ``eagle.method`` view has a method ``eagle`` that is registered
-    with ``allowed_attributes`` in pages.zcml. This attribute should be
-    reachable through ``publishTraverse`` on the view.
+class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
 
-    >>> import Products.Five.browser.tests
-    >>> from Zope2.App import zcml
-    >>> zcml.load_config("configure.zcml", Products.Five)
-    >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+    def setUp(self):
+        super(TestPublishTraverse, self).setUp()
+        zcml.load_config("configure.zcml", Products.Five)
+        zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+        manage_addSimpleContent(self.folder, 'testoid', 'x')
 
-    >>> from Products.Five.tests.testing.simplecontent import (
-    ... manage_addSimpleContent)
-    >>> manage_addSimpleContent(self.folder, 'testoid', 'x')  # NOQA: F821
-    >>> folder = self.folder  # NOQA: F821
-    >>> view = folder.unrestrictedTraverse('testoid/eagle.method')
+    def tearDown(self):
+        zope.component.testing.tearDown()
+        super(TestPublishTraverse, self).tearDown()
 
-    Publishing traversal with the default adapter should work:
+    def test_publishTraverse_to_allowed_name(self):
+        # The ``eagle.method`` view has a method ``eagle`` that is registered
+        # with ``allowed_attributes`` in pages.zcml. This attribute should be
+        # reachable through ``publishTraverse`` on the view.
 
-    >>> from ZPublisher.BaseRequest import DefaultPublishTraverse
-    >>> request = folder.REQUEST
-    >>> adapter = DefaultPublishTraverse(view, request)
-    >>> result = adapter.publishTraverse(request, 'eagle')()
-    >>> 'The eagle has landed' in result
-    True
+        folder = self.folder
+        view = folder.unrestrictedTraverse('testoid/eagle.method')
 
-    Clean up:
+        # Publishing traversal with the default adapter should work:
 
-    >>> from zope.component.testing import tearDown
-    >>> tearDown()
-    """
+        from ZPublisher.BaseRequest import DefaultPublishTraverse
+        request = folder.REQUEST
+        adapter = DefaultPublishTraverse(view, request)
+        result = adapter.publishTraverse(request, 'eagle')()
+        self.assertIn('The eagle has landed', result)
 
 
 def test_suite():
@@ -105,6 +107,7 @@ def test_suite():
     from Testing.ZopeTestCase import ZopeDocTestSuite
     return unittest.TestSuite((
         ZopeDocTestSuite(),
+        unittest.makeSuite(TestPublishTraverse),
         ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),
         FunctionalDocFileSuite('pages_ftest.txt',
                                package='Products.Five.browser.tests'),
