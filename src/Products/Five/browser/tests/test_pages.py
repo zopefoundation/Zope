@@ -19,7 +19,9 @@ import Products.Five.browser.tests
 import Testing.ZopeTestCase
 import zope.component.testing
 from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
+from Testing.testbrowser import Browser
 from Zope2.App import zcml
+from zope.testbrowser.browser import HTTPError
 
 
 def test_view_with_unwrapped_context():
@@ -78,7 +80,11 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
         super(TestPublishTraverse, self).setUp()
         zcml.load_config("configure.zcml", Products.Five)
         zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
         manage_addSimpleContent(self.folder, 'testoid', 'x')
+        self.browser = Browser()
+        self.browser.login('manager', 'manager_pass')
 
     def tearDown(self):
         zope.component.testing.tearDown()
@@ -99,6 +105,22 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
         adapter = DefaultPublishTraverse(view, request)
         result = adapter.publishTraverse(request, 'eagle')()
         self.assertIn('The eagle has landed', result)
+
+        # Publishing via browser works, too:
+
+        self.browser.open(
+            'http://localhost/test_folder_1_/testoid/eagle.method/eagle')
+        self.assertEqual('The eagle has landed', browser.contents)
+
+    def test_publishTraverse_to_not_allowed_name(self):
+        # The ``eagle.method`` view has a method ``mouse`` but it is not
+        # registered with ``allowed_attributes`` in pages.zcml. This attribute
+        # should be not be accessible. It leads to # a HTTP-404, so we do not
+        # tell the world about our internal methods:
+        with self.assertRaises(HTTPError) as err:
+            self.browser.open(
+                'http://localhost/test_folder_1_/testoid/eagle.method/mouse')
+        self.assertEqual('HTTP Error 404: Not Found', str(err.exception))
 
 
 def test_suite():
