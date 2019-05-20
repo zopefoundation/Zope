@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Features
 ++++++++
 
+- Resurrect ZODB packing from the ZMI
+  (`#623 <https://github.com/zopefoundation/Zope/issues/623>`_)
+
 - Optionally control the use of Zope's built-in XML-RPC support for
   POST requests with Content-Type ``text/xml`` via the
   registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility
@@ -26,6 +29,14 @@ Fixes
 
 - Fixed logic error in exceptions handling during publishing. This error would
   prevent correct Unauthorized handling when exceptions debug mode was set.
+
+- Do not cache (implicit) request access to form data and cookies in ``other``
+  (`#630 <https://github.com/zopefoundation/Zope/issues/630>`_).
+
+- Bring request lookup order related documentation in line with the
+  actual implementation
+  (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
+  Minor cleanup of ``HTTPRequest.get``.
 
 
 4.0 (2019-05-10)

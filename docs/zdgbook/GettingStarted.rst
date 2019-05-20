@@ -106,7 +106,7 @@ following URL.
 
   http://localhost:8080
 
-You can also visit the adminstration area.
+You can also visit the administration area.
 
 Use the user name and password you set earlier.
 
@@ -136,7 +136,7 @@ dependencies between the packages properly.
 
 In order to create an egg distribution, we need to create a
 ``setup.py`` and a basic directory structure. We are going to place
-the Python package inisde the ``src`` directory.
+the Python package inside the ``src`` directory.
 
 ::
 
@@ -148,7 +148,7 @@ the Python package inisde the ``src`` directory.
   $ touch src/poll/main/__init__.py
   $ touch src/poll/main/configure.zcml
 
-The last file is a configuration file. The file ending stands for
+The last file is a configuration file. The ``.zcml`` file extension stands for
 ``Zope Configuration Markup Language``.
 
 To declare ``poll`` as a namespace package, we need to add following
@@ -158,8 +158,8 @@ code to ``src/poll/__init__.py``.
 
   __import__('pkg_resources').declare_namespace(__name__)
 
-Next, we need to add the minimum meta data required for the package
-in `setup.py`.
+Next, we need to add the minimum metadata required for the package
+in ``setup.py``.
 
 ::
 
@@ -175,15 +175,15 @@ in `setup.py`.
                         "Zope"],
       )
 
-We need to add two more files to be recognized by Zope.  First,
-define this call-back function in ``src/poll/main/__init__.py``.
+We need to edit two more files to be recognized by Zope.  First,
+define the ``initialize`` callback function in ``src/poll/main/__init__.py``.
 
 ::
 
   def initialize(registrar):
       pass
 
-And in the ZCML file (``src/poll/main/configure.zcml``) add these
+And, in the ZCML file (``src/poll/main/configure.zcml``), add these
 few lines.
 
 ::

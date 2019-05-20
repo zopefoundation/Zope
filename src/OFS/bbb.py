@@ -44,4 +44,4 @@ class DAVPropertySheetMixin(object):
 
 
 class DAVProperties(object):
-    pass
+    id = 'webdav'
