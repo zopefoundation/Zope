@@ -15,11 +15,18 @@
   <form action="manage_permission" method="post">
     <input type="hidden" name="permission_to_manage"
            value="&dtml-permission_to_manage;" />
-    <select class="form-control" name="roles:list" multiple>
+
+    <table class="table table-striped table-hover table-sm">
       <dtml-in expr="rolesOfPermission(permission_to_manage)" mapping=1>
-        <option &dtml-selected;>&dtml-name;</option>
+        <tr>
+          <td class="zmi-object-check text-right">
+            <input type="checkbox" name="roles:list" value="&dtml-name;"
+                   <dtml-if selected>checked</dtml-if>>
+          </td>
+          <td class="zmi-object-id">&dtml-name;</td>
+        </tr>
       </dtml-in>
-    </select>
+    </table>
 
     <dtml-unless isTopLevelPrincipiaApplicationObject>
       <div class="form-check">

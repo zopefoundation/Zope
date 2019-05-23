@@ -5,6 +5,8 @@
 </dtml-with>
 
 <main class="container-fluid">
+
+  <h3>Local roles for user <strong>&dtml-userid;</strong></h3>
   <p class="form-help">
     Local roles allow you to give particular users extra roles in the 
     context of this object, in addition to the roles they already have. 
@@ -15,37 +17,27 @@
   </p>
 
   <form action="manage_setLocalRoles" method="post">
-    <table class="table table-md">
-      <thead>
-        <tr>
-          <th class="pl-3">User</th>
-          <th>Roles</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="pl-3">
-            &dtml-userid;
-            <input type="hidden" name="userid" value="&dtml-userid;" />
-          </td>
-          <td>
-            <dtml-with "_(user_roles=get_local_roles_for_userid(userid))">
-              <select class="form-control" name="roles:list" size="5"
-                      multiple="multiple">
-                <dtml-in valid_roles>
-                   <dtml-if "_vars['sequence-item'] not in ('Anonymous','Shared',
-                                                            'Authenticated')">
-                     <option value="&dtml-sequence-item;"
-                             <dtml-if "_['sequence-item'] in user_roles">
-                               selected="selected"
-                            </dtml-if>>&dtml-sequence-item;</option>
-                  </dtml-if>
-                 </dtml-in>
-              </select>
-            </dtml-with>
-          </td>
-        </tr>
-      </tbody>
+    <input type="hidden" name="userid" value="&dtml-userid;" />
+
+    <table class="table table-striped table-hover table-sm">
+      <dtml-with "_(user_roles=get_local_roles_for_userid(userid))">
+        <dtml-in valid_roles>
+          <dtml-if "_vars['sequence-item'] not in ('Anonymous','Shared',
+                                                   'Authenticated')">
+            <tr>
+              <td class="zmi-object-check text-right">
+                <input type="checkbox" name="roles:list"
+                       id="&dtml-sequence-item;"
+                       value="&dtml-sequence-item;"
+                       <dtml-if "_['sequence-item'] in user_roles">
+                         checked
+                       </dtml-if>/>
+              </td>
+              <td>&dtml-sequence-item;</td>
+            </tr>
+          </dtml-if>
+        </dtml-in>
+      </dtml-with>
     </table>
 
     <div class="zmi-controls">

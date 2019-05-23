@@ -22,9 +22,8 @@
     </dtml-if>
   </p>
 
-
-
   <dtml-if has_local_roles>
+
     <form action="manage_delLocalRoles" method="POST"
           class="zmi-localroles-delete">
       <dtml-in get_local_roles>
@@ -86,17 +85,18 @@
           </dtml-try>
         </td>
         <td>
-          <select id="roles" name="roles:list" class="form-control pb-4" 
-                  size="6" multiple="multiple" required="required">
+          <table class="table table-striped table-hover table-sm">
             <dtml-in valid_roles>
-              <dtml-if "_vars['sequence-item'] not in ('Anonymous', 'Shared',
-                                                       'Authenticated')">
-                <option value="&dtml-sequence-item;">
-                  &dtml-sequence-item;
-                </option>
-              </dtml-if>
+              <tr>
+                <td class="zmi-object-check text-right">
+                  <input type="checkbox" name="roles:list"
+                         id="&dtml-sequence-item;"
+                         value="&dtml-sequence-item;"/>
+                </td>
+                <td>&dtml-sequence-item;</td>
+              </tr>
             </dtml-in>
-          </select>
+          </table>
         </td>
       </tr>
     </tbody>
