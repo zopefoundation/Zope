@@ -1,34 +1,43 @@
 <dtml-var manage_page_header>
+
 <dtml-with "_(management_view='Security')">
-<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
+  <dtml-if manage_tabs>
+    <dtml-var manage_tabs>
+  </dtml-if manage_tabs>
 </dtml-with>
 
 <main class="container-fluid">
 
-	<p class="form-text">
-		Roles assigned to the permission <strong>&dtml-permission_to_manage;</strong>
-	</p>
+  <p class="form-text">
+    Roles assigned to the permission <strong>&dtml-permission_to_manage;</strong>
+  </p>
 
-	<form action="manage_permission" method="post">
-		<input type="hidden" name="permission_to_manage" value="&dtml-permission_to_manage;" />
-		<select class="form-control" name="roles:list" multiple>
-			<dtml-in expr="rolesOfPermission(permission_to_manage)" mapping=1>
-				<option &dtml-selected;>&dtml-name;</option>
-			</dtml-in>
-		</select>
+  <form action="manage_permission" method="post">
+    <input type="hidden" name="permission_to_manage"
+           value="&dtml-permission_to_manage;" />
+    <select class="form-control" name="roles:list" multiple>
+      <dtml-in expr="rolesOfPermission(permission_to_manage)" mapping=1>
+        <option &dtml-selected;>&dtml-name;</option>
+      </dtml-in>
+    </select>
 
-		<dtml-unless isTopLevelPrincipiaApplicationObject>
-			<div class="form-check">
-				<input type="checkbox" class="form-check-input" name="acquire" id="acquire" <dtml-var expr="acquiredRolesAreUsedBy(permission_to_manage)">/>
-				<label for="acquire" class="form-check-label">Also use roles acquired from folders containing this objects</label>
-			</div>
-		</dtml-unless>
+    <dtml-unless isTopLevelPrincipiaApplicationObject>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="acquire"
+               id="acquire"
+               <dtml-var expr="acquiredRolesAreUsedBy(permission_to_manage)">/>
+        <label for="acquire" class="form-check-label">
+          Also use roles acquired from folders containing this objects
+        </label>
+      </div>
+    </dtml-unless>
 
-		<div class="zmi-controls">
-			<input class="btn btn-primary" type="submit" name="submit" value="Save Changes" />
-		</div>
+    <div class="zmi-controls">
+      <input class="btn btn-primary" type="submit" name="submit"
+             value="Save Changes" />
+    </div>
 
-	</form>
+  </form>
 
 </main>
 
