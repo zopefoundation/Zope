@@ -1,96 +1,113 @@
 <dtml-var manage_page_header>
 
-<dtml-with "_(management_view='Security')"><dtml-if manage_tabs><dtml-var manage_tabs></dtml-if></dtml-with>
+<dtml-with "_(management_view='Security')">
+  <dtml-if manage_tabs>
+    <dtml-var manage_tabs>
+  </dtml-if>
+</dtml-with>
 
 <main class="container-fluid">
 
-	<dtml-if stat><div class="alert alert-success">&dtml-stat;</div></dtml-if>
+  <dtml-if stat><div class="alert alert-success">&dtml-stat;</div></dtml-if>
 
-	<p class="form-help">
-		Local roles allow you to give particular users extra roles in the context
-		of this object, in addition to the roles they already have.
-		<dtml-if has_local_roles>
-			<br />The following users have been given local roles. To modify the local roles
-			given to a particular user, click on the name of the user. To remove all
-			local roles from a user, select the checkbox next to the name of the user
-			and click the <em>Remove</em> button.
-		</dtml-if>
-	</p>
+  <p class="form-help">
+    Local roles allow you to give particular users extra roles in the context
+    of this object, in addition to the roles they already have.
+    <dtml-if has_local_roles>
+      <br />
+      The following users have been given local roles. To modify the local roles
+      given to a particular user, click on the name of the user. To remove all
+      local roles from a user, select the checkbox next to the name of the user
+      and click the <em>Remove</em> button.
+    </dtml-if>
+  </p>
 
+  <dtml-if has_local_roles>
 
+    <form action="manage_delLocalRoles" method="POST"
+          class="zmi-localroles-delete">
+      <dtml-in get_local_roles>
+        <div class="form-check">
+           <input type="checkbox" class="form-check-input" name="userids:list"
+                  value="&dtml-sequence-key;"
+                  id="&dtml-sequence-key;_&dtml-sequence-item;" />
+          <label for="&dtml-sequence-key;_&dtml-sequence-item;"
+                 class="form-check-label">
+             <a href="manage_editLocalRoles?userid=&dtml.url_quote-sequence-key;">
+               <strong>&dtml-sequence-key;</strong></a>
+               (<dtml-in sequence-item>&dtml-sequence-item;<dtml-unless
+                         sequence-end>, </dtml-unless></dtml-in>)
+          </label>
+        </div>
+      </dtml-in>
+      <div class="zmi-controls mt-3 mb-4">
+        <input class="btn btn-primary" type="submit" name="submit"
+               value="Remove" />
+      </div>
+    </form>
 
-	<dtml-if has_local_roles>
-		<form action="manage_delLocalRoles" method="POST" class="zmi-localroles-delete">
-			<dtml-in get_local_roles>
-				<div class="form-check">
- 					<input type="checkbox" class="form-check-input" 
- 						name="userids:list" value="&dtml-sequence-key;" id="&dtml-sequence-key;_&dtml-sequence-item;" />
-					<label for="&dtml-sequence-key;_&dtml-sequence-item;" class="form-check-label">
-	 					<a href="manage_editLocalRoles?userid=&dtml.url_quote-sequence-key;"><strong>&dtml-sequence-key;</strong></a> (<dtml-in
-							sequence-item>&dtml-sequence-item;<dtml-unless
-							sequence-end>, </dtml-unless></dtml-in>)
-					</label>
-				</div>
-			</dtml-in>
-			<div class="zmi-controls mt-3 mb-4">
-				<input class="btn btn-primary" type="submit" name="submit" value="Remove" />
-			</div>
-		</form>
+  </dtml-if>
 
-	</dtml-if>
+  <form action="manage_setLocalRoles" method="post" class="zmi-localroles-add">
+    <p class="form-text">
+      To give a user extra roles when accessing this object (and its children),
+      select a user from the <em>User</em> list below, select the extra
+      roles that should be given to that user from the <em>Roles</em> list.
+    </p>
+    <table class="table table-md">
+      <thead>
+        <tr>
+          <th scope="col" class="pl-3" style="width:50%">User</th>
+          <th scope="col" style="width:50%">Roles</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pl-3">
+          <dtml-try>
+            <input id="userid" name="userid" class="form-control" 
+                   placeholder="Enter User Name or Select from List"
+                   value="<dtml-var "REQUEST.get('username','')">" 
+                   required="required" />
+            <select name="userid_list" class="form-control bg-light" size="5"
+                    onclick="$('#userid').val( $(this).val() );
+                             $('#userid').focus();">
+              <dtml-in get_valid_userids>
+                <option value="&dtml-sequence-item;">
+                  &dtml-sequence-item;
+                </option>
+              </dtml-in>
+            </select>
+          <dtml-except OverflowError>
+            <input id="userid" placeholder="Enter User Name" 
+                   name="userid" class="form-control"
+                   required="required" />
+          </dtml-try>
+        </td>
+        <td>
+          <table class="table table-striped table-hover table-sm">
+            <dtml-in valid_roles>
+              <dtml-if "_['sequence-item'] not in ('Anonymous', 'Shared',
+                                                   'Authenticated')">
+                <tr>
+                  <td class="zmi-object-check text-right">
+                    <input type="checkbox" name="roles:list"
+                           id="&dtml-sequence-item;"
+                           value="&dtml-sequence-item;"/>
+                  </td>
+                  <td>&dtml-sequence-item;</td>
+                </tr>
+              </dtml-if>
+            </dtml-in>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-	<form action="manage_setLocalRoles" method="post" class="zmi-localroles-add">
-		<p class="form-text">
-			To give a user extra roles when accessing this object (and its children),
-			select a user from the <em>User</em> list below, select the extra
-			roles that should be given to that user from the <em>Roles</em> list.
-		</p>
-		<table class="table table-md">
-			<thead>
-				<tr>
-					<th scope="col" class="pl-3" style="width:50%">User</th>
-					<th scope="col" style="width:50%">Roles</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td class="pl-3">
-					<dtml-try>
-						<input id="userid" name="userid" class="form-control" 
-							placeholder="Enter User Name or Select from List"
-							value="<dtml-var "REQUEST.get('username','')">" 
-							required="required" />
-						<select name="userid_list" class="form-control bg-light" size="5"
-							onclick="$('#userid').val( $(this).val() ); $('#userid').focus();">
-							<dtml-in get_valid_userids>
-								<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-							</dtml-in>
-						</select>
-						<dtml-except OverflowError>
-						<input id="userid" placeholder="Enter User Name" 
-							name="userid" class="form-control"
-							required="required" />
-					</dtml-try>
-				</td>
-				<td>
-					<select id="roles" name="roles:list" class="form-control pb-4" 
-						size="6" 
-						multiple="multiple"
-						required="required">
-						<dtml-in valid_roles><dtml-if
-							"_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
-							<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-							</dtml-if>
-						</dtml-in>
-					</select>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<div class="zmi-controls mt-3">
-		<input class="btn btn-primary" type="submit" name="submit" value="Add" />
-	</div>
+  <div class="zmi-controls mt-3">
+    <input class="btn btn-primary" type="submit" name="submit" value="Add" />
+  </div>
 
 </form>
 
