@@ -483,6 +483,9 @@ class HTTPRequest(BaseRequest):
             setattr=setattr):
         """Process request inputs
 
+        See the file "request_parms.rst" in this directory for
+        a description.
+
         We need to delay input parsing so that it is done under
         publisher control for error handling purposes.
         """
