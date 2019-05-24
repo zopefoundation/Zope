@@ -5,7 +5,7 @@ Request parameter support
 Introduction
 ============
 
-Zope responds to requests, specified via an url, request headers
+Zope responds to requests, specified via an URL, request headers
 and (optionally) a request body. An url consists of
 various parts, among them a *path* and a *query*
 (for details see `RFC 2396 <https://www.ietf.org/rfc/rfc2396.txt>`_).
@@ -107,7 +107,7 @@ Zope supports the following aggregators:
 list
   collect all values with this name into a list.
 
-  If there are more than a single parameter with the same name,
+  If there are two or more parameters with the same name,
   then they are by default collected into a list.
   The ``list`` aggregator is mainly used to ensure that
   the parameter leads to a list value even in the case that
@@ -126,8 +126,8 @@ record
   *var*\ ``.``\ *attr*.
 
   It tells Zope to create a request variable *var*
-  with as value a 
-  record (i.e. a ``ZPublisher.HTTPRequest.record`` instance) and
+  of type record (more precisely,
+  a ``ZPublisher.HTTPRequest.record`` instance) and
   set its attribute *attr* to the parameter value.
   If such a request variable already exists,
   then only its attribute *attr* is updated.
@@ -202,7 +202,7 @@ For each request parameter, the processing consists of the following steps:
 1. Some variables are set up:
 
    isFileUpload
-     does the parameter represents an uploaded file?
+     does the parameter represent an uploaded file?
 
    converter_type
      the most recently seen converter from a converter directive
@@ -240,7 +240,7 @@ path is extended accordingly.
 
 As a security measure, mainly for DTML use, request variables
 are not only made available in the request attribute ``form``;
-a (somewhat) securized version of them is made available in
+a (somewhat) secured version of them is made available in
 the attribute ``taintedform``. In the *tainted* request variable
 variant, strings potentially containing HTML fragments use
 ``TaintedString`` as data type rather than the normal ``str``.
