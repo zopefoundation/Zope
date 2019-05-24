@@ -172,9 +172,12 @@ class RoleManager(BaseRoleManager):
 
     @security.protected(change_permissions)
     @requestmethod('POST')
-    def manage_setLocalRoles(self, userid, roles, REQUEST=None):
+    def manage_setLocalRoles(self, userid, roles=[], REQUEST=None):
         """Set local roles for a user."""
-        BaseRoleManager.manage_setLocalRoles(self, userid, roles)
+        if roles:
+            BaseRoleManager.manage_setLocalRoles(self, userid, roles)
+        else:
+            return self.manage_delLocalRoles((userid,), REQUEST)
         if REQUEST is not None:
             stat = 'Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)

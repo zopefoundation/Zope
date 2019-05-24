@@ -42,6 +42,11 @@ Fixes
   (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
   Minor cleanup of ``HTTPRequest.get``.
 
+Other changes
++++++++++++++
+
+- Fixed usability on ZMI Security tab forms for sites with many roles
+
 
 4.0 (2019-05-10)
 ----------------
