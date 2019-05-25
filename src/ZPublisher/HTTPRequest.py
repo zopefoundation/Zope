@@ -483,8 +483,10 @@ class HTTPRequest(BaseRequest):
             setattr=setattr):
         """Process request inputs
 
-        See the file "request_parms.rst" in this directory for
-        a description.
+        See the `Zope Developer Guide Object Publishing chapter
+        <https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
+        for a detailed explanation in the section `Marshalling Arguments from
+        the Request`.
 
         We need to delay input parsing so that it is done under
         publisher control for error handling purposes.
