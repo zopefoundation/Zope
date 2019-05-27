@@ -110,7 +110,7 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
 
         self.browser.open(
             'http://localhost/test_folder_1_/testoid/eagle.method/eagle')
-        self.assertEqual('The eagle has landed', browser.contents)
+        self.assertEqual('The eagle has landed', self.browser.contents)
 
     def test_publishTraverse_to_not_allowed_name(self):
         # The ``eagle.method`` view has a method ``mouse`` but it is not

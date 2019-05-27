@@ -25,6 +25,7 @@ from inspect import ismethod
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
 import zope.publisher.browser
+from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.security import CheckerPrivateId
 from AccessControl.security import getSecurityInfo
@@ -459,6 +460,27 @@ class simple(zope.publisher.browser.BrowserView):
         return getattr(self, attr)
 
 
+class DeferredAttrAuthProxy(object):
+    """Proxy to defer the authorization from traversal to object access."""
+
+    security = ClassSecurityInfo()
+
+    def __init__(self, context, name):
+        self.context = context
+        self.name = name
+
+    @security.public
+    def __call__(self, *args, **kw):
+        try:
+            attr = guarded_getattr(self.context, self.name)
+        except (AttributeError, Unauthorized):
+            raise NotFound(self.context, self.name)
+        return attr(*args, **kw)
+
+
+InitializeClass(DeferredAttrAuthProxy)
+
+
 @zope.interface.implementer(IPublishTraverse)
 @zope.component.adapter(simple, IBrowserRequest)
 class SimplePublishTraverse(object):
@@ -469,11 +491,7 @@ class SimplePublishTraverse(object):
         self.request = request
 
     def publishTraverse(self, request, name):
-        try:
-            return guarded_getattr(self.context, name)
-        except Unauthorized:
-            # attribute exists but is not published, so hide it from access:
-            raise AttributeError(name)
+        return DeferredAttrAuthProxy(self.context, name)
 
 
 class ViewMixinForTemplates(zope.browserpage.simpleviewclass.simple):
