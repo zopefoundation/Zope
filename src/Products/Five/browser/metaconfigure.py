@@ -25,14 +25,11 @@ from inspect import ismethod
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
 import zope.publisher.browser
-from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.security import CheckerPrivateId
 from AccessControl.security import getSecurityInfo
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
-from AccessControl.unauthorized import Unauthorized
-from AccessControl.ZopeGuards import guarded_getattr
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.browser.resource import DirectoryResourceFactory
 from Products.Five.browser.resource import FileResourceFactory
