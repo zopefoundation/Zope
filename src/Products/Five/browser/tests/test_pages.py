@@ -113,14 +113,10 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
         self.assertEqual('The eagle has landed', self.browser.contents)
 
     def test_publishTraverse_to_not_allowed_name(self):
-        # The ``eagle.method`` view has a method ``mouse`` but it is not
-        # registered with ``allowed_attributes`` in pages.zcml. This attribute
-        # should be not be accessible. It leads to # a HTTP-404, so we do not
-        # tell the world about our internal methods:
         with self.assertRaises(HTTPError) as err:
             self.browser.open(
                 'http://localhost/test_folder_1_/testoid/eagle.method/mouse')
-        self.assertEqual('HTTP Error 404: Not Found', str(err.exception))
+        self.assertEqual('HTTP Error 401: Unauthorized', str(err.exception))
 
 
 def test_suite():
