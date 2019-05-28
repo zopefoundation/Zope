@@ -51,8 +51,8 @@ The remaining parts of this document describe these directives
 and the overall processing model in detail.
 
 
-Request parameter directives
-============================
+Request parameter directive types
+=================================
 
 Zope supports different kinds of request parameter directives.
 This sections describes them in detail.
@@ -62,7 +62,7 @@ Converter
 ---------
 
 A converter directive converts the parameter value (a string) to a
-converter-specific type in a converter-specific way. The available converters
+converter specific type in a converter specific way. The available converters
 are provided by the ``ZPublisher.Converters.type_converters`` module.
 
 Simple type converters are ``int``, ``float``, ``boolean``, ...
@@ -171,7 +171,8 @@ Processing model
 Zope processes the request parameters in
 ``ZPublisher.HTTPRequest.HTTPRequest.processInputs``.
 
-This section describes the complex processing model in some detail.
+This section describes the complex processing model in some detail as its
+various steps and peculiar logic may lead to surprises.
 
 In a preliminary step the request parameters are collected
 from the potential sources, i.e. the "query" and
@@ -221,8 +222,8 @@ For each request parameter, the processing consists of the following steps:
 
 3. All directives in the paramter name are examined from right to left
    and the variables set up in step 1 are updated accordingly.
-   ``:tuple`` directives update ``tuple_items``, and method directives
-   update ``method``.
+   ``:tuple`` directives update ``flags`` and ``tuple_items``, and method
+   directives update ``flags`` and ``method``.
 
 4. The actions stored in ``flags`` during step 3 are executed.
 
@@ -231,7 +232,7 @@ For each request parameter, the processing consists of the following steps:
 
 After all request parameters have been processed
 request variables from ``defaults`` are put into ``form`` as long as it
-does not already if contain that variable.
+does not contain that variable already.
 If a method directive has been encountered the traversal
 path is extended accordingly.
 
