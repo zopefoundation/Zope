@@ -671,8 +671,9 @@ a record ``x`` with attributes ``name`` and ``age`` and respective values
 
 The publisher also marshals arguments from CGI environment variables
 and cookies. When locating arguments, the publisher first looks in
-CGI environment variables, then other request variables, then form
-data, and finally cookies. Once a variable is found, no further
+other (i.e. explicitly set or special) request variables,
+then CGI environment variables, then form
+variables, and finally cookies. Once a variable is found, no further
 searching is done. So for example, if your published object expects
 to be called with a form variable named ``SERVER_URL``, it will fail,
 since this argument will be marshalled from the CGI environment first,
