@@ -736,9 +736,6 @@ The publisher supports many converters:
 - **required** -- Raises an exception if the variable is not present or
   is an empty string.
 
-- **ignore_empty** -- Excludes a variable from the request if the
-  variable is an empty string.
-
 - **date** -- Converts a string to a **DateTime** object. The formats
   accepted are fairly flexible, for example ``10/16/2000``, ``12:01:13
   pm``.
@@ -746,12 +743,6 @@ The publisher supports many converters:
 - **date_international** -- Converts a string to a **DateTime** object,
   but especially treats ambiguous dates as "days before month before
   year". This useful if you need to parse non-US dates.
-
-- **list** -- Converts a variable to a Python list of values, even if
-  there is only one value.
-
-- **tuple** -- Converts a variable to a Python tuple of values, even if
-  there is only one value.
 
 - **lines** -- Converts a variable to a Python list of native strings
   by splitting the string on line breaks. Also converts list/tuple of
@@ -768,7 +759,10 @@ The publisher supports many converters:
 - **ulines**, **utokens**, **utext** -- like **lines**, **tokens**,
   **text**, but always converts into unicode strings.
 
-If the publisher cannot coerce a request variable into the type
+The full list of supported converters can be found
+in ``ZPublisher.Converters.tpye_converters``.
+
+If the publisher cannot coerce a request parameter into the type
 required by the type converter it will raise an error. This is useful
 for simple applications, but restricts your ability to tailor error
 messages. If you wish to provide your own error messages, you should
@@ -796,46 +790,36 @@ a similar name.
 
 Zope supports the following aggregators:
 
-list
-  collect all values with this name into a list.
-
+- **list** -- collect all values with this name into a list.
   If there are two or more parameters with the same name
   they are collected into a list by default.
   The ``list`` aggregator is mainly used to ensure that
   the parameter leads to a list value even in the case that
   there is only one of them.
 
-tuple
-  collect all values with this name into a tuple.
+- **tuple** -- collect all values with this name into a tuple.
 
-default
-  use the value of this parameter as a default value; it
+- **default** -- use the value of this parameter as a default value; it
   can be overridden by a parameter of the same name without
   the ``default`` directive.
 
-record
-  this directive assumes that the parameter name starts with
-  *var*\ ``.``\ *attr*.
-
-  It tells Zope to create a request variable *var*
-  of type record (more precisely,
-  a ``ZPublisher.HTTPRequest.record`` instance) and
+- **record** -- this directive assumes that the parameter name starts
+  with *var*\ ``.``\ *attr*.
+  It tells Zope to create a request variable *var* of type record
+  (more precisely, a ``ZPublisher.HTTPRequest.record`` instance) and
   set its attribute *attr* to the parameter value.
   If such a request variable already exists,
-  then only its attribute *attr* is updated
+  then only its attribute *attr* is updated.
 
-records
-  this directive is similar to ``record``. However, *var*
+- **records** -- this directive is similar to ``record``. However, *var*
   gets as value not a single record but a list of records.
-
   Zope starts a new record (and appends it to the list)
   when the current request parameter would override an attribute
   in the last record of the list constructed so far (or this list
   is empty).
 
-ignore_empty
-  this directive causes Zope to ignore the parameter if its
-  value is empty.
+- **ignore_empty** -- this directive causes Zope to ignore the parameter
+  if its value is empty.
 
 
 An aggregator in detail: the `record` argument
