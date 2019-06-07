@@ -1074,7 +1074,7 @@ For each request parameter, the processing consists of the following steps:
 
 2. The parameter value is checked to see if it is a file upload.
    In this case, it is wrapped into a ``FileUpload``, and ``isFileUpload``
-   is updated
+   is updated.
 
 3. All directives in the paramter name are examined from right to left
    and the variables set up in step 1 are updated accordingly.
