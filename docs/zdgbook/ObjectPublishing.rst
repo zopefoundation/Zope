@@ -1070,7 +1070,7 @@ For each request parameter, the processing consists of the following steps:
 
      Processing types are "ignore", "aggregate as sequence",
      "aggregate as record", "aggregate as records", "use as default",
-     "convert" (using ``converter_type`` and ``character_encoding``)
+     "convert" (using ``converter_type`` and ``character_encoding``).
 
 2. The parameter value is checked to see if it is a file upload.
    In this case, it is wrapped into a ``FileUpload``, and ``isFileUpload``
