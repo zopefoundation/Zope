@@ -760,7 +760,7 @@ The publisher supports many converters:
   **text**, but always converts into unicode strings.
 
 The full list of supported converters can be found
-in ``ZPublisher.Converters.tpye_converters``.
+in ``ZPublisher.Converters.type_converters``.
 
 If the publisher cannot coerce a request parameter into the type
 required by the type converter it will raise an error. This is useful
