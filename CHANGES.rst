@@ -22,6 +22,10 @@ Features
   registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility
   (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_).
 
+- Document request parameter handling
+  (`#636 <https://github.com/zopefoundation/Zope/issues/636>`_).
+
+
 Fixes
 +++++
 
