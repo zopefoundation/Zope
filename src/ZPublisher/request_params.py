@@ -53,11 +53,13 @@ Aggregator
 
 from codecs import lookup
 from re import compile
-from six import PY3
 from sys import exc_info
 
+from six import PY3
+
 from .Converters import type_converters
-from .HTTPRequest import FileUpload, record
+from .HTTPRequest import FileUpload
+from .HTTPRequest import record
 
 
 class Markable(object):

@@ -30,7 +30,8 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 from ZPublisher.BaseRequest import exec_callables
 from ZPublisher.HTTPRequest import FileUpload
-from ZPublisher.interfaces import IXmlrpcChecker, RequestParameterError
+from ZPublisher.interfaces import IXmlrpcChecker
+from ZPublisher.interfaces import RequestParameterError
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
 from ZPublisher.xmlrpc import is_xmlrpc_response

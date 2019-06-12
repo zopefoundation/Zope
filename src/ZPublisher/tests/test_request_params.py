@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 from io import BytesIO
+from unittest import TestCase
+from unittest import skipIf
+
 from six import PY3
-from unittest import TestCase, skipIf
 
 from ..HTTPRequest import FileUpload
+from ..request_params import PrimaryValue
+from ..request_params import RecordValue
+from ..request_params import SequenceValue
+from ..request_params import process_parameters
+from ..request_params import record
 
-from ..request_params import \
-    process_parameters, record, RecordValue, SequenceValue, PrimaryValue
 
 if PY3:
     unicode = str

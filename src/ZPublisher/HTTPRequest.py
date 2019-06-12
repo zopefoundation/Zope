@@ -24,9 +24,9 @@ from cgi import FieldStorage
 from six import PY2
 from six import PY3
 from six import binary_type
+from six import reraise
 from six import string_types
 from six import text_type
-from six import reraise
 from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 
@@ -44,8 +44,11 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
-from ZPublisher.interfaces import IXmlrpcChecker, RequestParameterError
+from ZPublisher.interfaces import IXmlrpcChecker
+from ZPublisher.interfaces import RequestParameterError
 from ZPublisher.utils import basic_auth_decode
+
+from .request_params import process_parameters  # noqa:
 
 
 if PY3:
@@ -1318,6 +1321,3 @@ def should_be_tainted(v):
         return base_should_be_tainted(v)
     except Exception:
         return False
-
-
-from .request_params import process_parameters  # noqa: 
