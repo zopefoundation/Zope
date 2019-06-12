@@ -8,6 +8,74 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
+4.1 (unreleased)
+----------------
+
+Features
+++++++++
+
+- Modernized request paramter handling
+  (`#641 <https://github.com/zopefoundation/Zope/issues/641>`_):
+
+  - fully recursive aggregation which can handle structures of arbitrary depth
+
+  - simplified processing model
+
+  - support for special HTML5 features: ``_charset_`` informs
+    about the used form encoding; character references used
+    to work around encoding limitations
+
+  - treats parameter values internally as text
+    (this means unicode for Python 2).
+    For Python 2, the conversion to unicode is skipped if it
+    results in a ``UnicodeDecodeError``. The value is then used
+    as is.
+
+    For Python 2,
+    the final values for parameters without converter and encoding directive
+    are encoded with Zope's default encoding; character references
+    are used for characters which cannot be encoded.
+
+  - Errors encountered during request parameter processing are
+    not reported immediately (at this stage, application specific
+    error handling has not yet been set up). Instead, a
+    ``post_traverse`` is registered which will raise
+    a ``RequestParameterError`` exception after the traversal
+    in the proper application context.
+    The ``RequestParameterError`` describes all errors
+    encountered during request parameter processing.
+
+  - ``FileUpload`` has new attributes ``type`` (the associated
+    MIME type or ``None``) and the ``dict`` ``type_options``
+    (containing the provided MIME type parameters).
+
+  Backward incompatibilities:
+
+  - a parameter must now follow a corresponding default parameter
+    to override the default paramter; formerly the relative order
+    of parameter and default parameter was of no importance.
+
+    There is a new directive "conditional" which can also be used
+    to define a default value. A conditional parameter is ignored,
+    if there is already a corresponding parameter, and
+    otherwise acts like a default parameter. Thus, its behaviour
+    is comparable to the former bahaviour of "default".
+
+  - aggregators are now applied from left to right; especially,
+    their relative order is important.
+    Formerly, aggregators were applied in a fixed order --
+    independent of the order in which they were specified.
+
+  - the converter *functions* (in ``ZPublisher.Converters``)
+    no longer support the conversion of files (because they
+    do not know the encoding applicable for the file).
+    The converter *directives*, however, can still be applied
+    to (uploaded) files. They use the encoding explicitly
+    specified via an encoding directive or fall back to
+    Zope's default encoding.
+
+
+
 4.0.1 (unreleased)
 ------------------
 

@@ -631,8 +631,7 @@ and an optional request body. A URL consists of
 various parts, among them a *path* and a *query*, see
 `RFC 2396 <https://www.ietf.org/rfc/rfc2396.txt>`_ for details.
 
-Zope uses the *path* to locate an object, method or view for
-producing the response (this process is called *traversal*)
+Zope uses the *path* to locate the published object
 and *query* - if present - as a specification for
 request parameters. Additionally, request parameters can come from
 the optional request body.
@@ -641,13 +640,79 @@ Zope preprocesses the incoming request information and makes
 the result available in the so called *request* object.
 This way, the response generation code can access all relevant request
 information in an easy and natural (pythonic) way.
-Preprocessing transforms the request *parameters* into request (or form)
-*variables*.
+Preprocessing transforms the *request parameters* into
+*form variables*, a special kind of *request variables*.
 They are made available via the request object's ``form`` attribute
-(a ``dict``) or directly via the request object itself, as long as they are
-not hidden by other request information.
+(a ``dict``).
 
-The request parameters coming from the *query* have the form
+*Request variables* can come from various sources. If a request
+variable is looked up, those sources are asked in turn
+whether they know the variable; the lookup stops with the first
+success. This way, a variable defined by a source
+is hidden by a variable of the same name defined by a source
+asked earlier.
+Sources are asked in the following order:
+
+* the lookup for ``REQUEST`` gives the request object
+
+* the request attribute ``other`` -- it contains 
+  request variables explicitly set with the method
+  ``request.set``. In addition it is used as
+  cache for special and lazy variables. Finally, the request
+  preprocessing puts some additional variables there,
+  e.g. ``PUBLISHED`` (the published object),
+  ``AUTHENTICATED_USER`` (the user object, if authentication was
+  successful), ``SERVER_URL`` (the initial URL part, identifying
+  the server).
+
+* special variables
+
+   - the URL variables whose names are defined by the
+     regular expressions ``URL(PATH)?([0-9]*)``
+     and ``BASE(PATH)?([0-9]*)``, e.g. ``URL``, ``URL1``, ``URLPATH``,
+     ``BASE``, ``BASEPATH1``. Their value is a prefix of the
+     current URL or the URL path (if the name contains ``PATH``),
+     respectively. ``URL`` and ``URL0`` give the full URL
+     and each successive *i* in ``URL``\ *i* removes a further
+     path segment from the end. ``BASE`` and ``BASE0`` start
+     with the empty path; ``BASE1`` adds the so called
+     "script name" (if any) and each successive *i* in ``BASE``\ *i*
+     adds a further path segment form the original URL.
+
+   - ``BODY`` and ``BODYFILE`` (for requests with a body).
+     Their value is the request body, either as a
+     (binary) string or as a file, respectively.
+     
+* the request attribute ``environ`` -- it contains the
+  CGI environment variables and other information
+  from the request headers.
+
+* the request attribute ``common`` -- it contains variables
+  defined by the request class (not the individual request).
+
+* so called *lazy variables* -- these are "expensive"
+  variables created only on first access and then
+  put into ``other``. An example is ``SESSION``, representing
+  Zope's session object.
+
+* the request attribute ``form`` -- it contains the form
+  variables, i.e. the result of the request parameter processing.
+
+* the request attribute ``cookies`` -- it contains the cookies
+  provided with the request.
+
+The object publisher can use all (visible) request variables
+as arguments for the published object.
+
+.. note::
+  ``str(request)`` returns a description of the request object as HTML text.
+  You can use this to "view" the result of request preprocessing, e.g.
+  by defining
+  a ``DTML Method`` with body ``<dtml-var "str(REQUEST)">``
+  (or a ``Script (Python)`` with body ``return str(container.REQUEST)``)
+  and calling it via the Web or using it as form action.
+
+The request parameters from the *query* have the form
 *name*\ ``=``\ *value* and are separated by ``&``;
 request parameters from a request body can have different forms
 and can be separated in different ways dependent on the
@@ -664,46 +729,32 @@ are aggregated into a single object. Zope supports both cases but it needs
 directives to guide the process. It uses *name* suffixes of the form
 ``:``\ *directive* to specify such directives. For example,
 the parameter ``i:int=1`` tells Zope to convert the value ``'1'`` to an
-integer and use it as value for request variable ``i``; the parameter sequence
+integer and use it as value for form variable ``i``; the parameter sequence
 ``x.name:record=Peter&x.age:int:record=10`` tells Zope to construct
 a record ``x`` with attributes ``name`` and ``age`` and respective values
-``'Peter'`` and ``10``.
-
-The publisher also marshals arguments from CGI environment variables
-and cookies. When locating arguments, the publisher first looks in
-other (i.e. explicitly set or special) request variables,
-then CGI environment variables, then form
-variables, and finally cookies. Once a variable is found, no further
-searching is done. So for example, if your published object expects
-to be called with a form variable named ``SERVER_URL``, it will fail,
-since this argument will be marshalled from the CGI environment first,
-before the form data.
-
-The publisher provides a number of additional special variables such
-as ``URL``, ``URLn``, ``BASEn`` and others, which are derived from the
-request.
-
-Unfortunately, there is no current documentation for those variables.
+``'Peter'`` and ``10``. There are different kinds of directives:
+converter, aggregator and encoding directives.
 
 
-Argument Conversion
-~~~~~~~~~~~~~~~~~~~
 
-The publisher supports argument conversion. For example consider this
+Converters
+~~~~~~~~~~
+
+The publisher supports argument conversion via
+converter directives. For example consider this
 function::
 
         def one_third(number):
             """returns the number divided by three"""
             return number / 3.0
 
-This function cannot be called from the web because by default the
-publisher marshals arguments into strings, not numbers. This is why
+Calling this function will only succeed, if *number* is a number; it
+will fail for a string. This is why
 the publisher provides a number of converters. To signal an argument
-conversion you name your form variables with a colon followed by a
-type conversion code.
+conversion you use a converter directive.
 
 For example, to call the above function with 66 as the argument you
-can use this URL ``one_third?number:int=66``.
+can use the URL ``one_third?number:int=66``.
 
 Some converters employ special logic for the conversion.
 For example, both ``tokens`` as well as ``lines`` convert to
@@ -732,9 +783,10 @@ The publisher supports many converters:
 - **ustring** -- Converts a variable to a Python unicode string.
 
 - **bytes** -- Converts a variable to a Python bytes object/string.
+  Currently, there is no way to specify the output encoding; "latin1"
+  is used.
 
-- **required** -- Raises an exception if the variable is not present or
-  is an empty string.
+- **required** -- Raises an exception if the variable is an empty string.
 
 - **date** -- Converts a string to a **DateTime** object. The formats
   accepted are fairly flexible, for example ``10/16/2000``, ``12:01:13
@@ -742,7 +794,7 @@ The publisher supports many converters:
 
 - **date_international** -- Converts a string to a **DateTime** object,
   but especially treats ambiguous dates as "days before month before
-  year". This useful if you need to parse non-US dates.
+  year". This is useful if you need to parse non-US dates.
 
 - **lines** -- Converts a variable to a Python list of native strings
   by splitting the string on line breaks. Also converts list/tuple of
@@ -762,75 +814,220 @@ The publisher supports many converters:
 The full list of supported converters can be found
 in ``ZPublisher.Converters.type_converters``.
 
-If the publisher cannot coerce a request parameter into the type
-required by the type converter it will raise an error. This is useful
-for simple applications, but restricts your ability to tailor error
-messages. If you wish to provide your own error messages, you should
-convert arguments manually in your published objects rather than
-relying on the publisher for coercion.
+If the publisher cannot convert a request parameter into the type
+required by the type converter it will raise an exception.
 
 .. note::
   Client-side validation with HTML 5 and/or JavaScript may improve
   the usability of the application, but it is never a replacement for
   server side validation.
 
-You can combine type converters to a limited extent. For example you
+You can combine a type converter with other directives. For example you
 could create a list of integers like so::
 
-        <input type="checkbox" name="numbers:list:int" value="1">
-        <input type="checkbox" name="numbers:list:int" value="2">
-        <input type="checkbox" name="numbers:list:int" value="3">
+        <input type="checkbox" name="numbers:int:list" value="1">
+        <input type="checkbox" name="numbers:int:list" value="2">
+        <input type="checkbox" name="numbers:int:list" value="3">
 
 
 Aggregators
 ~~~~~~~~~~~
 
-An aggregator directive tells Zope how to process parameters with the same or
-a similar name.
+Aggregator directives tell Zope how to process parameters with the same or
+similar names. There are aggregators with tell Zope to
+aggregate parameter values into a sequence or a record
+and aggregators which mark the value for a particular use, e.g.
+"to be used as default value".
 
-Zope supports the following aggregators:
+A request parameter can have several aggregator directives.
+They are applied in turn from left to right. For example,
+``x.a:int:list:record=1&x.a:int:list:record=2`` creates the
+form variable ``x`` of type ``record`` with attribute ``a`` with
+the list ``[1, 2]`` as value;
+``x.a:int:record:list=1&x.a:int:record:list=2`` creates the form variable
+``x``; its value is the list of two ``record``\ s of which the
+``a`` attributes  have the value ``1`` and ``2``, respectively.
+As another example,
+``x:default:list=1&x:default:list=2&x:list=3`` creates request
+variable ``x`` with value ``['1', '3']`` -- the ``x:default:list=2``
+was replaced by ``x:list=3``. On the other hand,
+``x:list:default=1&x:list:default=2&x:list=3`` creates
+``x`` with value ``['3']`` -- processing the first two parameters
+has created the default value ``['1', '2']`` which was replaced
+by the non default ``['3']`` from the processing of the third
+parameter.
 
-- **list** -- collect all values with this name into a list.
-  If there are two or more parameters with the same name
-  they are collected into a list by default.
-  The ``list`` aggregator is mainly used to ensure that
-  the parameter leads to a list value even in the case that
-  there is only one of them.
+.. note::
 
-- **tuple** -- collect all values with this name into a tuple.
+  Technically, an aggregator transforms a triple *name*, *value*
+  and *aggs* into another such triple (or ``None``).
+  *name* is the parameter name, *value* the parameter value
+  and *aggs* the sequence of aggregators still to apply.
+  Thus, an aggregator can change the parameter name, its value
+  and what aggregators should still be applied.
+  The aggregators are applied successively until *aggs* becomes
+  empty. The final *name* and *value* is used to "update"
+  the form variable collection. This "update" can be
+  complex, is often recursive and is affected by the types and marks
+  of the encountered values.
 
-- **default** -- use the value of this parameter as a default value; it
-  can be overridden by a parameter of the same name without
-  the ``default`` directive.
 
-- **record** -- this directive assumes that the parameter name starts
-  with *var*\ ``.``\ *attr*.
-  It tells Zope to create a request variable *var* of type record
-  (more precisely, a ``ZPublisher.HTTPRequest.record`` instance) and
-  set its attribute *attr* to the parameter value.
-  If such a request variable already exists,
-  then only its attribute *attr* is updated.
+.. note::
+  While aggregators have the purpose to aggregate
+  (in the sense of coordinate) several parameters with
+  similar names into a single form variable, they do not
+  perform this aggregation themselves. Instead, they
+  produce a wrapped value representing an isolated
+  parameter. The wrapped value uses appropriate types and marks
+  to achieve the desired aggregation when the final *name*, *value*
+  (after the application of all aggrgators) updates the form
+  variable collection.
+  During this update, the form variable collection
+  representing the result of the aggregation of the previously
+  processed parameters is recursively updated with the information
+  for the current parameter. In this process, *target* subvalues from
+  the collection are *updated* with corresponding
+  *source* subvalues from the current parameter.
+  When we use the terms "updating", "target" and "source" below,
+  we reference this recursive subvalue update.
 
-- **records** -- this directive is similar to ``record``. However, *var*
-  gets as value not a single record but a list of records.
-  Zope starts a new record (and appends it to the list)
-  when the current request parameter would override an attribute
-  in the last record of the list constructed so far (or this list
-  is empty).
+Sequence aggregators
+++++++++++++++++++++
+
+All sequence aggregators produce a sequences value -- typically
+with a single element (exception **empty**: its result value
+has no elements). For some sequence aggregators, the input
+value must already have been a sequence.
+
+- **list** -- Wrap *value* into a ``list`` sequence. This is typically used to
+  collect all parameters with the same name into a list.
+
+  "Updating" a target sequence with a source sequence requires that
+  the source sequence has a single element, *source_value*. 
+  If the source sequence is marked as "to be used in **append mode**",
+  then *source_value* is appended to the target sequence.
+  Otherwise (the default), it is tried to "update or replace"
+  the last component of the target sequence (if any) with *source_value*;
+  should this fail, *source_value* is appended to the target list.
+
+  .. note::
+
+    If there are two or more simple (i.e. top level and not structured)
+    parameters with
+    the same name they are by default collected into an
+    implicitly constructed list.
+    For simple parameters, the **list** aggregator is mainly used to ensure
+    that the parameter leads to a list value even in the case that
+    there is only one of them.
+
+- **tuple** -- Wrap *value* into a tuple. Otherwise, it works like **list**.
+
+- **empty** -- Transform *value* (a sequence) into an empty sequence.
+
+  An empty sequence can be useful e.g. as default value for
+  a multi select control.
+
+- **append** -- Mark *value* (a sequence) as "to be used in **append mode**".
+
+  **append** is used to force that the source value is appended
+  to the target sequence. Without
+  the **append**, the value might instead be used to "update or replace"
+  the last element of the target sequence.
+
+Record aggregator
++++++++++++++++++
+
+The record aggregator **record** requires that *name* contains ``.``
+and splits it at the last ``.`` into *var*\ ``.``\ *attr*.
+It returns as name *var* and as value the record with attribute *attr* with
+value *value*.
+
+**record** is typically used to aggregate the parameters whose
+name starts with *var.* into a single record variable *var*.
+
+"Updating" a target record with a source record requires that
+the source record has a single attribute *attr*; denote its value by
+*attr_value*. If the target record still lacks the attribute *attr*,
+add it with value *attr_value*; otherwise, try to "update or replace"
+its value with *attr_value*; if this fails, the updating fails.
+
+A related aggregator is **records**. **records** is actually
+a synonym for the aggregator sequence **record** **list**.
+
+
+Value marking aggregators
++++++++++++++++++++++++++
+
+These aggregators mark their value as
+to be used in a special way. A value can have at most one
+mark. A value without mark is called a "normal" value.
+
+Zope supports the following marking aggregators:
+
+- **default** -- mark as a default value.
+
+  "Updating" a target default value with a "normal" (source) value
+  replaces the target value. "Updating" with another default value
+  fails.
+
+  This means:
+  a default value can be replaced by a following "normal"
+  value but not by another default value.
+
+- **conditional** -- mark as a conditional value.
+
+  "Updating" with a conditional source value has no effect
+  if there is already a target value; "Updating"
+  a conditional target value behaves identically to
+  the update of a default value.
+
+  This means:
+  A conditional value is ignored if there exists already a value;
+  otherwise, it behaves like a default
+  value.
+
+  .. note:
+
+    **conditional**, like **default**, indicates some kind of
+    default value. With **conditional**, the default can come
+    before or after the "normal" value; with **default** it
+    must come before the "normal" value (if any).
+
+  The use of **conditional** can be indicated e.g. for
+  default values from button controls: visual aspects
+  can prevent you to put a button before another control
+
+- **replace** -- mark as a replacement value.
+
+  "Updating" with a source replacement value always replaces
+  the target value. "Updating" a target replacement value
+  behaves like updating a normal value.
+
+  This means:
+  a replacement value unconditionally replaces an existing value.
+  After the replacement, it behaves like a normal value.
+
+  A replacement value replaces an implicitly constructed sequence
+  as a whole.
+
+Miscellaneous aggregators
++++++++++++++++++++++++++
 
 - **ignore_empty** -- this directive causes Zope to ignore the parameter
   if its value is empty.
 
 
-An aggregator in detail: the `record` argument
-++++++++++++++++++++++++++++++++++++++++++++++
+
+Detailed examples
++++++++++++++++++
 
 Sometimes you may wish to consolidate form data into a structure
 rather than pass arguments individually. **Record arguments** allow you
 to do this.
 
-The ``record`` type converter allows you to combine multiple form
-variables into a single input variable. For example::
+The **record** directive allows you to combine the values
+of multiple form controls
+into a single form variable. For example::
 
   <input name="date.year:record:int">
   <input name="date.month:record:int">
@@ -839,7 +1036,7 @@ variables into a single input variable. For example::
 This form will result in a single variable, ``date``, with the
 attributes ``year``, ``month``, and ``day``.
 
-You can skip empty record elements with the ``ignore_empty`` converter.
+You can skip empty record elements with the **ignore_empty** directive.
 For example::
 
   <input type="text" name="person.email:record:ignore_empty">
@@ -850,12 +1047,12 @@ record ``person`` is returned it will not have an ``email`` attribute
 if the user did not enter one.
 
 You can also provide default values for record elements with the
-``default`` converter. For example::
+**default** directive. For example::
 
   <input type="hidden"
-         name="pizza.toppings:record:list:default" 
+         name="pizza.toppings:list:default:record" 
          value="All">
-  <select multiple name="pizza.toppings:record:list:ignore_empty">
+  <select multiple name="pizza.toppings:list:record">
     <option>Cheese</option>
     <option>Onions</option>
     <option>Anchovies</option>
@@ -863,7 +1060,7 @@ You can also provide default values for record elements with the
     <option>Garlic<option>
   </select>
 
-The ``default`` type allows a specified value to be inserted when the
+The **default** directive allows a specified value to be inserted when the
 form field is left blank. In the above example, if the user does not
 select values from the list of toppings, the default value will be
 used. The record ``pizza`` will have the attribute ``toppings`` and its
@@ -871,7 +1068,9 @@ value will be the list containing the word "All" (if the field is
 empty) or a list containing the selected toppings.
 
 You can even marshal large amounts of form data into multiple records
-with the ``records`` type converter. Here's an example::
+with the **records** directive.
+
+Here's an example::
 
   <h2>Member One</h2>
   Name:
@@ -905,30 +1104,28 @@ simple as possible.
   one radio button will also deactivate all other radio buttons from
   the other records.
 
-.. attention::
+.. note::
 
-    When using records please note that there is a known issue when
-    you use a form, where checkboxes are used in the first "column".
-
-    As browsers leave out empty checkboxes when sending a request, the
-    **object publisher** may not be able to match checked checkboxes
-    with the correct record.
-
-    This behaviour cannot not be fixed.
+    When using records please note that a checkbox
+    produces a request parameter only when it is checked.
+    This can seriously confuse the aggregation of request
+    parameters into a list of records when the checkbox
+    is the first element.
 
     If you want a checkbox as the first form field, you can work
-    around the problem by using a hidden input field.
+    around the problem by using a hidden input field which
+    provides a default value.
 
     **Code example with applied workaround**::
 
       <form action="records_parse">
           <p>
-          <input type="hidden" name="index.dummy:records" value="dummy" />
-          <input type="checkbox" name="index.enabled:records" value="1" checked="checked" />
+          <input type="hidden" name="index.enabled:boolean:default:records" value="" />
+          <input type="checkbox" name="index.enabled:boolean:records" value="1" checked="checked" />
           <input type="text" name="index.name:records" value="index 1" />
           <p>
-          <input type="hidden" name="index.dummy:records" value="dummy" />
-          <input type="checkbox" name="index.enabled:records" value="2" />
+          <input type="hidden" name="index.enabled:boolean:default:records" value="" />
+          <input type="checkbox" name="index.enabled:boolean:records" value="1" />
           <input type="text" name="index.name:records" value="index 2" />
           <p>
           <input type="submit" name="submit" value="send" />
@@ -938,30 +1135,57 @@ simple as possible.
 Specifying argument character encodings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An encoding directive tells the converting process the encoding
-of the parameter value. Typical encodings are e.g. "utf8" or  "latin1".
+An encoding directive specifies the encoding
+of the parameter value. For example, ``x:latin1=``\ *value* tells Zope
+that *value* is a ``latin1`` encoded sequence of bytes.
+Typical encodings are e.g. "utf8" or  "latin1".
+You can use any Python supported encoding which decodes bytes into
+text.
 
-An encoding directive is ignored if the parameter does not
-have a converter directive as well.
-If there is no encoding directive, the converter uses the
-default encoding as specified by the Zope configuration option
-``zpublisher-default-encoding``. The default value for this configuration
-option in Zope 4 is ``utf-8``.
+.. note::
 
-In principle, Zope supports any encoding known by the ``codecs``
-module. However, the converter may impose restrictions.
+  Under Python 2, a form variable value is by default an ``str``
+  using Zope's default encoding. However, if the parameter
+  has an encoding (but not also a converter) directive, then 
+  its value is ``unicode``.
+
+HTML5 specifies how a browser can inform the server about
+the encoding used for the submission of a form: if the
+form contains a hidden control with name ``_charset_``, then
+the browser uses its form submission encoding as value for this control.
+Zope supports this feature: if it processes a ``_charset_``
+parameter and its value is a Python supported encoding, then
+all following parameters (names and values) are assumed
+to use this encoding by default. This works only for
+an "ASCII compatible" encoding (not checked).
+Zope starts the overall request parameter processing with its default encoding.
+
+HTML5 replaces characters not encodable by the encoding
+used for the form submission by character references
+of the form ``&#``\ *unicode code number*\ ``;``.
+Zope dereferences those character references. For Python 2,
+it tries to use the same approach to represent characters
+not encodable by its default encoding.
+This works well in page templates but might confuse at other places.
 
 
 **Special cases**
 
-If you are still on Python 2 or your pages use a different encoding,
-such as ``Windows-1252`` or ``ISO-8859-1``, which was the default
-encoding for HTML 4, you have to add the encoding, eg ``:cp1252``, for
-all argument type converts, such as follows::
+If Zope's default encoding is ASCII compatible (true e.g. for "utf-8"
+(the default for Zope's default encoding) and for the "ISO-8859-\*"
+encoding family and their Windows equivalents),
+then forms submitted from pages generated by Zope
+typically do not need special encoding handling.
+Exceptions are only pages which use their own encoding (different
+from Zope's default encoding). In those cases or when
+the form was generated from a foreign server, then Zope might
+need to be informed about the applied encoding.
+The easiest way is to use the ``_charset_`` feature described above::
 
-    <input type="text" name="name:cp1252:ustring">
-    <input type="checkbox" name="numbers:list:int:cp1252" value="1">
-    <input type="checkbox" name="numbers:list:int:cp1252" value="1">
+    <input type="hidden" name="_charset_" value="cp1252">
+    <input type="text" name="name:ustring">
+    <input type="checkbox" name="numbers:list:int" value="1">
+    <input type="checkbox" name="numbers:list:int" value="1">
 
 .. note::
 
@@ -969,9 +1193,6 @@ all argument type converts, such as follows::
 
     https://docs.python.org/3.7/library/codecs.html#standard-encodings
 
-If your pages all use a character encoding which has ASCII as a subset,
-such as Latin-1, UTF-8, etc., then you do not need to specify any
-character encoding for boolean, int, long, float and date types.
 
 .. note::
 
@@ -984,169 +1205,230 @@ character encoding for boolean, int, long, float and date types.
 Method Arguments
 ~~~~~~~~~~~~~~~~
 
-Normally, a request parameter is transformed into a request variable
-and made available via the ``form`` attribute of the request object. The
-*method* directive tells Zope to extend the path used for traversal.
-
-You can use a `method` directive to control which object is published based on
-form data. For example, you might want to have a form with a select
+Normally, a request parameter is transformed into a form variable
+and made available via the ``form`` attribute of the request object.
+A request parameter with a
+*method* directive, however, tells Zope to extend the
+path used for traversal rather than to create a form variable.
+Thus you can use a request parameter with method directive
+to control which object is published
+based on form data. For example, you might want to have a form with a select
 list that calls different methods depending on the item chosen.
 Similarly, you might want to have multiple submit buttons which invoke
 a different method for each button.
 
-The publisher provides a way to select methods using form variables
-through the use of the ``method`` argument type. The method type allows
-the request variable ``PATH_INFO`` to be augmented using information
-from a form item's name or value.
-
-If the name of a form field is ``:method``, then the value of the field
-is added to ``PATH_INFO``. For example, if the original ``PATH_INFO``
-is ``foo/bar`` and the value of a ``:method`` field is ``x/y``, then
-``PATH_INFO`` is transformed to ``foo/bar/x/y``. This is useful when
-presenting a select list. Method names can be placed in the select
-option values.
-
-If the name of a form field **ends** in ``:method`` then the part of
-the name before ``:method`` is added to ``PATH_INFO``. For example, if
-the original ``PATH_INFO`` is ``foo/bar`` and there is a ``x/y:method``
-field, then ``PATH_INFO`` is transformed to ``foo/bar/x/y``. In this
-case, the form value is ignored. This is useful for mapping submit
-buttons to methods, since submit button values are displayed and
-should therefore not contain method names.
-
 Zope supports the following method directives:
-``method`` (synonym ``action``), and ``default_method``
-(synonym ``default_action``). A path extension specified by a
-``default_method`` directive is overridden by a ``method`` directive.
+**method** (synonym **action**), and **default_method**
+(synonym **default_action**). A path extension specified by a
+**default_method** directive is overridden by a
+**method** directive.
+
+The extension for the traversal path can come either
+from the parameter value or the parameter name.
+It comes from the parameter value, if the parameter name consists
+only of directives; otherwise it is the remaining part of the
+name. For example, the parameters ``:method=``\ *path*
+and *path*\ ``:method=``\ *value* both extend the traversal
+path by *path*.
+
+There is special handling for HTML's image controls.
+For such a control, the browser generates a pair of consecutive
+request parameters with names *name*\ ``.x`` and *name*\ ``.y``
+(where *name* is the name of the control) and the x and y coordinates
+of the click position as values. For example, if such
+a control has the name *path*\ ``:method``, then the browser
+will create the two request parameters *path*\ ``:method.x=`` *x*
+and *path*\ ``:method.y=`` *y*.
+Zope treads this special case correctly. In the example above,
+the traversal path will be extended by *path*. Note that
+for an image control with method directive the traversal
+extension cannot come from the parameter value (because there
+are two values).
+
+.. note::
+
+    Technically, the method directives are implemented
+    as aggregators.
+    Those aggregators define a variable ``__method__``.
+    The directive ``:default_method``
+    is actually a synonym for ``:method:conditional``.
+    If the request parameter processing gives ``__method__``
+    a list value, then its last component is used
+    to extend the traversal path.
+
+    For most directives, it makes no sense to combine them
+    with a method directive.
 
 
-Processing model for request data marshaling
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Errors during request parameter processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Errors during request parameter processing are signaled by
+raising an appropriate exception. However, request
+parameter processing happens at a very early stage when
+application specific error handling configuration is
+not yet effective. Therefore, exceptions are not reported directly;
+instead, a *post traverse hook* it set up
+to report them after the traversal by
+raising a ``ZPublisher.interfaces.RequestParameterError``
+exception. Its ``args[0]`` is
+the list describing the errors
+gathered during request parameter processing. Its elements are triples
+*name*, *value*, *exc_info* giving the parameter name, parameter
+value and the exception info (provided by ``sys.exc_info()``)
+of the corresponding error.
+
+Error analysis often uses the ``event_log`` object.
+To facilitate its use in the analysis of request parameter processing
+errors, the list of errors is made available as
+``request.other["__request_parameter_errors__"]``.
+
+The handling of request parameter processing errors described above
+is a heuristics to ensure that in most cases the errors
+are reported in an application specific way. Of course, it is
+possible that those errors were sufficiently grave to 
+hamper the following traversal and lead to secondary exceptions.
+In those cases, appliciation specific error handling might still not
+bave been set up.
+
+
+Processing model for request parameter processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This section describes the processing model in some detail.
+You may skip it unless you have need for an in depth understanding.
+
 Zope processes the request parameters in
-``ZPublisher.HTTPRequest.HTTPRequest.processInputs``.
+``ZPublisher.HTTPRequest.HTTPRequest.processInputs``
+and ``ZPublisher.HTTPRequest.request_params.process_parameters``.
 
-This section describes the complex processing model in some detail as its
-various steps and peculiar logic may lead to surprises. If you are developing
-`with` Zope as opposed to developing Zope itelf, you may skip over these
-details.
 
 In a preliminary step the request parameters are collected
-from the potential sources, i.e. the "query" and
-request body (if present), and normalized. The result is a sequence of
-name/value pairs, each describing a single request parameter.
+from the "query" and the optional
+request body and normalized. The result is a sequence of
+*name*\ /\ *value* pairs, each describing a single request parameter.
+*name* is always a native string; *value* is a native string or
+a ``FileUpload`` instance.
+
+.. note::
+
+    For Python 3, the native strings at this place are
+    actually "latin1" decoded byte sequences.
 
 Zope then sets up some variables:
 
-form
+``form``
   as target for the collected form variables
 
-defaults
-  as target for the collected form variable defaults
-
-tuple_items
-  to remember which form variable should be tuples
-
-method
-  as target for the path extension from method directives.
+``form_encoding``
+  the encoding used to decode parameter names
+  and values. A parameter can use an
+  encoding directive to override the encoding
+  used to decode its value.
+  ``form_encoding`` is initialized with Zope's default encoding. 
 
 It then loops over the request parameter sequence.
 
 
 For each request parameter, the processing consists of the following steps:
 
-1. Some variables are set up:
+1. For Python 3, the parameter name is decoded using the
+   current ``form_encoding``, character references are replaced.
+   For Python 2, the parameter name is used as given.
 
-   isFileUpload
-     does the parameter represent an uploaded file?
+2. If the name is ``_charset_`` and its value is a recognized
+   encoding, then ``form_encoding`` is set to this encoding.
 
-   converter_type
-     the most recently seen converter from a converter directive
+3. The name is split into a *key* and *directives*.
+   The special names automatically created for image controls by the browser 
+   are recognized and properly handled.
+   The directive recognition proceeds from right to left
+   and stops as soon as a directive is not recognized.
+   This allows to use ``:`` as part of form variable names
+   (if the following part is not recognized as a directive).
 
-   character_encoding
-     the most recently seen encoding from an encoding directive
+4. A ``PrimaryValue`` is constructed as initial *value* from the
+   parameter value and, if present, a converter and/or an
+   encoding from *directives*.
 
-   flags
-     to indicate which processing types are requested via directives
+5. The aggregators from *directives* are applied from right to left.
+   Each aggregator can transform *key*, *value* and/or *aggs* (i.e.
+   the sequence of aggregators still to apply). Alternatively,
+   it can indicate that the parameter should be ignored.
+   ``form`` is (recursively) updated with the final *key* and *value* (if any).
 
-     Processing types are "ignore", "aggregate as sequence",
-     "aggregate as record", "aggregate as records", "use as default",
-     "convert" (using ``converter_type`` and ``character_encoding``).
+   .. note::
 
-2. The parameter value is checked to see if it is a file upload.
-   In this case, it is wrapped into a ``FileUpload``, and ``isFileUpload``
-   is updated.
+      The actual implementation works with a reversed aggregator list.
+      Nevertheless, the aggregators are effectively applied from left
+      to right.
 
-3. All directives in the paramter name are examined from right to left
-   and the variables set up in step 1 are updated accordingly.
-   ``:tuple`` directives update ``flags`` and ``tuple_items``, and method
-   directives update ``flags`` and ``method``.
+   The intermediate values are all ``FlexValue`` instances.
+   ``FlexValue`` is a wrapper class for real values which supports
+   defaults, update and aggregation. ``PrimaryValue``,
+   ``SequenceValue`` and ``RecordValue`` are subclasses.
 
-4. The actions stored in ``flags`` during step 3 are executed.
+After all request parameters have been processed,
+``form`` is recursively *instantiated*. This transforms all ``FlexValue``
+values into "normal" values.
 
-   If ``flags`` indicate the use as default, the step operates
-   on ``defaults``, otherwise on ``form``.
+If the instantiated ``form`` contains a ``__method__`` variable,
+it is removed and its value is used to extend the traversal path.
 
-After all request parameters have been processed
-request variables from ``defaults`` are put into ``form`` as long as it
-does not contain that variable already.
-If a method directive has been encountered the traversal
-path is extended accordingly.
+If the request parameter processing has encountered errors,
+a "post traversal hook" is registered to report those errors
+after traversal.
 
-As a security measure, mainly for DTML use, request variables
+As a security measure, mainly for DTML use, form variables
 are not only made available in the request attribute ``form``.
-A (somewhat) secured version of them is also stored in
-the attribute ``taintedform``. In the *tainted* request variable
-variant, strings potentially containing HTML fragments use
-``TaintedString`` as data type rather than the normal ``str``.
+If a form variable contains in its name or value HTML fragments,
+then a secured variant thereof is made available via
+the request attribute ``taintedform``. In this variant
+strings containing HTML fragments are replaced by ``TaintedString``
+instances. 
 DTML will automatically quote those values to give some
 protection against cross site scripting attacks via HTML injection.
 With the more modern page templates, all values (not only tainted ones)
 are quoted by default. They typically do not use the tainted
-form of the request variables.
+form of the form variables.
 
 Known issues and caveats
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. There is almost no error handling:
+1. Limitations and surprises with the construction of structured values
 
-   - unrecognized directives are silently ignored
+   Zope uses heuristics to determine whether to "update or replace" an
+   existing value or whether to create a new value. The heuristics
+   were chosen to do the right thing in most cases - but there
+   are cases for which the heuristics fail.
 
-   - if a request paramater contains several converter directives, the
-     leftmost wins
+   For example, updating a ``SequenceValue`` with an additional
+   value first tries to "update or replace" the last existing
+   component in the sequence and only if this fails appends the
+   additional value to the list.
 
-   - if a request paramter contains several encoding directives, the
-     leftmost wins
+   As another example, constructing a sequence of records
+   can give surprises. In this case, updating the sequence
+   with an *attr* and *value* tries to "update or replace"
+   the last record in the sequence. Only if this fails 
+   a new record is created and appended to the list.
+   This can cause problems if consecutive records do not have
+   the same attribute sets - in this case, attributes destined for
+   the following record may wrongly be associated with the preceeding
+   one. Even if the attribute sets are equal, values are wrongly
+   associated if the first attribute has a sequence value.
 
-   - if a request parameter contains an encoding but no converter
-     directive, the encoding directive is silently ignored
+   You can use the **append** and **replace** directives
+   to override Zope's heuristics.
 
-   - some directive combinations do not make sense (e.g. ``:record:records``);
-     for them, some of the directives are silently ignored
+2. Zope can only use an ASCII compatible encoding as form encoding
+   (this includes Zope's default encoding - used as initial form encoding).
+   This is not checked: if the restriction is violated, Zope
+   will simply not recognize the request parameters reliably.
 
-2. Usually, the order of aggregator directives in a request parameter does
-   not matter. However, this is not the case for the ``:tuple`` directive.
-   To really produce a tuple request variable, it must be the left most
-   directive; otherwise, it is equivalent to ``:list``.
-
-   In addition, ``:tuple`` is always equivalent to ``:list`` for
-   request variables aggregated as record or sequence of records.
-
-3. The main use case for the ``:default`` directive is to provide a
-   default value for form controls (e.g. checkboxes) for which the browser may
-   or may not pass on a value when the form is submitted.
-   Unfortunately, this only works at the top level.
-   It does not work for subcomponents, e.g. an attribute of a "record".
-   As a consequence, if a request parameter combines ``:default`` with
-   another aggregator directive, the result may be unexpected.
-
-4. The request preprocessing happens at a very early stage, before
-   traversal has taken place. As a consequence,
-   important configuration for application specific error handling
-   may not yet have taken effect. Exceptions raised during this stage
-   are reported and tracked only via "root level" error handling.
-   For the reason it is typically better to use a form framework such as
-   ``z3c.form`` or ``zope.formlib`` for form processing
-   rather than the built-in features described in this document.
+3. There is no way to specify the output encoding for the **bytes**
+   converter directive. It uses ``latin1`` when it converts text to bytes
+   (which is the case for Python 2 if the parameter
+   also has an encoding directive and always for Python 3).
 
 
 Exceptions

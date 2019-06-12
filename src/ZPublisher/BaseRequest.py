@@ -207,10 +207,14 @@ class BaseRequest(object):
         else:
             other.update(kw)
         self.other = other
+        # set up `_post_traverse` early for `processInputs`
+        self._post_traverse = []
 
     def clear(self):
         self.other.clear()
         self._held = None
+        if hasattr(self, "_post_traverse"):
+            del self._post_traverse
 
     def close(self):
         try:
@@ -435,8 +439,14 @@ class BaseRequest(object):
         request['TraversalRequestNameStack'] = request.path = path
         request['ACTUAL_URL'] = request['URL'] + quote(browser_path)
 
-        # Set the posttraverse for duration of the traversal here
-        self._post_traverse = post_traverse = []
+        # `_post_traverse` is set up in `__init__` to make it
+        #     available for `processInputs`. It is removed at the end
+        #     of `traverse`.
+        #     Some tests call `traverse` multiple times. Not sure
+        #     whether this must be supported for "real" use or
+        #     whether the tests should change.
+        post_traverse = self._post_traverse = getattr(
+            self, "_post_traverse", [])
 
         # import time ordering problem
         if HAS_ZSERVER:

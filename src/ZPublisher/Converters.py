@@ -10,11 +10,63 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Converters
+
+used (mainly) by ``.request_parameters`` and ``OFS.PropertyManager``.
+
+
+Backward incompatibilities
+==========================
+
+The converters no longer support file like input (because
+we have no way to determine which encoding they use).
+
+
+Important note about ``bytes`` as data type and converter
+=========================================================
+
+Python 2
+--------
+
+Under Python 2, ``bytes`` is a synonym for ``str`` and
+a ``bytes`` value can both represent a intrinsic sequence of bytes
+as well as an encoded text.
+
+Under Python 2, there is no real need for a ``bytes`` converter
+(and in fact, Zope introduced it only once it started to support Python 3).
+
+Python 3
+--------
+
+Under Python 3, a ``bytes`` value typically represents an
+intrinsic sequence of bytes; such a sequence may represent
+an encoded text but this is rare (and mainly used only at system
+boundaries).
+
+An intrinsic sequence of bytes is often represented as
+text via "latin-1" decoding. This maps byte *b* to unicode codepoint *b*.
+
+Interpretation of ``bytes``
+---------------------------
+
+The converters below interpret a binary value (i.e. a ``bytes``
+value under Python 3) as an intrinsic sequence of bytes without
+an implicit relation to text.
+
+If a converter converts between a binary value and a text value,
+then the "latin-1" encoding (and not the ``default_encoding``) is used
+by default. The converter can be called with an explicit *encoding*
+parameter to change this.
+
+The ``bytes`` converter is interpreted to produce a binary value
+and therefore, by default uses the "latin-1" encoding.
+"""
 
 import re
 
 import six
 from six import binary_type
+from six import raise_from
 from six import text_type
 
 from DateTime import DateTime
@@ -30,51 +82,105 @@ except ImportError:  # PY2
 default_encoding = 'utf-8'
 
 
-def field2string(v):
-    """Converts value to native strings.
+class Converter(object):
+    """Base class.
 
-    So always to `str` no matter which Python version you are on.
+    It converts to "native string".
     """
-    if hasattr(v, 'read'):
-        return v.read()
-    elif six.PY2 and isinstance(v, text_type):
-        return v.encode(default_encoding)
-    elif six.PY3 and isinstance(v, binary_type):
-        return v.decode(default_encoding)
-    else:
+    input_types = object,
+
+    def __call__(self, v, encoding=None):
+        if six.PY2 and isinstance(v, text_type):
+            return v.encode(encoding or default_encoding)
+        if six.PY3 and isinstance(v, binary_type):
+            # see note in module docstring
+            return v.decode(encoding or "latin-1")
         return str(v)
 
 
-def field2bytes(v):
-    # Converts value to bytes.
-    if hasattr(v, 'read'):
-        return v.read()
-    elif isinstance(v, text_type):
-        return v.encode(default_encoding)
-    else:
+if six.PY3:
+    UConverter = Converter
+else:
+    class UConverter(Converter):
+        """converts to unicode (aka ``text_type``)."""
+        def __call__(self, v, encoding=None):
+            if isinstance(v, str):
+                return v.decode(encoding or default_encoding)
+            return unicode(v)  # noqa: F821
+
+
+field2string = Converter()
+field2ustring = UConverter()
+
+
+class BytesConverter(Converter):
+    """convert to a binary value.
+
+    See note in module docstring.
+    """
+    input_types = bytes, str, text_type
+
+    def __call__(self, v, encoding=None):
+        if isinstance(v, text_type):
+            return v.encode(encoding or "latin1")
         return bytes(v)
 
 
-def field2text(value, nl=re.compile('\r\n|\n\r').search):
-    value = field2string(value)
-    match_object = nl(value)
-    if match_object is None:
-        return value
-    length = match_object.start(0)
-    result = []
-    start = 0
-    while length >= start:
-        result.append(value[start:length])
-        start = length + 2
-        match_object = nl(value, start)
-        if match_object is None:
-            length = -1
-        else:
-            length = match_object.start(0)
+field2bytes = BytesConverter()
 
-    result.append(value[start:])
 
-    return '\n'.join(result)
+class TypeSequenceConverter(Converter):
+    """convert to *output_type*.
+
+    If *v* is a ``list`` or ``tuple``, the converter
+    is recursively applied to its elements.
+    Note: This feature likely comes from a misunderstanding of the
+    request parameter converter documentation and is likely not used.
+    """
+    def __init__(self, output_type, clean=None):
+        self.output_type = output_type
+        self.clean = clean
+
+    def __call__(self, v, encoding=None):
+        if isinstance(v, (list, tuple)):
+            return v.__class__(self(x, encoding) for x in v)
+        t = self.output_type
+        if isinstance(v, t):
+            return v
+        v = super(TypeSequenceConverter, self).__call__(v, encoding)
+        if self.clean:
+            v = self.clean(v)
+        try:
+            return t(v)
+        except (ValueError, TypeError) as e:
+            raise_from(ValueError("Expected %s in value %r"
+                                  % (t.__name__,
+                                     escape(v, quote=True))),
+                       e)
+
+
+class TransformerMixin(object):
+    """converts by regular expression transformation."""
+    def __init__(self, transform):
+        self.transform = transform
+
+    def __call__(self, v, encoding=None):
+        v = super(TransformerMixin, self).__call__(v, encoding)
+        return self.transform(v)
+
+
+class Transformer(TransformerMixin, Converter):
+    pass
+
+
+class UTransformer(TransformerMixin, UConverter):
+    pass
+
+
+lineend = re.compile("[\r\n]{1,2}", re.M)
+text_transform = lambda v, sub=lineend.sub: sub("\n", v)  # noqa: E731
+field2text = Transformer(text_transform)
+field2utext = UTransformer(text_transform)
 
 
 def field2required(v):
@@ -84,85 +190,60 @@ def field2required(v):
     raise ValueError('No input for required field<p>')
 
 
-def field2int(v):
-    if isinstance(v, (list, tuple)):
-        return list(map(field2int, v))
-    v = field2string(v)
-    if v:
+if six.PY3:
+    long = int
+
+field2int = TypeSequenceConverter(int)
+field2float = TypeSequenceConverter(float)
+field2long = TypeSequenceConverter(
+    long,
+    lambda v: v if not (v.endswith("l") or v.endswith("L")) else v[:-1])
+
+
+class SplitterMixin(object):
+    def __init__(self, split, keep_types=()):
+        self.split = split
+        self.keep_types = keep_types
+
+    def __call__(self, v, encoding=None):
+        if isinstance(v, self.keep_types):
+            return v
+        v = super(SplitterMixin, self).__call__(v, encoding)
+        return [] if not v else self.split(v)
+
+
+class Splitter(SplitterMixin, Converter):
+    pass
+
+
+class USplitter(SplitterMixin, UConverter):
+    pass
+
+
+token_split = re.compile(r"\s+").split
+field2tokens = Splitter(token_split)
+field2utokens = USplitter(token_split)
+line_split = lineend.split
+line_keep = (list, tuple)
+field2lines = Splitter(line_split, line_keep)
+field2ulines = USplitter(line_split, line_keep)
+
+
+class DateConverter(Converter):
+    def __init__(self, **kw):
+        self.kw = kw
+
+    def __call__(self, v, encoding=None):
+        v = super(DateConverter, self).__call__(v, encoding)
         try:
-            return int(v)
-        except ValueError:
-            raise ValueError(
-                "An integer was expected in the value %r" % escape(
-                    v, quote=True
-                )
-            )
-    raise ValueError('Empty entry when <strong>integer</strong> expected')
+            return DateTime(v, **self.kw)
+        except SyntaxError as e:
+            raise_from(ValueError("Invalid Datetime" + escape(repr(v), True)),
+                       e)
 
 
-def field2float(v):
-    if isinstance(v, (list, tuple)):
-        return list(map(field2float, v))
-    v = field2string(v)
-    if v:
-        try:
-            return float(v)
-        except ValueError:
-            raise ValueError(
-                "A floating-point number was expected in the value %r" %
-                escape(v, True)
-            )
-    raise ValueError(
-        'Empty entry when <strong>floating-point number</strong> expected')
-
-
-def field2long(v):
-    if isinstance(v, (list, tuple)):
-        return list(map(field2long, v))
-    v = field2string(v)
-    # handle trailing 'L' if present.
-    if v[-1:] in ('L', 'l'):
-        v = v[:-1]
-    if v:
-        try:
-            return int(v)
-        except ValueError:
-            raise ValueError(
-                "A long integer was expected in the value %r" % escape(v, True)
-            )
-    raise ValueError('Empty entry when <strong>integer</strong> expected')
-
-
-def field2tokens(v):
-    v = field2string(v)
-    return v.split()
-
-
-def field2lines(v):
-    if isinstance(v, (list, tuple)):
-        result = []
-        for item in v:
-            result.append(field2bytes(item))
-        return result
-    return field2bytes(v).splitlines()
-
-
-def field2date(v):
-    v = field2string(v)
-    try:
-        v = DateTime(v)
-    except SyntaxError:
-        raise SyntaxError("Invalid DateTime " + escape(repr(v), True))
-    return v
-
-
-def field2date_international(v):
-    v = field2string(v)
-    try:
-        v = DateTime(v, datefmt="international")
-    except SyntaxError:
-        raise SyntaxError("Invalid DateTime " + escape(repr(v)))
-    return v
+field2date = DateConverter()
+field2date_international = DateConverter(datefmt="international")
 
 
 def field2boolean(v):
@@ -171,65 +252,11 @@ def field2boolean(v):
     return bool(v)
 
 
-class _unicode_converter(object):
-
-    def __call__(self, v):
-        # Convert a regular python string. This probably doesn't do
-        # what you want, whatever that might be. If you are getting
-        # exceptions below, you probably missed the encoding tag
-        # from a form field name. Use:
-        #       <input name="description:utf8:ustring" .....
-        # rather than
-        #       <input name="description:ustring" .....
-        if hasattr(v, 'read'):
-            v = v.read()
-        v = text_type(v)
-        return self.convert_unicode(v)
-
-    def convert_unicode(self, v):
-        raise NotImplementedError('convert_unicode')
+def field2none(v):
+    return
 
 
-class field2ustring(_unicode_converter):
-    def convert_unicode(self, v):
-        return v
-
-
-field2ustring = field2ustring()
-
-
-class field2utokens(_unicode_converter):
-    def convert_unicode(self, v):
-        return v.split()
-
-
-field2utokens = field2utokens()
-
-
-class field2utext(_unicode_converter):
-    def convert_unicode(self, v):
-        if isinstance(v, binary_type):
-            return text_type(field2text(v.encode('utf8')), 'utf8')
-        return v
-
-
-field2utext = field2utext()
-
-
-class field2ulines(object):
-    def __call__(self, v):
-        if hasattr(v, 'read'):
-            v = v.read()
-        if isinstance(v, (list, tuple)):
-            return [field2ustring(x) for x in v]
-        v = text_type(v)
-        return self.convert_unicode(v)
-
-    def convert_unicode(self, v):
-        return field2utext.convert_unicode(v).splitlines()
-
-
-field2ulines = field2ulines()
+field2none.input_types = object,
 
 
 type_converters = {
@@ -237,7 +264,7 @@ type_converters = {
     'int': field2int,
     'long': field2long,
     'string': field2string,  # to native str
-    'bytes': field2bytes,
+    'bytes': field2bytes,  # to binary value
     'date': field2date,
     'date_international': field2date_international,
     'required': field2required,
@@ -249,6 +276,7 @@ type_converters = {
     'utokens': field2utokens,
     'ulines': field2ulines,
     'utext': field2utext,
+    'none': field2none,  # None
 }
 
 get_converter = type_converters.get
