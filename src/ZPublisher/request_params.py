@@ -53,7 +53,7 @@ Aggregator
 
 from codecs import lookup
 from re import compile
-from sys import exc_info
+from sys import exc_info, version_info
 
 from six import PY3
 
@@ -722,5 +722,7 @@ else:  # noqa:
             spec = getargspec(callable.__call__)
         return param in spec.args
 
+
+if version_info[0:2] < (3, 6):  # noqa:
     FlexValue.__init_subclass__()
     SequenceValue.__init_subclass__()

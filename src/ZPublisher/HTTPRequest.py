@@ -468,6 +468,8 @@ class HTTPRequest(BaseRequest):
         We need to delay input parsing so that it is done under
         publisher control for error handling purposes.
         """
+        # local import to avoid cyclic imports
+        from .request_params import process_parameters
         response = self.response
         environ = self.environ
         method = environ.get('REQUEST_METHOD', 'GET')
@@ -1319,7 +1321,3 @@ def should_be_tainted(v):
         return base_should_be_tainted(v)
     except Exception:
         return False
-
-
-# at this place to work around a import cycles
-from .request_params import process_parameters  # noqa: I001
