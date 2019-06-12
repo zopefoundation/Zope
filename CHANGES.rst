@@ -74,6 +74,9 @@ Features
     specified via an encoding directive or fall back to
     Zope's default encoding.
 
+  - the converters **lines** and **tokens** now use
+    native (rather than binary) strings in their result
+
 
 
 4.0.1 (unreleased)

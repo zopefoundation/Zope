@@ -48,8 +48,6 @@ from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.interfaces import RequestParameterError
 from ZPublisher.utils import basic_auth_decode
 
-from .request_params import process_parameters  # noqa:
-
 
 if PY3:
     from html import escape
@@ -1321,3 +1319,7 @@ def should_be_tainted(v):
         return base_should_be_tainted(v)
     except Exception:
         return False
+
+
+# at this place to work around a import cycles
+from .request_params import process_parameters  # noqa: I001
