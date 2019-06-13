@@ -880,7 +880,7 @@ parameter.
   produce a wrapped value representing an isolated
   parameter. The wrapped value uses appropriate types and marks
   to achieve the desired aggregation when the final *name*, *value*
-  (after the application of all aggrgators) updates the form
+  (after the application of all aggregators) updates the form
   variable collection.
   During this update, the form variable collection
   representing the result of the aggregation of the previously
@@ -894,7 +894,7 @@ parameter.
 Sequence aggregators
 ++++++++++++++++++++
 
-All sequence aggregators produce a sequences value -- typically
+All sequence aggregators produce a sequence value -- typically
 with a single element (exception **empty**: its result value
 has no elements). For some sequence aggregators, the input
 value must already have been a sequence.
