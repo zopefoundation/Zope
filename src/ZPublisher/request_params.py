@@ -53,7 +53,8 @@ Aggregator
 
 from codecs import lookup
 from re import compile
-from sys import exc_info, version_info
+from sys import exc_info
+from sys import version_info
 
 from six import PY3
 
