@@ -79,6 +79,16 @@ class UseTraversalDefault(Exception):
     """
 
 
+class RequestParameterError(Exception):
+    """Exception wrapper for request parameter processing exceptions.
+
+    *args[0]* is a list of triples *name*, *value*, *exc_info*
+    where *exc_info* is the exception information for
+    an exception raised during processing of parameter *name*
+    with value *value*.
+    """
+
+
 ###############################################################################
 # XML-RPC control
 

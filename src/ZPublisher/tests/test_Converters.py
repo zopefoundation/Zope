@@ -13,10 +13,6 @@
 
 import unittest
 
-from six import PY2
-from six import PY3
-from six import text_type
-
 
 class ConvertersTests(unittest.TestCase):
 
@@ -153,15 +149,6 @@ class ConvertersTests(unittest.TestCase):
         expected = 'to_convert'
         self.assertEqual(field2string(to_convert), expected)
 
-    def test_field2string_with_filelike_object(self):
-        from ZPublisher.Converters import field2string
-        to_convert = 'to_convert'
-
-        class Filelike(object):
-            def read(self):
-                return to_convert
-        self.assertEqual(field2string(Filelike()), to_convert)
-
     def test_field2bytes_with_bytes(self):
         from ZPublisher.Converters import field2bytes
         to_convert = b'to_convert'
@@ -183,13 +170,13 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
         to_convert = ['one', b'two']
-        expected = [b'one', b'two']
+        expected = ['one', b'two']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_tuple(self):
         from ZPublisher.Converters import field2lines
         to_convert = ('one', b'two')
-        expected = [b'one', b'two']
+        expected = ('one', b'two')
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_empty_string(self):
@@ -200,36 +187,30 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_string_no_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc def ghi'
-        expected = [b'abc def ghi']
+        expected = ['abc def ghi']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_string_with_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc\ndef\nghi'
-        expected = [b'abc', b'def', b'ghi']
+        expected = ['abc', 'def', 'ghi']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2text_with_string_with_newlines(self):
         from ZPublisher.Converters import field2text
         to_convert = 'abc\r\ndef\r\nghi'
-        if PY3:
-            expected = 'abc\ndef\nghi'
-            self.assertEqual(field2text(to_convert), expected)
-        if PY2:
-            expected = b'abc\ndef\nghi'
-            self.assertEqual(field2text(to_convert), expected)
+        expected = 'abc\ndef\nghi'
+        self.assertEqual(field2text(to_convert), expected)
 
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines
         to_convert = [u'one', 'two']
-        self.assertEqual(field2ulines(to_convert),
-                         [text_type(x) for x in to_convert])
+        self.assertEqual(field2ulines(to_convert), to_convert)
 
     def test_field2ulines_with_tuple(self):
         from ZPublisher.Converters import field2ulines
         to_convert = (u'one', 'two')
-        self.assertEqual(field2ulines(to_convert),
-                         [text_type(x) for x in to_convert])
+        self.assertEqual(field2ulines(to_convert), to_convert)
 
     def test_field2ulines_with_empty_string(self):
         from ZPublisher.Converters import field2ulines
@@ -245,3 +226,8 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2ulines
         to_convert = u'abc\ndef\nghi'
         self.assertEqual(field2ulines(to_convert), to_convert.splitlines())
+
+    def test_field2none(self):
+        from ZPublisher.Converters import field2none
+        to_convert = u'abc\ndef\nghi'
+        self.assertIsNone(field2none(to_convert))

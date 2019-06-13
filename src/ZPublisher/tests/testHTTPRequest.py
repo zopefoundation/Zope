@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
@@ -27,8 +28,10 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
-from ZPublisher.HTTPRequest import search_type
+from ZPublisher.BaseRequest import exec_callables
+from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.interfaces import IXmlrpcChecker
+from ZPublisher.interfaces import RequestParameterError
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
 from ZPublisher.xmlrpc import is_xmlrpc_response
@@ -134,7 +137,7 @@ class HTTPRequestFactoryMixin(object):
 
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
-    def _processInputs(self, inputs):
+    def _processInputs(self, inputs, no_errors=True):
         from six.moves.urllib.parse import quote_plus
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
@@ -152,7 +155,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(environ=env)
         req.processInputs()
         self._noFormValuesInOther(req)
+        if no_errors:
+            self._noErrors(req)
         return req
+
+    def _noErrors(self, req):
+        self.assertEqual(req._post_traverse, [])
 
     def _noTaintedValues(self, req):
         self.assertFalse(list(req.taintedform.keys()))
@@ -296,7 +304,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req['bign'], 45)
         self.assertEqual(req['fract'], 4.2)
         self.assertEqual(req['morewords'], 'one\ntwo\n')
-        self.assertEqual(req['multiline'], [b'one', b'two'])
+        self.assertEqual(req['multiline'], ['one', 'two'])
         self.assertEqual(req['num'], 42)
         self.assertEqual(req['words'], 'Some words')
 
@@ -394,8 +402,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         inputs = (
             ('onerec.name:record', 'foo'),
             ('onerec.tokens:tokens:record', 'one two'),
-            ('onerec.ints:int:record', '1'),
-            ('onerec.ints:int:record', '2'),
+            ('onerec.ints:int:list:record', '1'),
+            ('onerec.ints:int:list:record', '2'),
 
             ('setrec.name:records', 'first'),
             ('setrec.ilist:list:int:records', '1'),
@@ -415,8 +423,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         self.assertEqual(req['onerec'].name, 'foo')
         self.assertEqual(req['onerec'].tokens, ['one', 'two'])
-        # Implicit sequences and records don't mix.
-        self.assertEqual(req['onerec'].ints, 2)
+        self.assertEqual(req['onerec'].ints, [1, 2])
 
         self.assertEqual(len(req['setrec']), 2)
         self.assertEqual(req['setrec'][0].name, 'first')
@@ -439,18 +446,18 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('alist:int', '1'),
             ('alist:int', '2'),
 
-            ('explicitlist:int:list:default', '3'),
-            ('explicitlist:int:list:default', '4'),
-            ('explicitlist:int:list:default', '5'),
+            ('explicitlist:int:default:list', '3'),
+            ('explicitlist:int:default:list', '4'),
+            ('explicitlist:int:default:list', '5'),
             ('explicitlist:int:list', '1'),
             ('explicitlist:int:list', '2'),
 
-            ('bar.spam:record:default', 'eggs'),
-            ('bar.foo:record:default', 'foo'),
+            ('bar.spam:default:record', 'eggs'),
+            ('bar.foo:default:record', 'foo'),
             ('bar.foo:record', 'baz'),
 
-            ('setrec.spam:records:default', 'eggs'),
-            ('setrec.foo:records:default', 'foo'),
+            ('setrec.spam:default:records', 'eggs'),
+            ('setrec.foo:default:records', 'foo'),
             ('setrec.foo:records', 'baz'),
             ('setrec.foo:records', 'ham'),
         )
@@ -461,8 +468,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(
             formkeys, ['alist', 'bar', 'explicitlist', 'foo', 'setrec'])
 
-        self.assertEqual(req['alist'], [1, 2, 3, 4, 5])
-        self.assertEqual(req['explicitlist'], [1, 2, 3, 4, 5])
+        self.assertEqual(req['alist'], [3, 4, 1, 2])
+        self.assertEqual(req['explicitlist'], [3, 4, 1, 2])
 
         self.assertEqual(req['foo'], 5)
         self.assertEqual(req['bar'].spam, 'eggs')
@@ -471,7 +478,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(len(req['setrec']), 2)
         self.assertEqual(req['setrec'][0].spam, 'eggs')
         self.assertEqual(req['setrec'][0].foo, 'baz')
-        self.assertEqual(req['setrec'][1].spam, 'eggs')
         self.assertEqual(req['setrec'][1].foo, 'ham')
 
         self._noTaintedValues(req)
@@ -666,27 +672,27 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tdeferlist', '1'),
             ('tdeferlist', '2'),
 
-            ('tinitbar.spam:record:default', 'eggs'),
-            ('tinitbar.foo:record:default', 'foo'),
+            ('tinitbar.spam:default:record', 'eggs'),
+            ('tinitbar.foo:default:record', 'foo'),
             ('tinitbar.foo:record', '<baz>'),
-            ('tdeferbar.spam:record:default', '<eggs>'),
-            ('tdeferbar.foo:record:default', 'foo'),
+            ('tdeferbar.spam:default:record', '<eggs>'),
+            ('tdeferbar.foo:default:record', 'foo'),
             ('tdeferbar.foo:record', 'baz'),
 
-            ('rdoesnotapply.spam:record:default', '<eggs>'),
+            ('rdoesnotapply.spam:default:record', '<eggs>'),
             ('rdoesnotapply.spam:record', 'eggs'),
 
-            ('tinitsetrec.spam:records:default', 'eggs'),
-            ('tinitsetrec.foo:records:default', 'foo'),
+            ('tinitsetrec.spam:default:records', 'eggs'),
+            ('tinitsetrec.foo:default:records', 'foo'),
             ('tinitsetrec.foo:records', '<baz>'),
             ('tinitsetrec.foo:records', 'ham'),
 
-            ('tdefersetrec.spam:records:default', '<eggs>'),
-            ('tdefersetrec.foo:records:default', 'foo'),
+            ('tdefersetrec.spam:default:records', '<eggs>'),
+            ('tdefersetrec.foo:default:records', 'foo'),
             ('tdefersetrec.foo:records', 'baz'),
             ('tdefersetrec.foo:records', 'ham'),
 
-            ('srdoesnotapply.foo:records:default', '<eggs>'),
+            ('srdoesnotapply.foo:default:records', '<eggs>'),
             ('srdoesnotapply.foo:records', 'baz'),
             ('srdoesnotapply.foo:records', 'ham'))
         req = self._processInputs(inputs)
@@ -702,9 +708,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def test_processInputs_w_tainted_attribute_raises(self):
-        input = ('taintedattr.here<be<taint:record', 'value',)
+        input = ('taintedattr.here<be<taint:record', 'value',),
 
-        self.assertRaises(ValueError, self._processInputs, input)
+        # this likely should be reported after traversal
+        with self.assertRaises(ValueError):
+            self._processInputs(input)
 
     def test_processInputs_w_tainted_values_cleans_exceptions(self):
         # Feed tainted garbage to the conversion methods, and any exception
@@ -796,6 +804,45 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         self.assertEqual(req.form['foo'], '1')
         self.assertEqual(req.form['bar'], '2')
+
+    def test_processInputs_method(self):
+        req = self._processInputs((("abc:method", ""),), False)
+        self.assertEqual(req["PATH_INFO"], "/abc")
+        self.assertTrue(req._hacked_path)
+
+    def test_processInputs_upload(self):
+        body = b"""\
+-----------------------------69631848912641131981831814146
+Content-Disposition: form-data; name="ustring:utf-8:ustring";
+   filename="request_params.html"
+Content-Type: text/html
+
+%s
+-----------------------------69631848912641131981831814146
+Content-Disposition: form-data; name="upload"; filename="request_params.html"
+Content-Type: text/html
+
+content
+-----------------------------69631848912641131981831814146--
+""" % u"ä".encode("utf-8")
+        environ = {
+            "REQUEST_METHOD": "POST",
+            "CONTENT_TYPE": "multipart/form-data;"
+            "boundary=---------------------------"
+            "69631848912641131981831814146",
+            "CONTENT_LENGTH": str(len(body)),
+        }
+        req = self._makeOne(stdin=BytesIO(body), environ=environ)
+        req.processInputs()
+        self._noErrors(req)
+        self.assertEqual(req["ustring"], u"ä")
+        self.assertIsInstance(req["upload"], FileUpload)
+        self.assertEqual(req["upload"].read(), b"content")
+
+    def test_processInputs_errors(self):
+        req = self._processInputs((("x:empty", "1"),), False)
+        with self.assertRaises(RequestParameterError):
+            exec_callables(req._post_traverse)
 
     def test_postProcessInputs(self):
         from ZPublisher.HTTPRequest import default_encoding
@@ -1285,34 +1332,6 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
             NotFound,
             self._makeOne(root).traverse, 'folder/@@meth/request'
         )
-
-
-class TestSearchType(unittest.TestCase):
-    """Test `ZPublisher.HTTPRequest.search_type`
-
-    see "https://github.com/zopefoundation/Zope/pull/512"
-    """
-    def check(self, val, expect):
-        mo = search_type(val)
-        if expect is None:
-            self.assertIsNone(mo)
-        else:
-            self.assertIsNotNone(mo)
-            self.assertEqual(mo.group(), expect)
-
-    def test_image_control(self):
-        self.check("abc.x", ".x")
-        self.check("abc.y", ".y")
-        self.check("abc.xy", None)
-
-    def test_type(self):
-        self.check("abc:int", ":int")
-
-    def test_leftmost(self):
-        self.check("abc:int:record", ":record")
-
-    def test_special(self):
-        self.check("abc:a-_0b", ":a-_0b")
 
 
 TEST_POST_ENVIRON = {
