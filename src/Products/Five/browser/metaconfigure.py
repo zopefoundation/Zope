@@ -165,7 +165,7 @@ def page(_context, name, permission, for_=Interface,
 
     _handle_for(_context, for_)
     expected = [attribute, 'browserDefault', '__call__', 'publishTraverse']
-    new_class._simple_whitelist = set(required) - set(expected)
+    new_class._simple__whitelist = set(required) - set(expected)
 
     _configure_z2security(_context, new_class, required)
 
