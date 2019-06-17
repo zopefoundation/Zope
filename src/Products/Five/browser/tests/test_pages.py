@@ -115,11 +115,43 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
     def test_publishTraverse_to_not_allowed_name(self):
         # The ``eagle.method`` view has a method ``mouse`` but it is not
         # registered with ``allowed_attributes`` in pages.zcml. This attribute
-        # should be not be accessible. It leads to # a HTTP-404, so we do not
+        # should be not be accessible. It leads to a HTTP-404, so we do not
         # tell the world about our internal methods:
         with self.assertRaises(HTTPError) as err:
             self.browser.open(
                 'http://localhost/test_folder_1_/testoid/eagle.method/mouse')
+        self.assertEqual('HTTP Error 404: Not Found', str(err.exception))
+
+    def test_publishTraverse_to_allowed_interface(self):
+        # The ``cheeseburger`` view has a method ``meat`` that is
+        # registered via ``allowed_interface`` in pages.zcml. This attribute
+        # should be reachable through ``publishTraverse`` on the view.
+
+        folder = self.folder
+        view = folder.unrestrictedTraverse('testoid/cheeseburger')
+
+        # Publishing traversal with the default adapter should work:
+
+        from ZPublisher.BaseRequest import DefaultPublishTraverse
+        request = folder.REQUEST
+        adapter = DefaultPublishTraverse(view, request)
+        result = adapter.publishTraverse(request, 'meat')()
+        self.assertIn('yummi', result)
+
+        # Publishing via browser works, too:
+
+        self.browser.open(
+            'http://localhost/test_folder_1_/testoid/cheeseburger/meat')
+        self.assertEqual('yummi', self.browser.contents)
+
+    def test_publishTraverse_to_not_allowed_interface(self):
+        # The ``cheeseburger`` view has a method ``cheese`` but it is not
+        # registered via ``allowed_interface`` in pages.zcml. This attribute
+        # should be not be accessible. It leads to a HTTP-404, so we do not
+        # tell the world about our internal methods:
+        with self.assertRaises(HTTPError) as err:
+            self.browser.open(
+                'http://localhost/test_folder_1_/testoid/cheeseburger/cheese')
         self.assertEqual('HTTP Error 404: Not Found', str(err.exception))
 
 

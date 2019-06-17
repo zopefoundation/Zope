@@ -91,7 +91,7 @@ setup(
         'z3c.pt',
         'zope.browser',
         'zope.browsermenu',
-        'zope.browserpage >= 4.0',
+        'zope.browserpage >= 4.4.0.dev0',
         'zope.browserresource >= 3.11',
         'zope.component',
         'zope.configuration',
