@@ -44,7 +44,7 @@ zodbpickle==1.0.4
 zope.annotation==4.7.0
 zope.browser==2.3
 zope.browsermenu==4.4
-zope.browserpage==4.3.0
+zope.browserpage==4.4.0
 zope.browserresource==4.3
 zope.cachedescriptors==4.3.1
 zope.component==4.5
