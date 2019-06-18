@@ -235,7 +235,8 @@ class zhttp_handler:
             value=value.strip()
             if h2ehas(key) and value:
                 env[h2eget(key)]=value
-            else:
+            elif "_" not in key:    # Headers with underscores,
+                                    #  might spoof real ones.
                 key='HTTP_%s' % ("_".join(key.split( "-"))).upper()
                 if value and not env_has(key):
                     env[key]=value
