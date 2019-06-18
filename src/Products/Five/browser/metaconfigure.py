@@ -128,14 +128,7 @@ def page(_context, name, permission, for_=Interface,
             # class and template
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
         else:
-            if not hasattr(class_, 'browserDefault'):
-                cdict = {
-                    'browserDefault':
-                    lambda self, request: (getattr(self, attribute), ())
-                }
-            else:
-                cdict = {}
-
+            cdict = {}
             cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
             cdict.update(getSecurityInfo(class_))
@@ -171,6 +164,8 @@ def page(_context, name, permission, for_=Interface,
                                required)
 
     _handle_for(_context, for_)
+    expected = [attribute, 'browserDefault', '__call__', 'publishTraverse']
+    new_class._simple__whitelist = set(required) - set(expected)
 
     _configure_z2security(_context, new_class, required)
 

@@ -232,7 +232,7 @@
       class=".pages.SimpleView"
       permission="zope2.Public"
       />
-  
+
   <!-- A named view with permissions -->
   <browser:view
       name="permission_view"
@@ -240,7 +240,7 @@
       class=".pages.PermissionView"
       permission="zope2.ViewManagementScreens"
       />
-  
+
   <!-- stuff that we'll override in overrides.zcml -->
   <browser:page
       for="Products.Five.tests.testing.simplecontent.ISimpleContent"
@@ -273,5 +273,16 @@
       name="protected_class_view"
       permission="zope2.ViewManagementScreens"
       />
+
+  <!-- view with allowed_interface declaration -->
+
+  <browser:page
+      for="Products.Five.tests.testing.simplecontent.ISimpleContent"
+      class=".pages.CheeseburgerView"
+      name="cheeseburger"
+      permission="zope2.View"
+      allowed_interface=".pages.IHamburger"
+      />
+
 
 </configure>

@@ -14,6 +14,7 @@
 """Test browser pages
 """
 
+import zope.interface
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
@@ -121,3 +122,20 @@ class ProtectedView(object):
 
 
 InitializeClass(ProtectedView)
+
+
+class IHamburger(zope.interface.Interface):
+
+    def meat():
+        pass
+
+
+class CheeseburgerView(BrowserView):
+    """View those `meat` method gets allowed via `IHamburger`."""
+
+    def meat(self):
+        """Make meat publically available via a docstring."""
+        return 'yummi'
+
+    def cheese(self):
+        return 'tasty'
