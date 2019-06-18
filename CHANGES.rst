@@ -42,6 +42,9 @@ Fixes
   (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
   Minor cleanup of ``HTTPRequest.get``.
 
+- Fix missing ``Paste`` distribution on installation using ``pip``.
+  (`#452 <https://github.com/zopefoundation/Zope/issues/452>`_)
+
 Other changes
 +++++++++++++
 
