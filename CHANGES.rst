@@ -14,33 +14,33 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 Features
 ++++++++
 
-- Resurrect ZODB packing from the ZMI
+- Resurrect ZODB packing from the ZMI.
   (`#623 <https://github.com/zopefoundation/Zope/issues/623>`_)
 
 - Optionally control the use of Zope's built-in XML-RPC support for
   POST requests with Content-Type ``text/xml`` via the
-  registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility
+  registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility.
   (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_).
 
-- Document request parameter handling
+- Document request parameter handling.
   (`#636 <https://github.com/zopefoundation/Zope/issues/636>`_).
 
 
 Fixes
 +++++
 
-- Prevent encoding issues in existing DTML Method and Document objects
+- Prevent encoding issues in existing DTML Method and Document objects.
 
 - Fixed logic error in exceptions handling during publishing. This error would
-  prevent correct Unauthorized handling when exceptions debug mode was set.
+  prevent correct `Unauthorized` handling when exceptions debug mode was set.
 
-- Do not cache (implicit) request access to form data and cookies in ``other``
+- Do not cache (implicit) request access to form data and cookies in ``other``.
   (`#630 <https://github.com/zopefoundation/Zope/issues/630>`_).
 
 - Bring request lookup order related documentation in line with the
-  actual implementation
+  actual implementation.
   (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
-  Minor cleanup of ``HTTPRequest.get``.
+  Minor clean-up of ``HTTPRequest.get``.
 
 - Fix missing ``Paste`` distribution on installation using ``pip``.
   (`#452 <https://github.com/zopefoundation/Zope/issues/452>`_)
@@ -48,7 +48,9 @@ Fixes
 Other changes
 +++++++++++++
 
-- Fixed usability on ZMI Security tab forms for sites with many roles
+- Fixed usability on ZMI Security tab forms for sites with many roles.
+
+- Update to current releases of most dependencies.
 
 
 4.0 (2019-05-10)
