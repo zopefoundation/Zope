@@ -1,7 +1,7 @@
 Installing Zope
 ===============
 This document describes installing Zope with
-`zc.buildout <https://pypi.python.org/pypi/zc.buildout>`_
+`zc.buildout <https://pypi.org/project/zc.buildout/>`_
 (the **recommended** method) or via ``pip``.
 
 .. contents::
@@ -37,7 +37,7 @@ available:
 
 Installing Zope with ``zc.buildout``
 ------------------------------------
-`zc.buildout <https://pypi.python.org/pypi/zc.buildout>`_ is a powerful
+`zc.buildout <https://pypi.org/project/zc.buildout/>`_ is a powerful
 tool for creating repeatable builds of a given software configuration
 and environment.  The Zope developers use ``zc.buildout`` to develop
 Zope itself, as well as the underlying packages it uses. **This is the
@@ -57,7 +57,7 @@ steps:
 
 - Run the buildout
 
-The following examples are from Linux and use Zope version 4.0b10. Just replace
+The following examples are from Linux and use Zope version 4.1. Just replace
 that version number with your desired version.
 
 Built-in standard buildout configuration
@@ -65,9 +65,9 @@ Built-in standard buildout configuration
 
 .. code-block:: console
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope/Zope-4.0b10.tar.gz
-  $ tar xfvz Zope-4.0b10.tar.gz
-  $ cd Zope-4.0b10
+  $ wget https://pypi.org/packages/source/Z/Zope/Zope-4.1.tar.gz
+  $ tar xfvz Zope-4.1.tar.gz
+  $ cd Zope-4.1
   $ python3.7 -m venv .
   $ bin/pip install -U pip zc.buildout
   $ bin/buildout
@@ -103,10 +103,10 @@ Here's a minimum ``buildout.cfg`` configuration  example:
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.0b10/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.1/versions-prod.cfg
     parts =
         zopescripts
-    
+
     [zopescripts]
     recipe = zc.recipe.egg
     interpreter = zopepy
@@ -125,7 +125,7 @@ options, please see the
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.0b10/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.1/versions-prod.cfg
     parts =
         zopeinstance
 
@@ -179,7 +179,7 @@ steps:
 
 - Install Zope and its dependencies
 
-Example steps on Linux. Replace the version number "4.0b10" with the latest
+Example steps on Linux. Replace the version number "4.1" with the latest
 version you find on https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
@@ -187,8 +187,8 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ python3.7 -m venv zope
   $ cd zope
   $ bin/pip install -U pip
-  $ bin/pip install Zope==4.0b10 \
-    -c https://zopefoundation.github.io/Zope/releases/4.0b10/constraints.txt
+  $ bin/pip install Zope==4.1 \
+    -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt
 
 .. note::
 
@@ -202,7 +202,7 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.0b10/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/4.1/requirements-full.txt
 
 If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
 install that package seperately using the version spec in constraints.txt
@@ -210,7 +210,7 @@ install that package seperately using the version spec in constraints.txt
 .. code-block:: console
 
     $ bin/pip install \
-    -c https://zopefoundation.github.io/Zope/releases/4.0b10/constraints.txt \
+    -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt \
     ZServer
 
 Building the documentation with ``Sphinx``

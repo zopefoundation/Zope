@@ -74,7 +74,7 @@ Steps for creating a new Zope release
 - Update https://zopefoundation.github.io/Zope/::
 
   $ git checkout gh-pages
-  $ ./build_index.sh
+  $ python3.7 build_index.py
 
 - Add the newly created files and commit and push the changes.
 
