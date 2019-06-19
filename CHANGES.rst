@@ -11,7 +11,7 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update to current releases of the dependencies.
 
 
 4.1 (2019-06-19)

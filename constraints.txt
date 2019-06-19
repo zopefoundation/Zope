@@ -29,7 +29,7 @@ funcsigs==1.0.2
 future==0.17.1
 ipaddress==1.0.22
 mock==3.0.5
-pbr==5.2.0
+pbr==5.3.0
 persistent==4.5.0
 pytz==2019.1
 roman==3.2
