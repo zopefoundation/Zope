@@ -2,11 +2,11 @@
 
 <main>
 <div class="dropdown" id="menu_buttons">
-	<a href="#" class="dropdown-toggle" 
-		data-toggle="dropdown" 
-		id="dropdownMenu1" 
+	<a href="#" class="dropdown-toggle"
+		data-toggle="dropdown"
+		id="dropdownMenu1"
 		title="Menu-Options"
-		aria-haspopup="true" 
+		aria-haspopup="true"
 		aria-expanded="true"
 		><i class="fa fa-cog"></i>
 	</a>
@@ -14,7 +14,7 @@
 		<li><a id="menu_refresh" href="manage_menu">Refresh</a></li>
 		<li><a id="menu_save" href="manage_menu?save_layout=1">Save layout</a></li>
 
-		<li><a id="menu_cp" title="Control Panel" 
+		<li><a id="menu_cp" title="Control Panel"
 			href="/Control_Panel/manage_main" target="manage_main">Control Panel</a></li>
 		<dtml-try>
 			<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
@@ -24,7 +24,7 @@
 		<dtml-except AttributeError>
 		<dtml-except NameError>
 		</dtml-try>
-		<li><a id="menu_undo" 
+		<li><a id="menu_undo"
 			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
 
 		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
@@ -62,7 +62,7 @@
 
 </main>
 
-<script src="/++resource++zmi/zmi.localstorage.api.js"></script>
+<script src="&dtml-BASEPATH1;/++resource++zmi/zmi.localstorage.api.js"></script>
 <script>
 	function menu_resize(init) {
 		var key = "ZMI.manage_menu.width";
