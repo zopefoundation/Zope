@@ -26,26 +26,29 @@ Features
 - Optionally control the use of Zope's built-in XML-RPC support for
   POST requests with Content-Type ``text/xml`` via the
   registration of a ``ZPublisher.interfaces.IXmlrpcChecker`` utility.
-  (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_).
+  (`#620 <https://github.com/zopefoundation/Zope/issues/620>`_)
 
 - Document request parameter handling.
-  (`#636 <https://github.com/zopefoundation/Zope/issues/636>`_).
+  (`#636 <https://github.com/zopefoundation/Zope/issues/636>`_)
 
 
 Fixes
 +++++
 
-- Prevent encoding issues in existing DTML Method and Document objects.
+- `allowed_attributes` and `allowed_interface` work again for BrowserViews.
+  (`#397 <https://github.com/zopefoundation/Zope/issues/397>`_)
+
+- Prevent encoding issues in existing DTML Method and DTML Document objects.
 
 - Fixed logic error in exceptions handling during publishing. This error would
   prevent correct `Unauthorized` handling when exceptions debug mode was set.
 
 - Do not cache (implicit) request access to form data and cookies in ``other``.
-  (`#630 <https://github.com/zopefoundation/Zope/issues/630>`_).
+  (`#630 <https://github.com/zopefoundation/Zope/issues/630>`_)
 
 - Bring request lookup order related documentation in line with the
   actual implementation.
-  (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_).
+  (`#629 <https://github.com/zopefoundation/Zope/issues/629>`_)
   Minor clean-up of ``HTTPRequest.get``.
 
 - Fix missing ``Paste`` distribution on installation using ``pip``.
