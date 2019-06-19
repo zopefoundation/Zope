@@ -5,3 +5,4 @@ bin/
 develop-eggs/
 dist/
 src/
+lib/
