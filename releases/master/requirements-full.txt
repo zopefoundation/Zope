@@ -9,10 +9,11 @@ DocumentTemplate==3.1b2
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
+Paste==3.0.8
 PasteDeploy==2.0.1
 Persistence==3.0
 Products.BTreeFolder2==4.2
-Products.ZCatalog==5.0
+Products.ZCatalog==5.0.1
 Record==3.5
 RestrictedPython==4.0
 WSGIProxy2==0.4.6
@@ -21,7 +22,7 @@ WebTest==2.0.33
 ZConfig==3.4.0
 ZEO==5.2.1
 ZODB==5.5.1
-Zope2==4.0b1
+Zope2==4.0
 five.globalrequest==99.1
 five.localsitemanager==3.2.2
 funcsigs==1.0.2
@@ -44,7 +45,7 @@ zodbpickle==1.0.4
 zope.annotation==4.7.0
 zope.browser==2.3
 zope.browsermenu==4.4
-zope.browserpage==4.3.0
+zope.browserpage==4.4.0
 zope.browserresource==4.3
 zope.cachedescriptors==4.3.1
 zope.component==4.5
