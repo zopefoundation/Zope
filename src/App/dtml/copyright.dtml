@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <title>Zope Public License (ZPL) Version 2.1</title>
-  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;&dtml-BASEPATH1;/++resource++zmi/zmi_base.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/zmi_base.css" />
 
   <link rel="shortcut icon" type="image/x-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/apple-touch-icon.png" />
