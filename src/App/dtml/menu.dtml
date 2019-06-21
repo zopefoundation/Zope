@@ -62,7 +62,7 @@
 
 </main>
 
-<script src="&dtml-BASE1;/++resource++zmi/zmi.localstorage.api.js"></script>
+<script src="&dtml-BASEPATH1;/++resource++zmi/zmi.localstorage.api.js"></script>
 <script>
 	function menu_resize(init) {
 		var key = "ZMI.manage_menu.width";

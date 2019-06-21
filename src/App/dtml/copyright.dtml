@@ -6,16 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <title>Zope Public License (ZPL) Version 2.1</title>
-  <link rel="stylesheet" type="text/css" href="&dtml-BASE1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="&dtml-BASE1;/++resource++zmi/zmi_base.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/zmi_base.css" />
 
-  <link rel="shortcut icon" type="image/x-icon" href="&dtml-BASE1;/++resource++zmi/logo/favicon/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="&dtml-BASE1;/++resource++zmi/logo/favicon/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="&dtml-BASE1;/++resource++zmi/logo/favicon/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="&dtml-BASE1;/++resource++zmi/logo/favicon/favicon-16x16.png" />
-  <link rel="manifest" href="&dtml-BASE1;/++resource++zmi/logo/favicon/site.webmanifest" />
-  <link rel="mask-icon" href="&dtml-BASE1;/++resource++zmi/logo/favicon/safari-pinned-tab.svg" color="#5bbad5" />
-  <meta name="msapplication-config" content="&dtml-BASE1;/++resource++zmi/logo/favicon/browserconfig.xml"/>
+  <link rel="shortcut icon" type="image/x-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-16x16.png" />
+  <link rel="manifest" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/site.webmanifest" />
+  <link rel="mask-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+  <meta name="msapplication-config" content="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/browserconfig.xml"/>
   <meta name="msapplication-TileColor" content="#2d89ef" />
   <meta name="theme-color" content="#ffffff" />
 </head>
