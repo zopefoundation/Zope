@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Update to current releases of the dependencies.
 
+- Fix broken ZMI when using non-root deployments.
+  (`#647 <https://github.com/zopefoundation/Zope/issues/647>`_)
+
 
 4.1 (2019-06-19)
 ----------------
