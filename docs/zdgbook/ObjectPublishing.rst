@@ -660,7 +660,7 @@ Sources are asked in the following order:
   ``request.set``. In addition it is used as
   cache for special and lazy variables. Finally, the request
   preprocessing puts some additional variables there,
-  e.g. ``PUBLISHED`` (the published object),
+  e.g. ``URL`` (the current URL), ``PUBLISHED`` (the published object),
   ``AUTHENTICATED_USER`` (the user object, if authentication was
   successful), ``SERVER_URL`` (the initial URL part, identifying
   the server).
@@ -668,16 +668,30 @@ Sources are asked in the following order:
 * special variables
 
    - the URL variables whose names are defined by the
-     regular expressions ``URL(PATH)?([0-9]*)``
-     and ``BASE(PATH)?([0-9]*)``, e.g. ``URL``, ``URL1``, ``URLPATH``,
-     ``BASE``, ``BASEPATH1``. Their value is a prefix of the
-     current URL or the URL path (if the name contains ``PATH``),
-     respectively. ``URL`` and ``URL0`` give the full URL
+     regular expressions ``URL(PATH)?([0-9]+)``
+     and ``BASE(PATH)?([0-9]+)``, e.g. ``URL0``, ``URL1``, ``URLPATH0``,
+     ``URL2``, ``BASE1``, ``BASEPATH1``. Their value is a prefix of the
+     current URL or URL path (if the name contains ``PATH``),
+     respectively. ``URL0`` gives the full URL
      and each successive *i* in ``URL``\ *i* removes a further
-     path segment from the end. ``BASE`` and ``BASE0`` start
-     with the empty path; ``BASE1`` adds the so called
-     "script name" (if any) and each successive *i* in ``BASE``\ *i*
-     adds a further path segment form the original URL.
+     path segment from the end. ``BASE1`` represents
+     the URL of the "Zope root object";  each successive *i* in ``BASE``\ *i*
+     adds a further path segment form the current URL.
+
+     .. note::
+
+        The value of the URL variables with ``PATH`` in their name
+	starts with ``/``. It represents an "abs_path" "relativeURI"
+	in
+	`URI spec terminology
+	<https://tools.ietf.org/html/rfc2396#section-5>`_.
+	The URL variables without ``PATH`` in their name have
+	"absoluteURI"s as values.
+
+     .. note::
+
+        ``BASE0`` removes the last path element from ``BASE1``
+        (if any, otherwise it is ``BASE0``). It is rarely useful.
 
    - ``BODY`` and ``BODYFILE`` (for requests with a body).
      Their value is the request body, either as a
