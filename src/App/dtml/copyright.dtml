@@ -98,10 +98,10 @@
 
   </main>
 
+  <script>
+    // Helpers for Menu Handling
+    var manage_menu = typeof window.parent.frames!="undefined"&&typeof window.parent.frames.manage_menu!="undefined";
+    window.parent.history.replaceState('','Main','/zope_copyright')
+  </script>
 </body>
-<script>
-  // Helpers for Menu Handling
-  var manage_menu = typeof window.parent.frames!="undefined"&&typeof window.parent.frames.manage_menu!="undefined";
-  window.parent.history.replaceState('','Main','/zope_copyright')
-</script>
 </html>
