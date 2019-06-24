@@ -109,19 +109,16 @@ sure your ZODB is packed before going on.
     ``mkwsgiinstance`` and under ``parts/<INSTANCE_NAME>/etc`` if you used
     ``plone.recipe.zope2instance``) reflect what was in your Zope 2
     configuration before the migration
+    
+  - start the Application using ``bin/runwsgi etc/zope.ini`` or
+  ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
+  instance configuration. Test it intensively for incomptibilities and errors.
 
-- make sure the Zope instance(s) and ZEO server that serves your ZODB are shut
-  down
+- shut down the Zope instance(s) and ZEO server that serves your ZODB
 
 - run ``bin/zodbverify -f path/to/Data.fs`` to uncover any errors in your ZODB.
   You may see cryptic errors pointing to the ``Products`` attribute of the
   ``Control_Panel``, this is not critical. All others need to be fixed.
-
-- do a dry-run test conversion:
-  ``bin/zodbupdate -n -f path/to/Data.fs --convert-py3 --encoding-fallback latin1``
-
-- if the dry run indicated no errors, do the actual first conversion:
-  ``bin/zodbupdate -f var/filestorage/Data.fs --convert-py3 --encoding-fallback latin1``
 
 Now you have a ZODB that is ready to be opened under Python 3 for the remaining
 steps.
@@ -133,7 +130,8 @@ Going from Python 2 to Python 3
 - Prepare a Python 3 environment, containing:
 
   - Zope 4 (latest),
-  - all relevant applications and addons for your ZODB,
+  - all relevant applications and addons for your ZODB, (make sure they are
+    comptible with Pyton 3)
   - `zodbupdate <https://pypi.org/project/zodbupdate/>`_,
   - `zodbverify <https://pypi.org/project/zodbverify/>`_,
 
@@ -159,7 +157,7 @@ Going from Python 2 to Python 3
 - Verify the ZODB by iterative loading every pickle using
   ``bin/zodbverify -f path/to/Data.fs``
 
-- Start the Application using ``runwsgi etc/zope.ini`` or
+- Start the Application using ``bin/runwsgi etc/zope.ini`` or
   ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
   instance configuration.  ``Data.fs.index`` will be discarded at the first
   start, you can ignore the error message telling that it cannot be read.
