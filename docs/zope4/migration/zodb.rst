@@ -152,7 +152,7 @@ Going from Python 2 to Python 3
   ``bin/zodbupdate -n -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``
 
 - if the dry run indicated no errors, do the actual final conversion:
-  ``bin/zodbupdate -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``
+  ``bin/zodbupdate --pack -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``
 
 - Verify the ZODB by iterative loading every pickle using
   ``bin/zodbverify -f path/to/Data.fs``
