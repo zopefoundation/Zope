@@ -112,6 +112,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
     interpreter = zopepy
     eggs =
         Zope
+        Paste
 
 Using ``plone.recipe.zope2instance``
 ++++++++++++++++++++++++++++++++++++
