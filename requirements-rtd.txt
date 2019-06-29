@@ -1,2 +1,2 @@
 repoze.sphinx.autointerface
-ZConfig
+Zope
