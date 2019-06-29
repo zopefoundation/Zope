@@ -18,7 +18,7 @@ RestrictedPython==4.0
 WSGIProxy2==0.4.6
 WebOb==1.8.5
 WebTest==2.0.33
-ZConfig==3.4.0
+ZConfig==3.5.0
 ZEO==5.2.1
 ZODB==5.5.1
 ZServer==4.0.1 ; python_version < '3.0'

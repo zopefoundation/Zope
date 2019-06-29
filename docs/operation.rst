@@ -88,8 +88,8 @@ After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
 For a full description of the supported sections and directives for
-``zope.conf``, refer to the machine readable schema description file
-``https://rawgit.com/zopefoundation/Zope/master/src/Zope2/Startup/wsgischema.xml``.
+``zope.conf``, refer to the :ref:`configuration reference section 
+<configuration_reference>`.
 
 
 Running Zope
@@ -418,5 +418,15 @@ Troubleshooting
   should already be available.
 
 - See the :doc:`changes` for important notes on this version of Zope.
+
+
+.. _configuration_reference:
+
+Zope configuration reference
+----------------------------
+
+.. zconfig:: Zope2.Startup
+    :file: wsgischema.xml
+
 
 .. _`Creating a Zope instance for Zope 2.13` : http://zope.readthedocs.io/en/2.13/INSTALL-buildout.html#creating-a-zope-instance

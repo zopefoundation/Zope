@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.1 (unreleased)
 ------------------
 
+- Document the Zope configuration options from the configuration schema itself
+  (`#571 <https://github.com/zopefoundation/Zope/issues/571>`_)
+
 - Update to current releases of the dependencies.
 
 - Fix broken ZMI when using non-root deployments.
