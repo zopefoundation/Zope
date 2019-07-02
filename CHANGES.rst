@@ -8,7 +8,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
-4.1.1 (unreleased)
+4.1.1 (2019-07-02)
 ------------------
 
 - Document the Zope configuration options from the configuration schema itself
