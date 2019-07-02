@@ -8,10 +8,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
+
 4.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update to current releases of the dependencies.
 
 
 4.1.1 (2019-07-02)
