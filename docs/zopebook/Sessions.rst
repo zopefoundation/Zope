@@ -1,6 +1,8 @@
 Session Management
 ##################
 
+.. include:: includes/zope2_notice.rst
+
 This chapter describes Zope's built-in Session Management.
 
 Terminology

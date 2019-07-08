@@ -1,6 +1,8 @@
 Advanced DTML
 =============
 
+.. include:: includes/zope2_notice.rst
+
 DTML is the kind of language that appears to "do what you mean."
 That is good when it does what you actually want it to do, but when
 it does something you don't want to do, well, it's no fun at all.

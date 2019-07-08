@@ -1,6 +1,8 @@
 Appendix C: Zope Page Templates Reference
 #########################################
 
+.. include:: includes/zope2_notice.rst
+
 Zope Page Templates are an HTML/XML generation tool. This appendix is a
 reference to Zope Page Templates standards: Template Attribute Language (TAL),
 TAL Expression Syntax (TALES), and Macro Expansion TAL (METAL). It also

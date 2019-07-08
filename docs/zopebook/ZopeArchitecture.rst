@@ -2,6 +2,8 @@
 Zope Concepts and Architecture
 ##############################
 
+.. include:: includes/zope2_notice.rst
+
 Fundamental Zope Concepts
 =========================
 

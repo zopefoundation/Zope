@@ -1,6 +1,8 @@
 Scalability and ZEO
 ###################
 
+.. include:: includes/zope2_notice.rst
+
 When a web application receives more requests than it can handle over a short
 period of time, it can become unresponsive. In the worst case, too many
 concurrent requests to a web application can cause the software which services

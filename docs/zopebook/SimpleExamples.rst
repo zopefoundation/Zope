@@ -1,6 +1,8 @@
 Creating Basic Zope Applications
 ================================
 
+.. include:: includes/zope2_notice.rst
+
 .. todo:
    
    - add new screen shots

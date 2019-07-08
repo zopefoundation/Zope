@@ -1,6 +1,8 @@
 Using the Zope Management Interface
 ===================================
 
+.. include:: includes/zope2_notice.rst
+
 Introduction
 ------------
 

@@ -1,6 +1,8 @@
 Maintaining Zope
 ################
 
+.. include:: includes/zope2_notice.rst
+
 Keeping a Zope site running smoothly involves a number of administrative tasks.
 This chapter covers some of these tasks, such as:
 

@@ -1,6 +1,8 @@
 Zope Services
 =============
 
+.. include:: includes/zope2_notice.rst
+
 Some Zope objects are *service* objects.  *Service* objects provide
 various kinds of support to your "domain-specific" content, logic,
 and presentation objects.  They help solve fundamental problems that
