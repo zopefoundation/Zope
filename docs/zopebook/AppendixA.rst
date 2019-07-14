@@ -2,6 +2,8 @@
 Appendix A: DTML Reference
 ##########################
 
+.. include:: includes/zope2_notice.rst
+
 DTML is the *Document Template Markup Language*, a handy presentation and
 templating language that comes with Zope. This Appendix is a reference to all
 of DTMLs markup tags and how they work.

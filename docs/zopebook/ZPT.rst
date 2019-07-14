@@ -1,6 +1,8 @@
 Using Zope Page Templates
 =========================
 
+.. include:: includes/zope2_notice.rst
+
 *Page Templates* are a web page generation tool.  They help programmers and
 designers collaborate in producing dynamic web pages for Zope web
 applications.  Designers can use them to maintain pages without having to

@@ -1,6 +1,8 @@
 Introducing Zope
 ================
 
+.. include:: includes/zope2_notice.rst
+
 Zope is family of related Python packages focussed on web technologies. The
 first version of Zope has originated from a company called
 `Zope Corporation <http://www.zope.com/>`_.

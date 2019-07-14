@@ -1,6 +1,8 @@
 Relational Database Connectivity
 ================================
 
+.. include:: includes/zope2_notice.rst
+
 
 .. note::
 

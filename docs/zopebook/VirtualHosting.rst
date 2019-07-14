@@ -1,6 +1,8 @@
 Virtual Hosting Services
 ========================
 
+.. include:: includes/zope2_notice.rst
+
 Zope comes with one object that help you do virtual hosting:
 *Virtual Host Monster*. Virtual hosting is a way to
 serve many websites with one Zope server.

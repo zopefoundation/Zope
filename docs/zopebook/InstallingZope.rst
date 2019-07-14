@@ -1,6 +1,8 @@
 Installing and Starting Zope
 ============================
 
+.. include:: includes/zope2_notice.rst
+
 By the end of this chapter, you should be able to install and start
 Zope.  It is fairly easy to install Zope on most platforms, and it
 typically takes no longer than ten minutes to complete an installation.

@@ -1,6 +1,8 @@
 Users and Security
 ==================
 
+.. include:: includes/zope2_notice.rst
+
 Introduction to Zope Security
 -----------------------------
 

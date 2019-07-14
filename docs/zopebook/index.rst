@@ -1,6 +1,8 @@
 The Zope Book
 =============
 
+.. include:: includes/zope2_notice.rst
+
 Welcome to *The Zope Book*.  This book is designed to introduce you
 to `Zope`, an open-source web application server.
 

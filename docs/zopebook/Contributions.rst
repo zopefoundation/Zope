@@ -1,6 +1,8 @@
 Contributions
 =============
 
+.. include:: includes/zope2_notice.rst
+
 Contributors to this book include Amos Latteier, Michel Pelletier,
 Chris McDonough, Evan Simpson, Tom Deprez, Paul Everitt, Bakhtiar
 A. Hamid, Geir Baekholt, Thomas Reulbach, Paul Winkler, Peter Sabaini,

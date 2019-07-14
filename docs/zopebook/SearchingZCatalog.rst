@@ -1,6 +1,8 @@
 Searching and Categorizing Content
 ==================================
 
+.. include:: includes/zope2_notice.rst
+
 The ZCatalog is Zope's built in search engine. It allows you to
 categorize and search all kinds of Zope objects. You can also use it
 to search external data such as relational data, files, and remote

@@ -1,6 +1,8 @@
 Basic DTML
 ==========
 
+.. include:: includes/zope2_notice.rst
+
 
 .. note::
     DTML has been the primary markup language within Zope for a long time.  However

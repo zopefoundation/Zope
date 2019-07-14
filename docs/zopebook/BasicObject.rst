@@ -1,6 +1,8 @@
 Using Basic Zope Objects
 ########################
 
+.. include:: includes/zope2_notice.rst
+
 When building a web application with Zope, you construct the application
 with *objects*.  The most fundamental Zope objects are explained in this
 chapter.
