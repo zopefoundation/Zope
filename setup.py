@@ -87,6 +87,7 @@ setup(
         'six',
         'transaction >= 2.4',
         'waitress',
+        'wheel',
         'zExceptions >= 3.4',
         'z3c.pt',
         'zope.browser',
