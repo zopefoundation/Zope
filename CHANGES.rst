@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Update to current releases of the dependencies.
 
+- Resurrect History ZMI tab and functionality
+
 
 4.1.1 (2019-07-02)
 ------------------
