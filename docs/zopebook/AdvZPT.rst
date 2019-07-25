@@ -1,6 +1,8 @@
 Advanced Page Templates
 =======================
 
+.. include:: includes/zope2_notice.rst
+
 In the chapter entitled `Using Zope Page Templates <ZPT.html>`_ you
 learned the basic features of Page Templates. In this chapter
 you'll learn about advanced techniques including new types of

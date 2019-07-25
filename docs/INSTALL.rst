@@ -112,6 +112,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
     interpreter = zopepy
     eggs =
         Zope
+        Paste
 
 Using ``plone.recipe.zope2instance``
 ++++++++++++++++++++++++++++++++++++
@@ -175,7 +176,7 @@ Installing Zope with ``pip``
 Installing the Zope software using ``pip`` involves the following
 steps:
 
-- Create a virtual environment
+- Create a virtual environment (There is no need to activate it.)
 
 - Install Zope and its dependencies
 

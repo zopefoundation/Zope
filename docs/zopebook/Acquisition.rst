@@ -1,6 +1,8 @@
 Acquisition
 ###########
 
+.. include:: includes/zope2_notice.rst
+
 Acquisition is the technology that allows dynamic behavior to be
 shared between Zope objects via *containment*.
 

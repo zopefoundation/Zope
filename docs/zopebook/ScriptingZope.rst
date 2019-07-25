@@ -1,6 +1,8 @@
 Advanced Zope Scripting
 =======================
 
+.. include:: includes/zope2_notice.rst
+
 In the chapter entitled "Basic Zope Scripting", you have seen
 how to manage Zope objects programmatically.  In this chapter,
 we will explore this topic some more.  Subjects discussed

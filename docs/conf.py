@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'ZConfig.sphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

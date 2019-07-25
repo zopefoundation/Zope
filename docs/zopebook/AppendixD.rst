@@ -1,6 +1,8 @@
 Appendix D: Zope Resources
 ##########################
 
+.. include:: includes/zope2_notice.rst
+
 At the time of this writing there is a multitude of sources for Zope
 information on the Internet and in print. We've collected a number of the most
 important links which you can use to find out more about Zope.

@@ -1,6 +1,8 @@
 Object Orientation
 ==================
 
+.. include:: includes/zope2_notice.rst
+
 To make the best use of Zope, you will need a grasp on the concept of *object
 orientation*, which is a software development pattern used in many programming
 languages (C++, Java, Python and others) and computer systems that simulate

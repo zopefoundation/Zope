@@ -30,6 +30,8 @@ from Acquisition import Explicit
 from Acquisition import aq_get
 from App.Common import package_home
 from OFS.Cache import Cacheable
+from OFS.History import Historical
+from OFS.History import html_diff
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
@@ -69,7 +71,7 @@ class Src(Explicit):
 InitializeClass(Src)
 
 
-class ZopePageTemplate(Script, PageTemplate, Cacheable,
+class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
@@ -88,6 +90,7 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         {'label': 'Edit', 'action': 'pt_editForm'},
         {'label': 'Test', 'action': 'ZScriptHTML_tryForm'},
     ) + PropertyManager.manage_options + \
+        Historical.manage_options + \
         SimpleItem.manage_options + \
         Cacheable.manage_options
 
@@ -213,6 +216,13 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
         """Parameters to test the script with."""
         return []
 
+    def manage_historyCompare(self, rev1, rev2, REQUEST,
+                              historyComparisonResults=''):
+        return ZopePageTemplate.inheritedAttribute(
+            'manage_historyCompare')(
+            self, rev1, rev2, REQUEST,
+            historyComparisonResults=html_diff(rev1._text, rev2._text))
+
     def pt_getContext(self, *args, **kw):
         root = None
         meth = aq_get(self, 'getPhysicalRoot', None)
@@ -278,6 +288,12 @@ class ZopePageTemplate(Script, PageTemplate, Cacheable,
             return result
         finally:
             security.removeContext(self)
+
+    security.declareProtected(  # NOQA: D001
+        change_page_templates,
+        'manage_historyCopy',
+        'manage_beforeHistoryCopy',
+        'manage_afterHistoryCopy')
 
     if bbb.HAS_ZSERVER:
         @security.protected(change_page_templates)

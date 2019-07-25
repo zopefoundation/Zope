@@ -1,6 +1,8 @@
 Managing Zope Objects Using External Tools
 ##########################################
 
+.. include:: includes/zope2_notice.rst
+
 So far, you've been working with Zope objects in your web browser via the Zope
 Management Interface. This chapter details how to use common non-browser-based
 common to access and modify your Zope content.

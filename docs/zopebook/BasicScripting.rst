@@ -1,6 +1,8 @@
 Basic Zope Scripting
 ####################
 
+.. include:: includes/zope2_notice.rst
+
 So far, you've learned about some basic Zope objects and how to manage them
 through the *Zope Management Interface*. This chapter shows you how to manage
 Zope objects programmatically.

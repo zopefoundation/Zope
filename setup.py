@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '4.1.1.dev0'
+version = '4.1.2.dev0'
 
 
 setup(
@@ -127,7 +127,12 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        'docs': ['Sphinx', 'sphinx_rtd_theme', 'repoze.sphinx.autointerface'],
+        'docs': [
+            'Sphinx',
+            'sphinx_rtd_theme',
+            'repoze.sphinx.autointerface',
+            'tempstorage',
+        ],
     },
     entry_points={
         'paste.app_factory': [
