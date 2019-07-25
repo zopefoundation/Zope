@@ -579,78 +579,76 @@ class BaseRequest(object):
         user = groups = None
         i = 0
 
-        if 1:  # Always perform authentication.
+        last_parent_index = len(parents)
+        if hasattr(object, '__allow_groups__'):
+            groups = object.__allow_groups__
+            inext = 0
+        else:
+            inext = None
+            for i in range(last_parent_index):
+                if hasattr(parents[i], '__allow_groups__'):
+                    groups = parents[i].__allow_groups__
+                    inext = i + 1
+                    break
 
-            last_parent_index = len(parents)
-            if hasattr(object, '__allow_groups__'):
-                groups = object.__allow_groups__
-                inext = 0
+        if inext is not None:
+            i = inext
+
+            if hasattr(groups, 'validate'):
+                v = groups.validate
             else:
-                inext = None
-                for i in range(last_parent_index):
-                    if hasattr(parents[i], '__allow_groups__'):
-                        groups = parents[i].__allow_groups__
-                        inext = i + 1
-                        break
+                v = old_validation
 
-            if inext is not None:
-                i = inext
+            auth = request._auth
 
+            if v is old_validation and self.roles is UNSPECIFIED_ROLES:
+                # No roles, so if we have a named group, get roles from
+                # group keys
+                if hasattr(groups, 'keys'):
+                    self.roles = list(groups.keys())
+                else:
+                    try:
+                        groups = groups()
+                    except Exception:
+                        pass
+                    try:
+                        self.roles = list(groups.keys())
+                    except Exception:
+                        pass
+
+                if groups is None:
+                    # Public group, hack structures to get it to validate
+                    self.roles = None
+                    auth = ''
+
+            if v is old_validation:
+                user = old_validation(groups, request, auth, self.roles)
+            elif self.roles is UNSPECIFIED_ROLES:
+                user = v(request, auth)
+            else:
+                user = v(request, auth, self.roles)
+
+            while user is None and i < last_parent_index:
+                parent = parents[i]
+                i = i + 1
+                if hasattr(parent, '__allow_groups__'):
+                    groups = parent.__allow_groups__
+                else:
+                    continue
                 if hasattr(groups, 'validate'):
                     v = groups.validate
                 else:
                     v = old_validation
-
-                auth = request._auth
-
-                if v is old_validation and self.roles is UNSPECIFIED_ROLES:
-                    # No roles, so if we have a named group, get roles from
-                    # group keys
-                    if hasattr(groups, 'keys'):
-                        self.roles = list(groups.keys())
-                    else:
-                        try:
-                            groups = groups()
-                        except Exception:
-                            pass
-                        try:
-                            self.roles = list(groups.keys())
-                        except Exception:
-                            pass
-
-                    if groups is None:
-                        # Public group, hack structures to get it to validate
-                        self.roles = None
-                        auth = ''
-
                 if v is old_validation:
-                    user = old_validation(groups, request, auth, self.roles)
+                    user = old_validation(
+                        groups, request, auth, self.roles)
                 elif self.roles is UNSPECIFIED_ROLES:
                     user = v(request, auth)
                 else:
                     user = v(request, auth, self.roles)
 
-                while user is None and i < last_parent_index:
-                    parent = parents[i]
-                    i = i + 1
-                    if hasattr(parent, '__allow_groups__'):
-                        groups = parent.__allow_groups__
-                    else:
-                        continue
-                    if hasattr(groups, 'validate'):
-                        v = groups.validate
-                    else:
-                        v = old_validation
-                    if v is old_validation:
-                        user = old_validation(
-                            groups, request, auth, self.roles)
-                    elif self.roles is UNSPECIFIED_ROLES:
-                        user = v(request, auth)
-                    else:
-                        user = v(request, auth, self.roles)
-
-            if user is None and self.roles != UNSPECIFIED_ROLES:
-                response.unauthorized()
+        if user is None and self.roles != UNSPECIFIED_ROLES:
+            response.unauthorized()
 
         if user is not None:
             if validated_hook is not None:
