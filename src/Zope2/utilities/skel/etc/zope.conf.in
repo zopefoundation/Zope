@@ -1,3 +1,4 @@
+%define INSTANCE <<INSTANCE_HOME>>
 
 instancehome $INSTANCE
 
