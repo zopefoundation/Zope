@@ -16,6 +16,13 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Resurrect History ZMI tab and functionality
 
+- Removed commented out configuration for tempstorage (and server side 
+  sessions) as that was known not working for ages. This was removed so we do 
+  not lead unsuspecting developers to think that this is the right way to do 
+  session data. See
+  (`#679 <https://github.com/zopefoundation/Zope/issues/679>`_)
+  (`tempstorage#8 <https://github.com/zopefoundation/tempstorage/issues/8>`_)
+  (`tempstorage#12 <https://github.com/zopefoundation/tempstorage/issues/12>`_)
 
 4.1.1 (2019-07-02)
 ------------------
