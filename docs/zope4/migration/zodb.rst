@@ -111,7 +111,7 @@ sure your ZODB is packed before going on.
     
   - start the Application using ``bin/runwsgi etc/zope.ini`` or
     ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
-    instance configuration. Test it intensively for incomptibilities and errors.
+    instance configuration. Test it intensively for incompatibilities and errors.
 
 - shut down the Zope instance(s) and ZEO server that serves your ZODB
 
@@ -130,7 +130,7 @@ Going from Python 2 to Python 3
 
   - Zope 4 (latest),
   - all relevant applications and addons for your ZODB, (make sure they are
-    comptible with Pyton 3)
+    compatible with Pyton 3)
   - `zodbupdate <https://pypi.org/project/zodbupdate/>`_
   - `zodbverify <https://pypi.org/project/zodbverify/>`_
 
