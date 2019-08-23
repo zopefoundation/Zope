@@ -97,7 +97,6 @@ sure your ZODB is packed before going on.
 
   - Zope 4 (latest)
   - all relevant applications and addons for your ZODB
-  - `zodbupdate <https://pypi.org/project/zodbupdate/>`_
   - `zodbverify <https://pypi.org/project/zodbverify/>`_
 
 - prepare a Zope configuration
@@ -111,8 +110,8 @@ sure your ZODB is packed before going on.
     configuration before the migration
     
   - start the Application using ``bin/runwsgi etc/zope.ini`` or
-  ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
-  instance configuration. Test it intensively for incomptibilities and errors.
+    ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
+    instance configuration. Test it intensively for incomptibilities and errors.
 
 - shut down the Zope instance(s) and ZEO server that serves your ZODB
 
@@ -132,8 +131,8 @@ Going from Python 2 to Python 3
   - Zope 4 (latest),
   - all relevant applications and addons for your ZODB, (make sure they are
     comptible with Pyton 3)
-  - `zodbupdate <https://pypi.org/project/zodbupdate/>`_,
-  - `zodbverify <https://pypi.org/project/zodbverify/>`_,
+  - `zodbupdate <https://pypi.org/project/zodbupdate/>`_
+  - `zodbverify <https://pypi.org/project/zodbverify/>`_
 
 - Prepare a Zope configuration
 
@@ -148,10 +147,12 @@ Going from Python 2 to Python 3
 - make sure the Zope instance(s) and ZEO server that serves your ZODB are shut
   down
 
-- do a dry-run test conversion:
-  ``bin/zodbupdate -n -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``
+- to prevent any compatibility issues with the ZODB index files created under
+  Python 2, remove ``Data.fs.index`` before proceeding.
 
-- if the dry run indicated no errors, do the actual final conversion:
+- run the ZODB conversion. Please note that you cannot use ``-n`` to use the
+  nondestructive ``--dry-run`` mode at this moment, but the actual conversion
+  works:
   ``bin/zodbupdate --pack -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``
 
 - Verify the ZODB by iterative loading every pickle using
@@ -159,8 +160,7 @@ Going from Python 2 to Python 3
 
 - Start the Application using ``bin/runwsgi etc/zope.ini`` or
   ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
-  instance configuration.  ``Data.fs.index`` will be discarded at the first
-  start, you can ignore the error message telling that it cannot be read.
+  instance configuration.
 
 - Verify that the Application works as expected.
 
