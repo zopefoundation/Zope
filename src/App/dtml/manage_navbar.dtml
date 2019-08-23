@@ -10,7 +10,7 @@
     <i class="fa fa-bars"></i>
   </div>
   <a class="navbar-brand" title="To Zope Root" href="/manage" target="_parent">
-    <span class="product">ZOPE 4.0</span>
+    <span class="product">ZOPE 4</span>
   </a>
   <ul class="navbar-nav flex-row ml-sm-auto d-flex">
 

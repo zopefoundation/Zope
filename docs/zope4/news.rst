@@ -29,7 +29,7 @@ found in this release.
 
 Extended Python version support
 -------------------------------
-Zope 4 supports Python 2.7 and Python 3.5 and higher.
+Zope 4 supports Python 2.7 and Python 3.5 up to Python 3.8.
 
 The Python 3 support currently covers the core dependencies shipped
 with Zope and is limited to the new WSGI based publisher. The new
