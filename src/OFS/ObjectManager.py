@@ -13,13 +13,8 @@
 """Object Manager
 """
 
-import copy
-import fnmatch
-import marshal
 import os
 import re
-import sys
-import time
 from io import BytesIO
 from logging import getLogger
 from operator import itemgetter
@@ -38,12 +33,10 @@ from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import import_export_objects
 from AccessControl.Permissions import view_management_screens
-from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import Implicit
 from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from App.Common import is_acquired
 from App.config import getConfiguration
 from App.FactoryDispatcher import ProductDispatcher
 from App.Management import Navigation
@@ -51,7 +44,6 @@ from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from DateTime.interfaces import DateTimeError
-from OFS import bbb
 from OFS.CopySupport import CopyContainer
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
@@ -76,10 +68,6 @@ try:
 except ImportError:  # PY2
     from cgi import escape
 
-if bbb.HAS_ZSERVER:
-    from webdav.Collection import Collection
-else:
-    Collection = bbb.Collection
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -170,7 +158,6 @@ class ObjectManager(
     Tabs,
     Implicit,
     Persistent,
-    Collection,
     LockableItem,
     Traversable
 ):
@@ -730,110 +717,12 @@ class ObjectManager(
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 
-    if bbb.HAS_ZSERVER:
-        # FTP support methods
-
-        @security.protected(ftp_access)
-        def manage_FTPlist(self, REQUEST):
-            """Directory listing for FTP.
-            """
-            out = ()
-
-            # check to see if we are being acquiring or not
-            ob = self
-            while 1:
-                if is_acquired(ob):
-                    raise ValueError(
-                        'FTP List not supported on acquired objects')
-                if not hasattr(ob, '__parent__'):
-                    break
-                ob = aq_parent(ob)
-
-            files = list(self.objectItems())
-
-            # recursive ride through all subfolders (ls -R) (ajung)
-
-            if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
-                all_files = copy.copy(files)
-                for f in files:
-                    if hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and \
-                       f[1].isPrincipiaFolderish:
-                        all_files.extend(findChildren(f[1]))
-                files = all_files
-
-            # Perform globbing on list of files (ajung)
-
-            globbing = REQUEST.environ.get('GLOBBING', '')
-            if globbing:
-                files = [x for x in files if fnmatch.fnmatch(x[0], globbing)]
-
-            files.sort()
-
-            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject')
-                    and self.isTopLevelPrincipiaApplicationObject):
-                files.insert(0, ('..', aq_parent(self)))
-            files.insert(0, ('.', self))
-            for k, v in files:
-                # Note that we have to tolerate failure here, because
-                # Broken objects won't stat correctly. If an object fails
-                # to be able to stat itself, we will ignore it, but log
-                # the error.
-                try:
-                    stat = marshal.loads(v.manage_FTPstat(REQUEST))
-                except Exception:
-                    LOG.error("Failed to stat file '%s'" % k,
-                              exc_info=sys.exc_info())
-                    stat = None
-                if stat is not None:
-                    out = out + ((k, stat),)
-            return marshal.dumps(out)
-
-        @security.protected(ftp_access)
-        def manage_FTPstat(self, REQUEST):
-            """Psuedo stat, used by FTP for directory listings.
-            """
-            mode = 0o0040000
-            from AccessControl.User import nobody
-            # check to see if we are acquiring our objectValues or not
-            parents = REQUEST.PARENTS
-            if not (len(parents) > 1
-                    and self.objectValues() == parents[1].objectValues()):
-                try:
-                    if getSecurityManager().validate(
-                            None, self, 'manage_FTPlist', self.manage_FTPlist):
-                        mode = mode | 0o0770
-                except Exception:
-                    pass
-
-                if nobody.allowed(self, getRoles(
-                        self, 'manage_FTPlist', self.manage_FTPlist, ())):
-                    mode = mode | 0o0007
-            if hasattr(aq_base(self), '_p_mtime'):
-                mtime = DateTime(self._p_mtime).timeTime()
-            else:
-                mtime = time.time()
-            # get owner and group
-            owner = group = 'Zope'
-            for user, roles in self.get_local_roles():
-                if 'Owner' in roles:
-                    owner = user
-                    break
-            return marshal.dumps(
-                (mode, 0, 0, 1, owner, group, 0, mtime, mtime, mtime))
-
     def __delitem__(self, name):
         return self.manage_delObjects(ids=[name])
 
     def __getitem__(self, key):
         if key in self:
             return self._getOb(key, None)
-        request = getattr(self, 'REQUEST', None)
-        if not (isinstance(request, str) or request is None):
-            method = request.get('REQUEST_METHOD', 'GET')
-            if request.maybe_webdav_client and method not in ('GET', 'POST'):
-                if bbb.HAS_ZSERVER:
-                    from webdav.NullResource import NullResource
-                    return NullResource(self, key, request).__of__(self)
         raise KeyError(key)
 
     def __setitem__(self, key, value):

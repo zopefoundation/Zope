@@ -15,15 +15,7 @@ import transaction
 from zope.deferredimport import deprecated
 
 
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.Testing.utils.',
-    importObjectFromFile='ZServer.Testing.utils:importObjectFromFile',
-    setupCoreSessions='ZServer.Testing.utils:setupCoreSessions',
-    setupSiteErrorLog='ZServer.Testing.utils:setupSiteErrorLog',
-    startZServer='ZServer.Testing.utils:startZServer',
-)
-
+# BBB Zope 6.0
 deprecated(
     'Please import from Testing.makerequest.',
     makerequest='Testing.makerequest:makerequest',

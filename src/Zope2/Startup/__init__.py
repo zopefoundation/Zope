@@ -12,20 +12,6 @@
 #
 ##############################################################################
 
-from __future__ import absolute_import
-
-from zope.deferredimport import deprecated
-
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.Zope2.Startup.starter',
-    get_starter='ZServer.Zope2.Startup.starter:get_starter',
-    UnixZopeStarter='ZServer.Zope2.Startup.starter:UnixZopeStarter',
-    WindowsZopeStarter='ZServer.Zope2.Startup.starter:WindowsZopeStarter',
-    ZopeStarter='ZServer.Zope2.Startup.starter:ZopeStarter',
-)
-
 
 def get_wsgi_starter():
     from Zope2.Startup.starter import WSGIStarter

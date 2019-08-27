@@ -148,16 +148,16 @@ debugger::
     ... blah blah...
 
   </BODY></HTML>
-  >>> 
+  >>>
 
 If you look closely, you will see that the content returned is
 *exactly* what is returned when you call your root level object
 through HTTP, including all the HTTP headers.
 
 Keep in mind that calling Zope this way does NOT involve a web
-server.  No ports are opened, the 'ZServer' code is not even
-imported.  In fact, this is just an interpreter front end to the same
-application code the ZServer *does* call.
+server.  No ports are opened.
+In fact, this is just an interpreter front end to the same
+application code the WSGI server *does* call.
 
 Interactive Debugging
 ~~~~~~~~~~~~~~~~~~~~~
@@ -209,7 +209,7 @@ one new argument to the call to 'Zope'::
     algorithm.
   * Then type c<cr> to jump to published object call.
   > <string>(0)?()
-  pdb> 
+  pdb>
 
 Here, you call Zope from the interpreter, just like before, but there
 are two differences.  First, you call the 'postnews' method with an
@@ -255,7 +255,7 @@ easier method).  For example::
   pdb> import Products
   pdb> b Products.ZopeNews.News.News.postnews
   Breakpoint 5 at C:\Program Files\WebSite\lib\python\Products\ZopeNews\News.py:42
-  pdb> 
+  pdb>
 
 First, you import 'Products'.  Since your module is a Zope product,
 it can be found in the 'Products' package.  Next, you set a new
@@ -315,7 +315,7 @@ final argument is 'request'.  This is the request object and will
 eventually be transformed in to the DTML usable object 'REQUEST'. Now
 continue, your breakpoint is next::
 
-  pdb> c    
+  pdb> c
   > C:\Program Files\WebSite\lib\python\Products\ZopeNews\News.py(42)postnews()
   -> def postnews(self, N)
 
@@ -638,8 +638,8 @@ example::
 
       def testWebRequest(self):
           ZPublisher.Zope('/a/url/representing/a/method?with=a&couple=arguments',
-                          u='username:password', 
-                          s=1, 
+                          u='username:password',
+                          s=1,
                           e={'some':'environment', 'variable':'settings'})
 
 If the 's' argument is passed to 'ZPublisher.Zope' then no output

@@ -7,10 +7,6 @@ except ImportError:
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-PY2_ONLY = [
-    'ZServer',
-]
-
 
 class CaseSensitiveParser(RawConfigParser):
 
@@ -40,12 +36,8 @@ def generate(in_, requirements_file, constraints_file):
             continue
 
         spec = '%s==%s' % (name, pin)
-        if name in PY2_ONLY:
-            spec += " ; python_version < '3.0'"
-            constraints.append(spec + '\n')
-        else:
-            requirements.append(spec + '\n')
-            constraints.append(spec + '\n')
+        requirements.append(spec + '\n')
+        constraints.append(spec + '\n')
 
     with open(out_file_requirements, 'w') as fd:
         fd.write(zope_requirement)
