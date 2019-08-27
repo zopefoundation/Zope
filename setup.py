@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '4.1.2.dev0'
+version = '5.0a1.dev0'
 
 
 setup(
@@ -53,9 +53,8 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -68,7 +67,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
+    python_requires='>= 3.5',
     install_requires=[
         'AccessControl >= 4.0b4',
         'Acquisition',
@@ -82,7 +81,6 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
-        'ipaddress ; python_version=="2.7"',
         'setuptools >= 36.2',
         'six',
         'transaction >= 2.4',
