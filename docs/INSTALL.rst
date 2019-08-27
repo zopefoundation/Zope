@@ -155,22 +155,6 @@ include the WSGI server software egg in the ``eggs`` specification:
     http-address = 8080
     wsgi = /path/to/zope.ini
 
-On Python 2 you can also forego the use of WSGI and create an old-fashioned
-ZServer-based installation by pulling in the ``ZServer`` egg and setting
-``wsgi = off`` explicitly:
-
-.. code-block:: ini
-
-    [zopeinstance]
-    recipe = plone.recipe.zope2instance
-    eggs =
-        Products.TemporaryFolder
-        ZServer
-    user = admin:adminpassword
-    http-address = 8080
-    wsgi = off
-
-
 Installing Zope with ``pip``
 ----------------------------
 Installing the Zope software using ``pip`` involves the following
@@ -205,14 +189,6 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
     $ bin/pip install \
     -r https://zopefoundation.github.io/Zope/releases/4.1/requirements-full.txt
 
-If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
-install that package seperately using the version spec in constraints.txt
-
-.. code-block:: console
-
-    $ bin/pip install \
-    -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt \
-    ZServer
 
 Building the documentation with ``Sphinx``
 ------------------------------------------

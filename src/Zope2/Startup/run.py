@@ -12,17 +12,6 @@
 #
 ##############################################################################
 
-from zope.deferredimport import deprecated
-
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.Zope2.Startup.run',
-    _setconfig='ZServer.Zope2.Startup.run:_setconfig',
-    configure='ZServer.Zope2.Startup.run:configure',
-    run='ZServer.Zope2.Startup.run:run',
-)
-
 
 def configure_wsgi(configfile):
     """ Provide an API which allows scripts to configure Zope

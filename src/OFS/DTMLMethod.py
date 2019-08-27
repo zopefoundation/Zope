@@ -23,7 +23,6 @@ from six.moves.urllib.parse import quote
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_proxy_roles  # NOQA
-from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import view_management_screens
 from AccessControl.requestmethod import requestmethod
@@ -35,7 +34,6 @@ from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import ParseError
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
-from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
@@ -383,29 +381,9 @@ class DTMLMethod(
             self, rev1, rev2, REQUEST,
             historyComparisonResults=html_diff(rev1.read(), rev2.read()))
 
-    if bbb.HAS_ZSERVER:
-
-        @security.protected(change_dtml_methods)
-        def PUT(self, REQUEST, RESPONSE):
-            """ Handle FTP / HTTP PUT requests.
-            """
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            body = REQUEST.get('BODY', '')
-            self._validateProxy(REQUEST)
-            self.munge(body)
-            self.ZCacheable_invalidate()
-            RESPONSE.setStatus(204)
-            return RESPONSE
-
-        @security.protected(ftp_access)
-        def manage_FTPget(self):
-            """ Get source for FTP download.
-            """
-            return self.read()
-
 
 InitializeClass(DTMLMethod)
+
 
 token = r"[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
 hdr_start = re.compile(r'(%s):(.*)' % token).match

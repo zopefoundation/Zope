@@ -764,21 +764,6 @@ class HTTPResponse(HTTPBaseResponse):
     if PY2:
         __str__ = __bytes__
 
-    # The following two methods are part of a private protocol with
-    # ZServer for handling fatal import errors.
-    _shutdown_flag = None
-
-    def _requestShutdown(self, exitCode=0):
-        """ Request that the server shut down with exitCode after fulfilling
-           the current request.
-        """
-        self._shutdown_flag = exitCode
-
-    def _shutdownRequested(self):
-        """ Returns true if this request requested a server shutdown.
-        """
-        return self._shutdown_flag is not None
-
     # deprecated
     def quoteHTML(self, text):
         return escape(text, 1)

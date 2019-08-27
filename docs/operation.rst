@@ -17,13 +17,6 @@ Whichever method you used to install Zope and create a server instance (see
 Creating a Zope instance
 ------------------------
 
-.. attention::
-
-  The following steps describe how to install a WSGI based Zope instance.
-  If you want/have to use ZServer instead of WSGI (Python 2 only!) follow
-  the documentation `Creating a Zope instance for Zope 2.13`_, as it has not
-  changed since that version.
-
 Once you've installed Zope, you will need to create an "instance
 home". This is a directory that contains configuration and data for a
 Zope server process.  The instance home is created using the
@@ -88,7 +81,7 @@ After making any changes to the configuration file, you need to restart any
 running Zope server for the affected instance before changes are in effect.
 
 For a full description of the supported sections and directives for
-``zope.conf``, refer to the :ref:`configuration reference section 
+``zope.conf``, refer to the :ref:`configuration reference section
 <configuration_reference>`.
 
 
@@ -156,7 +149,7 @@ works with the ``runwsgi`` script. It assumes your buildout is located at
    KillMode=control-group
    TimeoutStartSec=10
    TimeoutStopSec=10
-   
+
    [Install]
    WantedBy=multi-user.target
 
@@ -270,7 +263,7 @@ user account your Zope instance runs under is ``zope``:
    [Unit]
    Description=Zope client zopeinstance
    After=network.target
-   
+
    [Service]
    Type=forking
    User=zope
@@ -281,7 +274,7 @@ user account your Zope instance runs under is ``zope``:
    KillMode=control-group
    TimeoutStartSec=10
    TimeoutStopSec=10
-   
+
    [Install]
    WantedBy=multi-user.target
 

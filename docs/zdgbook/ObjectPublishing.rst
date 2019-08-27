@@ -2,16 +2,6 @@
 Object Publishing
 #################
 
-.. note::
-
-  Previously, this document contained information about access by
-  **FTP** and **WebDAV**. As those functionalities were provided by the
-  now removed **ZServer**, the related information also has been removed.
-
-  Please directly refer to the **ZServer** package for further
-  information.
-
-
 Introduction
 ============
 
@@ -204,7 +194,7 @@ will try in order to find the next object:
   2. ``a.next``
 
   3. ``a["next"]``
-  
+
 
 Publishing Methods
 ------------------
@@ -853,7 +843,7 @@ You can also provide default values for record elements with the
 ``default`` converter. For example::
 
   <input type="hidden"
-         name="pizza.toppings:record:list:default" 
+         name="pizza.toppings:record:list:default"
          value="All">
   <select multiple name="pizza.toppings:record:list:ignore_empty">
     <option>Cheese</option>

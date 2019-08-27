@@ -35,7 +35,7 @@ Building a Zope instance with WSGI support
 Zope ships with several helper scripts to set up a default WSGI-enabled
 environment. The document :doc:`operation` walks you through using
 ``mkwsgiinstance`` for a default configuration that you can use in conjunction
-with the ``runwsgi`` script to start a Zope instance. 
+with the ``runwsgi`` script to start a Zope instance.
 
 The buildout extension ``plone.recipe.zope2instance`` expands on that and
 adds a script wrapper for convenient starting and stopping as well as a host
@@ -45,9 +45,8 @@ of other functions. Take a look at `their PyPI page listing all options
 
 Logging configuration
 ---------------------
-When running Zope under the old ZServer, logging configurations were built in.
-Now they are explicit and part of the WSGI configuration ``.ini`` file. The
-default configurations created by ``mkwsgiinstance`` and
+The logging configurations are part of the WSGI configuration ``.ini`` file.
+The default configurations created by ``mkwsgiinstance`` and
 ``plone.recipe.zope2instance`` are suitable for most applications.
 
 Keep in mind that different WSGI servers have different logging behaviors. Some
@@ -63,7 +62,7 @@ capture and log all errors propagating from your application.
    ``Paste`` egg in your buildout's ``eggs`` specification.
 
 You can use the generated default WSGI configuration's logging sections as a
-starting point for changes. The `Python Logging Cookbook 
+starting point for changes. The `Python Logging Cookbook
 <https://docs.python.org/3/howto/logging-cookbook.html>`_ has a great selection
 of topics for advanced configurations.
 
@@ -81,11 +80,10 @@ Things to watch out for
 ~~~~~~~~~~~~~~~~~~~~~~~
 The ZODB uses connection pooling where a working thread grabs a connection
 from the pool to serve content and then releases it when the work is done.
-The default size of this connection pool is 7. The advice from ``ZServer``
-days to choose a number of application threads that stays safely below that
-number of ZODB connections is still valid. ``ZServer`` used 4 threads by
-default, so if the WSGI server lets you configure the number of threads 4 is
-still a safe choice.
+The default size of this connection pool is 7. You should choose a number of
+application threads that stays safely below that number of ZODB connections.
+If the WSGI server lets you configure the number of threads, 4 is a safe
+choice.
 
 Another recommendation from Zope 2 is still valid as well: If you have a choice
 between less Zope instances with a higher number of threads each, or more
@@ -201,7 +199,7 @@ werkzeug
 ++++++++
 `werkzeug <https://palletsprojects.com/p/werkzeug/>`_ is a WSGI library that
 contains not just a WSGI server, but also a powerful debugger. It can
-easily integrate wth Zope using a shim package called `dataflake.wsgi.werkzeug 
+easily integrate wth Zope using a shim package called `dataflake.wsgi.werkzeug
 <https://dataflakewsgiwerkzeug.readthedocs.io/>`_. See the `Using this package`
 section for how to integrate `werkzeug` using Zope's own ``runwsgi`` script and
 how to create a suitable WSGI configuration.
@@ -307,8 +305,8 @@ section will pull in the correct dependencies:
 
 Debugging Zope applications under WSGI
 --------------------------------------
-You can debug a WSGI-based Zope application the same way you have debugged
-ZServer-based installations in the past. In addition, you can now take
+You can debug a WSGI-based Zope application by adding a statement to activate
+the debugger. In addition, you can take
 advantage of WSGI middleware or debugging facilities built into the chosen
 WSGI server.
 

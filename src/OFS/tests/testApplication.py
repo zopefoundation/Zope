@@ -92,27 +92,6 @@ class ApplicationTests(unittest.TestCase):
         request = {'REQUEST_METHOD': 'GET'}
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test_bobo_traverse_attribute_key_miss_R_M_not_GET_POST(self):
-        from OFS import bbb
-        if bbb.HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = bbb.NullResource
-
-        if NullResource is None:
-            return
-
-        from Acquisition import aq_inner, aq_parent
-
-        app = self._makeOne()
-        app._getOb = _noWay
-        request = {'REQUEST_METHOD': 'GOOFY'}
-
-        result = app.__bobo_traverse__(request, 'OTHER')
-
-        self.assertIsInstance(result, NullResource)
-        self.assertTrue(aq_parent(aq_inner(result)) is app)
-
     def test_redirect_regression(self):
         """From code you should still be able to call the Redirect method.
 
