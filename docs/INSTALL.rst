@@ -16,8 +16,7 @@ available:
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include:
 
-  * 2.7
-  * 3.5 - 3.8
+  * 3.5 up to 3.8
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -71,11 +70,6 @@ Built-in standard buildout configuration
   $ python3.7 -m venv .
   $ bin/pip install -U pip zc.buildout
   $ bin/buildout
-
-.. note::
-
-  When using Python 2.7 instead of calling ``python3.7 -m venv .`` you have to
-  install `virtualenv` and then call ``python2.7 -m virtualenv .``.
 
 
 Custom buildout configurations
@@ -174,11 +168,6 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ bin/pip install -U pip
   $ bin/pip install Zope==4.1 \
     -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt
-
-.. note::
-
-  When using Python 2.7 instead of calling ``python3.7 -m venv zope`` you have
-  to install `virtualenv` and then call ``python2.7 -m virtualenv zope``.
 
 You can also install Zope using a single requirements file. Note that this
 installation method might install packages that are not actually needed (i. e.

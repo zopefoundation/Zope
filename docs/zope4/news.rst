@@ -29,15 +29,14 @@ found in this release.
 
 Extended Python version support
 -------------------------------
-Zope 4 supports Python 2.7 and Python 3.5 up to Python 3.8.
+Zope 5 supports Python 3.5 up to Python 3.8.
 
 The Python 3 support currently covers the core dependencies shipped
-with Zope and is limited to the new WSGI based publisher. The new
-external ZServer project is currently limited to Python 2.7 compatibility
-and likely to stay that way.
+with Zope and is limited to the new WSGI based publisher.
 
-Migrating an existing ZODB to Python 3 is not an automated process. Please
-consult :ref:`zope4zodbmigration` for details.
+Migrating an existing ZODB to Python 3 is not an automated process. You have
+to update to Zope 4 first, see
+`Zope 4 migration <https://zope.readthedocs.io/en/4.x/zope4/migration/index.html>`_.
 
 
 WSGI as the new default server type
