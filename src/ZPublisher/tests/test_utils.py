@@ -15,8 +15,6 @@
 
 import unittest
 
-from six import PY2
-
 
 class SafeUnicodeTests(unittest.TestCase):
 
@@ -35,8 +33,5 @@ class SafeUnicodeTests(unittest.TestCase):
         self.assertEqual(self._makeOne(u'foö'), u'foö')
 
     def test_utf_8(self):
-        if PY2:
-            self.assertEqual(self._makeOne('test\xc2\xae'), u'test\xae')
-        else:
-            self.assertEqual(self._makeOne('test\xc2\xae'), u'test\xc2\xae')
+        self.assertEqual(self._makeOne('test\xc2\xae'), u'test\xc2\xae')
         self.assertEqual(self._makeOne(b'test\xc2\xae'), u'test\xae')

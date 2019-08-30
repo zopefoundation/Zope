@@ -16,8 +16,6 @@ import io
 import sys
 import unittest
 
-import six
-
 
 class TestFunctions(unittest.TestCase):
 
@@ -51,10 +49,7 @@ class TestServeCommand(unittest.TestCase):
         return ServeCommand(argv, quiet=quiet)
 
     def _getFileLike(self):
-        if six.PY2:
-            return io.BytesIO()
-        else:
-            return io.StringIO()
+        return io.StringIO()
 
     def test_defaults(self):
         srv = self._makeOne()

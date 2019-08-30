@@ -17,8 +17,6 @@ import io
 import os
 import traceback
 
-from six import PY2
-from six import text_type
 from six.moves import UserDict
 
 from ZODB.config import ZODBDatabase
@@ -155,8 +153,6 @@ class ZopeDatabase(ZODBDatabase):
     def computeMountPaths(self):
         mps = []
         for part in self.config.mount_points:
-            if PY2 and isinstance(part, text_type):
-                part = part.encode()
             real_root = None
             if ':' in part:
                 # 'virtual_path:real_path'
@@ -195,9 +191,6 @@ def default_zpublisher_encoding(value):
     # so a module-level call to getConfiguration in any of them
     # results in getting config data structure without the necessary
     # value in it.
-    if PY2:
-        # unicode is not acceptable as encoding in HTTP headers:
-        value = str(value)
     from ZPublisher import Converters, HTTPRequest, HTTPResponse
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value

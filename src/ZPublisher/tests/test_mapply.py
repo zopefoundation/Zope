@@ -14,8 +14,6 @@
 
 import unittest
 
-from six import PY2
-
 import Acquisition
 import ExtensionClass
 from ZPublisher.mapply import mapply
@@ -53,29 +51,6 @@ class MapplyTests(unittest.TestCase):
         del values['c']
         v = mapply(cc.compute, (), values)
         self.assertEqual(v, '334')
-
-    @unittest.skipUnless(PY2, 'Testing old-style class.')
-    def testOldStyleClass(self):
-        # Testing old-style class behavior.
-        values = {'a': 2, 'b': 3, 'c': 5}
-
-        class c(object):
-            a = 3
-
-            def __call__(self, b, c=4):
-                return '%d%d%d' % (self.a, b, c)
-
-            compute = __call__
-
-        cc = c()
-
-        class c2:
-            """Must be a classic class."""
-
-        c2inst = c2()
-        c2inst.__call__ = cc
-        v = mapply(c2inst, (), values)
-        self.assertEqual(v, '335')
 
     def testObjectWithCall(self):
         # Make sure that the __call__ of an object can also be another

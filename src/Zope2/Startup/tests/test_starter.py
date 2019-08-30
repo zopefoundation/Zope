@@ -15,11 +15,8 @@
 import io
 import os
 import shutil
-import sys
 import tempfile
 import unittest
-
-import six
 
 import ZConfig
 from Zope2.Startup import get_wsgi_starter
@@ -56,10 +53,7 @@ class WSGIStarterTestCase(unittest.TestCase):
         # of the directory is checked.  This handles this in a
         # platform-independent way.
         text = text.replace("<<INSTANCE_HOME>>", self.TEMPNAME)
-        if six.PY2:
-            sio = io.BytesIO(text)
-        else:
-            sio = io.StringIO(text)
+        sio = io.StringIO(text)
 
         try:
             os.mkdir(self.TEMPNAME)
@@ -107,18 +101,3 @@ class WSGIStarterTestCase(unittest.TestCase):
             max-conflict-retries 25""")
         root_wsgi_handler(conf)
         self.assertEqual(HTTPRequest.retry_max_count, 25)
-
-    @unittest.skipUnless(six.PY2, 'Python 2 specific checkinterval test.')
-    def testConfigureInterpreter(self):
-        oldcheckinterval = sys.getcheckinterval()
-        newcheckinterval = oldcheckinterval + 1
-        conf = self.load_config_text("""
-                    instancehome <<INSTANCE_HOME>>
-                    python-check-interval %d
-                    """ % newcheckinterval)
-        try:
-            starter = self.get_starter(conf)
-            starter.setupInterpreter()
-            self.assertEqual(sys.getcheckinterval(), newcheckinterval)
-        finally:
-            sys.setcheckinterval(oldcheckinterval)

@@ -11,20 +11,15 @@
 #
 ##############################################################################
 
+import html
 import re
 
-import six
 from six import binary_type
 from six import text_type
 
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
 
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -37,9 +32,7 @@ def field2string(v):
     """
     if hasattr(v, 'read'):
         return v.read()
-    elif six.PY2 and isinstance(v, text_type):
-        return v.encode(default_encoding)
-    elif six.PY3 and isinstance(v, binary_type):
+    elif isinstance(v, binary_type):
         return v.decode(default_encoding)
     else:
         return str(v)
@@ -93,7 +86,7 @@ def field2int(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "An integer was expected in the value %r" % escape(
+                "An integer was expected in the value %r" % html.escape(
                     v, quote=True
                 )
             )
@@ -110,7 +103,7 @@ def field2float(v):
         except ValueError:
             raise ValueError(
                 "A floating-point number was expected in the value %r" %
-                escape(v, True)
+                html.escape(v, True)
             )
     raise ValueError(
         'Empty entry when <strong>floating-point number</strong> expected')
@@ -128,8 +121,9 @@ def field2long(v):
             return int(v)
         except ValueError:
             raise ValueError(
-                "A long integer was expected in the value %r" % escape(v, True)
-            )
+                "A long integer was expected in the value %r" %
+                html.escape(
+                    v, True))
     raise ValueError('Empty entry when <strong>integer</strong> expected')
 
 
@@ -152,7 +146,7 @@ def field2date(v):
     try:
         v = DateTime(v)
     except SyntaxError:
-        raise SyntaxError("Invalid DateTime " + escape(repr(v), True))
+        raise SyntaxError("Invalid DateTime " + html.escape(repr(v), True))
     return v
 
 
@@ -161,7 +155,7 @@ def field2date_international(v):
     try:
         v = DateTime(v, datefmt="international")
     except SyntaxError:
-        raise SyntaxError("Invalid DateTime " + escape(repr(v)))
+        raise SyntaxError("Invalid DateTime " + html.escape(repr(v)))
     return v
 
 

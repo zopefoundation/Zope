@@ -13,7 +13,6 @@
 '''CGI Response Output formatter
 '''
 
-from six import PY2
 from six import text_type
 
 from zExceptions import BadRequest
@@ -108,10 +107,6 @@ class BaseResponse(object):
 
     def __bytes__(self):
         return bytes(self.body)
-
-    if PY2:
-        def __str__(self):
-            return str(self.body)
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.body)

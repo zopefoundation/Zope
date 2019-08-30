@@ -65,7 +65,6 @@ class TestFindSupport(unittest.TestCase):
         self.assertEqual(len(res), 2)
         self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
 
-    @unittest.skipIf(six.PY2, 'Not applicable under Python 2')
     def test_find_text_nonascii(self):
         # Make sure ZopeFind can handle text and encoded text (binary) data
         unencoded = u'\xfcml\xe4\xfct'
@@ -77,7 +76,6 @@ class TestFindSupport(unittest.TestCase):
         self.assertEqual(len(res), 2)
         self.assertEqual(set([x[0] for x in res]), set(['text', 'bytes']))
 
-    @unittest.skipIf(six.PY2, 'Not applicable under Python 2')
     def test_find_text_nondecodable(self):
         # Make sure ZopeFind does not crash searching text in nondecodable data
         encoded = b'\xf6'

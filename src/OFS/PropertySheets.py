@@ -13,6 +13,8 @@
 """Property sheets
 """
 
+import html
+
 import six
 
 from AccessControl.class_init import InitializeClass
@@ -30,12 +32,6 @@ from OFS.Traversable import Traversable
 from Persistence import Persistent
 from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class Virtual(object):
@@ -160,7 +156,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def valid_property_id(self, id):
         if not id or id[:1] == '_' or (id[:3] == 'aq_') \
-           or (' ' in id) or escape(id, True) != id:
+           or (' ' in id) or html.escape(id, True) != id:
             return 0
         return 1
 
@@ -202,7 +198,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # systems.
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise BadRequest('Invalid property id, %s.' % escape(id, True))
+            raise BadRequest(
+                'Invalid property id, %s.' %
+                html.escape(
+                    id, True))
 
         if not self.property_extensible_schema__():
             raise BadRequest(
@@ -213,7 +212,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             if not (id == 'title' and id not in self.__dict__):
                 raise BadRequest(
                     'Invalid property id, <em>%s</em>. It is in use.' %
-                    escape(id, True))
+                    html.escape(id, True))
         if meta is None:
             meta = {}
         prop = {'id': id, 'type': type, 'meta': meta}
@@ -241,10 +240,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         self._wrapperCheck(value)
         if not self.hasProperty(id):
             raise BadRequest('The property %s does not exist.' %
-                             escape(id, True))
+                             html.escape(id, True))
         propinfo = self.propertyInfo(id)
         if 'w' not in propinfo.get('mode', 'wd'):
-            raise BadRequest('%s cannot be changed.' % escape(id, True))
+            raise BadRequest('%s cannot be changed.' % html.escape(id, True))
         if isinstance(value, (six.string_types, six.binary_type)):
             proptype = propinfo.get('type', 'string')
             if proptype in type_converters:
@@ -267,14 +266,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
             raise BadRequest('The property %s does not exist.' %
-                             escape(id, True))
+                             html.escape(id, True))
         vself = self.v_self()
         if hasattr(vself, '_reserved_names'):
             nd = vself._reserved_names
         else:
             nd = ()
         if ('d' not in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
-            raise BadRequest('%s cannot be deleted.' % escape(id, True))
+            raise BadRequest('%s cannot be deleted.' % html.escape(id, True))
         delattr(vself, id)
         pself = self.p_self()
         pself._properties = tuple(
@@ -302,7 +301,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         for p in self._propertyMap():
             if p['id'] == id:
                 return p
-        raise ValueError('The property %s does not exist.' % escape(id, True))
+        raise ValueError(
+            'The property %s does not exist.' %
+            html.escape(
+                id, True))
 
     def _propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties."""
@@ -366,7 +368,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             if self.hasProperty(name):
                 if 'w' not in propdict[name].get('mode', 'wd'):
                     raise BadRequest('%s cannot be changed' %
-                                     escape(name, True))
+                                     html.escape(name, True))
                 self._updateProperty(name, value)
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)

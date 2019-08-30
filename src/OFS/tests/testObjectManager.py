@@ -3,7 +3,6 @@ import os
 import unittest
 from logging import getLogger
 
-from six import PY2
 from six.moves.urllib.parse import quote
 
 from AccessControl.owner import EmergencyUserCannotOwn
@@ -436,10 +435,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om['2'] = si2
         iterator = iter(om)
         self.assertTrue(hasattr(iterator, '__iter__'))
-        if PY2:
-            self.assertTrue(hasattr(iterator, 'next'))
-        else:
-            self.assertTrue(hasattr(iterator, '__next__'))
+        self.assertTrue(hasattr(iterator, '__next__'))
         result = [i for i in iterator]
         self.assertTrue('1' in result)
         self.assertTrue('2' in result)
@@ -580,42 +576,16 @@ class TestCheckValidId(unittest.TestCase):
         self.assertEqual(str(e),
                          "('Empty or invalid id specified', '')")
 
-    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
-    def test_unicode_py2(self):
-        e = self.assertBadRequest(u'abc☃')
-        self.assertEqual(
-            str(e), "('Empty or invalid id specified', u'abc\\u2603')")
-
-    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
-    def test_unicode_py3(self):
+    def test_unicode(self):
         self._callFUT(self._makeContainer(), u'abc☃')
 
-    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
-    def test_encoded_unicode_py2(self):
-        self._callFUT(self._makeContainer(), u'abcö'.encode('utf-8'))
-
-    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
-    def test_encoded_unicode_py3(self):
+    def test_encoded_unicode(self):
         e = self.assertBadRequest(u'abcö'.encode('utf-8'))
         self.assertEqual(str(e),
                          "('Empty or invalid id specified', "
                          "b'abc\\xc3\\xb6')")
 
-    @unittest.skipUnless(PY2, 'Python 3 cannot handle bytestrings here.')
-    def test_unprintable_characters_py2(self):
-        # We do not allow the first 31 ASCII characters. \x00-\x19
-        # We do not allow the DEL character. \x7f
-        e = self.assertBadRequest('abc\x10')
-        self.assertEqual(str(e),
-                         'The id "abc\x10" contains characters illegal'
-                         ' in URLs.')
-        e = self.assertBadRequest('abc\x7f')
-        self.assertEqual(str(e),
-                         'The id "abc\x7f" contains characters illegal'
-                         ' in URLs.')
-
-    @unittest.skipIf(PY2, 'Python 2 cannot handle unicode / text here.')
-    def test_unprintable_characters_py3(self):
+    def test_unprintable_characters(self):
         # We do not allow the first 31 ASCII characters. \x00-\x19
         # We do not allow the DEL character. \x7f
         e = self.assertBadRequest(u'abc\x10')

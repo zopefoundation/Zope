@@ -22,7 +22,6 @@ import time
 from cgi import FieldStorage
 from copy import deepcopy
 
-from six import PY2
 from six import PY3
 from six import binary_type
 from six import string_types
@@ -1698,16 +1697,6 @@ class FileUpload(object):
 
     def __next__(self):
         return self.file.__next__()
-
-    if PY2:
-        def __nonzero__(self):
-            return self.__bool__()
-
-        def next(self):
-            return self.file.next()
-
-        def xreadlines(self):
-            return self
 
 
 QPARMRE = re.compile(

@@ -13,6 +13,8 @@
 """Role manager
 """
 
+import html
+
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import Permission
@@ -23,12 +25,6 @@ from AccessControl.rolemanager import _string_hash
 from AccessControl.rolemanager import reqattr
 from App.special_dtml import DTMLFile
 from zExceptions import BadRequest
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class RoleManager(BaseRoleManager):
@@ -143,7 +139,7 @@ class RoleManager(BaseRoleManager):
 
         if fails:
             raise BadRequest('Some permissions had errors: '
-                             + escape(', '.join(fails), True))
+                             + html.escape(', '.join(fails), True))
         if REQUEST is not None:
             return self.manage_access(REQUEST)
 

@@ -14,10 +14,8 @@
 """
 import re
 
-from six import PY2
 from six import PY3
 from six import binary_type
-from six import text_type
 from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
@@ -190,9 +188,6 @@ class DTMLMethod(
                 c = self.content_type
             else:
                 encoding = getattr(self, 'encoding', default_encoding)
-                if PY2 and not isinstance(r, text_type):
-                    # Prevent double-encoding edge cases under Python 2
-                    r = r.decode(encoding)
                 c, e = guess_content_type(self.getId(), r.encode(encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
@@ -430,8 +425,6 @@ def safe_file_data(data):
         data = data.read()
     if PY3 and isinstance(data, binary_type):
         data = data.decode('utf-8')
-    if PY2 and isinstance(data, text_type):
-        data = data.encode('utf-8')
     return data
 
 

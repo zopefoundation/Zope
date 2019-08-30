@@ -12,6 +12,7 @@
 ##############################################################################
 """ CGI Response Output formatter
 """
+import html
 import os
 import re
 import struct
@@ -20,8 +21,6 @@ import time
 import zlib
 from io import BytesIO
 
-from six import PY2
-from six import PY3
 from six import binary_type
 from six import class_types
 from six import reraise
@@ -44,11 +43,6 @@ from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.Iterators import IStreamIterator
 from ZPublisher.Iterators import IUnboundStreamIterator
 
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 if sys.version_info >= (3, ):
     from io import IOBase
@@ -207,9 +201,7 @@ class HTTPBaseResponse(BaseResponse):
             status = location.getStatus()
             location = location.headers['Location']
 
-        if PY2 and isinstance(location, text_type):
-            location = location.encode(self.charset)
-        elif PY3 and isinstance(location, binary_type):
+        if isinstance(location, binary_type):
             location = location.decode(self.charset)
 
         # To be entirely correct, we must make sure that all non-ASCII
@@ -289,10 +281,6 @@ class HTTPBaseResponse(BaseResponse):
         `value` may be text or bytes. The default encoding of respective python
         version is used.
         """
-        if PY2:
-            name = str(name)
-            value = str(value)
-
         cookies = self.cookies
         if name in cookies:
             cookie = cookies[name]
@@ -316,10 +304,6 @@ class HTTPBaseResponse(BaseResponse):
         `value` may be text or bytes. The default encoding of respective python
         version is used.
         """
-        if PY2:
-            name = str(name)
-            value = str(value)
-
         cookies = self.cookies
         if name in cookies:
             cookie = cookies[name]
@@ -343,9 +327,6 @@ class HTTPBaseResponse(BaseResponse):
 
         `name` has to be text in Python 3.
         """
-        if PY2:
-            name = str(name)
-
         d = kw.copy()
         if 'value' in d:
             d.pop('value')
@@ -457,7 +438,7 @@ class HTTPBaseResponse(BaseResponse):
                 ibase = base_re_search(text)
                 if ibase is None:
                     text = (text[:index] + '\n<base href="'
-                            + escape(self.base, True) + '" />\n'
+                            + html.escape(self.base, True) + '" />\n'
                             + text[index:])
                     self.text = text
                     self.setHeader('content-length', len(self.body))
@@ -761,12 +742,9 @@ class HTTPResponse(HTTPBaseResponse):
         chunks.append(body)
         return b'\r\n'.join(chunks)
 
-    if PY2:
-        __str__ = __bytes__
-
     # deprecated
     def quoteHTML(self, text):
-        return escape(text, 1)
+        return html.escape(text, 1)
 
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
@@ -803,7 +781,7 @@ class HTTPResponse(HTTPBaseResponse):
             "Resource not found",
             ("Sorry, the requested resource does not exist."
              "<p>Check the URL and try again.</p>"
-             "<p><b>Resource:</b> " + escape(entry) + "</p>")))
+             "<p><b>Resource:</b> " + html.escape(entry) + "</p>")))
 
     # If a resource is forbidden, why reveal that it exists?
     forbiddenError = notFoundError
@@ -967,7 +945,7 @@ class WSGIResponse(HTTPBaseResponse):
         exc.detail = (
             'Sorry, the requested resource does not exist.'
             '<p>Check the URL and try again.</p>'
-            '<p><b>Resource:</b> %s</p>' % escape(entry, True))
+            '<p><b>Resource:</b> %s</p>' % html.escape(entry, True))
         raise exc
 
     # If a resource is forbidden, why reveal that it exists?

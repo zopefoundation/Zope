@@ -1,6 +1,5 @@
 import unittest
 
-from six import PY2
 from six.moves.urllib.parse import quote
 
 from DateTime import DateTime
@@ -28,10 +27,7 @@ class QueryTests(unittest.TestCase):
         self.assertEqual(simple_marshal(DateTime()), ":date")
 
     def testMarshalUnicode(self):
-        if PY2:
-            arg_type = ':utf8:ustring'
-        else:
-            arg_type = ''
+        arg_type = ''
         self.assertEqual(simple_marshal(u'unic\xF3de'), arg_type)
 
     def testMarshallLists(self):
@@ -39,10 +35,7 @@ class QueryTests(unittest.TestCase):
         test_date = DateTime()
         list_ = [1, test_date, 'str', u'unic\xF3de']
         result = complex_marshal([('list', list_), ])
-        if PY2:
-            arg4_type = ':utf8:ustring:list'
-        else:
-            arg4_type = ':list'
+        arg4_type = ':list'
         self.assertEqual(result,
                          [('list', ':int:list', 1),
                           ('list', ':date:list', test_date),
@@ -57,10 +50,7 @@ class QueryTests(unittest.TestCase):
             'arg3': 'str', 'arg4': u'unic\xF3de',
         }
         result = complex_marshal([('record', record), ])
-        if PY2:
-            arg4_type = ':utf8:ustring:record'
-        else:
-            arg4_type = ':record'
+        arg4_type = ':record'
         self.assertEqual(
             set(result),
             set([('record.arg1', ':int:record', 1),
@@ -73,10 +63,7 @@ class QueryTests(unittest.TestCase):
         test_date = DateTime()
         record = {'arg1': [1, test_date, 'str', u'unic\xF3de'], 'arg2': 1}
         result = complex_marshal([('record', record), ])
-        if PY2:
-            arg1_type = ':utf8:ustring:list:record'
-        else:
-            arg1_type = ':list:record'
+        arg1_type = ':list:record'
         self.assertEqual(
             set(result),
             set([('record.arg1', ':int:list:record', 1),
@@ -116,10 +103,7 @@ class QueryTests(unittest.TestCase):
            https://github.com/zopefoundation/Zope/issues/15
         '''
         query = make_query(search_text=u'unic\xF3de')
-        if PY2:
-            arg_type = 'search_text:utf8:ustring='
-        else:
-            arg_type = 'search_text='
+        arg_type = 'search_text='
         self.assertEqual(arg_type + 'unic%C3%B3de', query)
 
     def testMakeHiddenInput(self):

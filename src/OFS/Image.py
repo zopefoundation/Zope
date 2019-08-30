@@ -13,11 +13,11 @@
 """Image object
 """
 
+import html
 import struct
 from email.generator import _make_boundary
 from io import BytesIO
 
-from six import PY2
 from six import binary_type
 from six import text_type
 
@@ -47,12 +47,6 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 manage_addFileForm = DTMLFile(
@@ -669,10 +663,7 @@ class File(
         return bytes(self.data)
 
     def __str__(self):
-        if PY2:
-            return str(self.data)
-        else:
-            return self.data.decode(self._get_encoding())
+        return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
@@ -944,11 +935,11 @@ class Image(File):
 
         if alt is None:
             alt = getattr(self, 'alt', '')
-        result = '%s alt="%s"' % (result, escape(alt, True))
+        result = '%s alt="%s"' % (result, html.escape(alt, True))
 
         if title is None:
             title = getattr(self, 'title', '')
-        result = '%s title="%s"' % (result, escape(title, True))
+        result = '%s title="%s"' % (result, html.escape(title, True))
 
         if height:
             result = '%s height="%s"' % (result, height)
@@ -989,10 +980,6 @@ class Pdata(Persistent, Implicit):
     def __init__(self, data):
         self.data = data
 
-    if PY2:
-        def __getslice__(self, i, j):
-            return self.data[i:j]
-
     def __getitem__(self, key):
         return self.data[key]
 
@@ -1012,6 +999,3 @@ class Pdata(Persistent, Implicit):
             _next = self.next
 
         return b''.join(r)
-
-    if PY2:
-        __str__ = __bytes__
