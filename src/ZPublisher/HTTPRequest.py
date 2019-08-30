@@ -40,6 +40,7 @@ from zope.interface import directlyProvidedBy
 from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.publisher.base import DebugFlags
+from zope.publisher.http import splitport
 from zope.publisher.interfaces.browser import IBrowserRequest
 from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
@@ -105,27 +106,6 @@ trusted_proxies = []
 
 class NestedLoopExit(Exception):
     pass
-
-
-def splitport(url):
-    """Return (hostname, port) from a URL
-
-    If it does not return a port, return the URL unchanged.
-    This mimics the behavior of the `splitport` function which was
-    in Python and got deprecated in Python 3.8.
-    """
-    parsed = urlparse(url)
-    if (not parsed.scheme
-            and parsed.port is None
-            and parsed.hostname is None):
-        # urlparse does not like URLs without a protocol, so add one:
-        parsed = urlparse('http://{}'.format(url))
-    if parsed.port is None:
-        return url, None
-    hostname = parsed.hostname
-    if parsed.netloc.startswith('['):
-        hostname = "[{}]".format(hostname)
-    return hostname, parsed.port
 
 
 @implementer(IBrowserRequest)
