@@ -595,11 +595,7 @@ class BaseRequest(object):
 
             if inext is not None:
                 i = inext
-
-                if hasattr(groups, 'validate'):
-                    v = groups.validate
-                else:
-                    v = old_validation
+                v = getattr(groups, 'validate', old_validation)
 
                 auth = request._auth
 
