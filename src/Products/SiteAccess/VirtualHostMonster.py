@@ -150,7 +150,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 protocol = stack.pop()
                 host = stack.pop()
                 hostname, port = splitport(host)
-                port = (port and int(port)) or None
+                port = int(port) if port else None
                 request.setServerURL(protocol, hostname, port)
                 path = list(stack)
 
