@@ -12,13 +12,11 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.2 (unreleased)
 ------------------
 
-- Update to current releases of the dependencies.
+- Resurrect ZMI History tab and functionality.
 
-- Resurrect History ZMI tab and functionality
-
-- Removed commented out configuration for tempstorage (and server side 
-  sessions) as that was known not working for ages. This was removed so we do 
-  not lead unsuspecting developers to think that this is the right way to do 
+- Remove commented out configuration for ``tempstorage`` (and server side
+  sessions) as that was known not working for ages. This was removed so we do
+  not lead unsuspecting developers to think that this is the right way to do
   session data. See
   (`#679 <https://github.com/zopefoundation/Zope/issues/679>`_)
   (`tempstorage#8 <https://github.com/zopefoundation/tempstorage/issues/8>`_)
@@ -26,6 +24,8 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Reuse ``zope.publisher.http.splitport`` instead of defining our own
   (`#683 <https://github.com/zopefoundation/Zope/issues/683>`_)
+
+- Update to current releases of the dependencies.
 
 
 4.1.1 (2019-07-02)
