@@ -9,7 +9,7 @@ For the change log of the alpha versions see
 https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 
-4.1.2 (unreleased)
+4.1.2 (2019-09-04)
 ------------------
 
 - Resurrect ZMI History tab and functionality.
