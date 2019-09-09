@@ -15,8 +15,3 @@ Backwards incompatible changes
 - Drop support for Python 2.7 aka Zope 5 cannot be run on Python 2 any more.
   If you are still running on Python 2.7 upgrade to the latest Zope 4 version
   first, migrate to Python 3 and than switch to Zope 5.
-
-Other changes
-+++++++++++++
-
-- Update to current releases of the dependencies.
