@@ -22,21 +22,6 @@ from six import text_type
 from six.moves import UserDict
 
 from ZODB.config import ZODBDatabase
-from zope.deferredimport import deprecated
-
-
-# BBB Zope 5.0
-_prefix = 'ZServer.Zope2.Startup.datatypes:'
-deprecated(
-    'Please import from ZServer.Zope2.Startup.datatypes.',
-    cgi_environment=_prefix + 'cgi_environment',
-    LoggerFactory=_prefix + 'LoggerFactory',
-    dns_resolver=_prefix + 'dns_resolver',
-    python_dotted_path=_prefix + 'python_dotted_path',
-    zdaemonEnvironDict=_prefix + 'zdaemonEnvironDict',
-    root_config=_prefix + 'root_config',
-    minimalClassFactory=_prefix + 'minimalClassFactory',
-)
 
 
 def security_policy_implementation(value):

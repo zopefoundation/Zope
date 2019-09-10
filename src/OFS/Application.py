@@ -27,12 +27,10 @@ from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
 from DateTime import DateTime
-from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from zExceptions import Forbidden
 from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
 
@@ -41,11 +39,6 @@ from . import misc_
 from .interfaces import IApplication
 from .misc_ import Misc_
 
-
-if bbb.HAS_ZSERVER:
-    from webdav.NullResource import NullResource
-else:
-    NullResource = bbb.NullResource
 
 LOG = getLogger('Application')
 
@@ -127,8 +120,6 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
             pass
 
         method = REQUEST.get('REQUEST_METHOD', 'GET')
-        if NullResource is not None and method not in ('GET', 'POST'):
-            return NullResource(self, name, REQUEST).__of__(self)
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
         # There is probably a better fix for this.
@@ -140,17 +131,6 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def ZopeTime(self, *args):
         """Utility function to return current date/time"""
         return DateTime(*args)
-
-    if bbb.HAS_ZSERVER:
-        def DELETE(self, REQUEST, RESPONSE):
-            """Delete a resource object."""
-            self.dav__init(REQUEST, RESPONSE)
-            raise Forbidden('This resource cannot be deleted.')
-
-        def MOVE(self, REQUEST, RESPONSE):
-            """Move a resource to a new location."""
-            self.dav__init(REQUEST, RESPONSE)
-            raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".

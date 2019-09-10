@@ -26,7 +26,6 @@ from Acquisition import aq_parent
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from OFS import bbb
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from zExceptions import BadRequest
@@ -37,11 +36,6 @@ try:
     from html import escape
 except ImportError:  # PY2
     from cgi import escape
-
-if bbb.HAS_ZSERVER:
-    from webdav.PropertySheet import DAVPropertySheetMixin
-else:
-    DAVPropertySheetMixin = bbb.DAVPropertySheetMixin
 
 
 class Virtual(object):
@@ -116,7 +110,7 @@ class View(Tabs, Base):
             return ''
 
 
-class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
+class PropertySheet(Traversable, Persistent, Implicit):
     """A PropertySheet is a container for a set of related properties and
        metadata describing those properties. PropertySheets may or may not
        provide a web interface for managing its properties."""
@@ -408,13 +402,6 @@ class DefaultProperties(Virtual, PropertySheet, View):
 InitializeClass(DefaultProperties)
 
 
-# import cycles
-if bbb.HAS_ZSERVER:
-    from webdav.PropertySheets import DAVProperties
-else:
-    DAVProperties = bbb.DAVProperties
-
-
 class PropertySheets(Traversable, Implicit, Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
@@ -429,10 +416,8 @@ class PropertySheets(Traversable, Implicit, Tabs):
     # optionally to be overridden by derived classes
     PropertySheetClass = PropertySheet
 
-    webdav = DAVProperties()
-
     def _get_defaults(self):
-        return (self.webdav,)
+        return ()
 
     def __propsets__(self):
         propsets = aq_parent(self).__propsets__
@@ -568,10 +553,9 @@ class DefaultPropertySheets(PropertySheets):
        design of Zope PropertyManagers."""
 
     default = DefaultProperties()
-    webdav = DAVProperties()
 
     def _get_defaults(self):
-        return (self.default, self.webdav)
+        return (self.default,)
 
 
 InitializeClass(DefaultPropertySheets)
