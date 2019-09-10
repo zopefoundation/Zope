@@ -9,6 +9,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Improve documentation for Zope's error logging services.
+
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++
 

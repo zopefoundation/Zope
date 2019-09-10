@@ -340,25 +340,35 @@ Now you can use the new MailHost object from a Script.
 Error Logging Services
 ----------------------
 
-The *Site Error Log* object, typically accessible in the Zope root
-under the name 'error_log', provides debugging and error logging
-information in real-time.  When your site encounters an error, it
-will be logged in the Site Error Log, allowing you to review (and
+.. note::
+
+  As of Zope 4, the **Site Error Log** is no longer a a dependency of Zope,
+  but has to be installed separately if you want to use it.
+
+  The **Site Error Log** is available as ``Products.SiteErrorLog`` on
+  `PyPI <https://pypi.org/project/Products.SiteErrorLog/>`_.
+
+The **Site Error Log** object, typically accessible in the Zope root
+under the name `error_log`, provides debugging and error logging
+information in real time. When your site encounters an error, it
+will be logged in the **Site Error Log***, allowing you to review (and
 hopefully fix!) the error.
 
-Options settable on a Site Error Log instance
-include:
+Available options for the **Site Error Log** instance:
 
-Number of exceptions to keep
-  keep 20 exceptions by default, rotating "old" exceptions out when more
-  than 20 are stored.  Set this to a higher or lower number as you like.
+- *Number of exceptions to keep* - This option is set to 20 by default,
+  rotating old exceptions out when more than 20 are stored.
+  You may set this to a higher or lower number as you like.
 
-Copy exceptions to the event log
-  If this option is selected, the site error log object will copy the text
-  of exceptions that it receives to the "event log" facility, which is
-  typically controlled by the 'EVENT_LOG_FILE' environment variable.  For
-  more information about this environment variable, see the chapter
-  entitled `Installing and Starting Zope <InstallingZope.html>`_.
+- *Copy exceptions to the event log* - If this option is enabled, the
+  **Site Error Log** object will copy the text of the received
+  exceptions to Zope's event log.
+  
+- *Ignored exception types* - Here you can add **Exceptions** which you
+  want to ignore.
+  This means they will be neither shown in the ZMI, nor logged to
+  Zope's event log.
+  By default `Unauthorized`, `NotFound` and `Redirect` are set.
 
 Virtual Hosting Services
 ------------------------
