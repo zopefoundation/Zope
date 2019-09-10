@@ -15,7 +15,7 @@ import transaction
 from zope.deferredimport import deprecated
 
 
-# BBB Zope 6.0
+# BBB Zope 5.0
 deprecated(
     'Please import from Testing.makerequest.',
     makerequest='Testing.makerequest:makerequest',
