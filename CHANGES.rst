@@ -15,5 +15,7 @@ Backwards incompatible changes
 - Drop support for Python 2.7 aka Zope 5 cannot be run on Python 2 any more.
   If you are still running on Python 2.7 upgrade to the latest Zope 4 version
   first, migrate to Python 3 and than switch to Zope 5.
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
 - Drop support for running Zope with ZServer as it is Python 2 only.
+  (`#592 <https://github.com/zopefoundation/Zope/issues/592>`_)
