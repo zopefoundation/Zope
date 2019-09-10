@@ -7,7 +7,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
 5.0a1 (unreleased)
------------------
+------------------
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++
