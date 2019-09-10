@@ -343,11 +343,14 @@ Error Logging Services
 .. note::
 
   As of Zope 4, the **Site Error Log** is no longer a a dependency of Zope,
-  but has to be installed additionally if you want to use it.
+  but has to be installed separately if you want to use it.
+
+  The **Site Error Log** is available as ``Products.SiteErrorLog`` on
+  `PyPI <https://pypi.org/project/Products.SiteErrorLog/>`_.
 
 The **Site Error Log** object, typically accessible in the Zope root
 under the name `error_log`, provides debugging and error logging
-information in real-time. When your site encounters an error, it
+information in real time. When your site encounters an error, it
 will be logged in the **Site Error Log***, allowing you to review (and
 hopefully fix!) the error.
 
