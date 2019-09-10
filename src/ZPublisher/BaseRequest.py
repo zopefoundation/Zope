@@ -19,9 +19,7 @@ from six.moves.urllib.parse import quote as urllib_quote
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
-from Acquisition import aq_inner
 from Acquisition.interfaces import IAcquirer
-from App.bbb import HAS_ZSERVER
 from ExtensionClass import Base
 from zExceptions import Forbidden
 from zExceptions import NotFound
@@ -182,8 +180,6 @@ class BaseRequest(object):
     The request object is a mapping object that represents a
     collection of variable to value mappings.
     """
-
-    maybe_webdav_client = HAS_ZSERVER
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -395,9 +391,6 @@ class BaseRequest(object):
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
-        elif self.maybe_webdav_client:
-            # Probably a WebDAV client.
-            no_acquire_flag = 1
 
         URL = request['URL']
         parents = request['PARENTS']
@@ -438,12 +431,6 @@ class BaseRequest(object):
         # Set the posttraverse for duration of the traversal here
         self._post_traverse = post_traverse = []
 
-        # import time ordering problem
-        if HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = None
-
         entry_name = ''
         try:
             # We build parents in the wrong order, so we
@@ -464,19 +451,6 @@ class BaseRequest(object):
                     # BrowserDefault returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published.
-
-                    # This is webdav support. The last object in the path
-                    # should not be acquired. Instead, a NullResource should
-                    # be given if it doesn't exist:
-                    if NullResource is not None and \
-                       no_acquire_flag and \
-                       hasattr(object, 'aq_base') and \
-                       not hasattr(object, '__bobo_traverse__'):
-
-                        if (object.__parent__ is not
-                                aq_inner(object).__parent__):
-                            object = NullResource(parents[-2], object.getId(),
-                                                  self).__of__(parents[-2])
 
                     if IBrowserPublisher.providedBy(object):
                         adapter = object

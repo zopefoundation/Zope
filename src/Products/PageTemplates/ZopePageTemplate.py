@@ -20,7 +20,6 @@ from six import text_type
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_page_templates
-from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -35,7 +34,6 @@ from OFS.History import html_diff
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
-from Products.PageTemplates import bbb
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -294,29 +292,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         'manage_historyCopy',
         'manage_beforeHistoryCopy',
         'manage_afterHistoryCopy')
-
-    if bbb.HAS_ZSERVER:
-        @security.protected(change_page_templates)
-        def PUT(self, REQUEST, RESPONSE):
-            """ Handle HTTP PUT requests """
-
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            text = REQUEST.get('BODY', '')
-            content_type = guess_type('', text)
-            self.pt_edit(text, content_type)
-            RESPONSE.setStatus(204)
-            return RESPONSE
-
-        security.declareProtected(change_page_templates,  # NOQA: D001
-                                  'manage_FTPput')
-        manage_FTPput = PUT
-
-        @security.protected(ftp_access)
-        def manage_FTPget(self):
-            "Get source for FTP download"
-            result = self.read()
-            return result.encode(self.output_encoding)
 
     @security.protected(view_management_screens)
     def html(self):

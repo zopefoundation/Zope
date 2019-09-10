@@ -26,7 +26,6 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from OFS import bbb
 from OFS.interfaces import IApplication
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound
@@ -198,13 +197,6 @@ class Traversable(object):
         else:
             obj = self
 
-        # import time ordering problem
-        if bbb.HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = bbb.NullResource
-
-        resource = _marker
         try:
             while path:
                 name = path_pop()
@@ -299,16 +291,6 @@ class Traversable(object):
                             else:
                                 try:
                                     next = obj[name]
-                                    # The item lookup may return a
-                                    # NullResource, if this is the case we
-                                    # save it and return it if all other
-                                    # lookups fail.
-                                    if (
-                                        NullResource is not None
-                                        and isinstance(next, NullResource)
-                                    ):
-                                        resource = next
-                                        raise KeyError(name)
                                 except (AttributeError, TypeError):
                                     # Raise NotFound for easier debugging
                                     # instead of AttributeError: __getitem__
@@ -343,11 +325,7 @@ class Traversable(object):
                         except AttributeError:
                             raise e
                         if next is _marker:
-                            # If we have a NullResource from earlier use it.
-                            next = resource
-                            if next is _marker:
-                                # Nothing found re-raise error
-                                raise e
+                            raise e
 
                 obj = next
 

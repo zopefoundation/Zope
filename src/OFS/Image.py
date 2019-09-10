@@ -24,7 +24,6 @@ from six import text_type
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files  # NOQA
-from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -32,7 +31,6 @@ from Acquisition import Implicit
 from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
-from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
@@ -684,51 +682,6 @@ class File(
     def __len__(self):
         data = bytes(self.data)
         return len(data)
-
-    if bbb.HAS_ZSERVER:
-        @security.protected(change_images_and_files)
-        def PUT(self, REQUEST, RESPONSE):
-            """Handle HTTP PUT requests"""
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            type = REQUEST.get_header('content-type', None)
-
-            file = REQUEST['BODYFILE']
-
-            data, size = self._read_data(file)
-            content_type = self._get_content_type(file, data, self.__name__,
-                                                  type or self.content_type)
-            self.update_data(data, content_type, size)
-
-            RESPONSE.setStatus(204)
-            return RESPONSE
-
-        @security.protected(ftp_access)
-        def manage_FTPget(self):
-            """Return body for ftp."""
-            RESPONSE = self.REQUEST.RESPONSE
-
-            if self.ZCacheable_isCachingEnabled():
-                result = self.ZCacheable_get(default=None)
-                if result is not None:
-                    # We will always get None from RAMCacheManager but we will
-                    # get something implementing the IStreamIterator interface
-                    # from FileCacheManager.
-                    # the content-length is required here by HTTPResponse,
-                    # even though FTP doesn't use it.
-                    RESPONSE.setHeader('Content-Length', self.size)
-                    return result
-
-            data = self.data
-            if isinstance(data, binary_type):
-                RESPONSE.setBase(None)
-                return data
-
-            while data is not None:
-                RESPONSE.write(data.data)
-                data = data.next
-
-            return b''
 
 
 InitializeClass(File)
