@@ -13,7 +13,8 @@
 """Zope-specific versions of ZTUTils classes
 """
 
-from six import PY2
+import html
+
 from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
@@ -29,12 +30,6 @@ from ZTUtils.SimpleTree import SimpleTreeMaker
 from ZTUtils.Tree import TreeMaker
 from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class LazyFilter(Lazy):
@@ -216,8 +211,6 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        if PY2 and isinstance(v, text_type):
-            v = v.encode(_default_encoding())
         qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
 
     return '&'.join(qlist)
@@ -242,7 +235,7 @@ def make_hidden_input(*args, **kwargs):
     d.update(kwargs)
 
     def hq(x):
-        return escape(x, quote=True)
+        return html.escape(x, quote=True)
 
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):

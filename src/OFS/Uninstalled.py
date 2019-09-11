@@ -13,6 +13,7 @@
 """
 Objects for packages that have been uninstalled.
 """
+import html
 from logging import getLogger
 
 from six import exec_
@@ -26,11 +27,6 @@ from Persistence import Overridable
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
 
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 broken_klasses = {}
 broken_klasses_lock = allocate_lock()
@@ -50,7 +46,7 @@ class BrokenClass(ZODB_Broken, Explicit, Item, Overridable):
     def __getattr__(self, name):
         if name[:3] == '_p_':
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
-        raise AttributeError(escape(name, True))
+        raise AttributeError(html.escape(name, True))
 
     manage = DTMLFile('dtml/brokenEdit', globals())
     manage_main = DTMLFile('dtml/brokenEdit', globals())

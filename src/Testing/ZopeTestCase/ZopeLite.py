@@ -27,7 +27,6 @@ import os
 import sys
 import time
 
-from six import PY2
 from six import exec_
 
 import App.ProductContext  # NOQA
@@ -54,10 +53,6 @@ from OFS.Application import get_folder_permissions  # NOQA; NOQA
 
 # Allow code to tell it is run by the test framework
 os.environ['ZOPETESTCASE'] = '1'
-
-# Increase performance on MP hardware
-if PY2:
-    sys.setcheckinterval(2500)
 
 # Always shut up
 _quiet = True

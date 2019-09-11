@@ -13,6 +13,7 @@
 """Standard management interface support
 """
 
+import html
 import itertools
 
 import six
@@ -30,12 +31,6 @@ from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from zope.interface import implementer
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class Tabs(Base):
@@ -99,7 +94,7 @@ class Tabs(Base):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']
         linkpat = '{}/manage_workspace'
-        yield {'url': linkpat.format(escape(script, True)),
+        yield {'url': linkpat.format(html.escape(script, True)),
                'title': 'Root',
                'last': not bool(steps)}
         if not steps:
@@ -107,12 +102,12 @@ class Tabs(Base):
         last = steps.pop()
         for step in steps:
             script = '%s/%s' % (script, step)
-            yield {'url': linkpat.format(escape(script, True)),
-                   'title': escape(unquote(step)),
+            yield {'url': linkpat.format(html.escape(script, True)),
+                   'title': html.escape(unquote(step)),
                    'last': False}
         script = '%s/%s' % (script, last)
-        yield {'url': linkpat.format(escape(script, True)),
-               'title': escape(unquote(last)),
+        yield {'url': linkpat.format(html.escape(script, True)),
+               'title': html.escape(unquote(last)),
                'last': True}
 
     def tabs_path_info(self, script, path):

@@ -671,10 +671,7 @@ def _cb_encode(d):
     json_bytes = dumps(d).encode('utf-8')
     squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
     # quote for embeding in cookie
-    if six.PY2:
-        return quote(squashed_bytes)
-    else:
-        return quote(squashed_bytes.decode('latin-1'))
+    return quote(squashed_bytes.decode('latin-1'))
 
 
 def _cb_decode(s, maxsize=8192):
@@ -686,10 +683,7 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
-    if six.PY2:
-        squashed = unquote(s)
-    else:
-        squashed = unquote(s).encode('latin-1')
+    squashed = unquote(s).encode('latin-1')
     data = dec.decompress(squashed, maxsize)
     if dec.unconsumed_tail:
         raise ValueError

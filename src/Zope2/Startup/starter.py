@@ -15,9 +15,6 @@
 import codecs
 import locale
 import logging
-import sys
-
-from six import PY2
 
 from ZConfig import ConfigurationError
 from Zope2.Startup.handlers import _name_to_ips
@@ -49,9 +46,7 @@ class WSGIStarter(object):
 
     def setupInterpreter(self):
         # make changes to the python interpreter environment
-        if PY2:
-            # Check interval is gone in supported Python 3 versions.
-            sys.setcheckinterval(self.cfg.python_check_interval)
+        pass
 
     def setupLocale(self):
         # set a locale if one has been specified in the config, else read from

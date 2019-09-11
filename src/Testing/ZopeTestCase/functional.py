@@ -18,8 +18,6 @@ After Marius Gedminas' functional.py module for Zope3.
 import sys
 from functools import partial
 
-from six import PY2
-
 import transaction
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
@@ -176,8 +174,6 @@ class ResponseWrapper(object):
         return self.cookies.get(name)
 
     def _decode(self, data):
-        if PY2:
-            return data
         # This is a hack. This method is called to print a response
         # as part of a doctest. But if that response contains an
         # actual binary body, like a GIF image, there's no good

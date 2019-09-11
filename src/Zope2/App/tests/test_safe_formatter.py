@@ -4,15 +4,6 @@ from Testing.ZopeTestCase import FunctionalTestCase
 from zExceptions import Unauthorized
 
 
-try:
-    from html import escape
-    import functools
-    # We do not want escaped " and ', as PageTemplate neither does it:
-    escape = functools.partial(escape, quote=False)
-except ImportError:  # PY2
-    from cgi import escape
-
-
 BAD_ATTR_STR = """
 <p tal:content="python:'class of {0} is {0.__class__}'.format(context)" />
 """

@@ -21,8 +21,6 @@ factory screen.
 
 import operator
 
-from six import PY2
-
 from OFS.SimpleItem import SimpleItem
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -209,14 +207,6 @@ class ObjectManagerNameChooser(object):
         self.context = context
 
     def checkName(self, name, object):
-        if PY2:
-            # ObjectManager can only deal with ASCII names. Specially
-            # ObjectManager._checkId can only deal with strings.
-            try:
-                name = name.encode('ascii')
-            except UnicodeDecodeError:
-                raise UserError("Id must contain only ASCII characters.")
-
         try:
             self.context._checkId(name, allow_dup=False)
         except BadRequest as e:
@@ -226,12 +216,6 @@ class ObjectManagerNameChooser(object):
     def chooseName(self, name, object):
         if not name:
             name = object.__class__.__name__
-        else:
-            if PY2:
-                try:
-                    name = name.encode('ascii')
-                except UnicodeDecodeError:
-                    raise UserError("Id must contain only ASCII characters.")
 
         dot = name.rfind('.')
         if dot >= 0:

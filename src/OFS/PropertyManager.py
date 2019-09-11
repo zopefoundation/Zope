@@ -13,6 +13,8 @@
 """Property management
 """
 
+import html
+
 import six
 
 from AccessControl.class_init import InitializeClass
@@ -28,12 +30,6 @@ from OFS.PropertySheets import vps
 from zExceptions import BadRequest
 from zope.interface import implementer
 from ZPublisher.Converters import type_converters
-
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 @implementer(IPropertyManager)
@@ -138,7 +134,7 @@ class PropertyManager(Base):
            id[:3] == 'aq_' or \
            ' ' in id or \
            hasattr(aq_base(self), id) or \
-           escape(id, True) != id:
+           html.escape(id, True) != id:
             return 0
         return 1
 
@@ -215,7 +211,7 @@ class PropertyManager(Base):
         self._wrapperCheck(value)
         if not self.hasProperty(id):
             raise BadRequest(
-                'The property %s does not exist' % escape(id, True))
+                'The property %s does not exist' % html.escape(id, True))
         if isinstance(value, (six.string_types, six.binary_type)):
             proptype = self.getPropertyType(id) or 'string'
             if proptype in type_converters:
@@ -225,7 +221,7 @@ class PropertyManager(Base):
     def _delProperty(self, id):
         if not self.hasProperty(id):
             raise ValueError(
-                'The property %s does not exist' % escape(id, True))
+                'The property %s does not exist' % html.escape(id, True))
         self._delPropValue(id)
         self._properties = tuple(i for i in self._properties if i['id'] != id)
 
@@ -339,7 +335,7 @@ class PropertyManager(Base):
             if self.hasProperty(name):
                 if 'w' not in propdict[name].get('mode', 'wd'):
                     raise BadRequest(
-                        '%s cannot be changed' % escape(name, True))
+                        '%s cannot be changed' % html.escape(name, True))
                 self._updateProperty(name, value)
 
         if REQUEST:
@@ -385,7 +381,7 @@ class PropertyManager(Base):
             if not hasattr(aq_base(self), id):
                 raise BadRequest(
                     ('The property <em>%s</em> '
-                     'does not exist' % escape(id, True)))
+                     'does not exist' % html.escape(id, True)))
             if ('d' not in propdict[id].get('mode', 'wd')) or (id in nd):
                 raise BadRequest('Cannot delete %s' % id)
             self._delProperty(id)

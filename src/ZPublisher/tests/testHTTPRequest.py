@@ -16,8 +16,6 @@ import unittest
 from contextlib import contextmanager
 from io import BytesIO
 
-from six import PY2
-
 from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
 from zope.component import getGlobalSiteManager
@@ -304,13 +302,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def test_processInputs_w_unicode_conversions(self):
-        # This tests native strings, which mean something different
-        # under Python 2 / 3.
-        if PY2:
-            reg_char = '\xc2\xae'
-        else:
-            reg_char = '\xae'
-
+        # This tests native strings.
+        reg_char = '\xae'
         inputs = (('ustring:ustring:utf8', 'test' + reg_char),
                   ('utext:utext:utf8',
                    'test' + reg_char + '\ntest' + reg_char + '\n'),

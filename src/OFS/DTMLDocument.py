@@ -13,7 +13,6 @@
 """DTML Document objects.
 """
 
-import six
 from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
@@ -103,9 +102,6 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                 c = self.content_type
             else:
                 encoding = getattr(self, 'encoding', default_encoding)
-                if six.PY2 and not isinstance(r, six.text_type):
-                    # Prevent double-encoding edge cases under Python 2
-                    r = r.decode(encoding)
                 c, e = guess_content_type(self.getId(), r.encode(encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)

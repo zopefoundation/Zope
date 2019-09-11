@@ -139,23 +139,13 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
             os.rmdir(self.import_dir)
         except OSError:
             pass
-        try:
-            import App.config
-        except ImportError:
-            # Restore builtins
-            builtins = getattr(__builtins__, '__dict__', __builtins__)
-            if hasattr(self, '_ih'):
-                builtins['INSTANCE_HOME'] = self._ih
-            if hasattr(self, '_ch'):
-                builtins['CLIENT_HOME'] = self._ch
-        else:
-            # Zope >= 2.7
-            config = App.config.getConfiguration()
-            if hasattr(self, '_ih'):
-                config.instancehome = self._ih
-            if hasattr(self, '_ch'):
-                config.clienthome = self._ch
-            App.config.setConfiguration(config)
+        import App.config
+        config = App.config.getConfiguration()
+        if hasattr(self, '_ih'):
+            config.instancehome = self._ih
+        if hasattr(self, '_ch'):
+            config.clienthome = self._ch
+        App.config.setConfiguration(config)
 
 
 class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):

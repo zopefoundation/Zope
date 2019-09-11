@@ -179,19 +179,11 @@ class Item(
             title = title()
         id = self.getId()
         # Make sure we don't blindly concatenate encoded and unencoded data
-        # This may happen under Python 2 where the id is encoded but the
-        # title is unencoded.
         if title and type(id) is not type(title):
-            if six.PY2:
-                if isinstance(id, six.text_type):
-                    id = id.encode(default_encoding)
-                if isinstance(title, six.text_type):
-                    title = title.encode(default_encoding)
-            else:
-                if isinstance(id, six.binary_type):
-                    id = id.decode(default_encoding)
-                if isinstance(title, six.binary_type):
-                    title = title.decode(default_encoding)
+            if isinstance(id, six.binary_type):
+                id = id.decode(default_encoding)
+            if isinstance(title, six.binary_type):
+                title = title.decode(default_encoding)
         return title and ("%s (%s)" % (title, id)) or id
 
     def this(self):

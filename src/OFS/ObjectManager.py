@@ -13,6 +13,7 @@
 """Object Manager
 """
 
+import html
 import os
 import re
 from io import BytesIO
@@ -63,12 +64,6 @@ from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
 
 
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
-
-
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
 REPLACEABLE = 1
@@ -94,12 +89,12 @@ def checkValidId(self, id, allow_dup=0):
     # set to false before the object is added.
     if not id or not isinstance(id, str):
         if isinstance(id, text_type):
-            id = escape(id, True)
+            id = html.escape(id, True)
         raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequest(
             ('The id "%s" contains characters '
-             'illegal in URLs.' % escape(id, True)))
+             'illegal in URLs.' % html.escape(id, True)))
     if id in ('.', '..'):
         raise BadRequest(
             'The id "%s" is invalid because it is not traversable.' % id)
@@ -557,7 +552,8 @@ class ObjectManager(
                 pass
 
             if v is self:
-                raise BadRequest('%s does not exist' % escape(ids[-1], True))
+                raise BadRequest('%s does not exist' %
+                                 html.escape(ids[-1], True))
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
@@ -642,14 +638,17 @@ class ObjectManager(
         """Import an object from a file"""
         dirname, file = os.path.split(file)
         if dirname:
-            raise BadRequest('Invalid file name %s' % escape(file, True))
+            raise BadRequest('Invalid file name %s' % html.escape(file, True))
 
         for impath in self._getImportPaths():
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
         else:
-            raise BadRequest('File does not exist: %s' % escape(file, True))
+            raise BadRequest(
+                'File does not exist: %s' %
+                html.escape(
+                    file, True))
 
         imported = self._importObjectFromFile(
             filepath, verify=bool(REQUEST), set_owner=set_owner,
