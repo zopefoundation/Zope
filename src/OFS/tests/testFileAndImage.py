@@ -6,7 +6,6 @@ import unittest
 from io import BytesIO
 
 import six
-from six import PY3
 
 import OFS.Image
 import Testing.testbrowser
@@ -271,8 +270,7 @@ class FileTests(unittest.TestCase):
 
     def testPrincipiaSearchSource_not_text(self):
         data = ''.join([chr(x) for x in range(256)])
-        if PY3:
-            data = data.encode('utf-8')
+        data = data.encode('utf-8')
         self.file.manage_edit('foobar', 'application/octet-stream',
                               filedata=data)
         self.assertEqual(self.file.PrincipiaSearchSource(), b'')

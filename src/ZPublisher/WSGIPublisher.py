@@ -19,7 +19,6 @@ from contextlib import contextmanager
 from io import BytesIO
 from io import IOBase
 
-from six import PY3
 from six import reraise
 from six.moves._thread import allocate_lock
 
@@ -286,7 +285,7 @@ def publish_module(environ, start_response,
     result = ()
 
     path_info = environ.get('PATH_INFO')
-    if path_info and PY3:
+    if path_info:
         # BIG Comment, see discussion at
         # https://github.com/zopefoundation/Zope/issues/575
         #

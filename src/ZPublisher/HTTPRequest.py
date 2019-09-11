@@ -15,6 +15,7 @@
 """
 
 import codecs
+import html
 import os
 import random
 import re
@@ -22,7 +23,6 @@ import time
 from cgi import FieldStorage
 from copy import deepcopy
 
-from six import PY3
 from six import binary_type
 from six import string_types
 from six import text_type
@@ -48,11 +48,6 @@ from ZPublisher.Converters import get_converter
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
 
-
-if PY3:
-    from html import escape
-else:
-    from cgi import escape
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -491,9 +486,7 @@ class HTTPRequest(BaseRequest):
 
         meth = None
         fs_kw = {}
-        if PY3:
-            # In Python 3 we need the proper encoding to parse the input.
-            fs_kw['encoding'] = self.charset
+        fs_kw['encoding'] = self.charset
 
         fs = ZopeFieldStorage(
             fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
@@ -637,7 +630,7 @@ class HTTPRequest(BaseRequest):
                         if should_be_tainted(attr):
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
-                                escape(attr, True))
+                                html.escape(attr, True))
 
                     # defer conversion
                     if flags & CONVERTED:
@@ -1465,29 +1458,33 @@ class HTTPRequest(BaseRequest):
         result = "<h3>form</h3><table>"
         row = '<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k, v in _filterPasswordFields(self.form.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>cookies</h3><table>"
         for k, v in _filterPasswordFields(self.cookies.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>lazy items</h3><table>"
         for k, v in _filterPasswordFields(self._lazies.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>other</h3><table>"
         for k, v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS', 'RESPONSE'):
                 continue
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
 
         for n in "0123456789":
             key = "URL%s" % n
             try:
-                result = result + row % (key, escape(self[key], False))
+                result = result + row % (key, html.escape(self[key], False))
             except KeyError:
                 pass
         for n in "0123456789":
             key = "BASE%s" % n
             try:
-                result = result + row % (key, escape(self[key], False))
+                result = result + row % (key, html.escape(self[key], False))
             except KeyError:
                 pass
 
@@ -1495,7 +1492,7 @@ class HTTPRequest(BaseRequest):
         for k, v in self.environ.items():
             if k not in hide_key:
                 result = result + row % (
-                    escape(k, False), escape(repr(v), False))
+                    html.escape(k, False), html.escape(repr(v), False))
         return result + "</table>"
 
     def __repr__(self):

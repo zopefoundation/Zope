@@ -14,7 +14,6 @@
 import base64
 import logging
 
-from six import PY3
 from six import binary_type
 from six import text_type
 
@@ -89,8 +88,7 @@ def basic_auth_encode(user, password=None):
     if password is not None:
         value = value + ':' + password
     header = b'Basic ' + base64.b64encode(value.encode('latin-1'))
-    if PY3:
-        header = header.decode('latin-1')
+    header = header.decode('latin-1')
     return header
 
 
@@ -102,7 +100,6 @@ def basic_auth_decode(token):
         return None
     value = token.split()[-1]  # Strip 'Basic '
     plain = base64.b64decode(value)
-    if PY3:
-        plain = plain.decode('latin-1')
+    plain = plain.decode('latin-1')
     user, password = plain.split(':', 1)  # Split at most once
     return (user, password)

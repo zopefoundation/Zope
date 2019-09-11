@@ -1,8 +1,6 @@
 import os
 import unittest
 
-from six import PY3
-
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -78,10 +76,7 @@ class TestPageTemplateFile(ZopeTestCase):
             self.fail("Expected unauthorized.")
 
         from AccessControl.SecurityInfo import allow_module
-        if PY3:
-            allow_module('html')
-        else:
-            allow_module('cgi')
+        allow_module('html')
         result = template(soup=soup)
         self.assertTrue('&lt;foo&gt;&lt;/bar&gt;' in result)
 
