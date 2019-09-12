@@ -1,7 +1,5 @@
 import unittest
 
-import six
-
 
 class TestItem(unittest.TestCase):
 
@@ -110,7 +108,6 @@ class TestSimpleItem(unittest.TestCase):
         unencoded_id = u'\xfc\xe4\xee\xe9\xdf_id'
         encoded_id = unencoded_id.encode('UTF-8')
         unencoded_title = u'\xfc\xe4\xee\xe9\xdf Title'
-        encoded_title = unencoded_title.encode('UTF-8')
         item = self._makeOne()
 
         item.id = unencoded_id
@@ -120,15 +117,10 @@ class TestSimpleItem(unittest.TestCase):
         self.assertIn(unencoded_id, item.title_and_id())
         self.assertIn(unencoded_title, item.title_and_id())
 
-        # Now mix encoded and unencoded. The combination is a native
-        # string, meaning encoded on Python 2 and unencoded on Python 3
+        # Now mix encoded and unencoded. The combination is a native string:
         item.id = encoded_id
-        if six.PY3:
-            self.assertIn(unencoded_id, item.title_and_id())
-            self.assertIn(unencoded_title, item.title_and_id())
-        else:
-            self.assertIn(encoded_id, item.title_and_id())
-            self.assertIn(encoded_title, item.title_and_id())
+        self.assertIn(unencoded_id, item.title_and_id())
+        self.assertIn(unencoded_title, item.title_and_id())
 
     def test_standard_error_message_is_called(self):
         from zExceptions import BadRequest

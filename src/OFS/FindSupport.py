@@ -12,8 +12,6 @@
 ##############################################################################
 """Find support
 """
-import six
-
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
@@ -129,19 +127,19 @@ class FindSupport(Base):
             if obj_searchterm:
                 if isinstance(obj_searchterm, TaintedString):
                     obj_searchterm = str(obj_searchterm)
-                    if six.PY3 and not isinstance(obj_searchterm, str):
+                    if not isinstance(obj_searchterm, str):
                         obj_searchterm = obj_searchterm.decode(
                             default_encoding)
                 if hasattr(ob, 'PrincipiaSearchSource'):
                     pss = ob.PrincipiaSearchSource()
-                    if six.PY3 and not isinstance(pss, str):
+                    if not isinstance(pss, str):
                         try:
                             pss = pss.decode(default_encoding)
                         except UnicodeDecodeError:
                             pss = ''
                 if hasattr(ob, 'SearchableText'):
                     st = ob.SearchableText()
-                    if six.PY3 and not isinstance(st, str):
+                    if not isinstance(st, str):
                         try:
                             st = st.decode(default_encoding)
                         except UnicodeDecodeError:

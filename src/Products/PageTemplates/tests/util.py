@@ -16,8 +16,6 @@ import re
 import sys
 import unittest
 
-import six
-
 from ExtensionClass import Base
 
 
@@ -123,11 +121,8 @@ output_dir = os.path.join(HERE, 'output')
 
 
 def _open(filename, mode):
-    if six.PY3:
-        # Define explicit encoding for windows platform
-        return open(filename, mode, encoding='utf-8')
-    else:
-        return open(filename, mode)
+    # Define explicit encoding for windows platform
+    return open(filename, mode, encoding='utf-8')
 
 
 def read_input(filename):

@@ -14,7 +14,6 @@
 """
 import re
 
-from six import PY3
 from six import binary_type
 from six.moves.urllib.parse import quote
 
@@ -423,7 +422,7 @@ def safe_file_data(data):
     # Helper to convert upload file content into a safe value for saving
     if hasattr(data, 'read'):
         data = data.read()
-    if PY3 and isinstance(data, binary_type):
+    if isinstance(data, binary_type):
         data = data.decode('utf-8')
     return data
 
