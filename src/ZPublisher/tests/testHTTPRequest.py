@@ -32,10 +32,6 @@ from ZPublisher.utils import basic_auth_encode
 from ZPublisher.xmlrpc import is_xmlrpc_response
 
 
-if sys.version_info >= (3, ):
-    unicode = str
-
-
 class RecordTests(unittest.TestCase):
 
     def _makeOne(self):
@@ -186,7 +182,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 if rval:
                     retval = 1
 
-        elif type(val) in (str, unicode):
+        elif isinstance(val, str):
             self.assertFalse(
                 should_be_tainted(val),
                 "'%s' is dangerous and should have been tainted." % val)
@@ -800,22 +796,22 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                     'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
                     'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
         req.postProcessInputs()
-        self.assertIsInstance(req.form['foo'], unicode)
+        self.assertIsInstance(req.form['foo'], str)
         self.assertEqual(req.form['foo'], _NON_ASCII)
         self.assertIsInstance(req.form['foo_list'], list)
-        self.assertIsInstance(req.form['foo_list'][0], unicode)
+        self.assertIsInstance(req.form['foo_list'][0], str)
         self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'][1], unicode)
+        self.assertIsInstance(req.form['foo_list'][1], str)
         self.assertEqual(req.form['foo_list'][1], u'SPAM')
         self.assertIsInstance(req.form['foo_tuple'], tuple)
-        self.assertIsInstance(req.form['foo_tuple'][0], unicode)
+        self.assertIsInstance(req.form['foo_tuple'][0], str)
         self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_tuple'][1], unicode)
+        self.assertIsInstance(req.form['foo_tuple'][1], str)
         self.assertEqual(req.form['foo_tuple'][1], u'HAM')
         self.assertIsInstance(req.form['foo_dict'], dict)
-        self.assertIsInstance(req.form['foo_dict']['foo'], unicode)
+        self.assertIsInstance(req.form['foo_dict']['foo'], str)
         self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_dict']['bar'], unicode)
+        self.assertIsInstance(req.form['foo_dict']['bar'], str)
         self.assertEqual(req.form['foo_dict']['bar'], u'EGGS')
 
     def test_close_removes_stdin_references(self):

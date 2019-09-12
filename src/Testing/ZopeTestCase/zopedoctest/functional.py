@@ -42,10 +42,6 @@ from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 
 
-if sys.version_info >= (3, ):
-    basestring = str
-
-
 class HTTPHeaderOutput(object):
 
     status = '200'
@@ -68,7 +64,7 @@ class HTTPHeaderOutput(object):
         ))
 
     def appendResponseHeaders(self, lst):
-        if lst and isinstance(lst[0], basestring):
+        if lst and isinstance(lst[0], str):
             headers = [split_header(header) for header in lst]
         else:
             headers = lst

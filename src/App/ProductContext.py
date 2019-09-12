@@ -14,7 +14,6 @@
 """
 
 import os
-import sys
 from logging import getLogger
 
 # Waaaa
@@ -32,8 +31,6 @@ if not hasattr(Products, 'meta_classes'):
     Products.meta_classes = {}
     Products.meta_class_info = {}
 
-if sys.version_info >= (3, ):
-    basestring = str
 
 _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
@@ -104,7 +101,7 @@ class ProductContext(object):
         pid = productObject.id
 
         if permissions:
-            if isinstance(permissions, basestring):  # You goofed it!
+            if isinstance(permissions, str):  # You goofed it!
                 raise TypeError(
                     'Product context permissions should be a '
                     'list of permissions not a string', permissions)

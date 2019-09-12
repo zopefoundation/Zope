@@ -44,11 +44,7 @@ from ZPublisher.mapply import mapply
 from ZPublisher.utils import recordMetaData
 
 
-if sys.version_info >= (3, ):
-    _FILE_TYPES = (IOBase, )
-else:
-    _FILE_TYPES = (IOBase, file)  # NOQA
-
+_FILE_TYPES = (IOBase, )
 _DEFAULT_DEBUG_EXCEPTIONS = False
 _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None

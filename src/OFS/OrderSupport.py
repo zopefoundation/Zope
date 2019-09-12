@@ -13,8 +13,6 @@
 """ Order support for 'Object Manager'.
 """
 
-import sys
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -24,10 +22,6 @@ from DocumentTemplate.sequence import sort
 from OFS.interfaces import IOrderedContainer as IOrderedContainer
 from zope.container.contained import notifyContainerModified
 from zope.interface import implementer
-
-
-if sys.version_info >= (3, ):
-    basestring = str
 
 
 @implementer(IOrderedContainer)
@@ -138,7 +132,7 @@ class OrderSupport(object):
         suppress_events=False
     ):
         """Move specified sub-objects by delta."""
-        if isinstance(ids, basestring):
+        if isinstance(ids, str):
             ids = (ids,)
         min_position = 0
         objects = list(self._objects)
