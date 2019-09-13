@@ -19,7 +19,6 @@ These directives are specific to Five and have no equivalents outside of it.
 import glob
 import logging
 import os
-import sys
 
 from App.config import getConfiguration
 from Products.Five.browser.metaconfigure import page
@@ -27,16 +26,13 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 
-if sys.version_info >= (3, ):
-    basestring = str
-
 logger = logging.getLogger('Products.Five')
 
 
 def pagesFromDirectory(_context, directory, module, for_=None,
                        layer=IDefaultBrowserLayer, permission='zope.Public'):
 
-    if isinstance(module, basestring):
+    if isinstance(module, str):
         module = _context.resolve(module)
 
     _prefix = os.path.dirname(module.__file__)

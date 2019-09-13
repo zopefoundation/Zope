@@ -17,12 +17,6 @@ This module provides a wrapper that causes a database connection to be created
 and used when bobo publishes a bobo_application object.
 """
 
-import sys
-
-
-if sys.version_info >= (3, ):
-    basestring = str
-
 
 class ZApplicationWrapper(object):
 
@@ -49,7 +43,7 @@ class ZApplicationWrapper(object):
         db = self._db
         if connection is None:
             connection = db.open()
-        elif isinstance(connection, basestring):
+        elif isinstance(connection, str):
             connection = db.open(connection)
 
         return connection.root()[self._name]

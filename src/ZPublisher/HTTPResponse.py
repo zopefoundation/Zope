@@ -20,6 +20,7 @@ import sys
 import time
 import zlib
 from io import BytesIO
+from io import IOBase
 
 from six import binary_type
 from six import class_types
@@ -43,11 +44,6 @@ from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.Iterators import IStreamIterator
 from ZPublisher.Iterators import IUnboundStreamIterator
 
-
-if sys.version_info >= (3, ):
-    from io import IOBase
-else:
-    IOBase = file  # NOQA
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
