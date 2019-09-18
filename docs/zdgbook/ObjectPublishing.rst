@@ -944,7 +944,7 @@ module. However, the converter may impose restrictions.
 
 **Special cases**
 
-If you are still on Python 2 or your pages use a different encoding,
+If your pages use a different encoding,
 such as ``Windows-1252`` or ``ISO-8859-1``, which was the default
 encoding for HTML 4, you have to add the encoding, eg ``:cp1252``, for
 all argument type converts, such as follows::
@@ -1276,13 +1276,6 @@ Other Network Protocols
 
 XML-RPC
 -------
-
-.. note::
-
-  Code examples are valid for Python 3 only.
-
-  If you want to use Python 2, please refer to the
-  `offcial documentation <https://docs.python.org/2/library/xmlrpclib.html>`_
 
 **XML-RPC** is a light-weight remote procedure call (RPC) protocol
 that uses **XML** to encode its calls and **HTTP** as a transport

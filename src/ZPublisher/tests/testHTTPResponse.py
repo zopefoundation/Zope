@@ -1339,8 +1339,6 @@ class HTTPResponseTests(unittest.TestCase):
     def test_exception_500_text(self):
         message = u'ERROR \xe4 VALUE'
         exc = AttributeError(message)
-        # This gets called deep down in the zExceptions.ExceptionFormatter
-        # and produces different results in Python 2/3.
         expected = traceback.format_exception_only(
             exc.__class__, exc)[0].encode('utf-8')
         response = self._makeOne()
