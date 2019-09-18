@@ -135,7 +135,7 @@ Interfaces try to solve these problems by providing a way for you to
 describe how to use an object, and a mechanism for discovering that
 description.
 
-Creating Interfaces                                       
+Creating Interfaces
 ===================
 
 The first step to creating a component, as you've been shown, is to
@@ -247,12 +247,6 @@ interfaces and classes should never be confused.
 Querying an Interface
 =====================
 
-.. attention::
-
-  The following explanation is only valid for Python 3. If you still
-  use Python 2, please note, that both ``names`` and
-  ``namesAndDescriptions`` return a list, not a dict_view.
-
 Interfaces can be queried for information.  The simplest case is to
 ask an interface the names of all the various interface items it
 describes.  From the Python interpreter, for example, you can walk
@@ -302,7 +296,7 @@ For example::
   <zope.interface.interface.Method object at 0x7fc6875110f0>
   >>> m.getSignatureString()
   '(name)'
-  >>> m.getSignatureInfo()   
+  >>> m.getSignatureInfo()
   {'positional': ('name',), 'required': ('name',), 'optional': {},
    'varargs': None, 'kwargs': None}
 

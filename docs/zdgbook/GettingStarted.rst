@@ -74,12 +74,6 @@ command to build the system.
 
 The initial build will take some time to complete.
 
-.. attention::
-
-  You will see some warnings or error messages on the console. These
-  cannot be fixed until Python 2 support is dropped. Just ignore
-  them for now.
-
 Creating the instance
 =====================
 

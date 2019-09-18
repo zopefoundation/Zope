@@ -15,8 +15,6 @@
 
 import unittest
 
-import six
-
 
 class TestPropertyManager(unittest.TestCase):
 
@@ -91,16 +89,11 @@ class TestPropertyManager(unittest.TestCase):
         pm = self._makeOne()
         pm._setProperty('test_lines', [], type='lines')
 
-        # text gets converted to bytes here as it's likely utf-8
-        # (or otherwise) encoded anyway (from use with Python 2)
         pm._updateProperty('test_lines', 'foo\nbar')
         self.assertEqual(pm.getProperty('test_lines'), (b'foo', b'bar'))
 
         pm._updateProperty('test_lines', b'bar\nbaz')
         self.assertEqual(pm.getProperty('test_lines'), (b'bar', b'baz'))
-
-        pm._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(pm.getProperty('test_lines'), (b'uni', b'code'))
 
 
 class TestPropertySheets(unittest.TestCase):
@@ -153,13 +146,8 @@ class TestPropertySheet(unittest.TestCase):
         ps = self._makeOne('foo')
         ps._setProperty('test_lines', [], type='lines')
 
-        # text gets converted to bytes here as it's likely utf-8
-        # (or otherwise) encoded anyway (from use with Python 2)
         ps._updateProperty('test_lines', 'foo\nbar')
         self.assertEqual(ps.getProperty('test_lines'), (b'foo', b'bar'))
 
         ps._updateProperty('test_lines', b'bar\nbaz')
         self.assertEqual(ps.getProperty('test_lines'), (b'bar', b'baz'))
-
-        ps._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(ps.getProperty('test_lines'), (b'uni', b'code'))
