@@ -49,7 +49,7 @@ setup(
     classifiers=[
         'Development Status :: 6 - Mature',
         "Environment :: Web Environment",
-        "Framework :: Zope :: 4",
+        "Framework :: Zope :: 5",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
