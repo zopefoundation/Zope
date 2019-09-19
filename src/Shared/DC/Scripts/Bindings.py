@@ -13,8 +13,6 @@
 
 import re
 
-from six import exec_
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.Permissions import view_management_screens
@@ -367,7 +365,7 @@ class Bindings(object):
                 bound_data = {}
             else:
                 bound_data = []
-                exec_(bindcode)
+                exec(bindcode)
                 bound_data = bound_data[0]
             return self._exec(bound_data, args, kw)
         finally:

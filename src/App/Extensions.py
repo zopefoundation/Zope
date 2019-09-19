@@ -17,8 +17,6 @@ Extensions currently include external methods.
 import os
 from functools import total_ordering
 
-from six import exec_
-
 import Products
 from zExceptions import NotFound
 
@@ -183,7 +181,7 @@ def getObject(module, name, reload=0):
         raise NotFound("The specified module, '%s', "
                        "couldn't be opened." % module)
     module_dict = {}
-    exec_(execsrc, module_dict)
+    exec(execsrc, module_dict)
 
     if old is not None:
         # XXX Accretive??

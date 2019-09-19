@@ -16,7 +16,6 @@ Objects for packages that have been uninstalled.
 import html
 from logging import getLogger
 
-from six import exec_
 from six.moves._thread import allocate_lock
 
 from Acquisition import Acquired
@@ -61,8 +60,8 @@ def Broken(self, oid, pair):
         else:
             module, klassname = pair
             d = {'BrokenClass': BrokenClass}
-            exec_("class %s(BrokenClass): ' '; __module__=%r" %
-                  (klassname, module), d)
+            exec("class %s(BrokenClass): ' '; __module__=%r" %
+                 (klassname, module), d)
             klass = broken_klasses[pair] = d[klassname]
             module = module.split('.')
             if len(module) > 2 and module[0] == 'Products':

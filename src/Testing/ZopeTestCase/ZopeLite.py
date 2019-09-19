@@ -27,8 +27,6 @@ import os
 import sys
 import time
 
-from six import exec_
-
 import App.ProductContext  # NOQA
 import OFS.Application  # NOQA
 import OFS.ObjectManager  # NOQA
@@ -74,7 +72,7 @@ def _exec(cmd):
     '''Prints the time it takes to execute 'cmd'.'''
     if os.environ.get('X', None):
         start = time.time()
-        exec_(cmd)
+        exec(cmd)
         _print('(%.3fs)' % (time.time() - start))
 
 
