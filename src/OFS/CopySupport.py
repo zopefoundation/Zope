@@ -16,6 +16,7 @@
 import logging
 import re
 import tempfile
+import urllib.parse
 import warnings
 from json import dumps
 from json import loads
@@ -24,7 +25,6 @@ from zlib import decompressobj
 
 import six
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -683,7 +683,7 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
-    squashed = unquote(s).encode('latin-1')
+    squashed = urllib.parse.unquote(s).encode('latin-1')
     data = dec.decompress(squashed, maxsize)
     if dec.unconsumed_tail:
         raise ValueError

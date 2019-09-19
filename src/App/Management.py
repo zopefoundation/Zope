@@ -15,10 +15,10 @@
 
 import html
 import itertools
+import urllib.parse
 
 import six
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 import zope.event
 from AccessControl import ClassSecurityInfo
@@ -103,11 +103,11 @@ class Tabs(Base):
         for step in steps:
             script = '%s/%s' % (script, step)
             yield {'url': linkpat.format(html.escape(script, True)),
-                   'title': html.escape(unquote(step)),
+                   'title': html.escape(urllib.parse.unquote(step)),
                    'last': False}
         script = '%s/%s' % (script, last)
         yield {'url': linkpat.format(html.escape(script, True)),
-               'title': html.escape(unquote(last)),
+               'title': html.escape(urllib.parse.unquote(last)),
                'last': True}
 
     def tabs_path_info(self, script, path):

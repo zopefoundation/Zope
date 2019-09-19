@@ -12,8 +12,9 @@
 #
 ##############################################################################
 
+import urllib.parse
+
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
@@ -36,7 +37,7 @@ class AbsoluteURL(BrowserView):
     """
 
     def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
+        return urllib.parse.unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         context = self.context
@@ -94,7 +95,7 @@ class OFSTraversableAbsoluteURL(BrowserView):
     """
 
     def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
+        return urllib.parse.unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         return self.context.absolute_url()

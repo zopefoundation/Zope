@@ -133,7 +133,7 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    from six.moves.urllib.parse import unquote
+    import urllib.parse
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module
@@ -149,7 +149,7 @@ def http(request_string, handle_errors=True):
     command_line = request_string[:newline].rstrip()
     request_string = request_string[newline + 1:]
     method, path, protocol = command_line.split()
-    path = unquote(path)
+    path = urllib.parse.unquote(path)
 
     env = {
         'HTTP_HOST': 'localhost',

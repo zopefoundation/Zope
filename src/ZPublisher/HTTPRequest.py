@@ -20,13 +20,13 @@ import os
 import random
 import re
 import time
+import urllib.parse
 from cgi import FieldStorage
 from copy import deepcopy
 
 from six import binary_type
 from six import string_types
 from six import text_type
-from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 
 from AccessControl.tainted import should_be_tainted
@@ -270,7 +270,7 @@ class HTTPRequest(BaseRequest):
         else:
             raise ValueError('Url does not match virtual hosting context')
         vrpp = other.get('VirtualRootPhysicalPath', ('',))
-        return list(vrpp) + list(map(unquote, path))
+        return list(vrpp) + list(map(urllib.parse.unquote, path))
 
     def _resetURLS(self):
         other = self.other
@@ -1741,7 +1741,7 @@ def parse_cookie(text,
                 return result
 
     if name not in result:
-        result[name] = unquote(value)
+        result[name] = urllib.parse.unquote(value)
 
     return parse_cookie(text[c_len:], result)
 

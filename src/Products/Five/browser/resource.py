@@ -15,8 +15,7 @@
 """
 
 import os
-
-from six.moves.urllib.parse import unquote
+import urllib.parse
 
 import zope.browserresource.directory
 import zope.browserresource.file
@@ -48,7 +47,7 @@ class Resource(object):
         name = self.__name__
         container = self.__parent__
 
-        url = unquote(absoluteURL(container, self.request))
+        url = urllib.parse.unquote(absoluteURL(container, self.request))
         if not isinstance(container, DirectoryResource):
             name = '++resource++%s' % name
         return "%s/%s" % (url, name)

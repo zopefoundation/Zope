@@ -14,11 +14,11 @@
 """
 
 import html
+import urllib.parse
 
 from six import binary_type
 from six import text_type
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
@@ -340,7 +340,7 @@ def url_query(request, req_name="URL", omit=None):
                 omits[name] = None
 
         for i in range(len(qsparts)):
-            name = unquote(qsparts[i].split('=', 1)[0])
+            name = urllib.parse.unquote(qsparts[i].split('=', 1)[0])
             if name in omits:
                 qsparts[i] = ''
             name = name.split(':', 1)[0]
