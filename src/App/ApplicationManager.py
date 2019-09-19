@@ -14,8 +14,7 @@
 import os
 import sys
 import time
-
-from six.moves.urllib import parse
+import urllib
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
@@ -66,7 +65,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
         names = configuration.dbtab.listDatabaseNames()
         names.sort()
         if quote:
-            return [(name, parse.quote(name)) for name in names]
+            return [(name, urllib.parse.quote(name)) for name in names]
         return names
 
     def __getitem__(self, name):
