@@ -13,7 +13,7 @@
 """This module implements a mix-in for traversable objects.
 """
 
-from six.moves.urllib.parse import quote
+import urllib.parse
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -349,4 +349,4 @@ InitializeClass(Traversable)
 
 
 def path2url(path):
-    return '/'.join(map(quote, path))
+    return '/'.join(map(urllib.parse.quote, path))

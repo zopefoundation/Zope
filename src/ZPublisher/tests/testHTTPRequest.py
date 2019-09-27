@@ -13,6 +13,7 @@
 
 import sys
 import unittest
+import urllib.parse
 from contextlib import contextmanager
 from io import BytesIO
 
@@ -129,7 +130,6 @@ class HTTPRequestFactoryMixin(object):
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
-        from six.moves.urllib.parse import quote_plus
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -138,7 +138,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         query_string = []
         add = query_string.append
         for key, val in inputs:
-            add("%s=%s" % (quote_plus(key), quote_plus(val)))
+            add("%s=%s" % (
+                urllib.parse.quote_plus(key), urllib.parse.quote_plus(val)))
         query_string = '&'.join(query_string)
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}

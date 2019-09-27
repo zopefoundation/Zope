@@ -1,6 +1,5 @@
 import unittest
-
-from six.moves.urllib.parse import quote
+import urllib.parse
 
 from DateTime import DateTime
 from ZTUtils.Zope import complex_marshal
@@ -75,7 +74,7 @@ class QueryTests(unittest.TestCase):
     def testMakeComplexQuery(self):
         '''Test that make_query returns sane results'''
         test_date = DateTime()
-        quote_date = quote(str(test_date))
+        quote_date = urllib.parse.quote(str(test_date))
         record = {'arg1': [1, test_date, 'str'], 'arg2': 1}
         list_ = [1, test_date, 'str']
         int_ = 1

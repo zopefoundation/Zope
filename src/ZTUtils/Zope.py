@@ -18,7 +18,6 @@ import urllib.parse
 
 from six import binary_type
 from six import text_type
-from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
@@ -211,7 +210,8 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
+        qlist[i] = '%s%s=%s' % (
+            urllib.parse.quote(k), m, urllib.parse.quote(str(v)))
 
     return '&'.join(qlist)
 

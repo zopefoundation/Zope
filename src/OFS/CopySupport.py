@@ -24,7 +24,6 @@ from zlib import compress
 from zlib import decompressobj
 
 import six
-from six.moves.urllib.parse import quote
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -671,7 +670,7 @@ def _cb_encode(d):
     json_bytes = dumps(d).encode('utf-8')
     squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
     # quote for embeding in cookie
-    return quote(squashed_bytes.decode('latin-1'))
+    return urllib.parse.quote(squashed_bytes.decode('latin-1'))
 
 
 def _cb_decode(s, maxsize=8192):

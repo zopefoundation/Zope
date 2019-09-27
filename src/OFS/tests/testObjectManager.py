@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import unittest
+import urllib.parse
 from logging import getLogger
-
-from six.moves.urllib.parse import quote
 
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
@@ -526,7 +525,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         result = om.manage_get_sortedObjects('id', 'asc')
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], hash_id)
-        self.assertEqual(result[0]['quoted_id'], quote(hash_id))
+        self.assertEqual(result[0]['quoted_id'], urllib.parse.quote(hash_id))
 
     def test_getBookmarkableURLs(self):
         saved_state = getattr(getConfiguration(),

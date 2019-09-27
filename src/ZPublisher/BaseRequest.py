@@ -14,8 +14,7 @@
 """
 
 import types
-
-from six.moves.urllib.parse import quote as urllib_quote
+import urllib.parse
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
@@ -46,7 +45,7 @@ UNSPECIFIED_ROLES = ''
 
 def quote(text):
     # quote url path segments, but leave + and @ intact
-    return urllib_quote(text, '/+@')
+    return urllib.parse.quote(text, '/+@')
 
 
 class RequestContainer(Base):

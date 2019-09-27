@@ -13,9 +13,9 @@
 """DTML Method objects.
 """
 import re
+import urllib.parse
 
 from six import binary_type
-from six.moves.urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
@@ -464,6 +464,6 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
         except Exception:
             u = REQUEST['URL1']
         if submit == "Add and Edit":
-            u = "%s/%s" % (u, quote(id))
+            u = "%s/%s" % (u, urllib.parse.quote(id))
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

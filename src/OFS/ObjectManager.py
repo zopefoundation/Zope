@@ -16,13 +16,13 @@
 import html
 import os
 import re
+import urllib.parse
 from io import BytesIO
 from logging import getLogger
 from operator import itemgetter
 
 from six import string_types
 from six import text_type
-from six.moves.urllib.parse import quote
 
 import zope.sequencesort
 from AccessControl import ClassSecurityInfo
@@ -800,7 +800,7 @@ class ObjectManager(
 
         items = []
         for id, obj in self.objectItems():
-            item = {'id': id, 'quoted_id': quote(id), 'obj': obj}
+            item = {'id': id, 'quoted_id': urllib.parse.quote(id), 'obj': obj}
             if sortkey not in ['id', 'position'] and hasattr(obj, sortkey):
                 # add the attribute by which we need to sort
                 item[sortkey] = getattr(obj, sortkey)

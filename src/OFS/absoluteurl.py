@@ -14,8 +14,6 @@
 
 import urllib.parse
 
-from six.moves.urllib.parse import quote
-
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
 from zope.component import getMultiAdapter
@@ -53,7 +51,7 @@ class AbsoluteURL(BrowserView):
             raise TypeError(_insufficientContext)
 
         if name:
-            url += '/' + quote(name.encode('utf-8'), _safe)
+            url += '/' + urllib.parse.quote(name.encode('utf-8'), _safe)
 
         return url
 
@@ -83,7 +81,8 @@ class AbsoluteURL(BrowserView):
         if name:
             base += ({'name': name,
                       'url': ("%s/%s" % (base[-1]['url'],
-                                         quote(name.encode('utf-8'), _safe)))
+                                         urllib.parse.quote(
+                                             name.encode('utf-8'), _safe)))
                       }, )
 
         return base

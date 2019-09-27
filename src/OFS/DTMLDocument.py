@@ -13,7 +13,7 @@
 """DTML Document objects.
 """
 
-from six.moves.urllib.parse import quote
+import urllib.parse
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
@@ -149,6 +149,6 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
         except Exception:
             u = REQUEST['URL1']
         if submit == "Add and Edit":
-            u = "%s/%s" % (u, quote(id))
+            u = "%s/%s" % (u, urllib.parse.quote(id))
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

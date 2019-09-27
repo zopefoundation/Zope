@@ -18,7 +18,6 @@ import itertools
 import urllib.parse
 
 import six
-from six.moves.urllib.parse import quote
 
 import zope.event
 from AccessControl import ClassSecurityInfo
@@ -129,7 +128,7 @@ class Tabs(Base):
         last = path[-1]
         del path[-1]
         for p in path:
-            script = "%s/%s" % (script, quote(p))
+            script = "%s/%s" % (script, urllib.parse.quote(p))
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
         return '/'.join(out)

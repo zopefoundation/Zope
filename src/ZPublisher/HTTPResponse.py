@@ -18,6 +18,7 @@ import re
 import struct
 import sys
 import time
+import urllib.parse
 import zlib
 from io import BytesIO
 from io import IOBase
@@ -26,7 +27,6 @@ from six import binary_type
 from six import class_types
 from six import reraise
 from six import text_type
-from six.moves.urllib.parse import quote
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.parse import urlunparse
 
@@ -211,7 +211,7 @@ class HTTPBaseResponse(BaseResponse):
             # The list of "safe" characters is from RFC 2396 section 2.3
             # (unreserved characters that should not be escaped) plus
             # section 3.3 (reserved characters in path components)
-            parsed[2] = quote(parsed[2], safe="/@!*'~();,=+$")
+            parsed[2] = urllib.parse.quote(parsed[2], safe="/@!*'~();,=+$")
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)
@@ -649,9 +649,9 @@ class HTTPBaseResponse(BaseResponse):
             # of name=value pairs may be quoted.
 
             if attrs.get('quoted', True):
-                cookie = '%s="%s"' % (name, quote(attrs['value']))
+                cookie = '%s="%s"' % (name, urllib.parse.quote(attrs['value']))
             else:
-                cookie = '%s=%s' % (name, quote(attrs['value']))
+                cookie = '%s=%s' % (name, urllib.parse.quote(attrs['value']))
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':
