@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Fix ``OFS.Image.File.__str__`` for ``Pdata`` contents
+  (`#711 <https://github.com/zopefoundation/Zope/issues/711>`_)
+
 - Update to current releases of the dependencies.
 
 

@@ -674,7 +674,10 @@ class File(
         if PY2:
             return str(self.data)
         else:
-            return self.data.decode(self._get_encoding())
+            if isinstance(self.data, Pdata):
+                return bytes(self.data).decode(self._get_encoding())
+            else:
+                return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
