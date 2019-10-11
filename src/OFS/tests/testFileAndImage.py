@@ -296,6 +296,16 @@ class FileTests(unittest.TestCase):
         self.assertRaises(TypeError, self.file.update_data,
                           data=val, content_type='text/plain')
 
+    def testStr(self):
+        small_data = b'small data'
+        self.file.manage_upload(file=small_data)
+        self.assertEqual(str(self.file), small_data.decode())
+
+        # Make sure Pdata contents are handled correctly
+        big_data = b'a' * (2 << 16)
+        self.file.manage_upload(file=big_data)
+        self.assertEqual(str(self.file), big_data.decode())
+
 
 class ImageTests(FileTests):
     content_type = 'image/gif'
@@ -318,6 +328,8 @@ class ImageTests(FileTests):
         self.assertEqual(self.file.tag(), (tag_fmt % ('', 'foo')))
         self.file.manage_changeProperties(alt='bar')
         self.assertEqual(self.file.tag(), (tag_fmt % ('bar', 'foo')))
+
+    testStr = testTag
 
     def testViewImageOrFile(self):
         request = self.app.REQUEST
