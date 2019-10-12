@@ -16,6 +16,17 @@ def create_master():
     copy_files("master", path)
 
 
+def create_4x_branch():
+    """Create the config files for the 4.x branch."""
+    path = get_dir("4.x")
+    README.write("\n## Zope 4 branch\n\n")
+    README.write(
+        "(files created from the 4.x branch but not necessarily "
+        "in sync with it)\n\n"
+    )
+    copy_files("4.x", path)
+
+
 def create_tag(tag):
     """Create the config files for a 4.x tag."""
     path = get_dir(tag)
@@ -91,6 +102,7 @@ def main():
     README.write("# Zope Releases\n\n")
 
     create_master()
+    create_4x_branch()
 
     tags_4_x = subprocess.check_output(
         "git tag -l 4*".split(), encoding="ascii"

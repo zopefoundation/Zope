@@ -21,6 +21,7 @@ WebTest==2.0.33
 ZConfig==3.5.0
 ZEO==5.2.1
 ZODB==5.5.1
+ZServer==4.0.2 ; python_version < '3.0'
 Zope2==4.0
 five.globalrequest==99.1
 five.localsitemanager==3.2.2

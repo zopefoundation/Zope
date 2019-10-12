@@ -9,6 +9,15 @@
 * [requirements-full.txt](releases/master/requirements-full.txt)
 * [constraints.txt](releases/master/constraints.txt)
 
+## Zope 4 branch
+
+(files created from the 4.x branch but not necessarily in sync with it)
+
+* [versions.cfg](releases/4.x/versions.cfg)
+* [versions-prod.cfg](releases/4.x/versions-prod.cfg)
+* [requirements-full.txt](releases/4.x/requirements-full.txt)
+* [constraints.txt](releases/4.x/constraints.txt)
+
 ## 4.1.2
 
 * [versions.cfg](releases/4.1.2/versions.cfg)
