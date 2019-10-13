@@ -112,7 +112,7 @@ somedomain1/folder
 
 
 somedomain2/folder
-        """ # map with empty lines.
+        """  # map with empty lines.
         vhm.set_map(mapping)
 
         self.assertEqual(len(vhm.lines), 2)
