@@ -884,16 +884,9 @@ class Image(File):
     )
 
     manage_options = (
-        (
-            {
-                'label': 'Edit',
-                'action': 'manage_main',
-            },
-            {
-                'label': 'View',
-                'action': 'view_image_or_file',
-            }
-        )
+        ({'label': 'Edit', 'action': 'manage_main'},
+         {'label': 'View', 'action': 'view_image_or_file'})
+        + PropertyManager.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options
         + Cacheable.manage_options
