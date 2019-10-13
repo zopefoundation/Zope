@@ -104,7 +104,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 if hostname not in host_map:
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
-            except Exception as msg:
+            except ValueError as msg:
                 line = '%s #! %s' % (line, msg)
             new_lines.append(line)
         self.lines = tuple(new_lines)
