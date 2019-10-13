@@ -5,11 +5,13 @@
 <main class="container-fluid">
 
 <!-- BO findResults.dtml -->
-<dtml-in "('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub','searchtype')"
+<dtml-in "('obj_ids', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub','searchtype')"
 	><dtml-else "_.hasattr(REQUEST, _['sequence-item'])"
 	><dtml-call "REQUEST.set(_['sequence-item'], None)"
 	></dtml-else
 ></dtml-in>
+<dtml-call "REQUEST.set('obj_metatypes',
+                        [x for x in (REQUEST.get('obj_metatypes', []) or [])])">
 
 <dtml-if btn_submit>
 <dtml-with "_.namespace(
@@ -93,7 +95,6 @@
 <!-- EO findResults.dtml -->
 
 <form id="zmi-search-form" action="manage_findForm" method="get" class="zmi-find">
-<!--input type="hidden" name="searchtype" value="advanced" / -->
 <table class="table table-borderless">
 <tr class="simple-search">
 	<td style="width:10rem">
@@ -103,10 +104,10 @@
 	<div class="form-element">
 		<select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
 		<option value="all" 
-			<dtml-if "obj_metatypes==None">
+			<dtml-if "not obj_metatypes">
 				selected="selected"
 			<dtml-else>
-				<dtml-var "( 'all' in list(obj_metatypes ) ) and 'selected=\042selected\042' or ''">
+				<dtml-var "('all' in obj_metatypes) and 'selected=\042selected\042' or ''">
 			</dtml-if>
 		>All types</option>
 		<dtml-let sorted_meta_types="[]"
@@ -115,9 +116,9 @@
 			></dtml-in><dtml-call "sorted_meta_types.sort()"
 			><dtml-in sorted_meta_types
 				><option value="&dtml-sequence-item;"
-				<dtml-if "obj_metatypes==None">
+				<dtml-if "not obj_metatypes">
 				<dtml-else>
-					<dtml-var "( _['sequence-item'] in list(obj_metatypes ) ) and 'selected=\042selected\042' or ''">
+					<dtml-var "(_['sequence-item'] in obj_metatypes) and 'selected=\042selected\042' or ''">
 				</dtml-if>
 				>&dtml-sequence-item;</option>
 			</dtml-in

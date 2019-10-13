@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Reduce the danger of acquiring built-in names on the ZMI Find tab
+  (`#712 <https://github.com/zopefoundation/Zope/issues/712>`_)
+
 - Restore the mistakenly removed Properties ZMI tab on Image objects
   (`#706 <https://github.com/zopefoundation/Zope/issues/706>`_)
 
