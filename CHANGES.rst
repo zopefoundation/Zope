@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Fix VirtualHostMonster not being able to set mappings under Python 3.
+  (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
+
 - Reduce the danger of acquiring built-in names on the ZMI Find tab
   (`#712 <https://github.com/zopefoundation/Zope/issues/712>`_)
 

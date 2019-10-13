@@ -105,6 +105,20 @@ class VHMRegressions(unittest.TestCase):
                          'http://doc.example.com/')
         self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
 
+    def test_vhm_set_map(self):
+        vhm = self.app.virtual_hosting
+        mapping = """
+somedomain1/folder
+
+
+somedomain2/folder
+        """  # map with empty lines.
+        vhm.set_map(mapping)
+
+        self.assertEqual(len(vhm.lines), 2)
+        self.assertEqual(vhm.lines[0], 'somedomain1/folder')
+        self.assertEqual(vhm.lines[1], 'somedomain2/folder')
+
 
 def gen_cases():
     for vbase, ubase in (
