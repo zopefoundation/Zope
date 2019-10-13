@@ -65,7 +65,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 except Exception:
                     raise ValueError(
                         'Line needs a slash between host and path: %s' % line)
-                pp = filter(None, path.split('/'))
+                pp = list(filter(None, path.split('/')))
                 if pp:
                     obpath = pp[:]
                     if obpath[0] == 'VirtualHostBase':
@@ -104,7 +104,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 if hostname not in host_map:
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
-            except 'LineError' as msg:
+            except ValueError as msg:
                 line = '%s #! %s' % (line, msg)
             new_lines.append(line)
         self.lines = tuple(new_lines)
