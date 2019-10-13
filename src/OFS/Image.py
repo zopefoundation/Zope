@@ -663,7 +663,10 @@ class File(
         return bytes(self.data)
 
     def __str__(self):
-        return self.data.decode(self._get_encoding())
+        if isinstance(self.data, Pdata):
+            return bytes(self.data).decode(self._get_encoding())
+        else:
+            return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
@@ -825,16 +828,9 @@ class Image(File):
     )
 
     manage_options = (
-        (
-            {
-                'label': 'Edit',
-                'action': 'manage_main',
-            },
-            {
-                'label': 'View',
-                'action': 'view_image_or_file',
-            }
-        )
+        ({'label': 'Edit', 'action': 'manage_main'},
+         {'label': 'View', 'action': 'view_image_or_file'})
+        + PropertyManager.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options
         + Cacheable.manage_options
