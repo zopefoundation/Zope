@@ -22,6 +22,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (`#711 <https://github.com/zopefoundation/Zope/issues/711>`_)
 
 - Set ``REMOTE_USER`` in wsgi environ using Zope user authentication
+  (`#713 <https://github.com/zopefoundation/Zope/pull/713>`_)
 
 - Improve documentation for Zope's error logging services.
 
