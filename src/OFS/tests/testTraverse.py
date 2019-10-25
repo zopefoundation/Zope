@@ -225,6 +225,11 @@ class TestTraverse(unittest.TestCase):
             self.folder1.unrestrictedTraverse(('', 'folder1', 'file')))
         self.assertTrue(self.folder1.unrestrictedTraverse(('', 'folder1')))
 
+    def testTraverseUnicodePath(self):
+        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertTrue(
+            self.folder1.unrestrictedTraverse(u'/folder1/file'))
+
     def testTraverseURLNoSlash(self):
         self.assertTrue('file' in self.folder1.objectIds())
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file'))

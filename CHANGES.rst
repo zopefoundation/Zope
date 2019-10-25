@@ -26,6 +26,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 
 - Update to current releases of the dependencies.
 
+- Fix unrestrictedTraverse not handling unicode strings under Python 2.
+  (`#715 <https://github.com/zopefoundation/Zope/issues/715>`_)
+
 
 4.1.2 (2019-09-04)
 ------------------

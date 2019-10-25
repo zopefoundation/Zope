@@ -13,6 +13,7 @@
 """This module implements a mix-in for traversable objects.
 """
 
+from six import string_types
 from six.moves.urllib.parse import quote
 
 from AccessControl.class_init import InitializeClass
@@ -172,8 +173,7 @@ class Traversable(object):
         if not path:
             return self
 
-        if isinstance(path, str):
-            # Unicode paths are not allowed
+        if isinstance(path, string_types):
             path = path.split('/')
         else:
             path = list(path)
