@@ -424,6 +424,15 @@ class TestPublishModule(ZopeTestCase):
         @implementer(IUnboundStreamIterator)
         class TestUnboundStreamIterator(object):
             data = "hello"
+            done = 0
+
+            def __next__(self):
+                if not self.done:
+                    self.done = 1
+                    return self.data
+                raise StopIteration
+
+            next = __next__
 
         _response = DummyResponse()
         _response._status = '200 OK'
