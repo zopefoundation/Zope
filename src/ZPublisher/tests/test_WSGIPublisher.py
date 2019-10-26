@@ -444,6 +444,16 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter is body)
 
+        # Test wsgi server that implements wsgi.file_wrapper
+        def file_wrapper_factory(f, bs=1024):
+            f.is_file_wrapper = True
+            return f
+
+        environ['wsgi.file_wrapper'] = file_wrapper_factory
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertTrue(app_iter is body)
+        self.assertTrue(app_iter.is_file_wrapper)
+
     def test_request_closed(self):
         environ = self._makeEnviron()
         start_response = DummyCallable()
