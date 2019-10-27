@@ -21,6 +21,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix ``OFS.Image.File.__str__`` for ``Pdata`` contents
   (`#711 <https://github.com/zopefoundation/Zope/issues/711>`_)
 
+- Add ``wsgi.file_wrapper`` implementation
+  https://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling
+  (`#719 <https://github.com/zopefoundation/Zope/pull/719>`_)
+
 - Improve documentation for Zope's error logging services.
 
 Backwards incompatible changes
