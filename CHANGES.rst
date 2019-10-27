@@ -12,6 +12,10 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Add ``wsgi.file_wrapper`` implementation
+  https://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling
+  (`#719 <https://github.com/zopefoundation/Zope/pull/719>`_)
+
 - Fix VirtualHostMonster not being able to set mappings under Python 3.
   (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
 
