@@ -23,6 +23,7 @@ from six import reraise
 from six.moves._thread import allocate_lock
 
 import transaction
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
@@ -330,6 +331,9 @@ def publish_module(environ, start_response,
                 with load_app(module_info) as new_mod_info:
                     with transaction_pubevents(request, response):
                         response = _publish(request, new_mod_info)
+                user = getSecurityManager().getUser()
+                if user is not None and user.getUserName() != 'Anonymous User':
+                    environ['REMOTE_USER'] = user.getUserName()
                 break
             except TransientError:
                 if request.supports_retry():

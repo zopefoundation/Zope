@@ -25,6 +25,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   https://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling
   (`#719 <https://github.com/zopefoundation/Zope/pull/719>`_)
 
+- Set ``REMOTE_USER`` in wsgi environ using Zope user authentication
+  (`#713 <https://github.com/zopefoundation/Zope/pull/713>`_)
+
+
 - Improve documentation for Zope's error logging services.
 
 Backwards incompatible changes

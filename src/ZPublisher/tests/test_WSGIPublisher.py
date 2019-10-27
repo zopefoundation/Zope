@@ -20,6 +20,7 @@ import Testing.testbrowser
 import transaction
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import user_name
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
@@ -722,6 +723,21 @@ class TestPublishModule(ZopeTestCase):
         finally:
             # Clean up view registration
             unregisterExceptionView(IException)
+
+    def test_set_REMOTE_USER_environ(self):
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _response = DummyResponse()
+        _publish = DummyCallable()
+        _publish._result = _response
+        self.assertFalse('REMOTE_USER' in environ)
+        self._callFUT(environ, start_response, _publish)
+        self.assertEqual(environ['REMOTE_USER'], user_name)
+        # After logout there is no REMOTE_USER in environ
+        environ = self._makeEnviron()
+        self.logout()
+        self._callFUT(environ, start_response, _publish)
+        self.assertFalse('REMOTE_USER' in environ)
 
 
 class ExcViewCreatedTests(ZopeTestCase):
