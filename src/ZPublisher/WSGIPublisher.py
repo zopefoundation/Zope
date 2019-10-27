@@ -351,7 +351,10 @@ def publish_module(environ, start_response,
 
         if isinstance(response.body, _FILE_TYPES) or \
            IUnboundStreamIterator.providedBy(response.body):
-            result = response.body
+            if 'wsgi.file_wrapper' in environ:
+                result = environ['wsgi.file_wrapper'](response.body)
+            else:
+                result = response.body
         else:
             # If somebody used response.write, that data will be in the
             # response.stdout BytesIO, so we put that before the body.
