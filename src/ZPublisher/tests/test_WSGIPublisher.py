@@ -452,6 +452,7 @@ class TestPublishModule(ZopeTestCase):
         @implementer(IStreamIterator)
         class TestStreamIterator(object):
             data = "hello" * 20
+
             def __len__(self):
                 return len(self.data)
 
@@ -469,12 +470,13 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter.file is body)
         self.assertTrue(isinstance(app_iter, Wrapper))
-        self.assertEqual(int(_response.headers['content-length']), len(body))
-        self.assertTrue(_response.headers['content-type'].startswith('text/plain'))
+        self.assertEqual(
+            int(_response.headers['content-length']), len(body))
+        self.assertTrue(
+            _response.headers['content-type'].startswith('text/plain'))
         self.assertEqual(_response.status, 200)
 
     def test_unboundstream_file_wrapper(self):
-        from ZPublisher.Iterators import IStreamIterator
         from ZPublisher.Iterators import IUnboundStreamIterator
         from zope.interface import implementer
         from ZPublisher.HTTPResponse import WSGIResponse
@@ -482,6 +484,7 @@ class TestPublishModule(ZopeTestCase):
         @implementer(IUnboundStreamIterator)
         class TestUnboundStreamIterator(object):
             data = "hello"
+
             def __len__(self):
                 return len(self.data)
 
@@ -502,8 +505,10 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter.file is body)
         self.assertTrue(isinstance(app_iter, Wrapper))
-        self.assertEqual(int(_response.headers['content-length']), len(body))
-        self.assertTrue(_response.headers['content-type'].startswith('text/plain'))
+        self.assertEqual(
+            int(_response.headers['content-length']), len(body))
+        self.assertTrue(
+            _response.headers['content-type'].startswith('text/plain'))
         self.assertEqual(_response.status, 200)
 
     def test_request_closed(self):
