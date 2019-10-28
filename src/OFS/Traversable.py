@@ -173,7 +173,7 @@ class Traversable(object):
             return self
 
         if isinstance(path, str):
-            # Unicode paths are not allowed
+            # unicode paths in Py2 and bytes paths in Py3 are not allowed
             path = path.split('/')
         else:
             path = list(path)
