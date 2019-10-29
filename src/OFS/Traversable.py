@@ -172,7 +172,7 @@ class Traversable(object):
             return self
 
         if isinstance(path, str):
-            # bytes paths are not allowed
+            # Only native strings are allowed
             path = path.split('/')
         else:
             path = list(path)
