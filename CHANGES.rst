@@ -9,6 +9,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- The method ``unrestrictedTraverse`` raises an error when
+  the argument ``path`` is not something it can work with
+  (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
+
 - Fix VirtualHostMonster not being able to set mappings under Python 3.
   (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
 

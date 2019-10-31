@@ -425,6 +425,23 @@ class TestTraverse(unittest.TestCase):
         self.assertTrue(
             self.folder1.unrestrictedTraverse('+something') == 'plus')
 
+    def testTraverseWrongType(self):
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(1)
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(b"foo")
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(["foo", b"bar"])
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(("foo", None))
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse({1, "foo"})
+
+    def testTraverseEmptyPath(self):
+        self.assertEqual(self.folder1.unrestrictedTraverse(None), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse(""), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse([]), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse({}), self.folder1)
 
 class SimpleClass(object):
     """Class with no __bobo_traverse__."""
