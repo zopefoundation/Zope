@@ -443,6 +443,7 @@ class TestTraverse(unittest.TestCase):
         self.assertEqual(self.folder1.unrestrictedTraverse([]), self.folder1)
         self.assertEqual(self.folder1.unrestrictedTraverse({}), self.folder1)
 
+
 class SimpleClass(object):
     """Class with no __bobo_traverse__."""
 
