@@ -28,25 +28,10 @@ import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from App.config import getConfiguration
-from zope.deferredimport import deprecated
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
 
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.ZPublisher.exceptionhook.',
-    RequestContainer='ZServer.ZPublisher.exceptionhook:RequestContainer',
-    zpublisher_exception_hook=(
-        'ZServer.ZPublisher.exceptionhook:EXCEPTION_HOOK'),
-    ZPublisherExceptionHook='ZServer.ZPublisher.exceptionhook:ExceptionHook',
-)
-
-deprecated(
-    'Please import from ZPublisher.WSGIPublisher.',
-    validated_hook='ZPublisher.WSGIPublisher:validate_user',
-)
 
 app = None
 startup_time = asctime()
