@@ -337,6 +337,7 @@ def publish_module(environ, start_response,
                 break
             except TransientError:
                 if request.supports_retry():
+                    request.delay_retry()  # Insert a time delay
                     new_request = request.retry()
                     new_response = new_request.response
                 else:

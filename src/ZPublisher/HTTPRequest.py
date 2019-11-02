@@ -162,9 +162,11 @@ class HTTPRequest(BaseRequest):
     retry_max_count = 0
 
     def supports_retry(self):
-        if self.retry_count < self.retry_max_count:
-            time.sleep(random.uniform(0, 2 ** (self.retry_count)))
-            return 1
+        return self.retry_count < self.retry_max_count
+
+    def delay_retry(self):
+        # Insert a delay before retrying. Moved here from supports_retry.
+        time.sleep(random.uniform(0, 2 ** (self.retry_count)))
 
     def retry(self):
         self.retry_count = self.retry_count + 1

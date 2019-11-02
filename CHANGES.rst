@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Move retried request delay handling out of ``supports_retry``
+  (`#474 <https://github.com/zopefoundation/Zope/issues/474>`_)
+
 - Remove all backwards-compatibility code marked to go away in Zope 5
   (`#478 <https://github.com/zopefoundation/Zope/issues/478>`_)
 
