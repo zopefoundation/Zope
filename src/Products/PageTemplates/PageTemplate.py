@@ -80,7 +80,7 @@ class PageTemplate(ExtensionClass.Base,
             showtal = sourceAnnotations = False
         if source:
             showtal = True
-        return super(PageTemplate, self).pt_render(
+        return super().pt_render(
             c, source=source, sourceAnnotations=sourceAnnotations,
             showtal=showtal)
 

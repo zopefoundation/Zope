@@ -18,9 +18,6 @@ import struct
 from email.generator import _make_boundary
 from io import BytesIO
 
-from six import binary_type
-from six import text_type
-
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files  # NOQA
@@ -262,7 +259,7 @@ class File(
                     RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
-                    if isinstance(data, binary_type):
+                    if isinstance(data, bytes):
                         RESPONSE.write(data[start:end])
                         return True
 
@@ -352,7 +349,7 @@ class File(
                             + b'\r\n\r\n'
                         )
 
-                        if isinstance(data, binary_type):
+                        if isinstance(data, bytes):
                             RESPONSE.write(data[start:end])
 
                         else:
@@ -456,7 +453,7 @@ class File(
         self.ZCacheable_set(None)
 
         data = self.data
-        if isinstance(data, binary_type):
+        if isinstance(data, bytes):
             RESPONSE.setBase(None)
             return data
 
@@ -480,7 +477,7 @@ class File(
 
     @security.private
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, text_type):
+        if isinstance(data, str):
             raise TypeError('Data can only be bytes or file-like. '
                             'Unicode objects are expressly forbidden.')
 
@@ -520,7 +517,7 @@ class File(
         elif self.precondition:
             del self.precondition
         if filedata is not None:
-            if isinstance(filedata, text_type):
+            if isinstance(filedata, str):
                 filedata = filedata.encode(self._get_encoding())
             self.update_data(filedata, content_type, len(filedata))
         else:
@@ -573,7 +570,7 @@ class File(
 
         n = 1 << 16
 
-        if isinstance(file, text_type):
+        if isinstance(file, str):
             raise ValueError("Must be bytes")
 
         if isinstance(file, bytes):
@@ -854,7 +851,7 @@ class Image(File):
 
     @security.private
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, text_type):
+        if isinstance(data, str):
             raise TypeError('Data can only be bytes or file-like.  '
                             'Unicode objects are expressly forbidden.')
 

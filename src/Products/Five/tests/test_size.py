@@ -18,7 +18,7 @@ from zope.size.interfaces import ISized
 
 
 @implementer(ISized)
-class SimpleContentSize(object):
+class SimpleContentSize:
     """Size for ``SimpleContent`` objects."""
 
     def __init__(self, context):
@@ -32,7 +32,7 @@ class SimpleContentSize(object):
 
 
 @implementer(ISized)
-class FancyContentSize(object):
+class FancyContentSize:
     """Size for ``SimpleContent`` objects."""
 
     def __init__(self, context):

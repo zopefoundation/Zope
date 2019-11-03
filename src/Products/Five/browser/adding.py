@@ -114,13 +114,13 @@ class Adding(BrowserView):
 
         factory = queryUtility(IFactory, name)
         if factory is None:
-            return super(Adding, self).publishTraverse(request, name)
+            return super().publishTraverse(request, name)
 
         return factory
 
     def action(self, type_name='', id=''):
         if not type_name:
-            raise UserError(_(u"You must select the type of object to add."))
+            raise UserError(_("You must select the type of object to add."))
 
         if type_name.startswith('@@'):
             type_name = type_name[2:]
@@ -199,7 +199,7 @@ class ContentAdding(Adding, SimpleItem):
 
 
 @implementer(INameChooser)
-class ObjectManagerNameChooser(object):
+class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
     """
 

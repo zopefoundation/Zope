@@ -14,7 +14,7 @@
 """Tests for the testbrowser module.
 """
 
-from six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 import transaction
 from AccessControl.Permissions import view
@@ -138,7 +138,7 @@ class TestTestbrowser(FunctionalTestCase):
 
         This is needed when HTTPExceptionHandler is part of the WSGI pipeline.
         """
-        class WSGITestAppWithHTTPExceptionHandler(object):
+        class WSGITestAppWithHTTPExceptionHandler:
             """Minimized testbrowser.WSGITestApp with HTTPExceptionHandler."""
 
             def __call__(self, environ, start_response):

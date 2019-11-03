@@ -14,9 +14,6 @@
 import base64
 import logging
 
-from six import binary_type
-from six import text_type
-
 import transaction
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -67,16 +64,16 @@ def recordMetaData(object, request):
         else:
             auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
         user_id = auth_user.getId()
-        user_id = safe_unicode(user_id) if user_id else u'None'
+        user_id = safe_unicode(user_id) if user_id else 'None'
         T.setUser(user_id, safe_unicode(auth_path))
 
 
 def safe_unicode(value):
-    if isinstance(value, text_type):
+    if isinstance(value, str):
         return value
-    elif isinstance(value, binary_type):
+    elif isinstance(value, bytes):
         try:
-            value = text_type(value, 'utf-8')
+            value = str(value, 'utf-8')
         except UnicodeDecodeError:
             value = value.decode('utf-8', 'replace')
     return value

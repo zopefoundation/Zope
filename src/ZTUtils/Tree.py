@@ -16,8 +16,6 @@
 import base64
 import zlib
 
-import six
-
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
 
@@ -67,7 +65,7 @@ class TreeNode(Explicit):
 _marker = []
 
 
-class TreeMaker(object):
+class TreeMaker:
     '''Class for mapping a hierarchy of objects into a tree of nodes.'''
 
     __allow_access_to_unprotected_subobjects__ = 1
@@ -227,7 +225,7 @@ class TreeMaker(object):
         return node
 
 
-_SIMPLE_TYPES = set([type(u''), type(b''), type(0), type(0.0), type(None)])
+_SIMPLE_TYPES = {type(''), type(b''), type(0), type(0.0), type(None)}
 
 
 def simple_type(ob):
@@ -241,7 +239,7 @@ def b2a(s):
     '''
     if not isinstance(s, bytes):
         s = str(s)
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = s.encode('utf-8')
     return base64.urlsafe_b64encode(s)
 
@@ -249,7 +247,7 @@ def b2a(s):
 def a2b(s):
     '''Decode a b2a-encoded value to bytes.'''
     if not isinstance(s, bytes):
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = s.encode('ascii')
     return base64.urlsafe_b64decode(s)
 

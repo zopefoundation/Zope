@@ -50,7 +50,7 @@ erase = interfaceStringCheck(erase)
 
 
 @implementer(IMarkerInterfaces)
-class MarkerInterfacesAdapter(object):
+class MarkerInterfacesAdapter:
 
     mark = staticmethod(mark)
     erase = staticmethod(erase)

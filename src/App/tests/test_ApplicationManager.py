@@ -8,7 +8,7 @@ import unittest
 import Testing.ZopeTestCase
 
 
-class DummyConnection(object):
+class DummyConnection:
 
     def __init__(self, db):
         self.__db = db
@@ -17,7 +17,7 @@ class DummyConnection(object):
         return self.__db
 
 
-class DummyDBTab(object):
+class DummyDBTab:
     def __init__(self, databases=None):
         self._databases = databases or {}
 
@@ -31,7 +31,7 @@ class DummyDBTab(object):
         return self._databases[name]
 
 
-class DummyDB(object):
+class DummyDB:
 
     _packed = None
 
@@ -53,22 +53,22 @@ class DummyDB(object):
         self._packed = when
 
 
-class ConfigTestBase(object):
+class ConfigTestBase:
 
     def setUp(self):
-        super(ConfigTestBase, self).setUp()
+        super().setUp()
         import App.config
         self._old_config = App.config._config
 
     def tearDown(self):
         import App.config
         App.config._config = self._old_config
-        super(ConfigTestBase, self).tearDown()
+        super().tearDown()
 
     def _makeConfig(self, **kw):
         import App.config
 
-        class DummyConfig(object):
+        class DummyConfig:
             def __init__(self):
                 self.debug_mode = False
 
@@ -286,7 +286,7 @@ class AltDatabaseManagerTests(unittest.TestCase):
         return self._getTargetClass()()
 
     def _makeJar(self, dbname, dbsize):
-        class Jar(object):
+        class Jar:
             def db(self):
                 return self._db
         jar = Jar()
@@ -370,7 +370,7 @@ class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):
     """Browser testing ..dtml.menu.dtml."""
 
     def setUp(self):
-        super(MenuDtmlTests, self).setUp()
+        super().setUp()
         uf = self.app.acl_users
         uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
         self.browser = Testing.testbrowser.Browser()

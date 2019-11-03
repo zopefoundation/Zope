@@ -13,8 +13,6 @@
 
 import unittest
 
-from six import text_type
-
 import zope.component.testing
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -36,7 +34,7 @@ class Folder(util.Base):
     pass
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -58,7 +56,7 @@ class UnitTestSecurityPolicy(object):
 class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(HTMLTests, self).setUp()
+        super().setUp()
         zope.component.provideAdapter(DefaultTraversable, (None,))
 
         provideUtility(DefaultUnicodeEncodingConflictResolver,
@@ -72,7 +70,7 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         noSecurityManager()  # Use the new policy.
 
     def tearDown(self):
-        super(HTMLTests, self).tearDown()
+        super().tearDown()
         SecurityManager.setSecurityPolicy(self.oldPolicy)
         noSecurityManager()  # Reset to old policy.
 
@@ -87,8 +85,8 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         t.write(util.read_input(fname))
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
         expect = util.read_output(fname)
-        if not isinstance(expect, text_type):
-            expect = text_type(expect, 'utf-8')
+        if not isinstance(expect, str):
+            expect = str(expect, 'utf-8')
         out = t(*args, **kwargs)
         util.check_html(expect, out)
 

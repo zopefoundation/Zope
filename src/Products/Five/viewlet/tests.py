@@ -28,7 +28,7 @@ class Content(SimpleItem):
     pass
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -55,7 +55,7 @@ class INewColumn(interfaces.IViewletManager):
     """Left column of my page."""
 
 
-class WeightBasedSorting(object):
+class WeightBasedSorting:
 
     def sort(self, viewlets):
         def _key(info):
@@ -63,25 +63,25 @@ class WeightBasedSorting(object):
         return sorted(viewlets, key=_key)
 
 
-class Weather(object):
+class Weather:
     weight = 0
 
 
-class Stock(object):
+class Stock:
     weight = 0
 
     def getStockTicker(self):
-        return u'SRC $5.19'
+        return 'SRC $5.19'
 
 
-class Sport(object):
+class Sport:
     weight = 0
 
     def __call__(self):
-        return u'Red Sox vs. White Sox'
+        return 'Red Sox vs. White Sox'
 
 
-class DynamicTempBox(object):
+class DynamicTempBox:
     weight = 0
     city = {'name': 'Los Angeles, CA', 'temp': 78}
 

@@ -24,8 +24,6 @@ from doctest import REPORT_NDIFF
 from functools import partial
 from io import BytesIO
 
-from six import text_type
-
 import transaction
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
@@ -42,7 +40,7 @@ from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 
 
-class HTTPHeaderOutput(object):
+class HTTPHeaderOutput:
 
     status = '200'
     reason = 'OK'
@@ -57,11 +55,11 @@ class HTTPHeaderOutput(object):
         self.status, self.reason = status, reason
 
     def setResponseHeaders(self, mapping):
-        self.headers.update(dict(
-            [('-'.join([s.capitalize() for s in name.split('-')]), v)
-             for name, v in mapping.items()
-             if name.lower() not in self.omit]
-        ))
+        self.headers.update({
+            '-'.join([s.capitalize() for s in name.split('-')]): v
+            for name, v in mapping.items()
+            if name.lower() not in self.omit
+        })
 
     def appendResponseHeaders(self, lst):
         if lst and isinstance(lst[0], str):
@@ -133,7 +131,7 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    from six.moves.urllib.parse import unquote
+    from urllib.parse import unquote
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module
@@ -176,7 +174,7 @@ def http(request_string, handle_errors=True):
     headers = msg.items()
     body = msg.get_payload()
 
-    if isinstance(body, text_type):
+    if isinstance(body, str):
         body = body.encode('utf-8')
 
     # Store request body without headers
@@ -227,7 +225,7 @@ def http(request_string, handle_errors=True):
         response, outstream, path, header_output, wsgi_result, wsgi_headers)
 
 
-class ZopeSuiteFactory(object):
+class ZopeSuiteFactory:
 
     def __init__(self, *args, **kw):
         self._args = args

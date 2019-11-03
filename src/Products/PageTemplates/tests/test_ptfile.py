@@ -1,4 +1,3 @@
-# coding=utf-8
 """Tests of PageTemplateFile."""
 
 import os
@@ -64,8 +63,8 @@ class TypeSniffingTestCase(unittest.TestCase):
             "text/xml")
 
     def test_sniffer_xml_utf16_be(self):
-        u_example1 = u'<?xml version=".0" encoding="utf-16-be"?><doc/>'
-        u_example2 = u'<?xml   version=".0" encoding="utf-16-be"?><doc/>'
+        u_example1 = '<?xml version=".0" encoding="utf-16-be"?><doc/>'
+        u_example2 = '<?xml   version=".0" encoding="utf-16-be"?><doc/>'
         b_example1 = u_example1.encode('utf-16-be')
         b_example2 = u_example2.encode('utf-16-be')
         # w/out byte order mark
@@ -80,8 +79,8 @@ class TypeSniffingTestCase(unittest.TestCase):
         )
 
     def test_sniffer_xml_utf16_le(self):
-        u_example1 = u'<?xml version=".0" encoding="utf-16-le"?><doc/>'
-        u_example2 = u'<?xml   version=".0" encoding="utf-16-le"?><doc/>'
+        u_example1 = '<?xml version=".0" encoding="utf-16-le"?><doc/>'
+        u_example2 = '<?xml   version=".0" encoding="utf-16-le"?><doc/>'
         b_example1 = u_example1.encode('utf-16-le')
         b_example2 = u_example2.encode('utf-16-le')
         # w/out byte order mark

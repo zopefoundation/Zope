@@ -17,7 +17,7 @@ from ZPublisher.interfaces import IPubStart
 from ZPublisher.interfaces import IPubSuccess
 
 
-class _Base(object):
+class _Base:
     """PubEvent base class."""
 
     def __init__(self, request):
@@ -35,7 +35,7 @@ class PubSuccess(_Base):
 
 
 @implementer(IPubFailure)
-class PubFailure(object):
+class PubFailure:
     '''notified at failed request end.'''
 
     def __init__(self, request, exc_info, retry):
@@ -61,7 +61,7 @@ class PubBeforeAbort(_Base):
 
 
 @implementer(IPubBeforeStreaming)
-class PubBeforeStreaming(object):
+class PubBeforeStreaming:
     """Notified immediately before streaming via response.write() commences
     """
 

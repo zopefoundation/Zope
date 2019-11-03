@@ -11,8 +11,6 @@
 #
 ##############################################################################
 
-from six import reraise
-
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -28,6 +26,6 @@ class Retry(Exception):
         if tb is None:
             raise t(v)
         try:
-            reraise(t, v, tb)
+            raise v.with_traceback(tb)
         finally:
             tb = None

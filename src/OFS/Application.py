@@ -179,7 +179,7 @@ def initialize(app):
     initializer.initialize()
 
 
-class AppInitializer(object):
+class AppInitializer:
     """ Initialze an Application object (called at startup) """
 
     def __init__(self, app):
@@ -215,7 +215,7 @@ class AppInitializer(object):
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects
                                  if i['id'] != 'Control_Panel')
-            self.commit(u'Removed persistent Control_Panel')
+            self.commit('Removed persistent Control_Panel')
 
     def install_required_roles(self):
         app = self.getApp()
@@ -223,13 +223,13 @@ class AppInitializer(object):
         # Ensure that Owner role exists.
         if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
             app.__ac_roles__ = app.__ac_roles__ + ('Owner',)
-            self.commit(u'Added Owner role')
+            self.commit('Added Owner role')
 
         # ensure the Authenticated role exists.
         if hasattr(app, '__ac_roles__'):
             if 'Authenticated' not in app.__ac_roles__:
                 app.__ac_roles__ = app.__ac_roles__ + ('Authenticated',)
-                self.commit(u'Added Authenticated role')
+                self.commit('Added Authenticated role')
 
     def install_inituser(self):
         app = self.getApp()
@@ -238,7 +238,7 @@ class AppInitializer(object):
             users = app.acl_users
             if hasattr(users, '_createInitialUser'):
                 app.acl_users._createInitialUser()
-                self.commit(u'Created initial user')
+                self.commit('Created initial user')
             users = aq_base(users)
             migrated = getattr(users, '_ofs_migrated', False)
             if not migrated:
@@ -252,7 +252,7 @@ class AppInitializer(object):
                     users._ofs_migrated = True
                     users._p_changed = True
                     app._p_changed = True
-                    transaction.get().note(u'Migrated user folder')
+                    transaction.get().note('Migrated user folder')
                     transaction.commit()
 
     def install_virtual_hosting(self):
@@ -266,7 +266,7 @@ class AppInitializer(object):
                 vhm = VirtualHostMonster()
                 vhm.id = 'virtual_hosting'
                 vhm.addToContainer(app)
-                self.commit(u'Added virtual_hosting')
+                self.commit('Added virtual_hosting')
 
     def install_root_view(self):
         app = self.getApp()
@@ -274,9 +274,9 @@ class AppInitializer(object):
             from Products.PageTemplates.ZopePageTemplate \
                 import ZopePageTemplate
             root_pt = ZopePageTemplate('index_html')
-            root_pt.pt_setTitle(u'Auto-generated default page')
+            root_pt.pt_setTitle('Auto-generated default page')
             app._setObject('index_html', root_pt)
-            self.commit(u'Added default view for root object')
+            self.commit('Added default view for root object')
 
     def install_products(self):
         return install_products(self.getApp())
@@ -287,7 +287,7 @@ class AppInitializer(object):
             delattr(app, '_standard_objects_have_been_added')
         if getattr(app, '_initializer_registry', None) is not None:
             delattr(app, '_initializer_registry')
-        transaction.get().note(u'Removed unused application attributes.')
+        transaction.get().note('Removed unused application attributes.')
         transaction.commit()
 
 

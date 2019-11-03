@@ -15,7 +15,7 @@
 """
 
 
-class SimpleClass(object):
+class SimpleClass:
     """Class with no __bobo_traverse__."""
 
 

@@ -28,15 +28,15 @@ class SimpleView(BrowserView):
 
     def eagle(self):
         """Docstring"""
-        return u"The eagle has landed"
+        return "The eagle has landed"
 
     def eagle2(self):
         """Docstring"""
-        return u"The eagle has landed:\n%s" % self.context.absolute_url()
+        return "The eagle has landed:\n%s" % self.context.absolute_url()
 
     def mouse(self):
         """Docstring"""
-        return u"The mouse has been eaten by the eagle"
+        return "The mouse has been eaten by the eagle"
 
 
 class FancyView(BrowserView):
@@ -44,19 +44,19 @@ class FancyView(BrowserView):
     """Fancy, fancy stuff"""
 
     def view(self):
-        return u"Fancy, fancy"
+        return "Fancy, fancy"
 
 
 class CallView(BrowserView):
 
     def __call__(self):
-        return u"I was __call__()'ed"
+        return "I was __call__()'ed"
 
 
 class PermissionView(BrowserView, SimpleItem):
 
     def __call__(self):
-        return u"I was __call__()'ed"
+        return "I was __call__()'ed"
 
 
 class CallTemplate(BrowserView):
@@ -64,27 +64,27 @@ class CallTemplate(BrowserView):
     __call__ = ViewPageTemplateFile('falcon.pt')
 
 
-class CallableNoDocstring(object):
+class CallableNoDocstring:
 
     def __call__(self):
-        return u"No docstring"
+        return "No docstring"
 
 
 def function_no_docstring(self):
-    return u"No docstring"
+    return "No docstring"
 
 
 class NoDocstringView(BrowserView):
 
     def method(self):
-        return u"No docstring"
+        return "No docstring"
 
     function = function_no_docstring
 
     object = CallableNoDocstring()
 
 
-class NewStyleClass(object):
+class NewStyleClass:
 
     """
     This is a testclass to verify that new style classes work
@@ -101,24 +101,24 @@ class NewStyleClass(object):
         return
 
 
-class ProtectedView(object):
+class ProtectedView:
 
     security = ClassSecurityInfo()
 
     @security.public
     def public_method(self):
         """Docstring"""
-        return u'PUBLIC'
+        return 'PUBLIC'
 
     @security.protected('View')
     def protected_method(self):
         """Docstring"""
-        return u'PROTECTED'
+        return 'PROTECTED'
 
     @security.private
     def private_method(self):
         """Docstring"""
-        return u'PRIVATE'
+        return 'PRIVATE'
 
 
 InitializeClass(ProtectedView)

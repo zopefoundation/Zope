@@ -14,8 +14,7 @@
 """
 
 import types
-
-from six.moves.urllib.parse import quote as urllib_quote
+from urllib.parse import quote as urllib_quote
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
@@ -61,7 +60,7 @@ class RequestContainer(Base):
 
 
 @implementer(IBrowserPublisher)
-class DefaultPublishTraverse(object):
+class DefaultPublishTraverse:
 
     def __init__(self, context, request):
         self.context = context
@@ -168,7 +167,7 @@ class DefaultPublishTraverse(object):
         return self.context, ()
 
 
-class BaseRequest(object):
+class BaseRequest:
     """Provide basic ZPublisher request management
 
     This object provides access to request data. Request data may

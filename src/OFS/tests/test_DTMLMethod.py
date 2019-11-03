@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import io
 import unittest
 
@@ -41,7 +40,7 @@ class DTMLMethodTests(unittest.TestCase):
     def test_manage_upload__bytes(self):
         """It stores uploaded bytes as a native str."""
         doc = self._makeOne()
-        data = u'bÿtës'.encode('utf-8')
+        data = 'bÿtës'.encode()
         self.assertIsInstance(data, bytes)
         doc.manage_upload(data)
         self.assertEqual(doc.read(), 'bÿtës')
@@ -58,7 +57,7 @@ class DTMLMethodTests(unittest.TestCase):
     def test_manage_upload__StringIO(self):
         """It stores StringIO contents as a native str."""
         doc = self._makeOne()
-        data = io.StringIO(u'bÿtës')
+        data = io.StringIO('bÿtës')
         doc.manage_upload(data)
         self.assertIsInstance(doc.read(), str)
         self.assertEqual(doc.read(), 'bÿtës')
@@ -66,7 +65,7 @@ class DTMLMethodTests(unittest.TestCase):
     def test_manage_upload__BytesIO(self):
         """It stores BytesIO contents as a native str."""
         doc = self._makeOne()
-        data = io.BytesIO(u'bÿtës'.encode('utf-8'))
+        data = io.BytesIO('bÿtës'.encode())
         doc.manage_upload(data)
         self.assertEqual(doc.read(), 'bÿtës')
         self.assertIsInstance(doc.read(), str)
@@ -108,7 +107,7 @@ class DTMLMethodTests(unittest.TestCase):
         # that existing instances did not have.
         del doc.encoding
 
-        self.assertEqual(doc(client=client, RESPONSE=response), u'foo')
+        self.assertEqual(doc(client=client, RESPONSE=response), 'foo')
 
 
 class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
@@ -116,7 +115,7 @@ class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
 
     def setUp(self):
         from OFS.DTMLMethod import addDTMLMethod
-        super(DTMLMethodBrowserTests, self).setUp()
+        super().setUp()
 
         Zope2.App.zcml.load_site(force=True)
 
@@ -189,7 +188,7 @@ class FactoryTests(unittest.TestCase):
         self.assertFalse('standard_html_footer' in method.read())
 
 
-class DummyDispatcher(object):
+class DummyDispatcher:
 
     def __init__(self):
         self._set = {}

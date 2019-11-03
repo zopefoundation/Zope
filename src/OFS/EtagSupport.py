@@ -57,7 +57,7 @@ class EtagBaseInterface(Interface):
 
 
 @implementer(EtagBaseInterface)
-class EtagSupport(object):
+class EtagSupport:
     """
     This class is the basis for supporting Etags in Zope.  It's main
     function right now is to support the *Lost Updates Problem* by

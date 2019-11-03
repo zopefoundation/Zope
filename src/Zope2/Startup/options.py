@@ -40,7 +40,7 @@ class ConditionalSchemaParser(SchemaParser):
             SchemaParser.start_import(self, attrs)
 
 
-class ZopeWSGIOptions(object):
+class ZopeWSGIOptions:
     """ZopeWSGIOptions parses a ZConfig schema and config file.
     """
     configfile = None

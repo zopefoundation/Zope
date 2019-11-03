@@ -4,7 +4,6 @@ from ast import parse
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
 from chameleon.codegen import template
-from six import class_types
 
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
@@ -40,7 +39,7 @@ def static(obj):
     return Static(template("obj", obj=Symbol(obj), mode="eval"))
 
 
-class BoboAwareZopeTraverse(object):
+class BoboAwareZopeTraverse:
     traverse_method = 'restrictedTraverse'
 
     __slots__ = ()
@@ -97,7 +96,7 @@ class TrustedBoboAwareZopeTraverse(BoboAwareZopeTraverse):
             return base
 
         if getattr(base, '__call__', _marker) is not _marker or \
-           isinstance(base, class_types):
+           isinstance(base, type):
             return base()
 
         return base
@@ -150,15 +149,15 @@ class UntrustedPythonExpr(expressions.PythonExpr):
     builtins = expressions.PythonExpr.builtins.copy()
 
     # Update builtins with Restricted Python utility builtins
-    builtins.update(dict(
-        (name, static(builtin)) for (name, builtin) in utility_builtins.items()
-    ))
+    builtins.update({
+        name: static(builtin) for (name, builtin) in utility_builtins.items()
+    })
 
     def rewrite(self, node):
         if node.id == 'repeat':
             node.id = 'wrapped_repeat'
         else:
-            node = super(UntrustedPythonExpr, self).rewrite(node)
+            node = super().rewrite(node)
 
         return node
 

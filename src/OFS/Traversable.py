@@ -13,7 +13,7 @@
 """This module implements a mix-in for traversable objects.
 """
 
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -43,7 +43,7 @@ _marker = object()
 
 
 @implementer(ITraversable)
-class Traversable(object):
+class Traversable:
 
     security = ClassSecurityInfo()
 

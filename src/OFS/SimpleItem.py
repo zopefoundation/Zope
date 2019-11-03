@@ -22,9 +22,6 @@ import logging
 import re
 import sys
 
-import six
-from six import reraise
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view as View
@@ -74,7 +71,7 @@ class PathReprProvider(Base):
         try:
             path = '/'.join(self.getPhysicalPath())
         except Exception:
-            return super(PathReprProvider, self).__repr__()
+            return super().__repr__()
         context_path = None
         context = aq_parent(self)
         container = aq_parent(aq_inner(self))
@@ -180,9 +177,9 @@ class Item(
         id = self.getId()
         # Make sure we don't blindly concatenate encoded and unencoded data
         if title and type(id) is not type(title):
-            if isinstance(id, six.binary_type):
+            if isinstance(id, bytes):
                 id = id.decode(default_encoding)
-            if isinstance(title, six.binary_type):
+            if isinstance(title, bytes):
                 title = title.decode(default_encoding)
         return title and ("%s (%s)" % (title, id)) or id
 
@@ -232,7 +229,7 @@ class Item(
 
             if hasattr(self, '_v_eek'):
                 # Stop if there is recursion.
-                reraise(error_type, error_value, tb)
+                raise error_value.with_traceback(tb)
             self._v_eek = 1
 
             if hasattr(error_type, '__name__'):

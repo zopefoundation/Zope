@@ -2,8 +2,6 @@
 
 import unittest
 
-from six import text_type
-
 from zope.component.testing import PlacelessSetup
 
 
@@ -177,9 +175,9 @@ class EngineTestsBase(PlacelessSetup):
         ec = self._makeContext()
         # XXX: can't do ec.evaluate(u'string:x') directly because ZopeContext
         # only bothers compiling true strings, not unicode strings
-        result = ec.evaluate(eng.compile(u'string:x'))
-        self.assertEqual(result, u'x')
-        self.assertIsInstance(result, text_type)
+        result = ec.evaluate(eng.compile('string:x'))
+        self.assertEqual(result, 'x')
+        self.assertIsInstance(result, str)
 
     def test_mixed(self):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors

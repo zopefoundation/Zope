@@ -17,11 +17,11 @@
 from zope.interface import Interface
 
 
-class One(object):
+class One:
     'A class'
 
 
-class Two(object):
+class Two:
     'Another class'
 
 

@@ -14,7 +14,7 @@
 import unittest
 
 
-class BaseSequenceTest(object):
+class BaseSequenceTest:
 
     def _compare(self, lseq, seq):
         self.assertEqual(len(lseq), len(seq))

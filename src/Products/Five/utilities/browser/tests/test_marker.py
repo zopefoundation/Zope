@@ -38,14 +38,14 @@ class IFooMarker(ISimpleContent):
 class MarkerViewTests(ZopeTestCase):
 
     def setUp(self):
-        super(MarkerViewTests, self).setUp()
+        super().setUp()
         component_setUp()
         zcml.load_config('meta.zcml', Products.Five)
         zcml.load_config('permissions.zcml', AccessControl)
         zcml.load_config('configure.zcml', Products.Five.utilities)
 
     def tearDown(self):
-        super(MarkerViewTests, self).tearDown()
+        super().tearDown()
         component_tearDown()
 
     def test_editview(self):

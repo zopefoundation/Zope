@@ -17,7 +17,7 @@
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 
 
-class EditView(object):
+class EditView:
     """Marker interface edit view.
     """
 

@@ -82,7 +82,6 @@ setup(
         'ZConfig >= 2.9.2',
         'ZODB',
         'setuptools >= 36.2',
-        'six',
         'transaction >= 2.4',
         'waitress',
         'zExceptions >= 3.4',

@@ -20,7 +20,7 @@ from Products.Five.browser import BrowserView
 
 
 @zope.interface.implementer(zope.interface.common.mapping.IItemMapping)
-class Macros(object):
+class Macros:
 
     macro_pages = ()
     aliases = {

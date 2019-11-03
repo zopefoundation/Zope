@@ -82,7 +82,7 @@ def rewriteBeforeTraverse(container, btr):
         bpth.add(btr[key])
 
 
-class MultiHook(object):
+class MultiHook:
     """Class used to multiplex hook.
 
     MultiHook calls the named hook from the class of the container, then
@@ -117,7 +117,7 @@ class MultiHook(object):
         self._list.append(cob)
 
 
-class NameCaller(object):
+class NameCaller:
     """Class used to proxy sibling objects by name.
 
     When called with a container and request object, it gets the named
@@ -151,10 +151,9 @@ class NameCaller(object):
 
         try:
             meth(*(container, request, None)[:args])
-        except (ArithmeticError, AttributeError, FloatingPointError,
-                IOError, ImportError, IndexError, KeyError,
-                OSError, OverflowError, TypeError, ValueError,
-                ZeroDivisionError):
+        except (ArithmeticError, AttributeError, FloatingPointError, OSError,
+                ImportError, IndexError, KeyError, OverflowError, TypeError,
+                ValueError, ZeroDivisionError):
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.

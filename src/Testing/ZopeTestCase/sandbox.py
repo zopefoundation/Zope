@@ -22,7 +22,7 @@ from Testing.ZopeTestCase import ZopeLite as Zope2
 from Testing.ZopeTestCase import connections
 
 
-class Sandboxed(object):
+class Sandboxed:
     '''Derive from this class and an xTestCase to make each test
        run in its own ZODB sandbox::
 
@@ -45,7 +45,7 @@ class Sandboxed(object):
         connections.closeAll()
 
 
-class AppZapper(object):
+class AppZapper:
     '''Application object share point'''
 
     __shared_state = {'_app': None}

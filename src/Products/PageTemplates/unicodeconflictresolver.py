@@ -15,8 +15,6 @@
 
 import sys
 
-from six import text_type
-
 import ZPublisher
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
@@ -28,14 +26,14 @@ default_encoding = sys.getdefaultencoding()
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class DefaultUnicodeEncodingConflictResolver(object):
+class DefaultUnicodeEncodingConflictResolver:
     """ This resolver implements the old-style behavior and will
         raise an exception in case of the string 'text' can't be converted
         properly to unicode.
     """
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
         return text.decode('ascii')
 
@@ -45,7 +43,7 @@ DefaultUnicodeEncodingConflictResolver = \
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class Z2UnicodeEncodingConflictResolver(object):
+class Z2UnicodeEncodingConflictResolver:
     """ This resolver tries to lookup the encoding from the
         'default-zpublisher-encoding' setting in the Zope configuration
         file and defaults to the old ZMI encoding iso-8859-15.
@@ -55,7 +53,7 @@ class Z2UnicodeEncodingConflictResolver(object):
         self.mode = mode
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
 
         try:
@@ -70,13 +68,13 @@ class Z2UnicodeEncodingConflictResolver(object):
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class PreferredCharsetResolver(object):
+class PreferredCharsetResolver:
     """ A resolver that tries use the encoding information
         from the HTTP_ACCEPT_CHARSET header.
     """
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
 
         request = aq_get(context, 'REQUEST', None)

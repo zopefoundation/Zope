@@ -38,4 +38,4 @@ class TestNameToIPs(unittest.TestCase):
         self.assertEqual(self._callFUT(
             b'0000:0000:0000:0000:0000:0abc:0007:0def'), ['::abc:7:def'])
         self.assertEqual(self._callFUT(
-            u'0000:0000:0000:0000:0000:0abc:0007:0def'), ['::abc:7:def'])
+            '0000:0000:0000:0000:0000:0abc:0007:0def'), ['::abc:7:def'])

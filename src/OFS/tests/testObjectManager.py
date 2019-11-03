@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 from logging import getLogger
-
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
@@ -83,7 +81,7 @@ class ObjectManagerWithIItem(ObjectManager):
 class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(ObjectManagerTests, self).setUp()
+        super().setUp()
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
         import Zope2.App
         zcml.load_config('meta.zcml', Zope2.App)
@@ -94,7 +92,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def tearDown(self):
         noSecurityManager()
         getConfiguration().debug_mode = self.saved_cfg_debug_mode
-        super(ObjectManagerTests, self).tearDown()
+        super().tearDown()
 
     def setDebugMode(self, mode):
         getConfiguration().debug_mode = mode
@@ -116,7 +114,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_filtered_meta_types(self):
 
-        class _DummySecurityPolicy(object):
+        class _DummySecurityPolicy:
 
             def checkPermission(self, permission, object, context):
                 return permission == 'addFoo'
@@ -337,7 +335,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertFalse('stuff' in om)
 
         om._setObject('stuff', ob)
-        om.manage_delObjects(u'stuff')
+        om.manage_delObjects('stuff')
         self.assertFalse('stuff' in om)
 
     def test_hasObject(self):
@@ -577,10 +575,10 @@ class TestCheckValidId(unittest.TestCase):
                          "('Empty or invalid id specified', '')")
 
     def test_unicode(self):
-        self._callFUT(self._makeContainer(), u'abc☃')
+        self._callFUT(self._makeContainer(), 'abc☃')
 
     def test_encoded_unicode(self):
-        e = self.assertBadRequest(u'abcö'.encode('utf-8'))
+        e = self.assertBadRequest('abcö'.encode())
         self.assertEqual(str(e),
                          "('Empty or invalid id specified', "
                          "b'abc\\xc3\\xb6')")
@@ -588,11 +586,11 @@ class TestCheckValidId(unittest.TestCase):
     def test_unprintable_characters(self):
         # We do not allow the first 31 ASCII characters. \x00-\x19
         # We do not allow the DEL character. \x7f
-        e = self.assertBadRequest(u'abc\x10')
+        e = self.assertBadRequest('abc\x10')
         self.assertEqual(str(e),
                          'The id "abc\x10" contains characters illegal'
                          ' in URLs.')
-        e = self.assertBadRequest(u'abc\x7f')
+        e = self.assertBadRequest('abc\x7f')
         self.assertEqual(str(e),
                          'The id "abc\x7f" contains characters illegal'
                          ' in URLs.')

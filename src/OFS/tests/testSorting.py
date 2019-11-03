@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import Testing.testbrowser
 import Testing.ZopeTestCase
 import Zope2.App
@@ -8,7 +7,7 @@ class SortingTests(Testing.ZopeTestCase.FunctionalTestCase):
     """Browser testing ..Image.File"""
 
     def setUp(self):
-        super(SortingTests, self).setUp()
+        super().setUp()
 
         Zope2.App.zcml.load_site(force=True)
 
@@ -20,7 +19,7 @@ class SortingTests(Testing.ZopeTestCase.FunctionalTestCase):
         for folder in [self.app.sortingTest, self.app.sortingTestOrdered]:
             folder.manage_addFile('File2')
             folder.manage_addFile('File1')
-            folder.File1.update_data(u'hällo'.encode('utf-8'))
+            folder.File1.update_data('hällo'.encode())
 
         self.browser = Testing.testbrowser.Browser()
         self.browser.login('manager', 'manager_pass')

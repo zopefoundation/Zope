@@ -149,7 +149,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         from Products.Five.browser.pagetemplatefile import BoundPageTemplate
         template = self._makeOne('templates/dirpage1.pt')
 
-        class Foo(object):
+        class Foo:
             def __init__(self, context, request):
                 self.context = context
                 self.request = request
@@ -268,15 +268,15 @@ DIRPAGE1 = """\
 """
 
 
-class DummyContext(object):
+class DummyContext:
     pass
 
 
-class DummyRequest(object):
+class DummyRequest:
     debug = object()
 
 
-class DummyResponse(object):
+class DummyResponse:
     def __init__(self, headers=None):
         if headers is None:
             headers = {}
@@ -289,7 +289,7 @@ class DummyResponse(object):
         self._headers[name] = value
 
 
-class DummyTemplate(object):
+class DummyTemplate:
     filename = 'dummy.pt'
 
     def __init__(self, macros=None):
@@ -302,14 +302,14 @@ class DummyTemplate(object):
         return '<h1>Dummy</h1>'
 
 
-class DummyView(object):
+class DummyView:
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
 
-class DummyUser(object):
+class DummyUser:
 
     def __init__(self, name):
         self._name = name

@@ -19,7 +19,7 @@ from functools import total_ordering
 
 
 @total_ordering
-class FuncCode(object):
+class FuncCode:
 
     def __init__(self, varnames=(), argcount=-1):
         # The default values are needed for unpickling instances of this class

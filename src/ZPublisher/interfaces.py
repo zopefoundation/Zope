@@ -67,7 +67,7 @@ class IPubBeforeStreaming(Interface):
     something calls response.write() for the first time. Note that this is
     carries a reference to the *response*, not the request.
     """
-    response = Attribute(u"The current HTTP response")
+    response = Attribute("The current HTTP response")
 
 
 class UseTraversalDefault(Exception):

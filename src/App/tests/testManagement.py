@@ -47,7 +47,7 @@ class TestTabs(Testing.ZopeTestCase.ZopeTestCase):
 
     def setUp(self):
         from OFS.DTMLMethod import addDTMLMethod
-        super(TestTabs, self).setUp()
+        super().setUp()
         self.app.REQUEST['PARENTS'] = [self.app]
         addDTMLMethod(self.folder, 'page')
 

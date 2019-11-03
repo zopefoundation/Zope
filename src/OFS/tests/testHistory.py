@@ -41,17 +41,17 @@ class HistoryTests(unittest.TestCase):
         t = transaction.get()
         # undo note made by Application instantiation above.
         t.description = None
-        t.note(u'Change 1')
+        t.note('Change 1')
         t.commit()
         time.sleep(0.02)  # wait at least one Windows clock tick
         hi.title = 'Second title'
         t = transaction.get()
-        t.note(u'Change 2')
+        t.note('Change 2')
         t.commit()
         time.sleep(0.02)  # wait at least one Windows clock tick
         hi.title = 'Third title'
         t = transaction.get()
-        t.note(u'Change 3')
+        t.note('Change 3')
         t.commit()
 
     def tearDown(self):

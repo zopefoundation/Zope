@@ -1,4 +1,3 @@
-
 def test_check_permission():
     """Code (in Zope packages) often uses
     zope.security.management.checkPermission to determine whether the

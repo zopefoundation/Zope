@@ -77,7 +77,7 @@ def test_view_with_unwrapped_context():
 class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
 
     def setUp(self):
-        super(TestPublishTraverse, self).setUp()
+        super().setUp()
         zcml.load_config("configure.zcml", Products.Five)
         zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
         uf = self.app.acl_users
@@ -88,7 +88,7 @@ class TestPublishTraverse(Testing.ZopeTestCase.FunctionalTestCase):
 
     def tearDown(self):
         zope.component.testing.tearDown()
-        super(TestPublishTraverse, self).tearDown()
+        super().tearDown()
 
     def test_publishTraverse_to_allowed_name(self):
         # The ``eagle.method`` view has a method ``eagle`` that is registered

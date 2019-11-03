@@ -25,7 +25,7 @@ from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.WSGIPublisher import publish_module
 
 
-class WSGITestApp(object):
+class WSGITestApp:
 
     def __init__(self, browser):
         self.browser = browser
@@ -63,7 +63,7 @@ class Browser(browser.Browser):
     def __init__(self, url=None, wsgi_app=None):
         if wsgi_app is None:
             wsgi_app = WSGITestApp(self)
-        super(Browser, self).__init__(url=url, wsgi_app=wsgi_app)
+        super().__init__(url=url, wsgi_app=wsgi_app)
 
     def login(self, username, password):
         """Set up a correct HTTP Basic Auth Authorization header"""

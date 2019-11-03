@@ -284,7 +284,7 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
     _ofs_migrated = False
 
     def __init__(self):
-        super(UserFolder, self).__init__()
+        super().__init__()
         self._ofs_migrated = True
 
     def _createInitialUser(self):

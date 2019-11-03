@@ -14,8 +14,6 @@
 import os
 from logging import getLogger
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -186,7 +184,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         return text, type_
 
     def _prepare_xml(self, text):
-        if not isinstance(text, six.text_type):
+        if not isinstance(text, str):
             encoding = encodingFromXMLPreamble(text, default=self.encoding)
             text = text.decode(encoding)
         return text, 'text/xml'

@@ -3,7 +3,7 @@ import unittest
 from ZTUtils import Tree
 
 
-class Item(object):
+class Item:
     children = ()
     id = ''
 
@@ -190,7 +190,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has_simple_attr(self):
 
-        class Obj(object):
+        class Obj:
             tpId = 'foo'
 
         maker = self._makeOne()
@@ -198,7 +198,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has_method(self):
 
-        class Obj(object):
+        class Obj:
 
             def tpId(self):
                 return 'foo'
@@ -208,7 +208,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has__p_oid(self):
 
-        class Obj(object):
+        class Obj:
             _p_oid = 123
 
         maker = self._makeOne()

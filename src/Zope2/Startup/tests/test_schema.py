@@ -73,7 +73,7 @@ class WSGIStartupTestCase(unittest.TestCase):
         self.load_config_text(text)
 
     def test_environment(self):
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             # instancehome is here since it's required
             instancehome <<INSTANCE_HOME>>
             <environment>
@@ -87,7 +87,7 @@ class WSGIStartupTestCase(unittest.TestCase):
             items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])
 
     def test_zodb_db(self):
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             <zodb_db main>
               <filestorage>
@@ -101,25 +101,25 @@ class WSGIStartupTestCase(unittest.TestCase):
         self.assertEqual(conf.databases[0].config.cache_size, 5000)
 
     def test_max_conflict_retries_default(self):
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             """)
         self.assertEqual(conf.max_conflict_retries, 3)
 
     def test_max_conflict_retries_explicit(self):
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             max-conflict-retries 15
             """)
         self.assertEqual(conf.max_conflict_retries, 15)
 
     def test_default_zpublisher_encoding(self):
-        conf, dummy = self.load_config_text(u"""\
+        conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             """)
         self.assertEqual(conf.default_zpublisher_encoding, 'utf-8')
 
-        conf, dummy = self.load_config_text(u"""\
+        conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             default-zpublisher-encoding iso-8859-15
             """)
@@ -129,13 +129,13 @@ class WSGIStartupTestCase(unittest.TestCase):
         self.assertEqual(type(ZPublisher.HTTPRequest.default_encoding), str)
 
     def test_pid_filename(self):
-        conf, dummy = self.load_config_text(u"""\
+        conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             """)
         default = os.path.join(conf.clienthome, 'Z4.pid')
         self.assertEqual(conf.pid_filename, default)
 
-        conf, dummy = self.load_config_text(u"""\
+        conf, dummy = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             pid-filename <<INSTANCE_HOME>>{sep}Z5.pid
             """.format(sep=os.path.sep))

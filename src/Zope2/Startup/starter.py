@@ -25,7 +25,7 @@ from zope.processlifetime import ProcessStarting
 logger = logging.getLogger("Zope")
 
 
-class WSGIStarter(object):
+class WSGIStarter:
     """This is a class which starts Zope as a WSGI app."""
 
     wsgi = True

@@ -64,10 +64,10 @@ class ApplicationTests(unittest.TestCase):
         self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
 
     def test_bobo_traverse_attribute_key_miss_R_M_default_real_request(self):
-        from six.moves import UserDict
+        from collections import UserDict
         request = UserDict()
 
-        class _Response(object):
+        class _Response:
             def notFoundError(self, msg):
                 1 / 0
 
@@ -120,7 +120,7 @@ class ApplicationPublishTests(FunctionalTestCase):
         # These are all aliases.
         for name in ('Redirect', 'ZopeRedirect'):
             response = self.publish(
-                '/{0}?destination=http://google.nl'.format(name))
+                '/{}?destination=http://google.nl'.format(name))
             # This should *not* return a 302 Redirect.
             self.assertEqual(response.status, 404)
 

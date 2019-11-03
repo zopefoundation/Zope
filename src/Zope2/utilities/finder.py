@@ -14,7 +14,7 @@
 import os
 
 
-class ZopeFinder(object):
+class ZopeFinder:
 
     def __init__(self, argv):
         self.cmd = argv[0]

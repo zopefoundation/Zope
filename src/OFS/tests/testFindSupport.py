@@ -1,7 +1,5 @@
 import unittest
 
-import six
-
 from OFS.FindSupport import FindSupport
 
 
@@ -63,18 +61,18 @@ class TestFindSupport(unittest.TestCase):
 
         res = self.base.ZopeFind(self.base, obj_searchterm=findme)
         self.assertEqual(len(res), 2)
-        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
+        self.assertEqual({x[0] for x in res}, {'doc1', 'doc2'})
 
     def test_find_text_nonascii(self):
         # Make sure ZopeFind can handle text and encoded text (binary) data
-        unencoded = u'\xfcml\xe4\xfct'
-        encoded = u'\xfcml\xe4\xfct'.encode('UTF-8')
+        unencoded = '\xfcml\xe4\xfct'
+        encoded = '\xfcml\xe4\xfct'.encode()
         self.base['text'] = DummyItem('text', text=unencoded)
         self.base['bytes'] = DummyItem('bytes', text=encoded)
 
         res = self.base.ZopeFind(self.base, obj_searchterm=unencoded)
         self.assertEqual(len(res), 2)
-        self.assertEqual(set([x[0] for x in res]), set(['text', 'bytes']))
+        self.assertEqual({x[0] for x in res}, {'text', 'bytes'})
 
     def test_find_text_nondecodable(self):
         # Make sure ZopeFind does not crash searching text in nondecodable data
@@ -106,9 +104,9 @@ class TestFindSupport(unittest.TestCase):
         tainted_string = TaintedString(findme)
         res = self.base.ZopeFind(self.base, obj_searchterm=tainted_string)
         self.assertEqual(len(res), 2)
-        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
+        self.assertEqual({x[0] for x in res}, {'doc1', 'doc2'})
 
-        tainted_bytes = TaintedBytes(six.b(findme))
+        tainted_bytes = TaintedBytes(bytes(findme, 'latin-1'))
         res = self.base.ZopeFind(self.base, obj_searchterm=tainted_bytes)
         self.assertEqual(len(res), 2)
-        self.assertEqual(set([x[0] for x in res]), set(['doc1', 'doc2']))
+        self.assertEqual({x[0] for x in res}, {'doc1', 'doc2'})

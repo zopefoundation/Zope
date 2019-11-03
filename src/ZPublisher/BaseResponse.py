@@ -13,15 +13,13 @@
 '''CGI Response Output formatter
 '''
 
-from six import text_type
-
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 
 
-class BaseResponse(object):
+class BaseResponse:
     """Base Response Class
     """
     body = b''
@@ -58,7 +56,7 @@ class BaseResponse(object):
         self.stdout.write(bytes(self))
 
     def setBody(self, body):
-        if isinstance(body, text_type):
+        if isinstance(body, str):
             raise ValueError('Body must be binary.')
         self.body = body
 
@@ -128,7 +126,7 @@ class BaseResponse(object):
         Note that published objects must not generate any errors
         after beginning stream-oriented output.
         """
-        if isinstance(data, text_type):
+        if isinstance(data, str):
             raise ValueError('Data must be binary.')
         self.body = self.body + data
 

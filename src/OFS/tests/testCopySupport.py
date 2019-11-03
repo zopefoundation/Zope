@@ -21,7 +21,7 @@ FILE_META_TYPES = ({
 }, )
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """Stub out the existing security policy for unit testing purposes.
     """
 
@@ -314,7 +314,7 @@ class TestCopySupport(CopySupportTestBase):
         self.assertEqual('Item Not Found', str(err.exception))
 
 
-class _SensitiveSecurityPolicy(object):
+class _SensitiveSecurityPolicy:
 
     def __init__(self, validate_lambda, checkPermission_lambda):
         self._lambdas = (validate_lambda, checkPermission_lambda)

@@ -233,7 +233,7 @@ class TestTearDownRaises(HookTest):
 class TestConnectionRegistry(base.TestCase):
     '''Test the registry with Connection-like objects'''
 
-    class Conn(object):
+    class Conn:
         _closed = 0
 
         def close(self):
@@ -314,8 +314,8 @@ class TestConnectionRegistry(base.TestCase):
 class TestApplicationRegistry(TestConnectionRegistry):
     '''Test the registry with Application-like objects'''
 
-    class App(object):
-        class Conn(object):
+    class App:
+        class Conn:
             _closed = 0
 
             def close(self):
@@ -370,7 +370,7 @@ class TestListConverter(base.TestCase):
         self.assertRaises(ValueError, utils.makelist, 0)
 
     def testObject(self):
-        class Dummy(object):
+        class Dummy:
             pass
         self.assertRaises(ValueError, utils.makelist, Dummy())
 
@@ -401,7 +401,7 @@ _sentinel3 = []
 class TestRequestGarbage1(base.TestCase):
     '''Make sure base.app + base.close does not leak REQUEST._held'''
 
-    class Held(object):
+    class Held:
         def __del__(self):
             _sentinel1.append('__del__')
 
@@ -419,7 +419,7 @@ class TestRequestGarbage1(base.TestCase):
 class TestRequestGarbage2(base.TestCase):
     '''Make sure self._app + self._clear does not leak REQUEST._held'''
 
-    class Held(object):
+    class Held:
         def __del__(self):
             _sentinel2.append('__del__')
 
@@ -436,7 +436,7 @@ class TestRequestGarbage2(base.TestCase):
 class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
     '''Make sure self._app + self._clear does not leak REQUEST._held'''
 
-    class Held(object):
+    class Held:
         def __del__(self):
             _sentinel3.append('__del__')
 

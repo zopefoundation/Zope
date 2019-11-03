@@ -19,10 +19,7 @@ import re
 from io import BytesIO
 from logging import getLogger
 from operator import itemgetter
-
-from six import string_types
-from six import text_type
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 import zope.sequencesort
 from AccessControl import ClassSecurityInfo
@@ -88,13 +85,13 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
     if not id or not isinstance(id, str):
-        if isinstance(id, text_type):
+        if isinstance(id, str):
             id = html.escape(id, True)
         raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequest(
-            ('The id "%s" contains characters '
-             'illegal in URLs.' % html.escape(id, True)))
+            'The id "%s" contains characters '
+            'illegal in URLs.' % html.escape(id, True))
     if id in ('.', '..'):
         raise BadRequest(
             'The id "%s" is invalid because it is not traversable.' % id)
@@ -529,7 +526,7 @@ class ObjectManager(
 
         The objects specified in 'ids' get deleted.
         """
-        if isinstance(ids, string_types):
+        if isinstance(ids, str):
             ids = [ids]
         if not ids:
             raise BadRequest('No items specified')
@@ -855,7 +852,7 @@ def findChildren(obj, dirname=''):
     return lst
 
 
-class IFAwareObjectManager(object):
+class IFAwareObjectManager:
 
     def all_meta_types(self, interfaces=None):
 

@@ -36,7 +36,7 @@ _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
 
 
-class ProductContext(object):
+class ProductContext:
 
     def __init__(self, product, app, package):
         self.__prod = product
@@ -206,7 +206,7 @@ class ProductContext(object):
         pass
 
     def getProductHelp(self):
-        class DummyHelp(object):
+        class DummyHelp:
             lastRegistered = None
         return DummyHelp()
 
@@ -214,7 +214,7 @@ class ProductContext(object):
         return self.__app
 
 
-class AttrDict(object):
+class AttrDict:
 
     def __init__(self, ob):
         self.ob = ob

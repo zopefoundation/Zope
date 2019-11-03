@@ -16,8 +16,7 @@
 import io
 import os
 import traceback
-
-from six.moves import UserDict
+from collections import UserDict
 
 from ZODB.config import ZODBDatabase
 
@@ -200,7 +199,7 @@ def default_zpublisher_encoding(value):
     return value
 
 
-class DBTab(object):
+class DBTab:
     """A Zope database configuration, similar in purpose to /etc/fstab.
     """
 

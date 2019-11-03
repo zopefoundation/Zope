@@ -15,8 +15,7 @@
 
 import logging
 import unittest
-
-from six import StringIO
+from io import StringIO
 
 
 class TestMaybeWarnDeprecated(unittest.TestCase):
@@ -50,21 +49,21 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
         self.assertEqual(expected, self.logfile.getvalue())
 
     def test_method_deprecated(self):
-        class Deprecated(object):
+        class Deprecated:
             def manage_afterAdd(self):
                 pass
             manage_afterAdd.__five_method__ = True
         self.assertLog(Deprecated, '')
 
     def test_class_deprecated(self):
-        class Deprecated(object):
+        class Deprecated:
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses.append(Deprecated)
         self.assertLog(Deprecated, '')
 
     def test_subclass_deprecated(self):
-        class Deprecated(object):
+        class Deprecated:
             def manage_afterAdd(self):
                 pass
 
@@ -75,7 +74,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
         self.assertLog(ASubClass, '')
 
     def test_not_deprecated(self):
-        class Deprecated(object):
+        class Deprecated:
             def manage_afterAdd(self):
                 pass
         self.assertLog(
@@ -84,7 +83,7 @@ class TestMaybeWarnDeprecated(unittest.TestCase):
             'discouraged. You should use event subscribers instead.\n')
 
     def test_not_deprecated_when_there_are_no_classes(self):
-        class Deprecated(object):
+        class Deprecated:
             def manage_afterAdd(self):
                 pass
         self.deprecatedManageAddDeleteClasses[:] = []

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2017 Zope Foundation and Contributors.
@@ -23,15 +22,15 @@ class SafeUnicodeTests(unittest.TestCase):
         return safe_unicode(value)
 
     def test_ascii(self):
-        self.assertEqual(self._makeOne('foo'), u'foo')
-        self.assertEqual(self._makeOne(b'foo'), u'foo')
+        self.assertEqual(self._makeOne('foo'), 'foo')
+        self.assertEqual(self._makeOne(b'foo'), 'foo')
 
     def test_latin_1(self):
-        self.assertEqual(self._makeOne(b'fo\xf6'), u'fo\ufffd')
+        self.assertEqual(self._makeOne(b'fo\xf6'), 'fo\ufffd')
 
     def test_unicode(self):
-        self.assertEqual(self._makeOne(u'foö'), u'foö')
+        self.assertEqual(self._makeOne('foö'), 'foö')
 
     def test_utf_8(self):
-        self.assertEqual(self._makeOne('test\xc2\xae'), u'test\xc2\xae')
-        self.assertEqual(self._makeOne(b'test\xc2\xae'), u'test\xae')
+        self.assertEqual(self._makeOne('test\xc2\xae'), 'test\xc2\xae')
+        self.assertEqual(self._makeOne(b'test\xc2\xae'), 'test\xae')

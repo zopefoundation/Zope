@@ -9,7 +9,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
-- Remove more Python 2 support code
+- Remove more Python 2 support code and dependency on ``six``
   (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
 - Move retried request delay handling out of ``supports_retry``

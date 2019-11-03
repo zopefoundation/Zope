@@ -249,13 +249,13 @@ class ITraversable(Interface):
 class IZopeObject(Interface):
 
     isPrincipiaFolderish = Bool(
-        title=u"Is a folderish object",
-        description=u"Should be false for simple items",
+        title="Is a folderish object",
+        description="Should be false for simple items",
     )
 
     meta_type = NativeStringLine(
-        title=u"Meta type",
-        description=u"The object's Zope2 meta type",
+        title="Meta type",
+        description="The object's Zope2 meta type",
     )
 
 
@@ -268,7 +268,7 @@ class IManageable(Interface):
 
     manage_tabs = Attribute("""Management tabs""")
 
-    manage_options = Tuple(title=u"Manage options")
+    manage_options = Tuple(title="Manage options")
 
     def manage(URL1):
         """Show management screen"""
@@ -502,9 +502,9 @@ class ILockItem(Interface):
 class IItem(IZopeObject, IManageable,
             ICopySource, ITraversable, IOwned):
 
-    __name__ = NativeStringLine(title=u"Name")
+    __name__ = NativeStringLine(title="Name")
 
-    title = NativeStringLine(title=u"Title")
+    title = NativeStringLine(title="Title")
 
     def getId():
         """Return the id of the object as a string.
@@ -646,12 +646,12 @@ class IObjectManager(IZopeObject, ICopyContainer, INavigation, IManageable,
     objects."""
 
     meta_types = Tuple(
-        title=u"Meta types",
-        description=u"Sub-object types that are specific to this object",
+        title="Meta types",
+        description="Sub-object types that are specific to this object",
     )
 
     isAnObjectManager = Bool(
-        title=u"Is an object manager",
+        title="Is an object manager",
     )
 
     manage_main = Attribute(""" """)
@@ -841,9 +841,9 @@ class IPropertyManager(Interface):
     manage_propertiesForm = Attribute(""" """)
     manage_propertyTypeForm = Attribute(""" """)
 
-    title = NativeStringLine(title=u"Title")
+    title = NativeStringLine(title="Title")
 
-    _properties = Tuple(title=u"Properties")
+    _properties = Tuple(title="Properties")
 
     propertysheets = Attribute(" ")
 
@@ -988,7 +988,7 @@ class IApplication(IFolder, IRoot):
     """Top-level system object"""
 
     isTopLevelPrincipiaApplicationObject = Bool(
-        title=u"Is top level application object",
+        title="Is top level application object",
     )
 
     p_ = Attribute(""" """)

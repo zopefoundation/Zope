@@ -4,7 +4,7 @@ import xmlrpc.client
 from DateTime import DateTime
 
 
-class FauxResponse(object):
+class FauxResponse:
 
     def __init__(self):
         self._headers = {}
@@ -20,7 +20,7 @@ class FauxResponse(object):
         self._status = status
 
 
-class FauxInstance(object):
+class FauxInstance:
     def __init__(self, **kw):
         self.__dict__.update(kw)
 
@@ -127,7 +127,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]
         self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
-        self.assertEqual(data.value, u'2006-05-24T07:00:00+00:00')
+        self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeattribute(self):
         # DateTime instance as attribute
@@ -138,7 +138,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['public']
         self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
-        self.assertEqual(data.value, u'2006-05-24T07:00:00+00:00')
+        self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeattribute_recursive(self):
         # DateTime encoding should work recursively
@@ -150,7 +150,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['public']['public']
         self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
-        self.assertEqual(data.value, u'2006-05-24T07:00:00+00:00')
+        self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeinstance_in_list(self):
         # DateTime instance embedded in a list
@@ -161,7 +161,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0][0]
         self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
-        self.assertEqual(data.value, u'2006-05-24T07:00:00+00:00')
+        self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeinstance_in_dict(self):
         # DateTime instance embedded in a dict
@@ -172,7 +172,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['date']
         self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
-        self.assertEqual(data.value, u'2006-05-24T07:00:00+00:00')
+        self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_functionattribute(self):
         # Cannot marshal functions or methods, obviously

@@ -3,8 +3,7 @@ import shutil
 import sys
 import tempfile
 import unittest
-
-from six import StringIO
+from io import StringIO
 
 from App.config import getConfiguration
 from App.config import setConfiguration

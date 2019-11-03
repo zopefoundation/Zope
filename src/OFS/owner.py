@@ -13,7 +13,7 @@
 """Support for owned objects
 """
 
-from six.moves.urllib import parse
+from urllib import parse
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import Owned as BaseOwned
