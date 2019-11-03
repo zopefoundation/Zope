@@ -20,7 +20,6 @@ from App.interfaces import INavigation
 from persistent.interfaces import IPersistent
 from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
-from zope.deferredimport import deprecated
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
@@ -1053,10 +1052,3 @@ class IObjectClonedEvent(IObjectEvent):
     event.object is the copied object, already added to its container.
     Note that this event is dispatched to all sublocations.
     """
-
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from webdav.interfaces.',
-    IFTPAccess='webdav.interfaces:IFTPAccess',
-)

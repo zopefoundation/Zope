@@ -13,6 +13,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   the argument ``path`` is not something it can work with
   (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
 
+- Remove more Python 2 support code
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
+
+- Move retried request delay handling out of ``supports_retry``
+  (`#474 <https://github.com/zopefoundation/Zope/issues/474>`_)
+
+- Remove all backwards-compatibility code marked to go away in Zope 5
+  (`#478 <https://github.com/zopefoundation/Zope/issues/478>`_)
+
 - Fix VirtualHostMonster not being able to set mappings under Python 3.
   (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
 

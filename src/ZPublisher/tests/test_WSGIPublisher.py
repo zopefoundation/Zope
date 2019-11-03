@@ -916,6 +916,9 @@ class DummyRequest(dict):
         self._traversed = (path, response, validated_hook)
         return self._traverse_to
 
+    def delay_retry(self):
+        return None
+
 
 class DummyResponse(object):
     debug_mode = False

@@ -14,8 +14,6 @@
 """Test the basic ZCML directives
 """
 
-from __future__ import absolute_import
-
 
 def test_directives():
     """

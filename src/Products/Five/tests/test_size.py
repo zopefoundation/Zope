@@ -13,8 +13,6 @@
 ##############################################################################
 """Size adapters for testing
 """
-from __future__ import absolute_import
-
 from zope.interface import implementer
 from zope.size.interfaces import ISized
 
