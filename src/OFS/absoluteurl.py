@@ -13,7 +13,6 @@
 ##############################################################################
 
 from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
@@ -34,9 +33,6 @@ class AbsoluteURL(BrowserView):
     zope.traversing.browser, but the Zope 2 request doesn't support
     all the methods that it uses yet.
     """
-
-    def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         context = self.context
@@ -92,9 +88,6 @@ class AbsoluteURL(BrowserView):
 class OFSTraversableAbsoluteURL(BrowserView):
     """An absolute_url adapter for OFS.Traversable subclasses
     """
-
-    def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         return self.context.absolute_url()

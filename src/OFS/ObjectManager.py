@@ -740,10 +740,6 @@ class ObjectManager(
     def __len__(self):
         return len(self.objectIds())
 
-    def __nonzero__(self):
-        # Py2
-        return self.__bool__()
-
     def __bool__(self):
         return True
 

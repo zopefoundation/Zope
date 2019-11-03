@@ -13,11 +13,8 @@
 """Object Histories
 """
 
-try:
-    from html import escape
-except ImportError:
-    from cgi import escape
 import difflib
+from html import escape
 from struct import pack
 from struct import unpack
 
