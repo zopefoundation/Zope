@@ -187,7 +187,7 @@ class UnauthorizedBinding(object):
     def __repr__(self):
         return '<UnauthorizedBinding: %s>' % self._name
 
-    def __getattr__(self, name, default=None):
+    def __getattr__(self, name):
         # Make *extra* sure that the wrapper isn't used to access
         # __call__, etc.
         if name.startswith('__'):
@@ -200,7 +200,7 @@ class UnauthorizedBinding(object):
 
             self.__you_lose()
 
-        return guarded_getattr(self._wrapped, name, default)
+        return guarded_getattr(self._wrapped, name)
 
     def __you_lose(self):
         name = self.__dict__['_name']
