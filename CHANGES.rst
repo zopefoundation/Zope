@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Fix ``__getattr__`` signature in ``UnauthorizedBinding``
+  (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
+
 - Set ``REMOTE_USER`` in wsgi environ using Zope user authentication
   (`#713 <https://github.com/zopefoundation/Zope/pull/713>`_)
 
