@@ -8,6 +8,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 5.0a1 (unreleased)
 ------------------
+- Fix ``__getattr__`` signature in ``UnauthorizedBinding``
+  (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
 
 - Remove more Python 2 support code
   (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
