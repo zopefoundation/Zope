@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Fix error when using database minimize in the ZMI
+  (`#726 <https://github.com/zopefoundation/Zope/issues/726>`_)
+
 - Fix ``__getattr__`` signature in ``UnauthorizedBinding``
   (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
 
