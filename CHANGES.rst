@@ -13,6 +13,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   the argument ``path`` is not something it can work with
   (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
 
+- Fix error when using database minimize in the ZMI
+  (`#726 <https://github.com/zopefoundation/Zope/issues/726>`_)
+
+- Fix ``__getattr__`` signature in ``UnauthorizedBinding``
+  (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
+
 - Remove more Python 2 support code
   (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
