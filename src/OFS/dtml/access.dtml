@@ -127,7 +127,7 @@
                 </td>
                 <dtml-in roles mapping>
                   <td class="zmi-rolename-check"
-                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">" 
+                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">Permission: &dtml-permission_title;" 
                       onclick="$(this).children('input').trigger('click')">
                     <label class="sr-only sr-only-focusable" 
                            for="&dtml-name;">
