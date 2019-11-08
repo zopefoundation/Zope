@@ -623,9 +623,12 @@ i.fa-folder.zmi-icon-folder-ordered:after {
 	content: "\f338";
 	font-family: "Font Awesome\ 5 Free",Fontawesome;
 	font-weight:900;
-	margin: -.65rem 0 0 -0.2rem;
+	margin: .475rem 0 0 -.7rem;
 	position:absolute;
-	font-size:14px
+	font-size:14px;
+}
+.zmi .breadcrumb i.fa-folder.zmi-icon-folder-ordered:after {
+	font-size:12px;
 }
 .zmi-manage_menu i.fa-folder.zmi-icon-folder-ordered:after {
 	margin: .475rem 0 0 -.7rem;

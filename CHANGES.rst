@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Some small ZMI rendering fixes
+  (`#729 <https://github.com/zopefoundation/Zope/issues/729>`_)
+
 - Fix error when using database minimize in the ZMI
   (`#726 <https://github.com/zopefoundation/Zope/issues/726>`_)
 
