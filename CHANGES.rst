@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Improve ZMI Security Tab usability for high numbers of roles
+  (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
+
 - Fix VirtualHostMonster not being able to set mappings under Python 3.
   (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
 
