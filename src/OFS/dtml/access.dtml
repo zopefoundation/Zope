@@ -82,7 +82,7 @@
 
     <dtml-with "_.namespace(valid_roles=roles)">
       <form action="manage_changePermissions" method="post">
-        <table class="table table-hover table-bordered">
+        <table id="table-permissions" class="table table-hover table-bordered table-responsive-sm">
           <thead>
             <tr>
               <th scope="col" colspan="2" class="zmi-table-head-permisions">

@@ -103,9 +103,7 @@ a:hover {
 	margin-top:1.75rem
 }
 .zmi-controls > * {
-	X-margin-right:.5rem;
 	margin-bottom:.6rem;
-	X-min-width: 7em;
 }
 
 .zmi .zmi-controls .btn.btn-primary,
@@ -114,7 +112,6 @@ a:hover {
   background-color:white !important;
   color:#6c757d;
   border-color:#6c757d;
-  X-min-width: 7em;
 }
 .zmi-controls .btn.btn-primary:hover,
 input.btn.btn-primary:hover {
@@ -382,7 +379,7 @@ form.zmi-upload {
 	width: 110px;
 	overflow: hidden;
 	display: inline-block;
-    text-align: center;
+	text-align: center;
 }
 
 @media (max-width: 768px) {
@@ -417,6 +414,37 @@ form.zmi-upload {
 		padding: 5px 0px 5px 20px;
 	}
 }
+
+/* USER PERMISSIONS TABLE: SIZE CONTROL */
+.zmi #table-permissions.compress th.blank > div > span {
+	width: 110px;
+	overflow: hidden;
+	display: inline-block;
+}
+.zmi #table-permissions.compress .zmi-table-head th {
+	border:none;
+}
+.zmi #table-permissions.compress th.zmi-table-head-roles {
+	border-right-color:white !important;
+}
+.zmi #table-permissions.compress .zmi-table-head th.zmi-rolename {
+	height:95px;
+	white-space: nowrap;
+}
+.zmi #table-permissions.compress .zmi-table-head th.zmi-rolename > div,
+.zmi #table-permissions.compress .zmi-table-head th.blank > div {
+	transform: translate(0px,63px) rotate(-60deg);
+	padding: 0;
+	max-width: 20px;
+	font-weight: normal;
+	cursor: default;
+}
+.zmi #table-permissions.compress .zmi-table-head  th.zmi-rolename > div > span,
+.zmi #table-permissions.compress .zmi-table-head th.blank > div > span {
+	border-top: 1px solid #ccc;
+	padding: 5px 0px 5px 20px;
+}
+
 .zmi .table-striped tbody tr:nth-of-type(odd) {
 	background-color: #e3e8ed33;
 }
@@ -617,24 +645,13 @@ div#menu_tree i.icon.icon-collapse-alt:focus {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-
 /* CUSTOM ICON: Folder (Ordered) */
-i.fa-folder.zmi-icon-folder-ordered:after {
-	content: "\f338";
-	font-family: "Font Awesome\ 5 Free",Fontawesome;
-	font-weight:900;
-	margin: -.65rem 0 0 -0.2rem;
-	position:absolute;
-	font-size:14px
+.far.fa-folder.zmi-icon-folder-ordered {
+	background-image: url('data:image/svg+xml;utf8,<svg width="220.21" height="134.06" version="1.1" viewBox="0 0 220.21 134.06" xmlns="http://www.w3.org/2000/svg"><path d="m150.11 0h46.059c21.382 0 32.09 25.851 16.971 40.971l-86.059 86.059c-9.373 9.373-24.568 9.373-33.941 0l-86.059-86.059c-15.119-15.119-4.411-40.971 16.971-40.971h46.058z" fill="black"/></svg>');
+	background-size: 42%;
+	background-position: center 0.45em;
+	background-repeat: no-repeat;
 }
-.zmi-manage_menu i.fa-folder.zmi-icon-folder-ordered:after {
-	margin: .475rem 0 0 -.7rem;
-	font-size: 12px;
-}
-.zmi .breadcrumb i.fa-folder.zmi-icon-folder-ordered:after {
-	margin: 0.4rem 0 0 -0.74rem;
-}
-
 /* HEADER BAR */
 header.navbar {
 	background: black;
