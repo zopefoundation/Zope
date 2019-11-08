@@ -365,7 +365,7 @@ form.zmi-upload {
 		margin-bottom:.5rem;
 	}
 }
-.zmi th.zmi-akcquire-title {
+.zmi th.zmi-acquire-title {
 	white-space: nowrap;
 }
 
@@ -455,11 +455,11 @@ form.zmi-upload {
 	background-color: #e3e8ed7d;
 }
 
-.zmi.zmi-manage_changePermissions td.zmi-akcquire-check,
+.zmi.zmi-manage_changePermissions td.zmi-acquire-check,
 .zmi.zmi-manage_changePermissions td.zmi-rolename-check,
-.zmi.zmi-manage_defined_roles td.zmi-akcquire-check,
+.zmi.zmi-manage_defined_roles td.zmi-acquire-check,
 .zmi.zmi-manage_defined_roles td.zmi-rolename-check,
-.zmi.zmi-manage_access td.zmi-akcquire-check,
+.zmi.zmi-manage_access td.zmi-acquire-check,
 .zmi.zmi-manage_access td.zmi-rolename-check {
 	border:1px solid #dee2e6;
 	text-align:center;
