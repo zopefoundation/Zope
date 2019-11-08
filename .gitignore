@@ -10,6 +10,7 @@
 .project
 .pydevproject
 .tox
+.vscode
 /bin/
 /build/
 /_build/
@@ -32,4 +33,3 @@ pip-selfcheck.json
 Pipfile
 Pipfile.lock
 pyvenv.cfg
-.vscode
