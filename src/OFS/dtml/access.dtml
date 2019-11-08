@@ -52,7 +52,7 @@
     <table>
       <dtml-in "ac_inherited_permissions(1)">
         <tr>
-          <td class="zmi-akcquire-title nowrap">
+          <td class="zmi-acquire-title nowrap">
             <dtml-let pname="_['sequence-key']">
               <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-pname;">&dtml-pname;</a>
             </dtml-let>
@@ -99,7 +99,7 @@
             <dtml-let permmission_title="name">
               <dtml-if "not (_['sequence-index']%10)">
                 <tr class="zmi-table-head">
-                  <th class="zmi-akcquire-title" title="Acquire?">
+                  <th class="zmi-acquire-title" title="Acquire?">
                     <dtml-unless isTopLevelPrincipiaApplicationObject>
                       <a href="manage_acquiredForm">Acquire?</a>
                     </dtml-unless>
@@ -114,7 +114,7 @@
                 </tr>
               </dtml-if>
               <tr>
-                <td class="zmi-akcquire-check">
+                <td class="zmi-acquire-check">
                   <dtml-if isTopLevelPrincipiaApplicationObject>
                     &nbsp;
                   <dtml-else>
@@ -122,7 +122,7 @@
                            &dtml-acquire; />
                   </dtml-if>
                 </td>
-                <td class="zmi-akcquire-title nowrap">
+                <td class="zmi-acquire-title nowrap">
                   <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
                 </td>
                 <dtml-in roles mapping>
