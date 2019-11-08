@@ -96,7 +96,7 @@
           <tbody>
 
           <dtml-in permission_settings mapping>
-            <dtml-let permmission_title="name">
+            <dtml-let permission_title="name">
               <dtml-if "not (_['sequence-index']%10)">
                 <tr class="zmi-table-head">
                   <th class="zmi-acquire-title" title="Acquire?">
@@ -132,7 +132,7 @@
                     <label class="sr-only sr-only-focusable" 
                            for="&dtml-name;">
                       Role: <dtml-var "valid_roles[_['sequence-index']]">,
-                      Permission: <dtml-var "_['permmission_title']">
+                      Permission: <dtml-var "_['permission_title']">
                     </label>
                     <input type="checkbox" &dtml-checked; id="&dtml-name;"
                            name="&dtml-name;" onclick="event.stopPropagation()" />
