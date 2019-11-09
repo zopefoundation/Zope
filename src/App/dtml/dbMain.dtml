@@ -48,9 +48,13 @@
 
   <div class="zmi-controls mb-5">
     <form action="&dtml-URL1;/manage_pack" method="post">
-      <input class="btn btn-primary" id="pack" type="submit"
-             name="submit" value="Pack" />
-      <input type="text" name="days:float" value="0" size="3"> days
+      <div class="input-group">
+        <input class="btn btn-primary" id="pack" type="submit"
+          name="submit" value="Pack" />
+        <input class="form-control col-sm-1 col-3 ml-2 text-right" type="text"
+          name="days:float" value="0" size="3" />
+        <label class="mt-2 ml-2">days</label>
+      </div>
       <small class="form-text text-muted">
         Pack: Remove previous object revisions older than the selected
         number of days.
