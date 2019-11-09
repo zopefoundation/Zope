@@ -17,7 +17,7 @@ creating components, and a description of interfaces and how they
 work.
 
 Here is a very simple component that says hello.  Like all
-components, this one consists of two pieces, an interface,
+components, this one consists of two pieces, an interface
 and an implementation::
 
   from zope.interface import Interface
@@ -30,7 +30,7 @@ and an implementation::
           """Say hello to the name"""
 
   @implementer(IHello)
-  class HelloComponent(object):
+  class HelloComponent:
       def hello(self, name):
           return "hello %s!" % name
 
@@ -177,12 +177,12 @@ class in which you define your user behavior.  For example::
           return "Hello %s!" % name
 
 This new class, ``HelloComponent`` is a concrete class that
-implements the ``Hello`` interface.  A class can realize more than
-one interface.  For example, say you had an interface called 'Item'
+implements the ``IHello`` interface.  A class can realize more than
+one interface.  For example, say you had an interface called ``IItem``
 that described how an object worked as an item in a "Container"
 object.  If you wanted to assert that ``HelloComponent`` instances
-realized the ``Item`` interface as well as ``Hello``, you can provide
-a sequence of Interface objects to the 'HelloComponent' class::
+realized the ``IItem`` interface as well as ``IHello``, you can provide
+a sequence of Interface objects to the ``HelloComponent`` class::
 
   @implementer(IHello, IItem)
   class HelloComponent:
@@ -257,7 +257,7 @@ right up to an interface and ask it for its *names*::
 
 Interfaces can also give you more interesting information about their
 items.  Interface objects can return a list of '(name, description)'
-tuples about their items by calling the *namesAndDescriptions*
+tuples about their items by calling the ``namesAndDescriptions``
 method.
 
 For example::
@@ -272,16 +272,16 @@ For example::
   You can either use `list` or `next` and `iter` on the result.
 
 As you can see, the "description" of the Interface's item is a
-`Method` object.  Description objects can be either 'Attribute' or
-`Method` objects.  Attributes, methods and interface objects
+`Method` object.  Description objects can be either `Attribute` or
+`Method` objects.  `Attribute`, `Method` and `Interface` objects
 implement the following interface::
 
   `getName()` -- Returns the name of the object.
 
   `getDoc()` -- Returns the documentation for the object.
 
-Method objects provide a way to describe rich meta-data about Python
-methods. Method objects have the following methods::
+`Method` objects provide a way to describe rich meta-data about Python
+methods. `Method` objects have the following methods::
 
   `getSignatureInfo()` -- Returns a dictionary describing the method
   parameters.
@@ -310,18 +310,18 @@ Checking Implementation
 
 You can ask an interface if a certain class that you hand
 it implements that interface.  For example, say you want to know if
-the `HelloComponent` class implements 'IHello'::
+the ``HelloComponent`` class implements ``IHello``::
 
   IHello.implementedBy(HelloComponent)
 
 This is a true expression.  If you had an instance of
-`HelloComponent`, you can also ask the interface if that instance
+``HelloComponent``, you can also ask the interface if that instance
 implements the interface::
 
   IHello.providedBy(my_hello_instance)
 
-This would also return true if *my_hello_instance* was an instance of
-*HelloComponent*, or any other object of a class that implemented
+This would also return true if ``my_hello_instance`` was an instance of
+``HelloComponent``, or any other object of a class that implemented
 the *IHello* interface.
 
 Conclusion
