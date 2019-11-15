@@ -380,13 +380,17 @@ form.zmi-upload {
 	overflow: hidden;
 	display: inline-block;
 	text-align: center;
+	object-fit: contain;
 }
-
+.zmi .compress th.zmi-rolename > div > span {
+	text-align: left;
+}
 @media (max-width: 768px) {
 	.zmi th.blank > div > span {
 		width: 110px;
 		overflow: hidden;
 		display: inline-block;
+		text-align: left;
 	}
 	.zmi .zmi-table-head th {
 		border:none;

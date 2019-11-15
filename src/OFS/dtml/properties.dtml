@@ -162,12 +162,12 @@
 	</form>
 
 	<dtml-if property_extensible_schema__>
-		<form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty" method="post" class="form-inline">
+		<form action="<dtml-var "REQUEST.URL1" html_quote>/manage_addProperty" method="post">
 			<p class="form-help mt-5">
 				To add a new property, enter a name, type and value for the new
 				property and click the <em>Add</em>-button.
 			</p>
-			<div class="form-group zmi-controls mt-2">
+			<div class="form-group form-inline zmi-controls mt-2">
 				<input type="text" placeholder="Name" title="Name" class="form-control" name="id:<dtml-var "REQUEST.charset.lower()=='utf-8' and 'UTF-8:' or ''">string" value="" />
 				<select name="type" title="Data Type"placeholder="Type" class="form-control">
 					<option>boolean</option>
