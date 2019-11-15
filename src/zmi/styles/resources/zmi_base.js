@@ -6,7 +6,9 @@
 function isURL(str) {
 	return /^(?:\w+:)?\/\/\S*$/.test(str);
 };
-
+function isSafari() {
+	return /^((?!chrome).)*safari/i.test(navigator.userAgent);
+}
 
 // NAVBAR-FUNCTIONS
 
@@ -229,7 +231,7 @@ $(function() {
 	// COMPRESS USER PERMISSIONS TABLE SIZE
 	if ($('body.zmi-manage_access').length !== 0) {
 		function resize_permissions_table() {
-			if ( $('#table-permissions').width() > $(window).width() ) {
+			if ( $('#table-permissions').width() > $(window).width() || isSafari() ) {
 				$('#table-permissions').addClass('compress');
 			}
 		}
