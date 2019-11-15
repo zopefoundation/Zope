@@ -226,4 +226,16 @@ $(function() {
 		})
 	}
 
+	// COMPRESS USER PERMISSIONS TABLE SIZE
+	if ($('body.zmi-manage_access').length !== 0) {
+		function resize_permissions_table() {
+			if ( $('#table-permissions').width() > $(window).width() ) {
+				$('#table-permissions').addClass('compress');
+			}
+		}
+		resize_permissions_table();
+		$(window).resize(function() {
+			resize_permissions_table();
+		})
+	}
 });

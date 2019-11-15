@@ -10,6 +10,7 @@
 .project
 .pydevproject
 .tox
+.vscode
 /bin/
 /build/
 /_build/

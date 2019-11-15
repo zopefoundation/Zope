@@ -52,7 +52,7 @@
     <table>
       <dtml-in "ac_inherited_permissions(1)">
         <tr>
-          <td class="zmi-akcquire-title nowrap">
+          <td class="zmi-acquire-title nowrap">
             <dtml-let pname="_['sequence-key']">
               <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-pname;">&dtml-pname;</a>
             </dtml-let>
@@ -82,7 +82,7 @@
 
     <dtml-with "_.namespace(valid_roles=roles)">
       <form action="manage_changePermissions" method="post">
-        <table class="table table-hover table-bordered">
+        <table id="table-permissions" class="table table-hover table-bordered table-responsive-sm">
           <thead>
             <tr>
               <th scope="col" colspan="2" class="zmi-table-head-permisions">
@@ -96,10 +96,10 @@
           <tbody>
 
           <dtml-in permission_settings mapping>
-            <dtml-let permmission_title="name">
+            <dtml-let permission_title="name">
               <dtml-if "not (_['sequence-index']%10)">
                 <tr class="zmi-table-head">
-                  <th class="zmi-akcquire-title" title="Acquire?">
+                  <th class="zmi-acquire-title" title="Acquire?">
                     <dtml-unless isTopLevelPrincipiaApplicationObject>
                       <a href="manage_acquiredForm">Acquire?</a>
                     </dtml-unless>
@@ -114,7 +114,7 @@
                 </tr>
               </dtml-if>
               <tr>
-                <td class="zmi-akcquire-check">
+                <td class="zmi-acquire-check">
                   <dtml-if isTopLevelPrincipiaApplicationObject>
                     &nbsp;
                   <dtml-else>
@@ -122,17 +122,17 @@
                            &dtml-acquire; />
                   </dtml-if>
                 </td>
-                <td class="zmi-akcquire-title nowrap">
+                <td class="zmi-acquire-title nowrap">
                   <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
                 </td>
                 <dtml-in roles mapping>
                   <td class="zmi-rolename-check"
-                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">" 
+                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">Permission: &dtml-permission_title;" 
                       onclick="$(this).children('input').trigger('click')">
                     <label class="sr-only sr-only-focusable" 
                            for="&dtml-name;">
                       Role: <dtml-var "valid_roles[_['sequence-index']]">,
-                      Permission: <dtml-var "_['permmission_title']">
+                      Permission: <dtml-var "_['permission_title']">
                     </label>
                     <input type="checkbox" &dtml-checked; id="&dtml-name;"
                            name="&dtml-name;" onclick="event.stopPropagation()" />
