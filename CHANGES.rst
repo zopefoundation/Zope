@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Improve ZMI Security Tab usability for high numbers of roles
+  (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
+
 - Some small ZMI rendering fixes
   (`#729 <https://github.com/zopefoundation/Zope/issues/729>`_)
 
