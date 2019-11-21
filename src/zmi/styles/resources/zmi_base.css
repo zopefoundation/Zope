@@ -715,7 +715,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm {
 	color: silver;
 	max-width: 9.6rem;
 	border: 0;
-	border-radius: 0;
+	border-radius: 1px;
 	cursor:pointer;
 }
 header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:focus {
