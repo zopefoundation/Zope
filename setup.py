@@ -76,6 +76,7 @@ setup(
         'DocumentTemplate >= 3.0b9',
         'ExtensionClass',
         'MultiMapping',
+        'Paste',
         'PasteDeploy',
         'Persistence',
         'RestrictedPython',
