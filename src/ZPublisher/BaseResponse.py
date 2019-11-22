@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''CGI Response Output formatter
-'''
+"""CGI Response Output formatter"""
 
 from zExceptions import BadRequest
 from zExceptions import Forbidden
@@ -52,7 +51,7 @@ class BaseResponse:
     __setitem__ = setHeader
 
     def outputBody(self):
-        """Output the response body"""
+        """Output the response body."""
         self.stdout.write(bytes(self))
 
     def setBody(self, body):
@@ -61,18 +60,17 @@ class BaseResponse:
         self.body = body
 
     def getStatus(self):
-        'Returns the current HTTP status code as an integer. '
+        """Returns the current HTTP status code as an integer."""
         return self.status
 
     def setCookie(self, name, value, **kw):
-        '''
-        Set an HTTP cookie on the browser
+        """Set an HTTP cookie on the browser.
 
         The response will include an HTTP header that sets a cookie on
         cookie-enabled browsers with a key "name" and value
         "value". This overwrites any previously set value for the
         cookie in the Response object.
-        '''
+        """
         cookies = self.cookies
         if name in cookies:
             cookie = cookies[name]
@@ -86,21 +84,20 @@ class BaseResponse:
         self.setBody(self.getBody() + body)
 
     def getHeader(self, name):
-        '''
-        Get a header value
+        """Get a header value.
 
         Returns the value associated with a HTTP return header, or
         "None" if no such header has been set in the response
         yet.
-        '''
+        """
         return self.headers.get(name, None)
 
     def __getitem__(self, name):
-        'Get the value of an output header'
+        """Get the value of an output header."""
         return self.headers[name]
 
     def getBody(self):
-        'Returns bytes representing the currently set body. '
+        """Returns bytes representing the currently set body."""
         return self.body
 
     def __bytes__(self):
@@ -113,8 +110,7 @@ class BaseResponse:
         pass
 
     def write(self, data):
-        """
-        Return data as a stream
+        """Return data as a stream.
 
         HTML data may be returned using a stream-oriented interface.
         This allows the browser to display partial results while
@@ -140,20 +136,19 @@ class BaseResponse:
         """
 
     def notFoundError(self, v=''):
-        """Generate an error indicating that an object was not found.
-        """
+        """Generate an error indicating that an object was not found."""
         raise NotFound(v)
 
     def debugError(self, v=''):
-        """Raise an error with debugging info and in debugging mode"""
+        """Raise an error with debugging info and in debugging mode."""
         raise NotFound("Debugging notice: %s" % v)
 
     def badRequestError(self, v=''):
-        """Raise an error indicating something wrong with the request"""
+        """Raise an error indicating something wrong with the request."""
         raise BadRequest(v)
 
     def forbiddenError(self, v=''):
-        """Raise an error indicating that the request cannot be done"""
+        """Raise an error indicating that the request cannot be done."""
         raise Forbidden(v)
 
     def unauthorized(self):

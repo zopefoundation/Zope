@@ -9,9 +9,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
-- Remove more Python 2 support code and dependency on ``six``
-  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
-
 - Move retried request delay handling out of ``supports_retry``
   (`#474 <https://github.com/zopefoundation/Zope/issues/474>`_)
 
@@ -45,6 +42,9 @@ Backwards incompatible changes
 - Drop support for Python 2.7 aka Zope 5 cannot be run on Python 2 any more.
   If you are still running on Python 2.7 upgrade to the latest Zope 4 version
   first, migrate to Python 3 and than switch to Zope 5.
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
+
+- Remove Python 2 support code and dependency on ``six``.
   (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
 - Drop support for running Zope with ZServer as it is Python 2 only.
