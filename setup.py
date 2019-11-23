@@ -76,7 +76,6 @@ setup(
         'DocumentTemplate >= 3.0b9',
         'ExtensionClass',
         'MultiMapping',
-        'Paste',
         'PasteDeploy',
         'Persistence',
         'RestrictedPython',
@@ -130,6 +129,9 @@ setup(
             'Sphinx',
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
+        ],
+        'wsgi': [
+            'Paste',
         ],
     },
     entry_points={
