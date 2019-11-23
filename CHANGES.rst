@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   the argument ``path`` is not something it can work with
   (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
 
+- Improve ZMI Security Tab usability for high numbers of roles
+  (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
+
 - Some small ZMI rendering fixes
   (`#729 <https://github.com/zopefoundation/Zope/issues/729>`_)
 
