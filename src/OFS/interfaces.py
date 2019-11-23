@@ -29,6 +29,8 @@ from zope.schema import Bool
 from zope.schema import NativeStringLine
 from zope.schema import Tuple
 
+from . import bbb
+
 
 class IOrderedContainer(Interface):
 
@@ -1056,7 +1058,14 @@ class IObjectClonedEvent(IObjectEvent):
 
 
 # BBB Zope 5.0
-deprecated(
-    'Please import from webdav.interfaces.',
-    IFTPAccess='webdav.interfaces:IFTPAccess',
-)
+if bbb.HAS_ZSERVER:
+    # This import can only be resolved if ZServer is installed
+    deprecated(
+        'Please import from webdav.interfaces.',
+        IFTPAccess='webdav.interfaces:IFTPAccess',
+    )
+else:
+    deprecated(
+        'You must install the ZServer package to import IFTPAccess.',
+        IFTPAccess='zope.interface:Interface',
+    )

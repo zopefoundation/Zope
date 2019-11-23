@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Fix broken deprecated import when ZServer is not installed
+  (`#714 <https://github.com/zopefoundation/Zope/issues/714>`_)
+
 - Improve ZMI Security Tab usability for high numbers of roles
   (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
 
