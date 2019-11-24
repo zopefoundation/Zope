@@ -176,7 +176,7 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.1/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/4.1.2/requirements-full.txt
 
 
 Building the documentation with ``Sphinx``
