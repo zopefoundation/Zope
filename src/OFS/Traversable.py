@@ -172,10 +172,14 @@ class Traversable(object):
             return self
 
         if isinstance(path, str):
-            # Only native strings are allowed
             path = path.split('/')
         else:
             path = list(path)
+            for part in path:
+                if not isinstance(part, str):
+                    raise TypeError(
+                        "path should be a string or an iterable of strings"
+                    )
 
         REQUEST = {'TraversalRequestNameStack': path}
         path.reverse()
