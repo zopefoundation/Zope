@@ -9,7 +9,7 @@
 <main class="container-fluid">
 
 <dtml-let roles="valid_roles()"
-          short_form="len(roles) > 20">
+          short_form="len(roles) > 30">
 
   <p class="form-help mb-4">
     The listing below shows the current security settings for this item.
