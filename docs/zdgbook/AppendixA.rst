@@ -2,15 +2,11 @@
 Appendix A: Zope Core Permissions
 #################################
 
-This is a list of standard permissions included with Zope.  It is a
-good idea to use these permissions when applicable with your Zope
-products, rather than creating new ones.  A list of built-in Zope
-permissions are available in the source code of the
-AccessControl package:
-``src/AccessControl/Permissions.py``.
-
-Additionally, ``src/DocumentTemplate/permissions.py`` contains
-some more permissions.
+This is a list of standard permissions included with Zope.  It is a good
+idea to use these permissions when applicable with your Zope products,
+rather than creating new ones.  A list of built-in Zope permissions are
+available in the `source code of the AccessControl package
+<https://github.com/zopefoundation/AccessControl/blob/master/src/AccessControl/Permissions.py>`_.
 
 Core Permissions
 ================
