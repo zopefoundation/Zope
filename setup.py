@@ -130,6 +130,9 @@ setup(
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
         ],
+        'wsgi': [
+            'Paste',
+        ],
     },
     entry_points={
         'paste.app_factory': [
