@@ -166,8 +166,8 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ python3.7 -m venv zope
   $ cd zope
   $ bin/pip install -U pip
-  $ bin/pip install Zope[wsgi]==4.1.2 \
-    -c https://zopefoundation.github.io/Zope/releases/4.1.2/constraints.txt
+  $ bin/pip install Zope[wsgi]==4.1.3 \
+    -c https://zopefoundation.github.io/Zope/releases/4.1.3/constraints.txt
 
 You can also install Zope using a single requirements file. Note that this
 installation method might install packages that are not actually needed (i. e.
@@ -176,7 +176,7 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.1.2/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/4.1.3/requirements-full.txt
 
 
 Building the documentation with ``Sphinx``
