@@ -188,8 +188,8 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ python3.7 -m venv zope
   $ cd zope
   $ bin/pip install -U pip
-  $ bin/pip install Zope==4.1 \
-    -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt
+  $ bin/pip install Zope[wsgi]==4.1.3 \
+    -c https://zopefoundation.github.io/Zope/releases/4.1.3/constraints.txt
 
 .. note::
 
@@ -203,7 +203,7 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.1/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/4.1.3/requirements-full.txt
 
 If you are on Python 2 and want to use ZServer instead of WSGI , you'll have to
 install that package seperately using the version spec in constraints.txt
