@@ -1,19 +1,41 @@
-What's new in Zope 4
-====================
-The article explains the new high-level features and changes found in this
-version of Zope.
+What's new in Zope
+==================
+The article explains the new high-level features and changes found in Zope.
 
-You can have a look at the `detailed change log <../changes.html>`_ to learn
-about all minor new features and bugs being solved in this release. When you
-are ready to migrate, make sure you study the :ref:`zope4migration`
-documentation.
+You can have a look at the `detailed change log <./changes.html>`_ to learn
+about all minor new features and bugs being solved in the latest release.
+
+.. attention::
+
+    If you are upgrading from Zope 2, make sure you study the
+    :ref:`zope4migration` documentation
+
 
 .. contents::
    :local:
 
 
+What's new in Zope 5
+--------------------
+
+Dropped support for Python 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Zope 5 supports Python 3 only, versions 3.5 up through 3.8. All support code
+and special casing for Python 2, including the use of the ``six`` package, have
+been removed.
+
+Dropped support for ``ZServer``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As ``ZServer`` only supports Python 2, its integration has been removed. Only
+`WSGI` is now supported for web service.
+
+
+
+What's new in Zope 4
+--------------------
+
 Restored sane version numbering
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Version numbers for Zope have been confusing in the past. The original Zope
 project iterated through version one to two up to version 2.13. In parallel
 a separate project was launched using the name Zope 3. Zope 3 wasn't a new
@@ -28,19 +50,18 @@ found in this release.
 
 
 Extended Python version support
--------------------------------
-Zope 5 supports Python 3.5 up to Python 3.8.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Zope 4 supports Python 2.7 and Python 3 versions 3.5 up to 3.8.
 
 The Python 3 support currently covers the core dependencies shipped
 with Zope and is limited to the new WSGI based publisher.
 
 Migrating an existing ZODB to Python 3 is not an automated process. You have
-to update to Zope 4 first, see
-`Zope 4 migration <https://zope.readthedocs.io/en/4.x/zope4/migration/index.html>`_.
+to update to Zope 4 first, see :ref:`zope4migration`.
 
 
 WSGI as the new default server type
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Zope 2.13 first gained support for running Zope as a WSGI application,
 using any WSGI capable web server instead of the built-in ZServer.
 
@@ -106,7 +127,7 @@ based publisher.
 
 
 View component Acquisition changes
-----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In Zope 2.12 Zope Toolkit view components changed and stopped inheriting
 from Acquisition base classes, as Acquisition got aware of `__parent__`
 pointers, which meant that ``aq_parent(view)`` worked, without the view
@@ -119,7 +140,7 @@ view page template files or viewlets.
 
 
 Page Templates now rendered by Chameleon
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Chameleon is an alternative implementation of the page template language
 supporting additional features and impressive template rendering speed.
 
@@ -138,7 +159,7 @@ manually.
 
 
 Lower memory consumption at runtime
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Zope 4 depends on a new DateTime release. The new release has been optimized
 for better memory use. Applications using a lot of DateTime values like the
 Plone CMS have seen total memory usage to decrease by 10% to 20% for medium
@@ -146,7 +167,7 @@ to large deployments.
 
 
 Simplified encoding configuration
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 As it is reasonable to have one unified encoding in ZMI and frontend, support
 for ``management_page_charset`` (as property of a folder) has been removed.
 ``default-zpublisher-encoding`` in `zope.conf` is the only place where to
@@ -155,7 +176,7 @@ Templates handle encoding and decoding of text.
 
 
 Restyled Zope Management Interface (ZMI)
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ZMI (Zope Management Interface) is now styled with Bootstrap.
 See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new
 styling.

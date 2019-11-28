@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Updated Zope documentation sources for Zope 5
+  (`#659 <https://github.com/zopefoundation/Zope/issues/659>`_)
+
 - The method ``unrestrictedTraverse`` raises an error when
   the argument ``path`` is not something it can work with
   (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)

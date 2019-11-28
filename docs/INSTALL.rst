@@ -14,9 +14,8 @@ In order to install Zope, you must have the following prerequisites
 available:
 
 - A supported version of Python, including the development support if
-  installed from system-level packages.  Supported versions include:
-
-  * 3.5 up to 3.8
+  installed from system-level packages.  Supported versions include
+  **3.5** up to **3.8**.
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -126,10 +125,9 @@ options, please see the
 
     [zopeinstance]
     recipe = plone.recipe.zope2instance
-    eggs =
-        Products.TemporaryFolder
     user = admin:adminpassword
     http-address = 8080
+    zodb-temporary-storage = off
 
 One feature this kind of installation offers is the easy integration of WSGI
 servers other than the built-in ``waitress``. You can specify a file path to a
@@ -143,10 +141,10 @@ include the WSGI server software egg in the ``eggs`` specification:
     [zopeinstance]
     recipe = plone.recipe.zope2instance
     eggs =
-        Products.TemporaryFolder
         gunicorn
     user = admin:adminpassword
     http-address = 8080
+    zodb-temporary-storage = off
     wsgi = /path/to/zope.ini
 
 Installing Zope with ``pip``
