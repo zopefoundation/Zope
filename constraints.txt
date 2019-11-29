@@ -15,6 +15,7 @@ Products.BTreeFolder2==4.2
 Products.ZCatalog==5.0.1
 Record==3.5
 RestrictedPython==5.0
+SecretStorage==3.1.1
 WSGIProxy2==0.4.6
 WebOb==1.8.5
 WebTest==2.0.33
