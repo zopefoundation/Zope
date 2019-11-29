@@ -5,9 +5,6 @@ Migrating content
 These issues may appear when rendering content (templates, scripts or
 other built-in Zope code objects) created with Zope 2 in Zope 4.
 
-.. contents::
-   :local:
-
 
 .. _zope4pagetemplatemigration:
 
@@ -44,8 +41,8 @@ it just fine.
      <a href=".">Text</A>  <!-- BAD: Mismatched open/close tag -->
      <a href=".">Text</a>  <!-- OK -->
      <A href=".">Text</A>  <!-- OK -->
-     <Td>...</td>            <!-- BAD: Mismatched open/close tag -->
-     <td>...</td>            <!-- OK -->
+     <Td>...</td>          <!-- BAD: Mismatched open/close tag -->
+     <td>...</td>          <!-- OK -->
 
 - HTML comments must not contain any double hyphens inside the comment or more
   than two hyphens in the closing sequence:

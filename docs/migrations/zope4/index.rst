@@ -1,7 +1,7 @@
 .. _zope4migration:
 
-Migrating from Zope 2 to Zope 4 or 5
-====================================
+From Zope 2 to Zope 4 or 5
+==========================
 
 .. toctree::
    :maxdepth: 2
