@@ -18,13 +18,13 @@ import optparse
 import os
 import re
 import sys
-import Zope2
 from logging.config import fileConfig
 
 from paste.deploy import loadapp
 from paste.deploy import loadserver
 from six.moves import configparser
 
+import Zope2
 from App.config import getConfiguration
 
 
