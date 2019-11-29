@@ -7,8 +7,8 @@ This is the official home for all Zope documentation.
 
    news
    INSTALL
-   migrations/index
    operation
+   migrations/index
    maintenance
    changes
    zopebook/index
