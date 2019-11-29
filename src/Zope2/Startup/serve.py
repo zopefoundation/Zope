@@ -18,6 +18,7 @@ import optparse
 import os
 import re
 import sys
+import Zope2
 from logging.config import fileConfig
 
 from paste.deploy import loadapp
@@ -209,6 +210,8 @@ and then use %(http_port)s in your config files.
                     msg = ''
                 self.out('Exiting%s (-v to see traceback)' % msg)
             finally:
+                for db in Zope2.opened:
+                    db.close()
                 self.unlinkPidFile()
 
         serve()

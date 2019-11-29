@@ -9,6 +9,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Close opened db during shutdown (as ZServer is already doing).
+
 - Updated Zope documentation sources for Zope 5
   (`#659 <https://github.com/zopefoundation/Zope/issues/659>`_)
 
