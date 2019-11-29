@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
 4.1.3 (unreleased)
 ------------------
 
+- Close opened db during shutdown (as ZServer is already doing).
+  (`#740 <https://github.com/zopefoundation/Zope/issues/740>`_)
+
 - Add ``Paste`` as ``extras_require`` dependency to pull in ``Paste`` when
   installing with `pip` and `constraints.txt` to prevent startup errors.
   This requires adding the ``[wsgi]`` extra in the egg specification.
