@@ -1,8 +1,9 @@
 Change log
 ==========
 
-This file contains change information for the current Zope release.
-Change information for previous versions of Zope can be found at
+These are all the changes for Zope 5, starting with the alpha releases.
+
+The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 

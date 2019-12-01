@@ -20,31 +20,33 @@
         :target: https://requires.io/github/zopefoundation/Zope/requirements/?branch=master
         :alt: Requirements Status
 
-.. contents::
-
-Introduction
-============
 
 Zope is an open-source web application server.
 
 This document provides some general information about Zope and provides
-links to other documents.
+links to other documents. The full documentation can be found at
+https://zope.readthedocs.io.
 
-Documentation can be found at https://zope.readthedocs.io.
+
+.. contents::
+    :local:
+    :depth: 1
+
 
 Installation
 ============
 
-You *cannot* simply do ``pip install Zope``, because you need
-specific versions of all dependencies. Follow the documentation to
-ensure you get the correct versions, or else installation is very
-likely to fail. See https://zope.readthedocs.io/en/latest/INSTALL.html for
-details.
+Please visit the installation documentation at
+https://zope.readthedocs.io/en/latest/INSTALL.html for detailed installation
+guidance.
+
 
 License
 =======
 
-The Zope License is included in ``LICENSE.txt``.
+Zope is licensed under the OSI-approved `Zope Public License` (ZPL), version
+2.1. The full license text is included in ``LICENSE.txt``.
+
 
 Bug tracker
 ===========
