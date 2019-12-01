@@ -4,8 +4,8 @@
 .. image:: https://coveralls.io/repos/github/zopefoundation/Zope/badge.svg?branch=master
         :target: https://coveralls.io/github/zopefoundation/Zope?branch=master
 
-.. image:: https://readthedocs.org/projects/zope/badge/?version=latest
-        :target: https://zope.readthedocs.org/en/latest/
+.. image:: https://readthedocs.org/projects/zope/badge/?version=4.x
+        :target: https://zope.readthedocs.org/en/4.x/
         :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/Zope.svg
@@ -36,7 +36,7 @@ Installation
 ============
 
 Please visit the installation documentation at
-https://zope.readthedocs.io/en/latest/INSTALL.html for detailed installation
+https://zope.readthedocs.io/en/4.x/INSTALL.html for detailed installation
 guidance.
 
 

@@ -19,7 +19,7 @@ In this chapter we are looking at building Python packages that are
   develop "through the web". This is still possible but no longer
   recommended.
   For further information please refer to the
-  `Zope Book <https://zope.readthedocs.io/en/latest/zopebook/index.html>`_.
+  `Zope Book <https://zope.readthedocs.io/en/4.x/zopebook/index.html>`_.
 
 
 Development Process

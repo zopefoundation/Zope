@@ -12,7 +12,7 @@ set of security features.  This chapter's goal is to shed light on
 Zope security in the context of Zope Product development.  For a more
 fundamental overview of Zope security, you may wish to refer to the
 `Zope Book* Chapter "Users and Security"
-<https://zope.readthedocs.io/en/latest/zopebook/Security.html>`_.
+<https://zope.readthedocs.io/en/4.x/zopebook/Security.html>`_.
 Before diving into this
 chapter, you should have a basic understanding of how to build Zope
 Products as well as an understanding of how the Zope object publisher
@@ -150,7 +150,7 @@ or methods.
 For a more fundamental overview of Zope users, roles, and
 permissions, see the section titled "Authorization, Roles and
 Permissions" in the `Security Chapter of the Zope Book
-<https://zope.readthedocs.io/en/latest/zopebook/Security.html>`_.
+<https://zope.readthedocs.io/en/4.x/zopebook/Security.html>`_.
 
 
 Security Declarations In Zope Products
@@ -1296,7 +1296,7 @@ allows them to create `user-defined roles` within the Zope management
 framework in order to associate these roles with the permissions of
 your product and with users.  This user interface and its usage
 patterns are explained in more detail within the `Zope Book's security
-chapter <https://zope.readthedocs.io/en/latest/zopebook/Security.html>`_.
+chapter <https://zope.readthedocs.io/en/4.x/zopebook/Security.html>`_.
 
 If your Product's class does not inherit from ``RoleManager``, its
 methods will still retain the security assertions associated with

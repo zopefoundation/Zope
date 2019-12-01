@@ -221,7 +221,7 @@ Other changes
 
 - Exceptions during publishing are now re-raised in a new exceptions debug
   mode to allow WSGI middleware to handle/debug it. See the `debug
-  documentation <https://zope.readthedocs.io/en/latest/wsgi.html#werkzeug>`_
+  documentation <https://zope.readthedocs.io/en/4.x/wsgi.html#werkzeug>`_
   for examples.
   (`#562 <https://github.com/zopefoundation/Zope/issues/562>`_)
 
@@ -502,7 +502,7 @@ New features
 
 - Add zconsole module for running scripts and interactive mode.
   See the `document Running Zope
-  <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope>`_.
+  <https://zope.readthedocs.io/en/4.x/operation.html#debugging-zope>`_.
 
 - Add support for Python 3.7.
 

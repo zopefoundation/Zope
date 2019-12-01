@@ -570,7 +570,7 @@ The upshot of this is that your published objects must inherit from
 
   - chapter 7 "Acquisition" of this Zope Developer's Guide
   - chapter 8
-    `"Acquisition" <https://zope.readthedocs.io/en/latest/zopebook/Acquisition.html>`_
+    `"Acquisition" <https://zope.readthedocs.io/en/4.x/zopebook/Acquisition.html>`_
     of *The Zope Book*
   - the excellent
     `readme <https://github.com/zopefoundation/Acquisition>`__
@@ -1200,7 +1200,7 @@ and by default **waitress** returns an error message as follows::
 .. note:: **Further information:**
 
     `Debugging Zope applications under WSGI
-    <https://zope.readthedocs.io/en/latest/wsgi.html#debugging-zope-applications-under-wsgi>`_
+    <https://zope.readthedocs.io/en/4.x/wsgi.html#debugging-zope-applications-under-wsgi>`_
 
 
 Exceptions and Transactions
@@ -1220,7 +1220,7 @@ adding a ``max_conflict_retries`` directive.
 .. note::
 
   For further information on transactions please refer to chapter 6
-  `ZODB Persistent Components <https://zope.readthedocs.io/en/latest/zdgbook/ZODBPersistentComponents.html>`_.
+  `ZODB Persistent Components <https://zope.readthedocs.io/en/4.x/zdgbook/ZODBPersistentComponents.html>`_.
 
 
 Manual Access to Request and Response
