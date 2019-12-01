@@ -23,4 +23,4 @@ Contents
 Usage
 =====
 
-See http://zope.readthedocs.io/en/latest/ZMI.html
+See https://zope.readthedocs.io/en/latest/news.html#restyled-zope-management-interface-zmi
