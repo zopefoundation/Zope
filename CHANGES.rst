@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.1.3 (unreleased)
+4.1.3 (2019-12-01)
 ------------------
 
 - Close opened db during shutdown (as ZServer is already doing).
