@@ -57,7 +57,8 @@ Steps for creating a new Zope release
 
     or
 
-    $ git tag <TAG-NAME>
+    $ git tag -as <TAG-NAME> -m "- tagging release <TAG-NAME>"
+    $ git --push-tags
     $ bin/zopepy setup.py egg_info -Db '' sdist bdist_wheel
     $ bin/twine upload -s dist/Zope-<TAG-NAME>*
 
