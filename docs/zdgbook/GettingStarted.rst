@@ -52,7 +52,7 @@ and create an instance, create a buildout configuration file
 ::
 
   [buildout]
-  extends = https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
+  extends = https://zopefoundation.github.io/Zope/releases/4.x/versions-prod.cfg
   parts =
       zope4
 
@@ -294,7 +294,7 @@ The final `buildout.cfg` will look like this.
 
   [buildout]
   develop = ../poll.main
-  extends = https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
+  extends = https://zopefoundation.github.io/Zope/releases/4.x/versions-prod.cfg
   parts =
       zope4
 

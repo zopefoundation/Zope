@@ -57,7 +57,7 @@ steps:
 
 - Run the buildout
 
-The following examples are from Linux and use Zope version 4.1. Just replace
+The following examples are from Linux and use Zope version 4.1.3. Just replace
 that version number with your desired version.
 
 Built-in standard buildout configuration
@@ -65,9 +65,9 @@ Built-in standard buildout configuration
 
 .. code-block:: console
 
-  $ wget https://pypi.org/packages/source/Z/Zope/Zope-4.1.tar.gz
-  $ tar xfvz Zope-4.1.tar.gz
-  $ cd Zope-4.1
+  $ wget https://pypi.org/packages/source/Z/Zope/Zope-4.1.3.tar.gz
+  $ tar xfvz Zope-4.1.3.tar.gz
+  $ cd Zope-4.1.3
   $ python3.7 -m venv .
   $ bin/pip install -U pip zc.buildout
   $ bin/buildout
@@ -103,7 +103,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.1/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.1.3/versions-prod.cfg
     parts =
         zopescripts
 
@@ -126,7 +126,7 @@ options, please see the
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.1/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/4.1.3/versions-prod.cfg
     parts =
         zopeinstance
 
@@ -180,7 +180,7 @@ steps:
 
 - Install Zope and its dependencies
 
-Example steps on Linux. Replace the version number "4.1" with the latest
+Example steps on Linux. Replace the version number "4.1.3" with the latest
 version you find on https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
@@ -211,7 +211,7 @@ install that package seperately using the version spec in constraints.txt
 .. code-block:: console
 
     $ bin/pip install \
-    -c https://zopefoundation.github.io/Zope/releases/4.1/constraints.txt \
+    -c https://zopefoundation.github.io/Zope/releases/4.1.3/constraints.txt \
     ZServer
 
 Building the documentation with ``Sphinx``

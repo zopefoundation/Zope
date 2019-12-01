@@ -72,7 +72,7 @@ adding another class variable::
 
     zmi_show_add_dialog = False
 
-.. _`zmi.styles` : https://github.com/zopefoundation/Zope/tree/master/src/zmi/styles
+.. _`zmi.styles` : https://github.com/zopefoundation/Zope/tree/4.x/src/zmi/styles
 .. _`available icons` : https://fontawesome.com/icons?d=gallery&m=free
 
 Custom icons and resources
