@@ -3,16 +3,16 @@ Searching and Categorizing Content
 
 .. include:: includes/zope2_notice.rst
 
-The ZCatalog is Zope's built in search engine. It allows you to
+The **ZCatalog** is Zope's built in search engine. It allows you to
 categorize and search all kinds of Zope objects. You can also use it
 to search external data such as relational data, files, and remote
 web pages.  In addition to searching you can use the ZCatalog to
 organize collections of objects.
 
-The ZCatalog supports a rich query interface. You can perform full text
-searching, can search multiple indexes at once, and can even specify
+The **ZCatalog** supports a rich query interface. You can perform full text
+searching, search multiple indexes at once and even specify
 weighing for different fields in your results. In addition, the
-ZCatalog keeps track of meta-data about indexed objects.
+**ZCatalog** keeps track of meta-data about indexed objects.
 
 The two most common ZCatalog usage patterns are:
 
@@ -25,45 +25,49 @@ Automatic Cataloging
 Getting started with Mass Cataloging
 ------------------------------------
 
-Let's take a look at how to use the ZCatalog to search documents.
+Let's take a look at how to use the **ZCatalog** to search documents.
 Cataloging a bunch of objects all at once is called *mass cataloging*.
+
 Mass cataloging involves four steps:
 
-- Creating a ZCatalog
+- Creating a **ZCatalog**
 
 - Creating indexes
 
 - Finding objects and cataloging them
 
-- Creating a web interface to search the ZCatalog.
+- Creating a web interface to search the **ZCatalog**
 
 Creating a ZCatalog
 -------------------
 
-Choose *ZCatalog* from the product add list to create a ZCatalog
-object within a subfolder named 'Zoo'.  This takes you to the
-ZCatalog add form, as shown in the figure below.
+Choose ``ZCatalog`` from the product add list to create a **ZCatalog**
+object within a subfolder named ``Zoo``.  This takes you to the
+``Add ZCatalog`` form, as shown in the figure below.
 
 .. figure:: Figures/creatingzcatalog.png
 
-   ZCatalog add form
+   Add ZCatalog form
 
-The Add form asks you for an *Id* and a *Title*.  Give your
-ZCatalog the Id 'AnimalCatalog' and click *Add* to create your new
-ZCatalog.  The ZCatalog icon looks like a folder with a small
-magnifying glass on it.  Select the *AnimalCatalog* icon to see
-the *Contents* view of the ZCatalog.
+The Add form asks you for an ``Id`` and a ``Title``.  Give your
+**ZCatalog** the Id ``AnimalCatalog`` and click ``Add`` to create your new
+**ZCatalog**.  The **ZCatalog** icon looks like a folder with a small
+magnifying glass on it.  Select the ``AnimalCatalog`` icon to see
+the ``Contents`` view of the **ZCatalog**.
 
-A ZCatalog looks a lot like a folder, but it has a few more
+A **ZCatalog** looks a lot like a folder, but it has a few more
 tabs.  Six tabs on the ZCatalog are the exact same six tabs you
-find on a standard folder.  ZCatalog have the following views:
-*Contents*, *Catalog*, *Properties*, *Indexes*, *Metadata*,
-*Find Objects*, *Advanced*, *Undo*, *Security*, and *Ownership*.
-When you click on a ZCatalog, you are on the *Contents*
-view. Here, you can add new objects and the ZCatalog will
-contain them just as any folder does. Although a ZCatalog is
+find on a standard folder.
+
+**ZCatalog** have the following views:
+
+``Contents``, ``Catalog``, ``Properties``, ``Indexes``, ``Metadata``,
+``Find Objects``, ``Advanced``, ``Undo``, ``Security``, and ``Ownership``.
+When you click on a **ZCatalog**, you are on the ``Contents``
+view. Here, you can add new objects and the **ZCatalog** will
+contain them just as any folder does. Although a **ZCatalog** is
 like a normal Zope folder, this does not imply that the objects
-contained within it are automatically searchable.  A ZCatalog
+contained within it are automatically searchable.  A **ZCatalog**
 can catalog objects at any level of your site, and it needs to
 be told exactly which ones to index.
 
@@ -71,36 +75,36 @@ Creating Indexes
 ~~~~~~~~~~~~~~~~
 
 In order to tell Zope what to catalog and where to store the
-information, we need to create a *Lexicon* and an *Index*.  A
-*Lexicon* is necessary to provide word storage services for
-full-text searching, and an *Index* is the object which stores
+information, we need to create a **Lexicon** and an **Index**.  A
+**Lexicon** is necessary to provide word storage services for
+full-text searching, and an **Index** is the object which stores
 the data necessary to perform fast searching.
 
-In the contents view of the *AnimalCatalog* ZCatalog, choose
-*ZCTextIndex Lexicon*, and give it an id of *zooLexicon*
+In the contents view of the ``AnimalCatalog`` **ZCatalog**, choose
+``ZCTextIndex Lexicon``, and give it an id of ``zooLexicon``.
 
 .. figure:: Figures/creatinglexicon.png
 
-   ZCTextIndex Lexicon add form
+   Add ZCTextIndex Lexicon form
 
 Now we can create an index that will record the information we
-want to have in the ZCatalog.  Click on the *Indexes* tab of the
-ZCatalog.  A drop down menu lists the available indexes.  Choose
-*ZCTextIndex*; in the add form fill in the id *zooTextIdx*.
-Fill in *PrincipiaSearchSource* in the "Field name" input.  This
-tells the ZCTextIndex to index the body text of the DTML
-Documents (*PrincipiaSearchSource* is an API method of all DTML
-Document and Method objects).  Note that *zooLexicon* is
-preselected in the *Lexicon* menu.
+want to have in the **ZCatalog**.  Click on the ``Indexes`` tab of the
+**ZCatalog**.  A drop down menu lists the available indexes.  Choose
+``ZCTextIndex``; in the add form fill in the id ``zooTextIdx``.
+Fill in ``PrincipiaSearchSource`` in the ``Field name`` input.  This
+tells the **ZCTextIndex** to index the body text of the DTML
+Documents (``PrincipiaSearchSource`` is an API method of all DTML
+Document and Method objects).  Note that ``zooLexicon`` is
+preselected in the ``Lexicon`` menu.
 
 .. figure:: Figures/creatingtextindex.png
 
-   ZCTextIndex add form
+   Add ZCTextIndex form
 
 .. note::
 
-   When you want the textindex to work on other types of objects,
-   they have to provide a method named "PrincipiaSearchSource" which
+   When you want the **TextIndex** to work on other types of objects,
+   they have to provide a method named ``PrincipiaSearchSource`` which
    returns the data of the object which has to be searched.
 
 To keep this example short we will skip over some of the options
