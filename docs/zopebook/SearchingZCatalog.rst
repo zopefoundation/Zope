@@ -88,14 +88,14 @@ In the contents view of the **AnimalCatalog ZCatalog**, choose
    Add ZCTextIndex Lexicon form
 
 Now we can create an index that will record the information we
-want to have in the **ZCatalog**.  Click on the ``Indexes`` tab of the
+want to have in the **ZCatalog**.  Click on the **Indexes** tab of the
 **ZCatalog**.  A drop down menu lists the available indexes.  Choose
-``ZCTextIndex``; in the add form fill in the id ``zooTextIdx``.
-Fill in ``PrincipiaSearchSource`` in the ``Field name`` input.  This
+**ZCTextIndex**; in the add form fill in the **Id** ``zooTextIdx``.
+Fill in ``PrincipiaSearchSource`` in the **Field name** input.  This
 tells the **ZCTextIndex** to index the body text of the DTML
 Documents (``PrincipiaSearchSource`` is an API method of all DTML
 Document and Method objects).  Note that ``zooLexicon`` is
-preselected in the ``Lexicon`` menu.
+preselected in the **Lexicon** menu.
 
 .. figure:: Figures/creatingtextindex.png
 
@@ -118,7 +118,7 @@ confused with the idea of metadata in Zope CMF, Plone, or other
 content management systems. Here, this just means that these are
 attributes that will be stored directly in the catalog for
 performance benefits.  For now, just go to the
-``Metadata`` tab of the **ZCatalog** and add ``id`` and ``title``.
+**Metadata** tab of the **ZCatalog** and add ``id`` and ``title``.
 
 Finding and Cataloging Objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,10 +129,10 @@ onto the next step: finding objects and cataloging them.
 Suppose you have a zoo site with information about animals.  To
 work with these examples, create two DTML Documents along-side
 the ``AnimalCatalog`` object (within the same folder that contains
-the ``AnimalCatalog`` **ZCatalog**) that contain information about
+the **AnimalCatalog ZCatalog**) that contain information about
 reptiles and amphibians.
 
-The first should have an ``Id`` of ``chilean_frog``, a ``title`` ``Chilean
+The first should have an **Id** of ``chilean_frog``, a **Title** ``Chilean
 four-eyed frog`` and its body text should read something like
 this::
 
@@ -143,8 +143,8 @@ this::
   rump, creating a much larger and more intimidating head.
   Frogs are amphibians.
 
-For the second, fill in an id of "carpet_python" and a title of
-"Carpet Python"; its body text could be::
+For the second, fill in an **Id** of ``carpet_python`` and a **Title** of
+``Carpet Python``; its body text could be::
 
   *Morelia spilotes variegata* averages 2.4 meters in length.  It
   is a medium-sized python with black-to-gray patterns of
@@ -159,27 +159,27 @@ to search for certain words and show all the documents that
 contain those words.  Searching is one of the most useful and
 common web activities.
 
-The *AnimalCatalog* ZCatalog you created can catalog all of the
+The **AnimalCatalog ZCatalog** you created can catalog all of the
 documents in your Zope site and let your users search for specific
-words.  To catalog your documents, go to the *AnimalCatalog*
-ZCatalog and click on the *Find Objects* tab.
+words.  To catalog your documents, go to the **AnimalCatalog
+ZCatalog** and click on the **Find Objects** tab.
 
-In this view, you tell the ZCatalog what kind of objects you are
+In this view, you tell the **ZCatalog** what kind of objects you are
 interested in.  You want to catalog all DTML Documents so select
-*DTML Document* from the *Find objects of type* multiple selection
-and click *Find and Catalog*.
+``DTML Document`` from the **Find objects of type** multiple selection
+and click **Find and Catalog**.
 
-The ZCatalog will now start from the folder where it is located
+The **ZCatalog** will now start from the folder where it is located
 and search for all DTML Documents.  It will search the folder and
 then descend down into all of the sub-folders and their
 sub-folders.  For example, if your ZCatalog is located at
-'/Zoo/AnimalCatalog', then the '/Zoo' folder and all its
+``/Zoo/AnimalCatalog``, then the ``/Zoo`` folder and all its
 subfolders will get searched. 
 
 If you have lots and lots of objects, this may take a long time
 to complete, so be patient.
 
-After a period of time, the ZCatalog will take you to the *Catalog*
+After a period of time, the **ZCatalog** will take you to the **Catalog**
 view automatically, with a status message telling you what it just
 did.
 
@@ -190,47 +190,48 @@ them.  Viewing an object in the catalog shows you what was indexed
 for the object, and what metadata items are stored for it.
 
 You have completed the first step of searching your objects,
-cataloging them into a ZCatalog. Now your documents are in the
-ZCatalog's database. Now you can move onto the fourth step,
-creating a web page and result form to query the ZCatalog.
+cataloging them into a **ZCatalog**. Now your documents are in the
+**ZCatalog**'s database. Now you can move onto the fourth step,
+creating a web page and result form to query the **ZCatalog**.
 
 Search and Report Forms
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 To create search and report forms, make sure you are inside the
-*AnimalCatalog* ZCatalog and select *Z Search Interface* from the
-add list.  Select the *AnimalCatalog* ZCatalog as the searchable
+**AnimalCatalog ZCatalog** and select ``Z Search Interface`` from the
+add list.  Select ``AnimalCatalog`` as the searchable
 object, as shown in the figure below.
 
 .. figure:: Figures/creatingsearchinterface.png
 
    Creating a search form for a ZCatalog
 
-Name the *Report Id* "SearchResults", the *Search Input Id*
-"SearchForm", select "Generate Page Templates" and click *Add*.
-This will create two new Page Templates in the *AnimalCatalog*
-ZCatalog named *SeachForm* and *SearchResults*.
+Name the **Report Id** ``SearchResults``, the **Search Input Id**
+``SearchForm``, select ``Generate Page Templates`` and click **Add**.
+This will create two new Page Templates in the ``AnimalCatalog``
+**ZCatalog** named ``SeachForm`` and ``SearchResults``.
 
-These objects are *contained in* the ZCatalog, but they are not
-*cataloged by* the ZCatalog.  The *AnimalCatalog* has only
-cataloged DTML Documents.  The search Form and Report templates
+These objects are *contained in* the **ZCatalog**, but they are not
+*cataloged by* the **ZCatalog**.  The **AnimalCatalog** has only
+cataloged DTML Documents.  The search form and report templates
 are just a user interface to search the animal documents in the
-ZCatalog. You can verify this by noting that the search and
-report forms are not listed in the *Cataloged Objects* tab.
+**ZCatalog**. You can verify this by noting that the search and
+report forms are not listed in the **Cataloged Objects** tab.
 
-To search the *AnimalCatalog* ZCatalog, select the *SearchForm*
-template and click on its *Test* tab.  
+To search the **AnimalCatalog**, select the ``SearchForm``
+template and click on its **Test** tab.  
 
-By typing words into the *ZooTextIdx* form element you can
-search all of the documents cataloged by the *AnimalCatalog*
-ZCatalog.  For example, type in the word "Reptiles".  The
-*AnimalCatalog* ZCatalog will be searched and return a simple
-table of objects that have the word "Reptiles" in them.  The
+By typing words into the ``ZooTextIdx`` form element you can
+search all of the documents cataloged by the **AnimalCatalog**.
+For example, type in the word ``Reptiles``.  The
+**AnimalCatalog** will be searched and return a simple
+table of objects that have the word **Reptiles** in them.  The
 search results should include the carpet python.  You can also
-try specifying multiple search terms like "reptiles OR
-amphibians".  Search results for this query should include both
+try specifying multiple search terms like ``reptiles OR
+amphibians``.  Search results for this query should include both
 the Chilean four-eyed Frog and the carpet python.
-Congratulations, you have successfully created a ZCatalog,
+
+Congratulations, you have successfully created a **ZCatalog**,
 cataloged content into it and searched it through the web.
 
 Configuring ZCatalogs
