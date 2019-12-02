@@ -43,27 +43,27 @@ Creating a ZCatalog
 
 Choose ``ZCatalog`` from the product add list to create a **ZCatalog**
 object within a subfolder named ``Zoo``.  This takes you to the
-``Add ZCatalog`` form, as shown in the figure below.
+**Add ZCatalog** form, as shown in the figure below.
 
 .. figure:: Figures/creatingzcatalog.png
 
    Add ZCatalog form
 
-The Add form asks you for an ``Id`` and a ``Title``.  Give your
-**ZCatalog** the Id ``AnimalCatalog`` and click ``Add`` to create your new
+The Add form asks you for an **Id** and a **Title**.  Give your
+**ZCatalog** the **Id** ``AnimalCatalog`` and click **Add** to create your new
 **ZCatalog**.  The **ZCatalog** icon looks like a folder with a small
 magnifying glass on it.  Select the ``AnimalCatalog`` icon to see
-the ``Contents`` view of the **ZCatalog**.
+the **Contents** view of the **ZCatalog**.
 
 A **ZCatalog** looks a lot like a folder, but it has a few more
-tabs.  Six tabs on the ZCatalog are the exact same six tabs you
+tabs.  Six tabs on the **ZCatalog** are the exact same six tabs you
 find on a standard folder.
 
-**ZCatalog** have the following views:
+A **ZCatalog** has the following views: ``Contents``, ``Catalog``,
+``Properties``, ``Indexes``, ``Metadata``, ``Find Objects``,
+``Advanced``, ``Undo``, ``Security``, and ``Ownership``.
 
-``Contents``, ``Catalog``, ``Properties``, ``Indexes``, ``Metadata``,
-``Find Objects``, ``Advanced``, ``Undo``, ``Security``, and ``Ownership``.
-When you click on a **ZCatalog**, you are on the ``Contents``
+When you click on a **ZCatalog**, you are on the **Contents**
 view. Here, you can add new objects and the **ZCatalog** will
 contain them just as any folder does. Although a **ZCatalog** is
 like a normal Zope folder, this does not imply that the objects
@@ -80,8 +80,8 @@ information, we need to create a **Lexicon** and an **Index**.  A
 full-text searching, and an **Index** is the object which stores
 the data necessary to perform fast searching.
 
-In the contents view of the ``AnimalCatalog`` **ZCatalog**, choose
-``ZCTextIndex Lexicon``, and give it an id of ``zooLexicon``.
+In the contents view of the **AnimalCatalog ZCatalog**, choose
+**ZCTextIndex Lexicon**, and give it an **Id** of ``zooLexicon``.
 
 .. figure:: Figures/creatinglexicon.png
 
@@ -111,28 +111,29 @@ To keep this example short we will skip over some of the options
 presented here.  In the section on indexes below, we will
 discuss this more thoroughly.
 
-Additionally, we will have to tell the ZCatalog which attributes
+Additionally, we will have to tell the **ZCatalog** which attributes
 of each cataloged object that it should store directly.  These
-attributes are called *Metadata*, however they should not be
+attributes are called **Metadata**, however they should not be
 confused with the idea of metadata in Zope CMF, Plone, or other
-content management systems--here, this just means that these are
+content management systems. Here, this just means that these are
 attributes that will be stored directly in the catalog for
 performance benefits.  For now, just go to the
-*Metadata* tab of the ZCatalog and add *id* and *title*.
+``Metadata`` tab of the **ZCatalog** and add ``id`` and ``title``.
 
 Finding and Cataloging Objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now that you have created a ZCatalog and an Index, you can move
+Now that you have created a **ZCatalog** and an **Index**, you can move
 onto the next step: finding objects and cataloging them.
+
 Suppose you have a zoo site with information about animals.  To
 work with these examples, create two DTML Documents along-side
-the *AnimalCatalog* object (within the same folder that contains
-the *AnimalCatalog* ZCatalog) that contain information about
+the ``AnimalCatalog`` object (within the same folder that contains
+the ``AnimalCatalog`` **ZCatalog**) that contain information about
 reptiles and amphibians.
 
-The first should have an Id of "chilean_frog", a title "Chilean
-four-eyed frog" and its body text should read something like
+The first should have an ``Id`` of ``chilean_frog``, a ``title`` ``Chilean
+four-eyed frog`` and its body text should read something like
 this::
 
   The Chilean four-eyed frog has a bright
