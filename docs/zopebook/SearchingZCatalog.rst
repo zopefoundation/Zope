@@ -677,7 +677,7 @@ example::
 
 will return all objects that contain the terms ``bob`` and ``uncle``
 but will not include any objects that contain words that start
-with **Zoo** like **Zoologist**, **Zoology**, or **Zoo** itself.
+with ``Zoo`` like **Zoologist**, **Zoology**, or **Zoo** itself.
 
 Similarly, a search for::
 
@@ -711,7 +711,7 @@ objects as you create and edit them.
 Lexicons
 ~~~~~~~~
 
-Lexicons are used by ZCTextIndexes.  Lexicons process and store
+**Lexicons** are used by ZCTextIndexes.  Lexicons process and store
 the words from the text and help in processing queries.
 
 Lexicons can:
@@ -719,45 +719,45 @@ Lexicons can:
 Normalize Case
   Often you want search terms to be case insensitive, eg. a search for
   "python", "Python" and "pYTHON" should return the same results.  The
-  lexicons' *Case Normalizer* does exactly that.
+  lexicons' **Case Normalizer** does exactly that.
 
 Remove stop words
   Stop words are words that are very common in a given language and should
   be removed from the index.  They would only cause bloat in the index and
   add little information.  In addition, stop words, being common words,
   would appear in almost every page, without this option turned on, a user
-  searching for "the python house" would get back practically every single
-  document on the site (since they would all likely contain "the"), taking
+  searching for ``the python house`` would get back practically every single
+  document on the site (since they would all likely contain **the**), taking
   longer and adding no quality to their results.
 
 Split text into words
   A splitter parses text into words.  Different texts have different needs
   of word splitting - if you are going to process HTML documents, you might
   want to use the HTML aware splitter which effectively removes HTML tags.
-  On the other hand, if you are going to index plain text documents *about*
+  On the other hand, if you are going to index plain text documents **about**
   HTML, you don't want to remove HTML tags - people might want to look them
   up.  Also, an eg. chinese language document has a different concept of
   words and you might want to use a different splitter. 
 
-The Lexicon uses a pipeline architecture. This makes it possible
+The **Lexicon** uses a pipeline architecture. This makes it possible
 to mix and match pipeline components.  For instance, you could
 implement a different splitting strategy for your language and
 use this pipeline element in conjunction with the standard text
 processing elements.  Implementing a pipeline element is out of
 the scope of this book; for examples of implementing and
 registering a pipeline element see
-eg. 'Products.ZCTextIndex.Lexicon.py'.  A pipeline
-element should conform to the 'IPipelineElement' interface.
+eg. ``Products.ZCTextIndex.Lexicon.py``.  A pipeline
+element should conform to the ``IPipelineElement`` interface.
 
-To create a ZCTextIndex, you first have to create a Lexicon
+To create a **ZCTextIndex**, you first have to create a Lexicon
 object.  Multiple ZCTextIndexes can share the same lexicon. 
 
 Searching Field Indexes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-*FieldIndexes* have a different aims than ZCTextIndexes.  A ZCTextIndex
+**FieldIndexes** have different aims than ZCTextIndexes.  A ZCTextIndex
 will treat the value it finds in your object, for example the
-contents of a News Item, like text.  This means that it breaks
+contents of a news item, like text.  This means that it breaks
 the text up into words and indexes all the individual words.
 
 A FieldIndex does not break up the value it finds.  Instead, it
@@ -766,16 +766,16 @@ tracking object attributes that contain simple values, such as
 numbers or short string identifiers.
 
 In the news item example, you created a FieldIndex
-'author'.  With the existing search form, this field is
+``author``.  With the existing search form, this field is
 not very useful.  Unless you know exactly the name of the author
 you are looking for, you will not get any results.  It would be
-better to be able to select from a list of all the *unique*
+better to be able to select from a list of all the **unique**
 authors indexed by the author index.
 
-There is a special method on the ZCatalog that does exactly this
-called 'uniqueValuesFor'.  The 'uniqueValuesFor' method returns
+There is a special method on the **ZCatalog** that does exactly this
+called ``uniqueValuesFor``.  The ``uniqueValuesFor`` method returns
 a list of unique values for a certain index.  Let's change your
-search form and replace the original 'author' input box
+search form and replace the original ``author`` input box
 with something a little more useful::
 
   <html><body>
@@ -797,14 +797,13 @@ with something a little more useful::
   <tr><th>Date</th>
   <td><input name="date_index" width=30 value=""></td></tr>
   <tr><td colspan=2 align=center>
-  <input type="SUBMIT" name="SUBMIT" value="Submit Query">
+  <input type="submit" name="SUBMIT" value="Submit Query">
   </td></tr>
   </table>
   </form>
   </body></html>
 
-The new, important bit of code added to the search form 
-is::
+The new, important bit of code added to the search form is::
 
     <select name="author:list" size="6" multiple>             
       <option 
@@ -814,21 +813,21 @@ is::
       </option>
     </select>
 
-In this example, you are changing the form element 'author' from
+In this example, you are changing the form element ``author`` from
 just a simple text box to an HTML multiple select box.  This box
 contains a unique list of all the authors that are indexed in
-the 'author' FieldIndex.  When the form gets submitted, the
+the ``author`` FieldIndex.  When the form gets submitted, the
 select box will contain the exact value of an authors name, and
 thus match against one or more of the news objects.  Your search
 form should look now like the figure below.
 
 .. figure:: Figures/uniqueauthorsform.png
 
-   Range searching and unique Authors
+   Unique Authors
 
 Be careful if you catalog objects with many different values; you
 can easily end up with a form with a thousand items in the drop-down
-menu. Also, items must match *exactly*, so strings that differ
+menu. Also, items must match **exactly**, so strings that differ
 in capitalization will be considered different.
 
 That's it.  You can continue to extend this search form using HTML
@@ -838,42 +837,42 @@ we'll show you how to use the next kind of index, keyword indexes.
 Searching KeywordIndexes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-A *KeywordIndex* indexes a sequence of keywords for objects and
+A **KeywordIndex** indexes a sequence of keywords for objects and
 can be queried for any objects that have one or more of those
 keywords.
 
-Suppose that you have a number of Image objects that have a
-'keywords' property. The 'keywords' property is a lines property
-that lists the relevant keywords for a given Image, for example,
-"Portraits", "19th Century", and "Women" for a picture of Queen
+Suppose that you have a number of image objects that have a
+**keywords** property. The **keywords** property is a lines property
+that lists the relevant keywords for a given image, for example,
+``Portraits``, ``19th Century``, and ``Women`` for a picture of Queen
 Victoria.  
 
-The keywords provide a way of categorizing Images. Each Image can
-belong in one or more categories depending on its 'keywords'
+The keywords provide a way of categorizing images. Each image can
+belong in one or more categories depending on its **keywords**
 property. For example, the portrait of Queen Victoria belongs to
 three categories and can thus be found by searching for any of the
 three terms. 
 
-You can use a *Keyword* index to search the 'keywords' property. Define
-a *Keyword* index with the name 'keywords' on your ZCatalog. Then
-catalog your Images. Now you should be able to find all the Images
+You can use a **Keyword** index to search the **keywords** property. Define
+a **Keyword** index with the name ``keywords`` on your **ZCatalog**. Then
+catalog your images. Now you should be able to find all the images
 that are portraits by creating a search form and searching for
-"Portraits" in the 'keywords' field. You can also find all pictures
-that represent 19th Century subjects by searching for "19th
-Century". 
+``Portraits`` in the **keywords** field. You can also find all pictures
+that represent 19th Century subjects by searching for ``19th
+Century``. 
 
-It's important to realize that the same Image can be in more
+It's important to realize that the same image can be in more
 than one category. This gives you much more flexibility in
 searching and categorizing your objects than you get with a
 FieldIndex. Using a FieldIndex your portrait of Queen Victoria
 can only be categorized one way.  Using a KeywordIndex it can be
 categorized a couple different ways.
 
-Often you will use a small list of terms with KeywordIndexes.
-In this case you may want to use the 'uniqueValuesFor' method to
+Often you will use a small list of terms with **KeywordIndexes**.
+In this case you may want to use the ``uniqueValuesFor`` method to
 create a custom search form. For example here's a snippet of a
 Page Template that will create a multiple select box for all the
-values in the 'keywords' index::
+values in the **keywords** index::
 
   <select name="keywords:list" multiple>
     <option 
@@ -885,7 +884,7 @@ values in the 'keywords' index::
 
 Using this search form you can provide users with a range of
 valid search terms. You can select as many keywords as you want and
-Zope will find all the Images that match one or more of your
+Zope will find all the images that match one or more of your
 selected keywords. Not only can each object have several indexed
 terms, but you can provide several search terms and find all
 objects that have one or more of those values.
@@ -895,9 +894,9 @@ Searching Path Indexes
 
 Path indexes allow you to search for objects based on their
 location in Zope. Suppose you have an object whose path is
-'/zoo/animals/Africa/tiger.doc'. You can find this object with
-the path queries: '/zoo', or '/zoo/animals', or
-'/zoo/animals/Africa'. In other words, a path index allows you
+``/zoo/animals/Africa/tiger.doc``. You can find this object with
+the path queries: ``/zoo``, or ``/zoo/animals``, or
+``/zoo/animals/Africa``. In other words, a path index allows you
 to find objects within a given folder (and below).
 
 If you place related objects within the same folders, you can
@@ -912,15 +911,15 @@ use path indexes to quickly locate these objects. For example::
     </a>
   </p>    
 
-This query searches a ZCatalog for all images that are located
-within the '/Zoo/Lizards' folder and below. It creates a link to
+This query searches a **ZCatalog** for all images that are located
+within the ``/Zoo/Lizards`` folder and below. It creates a link to
 each image.  To make this work, you will have to create a
-FieldIndex 'meta_type' and a Metadata entries for 'title'.
+FieldIndex ``meta_type`` and a meta data entry for ``title``.
 
 Depending on how you choose to arrange objects in your site, you
 may find that a path indexes are more or less effective.  If you
 locate objects without regard to their subject (for example, if
-objects are mostly located in user "home" folders) then path
+objects are mostly located in user **home folders**) then path
 indexes may be of limited value.  In these cases, key word and
 field indexes will be more useful.
 
