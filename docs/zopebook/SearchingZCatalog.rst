@@ -390,37 +390,37 @@ Next let's look more closely at how to search a **ZCatalog**.
 Searching ZCatalogs
 -------------------
 
-You can search a ZCatalog by passing it search terms. These search
+You can search a **ZCatalog** by passing it search terms. These search
 terms describe what you are looking for in one or more indexes. The
-ZCatalog can glean this information from the web request, or you
+**ZCatalog** can extract this information from the web request, or you
 can pass this information explicitly from DTML or Python. In
-response to a search request, a ZCatalog will return a list of
+response to a search request, a **ZCatalog** will return a list of
 records corresponding to the cataloged objects that match the
 search terms.
 
 Searching with Forms
 ~~~~~~~~~~~~~~~~~~~~
 
-In this chapter you used the *Z Search Interface* to
-automatically build a Form/Action pair to query a ZCatalog (the
+In this chapter you used the **Z Search Interface** to
+automatically build a Form/Action pair to query a **ZCatalog** (the
 Form/Action pattern is discussed in the chapter entitled
-`Advanced Page Templates <AdvZPT.html>`_ ).  The *Z Search
-Interface* builds a very simple form and a very simple
+`Advanced Page Templates <AdvZPT.html>`_ ).  The **Z Search
+Interface** builds a very simple form and a very simple
 report. These two methods are a good place to start
-understanding how ZCatalogs are queried and how you can
+understanding how **ZCatalogs** are queried and how you can
 customize and extend your search interface.
 
-Suppose you have a ZCatalog that holds news items named
-'NewsCatalog'.  Each news item has 'content', an 'author' and a
-'date' attribute.  Your ZCatalog has three indexes that
-correspond to these attributes, namely "contentTextIdx",
-"author" and "date".  The contents index is a ZCTextIndex, and
+Suppose you have a **ZCatalog** that holds news items named
+**NewsCatalog**.  Each news item has ``content``, an ``author`` and a
+``date`` attribute.  Your **ZCatalog** has three indexes that
+correspond to these attributes, namely ``contentTextIdx``,
+``author`` and ``date``.  The contents index is a ZCTextIndex, and
 the author and date indexes are a FieldIndex and a DateIndex.
 For the ZCTextIndex you will need a ZCTextIndexLexicon, and to
-display the search results in the 'Report' template, you should
-add the 'author', 'date' and 'absolute_url' attributes as
-Metadata.  Here is a search form that would allow you to query
-such a ZCatalog::
+display the search results in the **Report** template, you should
+add the ``author``, ``date`` and ``absolute_url`` attributes as
+meta data.  Here is a search form that would allow you to query
+such a **ZCatalog**::
 
   <html><body>
   <form action="Report" method="get">
@@ -433,15 +433,15 @@ such a ZCatalog::
   <tr><th>Date</th>
   <td><input name="date" width=30 value=""></td></tr>
   <tr><td colspan=2 align=center>
-  <input type="SUBMIT" name="SUBMIT" value="Submit Query">
+  <input type="submit" name="SUBMIT" value="Submit Query">
   </td></tr>
   </table>
   </form>
   </body></html>
 
-This form consists of three input boxes named 'contentTextIdx',
-'author', and 'date'.  These names must match the names of the
-ZCatalog's indexes for the ZCatalog to find the search terms.
+This form consists of three input boxes named ``contentTextIdx``,
+``author``, and ``date``.  These names must match the names of the
+**ZCatalog's** indexes for the **ZCatalog** to find the search terms.
 Here is a report form that works with the search form::
 
   <html>
@@ -471,52 +471,52 @@ Here is a report form that works with the search form::
 
 There are a few things going on here which merit closer
 examination.  The heart of the whole thing is in the definition
-of the 'searchResults' variable::
+of the ``searchResults`` variable::
 
   <body tal:define="searchResults context/NewsCatalog;">
 
-This calls the 'NewsCatalog' ZCatalog.  Notice how the form
-parameters from the search form ( 'contentTextIdx' ,
-'author', 'date' ) are not mentioned here at all.
+This calls the ``NewsCatalog`` ZCatalog.  Notice how the form
+parameters from the search form (``contentTextIdx``,
+``author``, ``date``) are not mentioned here at all.
 Zope automatically makes sure that the query parameters from the
-search form are given to the ZCatalog.  All you have to do is
-make sure the report form calls the ZCatalog.  Zope locates the
-search terms in the web request and passes them to the ZCatalog.
+search form are given to the **ZCatalog**.  All you have to do is
+make sure the report form calls the **ZCatalog**.  Zope locates the
+search terms in the web request and passes them to the **ZCatalog**.
 
-The ZCatalog returns a sequence of *Record Objects* (just like
-ZSQL Methods).  These record objects correspond to *search
-hits*, which are objects that match the search criteria you
+The **ZCatalog** returns a sequence of **Record Objects** (just like
+ZSQL Methods).  These record objects correspond to **search
+hits**, which are objects that match the search criteria you
 typed in. For a record to match a search, it must match all
 criteria for each specified index. So if you enter an author and
-some search terms for the contents, the ZCatalog will only return
+some search terms for the contents, the **ZCatalog** will only return
 records that match both the author and the contents.
 
 ZSQL Record objects have an attribute for every column in the
-database table.  Record objects for ZCatalogs work very
-similarly, except that a ZCatalog Record object has an attribute
-for every column in the Metadata Table.  In fact, the purpose of
-the Metadata Table is to define the schema for the Record
-objects that ZCatalog queries return.
+database table.  Record objects for **ZCatalogs** work very
+similarly, except that a **ZCatalog** Record object has an attribute
+for every column in the **Metadata Table**.  In fact, the purpose of
+the **Metadata Table** is to define the schema for the Record
+objects that **ZCatalog** queries return.
 
 Searching from Python
 ~~~~~~~~~~~~~~~~~~~~~
 
-Page Templates make querying a ZCatalog from a form very simple.
+Page Templates make querying a **ZCatalog** from a form very simple.
 For the most part, Page Templates will automatically make sure
-your search parameters are passed properly to the ZCatalog.
+your search parameters are passed properly to the **ZCatalog**.
 
-Sometimes though you may not want to search a ZCatalog from a web
+Sometimes though you may not want to search a **ZCatalog** from a web
 form; some other part of your application may want to query a
-ZCatalog.  For example, suppose you want to add a sidebar to the
+**ZCatalog**.  For example, suppose you want to add a sidebar to the
 Zope Zoo that shows news items that only relate to the animals
 in the section of the site that you are currently looking at.
-As you've seen, the Zope Zoo site is built up from Folders that
-organize all the sections according to animal.  Each Folder's id
+As you've seen, the Zope Zoo site is built up from folders that
+organize all the sections according to animal.  Each folder's id
 is a name that specifies the group or animal the folder
 contains.  Suppose you want your sidebar to show you all the
 news items that contain the id of the current section.  Here is
-a Script called 'relevantSectionNews' that queries the news
-ZCatalog with the currentfolder's id::
+a script called ``relevantSectionNews`` that queries the news
+**ZCatalog** with the current folder's id::
 
   ## Script (Python) "relevantSectionNews"
   ##
@@ -524,14 +524,14 @@ ZCatalog with the currentfolder's id::
   id=context.getId()
   return context.NewsCatalog({'contentTextIdx' : id})
 
-This script queries the 'NewsCatalog' by calling it like a
-method.  ZCatalogs expect a *mapping* as the first argument when
+This script queries the ``NewsCatalog`` by calling it like a
+method.  **ZCatalogs** expect a **mapping** as the first argument when
 they are called.  The argument maps the name of an index to the
 search terms you are looking for.  In this case, the
-'contentTextIdx' index will be queried for all news items that
-contain the name of the current Folder.  To use this in your
+``contentTextIdx`` index will be queried for all news items that
+contain the name of the current folder.  To use this in your
 sidebar place you could insert this snippet where appropriate in
-the main ZopeZoo Page Template::
+the main Zope Zoo Page Template::
 
   ...
   <ul>
@@ -543,25 +543,28 @@ the main ZopeZoo Page Template::
   </ul>
   ...     
 
-This template assumes that you have defined 'absolute_url' and
-'title' as Metadata columns in the 'NewsCatalog'. Now, when you
+This template assumes that you have defined ``absolute_url`` and
+``title`` as meta data columns in the ``NewsCatalog``. Now, when you
 are in a particular section, the sidebar will show a simple list
 of links to news items that contain the id of the current animal
-section you are viewing.  (Note: in reality, you shouldn't use
-an index called 'absolute_url', but should rely instead on the
-getURL() method call below, as that works even in virtual hosting
-settings.
+section you are viewing.
+
+.. note::
+
+   In reality, you shouldn't use an index called ``absolute_url``,
+   but should rely instead on the ``getURL()`` method call below,
+   as that works even in virtual hosting settings.
 
 Methods of Search Results
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The list of results you get for a catalog search is actually
-a list of Catalog Brain objects.  In addition to having an
-attribute for each item of your metadata, they also have
+a list of **Catalog Brain** objects.  In addition to having an
+attribute for each item of your meta data, they also have
 several useful methods:
 
 has_key(key)
-  Returns true if the result object has a meta-data element 
+  Returns true if the result object has a meta data element 
   named key.
 
 getPath()
@@ -571,26 +574,26 @@ getPath()
 
 getURL()
   Returns the URL of the result object.  You should use this
-  instead of creating a metadata element for 'absolute_url',
-  This can differ from getPath() if you are using virtual hosting.
+  instead of creating a meta data element for ``absolute_url``.
+  This can differ from ``getPath()`` if you are using virtual hosting.
 
 getObject()
   Returns the actual Zope object from the result object.  This
   is useful if you want to examine or show an attribute or
-  method of the object that isn't in the metadata--once we have
+  method of the object that isn't in the meta data. Once we have
   the actual object, we can get any normal attribute or method
   of it.  However, be careful not to use this instead of defining
-  metadata.  Metadata, being stored in the catalog, is 
+  meta data.  Meta data, being stored in the catalog, is 
   pre-calculated and quickly accessed; getting the same type of
-  information by using 'getObject().attribute_name' requires
+  information by using ``getObject().attribute_name`` requires
   actually pulling your real object from the ZODB and may be
   a good deal slower.  On the other hand, stuffing everything
-  you might ever need into metadata will slow down all querying
+  you might ever need into meta data will slow down all querying
   of your catalog, so you'll want to strike a balance. A good
-  idea is to list in metadata those things that would normally
+  idea is to list in meta data those things that would normally
   appear on a tabular search results form; other things that
   might be needed less commonly (and for fewer result objects
-  at a time) can be retried with getObject.
+  at a time) can be retrieved with getObject.
 
 getRID()
   Returns the Catalog's record id for the result object.  This
