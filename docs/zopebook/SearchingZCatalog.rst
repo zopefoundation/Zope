@@ -1331,32 +1331,32 @@ Advanced Catalog Topics
 Sorting
 ~~~~~~~
 
-When you execute a ZCatalog call, your result set may or may not
+When you execute a **ZCatalog** call, your result set may or may not
 be returned in a particular order:
 
 - If your query contains no text index fields, your results will
   not be sorted in any particular order.  For example, with a
-  query based off a KeywordIndex, or query based off both
-  a KeywordIndex and a DateIndex, you will get a indeterminate
+  query based off a **KeywordIndex**, or query based off both
+  a **KeywordIndex** and a **DateIndex**, you will get a indeterminate
   ordering.
 
 - For results that include a text index, your results will be
-  returned in order of revelance of the text search.  That is,
+  returned in order of relevance of the text search.  That is,
   the result set will be sorted based how often
   search words appear in the indexes.  A search for the word
-  'frog' against a text index will give priority toward an object
+  ``frog`` against a text index will give priority toward an object
   that uses that word many times compared with
   an object that uses that fewer.  This is
   a simplified version of the way that many web search engines
-  work: the more "relevant" your keywords are to an item, the
+  work: the more **relevant** your keywords are to an item, the
   higher its ordering in the results. In particular, with
-  the ZCTextIndex, you have a choice between two algorithms
+  the **ZCTextIndex**, you have a choice between two algorithms
   for how to weight the sorting:
 
   - Okapi: is the best general choice. It does very well
-    when comparing an ordinary "human query" against a longer
+    when comparing an ordinary **human query** against a longer
     text field. For example, querying a long description field
-    for a short query like 'indoor OR mammal' would work very
+    for a short query like ``indoor OR mammal`` would work very
     well.
 
   - Cosine: is better suited for when the length of the
@@ -1375,8 +1375,8 @@ normal Python syntax::
 
 This can be, however, very inefficient.
 
-When results are returned by the ZCatalog, they are in a special
-form called a `LazyResults` set.  This means that Zope hasn't
+When results are returned by the **ZCatalog**, they are in a special
+form called a ``LazyResults`` set.  This means that Zope hasn't
 gone to the trouble of actually creating the entire list, but
 has just sketched out the list and will fill it in at the exact
 point that you ask for each item.  This is helpful, since it lets
@@ -1398,18 +1398,18 @@ sort_on
   The field name to sort the results on
 
 sort_order
-  'ascending' or 'descending', with the default
-    being 'ascending. Note that you can also use 'reverse'
-    as a synonym for 'descending'
+  ``ascending`` or ``descending``, with the default
+  being ``ascending``. Note that you can also use ``reverse``
+  as a synonym for ``descending``
 
 sort_limit
   Since you're likely to only want to use the
-    first 20 or 50 or so items, we can give a hint to the 
-    ZCatalog not to bother to sort beyond this by passing along
-    a 'sort_limit' parameter, which is the number of records
-    to sort.
+  first 20 or 50 or so items, we can give a hint to the 
+  **ZCatalog** not to bother to sort beyond this by passing along
+  a ``sort_limit`` parameter, which is the number of records
+  to sort.
 
-For example, assuming we have a 'latin_name' FieldIndex on our
+For example, assuming we have a ``latin_name`` FieldIndex on our
 animals, we can sort them by name in a PythonScript with::
 
   zcat=context.AnimalCatalog
@@ -1435,14 +1435,14 @@ or, combining this with a query restriction::
         'sort_order':'descending',
         'sort_limit':20})
 
-This gives us all records with the 'title' "frog", sorted
-by 'latin_name', and doesn't bother to sort after the first
+This gives us all records with the **title** ``frog``, sorted
+by ``latin_name``, and doesn't bother to sort after the first
 20 records.
 
-Note that using 'sort_limit' does not guarantee that we'll get
-exactly that number of records--we may get fewer if they're
+Note that using **sort_limit** does not guarantee that we'll get
+exactly that number of records - we may get fewer if they're
 aren't that many matching or query, and we may get more. 
-'sort_limit' is merely a request for optimization. To
+**sort_limit** is merely a request for optimization. To
 ensure that we get no more than 20 records, we'll want to 
 truncate our result set::
 
@@ -1454,14 +1454,13 @@ truncate our result set::
 Unsortable Fields
 %%%%%%%%%%%%%%%%%
 
-In order to sort on a index, we have to actually keep the
+In order to sort on an index, we have to actually keep the
 full attribute or method value in that index.  For many
 index types, such as DateIndex or FieldIndex, this is
 normally done.  However, for text indexes, such as
-ZCTextIndex, TextIndex (deprecated), and TextIndexNG
-(described below), the index doesn't keep the actual
+ZCTextIndex, the index doesn't keep the actual
 attribute or method results in the index.  Instead, it
-cleans up the input (often removing "stop words",
+cleans up the input (often removing **stop words**,
 normalizing input, lowercasing it, removing duplicates,
 etc., depending on the options chosen.  So a term paper
 with an attribute value of::
@@ -1473,11 +1472,11 @@ could actually be indexed as :
   ( 'critique', 'tora' )
 
 once the common stop words ("a", "of") are removed,
-it is lowercased and de-deduplicated.  (In reality,
+it is lowercased and deduplicated.  In reality,
 the indexed information is much richer, as it keeps
 track of things like how often words appear, and which
-words appear earlier in the the stream, but this gives
-you an idea of what is stored.)
+words appear earlier in the stream, but this gives
+you an idea of what is stored.
 
 This is a necessary and positive step to make the index
 use less storage and less memory, and increases search
@@ -1485,23 +1484,18 @@ results, as your site user doesn't have to worry about
 getting incidental words ("the", "a", etc.) correct,
 nor about capitalization, etc.
 
-**Note:** As we'll see, TextIndexNG indexes can even
-do advanced tricks, such as normalizing a word and
-stemming it, so that a search for "vehicles" could
-find "vehicle" or even "car".
-
 However, this process means that the index no longer knows
 the actual value, and, therefore, can't sort on it.
-Due to this, it is not possible to use the 'sort_on'
+Due to this, it is not possible to use the **sort_on**
 feature with text indexes types.
 
 To work around this, you can either sort the results of
-the query using the normal python 'sort()' feature
+the query using the normal python ``sort()`` feature
 (shown above), or you can create an additional non-text
 index on the field, described below, in the section
-'Indexing a Field with Two Index Types'.
+**Indexing a Field with Two Index Types**.
 
-Similarly, the API call 'uniqueValuesFor', described above,
+Similarly, the API call ``uniqueValuesFor``, described above,
 cannot be used on text-type indexes, since the exact
 values are not kept.
 
@@ -1510,7 +1504,7 @@ Searching in More Than One Index Using "OR"
 
 As mentioned, if you search in more than one index,
 you must meet your criteria for each index you search
-in, i.e., there is an implied 'AND' between each of the
+in, i.e., there is an implied ``AND`` between each of the
 searches::
 
   # find sunset art by Van Gogh
@@ -1521,7 +1515,7 @@ This query finds all sunset art by Van Gogh: both of
 these conditions must be true.
 
 There is no way to directly search in more than one
-index without this 'AND' condition; instead, you can
+index without this ``AND`` condition; instead, you can
 perform two catalog searches and concatenate their
 results. For example::
 
@@ -1534,7 +1528,7 @@ This method, however, does not remove duplicates, so
 a painting of a sunset by VanGogh would appear twice.
 
 For alternate strategies about searching in two places,
-see 'PrincipiaSearchSource' and 'FieldedTextIndex', below,
+see **PrincipiaSearchSource** and **FieldedTextIndex**, below,
 both of which can be used as possible workarounds.
 
 Indexing a Field With Two Index Types
@@ -1542,39 +1536,39 @@ Indexing a Field With Two Index Types
 
 Since the different indexes act differently, it can be advantageous
 to have the same attribute indexed by more than one index.  For
-example, our animals have a 'latin_name' attribute that gives their
+example, our animals have a **latin_name** attribute that gives their
 formal genus/species latin name.  A user should be able to search
-that trying to match a name *exactly*, and we should be able to
-sort results based on that, both of which suggest a FieldIndex.  In
+that trying to match a name **exactly**, and we should be able to
+sort results based on that, both of which suggest a **FieldIndex**.  In
 addition, though, users may want to search that like a text field,
 where they can match parts of words, in which case we would a
-ZCTextIndex (or TextIndexNG, described below).
+**ZCTextIndex**.
 
 In a case like this, a good strategy is to create one index for the
-FieldIndex on 'latin_name'.  Let's call that index 'latin_name'.
-Then, you can create a ZCTextIndex that uses a new feature: the
+FieldIndex on **latin_name**.  Let's call that index ``latin_name``.
+Then, you can create a **ZCTextIndex** that uses a new feature: the
 ability to have the indexed attribute be different than the index
 name itself.
 
-When you create the second index, the ZCTextIndex, you can give it
-the Id 'latin_name_text', and have the 'Indexed attributes' field
-be 'latin_name'.  Now, when we catalog our animals, their
-'latin_name' attribute is indexed in two ways: once, as a
-FieldIndex, that we can sort against and match exactly, and once as
-a ZCTextIndex, that we can search like a text field with full text
+When you create the second index, the **ZCTextIndex**, you can give it
+the id ``latin_name_text``, and have the **Indexed attributes** field
+be ``latin_name``.  Now, when we catalog our animals, their
+``latin_name`` attribute is indexed in two ways: once, as a
+`**FieldIndex**, that we can sort against and match exactly, and once as
+a **ZCTextIndex**, that we can search like a text field with full text
 search.
 
-The second index has a different name, so when make our catalog
+The second index has a different name, so when we make our catalog
 call, we'll need to be sure to use that name if we want to search
 it like a text field::
 
   # search latin_name
   zcat=context.AnimalCatalog
-  exact_results=zcat({'latin_name':'homo sapien'})
+  exact_results=zcat({'latin_name':'homo sapiens'})
   fuzzy=zcat({'latin_name_text':'sap*'})
 
 Note that a good strategy is to have the search be against the
-ZCTextIndex, but sort it by the FieldIndex::
+**ZCTextIndex**, but sort it by the **FieldIndex**::
 
   # free text search, sorted
   zcat=context.AnimalCatalog
@@ -1586,42 +1580,42 @@ PrincipiaSearchSource
 
 You can choose to create indexes on any attribute or method that
 you would find useful to search on; however, one that is
-generally helpful is 'PrincipiaSearchSource'.  Several of the
+generally helpful is **PrincipiaSearchSource**.  Several of the
 built-in Zope objects, such as DTMLDocuments, and many add-on
-objects to Zope have a 'PrincipiaSearchSource' attribute or
+objects to Zope have a **PrincipiaSearchSource** attribute or
 method that returns a value that is meant to be used for general
-purpose searching.  Traditionally, 'PrincipiaSearchSource'
+purpose searching.  Traditionally, **PrincipiaSearchSource**
 would include the text in an object's title, it's body, and
 anywhere else you'd want to be able to search. 
 
 For example, if you downloaded a Zope product that managed
 our zoo, and it had an animal type that you could add to your
 site, this animal type would probably expose a 
-PrincipiaSearchSource that looked something like this::
+**PrincipiaSearchSource** that looked something like this::
 
   def PrincipiaSearchSource(self):
-    "used for general searching for animal"
+      """used for general searching for animal"""
     return self.title + ' ' + self.latin_name + ' ' \
          + self.description + ' ' + self.environment
 
-So that, if you create a 'PrincipiaSearchSource' index and
+So that, if you create a **PrincipiaSearchSource** index and
 search again that, you can find this animal by using words
-that are in it's 'title', 'latin_name', 'description', or
-'environment', without having to worry about which field,
+that are in it's ``title``, ``latin_name``, ``description``, or
+``environment``, without having to worry about which field,
 exactly, they're in.  This is similar to searching with a
 web search engine, in that you use can use a single text string
-to find the "right" information, without needing to know about
+to find the **right** information, without needing to know about
 the type of object you're looking for.  It is especially
 helpful in allowing you to create a site-wide search: searching
-animals specifically by their 'latin_name' or 'environment'
+animals specifically by their ``latin_name`` or ``environment``
 might be useful for a biologist in the right section of your
 site, but for a general purpose visitor, they might like
-to search using the phrase "jungle" and find results without
-having to know to search for that in the 'environment' field
+to search using the phrase ``jungle`` and find results without
+having to know to search for that in the ``environment`` field
 of a search form.
 
 If you create custom types by using more advanced techniques described
-elsewhere, you should create a PrincipiaSearchSource method that returns
+elsewhere, you should create a **PrincipiaSearchSource** method that returns
 appropriate object-wide text searching capabilities.
 
 ZCatalogs and CMF/Plone
