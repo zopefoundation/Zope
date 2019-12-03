@@ -1553,7 +1553,7 @@ When you create the second index, the **ZCTextIndex**, you can give it
 the id ``latin_name_text``, and have the **Indexed attributes** field
 be ``latin_name``.  Now, when we catalog our animals, their
 ``latin_name`` attribute is indexed in two ways: once, as a
-`**FieldIndex**, that we can sort against and match exactly, and once as
+**FieldIndex**, that we can sort against and match exactly, and once as
 a **ZCTextIndex**, that we can search like a text field with full text
 search.
 
@@ -1660,15 +1660,15 @@ general-text searched.
 Conclusion
 ----------
 
-The cataloging features of ZCatalog allow you to search your objects
+The cataloging features of **ZCatalog** allow you to search your objects
 for certain attributes very quickly.  This can be very useful for sites
 with lots of content that many people need to be able to search in an
 efficient manner.
 
-Searching the ZCatalog works a lot like searching a relational
+Searching the **ZCatalog** works a lot like searching a relational
 database, except that the searching is more object-oriented.  Not all
 data models are object-oriented however, so in some cases you will want
-to use the ZCatalog, but in other cases you may want to use a
+to use the **ZCatalog**, but in other cases you may want to use a
 relational database.  The next chapter goes into more details about how
 Zope works with relational databases, and how you can use relational
 data as objects in Zope.
