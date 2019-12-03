@@ -926,45 +926,45 @@ field indexes will be more useful.
 Searching DateIndexes
 ~~~~~~~~~~~~~~~~~~~~~
 
-DateIndexes work like FieldIndexes, but are optimised for
+**DateIndexes** work like FieldIndexes, but are optimized for
 DateTime values.  To minimize resource usage, DateIndexes have a
 resolution of one minute, which is considerably lower than the
 resolution of DateTime values.
 
-DateIndexes are used just like FieldIndexes; below in the
-section on "Advanced Searching with Records" we present an
+**DateIndexes** are used just like FieldIndexes; below in the
+section on **Advanced Searching with Records** we present an
 example of searching them.
 
 Searching DateRangeIndexes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-DateRangeIndexes are specialised for searching for ranges of
+**DateRangeIndexes** are specialized for searching for ranges of
 DateTime values.  An example application would be NewsItems
-which have two DateTime attributes 'effective' and 'expiration',
+which have two DateTime attributes ``effective`` and ``expiration``,
 and which should only be published if the current date would
 fall somewhere in between these two date values.  Like
-DateIndexes, DateRangeIndexes have a resolution of one minute. 
+DateIndexes, **DateRangeIndexes** have a resolution of one minute. 
 
-DateRangeIndexes are widely used in CMF and Plone, where
+**DateRangeIndexes** are widely used in CMF and Plone, where
 content is compared to an effective date and an expiration
 date.
 
-DateRangeIndexes also allow one or both of the boundary dates of
+**DateRangeIndexes** also allow one or both of the boundary dates of
 the indexed objects to be left open which greatly simplifies
-application logic when querying for "active" content where expiration
+application logic when querying for **active** content where expiration
 and effective dates are optional.
 
 Searching TopicIndexes
 ~~~~~~~~~~~~~~~~~~~~~~
 
-A TopicIndex is a container for so-called FilteredSets. A
+A **TopicIndex** is a container for so-called FilteredSets. A
 FilteredSet consists of an expression and a set of internal
-ZCatalog document identifiers that represent a pre-calculated
+**ZCatalog** document identifiers that represent a pre-calculated
 result list for performance reasons. Instead of executing the
-same query on a ZCatalog multiple times it is much faster to use
+same query on a **ZCatalog** multiple times it is much faster to use
 a TopicIndex instead.
 
-TopicIndexes are also useful for indexing boolean attributes or
+**TopicIndexes** are also useful for indexing boolean attributes or
 attributes where only one value is queried for. They can do this more
 efficiently then a field index.
 
@@ -977,13 +977,12 @@ True. Uncatalogued objects are removed from the FilteredSet.
 A built-in type of FilteredSet is the PythonFilteredSet - it
 would be possible to construct custom types though.
 
-A PythonFilteredSet evaluates using the eval() function inside the
-context of the FilteredSet class. The object to be indexes must
-be referenced inside the expression using "o.".  Below are some
+A PythonFilteredSet evaluates using the ``eval()`` function inside the
+context of the FilteredSet class. The object to be indexed must
+be referenced inside the expression using ``o``.  Below are some
 examples of expressions.
 
-This would index all DTML 
-Methods::
+This would index all DTML Methods::
 
   o.meta_type=='DTML Method'
 
@@ -992,19 +991,19 @@ title::
 
   o.isPrincipiaFolderish and o.title
 
-Querying of TopicIndexes is done much in the same way as with
+Querying of **TopicIndexes** is done much in the same way as with
 other Indexes.  Eg., if we named the last FilteredSet above
-'folders_with_titles', we could query our TopicIndex with a
+``folders_with_titles``, we could query our TopicIndex with a
 Python snippet like::
 
   zcat = context.AnimalCatalog
   results = zcat(topicindex='folders_with_titles')
 
-Provided our 'AnimalCatalog' contains a TopicIndex 'topicindex',
-this would return all folderish objects in 'AnimalCatalog' which
+Provided our **AnimalCatalog** contains a TopicIndex ``topicindex``,
+this would return all folderish objects in **AnimalCatalog** which
 had a non-empty title.  
 
-TopicIndexes also support the 'operator' parameter with Records.
+**TopicIndexes** also support the ``operator`` parameter with Records.
 More on Records below.
 
 Advanced Searching with Records
@@ -1026,14 +1025,13 @@ to the catalog instead of a simple query string.
 KeywordIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-'query'
- Either a sequence of words or a single word.
- (mandatory)
+query
+  Either a sequence of words or a single word (mandatory)
 
-'operator'
- Specifies whether all keywords or only one need
- to match. Allowed values: 'and', 'or'. (optional, default:
- 'or')
+operator
+  Specifies whether all keywords or only one need
+  to match. Allowed values: ``and``, ``or`` (optional, default:
+  ``or``)
 
 For example::
 
@@ -1045,33 +1043,33 @@ For example::
                                        'operator':'and'})
 
 The second query matches objects that have both the keywords
-"big" and "shiny". Without using the record syntax you can
+``big`` and ``shiny``. Without using the record syntax you can
 only match objects that are big or shiny.
 
 FieldIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-'query'
+query
   Either a sequence of objects or a single value to be
   passed as query to the index (mandatory)
 
-'range'
-  Defines a range search on a Field Index (optional, default: not set).
+range
+  Defines a range search on a FieldIndex (optional, default: not set)
 
   Allowed values:
 
-    'min'
+    min
       Searches for all objects with values larger than
-      the minimum of the values passed in the 'query' parameter.
+      the minimum of the values passed in the ``query`` parameter.
 
-    'max'
+    max
       Searches for all objects with values smaller than
-      the maximum of the values passed in the 'query' parameter.
+      the maximum of the values passed in the ``query`` parameter.
 
-    'min:max'
+    min:max
       Searches for all objects with values smaller than the maximum of the
-      values passed in the 'query' parameter and larger than the minimum of
-      the values passwd in the 'query' parameter. 
+      values passed in the ``query`` parameter and larger than the minimum of
+      the values passed in the ``query`` parameter. 
 
 For example, here is a PythonScript snippet using a range 
 search::
@@ -1083,9 +1081,9 @@ search::
                    'range': 'min'}
               )
 
-This query matches all objects in the AnimalCatalog which have a
+This query matches all objects in the **AnimalCatalog** which have a
 population count greater than 5 (provided that there is a
-FieldIndex 'population_count' and an attribute 'population_count'
+FieldIndex ``population_count`` and an attribute ``population_count``
 present).
 
 Or::
@@ -1097,96 +1095,96 @@ Or::
                    'range': 'min:max'}
               )
 
-This query mathches all animals with population count
+This query matches all animals with population count
 between 5 and 10 (provided that the same FieldIndex
-'population_count' indexing the attribute 'population_count'.)
+``population_count`` indexing the attribute ``population_count``.)
 
 Path Index Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-'query'
-  Path to search for either as a string (e.g. "/Zoo/Birds") or list (e.g.
-  ["Zoo", "Birds"]). (mandatory)
+query
+  Path to search for either as a string (e.g. ``/Zoo/Birds``) or list (e.g.
+  ``["Zoo", "Birds"]``) (mandatory)
 
-'level'
-  The path level to begin searching at.  Level defaults to 0, which means
-  searching from the root.  A level of -1 means start from anywhere in the
+level
+  The path level to begin searching at.  Level defaults to ``0``, which means
+  searching from the root.  A level of ``-1`` means start from anywhere in the
   path. 
 
 Suppose you have a collection of objects with these paths:
 
-- '/aa/bb/aa'
+- ``'/aa/bb/aa'``
 
-- '/aa/bb/bb'
+- ``'/aa/bb/bb'``
 
-- '/aa/bb/cc'
+- ``'/aa/bb/cc'``
 
-- '/bb/bb/aa'
+- ``'/bb/bb/aa'``
 
-- '/bb/bb/bb'
+- ``'/bb/bb/bb'``
 
-- '/bb/bb/cc'
+- ``'/bb/bb/cc'``
 
-- '/cc/bb/aa'
+- ``'/cc/bb/aa'``
 
-- '/cc/bb/bb'
+- ``'/cc/bb/bb'``
 
-- '/cc/bb/cc'
+- ``'/cc/bb/cc'``
 
 Here are some examples queries and their results to show how the
-'level' attribute works:
+**level** attribute works:
 
-'query="/aa/bb", level=0'
-  This gives the same behaviour as our previous examples, ie. searching
+``query="/aa/bb", level=0``
+  This gives the same behavior as our previous examples, ie. searching
   absolute from the root, and results in:
 
-  - '/aa/bb/aa'
+  - ``'/aa/bb/aa'``
 
-  - '/aa/bb/bb'
+  - ``'/aa/bb/bb'``
 
-  - '/aa/bb/cc'
+  - ``'/aa/bb/cc'``
 
-'query="/bb/bb", level=0'
+``query="/bb/bb", level=0``
   Again, this returns the default: 
 
-  - '/bb/bb/aa'
+  - ``'/bb/bb/aa'``
 
-  - '/bb/bb/bb'
+  - ``'/bb/bb/bb'``
 
-  - '/bb/bb/cc'
+  - ``'/bb/bb/cc'``
 
-'query="/bb/bb", level=1'
-  This searches for all objects which have '/bb/bb' one level down from
+``query="/bb/bb", level=1``
+  This searches for all objects which have ``'/bb/bb'`` one level down from
   the root:
 
-  - '/aa/bb/bb'
+  - ``'/aa/bb/bb'``
 
-  - '/bb/bb/bb'
+  - ``'/bb/bb/bb'``
 
-  - '/cc/bb/bb'
+  - ``'/cc/bb/bb'``
 
-'query="/bb/bb", level=-1'
-  Gives all objects which have '/bb/bb' anywhere in their path:
+``query="/bb/bb", level=-1``
+  Gives all objects which have ``/bb/bb`` anywhere in their path:
 
-  - '/aa/bb/bb'
+  - ``'/aa/bb/bb'``
 
-  - '/bb/bb/aa'
+  - ``'/bb/bb/aa'``
 
-  - '/bb/bb/bb'
+  - ``'/bb/bb/bb'``
 
-  - '/bb/bb/cc'
+  - ``'/bb/bb/cc'``
 
-  - '/cc/bb/bb'
+  - ``'/cc/bb/bb'``
 
-'query="/xx", level=-1'
-  Returns None
+``query="/xx", level=-1``
+  Returns ``None``
 
 You can use the level attribute to flexibly search different
 parts of the path.
 
-As of Zope 2.4.1, you can also include level information in a
-search without using a record. Simply use a tuple containing the
-query and the level. Here's an example tuple: '("/aa/bb", 1)'.
+You can also include level information in a search without using a record.
+Simply use a tuple containing the query and the level.
+Here's an example tuple: ``("/aa/bb", 1)``.
 
 DateIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1194,40 +1192,39 @@ DateIndex Record Attributes
 The supported Record Attributes are the same as those of the
 FieldIndex:
 
-'query'
+query
   Either a sequence of objects or a single value to be
   passed as query to the index (mandatory)
 
-'range'
-  Defines a range search on a DateIndex (optional,
-  default: not set).
+range
+  Defines a range search on a DateIndex (optional, default: not set)
 
   Allowed values:
 
-    'min'
+    min
       Searches for all objects with values larger than
-      the minimum of the values passed in the 'query' parameter.
+      the minimum of the values passed in the ``query`` parameter.
 
-    'max'
+    max
       Searches for all objects with values smaller than
-      the maximum of the values passed in the 'query' parameter.
+      the maximum of the values passed in the ``query`` parameter.
 
-    'min:max'
+    min:max
       Searches for all objects with values smaller
-      than the maximum of the values passed in the 'query'
-      parameter and larger than the minimum of the values passwd
-      in the 'query' parameter. 
+      than the maximum of the values passed in the ``query``
+      parameter and larger than the minimum of the values passed
+      in the ``query`` parameter. 
 
 As an example, we go back to the NewsItems we created in the
-Section *Searching with Forms*.  For this example, we created
-news items with attributes 'content', 'author', and 'date'.
+Section **Searching with Forms**.  For this example, we created
+news items with attributes ``content``, ``author``, and ``date``.
 Additionally, we created a search form and a report template for
 viewing search results.  
 
 Searching for dates of NewsItems was not very comfortable
 though - we had to type in exact dates to match a document.
 
-With a 'range' query we are now able to search for ranges of
+With a ``range`` query we are now able to search for ranges of
 dates.  Take a look at this PythonScript snippet::
 
   # return NewsItems newer than a week
@@ -1239,8 +1236,8 @@ dates.  Take a look at this PythonScript snippet::
 DateRangeIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-DateRangeIndexes only support the 'query' attribute on Record
-objects.  The 'query' attribute results in the same
+**DateRangeIndexes** only support the ``query`` attribute on Record
+objects.  The ``query`` attribute results in the same
 functionality as querying directly; returning matches where
 the date supplied to the query falls between the start and
 end dates from the indexed object.
@@ -1248,17 +1245,17 @@ end dates from the indexed object.
 TopicIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Like KeywordIndexes, TopicIndexes support the 'operator'
+Like KeywordIndexes, **TopicIndexes** support the ``operator``
 attribute:
 
-'operator'
+operator
   Specifies whether all FieldSets or only one need to match.
-  Allowed values: 'and', 'or'. (optional, default: 'or')
+  Allowed values: ``and``, ``or`` (optional, default: ``or``)
 
 ZCTextIndex Record Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Because ZCTextIndex operators are embedded in the query string,
+Because **ZCTextIndex** operators are embedded in the query string,
 there are no additional Record Attributes for ZCTextIndexes.
 
 Creating Records in HTML
@@ -1279,17 +1276,17 @@ example showing how to create a search form using records::
   </form>
 
 For more information on creating records in HTML see the section
-"Passing Parameters to Scripts" in Chapter 14, Advanced Zope
+**Passing Parameters to Scripts** in Chapter 14, Advanced Zope
 Scripting.
 
 Automatic Cataloging
 --------------------
 
-Automatic Cataloging is an advanced ZCatalog usage pattern that
+**Automatic Cataloging** is an advanced **ZCatalog** usage pattern that
 keeps objects up to date as they are changed. It requires that as
 objects are created, changed, and destroyed, they are
-automatically tracked by a ZCatalog. This usually involves the
-objects notifying the ZCatalog when they are created, changed, or
+automatically tracked by a **ZCatalog**. This usually involves the
+objects notifying the **ZCatalog** when they are created, changed, or
 deleted.
 
 This usage pattern has a number of advantages in comparison to
@@ -1303,7 +1300,7 @@ works well for indexing up to a few thousand objects, but beyond
 that automatic indexing works much better.
 
 If you can trade off memory for time, you can enable
-'Subtransactions' in the 'Advanced' tab of the catalog. This
+**Subtransactions** in the **Advanced** tab of the catalog. This
 commits the work in chunks, reducing memory requirements, but
 taking longer. It is a good solution for mass cataloging with a
 very large number of records.
@@ -1315,8 +1312,7 @@ information sources like message boards.
 
 On the other hand, cataloging a complex object when it changes may be too time
 consuming during operation (especially if the catalog index attempts to
-translate the information, as TextIndexNG, described below, can do with PDF
-files or Microsoft Office files). Some sites may benefit from mass cataloging,
+translate the information). Some sites may benefit from mass cataloging,
 and having a cron job or other scheduled job initiate the mass cataloging every
 night.
 
@@ -1324,7 +1320,7 @@ In standard (non-CMF, non-Plone) Zope, none of the built-in
 object types attempt to automatically catalog themselves. In
 CMF and Plone, the "contentish" object (Documents, News Item,
 Event, etc.) all use automatic cataloging to add themselves
-to the standard CMF catalog, 'portal_catalog'.  The CMF
+to the standard CMF catalog, **portal_catalog**.  CMF
 and especially Plone offer many advantages; if you're interested
 in building a content-oriented site, you should consider
 these technologies.
