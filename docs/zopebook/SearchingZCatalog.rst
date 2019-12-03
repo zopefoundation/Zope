@@ -1622,38 +1622,38 @@ ZCatalogs and CMF/Plone
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The CMF was built from the ground up to understand the
-difference between things that are "content", such as a news item
+difference between things that are **content**, such as a news item
 or press release, and those things that are not, such as
-a DTMLMethod used to show a press release, or a ZCatalog
+a **DTMLMethod** used to show a press release, or a **ZCatalog**
 object.  In addition, the CMF includes several stock items
 that are intended to be used for content, including:
 Document, Event, NewsItem, and others.  These content items
-are already set up for autocataloging, so that any changes
+are already set up for automatic cataloging, so that any changes
 made will appear in the catalog.
 
 In non-CMF Zope, the traditional name for a general-purpose
-catalog is 'Catalog' (though you can always create your own
+catalog is **Catalog**. Though you can always create your own
 catalog with any id you want; we've used the example
-'AnimalCatalog' in this chapter for a special-purpose catalog
-for searching animal-specific info in our zoo.)  Even though
-'Catalog' is the traditional name, Zope does not come with
+**AnimalCatalog** in this chapter for a special-purpose catalog
+for searching animal-specific info in our zoo.  Even though
+**Catalog** is the traditional name, Zope does not come with
 such a catalog in the ZODB already, you have to create it.
 
 In CMF (and Plone, an out-of-the-box portal system built
 on top of the CMF), there is always a catalog created, called
-'portal_catalog', at the root of the CMF site.  All of the
+**portal_catalog**, at the root of the CMF site.  All of the
 built-in content objects (and almost every add-on content
-object for the CMF/Plone) are set to autocatalog to this
-'portal_catalog'.  This is required, since many of the features
+object for the CMF/Plone) are set to automatically catalog to this
+**portal_catalog**.  This is required, since many of the features
 of the CMF and Plone, such as listing current content, finding
-content of correct types, etc., rely on the 'portal_catalog'
+content of correct types, etc., rely on the **portal_catalog**
 and the searching techniques shown here to function.
 
-In CMF and Plone, the index name 'PrincipiaSearchSource' is
+In CMF and Plone, the index name **PrincipiaSearchSource** is
 not traditionally used.  Instead, an index is created called
-'SearchableText', and used in the same manner as
-'PrincipiaSearchSource'.  All of the standard contentish
-objects have a 'SearchableText' method that returns things
+**SearchableText**, and used in the same manner as
+**PrincipiaSearchSource**.  All of the standard "contentish"
+objects have a **SearchableText** method that returns things
 like title, description, body, etc., so that they can be
 general-text searched.
 
