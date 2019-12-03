@@ -209,7 +209,7 @@ object, as shown in the figure below.
 Name the **Report Id** ``SearchResults``, the **Search Input Id**
 ``SearchForm``, select ``Generate Page Templates`` and click **Add**.
 This will create two new Page Templates in the ``AnimalCatalog``
-**ZCatalog** named ``SeachForm`` and ``SearchResults``.
+**ZCatalog** named ``SearchForm`` and ``SearchResults``.
 
 These objects are *contained in* the **ZCatalog**, but they are not
 *cataloged by* the **ZCatalog**.  The **AnimalCatalog** has only
@@ -237,16 +237,16 @@ cataloged content into it and searched it through the web.
 Configuring ZCatalogs
 ---------------------
 
-The ZCatalog is capable of much more powerful and complex searches
+The **ZCatalog** is capable of much more powerful and complex searches
 than the one you just performed. Let's take a look at how the
-ZCatalog stores information. This will help you tailor your
-ZCatalogs to provide the sort of searching you want.
+**ZCatalog** stores information. This will help you tailor your
+**ZCatalogs** to provide the sort of searching you want.
 
 Defining Indexes
 ~~~~~~~~~~~~~~~~
 
-ZCatalogs store information about objects and their contents in
-fast databases called *indexes*.  Indexes can store and retrieve
+**ZCatalogs** store information about objects and their contents in
+fast databases called **indexes**.  Indexes can store and retrieve
 large volumes of information very quickly.  You can create
 different kinds of indexes that remember different kinds of
 information about your objects.  For example, you could have one
@@ -254,46 +254,47 @@ index that remembers the text content of DTML Documents, and
 another index that remembers any objects that have a specific
 property.
 
-When you search a ZCatalog you are not searching through your
+When you search a **ZCatalog** you are not searching through your
 objects one by one. That would take far too much time if you had
-a lot of objects.  Before you search a ZCatalog, it looks at
+a lot of objects.  Before you search a **ZCatalog**, it looks at
 your objects and remembers whatever you tell it to remember
-about them.  This process is called *indexing*.  From then on,
-you can search for certain criteria and the ZCatalog will return
+about them.  This process is called **indexing**.  From then on,
+you can search for certain criteria and the **ZCatalog** will return
 objects that match the criteria you provide.
 
-A good way to think of an index in a ZCatalog is just like an
+A good way to think of an index in a **ZCatalog** is just like an
 index in a book.  For example, in a book's index you can look up
-the word *Python*::
+the word **Python**::
 
   Python: 23, 67, 227
 
-The word *Python* appears on three pages.  Zope indexes work
+The word **Python** appears on three pages.  Zope indexes work
 like this except that they map the search term, in this case the
-word *Python*, to a list of all the objects that contain it,
+word **Python**, to a list of all the objects that contain it,
 instead of a list of pages in a book.
 
-In Zope 2.6, indexes can be added and removed from a ZCatalog
+Indexes can be added and removed from a **ZCatalog**
 using the "pluggable" index interface as shown in the figure below:
 
 .. figure:: Figures/managingindexes.png
 
    Managing indexes
 
-Each index has a name, like *PrincipiaSearchSource*,
-and a type, like *ZCTextIndex*.
+Each index has a name, like ``PrincipiaSearchSource``,
+and a type, like ``ZCTextIndex``.
 
-When you catalog an object the ZCatalog uses each index to
-examine the object. The ZCatalog consults attributes and methods
+When you catalog an object the **ZCatalog** uses each index to
+examine the object. The **ZCatalog** consults attributes and methods
 to find an object's value for each index. For example, in the
 case of the DTML Documents cataloged with a
-'PrincipiaSearchSource' index, the ZCatalog calls each document's
-'PrincipiaSearchSource' method and records the results in its
-'PrincipiaSearchSource' index. If the ZCatalog cannot find an
+``PrincipiaSearchSource`` index, the **ZCatalog** calls each document's
+``PrincipiaSearchSource`` method and records the results in its
+``PrincipiaSearchSource`` index. If the **ZCatalog** cannot find an
 attribute or method for an index, then it ignores it. In other
 words it's fine if an object does not support a given
-index. There are eight kinds of indexes that come standard with
-Zope 2.6, and others that can be added.  The standard eight are:
+index.
+
+Among others, the **ZCatalog** comes with following indexes:
 
 ZCTextIndex
   Searches text. Use this kind of index when you
@@ -312,7 +313,7 @@ KeywordIndex
 PathIndex
   Searches for all objects that contain certain URL
   path elements.  For example, you could search for all the
-  objects whose paths begin with '/Zoo/Animals'.
+  objects whose paths begin with ``/Zoo/Animals``.
 
 TopicIndex
   Searches among FilteredSets;  each set contains
@@ -321,72 +322,70 @@ TopicIndex
   frequently-accessed searches. 
 
 DateIndex
-  A subclass of FieldIndex, optimized for date-time
+  A subclass of FieldIndex, optimized for DateTime
   values.  Use this index for any field known to be a date or a
-  date-time. 
+  DateTime. 
 
 DateRangeIndex
-  Searches objects based on a pair of dates /
-  date-times.  Use this index to search for objects which are
-  "current" or "in effect" at a given time. 
+  Searches objects based on a pair of
+  DateTime objects.  Use this index to search for objects which are
+  **current** or **in effect** at a given time. 
 
-TextIndex
-  Old version of a full-text index.  Only provided
-  for backward compatibility, use ZCTextIndex instead.
 
 We'll examine these different indexes more closely later in the
-chapter. New indexes can be created from the *Indexes* view of a
-ZCatalog.  There, you can enter the *name* and select a *type*
+chapter. New indexes can be created from the **Indexes** view of a
+**ZCatalog**.  There, you can enter the **name** and select a **type**
 for your new index.  This creates a new empty index in the
-ZCatalog.  To populate this index with information, you need to
-go to the *Advanced* view and click the the *Update Catalog*
+**ZCatalog**.  To populate this index with information, you need to
+go to the **Advanced** view and click the the **Update Catalog**
 button.  Recataloging your content may take a while if you have
 lots of cataloged objects.  For a ZCTextIndex, you will also
-need a *ZCTextIndex Lexicon* object in your ZCatalog - see below
+need a **ZCTextIndex Lexicon** object in your **ZCatalog** - see below
 for details. 
 
-To remove an index from a ZCatalog, select the Indexes and click
-on the *Delete* button.  This will delete the index and all of
-its indexed content.  As usual, this operation is undoable.
+To remove an index from a **ZCatalog**, select the index and click
+on the **Delete** button.  This will delete the index and all of
+its indexed content.
 
 Defining Meta Data
 ~~~~~~~~~~~~~~~~~~
 
-The ZCatalog can not only index information about your object,
+The **ZCatalog** can not only index information about your object,
 but it can also store information about your object in a
-*tabular database* called the *Metadata Table*.  The *Metadata
-Table* works similarly to a relational database table, it
-consists of one or more *columns* that define the *schema* of
-the table.  The table is filled with *rows* of information about
+**tabular database** called the **Metadata Table**.  The **Metadata
+Table** works similarly to a relational database table, it
+consists of one or more **columns** that define the **schema** of
+the table.  The table is filled with **rows** of information about
 cataloged objects.  These rows can contain information about
 cataloged objects that you want to store in the table. Your meta
-data columns don't need to match your ZCatalog's indexes. Indexes
-allow you to search; meta-data allows you to report search
+data columns don't need to match your **ZCatalog's** indexes. Indexes
+allow you to search; meta data allows you to report search
 results.
 
-The Metadata Table is useful for generating search reports. It
+The **Metadata Table** is useful for generating search reports. It
 keeps track of information about objects that goes on your
-report forms.  For example, if you create a Metadata Table
-column called *Title*, then your report forms can use this
+report forms.  For example, if you create a **Metadata Table**
+column called **Title**, then your report forms can use this
 information to show the titles of your objects that are returned
 in search results instead of requiring that you actually obtain
 the object to show its title.
 
-To add a new Metadata Table column, type in the name of the column
-on the *Metadata Table* view and click *Add*.  To remove a column
-from the Metadata Table, select the column check box and click on
-the *Delete* button.  This will delete the column and all of its
-content for each row.  As usual, this operation is undoable.  Next
-let's look more closely at how to search a ZCatalog.
+To add a new **Metadata Table** column, type in the name of the column
+on the **Metadata Table** view and click **Add**.  To remove a column
+from the **Metadata Table**, select the column check box and click on
+the **Delete** button.  This will delete the column and all of its
+content for each row.
 
-While metadata columns are useful, there are performance tradeoffs
-from using too many.  As more metadata columns are added, the
+While meta data columns are useful, there are performance tradeoffs
+from using too many.  As more meta data columns are added, the
 catalog itself becomes larger (and slower), and getting the
 result objects becomes more memory- and performance-intensive.
-Therefore, you should choose metadata columns only for those
+Therefore, you should choose meta data columns only for those
 fields that you'll want to show on common search results. 
 Consider carefully before adding a field that returns a large
-result (like the full text of a document) to metadata.
+result (like the full text of a document) to meta data.
+
+Next let's look more closely at how to search a **ZCatalog**.
 
 Searching ZCatalogs
 -------------------
