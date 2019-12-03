@@ -603,7 +603,7 @@ getRID()
 Searching and Indexing Details
 ------------------------------
 
-Earlier you saw that the ZCatalog includes eight types of
+Earlier you saw that the **ZCatalog** includes several types of
 indexes.  Let's examine these indexes more closely, and look
 at some of the additional available indexes, to understand
 what they are good for and how to search them.
@@ -611,7 +611,7 @@ what they are good for and how to search them.
 Searching ZCTextIndexes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-A ZCTextIndex is used to index text.  After indexing, you can
+A **ZCTextIndex** is used to index text.  After indexing, you can
 search the index for objects that contain certain words.
 ZCTextIndexes support a rich search grammar for doing more
 advanced searches than just looking for a word.
@@ -619,104 +619,94 @@ advanced searches than just looking for a word.
 Boolean expressions
 %%%%%%%%%%%%%%%%%%%
 
-  Search for Boolean expressions
-  like::
+  Search for **Boolean expressions** like::
 
     word1 AND word2
 
-  This will search for all objects that contain *both* "word1"
-  and "word2".  Valid Boolean operators include AND, OR, and
-  NOT.  A synonym for NOT is a leading hyphen::
+  This will search for all objects that contain **both** ``word1``
+  and ``word2``.  Valid boolean operators include ``AND``, ``OR``, and
+  ``NOT``.  A synonym for ``NOT`` is a leading hyphen::
 
     word1 -word2
 
-  which would search for occurences of "word1" but would
-  exclude documents which contain "word2".  A sequence of words
-  without operators implies AND. A search for "carpet python
-  snakes" translates to "carpet AND python AND snakes".
+  which would search for occurrences of ``word1`` but would
+  exclude documents which contain ``word2``.  A sequence of words
+  without operators implies ``AND``. A search for ``carpet python
+  snakes`` translates to ``carpet AND python AND snakes``.
 
 Parentheses
 %%%%%%%%%%%
 
-  Control search order with parenthetical 
-  expressions::
+  Control search order with parenthetical expressions::
 
     (word1 AND word2) OR word3)
 
-  This will return objects containing "word1" and "word2" *or*
-  just objects that contain the term "word3".
+  This will return objects containing ``word1`` and ``word2`` **or**
+  just objects that contain the term ``word3``.
 
 Wild cards
 %%%%%%%%%%
 
-  Search for wild cards
-  like::
+  Search for wild cards like::
 
     Z*
 
-  which returns all words that begin with "Z", 
-  or::
+  which returns all words that begin with **Z**, or::
 
      Zop?
 
-  which returns all words that begin with "Zop" and have one
-  more character - just like in a Un*x shell.  Note though that
+  which returns all words that begin with **Zop** and have one
+  more character - just like in a Unix shell.  Note though that
   wild cards cannot be at the beginning of a search phrase.
-  "?ope" is an illegal search term and will be ignored.
+  ``?ope`` is an illegal search term and will be ignored.
 
 Phrase search
 %%%%%%%%%%%%%
 
-  Double-quoted text implies phrase search, 
-  for example::
+  Double-quoted text implies phrase search,  for example::
 
     "carpet python" OR frogs 
 
-  will search for all occurences of the phrase "carpet python"
-  or of the word "frogs"
+  will search for all occurrences of the phrase ``carpet python``
+  or of the word ``frogs``
 
 All of these advanced features can be mixed together.  For
 example::
 
   ((bob AND uncle) AND NOT Zoo*)
 
-will return all objects that contain the terms "bob" and "uncle"
+will return all objects that contain the terms ``bob`` and ``uncle``
 but will not include any objects that contain words that start
-with "Zoo" like "Zoologist", "Zoology", or "Zoo" itself.
+with **Zoo** like **Zoologist**, **Zoology**, or **Zoo** itself.
 
-Similarly, a search 
-for::
+Similarly, a search for::
 
   snakes OR frogs -"carpet python"
 
-will return all objects which contain the word "snakes" or
-"frogs" but do not contain the phrase "carpet python".
+will return all objects which contain the word ``snakes`` or
+``frogs`` but do not contain the phrase ``carpet python``.
 
-Querying a ZCTextIndex with these advanced features works just
+Querying a **ZCTextIndex** with these advanced features works just
 like querying it with the original simple features.  In the HTML
 search form for DTML Documents, for example, you could enter
-"Koala AND Lion" and get all documents about Koalas and Lions.
-Querying a ZCTextIndex from Python with advanced features works
+``Koala AND Lion`` and get all documents about Koalas and Lions.
+Querying a **ZCTextIndex** from Python with advanced features works
 much the same; suppose you want to change your
-'relevantSectionNews' Script to not include any news items that
-contain the word "catastrophic"::
+``relevantSectionNews`` script to not include any news items that
+contain the word ``catastrophic``::
 
   ## Script (Python) "relevantSectionNews"
   ##
-  """ Returns relevant, non-catastropic news """
+  """ Returns relevant, non-catastrophic news """
   id=context.getId()
   return context.NewsCatalog(
            {'contentTextIdx' : id + ' -catastrophic'}
           )
 
-ZCTextIndexes are very powerful.  When mixed with the Automatic
-Cataloging pattern described later in the chapter, they give you
+**ZCTextIndexes** are very powerful.  When mixed with the automatic
+cataloging pattern described later in the chapter, they give you
 the ability to automatically full-text search all of your
 objects as you create and edit them.
-
-In addition, below, we'll talk about TextIndexNG indexes, which
-are a competing index type that can be added to Zope, and offers
-even more additional features for full-text indexing.
 
 Lexicons
 ~~~~~~~~
