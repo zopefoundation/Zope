@@ -167,8 +167,8 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ bin/pip install Zope[wsgi]==4.1.3 \
     -c https://zopefoundation.github.io/Zope/releases/4.1.3/constraints.txt
 
-You can also install Zope using a single requirements file. Note that this
-installation method might install packages that are not actually needed (i. e.
+You can also install Zope using a single requirements file. **Note that this
+installation method might install packages that are not actually needed** (i. e.
 more than are listed in the ``install_requires`` section of ``setup.py``):
 
 .. code-block:: console
