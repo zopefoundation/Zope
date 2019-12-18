@@ -16,7 +16,6 @@
 import os
 from logging import getLogger
 
-# Waaaa
 import Products
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
