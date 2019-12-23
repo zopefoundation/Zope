@@ -57,9 +57,9 @@
             </th>
             <th scope="col" class="zmi-object-date text-right hidden-xs">
               <a title="Sort Ascending by Modification Date"
-                 href="?skey=_p_mtime&rkey=asc"
+                 href="manage_main?skey=_p_mtime&rkey=asc"
                  tal:attributes="title python:'Sort %s by Modification Date'%( rkey_alt.upper() );
-                                 href python:'?skey=_p_mtime&rkey=%s'%( rkey_alt );
+                                 href python:'manage_main?skey=_p_mtime&rkey=%s'%( rkey_alt );
                                  class python:request.get('skey',None)=='_p_mtime' and 'zmi-sort_key' or None;
                                 ">
                 Last Modified
