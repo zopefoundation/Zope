@@ -129,6 +129,9 @@ setup(
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
         ],
+        'wsgi': [
+            'Paste',
+        ],
     },
     entry_points={
         'paste.app_factory': [
@@ -138,7 +141,7 @@ setup(
             'httpexceptions=ZPublisher.httpexceptions:main',
         ],
         'console_scripts': [
-            'addzope2user=Zope2.utilities.adduser:main',
+            'addzopeuser=Zope2.utilities.adduser:main',
             'runwsgi=Zope2.Startup.serve:main',
             'mkwsgiinstance=Zope2.utilities.mkwsgiinstance:main',
             'zconsole=Zope2.utilities.zconsole:main',

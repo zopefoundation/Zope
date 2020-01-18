@@ -57,8 +57,10 @@ Steps for creating a new Zope release
 
     or
 
-    $ git tag <TAG-NAME>
-    $ bin/zopepy setup.py egg_info -RDb '' sdist bdist_wheel upload --sign
+    $ git tag -as <TAG-NAME> -m "- tagging release <TAG-NAME>"
+    $ git push --tags
+    $ bin/zopepy setup.py egg_info -Db '' sdist bdist_wheel
+    $ bin/twine upload -s dist/Zope-<TAG-NAME>*
 
 - Update version information::
 
@@ -81,7 +83,9 @@ Steps for creating a new Zope release
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
 
 - Check the versions.cfg file for outdated or updated
-  packages and update version information where necessary::
+  packages and update version information where necessary. You can get a good
+  overview of outdated packages on `requires.io
+  <https://requires.io/github/zopefoundation/Zope/requirements/?branch=master>`_::
 
   $ bin/checkversions versions-prod.cfg
   $ bin/checkversions versions.cfg

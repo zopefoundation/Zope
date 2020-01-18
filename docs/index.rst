@@ -5,10 +5,10 @@ This is the official home for all Zope documentation.
 .. toctree::
    :maxdepth: 2
 
-   zope4/index
+   news
    INSTALL
    operation
-   wsgi
+   migrations/index
    maintenance
    changes
    zopebook/index

@@ -16,7 +16,6 @@
 import os
 from logging import getLogger
 
-# Waaaa
 import Products
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
@@ -66,7 +65,7 @@ class ProductContext:
            meta type will be used.
 
         constructors -- A list of constructor methods
-          A method can me a callable object with a __name__
+          A method can be a callable object with a __name__
           attribute giving the name the method should have in the
           product, or the method may be a tuple consisting of a
           name and a callable object.  The method must be picklable.

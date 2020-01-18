@@ -1,13 +1,39 @@
 Change log
 ==========
 
-This file contains change information for the current Zope release.
-Change information for previous versions of Zope can be found at
+These are all the changes for Zope 5, starting with the alpha releases.
+
+The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
 5.0a1 (unreleased)
 ------------------
+
+- Close opened db during shutdown (as ZServer is already doing).
+  (`#740 <https://github.com/zopefoundation/Zope/issues/740>`_)
+
+- Updated Zope documentation sources for Zope 5
+  (`#659 <https://github.com/zopefoundation/Zope/issues/659>`_)
+
+- The method ``unrestrictedTraverse`` raises an error when
+  the argument ``path`` is not something it can work with
+  (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
+
+- Improve ZMI Security Tab usability for high numbers of roles
+  (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
+
+- Some small ZMI rendering fixes
+  (`#729 <https://github.com/zopefoundation/Zope/issues/729>`_)
+
+- Fix error when using database minimize in the ZMI
+  (`#726 <https://github.com/zopefoundation/Zope/issues/726>`_)
+
+- Fix ``__getattr__`` signature in ``UnauthorizedBinding``
+  (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
+
+- Remove more Python 2 support code
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
 - Move retried request delay handling out of ``supports_retry``
   (`#474 <https://github.com/zopefoundation/Zope/issues/474>`_)
@@ -35,6 +61,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (`#713 <https://github.com/zopefoundation/Zope/pull/713>`_)
 
 - Improve documentation for Zope's error logging services.
+
+- Add ``Paste`` as ``extras_require`` dependency to pull in ``Paste`` when 
+  installing with `pip` and `constraints.txt` to prevent startup errors.
+  This requires adding the ``[wsgi]`` extra in the egg specification.
+  (`#734 <https://github.com/zopefoundation/Zope/issues/734>`_)
+
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++

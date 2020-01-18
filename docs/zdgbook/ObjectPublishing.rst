@@ -1190,7 +1190,7 @@ and by default **waitress** returns an error message as follows::
 .. note:: **Further information:**
 
     `Debugging Zope applications under WSGI
-    <https://zope.readthedocs.io/en/latest/wsgi.html#debugging-zope-applications-under-wsgi>`_
+    <https://zope.readthedocs.io/en/latest/operation.html#debugging-zope-applications-under-wsgi>`_
 
 
 Exceptions and Transactions
