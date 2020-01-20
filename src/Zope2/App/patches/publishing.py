@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 def delete_method_docstring(klass, method_name):
     # Delete the docstring from the class method.
     # Objects must have a docstring to be published.

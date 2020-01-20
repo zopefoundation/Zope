@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
 import os
 import sys
 import time
 import unittest
 from io import BytesIO
-
-import six
 
 import OFS.Image
 import Testing.testbrowser
@@ -52,7 +49,7 @@ def aputrequest(file, content_type):
     return req
 
 
-class DummyCache(object):
+class DummyCache:
 
     def __init__(self):
         self.clear()
@@ -88,7 +85,7 @@ class DummyCacheManager(SimpleItem):
         return ADummyCache
 
 
-class EventCatcher(object):
+class EventCatcher:
 
     def __init__(self):
         self.created = []
@@ -291,7 +288,7 @@ class FileTests(unittest.TestCase):
         verifyClass(IWriteLock, File)
 
     def testUnicode(self):
-        val = u'some unicode string here'
+        val = 'some unicode string here'
 
         self.assertRaises(TypeError, self.file.update_data,
                           data=val, content_type='text/plain')
@@ -345,7 +342,7 @@ class ImageTests(FileTests):
         verifyClass(IWriteLock, Image)
 
     def test_text_representation_is_tag(self):
-        self.assertEqual(six.text_type(self.file),
+        self.assertEqual(str(self.file),
                          '<img src="http://nohost/file"'
                          ' alt="" title="" height="16" width="16" />')
 
@@ -354,7 +351,7 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
     """Browser testing ..Image.File"""
 
     def setUp(self):
-        super(FileEditTests, self).setUp()
+        super().setUp()
         uf = self.app.acl_users
         uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
         self.app.manage_addFile('file')
@@ -365,14 +362,14 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
 
     def test_Image__manage_main__1(self):
         """It shows the content of text files as text."""
-        self.app.file.update_data(u'hällo'.encode('utf-8'))
+        self.app.file.update_data('hällo'.encode())
         self.browser.open('http://localhost/file/manage_main')
         text = self.browser.getControl(name='filedata:text').value
         self.assertEqual(text, 'hällo')
 
     def test_Image__manage_main__3(self):
         """It shows an error message if the file content cannot be decoded."""
-        self.app.file.update_data(u'hällo'.encode('latin-1'))
+        self.app.file.update_data('hällo'.encode('latin-1'))
         self.browser.open('http://localhost/file/manage_main')
         self.assertIn(
             "The file could not be decoded with 'utf-8'.",
@@ -395,7 +392,7 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.browser.open('http://localhost/file/manage_main')
         text_1 = self.browser.getControl(name='filedata:text').value
         self.assertEqual(text_1, '')
-        self.browser.getControl(name='filedata:text').value = u'hällo'
+        self.browser.getControl(name='filedata:text').value = 'hällo'
         self.browser.getControl('Save Changes').click()
         self.assertIn('Saved changes', self.browser.contents)
         text_2 = self.browser.getControl(name='filedata:text').value

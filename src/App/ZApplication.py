@@ -18,7 +18,7 @@ and used when bobo publishes a bobo_application object.
 """
 
 
-class ZApplicationWrapper(object):
+class ZApplicationWrapper:
 
     def __init__(self, db, name, klass=None):
         self._db = db

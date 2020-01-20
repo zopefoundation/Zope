@@ -22,4 +22,4 @@ _ = MessageFactory('fivetest')
 
 
 class I18nView(BrowserView):
-    this_is_a_message = _(u'This is a message')
+    this_is_a_message = _('This is a message')

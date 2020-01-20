@@ -18,7 +18,7 @@ class TestPageTemplateFile(ZopeTestCase):
         return PageTemplateFile(os.path.join(path, name)).__of__(self.app)
 
     def test_rr(self):
-        class Prioritzed(object):
+        class Prioritzed:
             __allow_access_to_unprotected_subobjects__ = 1
 
             def __init__(self, order):

@@ -20,7 +20,7 @@ from zope.schema.vocabulary import setVocabularyRegistry
 
 
 @implementer(IVocabularyRegistry)
-class Zope2VocabularyRegistry(object):
+class Zope2VocabularyRegistry:
     """IVocabularyRegistry that supports global and local utilities.
     """
     __slots__ = ()

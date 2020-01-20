@@ -182,7 +182,7 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
                 copydir(root, dirs, files, targetdir, replacements, uid, gid)
         finally:
             os.chdir(pwd)
-    except (IOError, OSError) as msg:
+    except OSError as msg:
         sys.stderr.write(msg)
         sys.exit(1)
 

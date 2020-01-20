@@ -171,7 +171,7 @@ class TestPubEvents(TestCase):
         self.assertTrue(b'datachunk1datachunk2' in out.getvalue())
 
 
-class ExceptionView(object):
+class ExceptionView:
 
     def __init__(self, context, request):
         self.context = context  # exception instance
@@ -205,7 +205,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
                 ExceptionView,
                 required=(self.exc_view_for, IDefaultBrowserLayer),
                 provided=Interface,
-                name=u'index.html',
+                name='index.html',
             )
 
     def _registerExceptionView(self, for_):
@@ -215,7 +215,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             ExceptionView,
             required=(for_, IDefaultBrowserLayer),
             provided=Interface,
-            name=u'index.html',
+            name='index.html',
         )
 
     @adapter(IPubEvent)
@@ -310,7 +310,7 @@ def _succeed():
 
 
 # Poor man's mock.
-class _Application(object):
+class _Application:
     def __getattr__(self, name):
         return self
 
@@ -318,7 +318,7 @@ class _Application(object):
         return self
 
 
-class _Reporter(object):
+class _Reporter:
     def __init__(self):
         self.events = []
 
@@ -326,7 +326,7 @@ class _Reporter(object):
         self.events.append(event)
 
 
-class _Response(object):
+class _Response:
     def setBody(*unused):
         pass
 

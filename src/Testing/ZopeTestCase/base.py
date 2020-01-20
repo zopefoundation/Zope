@@ -39,7 +39,7 @@ def close(app):
 
 
 @implementer(interfaces.IZopeTestCase)
-class TestCase(unittest.TestCase, object):
+class TestCase(unittest.TestCase):
     '''Base test case for Zope testing
     '''
 

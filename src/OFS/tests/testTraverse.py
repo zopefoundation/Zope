@@ -16,7 +16,7 @@
 import unittest
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -29,7 +29,7 @@ class UnitTestSecurityPolicy(object):
         return 1
 
 
-class CruelSecurityPolicy(object):
+class CruelSecurityPolicy:
     """Denies everything
     """
     #   Standard SecurityPolicy interface
@@ -41,7 +41,7 @@ class CruelSecurityPolicy(object):
         return 0
 
 
-class ProtectedMethodSecurityPolicy(object):
+class ProtectedMethodSecurityPolicy:
     """Check security strictly on bound methods.
     """
     def validate(self, accessed, container, name, value, *args):
@@ -444,7 +444,7 @@ class TestTraverse(unittest.TestCase):
         self.assertEqual(self.folder1.unrestrictedTraverse({}), self.folder1)
 
 
-class SimpleClass(object):
+class SimpleClass:
     """Class with no __bobo_traverse__."""
 
 

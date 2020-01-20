@@ -10,14 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-from six.moves import xrange
-
-
 _marker = object()
 
 
-class Lazy(object):
+class Lazy:
 
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__ = True
@@ -61,7 +57,7 @@ class Lazy(object):
         if isinstance(index, slice):
             r = []
             start, stop, step = index.indices(len(self))
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     r.append(self[i])
                 except IndexError:
@@ -114,7 +110,7 @@ class LazyCat(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyCat, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:
@@ -193,7 +189,7 @@ class LazyMap(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyMap, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         if index in data:
@@ -216,7 +212,7 @@ class LazyFilter(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyFilter, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:
@@ -267,7 +263,7 @@ class LazyMop(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyMop, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:

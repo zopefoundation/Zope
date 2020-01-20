@@ -25,7 +25,7 @@ class IOne(Interface):
 
 
 @implementer(IOne)
-class One(object):
+class One:
     'A class'
 
 

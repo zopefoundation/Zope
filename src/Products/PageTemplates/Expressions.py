@@ -18,9 +18,6 @@ for Python expressions, string literals, and paths.
 
 import logging
 
-from six import binary_type
-from six import text_type
-
 import OFS.interfaces
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
@@ -132,8 +129,7 @@ class ZopePathExpr(PathExpr):
     def __init__(self, name, expr, engine):
         if not expr.strip():
             expr = 'nothing'
-        super(ZopePathExpr, self).__init__(name, expr, engine,
-                                           self._TRAVERSER)
+        super().__init__(name, expr, engine, self._TRAVERSER)
 
     # override this to support different call metrics (see bottom of
     # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
@@ -194,7 +190,7 @@ class SafeMapping(MultiMapping):
 class ZopeContext(Context):
 
     def __init__(self, engine, contexts):
-        super(ZopeContext, self).__init__(engine, contexts)
+        super().__init__(engine, contexts)
         # wrap the top-level 'repeat' variable, as it is visible to
         # restricted code
         self.setContext('repeat', SafeMapping(self.repeat_vars))
@@ -223,7 +219,7 @@ class ZopeContext(Context):
         """ customized version in order to get rid of unicode
             errors for all and ever
         """
-        text = super(ZopeContext, self).evaluateStructure(expr)
+        text = super().evaluateStructure(expr)
         return self._handleText(text, expr)
 
     def evaluateText(self, expr):
@@ -239,11 +235,11 @@ class ZopeContext(Context):
             # XXX: should be unicode???
             return text
 
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             # we love unicode, nothing to do
             return text
 
-        elif isinstance(text, binary_type):
+        elif isinstance(text, bytes):
             # bahh...non-unicode string..we need to convert it to unicode
 
             # catch ComponentLookupError in order to make tests shut-up.
@@ -268,7 +264,7 @@ class ZopeContext(Context):
         else:
             # This is a weird culprit ...calling text_type() on non-string
             # objects
-            return text_type(text)
+            return str(text)
 
     def createErrorInfo(self, err, position):
         # Override, returning an object accessible to untrusted code.
@@ -310,19 +306,19 @@ class ZopeIterator(Iterator):
 
     @property
     def index(self):
-        return super(ZopeIterator, self).index()
+        return super().index()
 
     @property
     def start(self):
-        return super(ZopeIterator, self).start()
+        return super().start()
 
     @property
     def end(self):
-        return super(ZopeIterator, self).end()
+        return super().end()
 
     @property
     def item(self):
-        return super(ZopeIterator, self).item()
+        return super().item()
 
     # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
     # spec.
@@ -346,12 +342,12 @@ class ZopeIterator(Iterator):
     def __next__(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return super(ZopeIterator, self).__next__()
+        return super().__next__()
 
     def next(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return super(ZopeIterator, self).next()
+        return super().next()
 
 
 @implementer(ITraversable)
@@ -375,9 +371,9 @@ class PathIterator(ZopeIterator):
     def same_part(self, name, ob1, ob2):
         if name is None:
             return ob1 == ob2
-        if isinstance(name, text_type):
-            name = name.split(u'/')
-        elif isinstance(name, binary_type):
+        if isinstance(name, str):
+            name = name.split('/')
+        elif isinstance(name, bytes):
             name = name.split(b'/')
         try:
             ob1 = boboAwareZopeTraverse(ob1, name, None)
@@ -391,7 +387,7 @@ class UnicodeAwareStringExpr(StringExpr):
 
     def __call__(self, econtext):
         vvals = []
-        if isinstance(self._expr, text_type):
+        if isinstance(self._expr, str):
             # coerce values through the Unicode Conflict Resolver
             evaluate = econtext.evaluateText
         else:

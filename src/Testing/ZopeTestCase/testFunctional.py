@@ -17,8 +17,7 @@ requests against the ZPublisher and how to examine the response.
 """
 
 from io import BytesIO
-
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import manage_properties

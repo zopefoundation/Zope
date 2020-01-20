@@ -13,9 +13,7 @@
 """DTML Method objects.
 """
 import re
-
-from six import binary_type
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
@@ -48,7 +46,7 @@ from ZPublisher.Iterators import IStreamIterator
 _marker = []  # Create a new marker object.
 
 
-class Code(object):
+class Code:
     # Documents masquerade as functions:
     pass
 
@@ -422,7 +420,7 @@ def safe_file_data(data):
     # Helper to convert upload file content into a safe value for saving
     if hasattr(data, 'read'):
         data = data.read()
-    if isinstance(data, binary_type):
+    if isinstance(data, bytes):
         data = data.decode('utf-8')
     return data
 

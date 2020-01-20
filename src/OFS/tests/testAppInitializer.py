@@ -71,7 +71,7 @@ class TestInitialization(unittest.TestCase):
         # platform-independent way.
         config_path = os.path.join(TEMPNAME, 'zope.conf')
         with open(config_path, 'w') as fd:
-            fd.write(text.replace(u"<<INSTANCE_HOME>>", TEMPNAME))
+            fd.write(text.replace("<<INSTANCE_HOME>>", TEMPNAME))
 
         options = ZopeWSGIOptions(config_path)()
         config = options.configroot

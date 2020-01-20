@@ -18,8 +18,6 @@ import sys
 import types
 from time import asctime
 
-import six
-
 import AccessControl.User
 import App.ZApplication
 import OFS.Application
@@ -57,7 +55,7 @@ def _load_custom_zodb(location):
             except SyntaxError:
                 return None
         module = types.ModuleType('Zope2.custom_zodb', 'Custom database')
-        six.exec_(code_obj, module.__dict__)
+        exec(code_obj, module.__dict__)
         sys.modules['Zope2.custom_zodb'] = module
         return module
 

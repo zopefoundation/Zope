@@ -29,7 +29,7 @@ class TestInitializeClass(unittest.TestCase):
         class AnotherClass(ExtensionClass.Base):
             _need__name__ = 1
 
-        class C(object):
+        class C:
             foo = AnotherClass
 
         InitializeClass(C)

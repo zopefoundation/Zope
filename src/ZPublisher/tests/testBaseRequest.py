@@ -7,7 +7,7 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 
 
 @implementer(IPublishTraverse)
-class DummyTraverser(object):
+class DummyTraverser:
 
     def publishTraverse(self, request, name):
         if name == 'dummy':
@@ -15,7 +15,7 @@ class DummyTraverser(object):
         raise ztkNotFound(self, name)
 
 
-class BaseRequest_factory(object):
+class BaseRequest_factory:
 
     def _makeOne(self, root):
         from Acquisition import Implicit
@@ -127,7 +127,7 @@ class BaseRequest_factory(object):
     def _makeObjectWithBBT(self):
         from ZPublisher.interfaces import UseTraversalDefault
 
-        class _DummyResult(object):
+        class _DummyResult:
             ''' '''
             def __init__(self, tag):
                 self.tag = tag
@@ -414,7 +414,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
 
     def test_traverse_simple_set(self):
         root, folder = self._makeRootAndFolder()
-        folder.simpleSet = set([])
+        folder.simpleSet = set()
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
 
@@ -478,7 +478,7 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
     def _makeOne(self, root):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-        request = super(TestRequestViewsBase, self)._makeOne(root)
+        request = super()._makeOne(root)
         # The request needs to implement the proper interface
         directlyProvides(request, IDefaultBrowserLayer)
         return request

@@ -15,10 +15,8 @@
 
 import html
 import itertools
-
-import six
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
+from urllib.parse import quote
+from urllib.parse import unquote
 
 import zope.event
 from AccessControl import ClassSecurityInfo
@@ -206,7 +204,7 @@ You have been logged out.
     def _get_zmi_additionals(self, attrib):
         # Get additional assets for styling ZMI defined on properties in ZMI.
         additionals = getattr(self, attrib, ()) or ()
-        if isinstance(additionals, six.string_types):
+        if isinstance(additionals, str):
             additionals = (additionals, )
         return additionals
 

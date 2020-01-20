@@ -14,6 +14,7 @@
 # licensed under the BSD-derived Repoze Public License
 # (http://repoze.org/license.html).
 
+import configparser
 import optparse
 import os
 import re
@@ -22,7 +23,6 @@ from logging.config import fileConfig
 
 from paste.deploy import loadapp
 from paste.deploy import loadserver
-from six.moves import configparser
 
 import Zope2
 from App.config import getConfiguration
@@ -79,7 +79,7 @@ def setup_logging(config_uri, global_conf=None,  # NOQA
             config_file, full_global_conf, disable_existing_loggers=False)
 
 
-class ServeCommand(object):
+class ServeCommand:
 
     usage = '%prog config_uri [var=value]'
     description = """\

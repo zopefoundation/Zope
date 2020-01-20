@@ -235,7 +235,7 @@ class VHMAddingTests(unittest.TestCase):
 
     def setUp(self):
         from OFS.Folder import Folder
-        super(VHMAddingTests, self).setUp()
+        super().setUp()
         self.root = Folder('root')
 
     def _makeOne(self):

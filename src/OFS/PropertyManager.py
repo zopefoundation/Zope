@@ -15,8 +15,6 @@
 
 import html
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -212,7 +210,7 @@ class PropertyManager(Base):
         if not self.hasProperty(id):
             raise BadRequest(
                 'The property %s does not exist' % html.escape(id, True))
-        if isinstance(value, (six.string_types, six.binary_type)):
+        if isinstance(value, (str, bytes)):
             proptype = self.getPropertyType(id) or 'string'
             if proptype in type_converters:
                 value = type_converters[proptype](value)
@@ -380,8 +378,8 @@ class PropertyManager(Base):
         for id in ids:
             if not hasattr(aq_base(self), id):
                 raise BadRequest(
-                    ('The property <em>%s</em> '
-                     'does not exist' % html.escape(id, True)))
+                    'The property <em>%s</em> '
+                    'does not exist' % html.escape(id, True))
             if ('d' not in propdict[id].get('mode', 'wd')) or (id in nd):
                 raise BadRequest('Cannot delete %s' % id)
             self._delProperty(id)

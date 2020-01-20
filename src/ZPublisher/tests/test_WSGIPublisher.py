@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2009 Zope Foundation and Contributors.
@@ -13,8 +12,7 @@
 ##############################################################################
 import io
 import unittest
-
-from six.moves.urllib_parse import quote
+from urllib.parse import quote
 
 import Testing.testbrowser
 import transaction
@@ -103,7 +101,7 @@ class WSGIResponseTests(unittest.TestCase):
         from zope.interface import implementer
 
         @implementer(IUnboundStreamIterator)
-        class TestStreamIterator(object):
+        class TestStreamIterator:
             data = "hello"
             done = 0
 
@@ -128,7 +126,7 @@ class WSGIResponseTests(unittest.TestCase):
         from zope.interface import implementer
 
         @implementer(IStreamIterator)
-        class TestStreamIterator(object):
+        class TestStreamIterator:
             data = "hello"
             done = 0
 
@@ -272,7 +270,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.traversing.interfaces import ITraversable
         from zope.traversing.namespace import view
 
-        class TestView(object):
+        class TestView:
             __name__ = 'testing'
 
             def __init__(self, context, request):
@@ -395,7 +393,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.interface import implementer
 
         @implementer(IStreamIterator)
-        class TestStreamIterator(object):
+        class TestStreamIterator:
             data = "hello"
             done = 0
 
@@ -423,7 +421,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.interface import implementer
 
         @implementer(IUnboundStreamIterator)
-        class TestUnboundStreamIterator(object):
+        class TestUnboundStreamIterator:
             data = "hello"
             done = 0
 
@@ -451,13 +449,13 @@ class TestPublishModule(ZopeTestCase):
         from ZPublisher.HTTPResponse import WSGIResponse
 
         @implementer(IStreamIterator)
-        class TestStreamIterator(object):
+        class TestStreamIterator:
             data = "hello" * 20
 
             def __len__(self):
                 return len(self.data)
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, file):
                 self.file = file
 
@@ -483,13 +481,13 @@ class TestPublishModule(ZopeTestCase):
         from ZPublisher.HTTPResponse import WSGIResponse
 
         @implementer(IUnboundStreamIterator)
-        class TestUnboundStreamIterator(object):
+        class TestUnboundStreamIterator:
             data = "hello"
 
             def __len__(self):
                 return len(self.data)
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, file):
                 self.file = file
 
@@ -760,13 +758,13 @@ class ExcViewCreatedTests(ZopeTestCase):
         from OFS.browser import StandardErrorMessageView
         from zope.interface import Interface
         registerExceptionView(Interface, factory=StandardErrorMessageView,
-                              name=u'standard_error_message')
+                              name='standard_error_message')
 
     def _unregisterStandardErrorView(self):
         from OFS.browser import StandardErrorMessageView
         from zope.interface import Interface
         unregisterExceptionView(Interface, factory=StandardErrorMessageView,
-                                name=u'standard_error_message')
+                                name='standard_error_message')
 
     def testNoStandardErrorMessage(self):
         from zExceptions import NotFound
@@ -794,13 +792,13 @@ class WSGIPublisherTests(FunctionalTestCase):
 
     def test_can_handle_non_ascii_URLs(self):
         from OFS.Image import manage_addFile
-        manage_addFile(self.app, 'täst', u'çöńtêñt'.encode('utf-8'))
+        manage_addFile(self.app, 'täst', 'çöńtêñt'.encode())
 
         browser = Testing.testbrowser.Browser()
         browser.login('manager', 'manager_pass')
 
         browser.open('http://localhost/{}'.format(quote('täst')))
-        self.assertEqual(browser.contents.decode('utf-8'), u'çöńtêñt')
+        self.assertEqual(browser.contents.decode('utf-8'), 'çöńtêñt')
 
 
 class TestLoadApp(unittest.TestCase):
@@ -810,11 +808,11 @@ class TestLoadApp(unittest.TestCase):
         return load_app
 
     def _makeModuleInfo(self):
-        class Connection(object):
+        class Connection:
             def close(self):
                 pass
 
-        class App(object):
+        class App:
             _p_jar = Connection()
 
         return (App, 'Zope', False)
@@ -831,7 +829,7 @@ class TestLoadApp(unittest.TestCase):
     def test_no_second_transaction_is_created_if_closed(self):
         load_app = self._getTarget()
 
-        class TransactionCounter(object):
+        class TransactionCounter:
 
             after = 0
             before = 0
@@ -862,7 +860,7 @@ class TestLoadApp(unittest.TestCase):
         self.assertEqual(counter.counts(), (1, 1))
 
 
-class CustomExceptionView(object):
+class CustomExceptionView:
 
     def __init__(self, context, request):
         self.context = context
@@ -876,7 +874,7 @@ class CustomExceptionView(object):
 
 
 def registerExceptionView(for_, factory=CustomExceptionView,
-                          name=u'index.html'):
+                          name='index.html'):
     from zope.interface import Interface
     from zope.component import getGlobalSiteManager
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -890,7 +888,7 @@ def registerExceptionView(for_, factory=CustomExceptionView,
 
 
 def unregisterExceptionView(for_, factory=CustomExceptionView,
-                            name=u'index.html'):
+                            name='index.html'):
     from zope.interface import Interface
     from zope.component import getGlobalSiteManager
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -920,7 +918,7 @@ class DummyRequest(dict):
         return None
 
 
-class DummyResponse(object):
+class DummyResponse:
     debug_mode = False
     after_list = ()
     realm = None
@@ -947,7 +945,7 @@ class DummyResponse(object):
     status = property(lambda self: self._status, setStatus)
 
 
-class DummyCallable(object):
+class DummyCallable:
     _called_with = _raise = _result = None
 
     def __call__(self, *args, **kw):

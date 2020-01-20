@@ -45,8 +45,8 @@ def dump_instance(self, value, write):
         # We want to avoid disclosing private attributes.
         # Private attributes are by convention named with
         # a leading underscore character.
-        value = dict([(k, v) for (k, v) in value.__dict__.items()
-                      if k[:1] != '_'])
+        value = {k: v for (k, v) in value.__dict__.items()
+                 if k[:1] != '_'}
         self.dump_struct(value, write)
 
 
@@ -104,7 +104,7 @@ def is_xmlrpc_response(response):
     return isinstance(response, Response)
 
 
-class Response(object):
+class Response:
     """Customized Response that handles XML-RPC-specific details.
 
     We override setBody to marshall Python objects into XML-RPC. We

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable

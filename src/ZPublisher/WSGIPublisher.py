@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
@@ -14,13 +13,11 @@
 """ Python Object Publisher -- Publish Python objects on web servers
 """
 import sys
+from _thread import allocate_lock
 from contextlib import closing
 from contextlib import contextmanager
 from io import BytesIO
 from io import IOBase
-
-from six import reraise
-from six.moves._thread import allocate_lock
 
 import transaction
 from AccessControl.SecurityManagement import getSecurityManager
@@ -51,6 +48,19 @@ _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
 _MODULE_LOCK = allocate_lock()
 _MODULES = {}
+
+
+# This is copied from the six module
+def reraise(tp, value, tb=None):
+    try:
+        if value is None:
+            value = tp()
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+        raise value
+    finally:
+        value = None
+        tb = None
 
 
 def call_object(obj, args, request):
@@ -106,14 +116,14 @@ def get_module_info(module_name='Zope2'):
 
 
 def _exc_view_created_response(exc, request, response):
-    view = queryMultiAdapter((exc, request), name=u'index.html')
+    view = queryMultiAdapter((exc, request), name='index.html')
     parents = request.get('PARENTS')
 
     if view is None and parents:
         # Try a fallback based on the old standard_error_message
         # DTML Method in the ZODB
         view = queryMultiAdapter((exc, request),
-                                 name=u'standard_error_message')
+                                 name='standard_error_message')
         root_parent = parents[0]
         try:
             aq_acquire(root_parent, 'standard_error_message')

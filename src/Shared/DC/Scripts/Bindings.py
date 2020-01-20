@@ -13,8 +13,6 @@
 
 import re
 
-from six import exec_
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.Permissions import view_management_screens
@@ -38,7 +36,7 @@ defaultBindings = {'name_context': 'context',
 _marker = []  # Create a new marker
 
 
-class NameAssignments(object):
+class NameAssignments:
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
@@ -160,7 +158,7 @@ class NameAssignments(object):
         return self._generateCodeBlock(text, assigned_names)
 
 
-class UnauthorizedBinding(object):
+class UnauthorizedBinding:
     """Explanation: as of Zope 2.6.3 a security hole was closed - no
        security check was happening when 'context' and 'container'
        were bound to a script. Adding the check broke lots of sites
@@ -209,7 +207,7 @@ class UnauthorizedBinding(object):
     __str__ = __call__ = index_html = __you_lose
 
 
-class Bindings(object):
+class Bindings:
 
     security = ClassSecurityInfo()
 
@@ -367,7 +365,7 @@ class Bindings(object):
                 bound_data = {}
             else:
                 bound_data = []
-                exec_(bindcode)
+                exec(bindcode)
                 bound_data = bound_data[0]
             return self._exec(bound_data, args, kw)
         finally:

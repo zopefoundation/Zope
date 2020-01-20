@@ -80,7 +80,7 @@ def getVerifiedManagerIds(container):
 manager_timestamp = 0
 
 
-class Cacheable(object):
+class Cacheable:
     """Mix-in for cacheable objects."""
 
     manage_options = (
@@ -386,7 +386,7 @@ def findCacheables(
         traceback.print_exc()
 
 
-class Cache(object):
+class Cache:
     """
     A base class (and interface description) for caches.
     Note that Cache objects are not intended to be visible by
@@ -420,7 +420,7 @@ class Cache(object):
         raise NotImplementedError
 
 
-class CacheManager(object):
+class CacheManager:
     """
     A base class for cache managers.  Implement ZCacheManager_getCache().
     """

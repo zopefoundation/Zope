@@ -76,5 +76,8 @@ Backwards incompatible changes
   first, migrate to Python 3 and than switch to Zope 5.
   (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
+- Remove Python 2 support code and dependency on ``six``.
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
+
 - Drop support for running Zope with ZServer as it is Python 2 only.
   (`#592 <https://github.com/zopefoundation/Zope/issues/592>`_)

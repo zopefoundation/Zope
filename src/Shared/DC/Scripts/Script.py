@@ -15,7 +15,7 @@
 This provides generic script support
 """
 
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens

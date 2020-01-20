@@ -14,11 +14,8 @@
 """
 
 import html
-
-from six import binary_type
-from six import text_type
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
+from urllib.parse import quote
+from urllib.parse import unquote
 
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
@@ -94,7 +91,7 @@ class LazyFilter(Lazy):
         return data[i]
 
 
-class TreeSkipMixin(object):
+class TreeSkipMixin:
     '''Mixin class to make trees test security, and allow
     skipping of unauthorized objects. '''
     skip = None
@@ -298,10 +295,10 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
-    if isinstance(v, binary_type):
+    if isinstance(v, bytes):
         # Py 3 only
         return ':bytes'
-    if isinstance(v, text_type):
+    if isinstance(v, str):
         # Py 2 only
         encoding = _default_encoding()
         return ':%s:ustring' % (encoding,)

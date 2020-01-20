@@ -129,7 +129,7 @@ class Functional(sandbox.Sandboxed):
                                wsgi_result, wsgi_headers)
 
 
-class ResponseWrapper(object):
+class ResponseWrapper:
     '''Decorates a response object with additional introspective methods.'''
 
     def __init__(self, response, outstream, path,

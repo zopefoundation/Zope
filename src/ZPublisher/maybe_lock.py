@@ -11,4 +11,4 @@
 #
 ##############################################################################
 
-from six.moves._thread import allocate_lock  # NOQA
+from _thread import allocate_lock  # NOQA

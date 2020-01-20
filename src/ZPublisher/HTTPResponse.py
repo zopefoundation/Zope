@@ -21,14 +21,9 @@ import time
 import zlib
 from io import BytesIO
 from io import IOBase
-
-from six import binary_type
-from six import class_types
-from six import reraise
-from six import text_type
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.parse import urlunparse
+from urllib.parse import quote
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 from zExceptions import BadRequest
 from zExceptions import HTTPRedirection
@@ -197,7 +192,7 @@ class HTTPBaseResponse(BaseResponse):
             status = location.getStatus()
             location = location.headers['Location']
 
-        if isinstance(location, binary_type):
+        if isinstance(location, bytes):
             location = location.decode(self.charset)
 
         # To be entirely correct, we must make sure that all non-ASCII
@@ -238,7 +233,7 @@ class HTTPBaseResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if isinstance(status, class_types) and issubclass(status, Exception):
+        if isinstance(status, type) and issubclass(status, Exception):
             status = status.__name__
 
         if isinstance(status, str):
@@ -496,7 +491,7 @@ class HTTPBaseResponse(BaseResponse):
         if hasattr(body, 'asHTML'):
             body = body.asHTML()
 
-        if isinstance(body, text_type):
+        if isinstance(body, str):
             body = self._encode_unicode(body)
         elif isinstance(body, bytes):
             pass
@@ -504,7 +499,7 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 body = bytes(body)
             except (TypeError, UnicodeError):
-                body = self._encode_unicode(text_type(body))
+                body = self._encode_unicode(str(body))
 
         # At this point body is always binary
         b_len = len(body)
@@ -515,7 +510,7 @@ class HTTPBaseResponse(BaseResponse):
             self.notFoundError(body[1:-1].decode(self.charset))
         else:
             if title:
-                title = text_type(title)
+                title = str(title)
                 if not is_error:
                     self.body = body = self._html(
                         title, body.decode(self.charset)).encode(self.charset)
@@ -852,15 +847,15 @@ class HTTPResponse(HTTPBaseResponse):
         if isinstance(b, Exception):
             try:
                 try:
-                    b = text_type(b)
+                    b = str(b)
                 except UnicodeDecodeError:
-                    b = self._encode_unicode(text_type(b)).decode(self.charset)
+                    b = self._encode_unicode(str(b)).decode(self.charset)
             except Exception:
                 b = '<unprintable %s object>' % type(b).__name__
 
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
-                (text_type(t),
+                (str(t),
                  'Zope has exited normally.<p>'
                  + self._traceback(t, v, tb) + '</p>'),
                 is_error=True)
@@ -872,7 +867,7 @@ class HTTPResponse(HTTPBaseResponse):
 
             if match is None:
                 body = self.setBody(
-                    (text_type(t),
+                    (str(t),
                      'Sorry, a site error occurred.<p>'
                      + self._traceback(t, v, tb) + '</p>'),
                     is_error=True)
@@ -885,7 +880,7 @@ class HTTPResponse(HTTPBaseResponse):
                     body = self.setBody(b, is_error=True)
             else:
                 body = self.setBody(
-                    (text_type(t),
+                    (str(t),
                      b + self._traceback(t, '(see above)', tb, 0)),
                     is_error=True)
         del tb
@@ -994,7 +989,7 @@ class WSGIResponse(HTTPBaseResponse):
         if issubclass(t, Unauthorized):
             self._unauthorized()
 
-        reraise(t, v, tb)
+        raise v.with_traceback(tb)
 
     def finalize(self):
         # Set 204 (no content) status if 200 and response is empty
@@ -1018,7 +1013,7 @@ class WSGIResponse(HTTPBaseResponse):
             result.append(('Server', self._server_version))
 
         result.append(('Date', build_http_date(_now())))
-        result.extend(super(WSGIResponse, self).listHeaders())
+        result.extend(super().listHeaders())
         return result
 
     def write(self, data):
@@ -1048,13 +1043,13 @@ class WSGIResponse(HTTPBaseResponse):
             self.body = body
         elif IStreamIterator.providedBy(body):
             self.body = body
-            super(WSGIResponse, self).setBody(b'', title, is_error)
+            super().setBody(b'', title, is_error)
         elif IUnboundStreamIterator.providedBy(body):
             self.body = body
             self._streaming = 1
-            super(WSGIResponse, self).setBody(b'', title, is_error)
+            super().setBody(b'', title, is_error)
         else:
-            super(WSGIResponse, self).setBody(body, title, is_error)
+            super().setBody(body, title, is_error)
 
         # Have to apply the lock at the end in case the super class setBody
         # is called, which will observe the lock and do nothing

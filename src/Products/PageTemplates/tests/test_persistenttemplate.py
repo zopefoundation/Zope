@@ -121,13 +121,13 @@ class TestPersistent(ZopeTestCase):
     def test_simple(self):
         template = self._makeOne('foo', simple_i18n)
         result = template().strip()
-        self.assertEqual(result, u'Hello, World')
+        self.assertEqual(result, 'Hello, World')
         editable_text = get_editable_content(template)
         self.assertEqual(editable_text, html.escape(simple_i18n, False))
 
     def test_escape_on_edit(self):
         # check that escapable chars can round-trip intact.
-        source = u"&gt; &amp; &lt;"
+        source = "&gt; &amp; &lt;"
         template = self._makeOne('foo', source)
         self.assertEqual(template(), source)  # nothing to render
         editable_text = get_editable_content(template)
@@ -138,7 +138,7 @@ class TestPersistent(ZopeTestCase):
         self._makeOne('macro_middle', macro_middle)
         inner = self._makeOne('macro_inner', macro_inner)
         result = inner().strip()
-        self.assertEqual(result, u'Inner Slot')
+        self.assertEqual(result, 'Inner Slot')
 
     def test_pt_render_with_macro(self):
         # The pt_render method of ZopePageTemplates allows rendering the
@@ -148,7 +148,7 @@ class TestPersistent(ZopeTestCase):
         extra_context = dict(form=object(),
                              context=self.folder,
                              here=object(),)
-        capture = dict((name, None) for name in extra_context)
+        capture = {name: None for name in extra_context}
         source = generate_capture_source(capture)
         self._makeOne('macro_outer', macro_outer)
         template = self._makeOne('test_pt_render', source)
@@ -173,7 +173,7 @@ class TestPersistent(ZopeTestCase):
     def test_repeat_object_security(self):
         template = self._makeOne('foo', repeat_object)
         # this should not raise an Unauthorized error
-        self.assertEqual(template().strip(), u'012')
+        self.assertEqual(template().strip(), '012')
         # The rest of this test is not actually testing
         # the security access, but I couldn't find a simpler
         # way to test if the RepeatItem instance itself allows public
@@ -196,7 +196,7 @@ class TestPersistent(ZopeTestCase):
         # check that the "path" function inside a python expression works
         self.folder.method = 'post'
         template = self._makeOne('foo', python_path_source)
-        self.assertEqual(template(), u'<form method="post" />')
+        self.assertEqual(template(), '<form method="post" />')
 
     def test_filename_attribute(self):
         # check that a persistent page template that happens to have
@@ -205,7 +205,7 @@ class TestPersistent(ZopeTestCase):
         template.filename = 'some/random/path'
         # this should still work, without trying to open some random
         # file on the filesystem
-        self.assertEqual(template().strip(), u'012')
+        self.assertEqual(template().strip(), '012')
 
     def test_edit_with_errors(self):
         # Prevent error output to the console
@@ -217,7 +217,7 @@ class TestPersistent(ZopeTestCase):
         # and the errors should be in an xml comment at the start of
         # the editable text
         error_prefix = html.escape(
-            '<!-- Page Template Diagnostics\n {0}\n-->\n'.format(
+            '<!-- Page Template Diagnostics\n {}\n-->\n'.format(
                 '\n '.join(template._v_errors)
             ),
             False,
@@ -227,15 +227,15 @@ class TestPersistent(ZopeTestCase):
     def test_lp_848200(self):
         # https://bugs.launchpad.net/chameleon.zpt/+bug/848200
         template = self._makeOne('foo', lp_848200_source)
-        self.assertEqual(template().strip(), u'<tag attrib="true" />')
+        self.assertEqual(template().strip(), '<tag attrib="true" />')
 
     def test_onerror_structure(self):
         template = self._makeOne('foo', tal_onerror_structure_source)
-        self.assertEqual(template().strip(), u'<i>error!</i>')
+        self.assertEqual(template().strip(), '<i>error!</i>')
 
     def test_python_nbsp(self):
         template = self._makeOne('foo', python_nbsp_source)
-        self.assertEqual(template().strip(), u'<p>&nbsp;</p>')
+        self.assertEqual(template().strip(), '<p>&nbsp;</p>')
 
 
 def test_suite():

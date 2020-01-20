@@ -36,7 +36,7 @@ class MapplyTests(unittest.TestCase):
     def testClass(self):
         values = {'a': 2, 'b': 3, 'c': 5}
 
-        class c(object):
+        class c:
             a = 3
 
             def __call__(self, b, c=4):
@@ -58,11 +58,11 @@ class MapplyTests(unittest.TestCase):
         # recursive look for __call__ attributes until it finds an
         # actual method:
 
-        class CallableObject(object):
+        class CallableObject:
             def __call__(self, a, b):
                 return '%s%s' % (a, b)
 
-        class Container(object):
+        class Container:
             __call__ = CallableObject()
 
         v = mapply(Container(), (8, 3), {})

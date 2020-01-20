@@ -30,7 +30,7 @@ class AqPageTemplate(Implicit, PageTemplate):
     pass
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -54,7 +54,7 @@ class UnitTestSecurityPolicy(object):
 class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(DTMLTests, self).setUp()
+        super().setUp()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
@@ -65,7 +65,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         noSecurityManager()  # Use the new policy.
 
     def tearDown(self):
-        super(DTMLTests, self).tearDown()
+        super().tearDown()
         SecurityManager.setSecurityPolicy(self.oldPolicy)
         noSecurityManager()  # Reset to old policy.
 

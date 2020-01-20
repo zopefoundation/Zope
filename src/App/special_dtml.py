@@ -42,7 +42,7 @@ PREFIX = os.path.realpath(
 )
 
 
-class Code(object):
+class Code:
     pass
 
 

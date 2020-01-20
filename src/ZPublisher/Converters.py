@@ -14,9 +14,6 @@
 import html
 import re
 
-from six import binary_type
-from six import text_type
-
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
 
@@ -32,7 +29,7 @@ def field2string(v):
     """
     if hasattr(v, 'read'):
         return v.read()
-    elif isinstance(v, binary_type):
+    elif isinstance(v, bytes):
         return v.decode(default_encoding)
     else:
         return str(v)
@@ -42,7 +39,7 @@ def field2bytes(v):
     # Converts value to bytes.
     if hasattr(v, 'read'):
         return v.read()
-    elif isinstance(v, text_type):
+    elif isinstance(v, str):
         return v.encode(default_encoding)
     else:
         return bytes(v)
@@ -165,7 +162,7 @@ def field2boolean(v):
     return bool(v)
 
 
-class _unicode_converter(object):
+class _unicode_converter:
 
     def __call__(self, v):
         # Convert a regular python string. This probably doesn't do
@@ -177,7 +174,7 @@ class _unicode_converter(object):
         #       <input name="description:ustring" .....
         if hasattr(v, 'read'):
             v = v.read()
-        v = text_type(v)
+        v = str(v)
         return self.convert_unicode(v)
 
     def convert_unicode(self, v):
@@ -202,21 +199,21 @@ field2utokens = field2utokens()
 
 class field2utext(_unicode_converter):
     def convert_unicode(self, v):
-        if isinstance(v, binary_type):
-            return text_type(field2text(v.encode('utf8')), 'utf8')
+        if isinstance(v, bytes):
+            return str(field2text(v.encode('utf8')), 'utf8')
         return v
 
 
 field2utext = field2utext()
 
 
-class field2ulines(object):
+class field2ulines:
     def __call__(self, v):
         if hasattr(v, 'read'):
             v = v.read()
         if isinstance(v, (list, tuple)):
             return [field2ustring(x) for x in v]
-        v = text_type(v)
+        v = str(v)
         return self.convert_unicode(v)
 
     def convert_unicode(self, v):

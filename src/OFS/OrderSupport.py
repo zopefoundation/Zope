@@ -25,7 +25,7 @@ from zope.interface import implementer
 
 
 @implementer(IOrderedContainer)
-class OrderSupport(object):
+class OrderSupport:
 
     """ Ordered container mixin class.
 
@@ -241,8 +241,7 @@ class OrderSupport(object):
         """ Rename a particular sub-object without changing its position.
         """
         old_position = self.getObjectPosition(id)
-        result = super(OrderSupport, self).manage_renameObject(id, new_id,
-                                                               REQUEST)
+        result = super().manage_renameObject(id, new_id, REQUEST)
         self.moveObjectToPosition(
             new_id,
             old_position,

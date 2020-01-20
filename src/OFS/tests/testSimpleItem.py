@@ -23,8 +23,8 @@ class TestItem(unittest.TestCase):
         verifyClass(IManageable, self._getTargetClass())
 
     def test_raise_StandardErrorMessage_str_errorValue(self):
-        class REQUEST(object):
-            class RESPONSE(object):
+        class REQUEST:
+            class RESPONSE:
                 handle_errors = True
         item = self._makeOne()
 
@@ -47,8 +47,8 @@ class TestItem(unittest.TestCase):
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
         from AccessControl.tainted import TaintedString
 
-        class REQUEST(object):
-            class RESPONSE(object):
+        class REQUEST:
+            class RESPONSE:
                 handle_errors = True
         item = self._makeOne()
 
@@ -94,8 +94,8 @@ class TestSimpleItem(unittest.TestCase):
         verifyClass(ISimpleItem, self._getTargetClass())
 
     def test_title_or_id_nonascii(self):
-        unencoded_id = u'\xfc\xe4\xee\xe9\xdf_id'
-        unencoded_title = u'\xfc\xe4\xee\xe9\xdf Title'
+        unencoded_id = '\xfc\xe4\xee\xe9\xdf_id'
+        unencoded_title = '\xfc\xe4\xee\xe9\xdf Title'
         item = self._makeOne()
 
         item.id = unencoded_id
@@ -105,9 +105,9 @@ class TestSimpleItem(unittest.TestCase):
         self.assertEqual(item.title_or_id(), unencoded_title)
 
     def test_title_and_id_nonascii(self):
-        unencoded_id = u'\xfc\xe4\xee\xe9\xdf_id'
+        unencoded_id = '\xfc\xe4\xee\xe9\xdf_id'
         encoded_id = unencoded_id.encode('UTF-8')
-        unencoded_title = u'\xfc\xe4\xee\xe9\xdf Title'
+        unencoded_title = '\xfc\xe4\xee\xe9\xdf Title'
         item = self._makeOne()
 
         item.id = unencoded_id
@@ -128,11 +128,11 @@ class TestSimpleItem(unittest.TestCase):
         # handle_errors should default to True. It is a flag used for
         # functional doctests. See ZPublisher/Test.py and
         # ZPublisher/Publish.py.
-        class REQUEST(object):
-            class RESPONSE(object):
+        class REQUEST:
+            class RESPONSE:
                 handle_errors = True
 
-        class StandardErrorMessage(object):
+        class StandardErrorMessage:
             def __init__(self):
                 self.kw = {}
 

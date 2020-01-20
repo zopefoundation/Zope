@@ -15,8 +15,6 @@
 
 import html
 
-import six
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
@@ -34,7 +32,7 @@ from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
 
 
-class Virtual(object):
+class Virtual:
     """A virtual propertysheet stores it's properties in it's instance."""
 
     def __init__(self):
@@ -244,7 +242,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         propinfo = self.propertyInfo(id)
         if 'w' not in propinfo.get('mode', 'wd'):
             raise BadRequest('%s cannot be changed.' % html.escape(id, True))
-        if isinstance(value, (six.string_types, six.binary_type)):
+        if isinstance(value, (str, bytes)):
             proptype = propinfo.get('type', 'string')
             if proptype in type_converters:
                 value = type_converters[proptype](value)

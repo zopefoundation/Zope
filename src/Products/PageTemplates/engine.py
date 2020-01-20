@@ -42,7 +42,7 @@ logger = logging.getLogger('Products.PageTemplates')
 
 @implementer(IPageTemplateProgram)
 @provider(IPageTemplateEngine)
-class Program(object):
+class Program:
 
     # Zope 2 Page Template expressions
     secure_expression_types = {

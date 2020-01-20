@@ -19,7 +19,7 @@ from Testing.ZopeTestCase import utils
 _deferred_setup = []
 
 
-class ZopeLite(object):
+class ZopeLite:
     '''The most base layer'''
 
     @classmethod

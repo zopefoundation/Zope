@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import traceback
 import unittest
 from io import BytesIO
@@ -85,7 +83,7 @@ class HTTPResponseTests(unittest.TestCase):
                          'application/foo; charset: something')
 
     def test_ctor_charset_unicode_body_application_header(self):
-        BODY = u'\xe4rger'
+        BODY = '\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
@@ -93,7 +91,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_charset_unicode_body_application_header_diff_encoding(self):
-        BODY = u'\xe4rger'
+        BODY = '\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type':
                                           'application/foo; charset=utf-8'})
@@ -103,8 +101,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_body_recodes_to_match_content_type_charset(self):
-        xml = (u'<?xml version="1.0" encoding="iso-8859-15" ?>\n'
-               u'<foo><bar/></foo>')
+        xml = ('<?xml version="1.0" encoding="iso-8859-15" ?>\n'
+               '<foo><bar/></foo>')
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=utf-8'})
@@ -112,8 +110,8 @@ class HTTPResponseTests(unittest.TestCase):
                          xml.replace('iso-8859-15', 'utf-8').encode('utf-8'))
 
     def test_ctor_body_already_matches_charset_unchanged(self):
-        xml = (u'<?xml version="1.0" encoding="iso-8859-15" ?>\n'
-               u'<foo><bar/></foo>')
+        xml = ('<?xml version="1.0" encoding="iso-8859-15" ?>\n'
+               '<foo><bar/></foo>')
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=iso-8859-15'})
@@ -349,10 +347,10 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_setCookie_handle_unicode_values(self):
         response = self._makeOne()
-        response.setCookie('foo', u'bar')
+        response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
         self.assertEqual(len(cookie), 2)
-        self.assertEqual(cookie.get('value'), u'bar')
+        self.assertEqual(cookie.get('value'), 'bar')
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
@@ -619,7 +617,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_setBody_object_with_asHTML(self):
         HTML = '<html><head></head><body></body></html>'
 
-        class Dummy(object):
+        class Dummy:
             def asHTML(self):
                 return HTML
         response = self._makeOne()
@@ -631,8 +629,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_unicode(self):
-        HTML = (u'<html><head></head><body>'
-                u'<h1>Tr\u0039s Bien</h1></body></html>')
+        HTML = ('<html><head></head><body>'
+                '<h1>Tr\u0039s Bien</h1></body></html>')
         ENCODED = HTML.encode('utf-8')
         response = self._makeOne()
         result = response.setBody(HTML)
@@ -753,7 +751,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(response._locked_status)
 
     def test_redirect_nonascii(self):
-        URL = u'http://example.com/\xe4'
+        URL = 'http://example.com/\xe4'
         BYTES_URL = URL.encode('UTF-8')
         ENC_URL = 'http://example.com/%C3%A4'
 
@@ -789,13 +787,13 @@ class HTTPResponseTests(unittest.TestCase):
         self._redirectURLCheck(url)
 
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         self.assertEqual(response._encode_unicode(UNICODE),
                          UNICODE.encode('UTF8'))
 
     def test__encode_unicode_w_content_type_no_charset_updates_charset(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
         self.assertEqual(response._encode_unicode(UNICODE),
@@ -803,7 +801,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.getHeader('Content-Type', 'text/html; charset=UTF8')
 
     def test__encode_unicode_w_content_type_w_charset(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
@@ -811,9 +809,9 @@ class HTTPResponseTests(unittest.TestCase):
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test__encode_unicode_w_content_type_w_charset_xml_preamble(self):
-        PREAMBLE = u'<?xml version="1.0" ?>'
-        ELEMENT = u'<element>Tr\u0039s Bien</element>'
-        UNICODE = u'\n'.join([PREAMBLE, ELEMENT])
+        PREAMBLE = '<?xml version="1.0" ?>'
+        ELEMENT = '<element>Tr\u0039s Bien</element>'
+        UNICODE = '\n'.join([PREAMBLE, ELEMENT])
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
@@ -1004,11 +1002,11 @@ class HTTPResponseTests(unittest.TestCase):
         response.redirect('http://example.com/')
         status, headers = response.finalize()
         self.assertEqual(status, '302 Found')
-        expected = set([
+        expected = {
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
             ('Content-Length', '0'),
             ('Location', 'http://example.com/'),
-        ])
+        }
         self.assertEqual(set(headers), expected)
 
     def test_listHeaders_empty(self):
@@ -1097,14 +1095,14 @@ class HTTPResponseTests(unittest.TestCase):
         headers = dict(response.listHeaders())
         cookie_header = headers.pop('Set-Cookie')
         headers = list(headers.items())
-        expected = set([
+        expected = {
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
-        ])
+        }
         self.assertEqual(set(headers), expected)
         self.assertEqual(
             set(cookie_header.split('; ')),
-            set(['qux="deleted"', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
+            {'qux="deleted"', 'Path=/', 'Max-Age=0',
+             'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1123,11 +1121,11 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setBody(b'BLAH')
         headers = response.listHeaders()
-        expected = set([
+        expected = {
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
             ('Content-Length', '4'),
             ('Content-Type', 'text/plain; charset=utf-8'),
-        ])
+        }
         self.assertEqual(set(headers), expected)
 
     def test___str__already_wrote(self):
@@ -1140,12 +1138,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__existing_content_length(self):
@@ -1156,12 +1154,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 42',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__existing_transfer_encoding(self):
@@ -1171,12 +1169,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Transfer-Encoding: slurry',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader(self):
@@ -1185,13 +1183,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader_literal(self):
@@ -1200,13 +1198,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-consistency: Foolish',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_redirect(self):
@@ -1215,13 +1213,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 302 Found',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'Location: http://example.com/',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setCookie_appendCookie(self):
@@ -1231,13 +1229,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'Set-Cookie: foo="bar%3Abaz"; Path=/',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_expireCookie(self):
@@ -1248,18 +1246,18 @@ class HTTPResponseTests(unittest.TestCase):
         cookie_line = [l for l in lines if b'Set-Cookie' in l][0]
         other_lines = [l for l in lines if b'Set-Cookie' not in l]
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
-        ])
+        }
         self.assertEqual(set(other_lines), expected)
         cookie_value = cookie_line.split(b': ', 1)[-1]
         self.assertEqual(
             set(cookie_value.split(b'; ')),
-            set([b'qux="deleted"', b'Path=/', b'Max-Age=0',
-                 b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
+            {b'qux="deleted"', b'Path=/', b'Max-Age=0',
+             b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test___str__after_addHeader(self):
@@ -1269,14 +1267,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 7)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'X-Consistency: Oatmeal',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__w_body(self):
@@ -1285,14 +1283,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 4',
             b'Content-Type: text/plain; charset=utf-8',
             b'BLAH',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
         self.assertEqual(lines[4], b'')
@@ -1305,13 +1303,13 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(response._wrote)
         lines = stdout.getvalue().split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
             b'Content-Length: 0',
             b'Kilroy was here!',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
         self.assertEqual(lines[3], b'')
@@ -1337,7 +1335,7 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(response.errmsg, 'Internal Server Error')
 
     def test_exception_500_text(self):
-        message = u'ERROR \xe4 VALUE'
+        message = 'ERROR \xe4 VALUE'
         exc = AttributeError(message)
         expected = traceback.format_exception_only(
             exc.__class__, exc)[0].encode('utf-8')
@@ -1352,4 +1350,4 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_isHTML_not_decodable_bytes(self):
         response = self._makeOne()
-        self.assertFalse(response.isHTML(u'bïñårÿ'.encode('latin1')))
+        self.assertFalse(response.isHTML('bïñårÿ'.encode('latin1')))

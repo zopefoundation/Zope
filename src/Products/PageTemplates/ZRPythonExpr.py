@@ -49,7 +49,7 @@ class PythonExpr(PythonExpr):
         return eval(self._code, vars, {})
 
 
-class _SecureModuleImporter(object):
+class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = True
 
     def __getitem__(self, module):

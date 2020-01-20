@@ -53,7 +53,7 @@ class ZopeDatabaseTestCase(unittest.TestCase):
         return conf
 
     def test_parse_mount_points_as_native_strings(self):
-        conf = self.load_config_text(u"""
+        conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             <zodb_db main>
                mount-point /test
@@ -63,7 +63,7 @@ class ZopeDatabaseTestCase(unittest.TestCase):
             </zodb_db>
             """)
         db = conf.databases[0]
-        self.assertEqual(u'main', db.name)
+        self.assertEqual('main', db.name)
         virtual_path = db.getVirtualMountPaths()[0]
         self.assertEqual('/test', virtual_path)
         self.assertIsInstance(virtual_path, str)

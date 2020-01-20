@@ -33,7 +33,7 @@ class simple(zope.viewlet.viewlet.simple):
     __init__ = ViewletBase.__init__
 
 
-def SimpleViewletClass(template, bases=(), attributes=None, name=u''):
+def SimpleViewletClass(template, bases=(), attributes=None, name=''):
     """A function that can be used to generate a viewlet from a set of
     information.
     """

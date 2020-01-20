@@ -15,7 +15,7 @@
 from zExceptions import HTTPException
 
 
-class HTTPExceptionHandler(object):
+class HTTPExceptionHandler:
 
     def __init__(self, application, global_conf=None):
         self.application = application

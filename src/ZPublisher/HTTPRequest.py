@@ -22,12 +22,8 @@ import re
 import time
 from cgi import FieldStorage
 from copy import deepcopy
-
-from six import binary_type
-from six import string_types
-from six import text_type
-from six.moves.urllib.parse import unquote
-from six.moves.urllib.parse import urlparse
+from urllib.parse import unquote
+from urllib.parse import urlparse
 
 from AccessControl.tainted import should_be_tainted
 from AccessControl.tainted import taint_string
@@ -214,7 +210,7 @@ class HTTPRequest(BaseRequest):
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if isinstance(path, string_types):
+        if isinstance(path, str):
             path = path.split('/')
         self._script[:] = list(map(quote, [_p for _p in path if _p]))
         del self._steps[:]
@@ -233,7 +229,7 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
-        if isinstance(path, string_types):
+        if isinstance(path, str):
             path = path.split('/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
         i = 0
@@ -642,8 +638,8 @@ class HTTPRequest(BaseRequest):
                                 # encoding.  This gets passed to the converter
                                 # either as unicode, if it can handle it, or
                                 # crunched back down to utf-8 if it can not.
-                                if isinstance(item, binary_type):
-                                    item = text_type(item, character_encoding)
+                                if isinstance(item, bytes):
+                                    item = str(item, character_encoding)
                                 if hasattr(converter, 'convert_unicode'):
                                     item = converter.convert_unicode(item)
                                 else:
@@ -1563,7 +1559,7 @@ class WSGIRequest(HTTPRequest):
     pass
 
 
-class TaintRequestWrapper(object):
+class TaintRequestWrapper:
 
     def __init__(self, req):
         self._req = req
@@ -1594,7 +1590,7 @@ class TaintRequestWrapper(object):
         return TaintMethodWrapper(self._req.keys)(*args, **kw)
 
 
-class TaintMethodWrapper(object):
+class TaintMethodWrapper:
 
     def __init__(self, method):
         self._method = method
@@ -1643,7 +1639,7 @@ class ZopeFieldStorage(FieldStorage):
 
 
 # Original version: zope.publisher.browser.FileUpload
-class FileUpload(object):
+class FileUpload:
     '''File upload objects
 
     File upload objects are used to represent file-uploaded data.
@@ -1748,7 +1744,7 @@ def parse_cookie(text,
     return parse_cookie(text[c_len:], result)
 
 
-class record(object):
+class record:
 
     # Allow access to record methods and values from DTML
     __allow_access_to_unprotected_subobjects__ = 1
@@ -1814,9 +1810,9 @@ def _decode(value, charset):
     elif isinstance(value, tuple):
         return tuple(_decode(v, charset) for v in value)
     elif isinstance(value, dict):
-        return dict((k, _decode(v, charset)) for k, v in value.items())
-    elif isinstance(value, binary_type):
-        return text_type(value, charset, 'replace')
+        return {k: _decode(v, charset) for k, v in value.items()}
+    elif isinstance(value, bytes):
+        return str(value, charset, 'replace')
     return value
 
 

@@ -14,8 +14,7 @@
 import os
 import sys
 import time
-
-from six.moves.urllib import parse
+from urllib import parse
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
@@ -30,7 +29,7 @@ from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 
-class FakeConnection(object):
+class FakeConnection:
     # Supports the methods of Connection that CacheManager needs
 
     def __init__(self, db, parent_jar):

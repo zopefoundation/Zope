@@ -13,7 +13,7 @@
 """DTML Document objects.
 """
 
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass

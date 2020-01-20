@@ -178,8 +178,8 @@ class FormatterFunctionalTest(FunctionalTestCase):
         namespace = {'context': self.app}
         self.assertEqual(
             pt.pt_render(namespace).strip(),
-            u'<p>&lt;application at &gt;</p>\n'
-            u'<p>&lt;APPLICATION AT &gt;</p>')
+            '<p>&lt;application at &gt;</p>\n'
+            '<p>&lt;APPLICATION AT &gt;</p>')
 
     def test_cook_zope3_page_templates_using_format(self):
         from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -193,18 +193,18 @@ class FormatterFunctionalTest(FunctionalTestCase):
         self.app.test_folder_1_.__roles__ = ['Manager']
         self.assertEqual(
             pt.pt_render(namespace).strip(),
-            u"<p>class of &lt;application at &gt; is "
-            u"&lt;class 'ofs.application.application'&gt;</p>\n"
-            u"<p>CLASS OF &lt;APPLICATION AT &gt; IS "
-            u"&lt;CLASS 'OFS.APPLICATION.APPLICATION'&gt;</p>\n"
-            u"<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
-            u"foo=&lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
-            u"foo=&lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>[&lt;Folder at /test_folder_1_&gt;] has "
-            u"first item &lt;Folder at test_folder_1_&gt;</p>\n"
-            u"<p>[&lt;Folder at /test_folder_1_&gt;] has "
-            u"first item &lt;Folder at test_folder_1_&gt;</p>"
+            "<p>class of &lt;application at &gt; is "
+            "&lt;class 'ofs.application.application'&gt;</p>\n"
+            "<p>CLASS OF &lt;APPLICATION AT &gt; IS "
+            "&lt;CLASS 'OFS.APPLICATION.APPLICATION'&gt;</p>\n"
+            "<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
+            "foo=&lt;Folder at test_folder_1_&gt;</p>\n"
+            "<p>{'foo': &lt;Folder at /test_folder_1_&gt;} has "
+            "foo=&lt;Folder at test_folder_1_&gt;</p>\n"
+            "<p>[&lt;Folder at /test_folder_1_&gt;] has "
+            "first item &lt;Folder at test_folder_1_&gt;</p>\n"
+            "<p>[&lt;Folder at /test_folder_1_&gt;] has "
+            "first item &lt;Folder at test_folder_1_&gt;</p>"
         )
 
     def test_cook_zope2_page_templates_bad_key_str(self):

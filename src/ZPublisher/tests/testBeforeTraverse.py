@@ -24,7 +24,7 @@ class DummyObjectBasic(Implicit):
     pass
 
 
-class BrokenHook(object):
+class BrokenHook:
 
     def __call__(self, *args):
         print('%s called' % self.__class__.__name__)

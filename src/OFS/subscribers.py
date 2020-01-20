@@ -71,7 +71,7 @@ def maybeWarnDeprecated(ob, method_name):
 
 @zope.interface.implementer(zope.location.interfaces.ISublocations)
 @zope.component.adapter(OFS.interfaces.IObjectManager)
-class ObjectManagerSublocations(object):
+class ObjectManagerSublocations:
     """Get the sublocations for an ObjectManager.
     """
 
@@ -79,8 +79,7 @@ class ObjectManagerSublocations(object):
         self.container = container
 
     def sublocations(self):
-        for ob in self.container.objectValues():
-            yield ob
+        yield from self.container.objectValues()
 
 # The following subscribers should really be defined in ZCML
 # but we don't have enough control over subscriber ordering for

@@ -30,10 +30,8 @@ import getopt
 import os
 import subprocess
 import sys
-
-from six.moves import input
-from six.moves.configparser import ParsingError
-from six.moves.configparser import RawConfigParser
+from configparser import ParsingError
+from configparser import RawConfigParser
 
 from . import copyzopeskel
 

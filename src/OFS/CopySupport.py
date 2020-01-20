@@ -19,12 +19,10 @@ import tempfile
 import warnings
 from json import dumps
 from json import loads
+from urllib.parse import quote
+from urllib.parse import unquote
 from zlib import compress
 from zlib import decompressobj
-
-import six
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -190,7 +188,7 @@ class CopyContainer(Base):
         try:
             op, mdatas = _cb_decode(cp, cb_maxsize)
         except Exception as e:
-            six.raise_from(CopyError('Clipboard Error'), e)
+            raise CopyError('Clipboard Error') from e
 
         oblist = []
         app = self.getPhysicalRoot()

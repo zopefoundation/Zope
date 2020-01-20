@@ -89,7 +89,7 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(d, rec.__dict__)
 
 
-class HTTPRequestFactoryMixin(object):
+class HTTPRequestFactoryMixin:
 
     def tearDown(self):
         cleanUp()
@@ -129,7 +129,7 @@ class HTTPRequestFactoryMixin(object):
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
-        from six.moves.urllib.parse import quote_plus
+        from urllib.parse import quote_plus
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -316,10 +316,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             formkeys,
             ['nouconverter', 'ulines', 'ustring', 'utext', 'utokens'])
 
-        self.assertEqual(req['ustring'], u'test\u00AE')
-        self.assertEqual(req['utext'], u'test\u00AE\ntest\u00AE\n')
-        self.assertEqual(req['utokens'], [u'test\u00AE', u'test\u00AE'])
-        self.assertEqual(req['ulines'], [u'test\u00AE', u'test\u00AE'])
+        self.assertEqual(req['ustring'], 'test\u00AE')
+        self.assertEqual(req['utext'], 'test\u00AE\ntest\u00AE\n')
+        self.assertEqual(req['utokens'], ['test\u00AE', 'test\u00AE'])
+        self.assertEqual(req['ulines'], ['test\u00AE', 'test\u00AE'])
 
         # expect a utf-8 encoded version
         self.assertEqual(req['nouconverter'], 'test' + reg_char)
@@ -789,7 +789,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_postProcessInputs(self):
         from ZPublisher.HTTPRequest import default_encoding
 
-        _NON_ASCII = u'\xc4\xd6\xdc'
+        _NON_ASCII = '\xc4\xd6\xdc'
         req = self._makeOne()
         req.form = {'foo': _NON_ASCII.encode(default_encoding),
                     'foo_list': [_NON_ASCII.encode(default_encoding), 'SPAM'],
@@ -802,17 +802,17 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertIsInstance(req.form['foo_list'][0], str)
         self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
         self.assertIsInstance(req.form['foo_list'][1], str)
-        self.assertEqual(req.form['foo_list'][1], u'SPAM')
+        self.assertEqual(req.form['foo_list'][1], 'SPAM')
         self.assertIsInstance(req.form['foo_tuple'], tuple)
         self.assertIsInstance(req.form['foo_tuple'][0], str)
         self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
         self.assertIsInstance(req.form['foo_tuple'][1], str)
-        self.assertEqual(req.form['foo_tuple'][1], u'HAM')
+        self.assertEqual(req.form['foo_tuple'][1], 'HAM')
         self.assertIsInstance(req.form['foo_dict'], dict)
         self.assertIsInstance(req.form['foo_dict']['foo'], str)
         self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
         self.assertIsInstance(req.form['foo_dict']['bar'], str)
-        self.assertEqual(req.form['foo_dict']['bar'], u'EGGS')
+        self.assertEqual(req.form['foo_dict']['bar'], 'EGGS')
 
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
@@ -1114,7 +1114,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(clone['PARENTS'], PARENTS[1:])
 
     def test_clone_preserves_response_class(self):
-        class DummyResponse(object):
+        class DummyResponse:
             pass
         environ = self._makePostEnviron()
         request = self._makeOne(None, environ, DummyResponse())

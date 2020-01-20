@@ -192,8 +192,8 @@ class pages(zope.browserpage.metaconfigure.pages):
 class IFiveViewDirective(IViewDirective):
 
     permission = Permission(
-        title=u"Permission",
-        description=u"The permission needed to use the view.",
+        title="Permission",
+        description="The permission needed to use the view.",
         required=False,
     )
 
