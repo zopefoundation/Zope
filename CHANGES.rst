@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- harmonize the viewlet and browserpage allowed_interface declarations
+  (`#755 <https://github.com/zopefoundation/Zope/issues/755>`_)
+
 - Close opened db during shutdown (as ZServer is already doing).
   (`#740 <https://github.com/zopefoundation/Zope/issues/740>`_)
 

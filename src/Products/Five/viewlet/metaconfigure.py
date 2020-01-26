@@ -45,7 +45,7 @@ def viewletManagerDirective(
         allowed_attributes = ['render', 'update']
     if allowed_interface is not None:
         for interface in allowed_interface:
-            allowed_attributes.extend(interface.names())
+            allowed_attributes.extend(interface.names(all=True))
 
     # Make sure that the template exists and that all low-level API methods
     # have the right permission.
@@ -120,7 +120,7 @@ def viewletDirective(
         allowed_attributes = ['render', 'update']
     if allowed_interface is not None:
         for interface in allowed_interface:
-            allowed_attributes.extend(interface.names())
+            allowed_attributes.extend(interface.names(all=True))
 
     # Make sure that the template exists and that all low-level API methods
     # have the right permission.
