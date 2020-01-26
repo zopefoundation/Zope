@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Remove more deprecated code
+  (`#757 <https://github.com/zopefoundation/Zope/issues/757>`_)
+
 - Close opened db during shutdown (as ZServer is already doing).
   (`#740 <https://github.com/zopefoundation/Zope/issues/740>`_)
 
