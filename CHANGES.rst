@@ -10,8 +10,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Remove deprecated module ``ZPublisher.maybe_lock``
+  (`#758 <https://github.com/zopefoundation/Zope/issues/758>`_)
+
 - Remove Help System methods from the product context
-  (`756 <https://github.com/zopefoundation/Zope/issues/756>`_)
+  (`#756 <https://github.com/zopefoundation/Zope/issues/756>`_)
 
 - Remove more deprecated code
   (`#757 <https://github.com/zopefoundation/Zope/issues/757>`_)
