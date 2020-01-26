@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.1.4 (unreleased)
 ------------------
 
+- Add deprecation warnings to the ``ZPublisher.maybe_lock`` module
+  (`#758 <https://github.com/zopefoundation/Zope/issues/758>`_)
+
 - Add deprecation warnings to Help System-related methods
   (`#756 <https://github.com/zopefoundation/Zope/issues/756>`_)
 
