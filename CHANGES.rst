@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.1.4 (unreleased)
 ------------------
 
+- Add deprecation warnings to Help System-related methods
+  (`#756 <https://github.com/zopefoundation/Zope/issues/756>`_)
+
 - Update to current releases of the dependencies
 
 

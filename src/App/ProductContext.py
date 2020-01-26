@@ -16,6 +16,7 @@
 import os
 import sys
 from logging import getLogger
+from warnings import warn
 
 # Waaaa
 import Products
@@ -203,12 +204,20 @@ class ProductContext(object):
                 m[name + '__roles__'] = pr
 
     def registerHelp(self, directory=None, clear=None, title_re=None):
-        pass
+        warn('The Help System has been removed from Zope 4. The '
+             'registerHelp method will be removed in Zope 5.',
+             DeprecationWarning, stacklevel=2)
 
     def registerHelpTitle(self, title=None):
-        pass
+        warn('The Help System has been removed from Zope 4. The '
+             'registerHelpTitle method will be removed in Zope 5.',
+             DeprecationWarning, stacklevel=2)
 
     def getProductHelp(self):
+        warn('The Help System has been removed from Zope 4. The '
+             'getProductHelp method will be removed in Zope 5.',
+             DeprecationWarning, stacklevel=2)
+
         class DummyHelp(object):
             lastRegistered = None
         return DummyHelp()
