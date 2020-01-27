@@ -198,17 +198,6 @@ class ProductContext:
                 m[name] = method
                 m[name + '__roles__'] = pr
 
-    def registerHelp(self, directory=None, clear=None, title_re=None):
-        pass
-
-    def registerHelpTitle(self, title=None):
-        pass
-
-    def getProductHelp(self):
-        class DummyHelp:
-            lastRegistered = None
-        return DummyHelp()
-
     def getApplication(self):
         return self.__app
 
