@@ -285,30 +285,20 @@ debugging), WebDAV (Web Distributed Authoring and Versioning), and ICP
 Zope is listening on ports other than the default 8080 HTTP, don't panic:
 it's likely just one of these additional ports.
 
-Using Zope With an Existing Web Server
---------------------------------------
+Using Zope With a Web Server
+----------------------------
 
-If you wish, you can configure your existing web server to serve Zope
-content.  Zope interfaces with Microsoft IIS, Apache, and other popular
-webservers.
+Zope works with **NGINX**, **Apache** and other popular web servers.
 
-The `Virtual Hosting Services <VirtualHosting.html>` chapter of this book
+The `Virtual Hosting Services <VirtualHosting.html>`_ chapter of this book
 provides rudimentary setup information for configuring Zope behind Apache.
-However, configuring Zope for use behind an existing web server can be a
-complicated task, and there is more than one way to get it done.  Here are
-some additional resources that should get you started:
 
-- IIS: see `brianh's HowTo
-  <http://www.zope.org/Members/brianh/iis_howto>`_ on using IIS with Zope.
-  Also of interest may be the ``WEBSERVER.txt`` file in your Zope
-  installation's ``doc`` directory, and hiperlogica's `Connecting IIS to
-  Zope <http://www.zope.org/Members/hiperlogica/ASP404>`_ article.
+If you are just getting started with Zope, note that it is not necessary
+to configure a web server to serve your Zope pages,
+as the standard Zope setup comes with the WSGI server **Waitress**.
 
-If you are just getting started with Zope, note that it is not necessary to
-configure Apache, IIS, or any other web server to serve your Zope pages, as
-Zope comes with its own web server.  You typically only need to configure
-your existing web server if you want to use it to serve Zope pages in a
-production environment.
+You typically only need to configure a web server if you want to use it
+to serve Zope pages in a production environment.
 
 Starting Zope on Windows
 ------------------------
