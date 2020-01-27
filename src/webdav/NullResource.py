@@ -54,6 +54,11 @@ from webdav.Resource import Resource
 from zope.contenttype import guess_content_type
 
 
+# XXX Originall in ZServer.Zope2.Startup.config
+# XXX Unclear if it is still relevant
+LARGE_FILE_THRESHOLD = 524288
+
+
 class NullResource(Persistent, Implicit, Resource):
 
     """Null resources are used to handle HTTP method calls on
@@ -107,8 +112,6 @@ class NullResource(Persistent, Implicit, Resource):
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource.
         """
-        from ZServer.Zope2.Startup.config import ZSERVER_LARGE_FILE_THRESHOLD
-
         self.dav__init(REQUEST, RESPONSE)
 
         name = self.__name__
@@ -127,8 +130,8 @@ class NullResource(Persistent, Implicit, Resource):
             raise PreconditionFailed
 
         # SDS: Only use BODY if the file size is smaller than
-        # ZSERVER_LARGE_FILE_THRESHOLD, otherwise read
-        # ZSERVER_LARGE_FILE_THRESHOLD bytes from the file
+        # LARGE_FILE_THRESHOLD, otherwise read
+        # LARGE_FILE_THRESHOLD bytes from the file
         # which should be enough to trigger
         # content_type detection, and possibly enough for CMF's
         # content_type_registry too.
@@ -146,9 +149,9 @@ class NullResource(Persistent, Implicit, Resource):
         # to read the whole file into memory.
 
         if (int(REQUEST.get('CONTENT_LENGTH') or 0) >
-                ZSERVER_LARGE_FILE_THRESHOLD):
+                LARGE_FILE_THRESHOLD):
             file = REQUEST['BODYFILE']
-            body = file.read(ZSERVER_LARGE_FILE_THRESHOLD)
+            body = file.read(LARGE_FILE_THRESHOLD)
             file.seek(0)
         else:
             body = REQUEST.get('BODY', '')

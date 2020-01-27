@@ -5,17 +5,17 @@ import transaction
 
 from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
 from Testing.makerequest import makerequest
-import ZServer.Zope2
+import Zope2
 
-auth_info = 'Basic %s' % base64.encodestring('manager:secret').rstrip()
+auth_info = b'Basic %s' % base64.encodebytes(b'manager:secret').rstrip()
 
-ZServer.Zope2.startup()
+Zope2.startup_wsgi()
 
 
 class TestPUTFactory(unittest.TestCase):
 
     def setUp(self):
-        self.app = makerequest(ZServer.Zope2.app())
+        self.app = makerequest(Zope2.app())
         # Make a manager user
         uf = self.app.acl_users
         uf._doAddUser('manager', 'secret', ['Manager'], [])

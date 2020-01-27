@@ -1,5 +1,5 @@
 import unittest
-import ZServer.Zope2
+import Zope2
 
 import transaction
 
@@ -15,7 +15,7 @@ from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from Zope2.App import zcml
 
-ZServer.Zope2.startup()
+Zope2.startup_wsgi()
 
 
 class EventLogger(object):
@@ -79,7 +79,7 @@ class EventTest(unittest.TestCase):
     layer = EventLayer
 
     def setUp(self):
-        self.app = makerequest(ZServer.Zope2.app())
+        self.app = makerequest(Zope2.app())
         try:
             uf = self.app.acl_users
             uf._doAddUser('manager', 'secret', ['Manager'], [])

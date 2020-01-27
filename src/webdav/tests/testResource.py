@@ -9,7 +9,7 @@ MS_DAV_AGENT = "Microsoft Data Access Internet Publishing Provider DAV"
 
 
 def make_request_response(environ=None):
-    from StringIO import StringIO
+    from io import StringIO
     from ZPublisher.HTTPRequest import HTTPRequest
     from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -106,16 +106,16 @@ class TestResource(unittest.TestCase):
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_ms_public_header(self):
-        from ZServer.Zope2.Startup import config
+        import webdav
 
-        default_settings = config.ZSERVER_ENABLE_MS_PUBLIC_HEADER
+        default_settings = webdav.enable_ms_public_header
         try:
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assert_('public' not in resp.headers)
 
-            config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = True
+            webdav.enable_ms_public_header = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
@@ -131,7 +131,7 @@ class TestResource(unittest.TestCase):
             self.assert_(resp.headers['public'] == resp.headers['allow'])
 
         finally:
-            config.ZSERVER_ENABLE_MS_PUBLIC_HEADER = default_settings
+            webdav.enable_ms_public_header = default_settings
 
     def test_MOVE_self_locked(self):
         """

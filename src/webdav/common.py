@@ -13,7 +13,9 @@
 """Commonly used functions for WebDAV support modules."""
 
 import re
-import urllib
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib.parse import urlunparse
+
 
 from Acquisition import aq_base, aq_parent
 from zExceptions import (
@@ -92,14 +94,11 @@ def is_acquired(ob):
     return 1
 
 
-def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
+def urlbase(url, ftype=None, fhost=None):
     # Return a '/' based url such as '/foo/bar', removing
     # type, host and port information if necessary.
-    if url[0] == '/':
-        return url
-    type, uri = ftype(url)
-    host, uri = fhost(uri)
-    return uri or '/'
+    parsed = urlparse(url)
+    return urlunparse(('', '') + tuple(parsed)[2:]) or '/'
 
 
 def isDavCollection(object):

@@ -13,7 +13,7 @@
 """WebDAV support - collection objects.
 """
 
-from urllib import unquote
+from six.moves.urllib.parse import unquote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
