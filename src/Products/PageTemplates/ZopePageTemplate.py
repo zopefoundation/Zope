@@ -347,6 +347,18 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def wl_isLocked(self):
         return 0
 
+    @security.protected(change_page_templates)
+    def PUT(self, REQUEST, RESPONSE):
+        """ Handle HTTP PUT requests """
+
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        text = REQUEST.get('BODY', '')
+        content_type = guess_type('', text)
+        self.pt_edit(text, content_type)
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
 
 InitializeClass(ZopePageTemplate)
 

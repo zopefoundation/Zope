@@ -367,6 +367,19 @@ class DTMLMethod(
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
+    @security.protected(change_dtml_methods)
+    def PUT(self, REQUEST, RESPONSE):
+        """ Handle HTTP PUT requests.
+        """
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        body = REQUEST.get('BODY', '')
+        self._validateProxy(REQUEST)
+        self.munge(body)
+        self.ZCacheable_invalidate()
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
         return DTMLMethod.inheritedAttribute('manage_historyCompare')(

@@ -24,10 +24,6 @@ from OFS.PropertySheets import Virtual, PropertySheet, View
 from webdav.common import isDavCollection
 from webdav.common import urlbase
 
-if sys.version_info >= (3, ):
-    basestring = str
-    unicode = str
-
 
 def absattr(attr):
     if callable(attr):
@@ -37,9 +33,9 @@ def absattr(attr):
 
 def xml_escape(value):
     from webdav.xmltools import escape
-    if not isinstance(value, basestring):
-        value = unicode(value)
-    if not isinstance(value, unicode):
+    if not isinstance(value, (str, bytes)):
+        value = str(value)
+    if not isinstance(value, str):
         value = value.decode('utf-8')
     value = escape(value)
     return value.encode('utf-8')

@@ -638,6 +638,23 @@ class File(
 
         return (_next, size)
 
+    @security.protected(change_images_and_files)
+    def PUT(self, REQUEST, RESPONSE):
+        """Handle HTTP PUT requests"""
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        type = REQUEST.get_header('content-type', None)
+
+        file = REQUEST['BODYFILE']
+
+        data, size = self._read_data(file)
+        content_type = self._get_content_type(file, data, self.__name__,
+                                              type or self.content_type)
+        self.update_data(data, content_type, size)
+
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     @security.protected(View)
     def get_size(self):
         # Get the size of a file or image.

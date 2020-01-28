@@ -31,6 +31,7 @@ TODO:
 
 """
 
+from io import BytesIO
 from io import StringIO
 from xml.dom import minidom
 from xml.sax.expatreader import ExpatParser
@@ -226,5 +227,9 @@ class XmlParser(object):
         pass
 
     def parse(self, data):
-        self.dom = minidom.parseString(data, parser=ProtectedExpatParser())
+        if isinstance(data, bytes):
+            self.dom = minidom.parse(BytesIO(data),
+									 parser=ProtectedExpatParser())
+        else:
+            self.dom = minidom.parseString(data, parser=ProtectedExpatParser())
         return Node(self.dom)

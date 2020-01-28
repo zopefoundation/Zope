@@ -13,8 +13,8 @@
 """Commonly used functions for WebDAV support modules."""
 
 import re
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.parse import urlunparse
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 
 from Acquisition import aq_base, aq_parent

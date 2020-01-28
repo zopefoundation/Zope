@@ -15,8 +15,7 @@
 
 import sys
 from io import StringIO
-
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 import transaction
 from AccessControl.Permissions import delete_objects
@@ -150,9 +149,8 @@ class PropFind(object):
                         rdict[code] = [prop]
                     else:
                         rdict[code].append(prop)
-            keys = rdict.keys()
-            keys.sort()
-            for key in keys:
+            keys = list(rdict.keys())
+            for key in sorted(keys):
                 result.write('<d:propstat>\n'
                              '  <d:prop>\n'
                              )

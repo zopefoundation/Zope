@@ -113,22 +113,22 @@ class TestResource(unittest.TestCase):
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_('public' not in resp.headers)
+            self.assertTrue('public' not in resp.headers)
 
             webdav.enable_ms_public_header = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_('public' not in resp.headers)
-            self.assert_('allow' in resp.headers)
+            self.assertTrue('public' not in resp.headers)
+            self.assertTrue('allow' in resp.headers)
 
             req, resp = make_request_response(
                 environ={'USER_AGENT': MS_DAV_AGENT})
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assert_('public' in resp.headers)
-            self.assert_('allow' in resp.headers)
-            self.assert_(resp.headers['public'] == resp.headers['allow'])
+            self.assertTrue('public' in resp.headers)
+            self.assertTrue('allow' in resp.headers)
+            self.assertEqual(resp.headers['public'], resp.headers['allow'])
 
         finally:
             webdav.enable_ms_public_header = default_settings

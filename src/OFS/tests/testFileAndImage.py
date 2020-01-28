@@ -255,6 +255,28 @@ class FileTests(unittest.TestCase):
         self.assertEqual(resp.getStatus(), 200)
         self.assertEqual(data, bytes(self.file.data))
 
+    def testPUT(self):
+        import pdb; pdb.set_trace()
+        s = b'# some python\n'
+
+        # with content type
+        data = BytesIO(s)
+        req = aputrequest(data, 'text/x-python')
+        req.processInputs()
+        self.file.PUT(req, req.RESPONSE)
+
+        self.assertEqual(self.file.content_type, 'text/x-python')
+        self.assertEqual(str(self.file.data), s)
+
+        # without content type
+        data.seek(0)
+        req = aputrequest(data, '')
+        req.processInputs()
+        self.file.PUT(req, req.RESPONSE)
+
+        self.assertEqual(self.file.content_type, 'text/x-python')
+        self.assertEqual(str(self.file.data), s)
+
     def testIndexHtmlWithPdata(self):
         self.file.manage_upload(b'a' * (2 << 16))  # 128K
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)

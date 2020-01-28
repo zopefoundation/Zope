@@ -15,15 +15,11 @@ import sys
 
 from webdav.xmltools import escape
 
-if sys.version_info >= (3, ):
-    basestring = str
-    unicode = str
-
 
 def xml_escape(value):
-    if not isinstance(value, basestring):
-        value = unicode(value)
-    if not isinstance(value, unicode):
+    if not isinstance(value, (str, bytes)):
+        value = str(value)
+    if not isinstance(value, str):
         value = value.decode('utf-8')
     value = escape(value)
     return value.encode('utf-8')

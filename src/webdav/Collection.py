@@ -13,7 +13,7 @@
 """WebDAV support - collection objects.
 """
 
-from six.moves.urllib.parse import unquote
+from urllib.parse import unquote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
@@ -89,7 +89,7 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
-        name = unquote(filter(None, url.split('/'))[-1])
+        name = unquote([_f for _f in url.split('/') if _f][-1])
         parent = self.aq_parent
         sm = getSecurityManager()
         token = None

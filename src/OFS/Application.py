@@ -31,6 +31,8 @@ from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
+from webdav.NullResource import NullResource
+from zExceptions import Forbidden
 from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
 
@@ -121,6 +123,9 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
 
         method = REQUEST.get('REQUEST_METHOD', 'GET')
 
+        if method not in ('GET', 'POST'):
+            return NullResource(self, name, REQUEST).__of__(self)
+
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
         # There is probably a better fix for this.
         try:
@@ -131,6 +136,16 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def ZopeTime(self, *args):
         """Utility function to return current date/time"""
         return DateTime(*args)
+
+    def DELETE(self, REQUEST, RESPONSE):
+        """Delete a resource object."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise Forbidden('This resource cannot be deleted.')
+
+    def MOVE(self, REQUEST, RESPONSE):
+        """Move a resource to a new location."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".
