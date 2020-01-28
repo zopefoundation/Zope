@@ -1313,7 +1313,7 @@ Conclusion
 
 Zope security is based upon roles and permissions. Users have
 roles. Security policies map permissions to roles. Classes protect
-methods with permissions. As a developer you main job is to protect
+methods with permissions. As a developer your main job is to protect
 your classes by associating methods with permissions. Of course there
 are many other details such as protecting modules and functions,
 creating security user interfaces, and initializing security
