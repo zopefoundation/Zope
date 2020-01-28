@@ -11,7 +11,7 @@ make up an application. To this end, Zope includes a comprehensive
 set of security features.  This chapter's goal is to shed light on
 Zope security in the context of Zope Product development.  For a more
 fundamental overview of Zope security, you may wish to refer to the
-`Zope Book* Chapter "Users and Security"
+*Zope Book* Chapter "Users and Security"
 <https://zope.readthedocs.io/en/latest/zopebook/Security.html>`_.
 Before diving into this
 chapter, you should have a basic understanding of how to build Zope
@@ -1313,7 +1313,7 @@ Conclusion
 
 Zope security is based upon roles and permissions. Users have
 roles. Security policies map permissions to roles. Classes protect
-methods with permissions. As a developer you main job is to protect
+methods with permissions. As a developer your main job is to protect
 your classes by associating methods with permissions. Of course there
 are many other details such as protecting modules and functions,
 creating security user interfaces, and initializing security
