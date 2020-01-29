@@ -83,9 +83,9 @@ class Node(object):
     def elements(self, name=None, ns=None):
         nodes = []
         for n in self.node.childNodes:
-            if (n.nodeType == n.ELEMENT_NODE and
-                ((name is None) or ((n.localName.lower()) == name)) and
-                    ((ns is None) or (n.namespaceURI == ns))):
+            if n.nodeType == n.ELEMENT_NODE and \
+               ((name is None) or ((n.localName.lower()) == name)) and \
+               ((ns is None) or (n.namespaceURI == ns)):
                 nodes.append(Element(n))
         return nodes
 
@@ -139,8 +139,7 @@ class Node(object):
         #       but the :n isnt part of the attribute name .. gash!
 
         attr = name.split(':')[0]
-        if (self.node.hasAttributes() and
-                attr in self.node.attributes):
+        if self.node.hasAttributes() and attr in self.node.attributes:
             # Only remove attributes if they exist
             return self.node.removeAttribute(attr)
 
@@ -230,7 +229,7 @@ class XmlParser(object):
     def parse(self, data):
         if isinstance(data, bytes):
             self.dom = minidom.parse(BytesIO(data),
-									 parser=ProtectedExpatParser())
+                                     parser=ProtectedExpatParser())
         else:
             self.dom = minidom.parseString(data, parser=ProtectedExpatParser())
         return Node(self.dom)

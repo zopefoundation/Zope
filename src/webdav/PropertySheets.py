@@ -11,7 +11,6 @@
 #
 ##############################################################################
 
-import sys
 from html import escape
 
 from AccessControl.class_init import InitializeClass

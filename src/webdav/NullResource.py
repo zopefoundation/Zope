@@ -83,7 +83,7 @@ class NullResource(Persistent, Implicit, Resource):
             raise Conflict('Collection ancestors must already exist.')
         raise NotFound('The requested resource was not found.')
 
-    security.declareProtected(View, 'HEAD')
+    @security.protected(View)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -106,7 +106,7 @@ class NullResource(Persistent, Implicit, Resource):
             ob = File(name, '', body, content_type=typ)
         return ob
 
-    security.declarePublic('PUT')
+    @security.public
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource.
         """
@@ -146,8 +146,7 @@ class NullResource(Persistent, Implicit, Resource):
         # REQUEST['BODYFILE'] directly and try as much as possible not
         # to read the whole file into memory.
 
-        if (int(REQUEST.get('CONTENT_LENGTH') or 0) >
-                LARGE_FILE_THRESHOLD):
+        if int(REQUEST.get('CONTENT_LENGTH') or 0) > LARGE_FILE_THRESHOLD:
             file = REQUEST['BODYFILE']
             body = file.read(LARGE_FILE_THRESHOLD)
             file.seek(0)
@@ -183,7 +182,7 @@ class NullResource(Persistent, Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
-    security.declareProtected(add_folders, 'MKCOL')
+    @security.protected(add_folders)
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -217,7 +216,7 @@ class NullResource(Persistent, Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
-    security.declareProtected(webdav_lock_items, 'LOCK')
+    @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """ LOCK on a Null Resource makes a LockNullResource instance """
         self.dav__init(REQUEST, RESPONSE)
@@ -284,10 +283,10 @@ class LockNullResource(NullResource, Item_w__name__):
 
     manage_options = ({'label': 'Info', 'action': 'manage_main'},)
 
-    security.declareProtected(View, 'manage')
-    security.declareProtected(View, 'manage_main')
+    security.declareProtected(View, 'manage')  # NOQA: D001
+    security.declareProtected(View, 'manage_main')  # NOQA: D001
     manage = manage_main = DTMLFile('dtml/locknullmain', globals())
-    security.declareProtected(View, 'manage_workspace')
+    security.declareProtected(View, 'manage_workspace')  # NOQA: D001
     manage_workspace = manage
     manage_main._setName('manage_main')  # explicit
 
@@ -303,7 +302,7 @@ class LockNullResource(NullResource, Item_w__name__):
         self.id = self.__name__ = name
         self.title = "LockNull Resource '%s'" % name
 
-    security.declarePublic('title_or_id')
+    @security.public
     def title_or_id(self):
         return 'Foo'
 
@@ -311,7 +310,7 @@ class LockNullResource(NullResource, Item_w__name__):
         """Retrieve properties defined on the resource."""
         return Resource.PROPFIND(self, REQUEST, RESPONSE)
 
-    security.declareProtected(webdav_lock_items, 'LOCK')
+    @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """ A Lock command on a LockNull resource should only be a
         refresh request (one without a body) """
@@ -349,7 +348,7 @@ class LockNullResource(NullResource, Item_w__name__):
 
         return RESPONSE
 
-    security.declareProtected(webdav_unlock_items, 'UNLOCK')
+    @security.protected(webdav_unlock_items)
     def UNLOCK(self, REQUEST, RESPONSE):
         """ Unlocking a Null Resource removes it from its parent """
         self.dav__init(REQUEST, RESPONSE)
@@ -374,7 +373,7 @@ class LockNullResource(NullResource, Item_w__name__):
             RESPONSE.setStatus(204)
         return RESPONSE
 
-    security.declarePublic('PUT')
+    @security.public
     def PUT(self, REQUEST, RESPONSE):
         """ Create a new non-collection resource, deleting the LockNull
         object from the container before putting the new object in. """
@@ -420,8 +419,8 @@ class LockNullResource(NullResource, Item_w__name__):
             typ, enc = guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory)
-        ob = (factory(name, typ, body) or
-              self._default_PUT_factory(name, typ, body))
+        ob = factory(name, typ, body) or self._default_PUT_factory(name,
+                                                                   typ, body)
 
         # Verify that the user can create this type of object
         try:
@@ -446,7 +445,7 @@ class LockNullResource(NullResource, Item_w__name__):
         RESPONSE.setBody('')
         return RESPONSE
 
-    security.declareProtected(add_folders, 'MKCOL')
+    @security.protected(add_folders)
     def MKCOL(self, REQUEST, RESPONSE):
         """ Create a new Collection (folder) resource.  Since this is being
         done on a LockNull resource, this also involves removing the LockNull

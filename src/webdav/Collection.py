@@ -76,7 +76,7 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for collections.')
 
-    security.declareProtected(delete_objects, 'DELETE')
+    @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a collection resource. For collection resources, DELETE
         may return either 200 (OK) or 204 (No Content) to indicate total

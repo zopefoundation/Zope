@@ -197,7 +197,7 @@ class Resource(Base, LockableItem):
             return 0
 
     # WebDAV class 1 support
-    security.declareProtected(View, 'HEAD')
+    @security.protected(View)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -237,7 +237,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
-    security.declarePublic('OPTIONS')
+    @security.public
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
         self.dav__init(REQUEST, RESPONSE)
@@ -254,7 +254,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setStatus(200)
         return RESPONSE
 
-    security.declarePublic('TRACE')
+    @security.public
     def TRACE(self, REQUEST, RESPONSE):
         """Return the HTTP message received back to the client as the
         entity-body of a 200 (OK) response. This will often usually
@@ -265,7 +265,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
-    security.declareProtected(delete_objects, 'DELETE')
+    @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
@@ -302,7 +302,7 @@ class Resource(Base, LockableItem):
 
         return RESPONSE
 
-    security.declareProtected(webdav_access, 'PROPFIND')
+    @security.protected(webdav_access)
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         from webdav.davcmds import PropFind
@@ -310,8 +310,8 @@ class Resource(Base, LockableItem):
         cmd = PropFind(REQUEST)
         result = cmd.apply(self)
         # work around MSIE DAV bug for creation and modified date
-        if (REQUEST.get_header('User-Agent') ==
-                'Microsoft Data Access Internet Publishing Provider DAV 1.1'):
+        if REQUEST.get_header('User-Agent') == \
+           'Microsoft Data Access Internet Publishing Provider DAV 1.1':
             result = result.replace('<n:getlastmodified xmlns:n="DAV:">',
                                     '<n:getlastmodified xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.rfc1123">')  # NOQA
             result = result.replace('<n:creationdate xmlns:n="DAV:">',
@@ -321,7 +321,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setBody(result)
         return RESPONSE
 
-    security.declareProtected(manage_properties, 'PROPPATCH')
+    @security.protected(manage_properties)
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
         from webdav.davcmds import PropPatch
@@ -350,7 +350,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('The resource already exists.')
 
-    security.declarePublic('COPY')
+    @security.public
     def COPY(self, REQUEST, RESPONSE):
         """Create a duplicate of the source resource whose state
         and behavior match that of the source resource as closely
@@ -462,7 +462,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setBody('')
         return RESPONSE
 
-    security.declarePublic('MOVE')
+    @security.public
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location. Though we may later try to
         make a move appear seamless across namespaces (e.g. from Zope
@@ -590,7 +590,7 @@ class Resource(Base, LockableItem):
 
     # WebDAV Class 2, Lock and Unlock
 
-    security.declareProtected(webdav_lock_items, 'LOCK')
+    @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """Lock a resource"""
         from webdav.davcmds import Lock
@@ -652,7 +652,7 @@ class Resource(Base, LockableItem):
 
         return RESPONSE
 
-    security.declareProtected(webdav_unlock_items, 'UNLOCK')
+    @security.protected(webdav_unlock_items)
     def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
         from webdav.davcmds import Unlock
@@ -672,13 +672,13 @@ class Resource(Base, LockableItem):
             RESPONSE.setStatus(204)     # No Content response code
         return RESPONSE
 
-    security.declareProtected(webdav_access, 'manage_DAVget')
+    @security.protected(webdav_access)
     def manage_DAVget(self):
         """Gets the document source"""
         # The default implementation calls manage_FTPget
         return self.manage_FTPget()
 
-    security.declareProtected(webdav_access, 'listDAVObjects')
+    @security.protected(webdav_access)
     def listDAVObjects(self):
         return []
 
