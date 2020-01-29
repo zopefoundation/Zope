@@ -14,16 +14,9 @@
 """
 
 from OFS.interfaces import IWriteLock
-from zope.deferredimport import deprecated
 from zope.interface import Interface
 from zope.schema import Bool
 from zope.schema import Tuple
-
-
-deprecated(
-    'Please import from OFS.interfaces.',
-    iso8601_date='OFS.interfaces:ILockItem',
-)
 
 
 # XXX: might contain non-API methods and outdated comments;

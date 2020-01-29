@@ -22,21 +22,6 @@ from zExceptions import HTTPConflict
 from zExceptions import HTTPLocked
 from zExceptions import HTTPPreconditionFailed
 from zExceptions import HTTPUnsupportedMediaType
-from zope.deferredimport import deprecated
-
-
-deprecated(
-    'Please import from App.Common.',
-    iso8601_date='App.Common:iso8601_date',
-    rfc1123_date='App.Common:rfc1123_date',
-    rfc850_date='App.Common:rfc850_date',
-)
-
-deprecated(
-    'Please import from OFS.LockItem.',
-    _randGen='OFS.Locked:_randGen',
-    generateLockToken='OFS.LockItem:generateLockToken',
-)
 
 
 class WebDAVException(Exception):
