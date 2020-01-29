@@ -106,16 +106,16 @@ class TestResource(unittest.TestCase):
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_ms_public_header(self):
-        import webdav
+        from webdav import Resource
 
-        default_settings = webdav.enable_ms_public_header
+        default_settings = Resource.enable_ms_public_header
         try:
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
             self.assertTrue('public' not in resp.headers)
 
-            webdav.enable_ms_public_header = True
+            Resource.enable_ms_public_header = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
@@ -131,7 +131,7 @@ class TestResource(unittest.TestCase):
             self.assertEqual(resp.headers['public'], resp.headers['allow'])
 
         finally:
-            webdav.enable_ms_public_header = default_settings
+            Resource.enable_ms_public_header = default_settings
 
     def test_MOVE_self_locked(self):
         """

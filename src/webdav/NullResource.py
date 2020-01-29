@@ -154,7 +154,7 @@ class NullResource(Persistent, Implicit, Resource):
             body = file.read(LARGE_FILE_THRESHOLD)
             file.seek(0)
         else:
-            body = REQUEST.get('BODY', '')
+            body = REQUEST.get('BODY', b'')
 
         typ = REQUEST.get_header('content-type', None)
         if typ is None:

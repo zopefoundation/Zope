@@ -22,7 +22,7 @@ def xml_escape(value):
     if not isinstance(value, str):
         value = value.decode('utf-8')
     value = escape(value)
-    return value.encode('utf-8')
+    return value
 
 
 class DAVPropertySheetMixin(object):
