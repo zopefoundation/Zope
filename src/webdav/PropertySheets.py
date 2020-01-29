@@ -11,16 +11,17 @@
 #
 ##############################################################################
 
-from cgi import escape
 import sys
+from html import escape
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import iso8601_date
 from App.Common import rfc1123_date
 from OFS.interfaces import IWriteLock
-from OFS.PropertySheets import Virtual, PropertySheet, View
-
+from OFS.PropertySheets import PropertySheet
+from OFS.PropertySheets import View
+from OFS.PropertySheets import Virtual
 from webdav.common import isDavCollection
 from webdav.common import urlbase
 

@@ -16,15 +16,14 @@ import re
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
-
-from Acquisition import aq_base, aq_parent
-from zExceptions import (
-    HTTPConflict,
-    HTTPLocked,
-    HTTPPreconditionFailed,
-    HTTPUnsupportedMediaType,
-)
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from zExceptions import HTTPConflict
+from zExceptions import HTTPLocked
+from zExceptions import HTTPPreconditionFailed
+from zExceptions import HTTPUnsupportedMediaType
 from zope.deferredimport import deprecated
+
 
 deprecated(
     'Please import from App.Common.',

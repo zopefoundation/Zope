@@ -38,6 +38,7 @@ from xml.sax.expatreader import ExpatParser
 from xml.sax.saxutils import escape as _escape
 from xml.sax.saxutils import unescape as _unescape
 
+
 escape_entities = {'"': '&quot;',
                    "'": '&apos;',
                    }

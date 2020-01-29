@@ -5,6 +5,7 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
 from Acquisition import Implicit
 
+
 MS_DAV_AGENT = "Microsoft Data Access Internet Publishing Provider DAV"
 
 

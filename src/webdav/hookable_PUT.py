@@ -1,6 +1,8 @@
 # Implement the "hookable PUT" hook.
 import re
+
 import OFS.DTMLMethod
+
 
 TEXT_PATTERN = re.compile(r'^text/.*$')
 

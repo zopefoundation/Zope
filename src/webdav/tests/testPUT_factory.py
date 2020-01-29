@@ -2,10 +2,10 @@ import base64
 import unittest
 
 import transaction
-
+import Zope2
 from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
 from Testing.makerequest import makerequest
-import Zope2
+
 
 auth_info = b'Basic %s' % base64.encodebytes(b'manager:secret').rstrip()
 

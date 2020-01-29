@@ -13,11 +13,12 @@
 """webdav interfaces.
 """
 
+from OFS.interfaces import IWriteLock
 from zope.deferredimport import deprecated
 from zope.interface import Interface
-from zope.schema import Bool, Tuple
+from zope.schema import Bool
+from zope.schema import Tuple
 
-from OFS.interfaces import IWriteLock
 
 deprecated(
     'Please import from OFS.interfaces.',

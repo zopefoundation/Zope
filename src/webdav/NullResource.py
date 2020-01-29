@@ -16,41 +16,39 @@
 import sys
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.Permissions import view as View
 from AccessControl.Permissions import add_folders
+from AccessControl.Permissions import view as View
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Acquisition import Implicit
 from App.special_dtml import DTMLFile
-from Persistence import Persistent
-from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from OFS.CopySupport import CopyError
 from OFS.DTMLDocument import DTMLDocument
 from OFS.Image import File
 from OFS.Image import Image
 from OFS.interfaces import IWriteLock
 from OFS.SimpleItem import Item_w__name__
+from Persistence import Persistent
+from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+from webdav.common import Conflict
+from webdav.common import IfParser
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
+from webdav.common import UnsupportedMediaType
+from webdav.common import isDavCollection
+from webdav.common import tokenFinder
+from webdav.davcmds import Lock
+from webdav.davcmds import Unlock
+from webdav.Resource import Resource
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-
-from webdav.common import Conflict
-from webdav.common import IfParser
-from webdav.common import isDavCollection
-from webdav.common import Locked
-from webdav.common import PreconditionFailed
-from webdav.common import tokenFinder
-from webdav.common import UnsupportedMediaType
-from webdav.davcmds import Lock
-from webdav.davcmds import Unlock
-from webdav.Resource import Resource
-
 from zope.contenttype import guess_content_type
 
 

@@ -14,19 +14,19 @@
 """
 
 import mimetypes
-import sys
 import re
+import sys
 from urllib.parse import unquote
 
-from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view as View
+from AccessControl.Permissions import webdav_access
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
-from AccessControl.Permissions import webdav_access
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -39,30 +39,29 @@ from OFS.Lockable import LockableItem
 from OFS.Lockable import wl_isLockable
 from OFS.Lockable import wl_isLocked
 from OFS.subscribers import compatibilityCall
+from webdav import enable_ms_public_header
+from webdav.common import Conflict
+from webdav.common import IfParser
+from webdav.common import Locked
+from webdav.common import PreconditionFailed
+from webdav.common import absattr
+from webdav.common import isDavCollection
+from webdav.common import tokenFinder
+from webdav.common import urlbase
+from webdav.common import urlfix
+from webdav.interfaces import IDAVResource
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
-
-from zope.interface import implementer
+from zope.container.contained import notifyContainerModified
 from zope.event import notify
+from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
-from zope.container.contained import notifyContainerModified
+from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
-from webdav import enable_ms_public_header
-from webdav.common import absattr
-from webdav.common import Conflict
-from webdav.common import IfParser
-from webdav.common import isDavCollection
-from webdav.common import Locked
-from webdav.common import PreconditionFailed
-from webdav.common import tokenFinder
-from webdav.common import urlbase
-from webdav.common import urlfix
-from webdav.interfaces import IDAVResource
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 

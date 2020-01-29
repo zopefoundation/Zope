@@ -404,7 +404,7 @@ InitializeClass(DefaultProperties)
 
 
 # import cycles
-from webdav.PropertySheets import DAVProperties
+from webdav.PropertySheets import DAVProperties  # isort:skip
 
 
 class PropertySheets(Traversable, Implicit, Tabs):
