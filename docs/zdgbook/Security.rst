@@ -11,7 +11,7 @@ make up an application. To this end, Zope includes a comprehensive
 set of security features.  This chapter's goal is to shed light on
 Zope security in the context of Zope Product development.  For a more
 fundamental overview of Zope security, you may wish to refer to the
-`Zope Book* Chapter "Users and Security"
+*Zope Book* Chapter "Users and Security"
 <https://zope.readthedocs.io/en/latest/zopebook/Security.html>`_.
 Before diving into this
 chapter, you should have a basic understanding of how to build Zope
@@ -736,7 +736,7 @@ by default::
           """Return a count of messages."""
           return len(self._messages)
 
-      @security.protectes('View Mailbox')
+      @security.protected('View Mailbox')
       def listMessages(self):
           """Return a sequence of message objects."""
           return self._messages[:]
@@ -907,7 +907,7 @@ Class Security Assertions In Non-Product Code (External Methods/Python Scripts)
 
 .. note::
 
-    The examples in this section use socalled "External Methods",
+    The examples in this section use so-called "External Methods",
     which require installing the ``Products.ExternalMethod`` package.
     Use of that package is discouraged in favor of filesystem-based
     Product code.
@@ -1219,7 +1219,7 @@ The Zope Product machinery "bootstraps" Product-based classes with
 proper constructors into the namespace of the Zope management
 interface `Add` list at Zope startup time.  This is done as a
 consequence of registering a class by way of the Product's
-``__init__.py`` ``intialize`` function.  If you want to make, for
+``__init__.py`` ``initialize`` function.  If you want to make, for
 example, the imaginary ``FooClass`` in your Product available from the
 `Add` list, you may construct an ``__init__.py`` file that looks much
 like this::
@@ -1313,7 +1313,7 @@ Conclusion
 
 Zope security is based upon roles and permissions. Users have
 roles. Security policies map permissions to roles. Classes protect
-methods with permissions. As a developer you main job is to protect
+methods with permissions. As a developer your main job is to protect
 your classes by associating methods with permissions. Of course there
 are many other details such as protecting modules and functions,
 creating security user interfaces, and initializing security
