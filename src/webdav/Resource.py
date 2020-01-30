@@ -93,7 +93,6 @@ class Resource(Base, LockableItem):
         # want to write duplicate headers (since ZS writes Date
         # and Connection itself).
         if not hasattr(response, '_server_version'):
-            response.setHeader('Connection', 'close')
             response.setHeader('Date', rfc1123_date(), 1)
 
         # HTTP Range support

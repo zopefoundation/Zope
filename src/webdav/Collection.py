@@ -52,7 +52,6 @@ class Collection(Resource):
         if pathinfo and pathinfo[-1] != '/':
             location = '%s/' % request['URL1']
             response.setHeader('Content-Location', location)
-        response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
 
     def HEAD(self, REQUEST, RESPONSE):
