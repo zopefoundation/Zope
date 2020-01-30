@@ -96,6 +96,8 @@ class NullResource(Persistent, Implicit, Resource):
 
     def _default_PUT_factory(self, name, typ, body):
         # Return DTMLDoc/PageTemplate/Image/File, based on sniffing.
+        if not isinstance(body, bytes):
+            body = body.encode('UTF-8')
         if name and name.endswith('.pt'):
             ob = ZopePageTemplate(name, body, content_type=typ)
         elif typ in ('text/html', 'text/xml', 'text/plain'):
@@ -149,6 +151,8 @@ class NullResource(Persistent, Implicit, Resource):
         if int(REQUEST.get('CONTENT_LENGTH') or 0) > LARGE_FILE_THRESHOLD:
             file = REQUEST['BODYFILE']
             body = file.read(LARGE_FILE_THRESHOLD)
+            if not isinstance(body, bytes):
+                body = body.encode('UTF-8')
             file.seek(0)
         else:
             body = REQUEST.get('BODY', b'')

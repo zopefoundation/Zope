@@ -120,6 +120,13 @@ class ImageFile(Explicit):
         RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         return filestream_iterator(self.path, mode='rb')
 
+    @security.public
+    def HEAD(self, REQUEST, RESPONSE):
+        """ """
+        RESPONSE.setHeader('Content-Type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', self.lmh)
+        return ''
+
     def __len__(self):
         # This is bogus and needed because of the way Python tests truth.
         return 1

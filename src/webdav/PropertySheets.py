@@ -21,23 +21,18 @@ from OFS.interfaces import IWriteLock
 from OFS.PropertySheets import PropertySheet
 from OFS.PropertySheets import View
 from OFS.PropertySheets import Virtual
+from webdav.common import absattr
 from webdav.common import isDavCollection
 from webdav.common import urlbase
-
-
-def absattr(attr):
-    if callable(attr):
-        return attr()
-    return attr
+from webdav.xmltools import escape as xmltools_escape
 
 
 def xml_escape(value):
-    from webdav.xmltools import escape
     if not isinstance(value, (str, bytes)):
         value = str(value)
     if not isinstance(value, str):
         value = value.decode('utf-8')
-    value = escape(value)
+    value = xmltools_escape(value)
     return value.encode('utf-8')
 
 
