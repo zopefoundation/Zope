@@ -15,12 +15,11 @@ from webdav.xmltools import escape
 
 
 def xml_escape(value):
-    if not isinstance(value, (str, bytes)):
-        value = str(value)
+    if isinstance(value, bytes):
+        value = value.decode('UTF-8')
     if not isinstance(value, str):
-        value = value.decode('utf-8')
-    value = escape(value)
-    return value
+        value = str(value)
+    return escape(value)
 
 
 class DAVPropertySheetMixin(object):
@@ -45,9 +44,9 @@ class DAVPropertySheetMixin(object):
             value = self.getProperty(name)
 
             if type == 'tokens':
-                value = ' '.join(map(str, value))
+                value = ' '.join([xml_escape(x) for x in value])
             elif type == 'lines':
-                value = '\n'.join(map(str, value))
+                value = '\n'.join([xml_escape(x) for x in value])
             # check for xml property
             attrs = item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
@@ -99,10 +98,12 @@ class DAVPropertySheetMixin(object):
             item = propdict[name]
             name, type = item['id'], item.get('type', 'string')
             value = self.getProperty(name)
+            if isinstance(value, bytes):
+                value = value.decode('UTF-8')
             if type == 'tokens':
-                value = ' '.join(map(str, value))
+                value = ' '.join([xml_escape(x) for x in value])
             elif type == 'lines':
-                value = '\n'.join(map(str, value))
+                value = '\n'.join([xml_escape(x) for x in value])
             # allow for xml properties
             attrs = item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:

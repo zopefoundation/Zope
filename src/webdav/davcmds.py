@@ -35,6 +35,9 @@ from webdav.PropertySheets import DAVProperties
 from webdav.xmltools import XmlParser
 from zExceptions import BadRequest
 from zExceptions import Forbidden
+from zExceptions import HTTPPreconditionFailed
+from zExceptions import MethodNotAllowed
+from zExceptions import ResourceLockedError
 
 
 def safe_quote(url, mark=r'%'):
@@ -153,7 +156,7 @@ class PropFind(object):
                 result.write('<d:propstat>\n'
                              '  <d:prop>\n'
                              )
-                map(result.write, rdict[key])
+                [result.write(x) for x in rdict[key]]
                 result.write('  </d:prop>\n'
                              '  <d:status>HTTP/1.1 %s</d:status>\n'
                              '</d:propstat>\n' % key
@@ -358,6 +361,7 @@ class Lock(object):
         if iscol and url[-1] != '/':
             url = url + '/'
         errmsg = None
+        exc_ob = None
         lock = None
 
         try:
@@ -368,8 +372,10 @@ class Lock(object):
 
         except ValueError:
             errmsg = "412 Precondition Failed"
+            exc_ob = HTTPPreconditionFailed()
         except Exception:
             errmsg = "403 Forbidden"
+            exc_ob = Forbidden()
 
         try:
             if not IWriteLock.providedBy(obj):
@@ -377,12 +383,14 @@ class Lock(object):
                     # This is the top level object in the apply, so we
                     # do want an error
                     errmsg = "405 Method Not Allowed"
+                    exc_ob = MethodNotAllowed()
                 else:
                     # We're in an infinity request and a subobject does
                     # not support locking, so we'll just pass
                     pass
             elif obj.wl_isLocked():
                 errmsg = "423 Locked"
+                exc_ob = ResourceLockedError()
             else:
                 method = getattr(obj, 'wl_setLock')
                 vld = getSecurityManager().validate(None, obj, 'wl_setLock',
@@ -391,13 +399,15 @@ class Lock(object):
                     obj.wl_setLock(token, lock)
                 else:
                     errmsg = "403 Forbidden"
+                    exc_ob = Forbidden()
         except Exception:
             errmsg = "403 Forbidden"
+            exc_ob = Forbidden()
 
         if errmsg:
             if top and ((depth in (0, '0')) or (not iscol)):
                 # We don't need to raise multistatus errors
-                raise errmsg[4:]
+                raise exc_ob
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header

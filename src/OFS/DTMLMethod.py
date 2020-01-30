@@ -373,7 +373,7 @@ class DTMLMethod(
         """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        body = REQUEST.get('BODY', '')
+        body = safe_file_data(REQUEST.get('BODY', ''))
         self._validateProxy(REQUEST)
         self.munge(body)
         self.ZCacheable_invalidate()

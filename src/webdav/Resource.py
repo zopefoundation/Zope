@@ -161,7 +161,7 @@ class Resource(Base, LockableItem):
 
             if not tag.resource:
                 # There's no resource (url) with this tag
-                tag_list = map(tokenFinder, tag.list)
+                tag_list = [tokenFinder(x) for x in tag.list]
                 wehave = [t for t in tag_list if self.wl_hasLock(t)]
 
                 if not wehave:
@@ -176,7 +176,7 @@ class Resource(Base, LockableItem):
                 break
             elif urlbase(tag.resource) == url:
                 resourcetagged = 1
-                tag_list = map(tokenFinder, tag.list)
+                tag_list = [tokenFinder(x) for x in tag.list]
                 wehave = [t for t in tag_list if self.wl_hasLock(t)]
 
                 if not wehave:

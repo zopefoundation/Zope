@@ -238,6 +238,11 @@ class NullResource(Persistent, Implicit, Resource):
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
                 raise Locked
+            if not body:
+                # No body means refresh lock, which makes no sense on
+                # a null resource. But if the parent is locked it can be
+                # interpreted as an indirect refresh lock for the parent.
+                return parent.LOCK(REQUEST, RESPONSE)
         elif ifhdr:
             # There was an If header, but the parent is not locked.
             raise PreconditionFailed
@@ -265,7 +270,7 @@ class NullResource(Persistent, Implicit, Resource):
         else:
             # The command was succesful
             lock = locknull.wl_getLock(token)
-            RESPONSE.setStatus(200)
+            RESPONSE.setStatus(201)
             RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
             RESPONSE.setBody(lock.asXML())
