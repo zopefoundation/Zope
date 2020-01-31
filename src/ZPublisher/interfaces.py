@@ -36,7 +36,7 @@ class IPubFailure(IPubEnd):
     '''A failed request processing.
 
     Note: If a subscriber to 'IPubSuccess' raises an exception,
-    then 'IPubFailure' may be notified in addtion to 'IPubSuccess'.
+    then 'IPubFailure' may be notified in addition to 'IPubSuccess'.
     '''
     exc_info = Attribute(
         '''The exception info as returned by 'sys.exc_info()'.''')
