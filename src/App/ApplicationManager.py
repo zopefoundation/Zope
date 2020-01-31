@@ -20,8 +20,8 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
 from App.config import getConfiguration
-from App.Management import Tabs
 from App.DavLockManager import DavLockManager
+from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt

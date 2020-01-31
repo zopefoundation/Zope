@@ -13,11 +13,14 @@
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Acquisition import aq_base
 from Acquisition import Implicit
+from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 from OFS.Lockable import wl_isLocked
 from OFS.SimpleItem import Item
+
+
+manage_webdav_locks = 'Manage WebDAV Locks'
 
 
 class DavLockManager(Item, Implicit):
@@ -26,16 +29,15 @@ class DavLockManager(Item, Implicit):
     meta_type = 'WebDAV Lock Manager'
 
     security = ClassSecurityInfo()
-    security.declareProtected('Manage WebDAV Locks',
-                              'findLockedObjects', 'manage_davlocks',
-                              'manage_unlockObjects')
-    security.declarePrivate('unlockObjects')
 
+    security.declareProtected(manage_webdav_locks,  # NOQA: D001
+                              'manage_davlocks')
     manage_davlocks = manage_main = manage = DTMLFile(
         'dtml/davLockManager', globals())
     manage_davlocks._setName('manage_davlocks')
     manage_options = ({'label': 'Write Locks', 'action': 'manage_main'}, )
 
+    @security.protected(manage_webdav_locks)
     def findLockedObjects(self, frompath=''):
         app = self.getPhysicalRoot()
 
@@ -45,7 +47,7 @@ class DavLockManager(Item, Implicit):
             # since the above will turn '/' into an empty string, check
             # for truth before chopping a final slash
             if frompath and frompath[-1] == '/':
-                frompath= frompath[:-1]
+                frompath = frompath[:-1]
 
         # Now we traverse to the node specified in the 'frompath' if
         # the user chose to filter the search, and run a ZopeFind with
@@ -55,6 +57,7 @@ class DavLockManager(Item, Implicit):
 
         return lockedobjs
 
+    @security.private
     def unlockObjects(self, paths=[]):
         app = self.getPhysicalRoot()
 
@@ -62,6 +65,7 @@ class DavLockManager(Item, Implicit):
             ob = app.unrestrictedTraverse(path)
             ob.wl_clearLocks()
 
+    @security.protected(manage_webdav_locks)
     def manage_unlockObjects(self, paths=[], REQUEST=None):
         " Management screen action to unlock objects. "
         if paths:
@@ -91,7 +95,7 @@ class DavLockManager(Item, Implicit):
             else:
                 p = id
 
-            dflag = hasattr(ob, '_p_changed') and (ob._p_changed == None)
+            dflag = hasattr(ob, '_p_changed') and (ob._p_changed is None)
             bs = aq_base(ob)
             if wl_isLocked(ob):
                 li = []
@@ -107,5 +111,6 @@ class DavLockManager(Item, Implicit):
                 ob._p_deactivate()
 
         return result
+
 
 InitializeClass(DavLockManager)
