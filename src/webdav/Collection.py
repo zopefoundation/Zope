@@ -54,6 +54,9 @@ class Collection(Resource):
             response.setHeader('Content-Location', location)
         response.setHeader('Date', rfc1123_date(), 1)
 
+        # Initialize ETag header
+        self.http__etag()
+
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)

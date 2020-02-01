@@ -95,6 +95,9 @@ class Resource(Base, LockableItem):
         if not hasattr(response, '_server_version'):
             response.setHeader('Date', rfc1123_date(), 1)
 
+        # Initialize ETag header
+        self.http__etag()
+
         # HTTP Range support
         if HTTPRangeInterface.providedBy(self):
             response.setHeader('Accept-Ranges', 'bytes')
