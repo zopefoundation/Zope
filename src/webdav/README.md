@@ -25,32 +25,32 @@ a test is not mentioned the results have not changed.
 
 **'basic' tests**
 
-- 4. `put_get_utf8_segment`: PASS (non-ASCII object IDs are now allowed)
+- `4. put_get_utf8_segment`: PASS (non-ASCII object IDs are now allowed)
 
 **'props' tests**
 
-- 17. `prophighunicode`: PASS (non-ASCII properties are now allowed)
-- 18. `propget`: PASS (because test 17 now sets the property successfully)
+- `17. prophighunicode`: PASS (non-ASCII properties are now allowed)
+- `18. propget`: PASS (because test 17 now sets the property successfully)
 
 **'locks' tests**
 
-- 15. `cond_put`: PASS (the WebDAV code now sets ETag headers)
-- 16. `fail_cond_put`: FAIL (no longer skipped because ETags are present)
+- `15. cond_put`: PASS (the WebDAV code now sets ETag headers)
+- `16. fail_cond_put`: FAIL (no longer skipped because ETags are present)
 
       Conditional PUT requests are no longer skipped, but invalid lock tokens
       or invalid conditional headers will now erroneously return a status of
       204 (no content) instead of failing. This affects the following tests:
 
-      - 16. `fail_cond_put`
-      - 20. `fail_complex_cond_put`
+      - `16. fail_cond_put`
+      - `20. fail_complex_cond_put`
 
-- 19. `complex_cond_put`: PASS (the WebDAV code now sets ETag headers)
-- 34. `notowner_modify`: No longer WARNING for a bad status code for DELETE
-- 36. `indirect_refresh`: PASS
+- `19. complex_cond_put`: PASS (the WebDAV code now sets ETag headers)
+- `34. notowner_modify`: No longer WARNING for a bad status code for DELETE
+- `36. indirect_refresh`: PASS
 
 **'http' tests**
 
-- 2. `expect100`: PASS (no longer seeing any timeouts)
+- `2. expect100`: PASS (no longer seeing any timeouts)
 
 
 Test run on 2007/06/17
@@ -59,7 +59,7 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
 
 **'basic' tests**
 
-- 4. `put_get_utf8_segment`: FAIL (PUT of `/litmus/res-%e2%82%ac` failed:
+- `4. put_get_utf8_segment`: FAIL (PUT of `/litmus/res-%e2%82%ac` failed:
      400 Bad Request)
 
      Zope considers the id `res-%e2%82%ac` invalid due to the
@@ -68,14 +68,14 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
      objectmanager interface.  It's likely possible to replace this
      regex with a more permissive one via a monkepatch as necessary.
 
-- 8. `delete_fragment`: WARNING: DELETE removed collection resource with
+- `8. delete_fragment`: WARNING: DELETE removed collection resource with
      Request-URI including fragment; unsafe `ZServer` strips off the fragment
      portion of the URL and throws it away, so we never get a chance to detect
      if a fragment was sent in the URL within appserver code.
 
 **'props' tests**
 
-- 17. `prophighunicode`: FAIL (PROPPATCH of property with high
+- `17. prophighunicode`: FAIL (PROPPATCH of property with high
       unicode value)
 
    The exception raised by Zope here is:
@@ -98,14 +98,14 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
       'latin-1'.  The value of the received property cannot be encoded
       using this encoding.
 
-- 18. `propget`: FAIL (No value given for property
+- `18. propget`: FAIL (No value given for property
       {http://webdav.org/neon/litmus/}high-unicode)
 
       This is because test 17 fails to set a value.
 
 **'locks' tests**
 
-- 15. `cond_put` SKIPPED
+- `15. cond_put`: SKIPPED
 
       Zope does not appear to send an Etag in normal responses, which
       this test seems to require as a precondition for execution.  See
@@ -114,9 +114,9 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
 
       These tests appear to be skipped for the same reason:
 
-      16. `fail_cond_put`: SKIPPED
-      19. `complex_cond_put`: SKIPPED
-      20. `fail_complex_cond_put`: SKIPPED
+      - `16. fail_cond_put`: SKIPPED
+      - `19. complex_cond_put`: SKIPPED
+      - `20. fail_complex_cond_put`: SKIPPED
 
       Zope's `OFS` package has an `OFS.EtagSupport.EtagSupport`
       class which is inherited by the `OFS.Lockable.LockableItem`
@@ -126,21 +126,21 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
       generate meaningful ETags in responses.  Finding out why it's
       not generating them appears to be an archaeology exercise.
 
-- 18. `cond_put_corrupt_token`: FAIL (conditional PUT with invalid
+- `18. cond_put_corrupt_token`: FAIL (conditional PUT with invalid
       lock-token should fail: 204 No Content)
 
       I (chrism) haven't been able to fix this without breaking
       32. `lock_collection`, which is a more important interaction.  See
      `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_cond_put_corrupt_token`.
 
-- 22. `fail_cond_put_unlocked`: FAIL (conditional PUT with invalid
+- `22. fail_cond_put_unlocked`: FAIL (conditional PUT with invalid
       lock-token should fail: 204 No Content)
 
       I (chrism) haven't been able to fix this without breaking
-      32. `lock_collection`, which is a more important interaction. See
+      `32. lock_collection`, which is a more important interaction. See
       `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_fail_cond_put_unlocked`.
 
-- 23. `lock_shared`: FAIL (LOCK on `/litmus/lockme`: 403
+- `23. lock_shared`: FAIL (LOCK on `/litmus/lockme`: 403
       Forbidden)
 
       Zope does not support locking resources with lockscope 'shared'
@@ -152,20 +152,20 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
 
       The dependent tests below are skipped due to this failure:
 
-      - 24. `notowner_modify`: SKIPPED
-      - 25. `notowner_lock`: SKIPPED
-      - 26. `owner_modify`: SKIPPED
-      - 27. `double_sharedlock`: SKIPPED
-      - 28. `notowner_modify`: SKIPPED
-      - 29. `notowner_lock`: SKIPPED
-      - 30. `unlock`: SKIPPED
+      - `24. notowner_modify`: SKIPPED
+      - `25. notowner_lock`: SKIPPED
+      - `26. owner_modify`: SKIPPED
+      - `27. double_sharedlock`: SKIPPED
+      - `28. notowner_modify`: SKIPPED
+      - `29. notowner_lock`: SKIPPED
+      - `30. unlock`: SKIPPED
 
-- 34. `notowner_modify`: WARNING: DELETE failed with 412 not 423 FAIL
+- `34. notowner_modify`: WARNING: DELETE failed with 412 not 423 FAIL
       (MOVE of locked resource should fail)
 
       Unknown reasons (not yet investigated).
 
-- 36. `indirect_refresh`: FAIL (indirect refresh LOCK on
+- `36. indirect_refresh`: FAIL (indirect refresh LOCK on
       `/litmus/lockcoll/` via `/litmus/lockcoll/lockme.txt`: 400 Bad
       Request)
 
@@ -173,7 +173,7 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
 
 **'http' tests**
 
-- 2. `expect100`: FAIL (timeout waiting for interim response)
+- `2. expect100`: FAIL (timeout waiting for interim response)
 
       Unknown reason (not yet investigated).
 
@@ -190,7 +190,7 @@ was available.  litmus 0.10.5 times out in a similar fashion on the
 
 **analyses**
 
-Analysis of what happens during locks 32. `lock_collection`:
+Analysis of what happens during locks `32. lock_collection`:
 
 The first request in this test set is a successful LOCK request
 with "Depth: infinity" to /litmus/lockcoll (an existing
