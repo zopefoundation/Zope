@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Restore WebDAV support in Zope
+  (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
+
 - Remove deprecated module ``ZPublisher.maybe_lock``
   (`#758 <https://github.com/zopefoundation/Zope/issues/758>`_)
 
