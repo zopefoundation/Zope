@@ -68,10 +68,12 @@
 						<dtml-if "_['sequence-index']!=0 and last==False">
 							&nbsp;/&nbsp;
 						</dtml-if>
-						<dtml-if wl_isLocked
-							><span class="badge badge-warning"
-								title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
-						</dtml-if>
+                        <dtml-if last>
+						    <dtml-if wl_isLocked
+						    	><span class="badge badge-warning"
+						    		title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
+						    </dtml-if>
+                        </dtml-if>
 					</li>
 				</dtml-in>
 			</ol>
