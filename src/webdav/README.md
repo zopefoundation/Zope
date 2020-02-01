@@ -26,11 +26,17 @@ a test is not mentioned the results have not changed.
 **'basic' tests**
 
 - `4. put_get_utf8_segment`: PASS (non-ASCII object IDs are now allowed)
+- results: 16 tests run: 16 passed, 0 failed. 100.0%
+
+**'copymove' tests**
+
+- results: 13 tests run: 13 passed, 0 failed. 100.0%
 
 **'props' tests**
 
 - `17. prophighunicode`: PASS (non-ASCII properties are now allowed)
 - `18. propget`: PASS (because test 17 now sets the property successfully)
+- results: 30 tests run: 30 passed, 0 failed. 100.0%
 
 **'locks' tests**
 
@@ -47,10 +53,12 @@ a test is not mentioned the results have not changed.
 - `19. complex_cond_put`: PASS (the WebDAV code now sets ETag headers)
 - `34. notowner_modify`: No longer WARNING for a bad status code for DELETE
 - `36. indirect_refresh`: PASS
+- results: 34 tests run: 28 passed, 6 failed. 82.4%
 
 **'http' tests**
 
 - `2. expect100`: PASS (no longer seeing any timeouts)
+- results: 4 tests run: 4 passed, 0 failed. 100.0%
 
 
 Test run on 2007/06/17
