@@ -37,12 +37,12 @@ a test is not mentioned the results have not changed.
 - `15. cond_put`: PASS (the WebDAV code now sets ETag headers)
 - `16. fail_cond_put`: FAIL (no longer skipped because ETags are present)
 
-      Conditional PUT requests are no longer skipped, but invalid lock tokens
-      or invalid conditional headers will now erroneously return a status of
-      204 (no content) instead of failing. This affects the following tests:
+  Conditional PUT requests are no longer skipped, but invalid lock tokens
+  or invalid conditional headers will now erroneously return a status of
+  204 (no content) instead of failing. This affects the following tests:
 
-      - `16. fail_cond_put`
-      - `20. fail_complex_cond_put`
+  - `16. fail_cond_put`
+  - `20. fail_complex_cond_put`
 
 - `19. complex_cond_put`: PASS (the WebDAV code now sets ETag headers)
 - `34. notowner_modify`: No longer WARNING for a bad status code for DELETE
@@ -60,25 +60,25 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
 **'basic' tests**
 
 - `4. put_get_utf8_segment`: FAIL (PUT of `/litmus/res-%e2%82%ac` failed:
-     400 Bad Request)
+  400 Bad Request)
 
-     Zope considers the id `res-%e2%82%ac` invalid due to the
-     `bad_id` regex in `OFS.ObjectManager`, which is consulted whenever
-     a new object is added to a container through the OFS
-     objectmanager interface.  It's likely possible to replace this
-     regex with a more permissive one via a monkepatch as necessary.
+  Zope considers the id `res-%e2%82%ac` invalid due to the
+  `bad_id` regex in `OFS.ObjectManager`, which is consulted whenever
+  a new object is added to a container through the OFS
+  objectmanager interface.  It's likely possible to replace this
+  regex with a more permissive one via a monkepatch as necessary.
 
 - `8. delete_fragment`: WARNING: DELETE removed collection resource with
-     Request-URI including fragment; unsafe `ZServer` strips off the fragment
-     portion of the URL and throws it away, so we never get a chance to detect
-     if a fragment was sent in the URL within appserver code.
+  Request-URI including fragment; unsafe `ZServer` strips off the fragment
+  portion of the URL and throws it away, so we never get a chance to detect
+  if a fragment was sent in the URL within appserver code.
 
 **'props' tests**
 
 - `17. prophighunicode`: FAIL (PROPPATCH of property with high
-      unicode value)
+  unicode value)
 
-   The exception raised by Zope here is:
+  The exception raised by Zope here is:
 
 
         2007-06-17 15:27:02 ERROR Zope.SiteErrorLog http://localhost:8080/litmus/prop2/PROPPATCH
@@ -92,90 +92,89 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
              Module webdav.xmltools, line 98, in strval
            UnicodeEncodeError: 'latin-1' codec can't encode characters in position 0-1: ordinal not in range(256)
 
-      This is because the `webdav.xmltools.Node.strval` method attempts
-      to encode the string representation of the property node to the
-      'default' propertysheet encoding, which is assumed to be
-      'latin-1'.  The value of the received property cannot be encoded
-      using this encoding.
+  This is because the `webdav.xmltools.Node.strval` method attempts
+  to encode the string representation of the property node to the
+  'default' propertysheet encoding, which is assumed to be
+  'latin-1'.  The value of the received property cannot be encoded
+  using this encoding.
 
 - `18. propget`: FAIL (No value given for property
-      {http://webdav.org/neon/litmus/}high-unicode)
+  {http://webdav.org/neon/litmus/}high-unicode)
 
-      This is because test 17 fails to set a value.
+  This is because test 17 fails to set a value.
 
 **'locks' tests**
 
 - `15. cond_put`: SKIPPED
 
-      Zope does not appear to send an Etag in normal responses, which
-      this test seems to require as a precondition for execution.  See
-      http://www.mnot.net/cache_docs/ for more information about
-      Etags.
+  Zope does not appear to send an Etag in normal responses, which
+  this test seems to require as a precondition for execution.  See
+  http://www.mnot.net/cache_docs/ for more information about
+  Etags.
 
-      These tests appear to be skipped for the same reason:
+  These tests appear to be skipped for the same reason:
 
-      - `16. fail_cond_put`: SKIPPED
-      - `19. complex_cond_put`: SKIPPED
-      - `20. fail_complex_cond_put`: SKIPPED
+  - `16. fail_cond_put`: SKIPPED
+  - `19. complex_cond_put`: SKIPPED
+  - `20. fail_complex_cond_put`: SKIPPED
 
-      Zope's `OFS` package has an `OFS.EtagSupport.EtagSupport`
-      class which is inherited by the `OFS.Lockable.LockableItem`
-      class, which is in turn inherited by
-      `OFS.SimpleItem.SimpleItem` (upon which almost all Zope content is
-      based), so potentially all Zope content can reasonably easily
-      generate meaningful ETags in responses.  Finding out why it's
-      not generating them appears to be an archaeology exercise.
+  Zope's `OFS` package has an `OFS.EtagSupport.EtagSupport`
+  class which is inherited by the `OFS.Lockable.LockableItem`
+  class, which is in turn inherited by
+  `OFS.SimpleItem.SimpleItem` (upon which almost all Zope content is
+  based), so potentially all Zope content can reasonably easily
+  generate meaningful ETags in responses.  Finding out why it's
+  not generating them appears to be an archaeology exercise.
 
 - `18. cond_put_corrupt_token`: FAIL (conditional PUT with invalid
-      lock-token should fail: 204 No Content)
+  lock-token should fail: 204 No Content)
 
-      I (chrism) haven't been able to fix this without breaking
-      32. `lock_collection`, which is a more important interaction.  See
-     `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_cond_put_corrupt_token`.
+  I (chrism) haven't been able to fix this without breaking
+  `32. lock_collection`, which is a more important interaction.  See
+  `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_cond_put_corrupt_token`.
 
 - `22. fail_cond_put_unlocked`: FAIL (conditional PUT with invalid
-      lock-token should fail: 204 No Content)
+  lock-token should fail: 204 No Content)
 
-      I (chrism) haven't been able to fix this without breaking
-      `32. lock_collection`, which is a more important interaction. See
-      `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_fail_cond_put_unlocked`.
+  I (chrism) haven't been able to fix this without breaking
+  `32. lock_collection`, which is a more important interaction. See
+  `webdav.tests.testResource.TestResource.donttest_dav__simpleifhandler_fail_cond_put_unlocked`.
 
-- `23. lock_shared`: FAIL (LOCK on `/litmus/lockme`: 403
-      Forbidden)
+- `23. lock_shared`: FAIL (LOCK on `/litmus/lockme`: 403 Forbidden)
 
-      Zope does not support locking resources with lockscope 'shared'
-      (only exclusive locks are supported for any kind of Zope
-      resource).  Litmus could probably do a PROPFIND on the
-      /litmus/lockme resource and check the <supportedlock> lockscope
-      in the response before declaring this a failure (class 2 DAV
-      servers are not required to support shared locks).
+  Zope does not support locking resources with lockscope 'shared'
+  (only exclusive locks are supported for any kind of Zope
+  resource).  Litmus could probably do a PROPFIND on the
+  /litmus/lockme resource and check the <supportedlock> lockscope
+  in the response before declaring this a failure (class 2 DAV
+  servers are not required to support shared locks).
 
-      The dependent tests below are skipped due to this failure:
+  The dependent tests below are skipped due to this failure:
 
-      - `24. notowner_modify`: SKIPPED
-      - `25. notowner_lock`: SKIPPED
-      - `26. owner_modify`: SKIPPED
-      - `27. double_sharedlock`: SKIPPED
-      - `28. notowner_modify`: SKIPPED
-      - `29. notowner_lock`: SKIPPED
-      - `30. unlock`: SKIPPED
+  - `24. notowner_modify`: SKIPPED
+  - `25. notowner_lock`: SKIPPED
+  - `26. owner_modify`: SKIPPED
+  - `27. double_sharedlock`: SKIPPED
+  - `28. notowner_modify`: SKIPPED
+  - `29. notowner_lock`: SKIPPED
+  - `30. unlock`: SKIPPED
 
 - `34. notowner_modify`: WARNING: DELETE failed with 412 not 423 FAIL
-      (MOVE of locked resource should fail)
+  (MOVE of locked resource should fail)
 
-      Unknown reasons (not yet investigated).
+  Unknown reasons (not yet investigated).
 
 - `36. indirect_refresh`: FAIL (indirect refresh LOCK on
-      `/litmus/lockcoll/` via `/litmus/lockcoll/lockme.txt`: 400 Bad
-      Request)
+  `/litmus/lockcoll/` via `/litmus/lockcoll/lockme.txt`: 400 Bad
+  Request)
 
-      Unknown reason (not yet investigated).
+  Unknown reason (not yet investigated).
 
 **'http' tests**
 
 - `2. expect100`: FAIL (timeout waiting for interim response)
 
-      Unknown reason (not yet investigated).
+  Unknown reason (not yet investigated).
 
 **additional notes**
 
