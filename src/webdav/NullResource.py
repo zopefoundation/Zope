@@ -64,6 +64,7 @@ class NullResource(Persistent, Implicit, Resource):
     objects which do not yet exist in the url namespace."""
 
     __null_resource__ = 1
+    zmi_icon = 'fas fa-edit'
 
     security = ClassSecurityInfo()
 

@@ -27,6 +27,7 @@ class DavLockManager(Item, Implicit):
     id = 'DavLockManager'
     name = title = 'WebDAV Lock Manager'
     meta_type = 'WebDAV Lock Manager'
+    zmi_icon = 'fa fa-lock'
 
     security = ClassSecurityInfo()
 
