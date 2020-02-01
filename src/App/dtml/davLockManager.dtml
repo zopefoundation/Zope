@@ -3,98 +3,104 @@
 
 <main class="container-fluid">
 
-<script type="text/javascript">
-<!-- 
-
-isSelected = false;
-
-function toggleSelect() {
-  if (isSelected == false) {
-    for (i = 0; i < document.objectItems.length; i++)
-      document.objectItems.elements[i].checked = true ;
-      isSelected = true;
-      document.objectItems.selectButton.value = "Deselect All";
-      return isSelected;
-  }
-  else {
-    for (i = 0; i < document.objectItems.length; i++)
-      document.objectItems.elements[i].checked = false ;
-      isSelected = false;
-      document.objectItems.selectButton.value = "Select All";
-      return isSelected;       
-  }
-}
-
-//-->
-</script>
-
 <dtml-let from_path="REQUEST.form.get('frompath',None)"
           lockedobjs="from_path and findLockedObjects(frompath=from_path) or []">
 
-<dtml-if lockedobjs>
- <p class="std-text">All locked objects
- <dtml-if frompath>from path <em>&dtml-frompath;</em></dtml-if>
- are listed below.</p>
-<dtml-else>
- <p class="std-text">No locked objects
- <dtml-if frompath>from path <em>&dtml-frompath;</em></dtml-if>
- were found.</p>
-</dtml-if>
+  <p class="form-help">
+    Use the search form to locate locked items starting from the
+    provided path.
+  </p>
 
-<form action="&dtml-URL0;" name="finderform">
-<p class="std-text">Search for locked objects starting from path:
-<input type="text" size="14" name="frompath" value="&dtml.missing-frompath;" 
- class="form-element" />
-<input type="submit" value="Go" class="form-element" />
-</p>
-</form>
+  <form action="&dtml-URL0;" name="finderform">
+    <p class="form-help">Search path:
+      <input type="text" size="14" name="frompath"
+             value="&dtml.missing-frompath;" 
+             class="form-element" />
+      <input class="btn btn-primary" type="submit" value="Go"/>
+    </p>
+  </form>
 
-<form action="manage_unlockObjects" name="objectItems" method="post">
-<dtml-if lockedobjs>
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
- <tr class="list-header">
-  <td width="60%" class="list-item">Locked Item</td>
-  <td width="40%" class="list-item">Lock Info</td>
- </tr>
-</table>
+  <form action="manage_unlockObjects" name="objectItems" method="post">
+    <input type="hidden" name="frompath" value="&dtml.missing-frompath;" />
+  
+    <dtml-if lockedobjs>
+    
+      <table class="table table-striped table-hover table-sm objectItems">
+      
+        <thead class="thead-light">
+          <th scope="col" class="zmi-object-check text-right">
+            <input type="checkbox" id="checkAll" onclick="checkbox_all();" />
+          </th>
+          <th scope="col">Path</th>
+          <th scope="col">Locked by</th>
+          <th scope="col">Lock token</th>
+        </thead>
+      
+        <tbody>
+          <dtml-in lockedobjs>
+            <tr>
+      		<td class="zmi-object-check text-right"
+                  onclick="$(this).children('input').trigger('click');">
+                <input type="checkbox" name="paths:list"
+                       value="&dtml-sequence-key;"
+                       class="checkbox-list-item"
+                       id="cb_&dtml-sequence-index;" 
+                       onclick="event.stopPropagation();select_objectitem($(this));"/>
+              </td>
+              <td class="zmi-object-id">
+               <label for="cb_&dtml-sequence-index;">
+                 <a href="/&dtml-sequence-key;/manage_workspace">
+                   /&dtml-sequence-key;
+                 </a>
+               </label>
+              </td>
+              <dtml-in sequence-item mapping>
+                <td class="zmi-object-id">&dtml-owner;</td>
+                <td class="zmi-object-id">&dtml-token;</td>
+               </dtml-in>
+              </td>
+            </tr>
+          </dtml-in lockedobjs>
+        </tbody>
+      
+      </table>
+  
+      <div class="form-group form-inline zmi-controls">
+        <div class="input-group">
+          <input class="btn btn-primary" type="submit"
+                 value="Unlock objects" />
+        </div>
+      </div>
+    <dtml-else>
+      <dtml-if frompath>
+        <p class="form-help">
+          Found no locked items under path <em>&dtml-frompath;</em>.
+        </p>
+      </dtml-if>
+    </dtml-if>
+  </form>
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
- <dtml-in lockedobjs>
- <dtml-if sequence-odd>
-  <tr class="row-normal">
- <dtml-else>
-  <tr class="row-hilite">
- </dtml-if sequence-odd>
-
- <td align="left" valign="top" width="16">
-  <input type="checkbox" name="paths:list" value="&dtml-sequence-key;"
-   id="cb_&dtml-sequence-index;" />
- </td>
- <td align="left" valign="top" width="16">
- </td>
- <td align="left" valign="top" class="list-item">
-  <label for="cb_&dtml-sequence-index;">&dtml-sequence-key;</label>
- </td>
- <td align="left" valign="top" width="40%" class="list-item">
-  <dtml-in sequence-item mapping>
-   <strong>Owner:</strong> &dtml-owner;,
-   <strong>Token:</strong> &dtml-token;<br />
-  </dtml-in>
- </td>
- </tr>
- </dtml-in lockedobjs>
-</table>
-<input type="hidden" name="frompath" value="&dtml.missing-frompath;" />
-<script type="text/javascript">
-<!-- 
- document.write('<input class="form-element" type="button" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
-//-->
-</script>
-&nbsp; <input class="form-element" type="submit" value="Unlock objects" />
-</dtml-if>
-</form>
 </dtml-let>
 
-<main class="container-fluid">
+</main>
+
+<script>
+  // +++++++++++++++++++++++++++
+  // Item  Selection
+  // +++++++++++++++++++++++++++
+  function checkbox_all() {
+    var checkboxes = document.getElementsByClassName('checkbox-list-item');
+    // Toggle Highlighting CSS-Class
+    if (document.getElementById('checkAll').checked) {
+      $('table.objectItems tbody tr').addClass('checked');
+    } else {
+      $('table.objectItems tbody tr').removeClass('checked');
+    };
+    // Set Checkbox like checkAll-Box
+    for (i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = document.getElementById('checkAll').checked;
+    }
+  };
+</script>
 
 <dtml-var manage_page_footer>
