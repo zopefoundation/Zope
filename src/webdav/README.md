@@ -192,7 +192,7 @@ was available.  litmus 0.10.5 times out in a similar fashion on the
 Analysis of what happens during locks `32. lock_collection`:
 
 The first request in this test set is a successful LOCK request
-with "Depth: infinity" to /litmus/lockcoll (an existing
+with "Depth: infinity" to `/litmus/lockcoll` (an existing
 newly-created collection):
 
         LOCK /litmus/lockcoll/ HTTP/1.1
@@ -233,22 +233,22 @@ request):
         PUT /litmus/lockcoll/lockme.txt HTTP/1.1
         If: <http://localhost:8080/litmus/lockcoll/> (<opaquelocktoken:{olt})
 
-The If header in this request specifies that the {olt} locktoken
+The If header in this request specifies that the `{olt}` locktoken
 should be checked against the resource
-http://localhost:8080/litmus/lockcoll/ (the collection parent).
+`http://localhost:8080/litmus/lockcoll/` (the collection parent).
 
 In response to the PUT command, inside Zope, a `NullResource`
 object is created representing `/litmus/lockcoll/lockme.txt`.
-NullResource.PUT determines its parent is locked and so calls
+`NullResource.PUT` determines its parent is locked and so calls
 `dav__simpleifhandler` on the parent (`/litmus/lockcoll`).  This
 does not raise an exception due to the fact that the If header
 specifies it as the resource being consulted for a lock.
 
 With the "is the parent locked" guard condition satisfied,
-NullResource.PUT continues. It extracts the file body out of the
+`NullResource.PUT` continues. It extracts the file body out of the
 request and creates a new object based on the file body content
 using `PUT_factory`.  It then turns around and sets the new object
-into its container and calls newob.PUT(REQUEST, RESPONSE).
+into its container and calls `newob.PUT(REQUEST, RESPONSE)`.
 
 Litmus expects the PUT request to succeed with a 2XX response
 (and presumably the new `lockme.txt` resource should be created
