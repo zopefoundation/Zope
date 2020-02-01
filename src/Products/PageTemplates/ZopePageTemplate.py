@@ -129,7 +129,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             source_encoding = None
             output_encoding = 'utf-8'
 
-        # for content updated through WebDAV, FTP
+        # for content updated through WebDAV
         if not keep_output_encoding:
             self.output_encoding = output_encoding
 

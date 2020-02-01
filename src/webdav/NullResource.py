@@ -217,7 +217,7 @@ class NullResource(Persistent, Implicit, Resource):
             # There was an If header, but the parent is not locked
             raise PreconditionFailed
 
-        # Add hook for webdav/FTP MKCOL (Collector #2254) (needed for CMF)
+        # Add hook for webdav MKCOL (Collector #2254) (needed for CMF)
         mkcol_handler = getattr(parent, 'MKCOL_handler',
                                 parent.manage_addFolder)
         mkcol_handler(name)

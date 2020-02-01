@@ -676,8 +676,8 @@ class Resource(Base, LockableItem):
     @security.protected(webdav_access)
     def manage_DAVget(self):
         """Gets the document source"""
-        # The default implementation calls manage_FTPget
-        return self.manage_FTPget()
+        # The default implementation calls PrincipiaSearchSource
+        return self.PrincipiaSearchSource()
 
     @security.protected(webdav_access)
     def listDAVObjects(self):
