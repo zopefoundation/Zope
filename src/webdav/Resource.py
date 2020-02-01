@@ -176,7 +176,7 @@ class Resource(Base, LockableItem):
                 resourcetagged = 1
                 found = 1
                 break
-            elif urlbase(tag.resource) == url:
+            elif unquote(urlbase(tag.resource)) == unquote(url):
                 resourcetagged = 1
                 tag_list = [tokenFinder(x) for x in tag.list]
                 wehave = [t for t in tag_list if self.wl_hasLock(t)]
@@ -290,8 +290,7 @@ class Resource(Base, LockableItem):
             else:
                 # Our parent is locked, and no If header was passed in.
                 # When a parent is locked, members cannot be removed
-                raise PreconditionFailed(
-                    'Resource is locked, and no condition was passed in.')
+                raise Locked('Parent of this resource is locked.')
         # Either we're not locked, or a succesful lock token was submitted
         # so we can delete the lock now.
         # ajung: Fix for Collector # 2196

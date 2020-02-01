@@ -30,6 +30,7 @@ class TestPUTFactory(unittest.TestCase):
         request = self.app.REQUEST
         request['PARENTS'] = [self.app]
         request['BODY'] = 'bar'
+        request['BODYFILE'] = b'bar'
         request.environ['CONTENT_TYPE'] = 'text/plain'
         request.environ['REQUEST_METHOD'] = 'PUT'
         request.environ['WEBDAV_SOURCE_PORT'] = 1

@@ -13,6 +13,7 @@
 """WebDAV support - null resource objects.
 """
 
+import os
 import sys
 
 from AccessControl.class_init import InitializeClass
@@ -95,17 +96,22 @@ class NullResource(Persistent, Implicit, Resource):
     index_html = HEAD
 
     def _default_PUT_factory(self, name, typ, body):
-        # Return DTMLDoc/PageTemplate/Image/File, based on sniffing.
+        # See if the name contains a file extension
+        shortname, ext = os.path.splitext(name)
+
+        # Make sure the body is bytes
         if not isinstance(body, bytes):
             body = body.encode('UTF-8')
-        if name and name.endswith('.pt'):
-            ob = ZopePageTemplate(name, body, content_type=typ)
-        elif typ in ('text/html', 'text/xml', 'text/plain'):
+
+        if ext == '.dtml':
             ob = DTMLDocument('', __name__=name)
+        elif typ in ('text/html', 'text/xml'):
+            ob = ZopePageTemplate(name, body, content_type=typ)
         elif typ[:6] == 'image/':
             ob = Image(name, '', body, content_type=typ)
         else:
             ob = File(name, '', body, content_type=typ)
+
         return ob
 
     @security.public
@@ -232,6 +238,12 @@ class NullResource(Persistent, Implicit, Resource):
 
         name = self.__name__
         parent = self.__parent__
+
+        if isinstance(parent, NullResource):
+            # Can happen if someone specified a bad path to
+            # the object. Missing path elements may be created
+            # as NullResources. Give up in this case.
+            raise BadRequest('Parent %s does not exist' % parent.__name__)
 
         if IWriteLock.providedBy(parent) and parent.wl_isLocked():
             if ifhdr:
