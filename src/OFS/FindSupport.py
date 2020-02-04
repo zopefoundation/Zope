@@ -23,9 +23,9 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
+from DocumentTemplate._DocumentTemplate import InstanceDict
+from DocumentTemplate._DocumentTemplate import TemplateDict
 from DocumentTemplate.DT_Util import Eval
-from DocumentTemplate.DT_Util import InstanceDict
-from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
 from OFS.interfaces import IFindSupport
