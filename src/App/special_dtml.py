@@ -27,11 +27,11 @@ from App import Common
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
 from DocumentTemplate import OLD_DEFAULT_ENCODING
+from DocumentTemplate._DocumentTemplate import InstanceDict
+from DocumentTemplate._DocumentTemplate import TemplateDict
+from DocumentTemplate._DocumentTemplate import render_blocks
 from DocumentTemplate.DT_String import DTReturn
 from DocumentTemplate.DT_String import _marker
-from DocumentTemplate.DT_String import render_blocks
-from DocumentTemplate.DT_Util import InstanceDict
-from DocumentTemplate.DT_Util import TemplateDict
 from Shared.DC.Scripts.Bindings import Bindings
 
 
