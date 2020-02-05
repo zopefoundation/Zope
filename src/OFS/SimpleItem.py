@@ -23,6 +23,7 @@ import marshal
 import re
 import sys
 import time
+from warnings import warn
 
 import six
 from six import reraise
@@ -60,16 +61,12 @@ from OFS.owner import Owned
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 from Persistence import Persistent
+from webdav.Resource import Resource
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import default_encoding
 
-
-if bbb.HAS_ZSERVER:
-    from webdav.Resource import Resource
-else:
-    Resource = bbb.Resource
 
 logger = logging.getLogger()
 
@@ -345,6 +342,8 @@ class Item(
             """Psuedo stat, used by FTP for directory listings.
             """
             from AccessControl.User import nobody
+            warn(u'manage_FTPstat is deprecated and will be removed in '
+                 u'Zope 5.', DeprecationWarning, stacklevel=2)
             mode = 0o0100000
 
             if (hasattr(aq_base(self), 'manage_FTPget')):
@@ -409,6 +408,8 @@ class Item(
             object, the object itself.
             """
             from App.Common import is_acquired
+            warn(u'manage_FTPlist is deprecated and will be removed in '
+                 u'Zope 5.', DeprecationWarning, stacklevel=2)
             # check to see if we are being acquiring or not
             ob = self
             while 1:

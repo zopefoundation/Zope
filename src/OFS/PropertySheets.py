@@ -26,9 +26,9 @@ from Acquisition import aq_parent
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from OFS import bbb
 from OFS.Traversable import Traversable
 from Persistence import Persistent
+from webdav.PropertySheet import DAVPropertySheetMixin
 from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
 
@@ -37,11 +37,6 @@ try:
     from html import escape
 except ImportError:  # PY2
     from cgi import escape
-
-if bbb.HAS_ZSERVER:
-    from webdav.PropertySheet import DAVPropertySheetMixin
-else:
-    DAVPropertySheetMixin = bbb.DAVPropertySheetMixin
 
 
 class Virtual(object):
@@ -409,10 +404,7 @@ InitializeClass(DefaultProperties)
 
 
 # import cycles
-if bbb.HAS_ZSERVER:
-    from webdav.PropertySheets import DAVProperties
-else:
-    DAVProperties = bbb.DAVProperties
+from webdav.PropertySheets import DAVProperties  # NOQA: E402 isort:skip
 
 
 class PropertySheets(Traversable, Implicit, Tabs):

@@ -23,6 +23,7 @@ import time
 from io import BytesIO
 from logging import getLogger
 from operator import itemgetter
+from warnings import warn
 
 from six import string_types
 from six import text_type
@@ -61,6 +62,8 @@ from OFS.subscribers import compatibilityCall
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from webdav.Collection import Collection
+from webdav.NullResource import NullResource
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -76,10 +79,6 @@ try:
 except ImportError:  # PY2
     from cgi import escape
 
-if bbb.HAS_ZSERVER:
-    from webdav.Collection import Collection
-else:
-    Collection = bbb.Collection
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -737,6 +736,8 @@ class ObjectManager(
         def manage_FTPlist(self, REQUEST):
             """Directory listing for FTP.
             """
+            warn(u'manage_FTPlist is deprecated and will be removed in '
+                 u'Zope 5.', DeprecationWarning, stacklevel=2)
             out = ()
 
             # check to see if we are being acquiring or not
@@ -792,6 +793,8 @@ class ObjectManager(
         def manage_FTPstat(self, REQUEST):
             """Psuedo stat, used by FTP for directory listings.
             """
+            warn(u'manage_FTPstat is deprecated and will be removed in '
+                 u'Zope 5.', DeprecationWarning, stacklevel=2)
             mode = 0o0040000
             from AccessControl.User import nobody
             # check to see if we are acquiring our objectValues or not
@@ -827,13 +830,13 @@ class ObjectManager(
     def __getitem__(self, key):
         if key in self:
             return self._getOb(key, None)
+
         request = getattr(self, 'REQUEST', None)
         if not (isinstance(request, str) or request is None):
             method = request.get('REQUEST_METHOD', 'GET')
             if request.maybe_webdav_client and method not in ('GET', 'POST'):
-                if bbb.HAS_ZSERVER:
-                    from webdav.NullResource import NullResource
-                    return NullResource(self, key, request).__of__(self)
+                return NullResource(self, key, request).__of__(self)
+
         raise KeyError(key)
 
     def __setitem__(self, key, value):

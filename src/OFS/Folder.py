@@ -17,7 +17,6 @@ Folders are the basic container objects and are analogous to directories.
 
 from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
-from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
 from OFS.Lockable import LockableItem
@@ -26,13 +25,8 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import PathReprProvider
+from webdav.Collection import Collection
 from zope.interface import implementer
-
-
-if bbb.HAS_ZSERVER:
-    from webdav.Collection import Collection
-else:
-    Collection = bbb.Collection
 
 
 manage_addFolderForm = DTMLFile('dtml/folderAdd', globals())

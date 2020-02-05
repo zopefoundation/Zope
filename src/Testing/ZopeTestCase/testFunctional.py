@@ -23,6 +23,7 @@ from six.moves.urllib.parse import urlencode
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view
+from DocumentTemplate.permissions import change_dtml_documents
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
@@ -116,6 +117,18 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
+
+    def testPUTExisting(self):
+        # PUT new data into an existing object
+        self.setPermissions([change_dtml_documents])
+
+        put_data = BytesIO(b'foo')
+        response = self.publish(self.folder_path + '/index_html',
+                                request_method='PUT', stdin=put_data,
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 204)
+        self.assertEqual(self.folder.index_html(), 'foo')
 
     def testHEAD(self):
         # HEAD should work without passing stdin

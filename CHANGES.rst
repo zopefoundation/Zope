@@ -7,8 +7,11 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.1.4 (unreleased)
-------------------
+4.2 (unreleased)
+----------------
+
+- Restore WebDAV support in Zope
+  (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
 
 - Fix longstanding test bug by forcing the page template engine.
   Many tests in ``Products.PageTemplates`` used the old Zope page template
