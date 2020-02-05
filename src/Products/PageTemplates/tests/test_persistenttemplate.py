@@ -6,6 +6,8 @@ from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
 from Testing.utils import capture_stdout
 from Testing.ZopeTestCase import ZopeTestCase
 
+from .util import useChameleonEngine
+
 
 try:
     from html import escape
@@ -114,10 +116,9 @@ _marker = object()
 
 
 class TestPersistent(ZopeTestCase):
+
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
         self.setRoles(['Manager'])
 
     def _makeOne(self, template_id, source):

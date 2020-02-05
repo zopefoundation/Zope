@@ -11,6 +11,8 @@ import Zope2
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.makerequest import makerequest
 
+from .util import useChameleonEngine
+
 
 class TypeSniffingTestCase(unittest.TestCase):
 
@@ -22,6 +24,8 @@ class TypeSniffingTestCase(unittest.TestCase):
             IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver import \
             DefaultUnicodeEncodingConflictResolver
+        # Make sure we use the new default chameleon engine
+        useChameleonEngine()
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
 

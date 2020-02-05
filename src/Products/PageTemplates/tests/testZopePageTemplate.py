@@ -30,6 +30,9 @@ from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 from zope.publisher.http import HTTPCharsets
 from zope.traversing.adapters import DefaultTraversable
 
+from .util import useChameleonEngine
+from .util import useOldZopeEngine
+
 
 ascii_binary = b'<html><body>hello world</body></html>'
 iso885915_binary = u'<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
@@ -88,6 +91,9 @@ installProduct('PageTemplates')
 
 class ZPTUtilsTests(unittest.TestCase):
 
+    def afterSetUp(self):
+        useChameleonEngine()
+
     def testExtractEncodingFromXMLPreamble(self):
         extract = encodingFromXMLPreamble
         self.assertEqual(extract(b'<?xml version="1.0" ?>'), DEFAULT_ENCODING)
@@ -121,8 +127,11 @@ class ZPTUtilsTests(unittest.TestCase):
 
 
 class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
+    # BBB The unicode conflict resolution feature is only available
+    # for the old Zope page template engine!
 
     def afterSetUp(self):
+        useOldZopeEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         zope.component.provideAdapter(HTTPCharsets, (None,))
         provideUtility(PreferredCharsetResolver,
@@ -229,6 +238,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
 
 class ZopePageTemplateFileTests(ZopeTestCase):
+
+    def afterSetUp(self):
+        useChameleonEngine()
 
     def test_class_conforms_to_IWriteLock(self):
         from zope.interface.verify import verifyClass
@@ -339,6 +351,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual('ATTR' in result, True)
 
     def testHTMLAttrsAreLowerCased(self):
+        # BBB Only the old Zope page template engine does this munging
+        useOldZopeEngine()
         zpt = self._put(html_with_upper_attr)
         self.content_type = 'text/html'
         result = zpt.pt_render()
@@ -362,6 +376,7 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
 class ZPTRegressions(unittest.TestCase):
 
     def setUp(self):
+        useChameleonEngine()
         transaction.begin()
         self.app = makerequest(Zope2.app())
         f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
@@ -409,6 +424,7 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super(ZPTMacros, self).setUp()
+        useChameleonEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
 
         transaction.begin()
@@ -461,6 +477,9 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
 class SrcTests(unittest.TestCase):
 
+    def setUp(self):
+        useChameleonEngine()
+
     def _getTargetClass(self):
         from Products.PageTemplates.ZopePageTemplate import Src
         return Src
@@ -505,6 +524,9 @@ class SrcTests(unittest.TestCase):
 
 class ZPTBrowserTests(FunctionalTestCase):
     """Browser testing ZopePageTemplate"""
+
+    def afterSetUp(self):
+        useChameleonEngine()
 
     def setUp(self):
         from Products.PageTemplates.ZopePageTemplate import \

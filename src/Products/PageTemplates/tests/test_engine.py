@@ -4,6 +4,8 @@ import unittest
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase.sandbox import Sandboxed
 
+from .util import useChameleonEngine
+
 
 path = os.path.dirname(__file__)
 
@@ -11,9 +13,7 @@ path = os.path.dirname(__file__)
 class TestPatches(Sandboxed, ZopeTestCase):
 
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
 
     def test_pagetemplate(self):
         from Products.PageTemplates.PageTemplate import PageTemplate

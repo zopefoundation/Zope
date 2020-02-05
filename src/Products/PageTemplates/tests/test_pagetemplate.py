@@ -6,15 +6,16 @@ from six import PY3
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
 
+from .util import useChameleonEngine
+
 
 path = os.path.dirname(__file__)
 
 
 class TestPageTemplateFile(ZopeTestCase):
+
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
 
     def _makeOne(self, name):
         return PageTemplateFile(os.path.join(path, name)).__of__(self.app)

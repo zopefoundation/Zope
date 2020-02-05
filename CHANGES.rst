@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.1.4 (unreleased)
 ------------------
 
+- Fix longstanding test bug by forcing the page template engine.
+  Many tests in ``Products.PageTemplates`` used the old Zope page template
+  engine because the correct one was not registered during setup.
+
 - Add deprecation warnings to the ``ZPublisher.maybe_lock`` module
   (`#758 <https://github.com/zopefoundation/Zope/issues/758>`_)
 
