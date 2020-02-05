@@ -6,9 +6,11 @@ These are all the changes for Zope 5, starting with the alpha releases.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-
 5.0a1 (unreleased)
 ------------------
+
+- Restore WebDAV support in Zope
+  (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
 
 - Fix longstanding test bug by forcing the page template engine.
   Many tests in ``Products.PageTemplates`` used the old Zope page template

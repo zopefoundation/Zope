@@ -41,6 +41,11 @@ def automatically_quote_dtml_request_data(value):
     return value
 
 
+def enable_ms_public_header(value):
+    import webdav
+    webdav.enable_ms_public_header = value
+
+
 def root_wsgi_handler(cfg):
     # Set environment variables
     for k, v in cfg.environment.items():

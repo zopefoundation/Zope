@@ -25,6 +25,7 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from OFS.SimpleItem import PathReprProvider
+from webdav.Collection import Collection
 from zope.interface import implementer
 
 
@@ -55,6 +56,7 @@ class Folder(
     ObjectManager,
     PropertyManager,
     RoleManager,
+    Collection,
     LockableItem,
     Item,
     FindSupport

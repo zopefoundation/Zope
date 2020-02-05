@@ -51,6 +51,8 @@ from OFS.subscribers import compatibilityCall
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from webdav.Collection import Collection
+from webdav.NullResource import NullResource
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -150,6 +152,7 @@ class ObjectManager(
     Tabs,
     Implicit,
     Persistent,
+    Collection,
     LockableItem,
     Traversable
 ):
@@ -719,6 +722,13 @@ class ObjectManager(
     def __getitem__(self, key):
         if key in self:
             return self._getOb(key, None)
+
+        request = getattr(self, 'REQUEST', None)
+        if not (isinstance(request, str) or request is None):
+            method = request.get('REQUEST_METHOD', 'GET')
+            if request.maybe_webdav_client and method not in ('GET', 'POST'):
+                return NullResource(self, key, request).__of__(self)
+
         raise KeyError(key)
 
     def __setitem__(self, key, value):

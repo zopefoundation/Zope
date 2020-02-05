@@ -129,7 +129,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             source_encoding = None
             output_encoding = 'utf-8'
 
-        # for content updated through WebDAV, FTP
+        # for content updated through WebDAV
         if not keep_output_encoding:
             self.output_encoding = output_encoding
 
@@ -344,8 +344,17 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         assert isinstance(result, str)
         return result
 
-    def wl_isLocked(self):
-        return 0
+    @security.protected(change_page_templates)
+    def PUT(self, REQUEST, RESPONSE):
+        """ Handle HTTP PUT requests """
+
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        text = REQUEST.get('BODY', '')
+        content_type = guess_type('', text)
+        self.pt_edit(text, content_type)
+        RESPONSE.setStatus(204)
+        return RESPONSE
 
 
 InitializeClass(ZopePageTemplate)

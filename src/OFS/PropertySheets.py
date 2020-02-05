@@ -28,6 +28,7 @@ from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from OFS.Traversable import Traversable
 from Persistence import Persistent
+from webdav.PropertySheet import DAVPropertySheetMixin
 from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
 
@@ -104,7 +105,7 @@ class View(Tabs, Base):
             return ''
 
 
-class PropertySheet(Traversable, Persistent, Implicit):
+class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
     """A PropertySheet is a container for a set of related properties and
        metadata describing those properties. PropertySheets may or may not
        provide a web interface for managing its properties."""
@@ -402,6 +403,10 @@ class DefaultProperties(Virtual, PropertySheet, View):
 InitializeClass(DefaultProperties)
 
 
+# import cycles
+from webdav.PropertySheets import DAVProperties  # NOQA: E402 isort:skip
+
+
 class PropertySheets(Traversable, Implicit, Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
@@ -416,8 +421,10 @@ class PropertySheets(Traversable, Implicit, Tabs):
     # optionally to be overridden by derived classes
     PropertySheetClass = PropertySheet
 
+    webdav = DAVProperties()
+
     def _get_defaults(self):
-        return ()
+        return (self.webdav,)
 
     def __propsets__(self):
         propsets = aq_parent(self).__propsets__
@@ -553,9 +560,10 @@ class DefaultPropertySheets(PropertySheets):
        design of Zope PropertyManagers."""
 
     default = DefaultProperties()
+    webdav = DAVProperties()
 
     def _get_defaults(self):
-        return (self.default,)
+        return (self.default, self.webdav)
 
 
 InitializeClass(DefaultPropertySheets)

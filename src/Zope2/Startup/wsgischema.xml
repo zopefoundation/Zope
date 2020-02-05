@@ -343,4 +343,25 @@
    </description>
   </multisection>
 
+  <key name="enable-ms-public-header"
+       datatype="boolean"
+       handler="enable_ms_public_header"
+       default="off">
+   <description>
+    Set this directive to 'on' to enable sending the "Public" header
+    in response to an WebDAV OPTIONS request - but only those coming from
+    Microsoft WebDAV clients.
+
+    Though recent WebDAV drafts mention this header, the original
+    WebDAV RFC did not mention it as part of the standard. Very few
+    web servers out there include this header in their replies, most
+    notably IIS and Netscape Enterprise 3.6.
+
+    Documentation about this header is sparse. Some versions of
+    Microsoft Web Folders after 2005 apparently require its presence,
+    but most documentation links have expired.
+   </description>
+   <metadefault>off</metadefault>
+  </key>
+
 </schema>

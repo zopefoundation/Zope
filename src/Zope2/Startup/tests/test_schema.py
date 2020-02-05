@@ -21,6 +21,7 @@ import unittest
 import ZConfig
 import Zope2.Startup.datatypes
 import ZPublisher.HTTPRequest
+from Zope2.Startup.handlers import handleWSGIConfig
 from Zope2.Startup.options import ZopeWSGIOptions
 
 
@@ -141,3 +142,41 @@ class WSGIStartupTestCase(unittest.TestCase):
             """.format(sep=os.path.sep))
         expected = os.path.join(conf.instancehome, 'Z5.pid')
         self.assertEqual(conf.pid_filename, expected)
+
+    def test_automatically_quote_dtml_request_data(self):
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertTrue(conf.automatically_quote_dtml_request_data)
+        self.assertEqual(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', ''), '')
+
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            automatically-quote-dtml-request-data off
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertFalse(conf.automatically_quote_dtml_request_data)
+        self.assertEqual(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', ''),
+                         '0')
+
+    def test_ms_public_header(self):
+        import webdav
+
+        default_setting = webdav.enable_ms_public_header
+        try:
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                enable-ms-public-header true
+                """)
+            handleWSGIConfig(None, handler)
+            self.assertTrue(webdav.enable_ms_public_header)
+
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                enable-ms-public-header false
+                """)
+            handleWSGIConfig(None, handler)
+            self.assertFalse(webdav.enable_ms_public_header)
+        finally:
+            webdav.enable_ms_public_header = default_setting

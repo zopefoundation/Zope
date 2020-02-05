@@ -20,6 +20,7 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
 from App.config import getConfiguration
+from App.DavLockManager import DavLockManager
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
@@ -100,6 +101,7 @@ class ConfigurationViewer(Tabs, Traversable, Implicit):
         {'label': 'Control Panel', 'action': '../manage_main'},
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': 'manage_main'},
+        {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -144,6 +146,7 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
 
     Database = DatabaseChooser()
     Configuration = ConfigurationViewer()
+    DavLocks = DavLockManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
@@ -151,6 +154,7 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
         {'label': 'Control Panel', 'action': 'manage_main'},
         {'label': 'Databases', 'action': 'Database/manage_main'},
         {'label': 'Configuration', 'action': 'Configuration/manage_main'},
+        {'label': 'DAV Locks', 'action': 'DavLocks/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
