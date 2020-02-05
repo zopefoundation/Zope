@@ -17,6 +17,10 @@ import sys
 import unittest
 
 from ExtensionClass import Base
+from Products.PageTemplates.engine import Program
+from zope.component import provideUtility
+from zope.pagetemplate.interfaces import IPageTemplateEngine
+from zope.pagetemplate.pagetemplate import PageTemplateEngine
 
 
 # Dummy TestCase to use the assertions outside the actual tests.
@@ -137,3 +141,18 @@ def read_output(filename):
     with _open(filename, 'r') as fd:
         data = fd.read()
     return data
+
+
+def useChameleonEngine():
+    # Force the use of the new chameleon rendering engine (the new default).
+    # Its use depends on a utility registration that is queried in
+    # zope.pagetemplate,pagetemplate.PageTemplate's _cook method. Unfortunately
+    # the fallback is the old Zope engine if there is no registration, so we
+    # force one here for use by unit tests.
+    provideUtility(Program, IPageTemplateEngine)
+
+
+def useOldZopeEngine():
+    # BBB Force the use of the old Zope page template engine, which is needed
+    # for some tests that test features only supported by it.
+    provideUtility(PageTemplateEngine, IPageTemplateEngine)
