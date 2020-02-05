@@ -27,6 +27,9 @@ from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 from zope.publisher.http import HTTPCharsets
 from zope.traversing.adapters import DefaultTraversable
 
+from .util import useChameleonEngine
+from .util import useOldZopeEngine
+
 
 ascii_binary = b'<html><body>hello world</body></html>'
 iso885915_binary = '<html><body>üöäÜÖÄß</body></html>'.encode('iso-8859-15')
@@ -85,6 +88,9 @@ installProduct('PageTemplates')
 
 class ZPTUtilsTests(unittest.TestCase):
 
+    def afterSetUp(self):
+        useChameleonEngine()
+
     def testExtractEncodingFromXMLPreamble(self):
         extract = encodingFromXMLPreamble
         self.assertEqual(extract(b'<?xml version="1.0" ?>'), DEFAULT_ENCODING)
@@ -118,8 +124,11 @@ class ZPTUtilsTests(unittest.TestCase):
 
 
 class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
+    # BBB The unicode conflict resolution feature is only available
+    # for the old Zope page template engine!
 
     def afterSetUp(self):
+        useOldZopeEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         zope.component.provideAdapter(HTTPCharsets, (None,))
         provideUtility(PreferredCharsetResolver,
@@ -134,7 +143,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'ISO-8859-15,utf-8')
         self.app.REQUEST.set('data', 'üöä'.encode('iso-8859-15'))
         result = zpt.pt_render()
-        self.assertTrue(result.startswith('<div>üöä</div>'))
+        self.assertIn('<div>üöä</div>', result)
 
     def testUTF8(self):
         manage_addPageTemplate(self.app, 'test',
@@ -145,7 +154,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'utf-8,ISO-8859-15')
         self.app.REQUEST.set('data', 'üöä'.encode())
         result = zpt.pt_render()
-        self.assertTrue(result.startswith('<div>üöä</div>'))
+        self.assertIn('<div>üöä</div>', result)
 
     def testUTF8WrongPreferredCharset(self):
         manage_addPageTemplate(self.app, 'test',
@@ -156,7 +165,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15')
         self.app.REQUEST.set('data', 'üöä'.encode())
         result = zpt.pt_render()
-        self.assertFalse(result.startswith('<div>üöä</div>'))
+        self.assertNotIn('<div>üöä</div>', result)
 
     def testStructureWithAccentedChars(self):
         raw = '<div tal:content="structure python: \'üöä\'" />'
@@ -166,7 +175,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         zpt = self.app['test']
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET', 'iso-8859-15,utf-8')
         result = zpt.pt_render()
-        self.assertTrue(result.startswith('<div>üöä</div>'))
+        self.assertIn('<div>üöä</div>', result)
 
     def testBug151020(self):
         raw = '<div tal:content="structure python: \'üöä\'" />'
@@ -177,7 +186,7 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
         self.app.REQUEST.set('HTTP_ACCEPT_CHARSET',
                              'x-user-defined, iso-8859-15,utf-8')
         result = zpt.pt_render()
-        self.assertTrue(result.startswith('<div>üöä</div>'))
+        self.assertIn('<div>üöä</div>', result)
 
     def test_bug_198274(self):
         # See https://bugs.launchpad.net/bugs/198274
@@ -226,6 +235,9 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
 
 
 class ZopePageTemplateFileTests(ZopeTestCase):
+
+    def afterSetUp(self):
+        useChameleonEngine()
 
     def test_class_conforms_to_IWriteLock(self):
         from zope.interface.verify import verifyClass
@@ -336,6 +348,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         self.assertEqual('ATTR' in result, True)
 
     def testHTMLAttrsAreLowerCased(self):
+        # BBB Only the old Zope page template engine does this munging
+        useOldZopeEngine()
         zpt = self._put(html_with_upper_attr)
         self.content_type = 'text/html'
         result = zpt.pt_render()
@@ -359,6 +373,7 @@ class PreferredCharsetUnicodeResolverTests(unittest.TestCase):
 class ZPTRegressions(unittest.TestCase):
 
     def setUp(self):
+        useChameleonEngine()
         transaction.begin()
         self.app = makerequest(Zope2.app())
         f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
@@ -406,6 +421,7 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super().setUp()
+        useChameleonEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
 
         transaction.begin()
@@ -458,6 +474,9 @@ class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
 class SrcTests(unittest.TestCase):
 
+    def setUp(self):
+        useChameleonEngine()
+
     def _getTargetClass(self):
         from Products.PageTemplates.ZopePageTemplate import Src
         return Src
@@ -502,6 +521,9 @@ class SrcTests(unittest.TestCase):
 
 class ZPTBrowserTests(FunctionalTestCase):
     """Browser testing ZopePageTemplate"""
+
+    def afterSetUp(self):
+        useChameleonEngine()
 
     def setUp(self):
         from Products.PageTemplates.ZopePageTemplate import \

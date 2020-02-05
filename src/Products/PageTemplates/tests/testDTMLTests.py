@@ -25,6 +25,9 @@ from Products.PageTemplates.unicodeconflictresolver import \
 from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 
+from .util import useChameleonEngine
+from .util import useOldZopeEngine
+
 
 class AqPageTemplate(Implicit, PageTemplate):
     pass
@@ -55,6 +58,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super().setUp()
+        useChameleonEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
@@ -153,6 +157,8 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def test_on_error_in_slot_filler(self):
         # The `here` isn't defined, so the macro definition is
         # expected to catch the error that gets raised.
+        # BBB This only works with the old Zope page template engine
+        useOldZopeEngine()
         text = '''\
             <div metal:define-macro="foo">
                <div tal:on-error="string:eek">
