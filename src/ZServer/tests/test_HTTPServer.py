@@ -16,9 +16,6 @@
 import unittest
 import urlparse
 
-from OFS.Folder import Folder
-from Testing.makerequest import makerequest
-
 
 class FakeMedusaServer:
 
