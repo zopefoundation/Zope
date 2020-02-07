@@ -8,7 +8,8 @@ http://docs.zope.org/zope2/
 2.13.30 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Prevent header spoofing by excluding those with ``_`` in them
+  (`#655 <https://github.com/zopefoundation/Zope/pull/655>`_)
 
 
 2.13.29 (2019-02-09)
