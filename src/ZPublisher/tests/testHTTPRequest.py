@@ -75,6 +75,13 @@ class RecordTests(unittest.TestCase):
         rec2.b = 'foo'
         self.assertNotEqual(rec1, rec2)
 
+    def test__str__returns_native_string(self):
+        rec = self._makeOne()
+        rec.a = b'foo'
+        rec.b = 8
+        rec.c = u'bar'
+        self.assertIsInstance(str(rec), str)
+
     def test_str(self):
         rec = self._makeOne()
         rec.a = 1
@@ -1189,6 +1196,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         req._script = ['foo', 'bar']
         self.assertEqual(req.getVirtualRoot(), '/foo/bar')
+
+    def test__str__returns_native_string(self):
+        r = self._makeOne()
+        self.assertIsInstance(str(r), str)
 
     def test___str____password_field(self):
         # It obscures password fields.

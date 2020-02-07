@@ -88,3 +88,9 @@ class TestImageFileFunctional(unittest.TestCase):
         self.assertEqual(stdout.getvalue(), b'')
         self.assertEqual(len(result), 0)
         self.assertEqual(response.getHeader('Content-Length'), '0')
+
+    def test__str__returns_native_string(self):
+        path = os.path.join(os.path.dirname(App.__file__),
+                            'www', 'zopelogo.png')
+        image = App.ImageFile.ImageFile(path)
+        self.assertIsInstance(str(image), str)

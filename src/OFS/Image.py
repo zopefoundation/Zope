@@ -679,6 +679,7 @@ class File(
         return bytes(self.data)
 
     def __str__(self):
+        """In most cases, this is probably not what you want. Use ``bytes``."""
         if isinstance(self.data, Pdata):
             return bytes(self.data).decode(self._get_encoding())
         else:

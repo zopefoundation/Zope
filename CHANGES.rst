@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- More tests to make sure all ``__str__`` implementations return native strings
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
+
 - Restore WebDAV support in Zope
   (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
 

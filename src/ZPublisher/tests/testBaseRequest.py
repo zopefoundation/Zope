@@ -759,3 +759,8 @@ class TestBaseRequestViews(TestRequestViewsBase):
         self.assertEqual(ob(), 'Test page')
         # make sure we can acquire
         self.assertEqual(ob.ob2, ob2)
+
+    def test__str__returns_native_string(self):
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        self.assertIsInstance(str(r), str)
