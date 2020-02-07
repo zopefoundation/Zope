@@ -10,7 +10,9 @@
                     skey python:request.get('skey',default_sort);
                     rkey python:request.get('rkey','asc');
                     rkey_alt python:'desc' if rkey=='asc' else 'asc';
+                    rkey_alt_up rkey_alt/upper;
                     obs python: here.manage_get_sortedObjects(sortkey = skey, revkey = rkey);
+                    my_url string:${context/absolute_url}/manage_main;
                    "
         tal:attributes="action string:${request/URL1}/">
 
@@ -24,9 +26,9 @@
             <th scope="col" class="zmi-object-type">
               <a title="Sort Ascending by Meta-Type"
                  href="?skey=meta_type&rkey=asc"
-                 tal:attributes="title python:'Sort %s by Meta-Type'%( rkey_alt.upper() );
-                                 href python:'?skey=meta_type&rkey=%s'%( rkey_alt );
-                                 class python:request.get('skey',None)=='meta_type' and 'zmi-sort_key' or None;
+                 tal:attributes="title string:Sort ${rkey_alt_up} by meta-type;
+                                 href string:${my_url}?skey=meta_type&rkey=${rkey_alt};
+                                 class python:skey=='meta_type' and 'zmi-sort_key' or None;
                                 ">
                 <i class="fa fa-sort"></i>
               </a>
@@ -34,9 +36,9 @@
             <th scope="col" class="zmi-object-id">
               <a title="Sort Ascending by Name"
                  href="?skey=id&rkey=asc"
-                 tal:attributes="title python:'Sort %s by Name'%( rkey_alt.upper() );
-                                 href python:'?skey=id&rkey=%s'%( rkey_alt );
-                                 class python:request.get('skey',None)=='id' and 'zmi-sort_key' or None;
+                 tal:attributes="title string:Sort ${rkey_alt_up} by name;
+                                 href string:${my_url}?skey=id&rkey=${rkey_alt};
+                                 class python:skey=='id' and 'zmi-sort_key' or None;
                                 ">
                 Name
                 <i class="fa fa-sort"></i>
@@ -47,9 +49,9 @@
             <th scope="col" class="zmi-object-size text-right hidden-xs">
               <a title="Sort Ascending by File-Size"
                  href="?skey=get_size&rkey=asc"
-                 tal:attributes="title python:'Sort %s by File-Size'%( rkey_alt.upper() );
-                                 href python:'?skey=get_size&rkey=%s'%( rkey_alt );
-                                 class python:request.get('skey',None)=='get_size' and 'zmi-sort_key' or None;
+                 tal:attributes="title string:Sort ${rkey_alt_up} by size;
+                                 href string:${my_url}?skey=get_size&rkey=${rkey_alt};
+                                 class python:skey=='get_size' and 'zmi-sort_key' or None;
                                 ">
                 Size
                 <i class="fa fa-sort"></i>
@@ -58,9 +60,9 @@
             <th scope="col" class="zmi-object-date text-right hidden-xs">
               <a title="Sort Ascending by Modification Date"
                  href="?skey=_p_mtime&rkey=asc"
-                 tal:attributes="title python:'Sort %s by Modification Date'%( rkey_alt.upper() );
-                                 href python:'?skey=_p_mtime&rkey=%s'%( rkey_alt );
-                                 class python:request.get('skey',None)=='_p_mtime' and 'zmi-sort_key' or None;
+                 tal:attributes="title string:Sort ${rkey_alt_up} by modification date;
+                                 href string:${my_url}?skey=_p_mtime&rkey=${rkey_alt};
+                                 class python:skey=='_p_mtime' and 'zmi-sort_key' or None;
                                 ">
                 Last Modified
                 <i class="fa fa-sort"></i>
@@ -153,6 +155,7 @@
       </div>
     </tal:empty>
   </form>
+
 </main>
 
 
