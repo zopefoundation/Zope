@@ -7,6 +7,12 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
+4.2.1 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 4.2 (2020-02-09)
 ----------------
 
