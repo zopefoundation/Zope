@@ -14,6 +14,7 @@
 """
 
 import os
+from warnings import warn
 
 from six import binary_type
 from six import text_type
@@ -29,13 +30,13 @@ from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
 from App.Common import package_home
+from OFS import bbb
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
-from Products.PageTemplates import bbb
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -134,7 +135,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             source_encoding = None
             output_encoding = 'utf-8'
 
-        # for content updated through WebDAV, FTP
+        # for content updated through WebDAV
         if not keep_output_encoding:
             self.output_encoding = output_encoding
 
@@ -295,19 +296,19 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         'manage_beforeHistoryCopy',
         'manage_afterHistoryCopy')
 
+    @security.protected(change_page_templates)
+    def PUT(self, REQUEST, RESPONSE):
+        """ Handle HTTP PUT requests """
+
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        text = REQUEST.get('BODY', '')
+        content_type = guess_type('', text)
+        self.pt_edit(text, content_type)
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     if bbb.HAS_ZSERVER:
-        @security.protected(change_page_templates)
-        def PUT(self, REQUEST, RESPONSE):
-            """ Handle HTTP PUT requests """
-
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            text = REQUEST.get('BODY', '')
-            content_type = guess_type('', text)
-            self.pt_edit(text, content_type)
-            RESPONSE.setStatus(204)
-            return RESPONSE
-
         security.declareProtected(change_page_templates,  # NOQA: D001
                                   'manage_FTPput')
         manage_FTPput = PUT
@@ -315,6 +316,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         @security.protected(ftp_access)
         def manage_FTPget(self):
             "Get source for FTP download"
+            warn(u'manage_FTPget is deprecated and will be removed in Zope 5.',
+                 DeprecationWarning, stacklevel=2)
             result = self.read()
             return result.encode(self.output_encoding)
 
@@ -371,9 +374,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         result = PageTemplate.pt_render(self, source, extra_context)
         assert isinstance(result, text_type)
         return result
-
-    def wl_isLocked(self):
-        return 0
 
 
 InitializeClass(ZopePageTemplate)

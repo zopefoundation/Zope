@@ -21,7 +21,6 @@ from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition.interfaces import IAcquirer
-from App.bbb import HAS_ZSERVER
 from ExtensionClass import Base
 from zExceptions import Forbidden
 from zExceptions import NotFound
@@ -183,7 +182,7 @@ class BaseRequest(object):
     collection of variable to value mappings.
     """
 
-    maybe_webdav_client = HAS_ZSERVER
+    maybe_webdav_client = 1
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -439,10 +438,7 @@ class BaseRequest(object):
         self._post_traverse = post_traverse = []
 
         # import time ordering problem
-        if HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = None
+        from webdav.NullResource import NullResource
 
         entry_name = ''
         try:
@@ -468,8 +464,7 @@ class BaseRequest(object):
                     # This is webdav support. The last object in the path
                     # should not be acquired. Instead, a NullResource should
                     # be given if it doesn't exist:
-                    if NullResource is not None and \
-                       no_acquire_flag and \
+                    if no_acquire_flag and \
                        hasattr(object, 'aq_base') and \
                        not hasattr(object, '__bobo_traverse__'):
 

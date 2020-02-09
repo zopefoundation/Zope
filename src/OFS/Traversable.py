@@ -26,7 +26,6 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from OFS import bbb
 from OFS.interfaces import IApplication
 from OFS.interfaces import ITraversable
 from zExceptions import NotFound
@@ -199,12 +198,9 @@ class Traversable(object):
             obj = self
 
         # import time ordering problem
-        if bbb.HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = bbb.NullResource
-
+        from webdav.NullResource import NullResource
         resource = _marker
+
         try:
             while path:
                 name = path_pop()
@@ -303,10 +299,7 @@ class Traversable(object):
                                     # NullResource, if this is the case we
                                     # save it and return it if all other
                                     # lookups fail.
-                                    if (
-                                        NullResource is not None
-                                        and isinstance(next, NullResource)
-                                    ):
+                                    if isinstance(next, NullResource):
                                         resource = next
                                         raise KeyError(name)
                                 except (AttributeError, TypeError):

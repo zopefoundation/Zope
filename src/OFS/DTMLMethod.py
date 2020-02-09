@@ -13,6 +13,7 @@
 """DTML Method objects.
 """
 import re
+from warnings import warn
 
 from six import PY2
 from six import PY3
@@ -377,6 +378,19 @@ class DTMLMethod(
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
+    @security.protected(change_dtml_methods)
+    def PUT(self, REQUEST, RESPONSE):
+        """ Handle HTTP PUT requests.
+        """
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        body = safe_file_data(REQUEST.get('BODY', ''))
+        self._validateProxy(REQUEST)
+        self.munge(body)
+        self.ZCacheable_invalidate()
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
         return DTMLMethod.inheritedAttribute('manage_historyCompare')(
@@ -385,23 +399,12 @@ class DTMLMethod(
 
     if bbb.HAS_ZSERVER:
 
-        @security.protected(change_dtml_methods)
-        def PUT(self, REQUEST, RESPONSE):
-            """ Handle FTP / HTTP PUT requests.
-            """
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            body = REQUEST.get('BODY', '')
-            self._validateProxy(REQUEST)
-            self.munge(body)
-            self.ZCacheable_invalidate()
-            RESPONSE.setStatus(204)
-            return RESPONSE
-
         @security.protected(ftp_access)
         def manage_FTPget(self):
             """ Get source for FTP download.
             """
+            warn(u'manage_FTPget is deprecated and will be removed in Zope 5.',
+                 DeprecationWarning, stacklevel=2)
             return self.read()
 
 

@@ -16,6 +16,7 @@
 import struct
 from email.generator import _make_boundary
 from io import BytesIO
+from warnings import warn
 
 from six import PY2
 from six import binary_type
@@ -649,6 +650,25 @@ class File(
 
         return (_next, size)
 
+    @security.protected(change_images_and_files)
+    def PUT(self, REQUEST, RESPONSE):
+        """Handle HTTP PUT requests"""
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        type = REQUEST.get_header('content-type', None)
+
+        file = REQUEST['BODYFILE']
+
+        data, size = self._read_data(file)
+        if isinstance(data, str):
+            data = data.encode('UTF-8')
+        content_type = self._get_content_type(file, data, self.__name__,
+                                              type or self.content_type)
+        self.update_data(data, content_type, size)
+
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     @security.protected(View)
     def get_size(self):
         # Get the size of a file or image.
@@ -689,26 +709,12 @@ class File(
         return len(data)
 
     if bbb.HAS_ZSERVER:
-        @security.protected(change_images_and_files)
-        def PUT(self, REQUEST, RESPONSE):
-            """Handle HTTP PUT requests"""
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            type = REQUEST.get_header('content-type', None)
-
-            file = REQUEST['BODYFILE']
-
-            data, size = self._read_data(file)
-            content_type = self._get_content_type(file, data, self.__name__,
-                                                  type or self.content_type)
-            self.update_data(data, content_type, size)
-
-            RESPONSE.setStatus(204)
-            return RESPONSE
 
         @security.protected(ftp_access)
         def manage_FTPget(self):
             """Return body for ftp."""
+            warn(u'manage_FTPget is deprecated and will be removed in Zope 5.',
+                 DeprecationWarning, stacklevel=2)
             RESPONSE = self.REQUEST.RESPONSE
 
             if self.ZCacheable_isCachingEnabled():
