@@ -1,8 +1,14 @@
+.coverage
 .installed.cfg
 .mr.developer.cfg
 .tox/
+_build/
 bin/
+coverage.xml
+default.profraw
 develop-eggs/
 dist/
+parts/
+pyvenv.cfg
 src/
 lib/
