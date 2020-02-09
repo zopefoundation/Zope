@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.2.1 (unreleased)
 ------------------
 
-- Update to current releases of the dependencies
+- Repair Python 2.7 compatibility due to a Python 3-only import
 
 
 4.2 (2020-02-09)

@@ -11,8 +11,6 @@
 #
 ##############################################################################
 
-from html import escape
-
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import iso8601_date
@@ -25,6 +23,12 @@ from webdav.common import absattr
 from webdav.common import isDavCollection
 from webdav.common import urlbase
 from webdav.xmltools import escape as xmltools_escape
+
+
+try:
+    from html import escape
+except ImportError:  # PY2
+    from cgi import escape
 
 
 def xml_escape(value):
