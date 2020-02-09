@@ -13,6 +13,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Restore WebDAV support in Zope
   (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
 
+- Fix sort link URLs on ``manage_main``
+  (`#748 <https://github.com/zopefoundation/Zope/issues/748>`_)
+
 - Fix longstanding test bug by forcing the page template engine.
   Many tests in ``Products.PageTemplates`` used the old Zope page template
   engine because the correct one was not registered during setup.
