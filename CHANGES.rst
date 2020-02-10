@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.2.1 (unreleased)
+4.2.1 (2020-02-09)
 ------------------
 
 - Repair Python 2.7 compatibility due to a Python 3-only import
