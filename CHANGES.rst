@@ -12,6 +12,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Repair Python 2.7 compatibility due to a Python 3-only import
 
+- Add shim modules with deprecation wanrnings for some ``webdav`` consumers
+
 
 4.2 (2020-02-09)
 ----------------
