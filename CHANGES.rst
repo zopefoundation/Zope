@@ -14,6 +14,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Add shim modules with deprecation wanrnings for some ``webdav`` consumers
 
+- Prevent a UnicodeDecode error under Python 2 with non-ASCII properties
+
 
 4.2 (2020-02-09)
 ----------------

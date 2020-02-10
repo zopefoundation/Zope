@@ -13,6 +13,7 @@
 
 from zope.deferredimport import deprecated
 
+
 deprecated(
     'Please import from OFS.LockItem.',
     LockItem='OFS.LockItem:LockItem',

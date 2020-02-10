@@ -15,6 +15,7 @@
 
 import sys
 
+import six
 from six.moves import cStringIO as StringIO
 from six.moves.urllib.parse import quote
 
@@ -157,7 +158,10 @@ class PropFind(object):
                 result.write('<d:propstat>\n'
                              '  <d:prop>\n'
                              )
-                [result.write(x) for x in rdict[key]]
+                if six.PY3:
+                    [result.write(x) for x in rdict[key]]
+                else:
+                    [result.write(x.encode('UTF-8')) for x in rdict[key]]
                 result.write('  </d:prop>\n'
                              '  <d:status>HTTP/1.1 %s</d:status>\n'
                              '</d:propstat>\n' % key
