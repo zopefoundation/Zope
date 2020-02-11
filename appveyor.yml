@@ -3,18 +3,18 @@
 environment:
   WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
-    - PROFILE: py37
-      PYTHON_VERSION: 3.7"
-      TOXENV: "py37"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
       TOXENV: "lint-py37"
+    - PROFILE: py37
+      PYTHON_VERSION: 3.7"
+      TOXENV: "py37,py37-deps"
     - PROFILE: py35
       PYTHON_VERSION: 3.5"
-      TOXENV: "py35"
+      TOXENV: "py35,py35-deps"
     - PROFILE: py36
       PYTHON_VERSION: 3.6"
-      TOXENV: "py36"
+      TOXENV: "py36,py36-deps"
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
