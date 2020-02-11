@@ -88,6 +88,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   This requires adding the ``[wsgi]`` extra in the egg specification.
   (`#734 <https://github.com/zopefoundation/Zope/issues/734>`_)
 
+- Add preliminary support for Python 3.9a3.
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++
