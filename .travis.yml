@@ -15,7 +15,7 @@ matrix:
         - python: "3.9-dev"
           env: TOXENV=py39
           before_install:
-            - python -m ensurepip --upgrade
+            - python -m ensurepip
 
 install:
     - travis_retry pip install -U pip setuptools
