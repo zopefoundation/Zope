@@ -5,8 +5,6 @@ matrix:
         - python: "3.9-dev"
           env: TOXENV=py39
           before_install:
-            - which python
-            - ls -l /home/travis/virtualenv/python3.9-dev/bin/python
             - /opt/python/3.9-dev/bin/python -m venv py39
             - cd py39
             - . bin/activate
