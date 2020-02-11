@@ -9,7 +9,7 @@ matrix:
             - ls -l /home/travis/virtualenv/python3.9-dev/bin/python
             - /opt/python/3.9-dev/bin/python -m venv py39
             - cd py39
-            - bin/activate
+            - . bin/activate
 
 install:
     - travis_retry pip install -U pip setuptools
