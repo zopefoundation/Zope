@@ -15,6 +15,9 @@ matrix:
         - python: "3.9-dev"
           env: TOXENV=py39
 
+before_install:
+    - pip install -U pip
+
 install:
     - travis_retry pip install -U pip setuptools
     - travis_retry pip install -U tox coveralls coverage
