@@ -6,6 +6,7 @@ matrix:
           env: TOXENV=py39
           before_install:
             - which python
+            - ls -l /home/travis/virtualenv/python3.9-dev/bin/python
 
 install:
     - travis_retry pip install -U pip setuptools
