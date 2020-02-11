@@ -82,13 +82,14 @@ Steps for creating a new Zope release
 
 - Check on https://zopefoundation.github.io/Zope/ for the new release.
 
-- Check the versions.cfg file for outdated or updated
-  packages and update version information where necessary. You can get a good
-  overview of outdated packages on `requires.io
-  <https://requires.io/github/zopefoundation/Zope/requirements/?branch=master>`_::
+- Check the versions files for outdated or updated
+  packages and update version information where necessary. The following
+  commands only update to newer minor versions but not newer major versions
+  expecting that removing Python 2 support is signalled by an increased major
+  version::
 
-  $ bin/checkversions versions-prod.cfg
-  $ bin/checkversions versions.cfg
+  $ bin/checkversions --level=2 versions-prod.cfg
+  $ bin/checkversions --level=2 versions.cfg
   $ bin/buildout
 
 .. note::
