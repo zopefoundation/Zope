@@ -14,6 +14,7 @@ matrix:
           env: TOXENV=py38
         - python: "3.9-dev"
           env: TOXENV=py39
+          dist: bionic
 
 before_install:
     - pip install -U pip
