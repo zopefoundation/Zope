@@ -12,12 +12,15 @@
 ##############################################################################
 
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import webdav_lock_items
+from AccessControl.Permissions import webdav_unlock_items
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
 from OFS.EtagSupport import EtagSupport
 from OFS.interfaces import ILockItem
 from OFS.interfaces import IWriteLock
 from Persistence import PersistentMapping
+from webdav import webdav_manage_locks
 from zope.interface import implementer
 
 
@@ -31,8 +34,8 @@ class LockableItem(EtagSupport):
 
     # Setting default roles for permissions - we want owners of conent
     # to be able to lock.
-    security.setPermissionDefault('WebDAV Lock items', ('Manager', 'Owner',))
-    security.setPermissionDefault('WebDAV Unlock items', ('Manager', 'Owner',))
+    security.setPermissionDefault(webdav_lock_items, ('Manager', 'Owner',))
+    security.setPermissionDefault(webdav_unlock_items, ('Manager', 'Owner',))
 
     @security.private
     def wl_lockmapping(self, killinvalids=0, create=0):
@@ -93,7 +96,7 @@ class LockableItem(EtagSupport):
         else:
             return 0
 
-    @security.protected('WebDAV Lock items')
+    @security.protected(webdav_lock_items)
     def wl_setLock(self, locktoken, lock):
         locks = self.wl_lockmapping(create=1)
         if ILockItem.providedBy(lock):
@@ -109,13 +112,13 @@ class LockableItem(EtagSupport):
         locks = self.wl_lockmapping(killinvalids=1)
         return locks.get(locktoken, None)
 
-    @security.protected('WebDAV Unlock items')
+    @security.protected(webdav_unlock_items)
     def wl_delLock(self, locktoken):
         locks = self.wl_lockmapping()
         if locktoken in locks:
             del locks[locktoken]
 
-    @security.protected('Manage WebDAV Locks')
+    @security.protected(webdav_manage_locks)
     def wl_clearLocks(self):
         # Called by lock management machinery to quickly and effectively
         # destroy all locks.

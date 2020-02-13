@@ -9,6 +9,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Clean up and sanitize permissions used for WebDAV-related methods
+
 - Fix sort link URLs on ``manage_main``
   (`#748 <https://github.com/zopefoundation/Zope/issues/748>`_)
 
