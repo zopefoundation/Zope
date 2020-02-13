@@ -18,9 +18,7 @@ from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 from OFS.Lockable import wl_isLocked
 from OFS.SimpleItem import Item
-
-
-manage_webdav_locks = 'Manage WebDAV Locks'
+from webdav import webdav_manage_locks
 
 
 class DavLockManager(Item, Implicit):
@@ -31,14 +29,14 @@ class DavLockManager(Item, Implicit):
 
     security = ClassSecurityInfo()
 
-    security.declareProtected(manage_webdav_locks,  # NOQA: D001
+    security.declareProtected(webdav_manage_locks,  # NOQA: D001
                               'manage_davlocks')
     manage_davlocks = manage_main = manage = DTMLFile(
         'dtml/davLockManager', globals())
     manage_davlocks._setName('manage_davlocks')
     manage_options = ({'label': 'Write Locks', 'action': 'manage_main'}, )
 
-    @security.protected(manage_webdav_locks)
+    @security.protected(webdav_manage_locks)
     def findLockedObjects(self, frompath=''):
         app = self.getPhysicalRoot()
 
@@ -66,7 +64,7 @@ class DavLockManager(Item, Implicit):
             ob = app.unrestrictedTraverse(path)
             ob.wl_clearLocks()
 
-    @security.protected(manage_webdav_locks)
+    @security.protected(webdav_manage_locks)
     def manage_unlockObjects(self, paths=[], REQUEST=None):
         " Management screen action to unlock objects. "
         if paths:

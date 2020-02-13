@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Clean up and sanitize permissions used for WebDAV-related methods
 
 
 4.2.1 (2020-02-09)
@@ -18,7 +18,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Repair Python 2.7 compatibility due to a Python 3-only import
 
-- Add shim modules with deprecation wanrnings for some ``webdav`` consumers
+- Add shim modules with deprecation warnings for some ``webdav`` consumers
 
 - Prevent a UnicodeDecode error under Python 2 with non-ASCII properties
 

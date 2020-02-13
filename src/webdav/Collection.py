@@ -17,6 +17,8 @@ from six.moves.urllib.parse import unquote
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import view
+from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import rfc1123_date
@@ -57,6 +59,7 @@ class Collection(Resource):
         # Initialize ETag header
         self.http__etag()
 
+    @security.protected(view)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -135,6 +138,7 @@ class Collection(Resource):
 
         return RESPONSE
 
+    @security.protected(webdav_access)
     def listDAVObjects(self):
         objectValues = getattr(self, 'objectValues', None)
         if objectValues is not None:
