@@ -13,6 +13,8 @@
 
 import pkg_resources
 
+from zope.deferredimport import deprecated
+
 
 HAS_ZSERVER = True
 try:
@@ -20,28 +22,38 @@ try:
 except pkg_resources.DistributionNotFound:
     HAS_ZSERVER = False
 
-NullResource = None
 
+# BBB Zope 5
+deprecated(
+    'Please import from webdav.Resource. '
+    'WebDAV support is back in Zope. This shim will go away in Zope 5.',
+    Resource='webdav.Resource:Resource',
+)
 
-class Resource(object):
-    def dav__init(self, request, response):
-        pass
+# BBB Zope 5
+deprecated(
+    'Please import from webdav.NullResource. '
+    'WebDAV support is back in Zope. This shim will go away in Zope 5.',
+    NullResource='webdav.NullResource:NullResource',
+)
 
-    def dav__validate(self, object, methodname, REQUEST):
-        pass
+# BBB Zope 5
+deprecated(
+    'Please import from webdav.Collection. '
+    'WebDAV support is back in Zope. This shim will go away in Zope 5.',
+    Collection='webdav.Collection:Collection',
+)
 
-    def dav__simpleifhandler(self, request, response, method='PUT',
-                             col=0, url=None, refresh=0):
-        pass
+# BBB Zope 5
+deprecated(
+    'Please import from webdav.PropertySheet. '
+    'WebDAV support is back in Zope. This shim will go away in Zope 5.',
+    DAVPropertySheetMixin='webdav.PropertySheet:DAVPropertySheetMixin',
+)
 
-
-class Collection(Resource):
-    pass
-
-
-class DAVPropertySheetMixin(object):
-    pass
-
-
-class DAVProperties(object):
-    id = 'webdav'
+# BBB Zope 5
+deprecated(
+    'Please import from webdav.PropertySheets. '
+    'WebDAV support is back in Zope. This shim will go away in Zope 5.',
+    DAVProperties='webdav.PropertySheets:DAVProperties',
+)
