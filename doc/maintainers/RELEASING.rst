@@ -10,7 +10,7 @@ branch, based on the ``2.13`` branch, as the locus for those changes:
 
 .. code-block:: bash
 
-   $ git checkout -b 2.13.30-prep 2.13
+   $ git checkout -b 2.13.31-prep 2.13
 
 Update the release version in ``setup.py``
 ------------------------------------------
@@ -20,7 +20,7 @@ Set the new release version, and commit:
 .. code-block:: bash
 
    $ vim setup.py
-   $ git commit -m "Update version for 2.13.30 release" setup.py
+   $ git commit -m "Update version for 2.13.31 release" setup.py
 
 Pin versions in ``buildout.cfg``
 --------------------------------
@@ -81,7 +81,7 @@ without buildout. Be sure to:
 
    $ vim requirements.txt
    $ git add requirements.txt
-   $ git commit -m "Pin versions for 2.13.30 release" buildout.cfg requirements.txt
+   $ git commit -m "Pin versions for 2.13.31 release" buildout.cfg requirements.txt
 
 Review / update the changelog
 -----------------------------
@@ -91,7 +91,7 @@ Add today's date to the current release.
 .. code-block:: bash
 
    $ vim doc/CHANGES.rst
-   $ git commit -m "Finalize changelog 2.13.30 release" doc/CHANGES.rst
+   $ git commit -m "Finalize changelog 2.13.31 release" doc/CHANGES.rst
 
 .. note::
 
@@ -103,7 +103,7 @@ Tag the release
 
 .. code-block:: bash
 
-   $ git tag -sm "Tag 2.13.30 release" 2.13.30
+   $ git tag -sm "Tag 2.13.31 release" 2.13.31
 
 .. note::
 
@@ -126,7 +126,7 @@ Push the git release artefacts
 
 .. code-block:: bash
 
-   $ git push origin 2.13.30-prep && git push --tags
+   $ git push origin 2.13.31-prep && git push --tags
 
 Update the ``2.13`` branch for the next release
 -----------------------------------------------
