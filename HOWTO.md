@@ -7,7 +7,7 @@ the [Zope GitHub repository](https://github.com/zopefoundation/Zope).
 ```bash
   $ git clone -b gh-pages git@github.com:zopefoundation/Zope
   $ cd Zope
-  $ python3.7 build_indexes.py
+  $ python3.7 build_index.py
   $ git add README.md releases/
   $ git commit -m "Add new Zope releases."
   $ git push origin gh-pages

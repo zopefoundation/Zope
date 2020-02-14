@@ -111,7 +111,7 @@ def main():
     for tag in tags_4_x:
         create_tag(tag)
 
-    for tag in ["2.13.29", "2.13.28", "2.13.27", "2.13.26"]:
+    for tag in ["2.13.30", "2.13.29", "2.13.28", "2.13.27", "2.13.26"]:
         create_tag_2_13(tag)
 
     create_tag("2.12.28")
