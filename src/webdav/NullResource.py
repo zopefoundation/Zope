@@ -18,7 +18,8 @@ import sys
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import add_folders
-from AccessControl.Permissions import view as View
+from AccessControl.Permissions import view
+from AccessControl.Permissions import webdav_access
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -85,7 +86,7 @@ class NullResource(Persistent, Implicit, Resource):
             raise Conflict('Collection ancestors must already exist.')
         raise NotFound('The requested resource was not found.')
 
-    @security.protected(View)
+    @security.protected(view)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -305,10 +306,10 @@ class LockNullResource(NullResource, Item_w__name__):
 
     manage_options = ({'label': 'Info', 'action': 'manage_main'},)
 
-    security.declareProtected(View, 'manage')  # NOQA: D001
-    security.declareProtected(View, 'manage_main')  # NOQA: D001
+    security.declareProtected(view, 'manage')  # NOQA: D001
+    security.declareProtected(view, 'manage_main')  # NOQA: D001
     manage = manage_main = DTMLFile('dtml/locknullmain', globals())
-    security.declareProtected(View, 'manage_workspace')  # NOQA: D001
+    security.declareProtected(view, 'manage_workspace')  # NOQA: D001
     manage_workspace = manage
     manage_main._setName('manage_main')  # explicit
 
@@ -328,6 +329,7 @@ class LockNullResource(NullResource, Item_w__name__):
     def title_or_id(self):
         return 'Foo'
 
+    @security.protected(webdav_access)
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         return Resource.PROPFIND(self, REQUEST, RESPONSE)
