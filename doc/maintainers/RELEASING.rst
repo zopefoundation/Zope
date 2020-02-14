@@ -71,12 +71,6 @@ without buildout. Be sure to:
 *  add the new ``Zope2`` release version to ``requirements.txt``
 *  replace `` = `` in ``requirements.txt`` by ``==``.
 
-
-.. note::
-
-   Update the single equal signs used in ``buildout.cfg`` to pip-compatible
-   double-equal signs.
-
 .. code-block:: bash
 
    $ vim requirements.txt
@@ -114,7 +108,8 @@ Register and upload the release to PyPI
 
 .. code-block:: bash
 
-   $ bin/python setup.py sdist upload --sign
+   $ bin/buildout
+   $ bin/zopepy setup.py sdist upload --sign
 
 .. note::
 
@@ -160,42 +155,16 @@ Update versions on GitHub pages
 
    $ git checkout gh-pages
 
-Add the new version number below "Select 2.13 version" at the beginning of the
-versions list and create the pages:
+Add the new version in the ``main()`` function at the beginning of the
+Zope 2.13 versions list and create the pages:
 
 .. code-block:: bash
 
-   $ vi build_index.sh
-   $ ./build_index.sh
+   $ vim build_index.py
+   $ python3.7 build_index.py
 
 Commit the changes and newly created files and push the changes. (Assure there
-are no releases deleted by calling ``./build_index.sh``.)
+are no releases deleted by calling ``build_index.py``.)
 
-Check the result on https://zopefoundation.github.io/Zope/.
-
-Announce the release to the world.
-
-
-Create index on download.zope.org
----------------------------------
-
-This index is no longer used, as it does no work with `pip`. No need to create it any more.
-
-.. code-block:: bash
-
-   $ ssh download.zope.org
-   $ sudo -iu zope
-   $ cd ~/zope2index
-
-In the next line replace the two version numbers with the current release:
-
-.. code-block:: bash
-
-   $ bin/z2_kgs 2.13.30 /var/www/download.zope.org/Zope2/index/2.13.30/
-
-Visit ``http://download.zope.org/Zope2/index/2.13.30/`` and make sure
-a ``Zope2`` folder with an ``index.html`` was created.
-
-If this is missing, you forgot to add ``Zope2`` to the ``[versions]``
-section in the buildout file. Also double check ``requirements.txt``
-for the same mistake.
+* Check the result on https://zopefoundation.github.io/Zope/.
+* Announce the release to the world.
