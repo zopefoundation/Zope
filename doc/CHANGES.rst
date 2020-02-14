@@ -5,11 +5,19 @@ This file contains change information for the current Zope release.
 Change information for previous versions of Zope can be found at
 http://docs.zope.org/zope2/
 
-2.13.30 (unreleased)
+2.13.30 (2020-02-14)
 --------------------
+
+Security related fixes
+++++++++++++++++++++++
 
 - Prevent header spoofing by excluding those with ``_`` in them
   (`#655 <https://github.com/zopefoundation/Zope/pull/655>`_)
+
+- Fix a possible SQL injection in DTML or in connection objects. The fix
+  include the changes provided by PloneHotfix20200121-1.1.zip by updating to
+  use DocumentTemplate version 2.13.6.
+  (For details see https://plone.org/security/announcements/new-waitress-version-and-updated-20200121-hotfix.)
 
 
 2.13.29 (2019-02-09)
