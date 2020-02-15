@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.2.2 (unreleased)
 ------------------
 
+- Deprecate unused ``postProcessInputs`` request method for removal in Zope 5
+  (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
+
 - Clean up and sanitize permissions used for WebDAV-related methods
 
 

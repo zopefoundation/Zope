@@ -21,6 +21,7 @@ import re
 import time
 from cgi import FieldStorage
 from copy import deepcopy
+from warnings import warn
 
 from six import PY2
 from six import PY3
@@ -1162,6 +1163,10 @@ class HTTPRequest(BaseRequest):
     def postProcessInputs(self):
         """Process the values in request.form to decode strings to unicode.
         """
+        warn(u'postProcessInputs() is deprecated and will be removed in Zope '
+             u'5.0. If your view implements IBrowserPage, similar processing '
+             u'is now executed automatically.',
+             DeprecationWarning, stacklevel=2)
         for name, value in self.form.items():
             self.form[name] = _decode(value, default_encoding)
 
