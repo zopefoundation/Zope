@@ -793,34 +793,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.form['foo'], '1')
         self.assertEqual(req.form['bar'], '2')
 
-    def test_postProcessInputs(self):
-        from ZPublisher.HTTPRequest import default_encoding
-
-        _NON_ASCII = '\xc4\xd6\xdc'
-        req = self._makeOne()
-        req.form = {'foo': _NON_ASCII.encode(default_encoding),
-                    'foo_list': [_NON_ASCII.encode(default_encoding), 'SPAM'],
-                    'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
-                    'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
-        req.postProcessInputs()
-        self.assertIsInstance(req.form['foo'], str)
-        self.assertEqual(req.form['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'], list)
-        self.assertIsInstance(req.form['foo_list'][0], str)
-        self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'][1], str)
-        self.assertEqual(req.form['foo_list'][1], 'SPAM')
-        self.assertIsInstance(req.form['foo_tuple'], tuple)
-        self.assertIsInstance(req.form['foo_tuple'][0], str)
-        self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_tuple'][1], str)
-        self.assertEqual(req.form['foo_tuple'][1], 'HAM')
-        self.assertIsInstance(req.form['foo_dict'], dict)
-        self.assertIsInstance(req.form['foo_dict']['foo'], str)
-        self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_dict']['bar'], str)
-        self.assertEqual(req.form['foo_dict']['bar'], 'EGGS')
-
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
         # request.close().  Otherwise a tempfile may stick around.

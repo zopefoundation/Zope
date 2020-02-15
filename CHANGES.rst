@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Remove deprecated ``postProcessInputs`` request method
+  (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
+
 - Clean up and sanitize permissions used for WebDAV-related methods
 
 - Fix sort link URLs on ``manage_main``
