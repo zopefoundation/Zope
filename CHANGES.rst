@@ -7,8 +7,10 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.2.2 (unreleased)
-------------------
+4.3 (unreleased)
+----------------
+
+- Enable WebDAV support independent of ``ZServer``
 
 - Deprecate unused ``postProcessInputs`` request method for removal in Zope 5
   (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)

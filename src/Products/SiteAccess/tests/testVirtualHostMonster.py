@@ -282,3 +282,84 @@ class VHMAddingTests(unittest.TestCase):
         self.assertTrue(VirtualHostMonster.id in self.root.objectIds())
         hook = queryBeforeTraverse(self.root, VirtualHostMonster.meta_type)
         self.assertTrue(hook)
+
+
+class VHMWebDAV(unittest.TestCase):
+    """Test the WebDAV special treatment"""
+
+    def setUp(self):
+        import transaction
+        from Testing.makerequest import makerequest
+        from Testing.ZopeTestCase.ZopeLite import app
+        transaction.begin()
+        self.app = makerequest(app())
+        if 'virtual_hosting' not in self.app.objectIds():
+            # If ZopeLite was imported, we have no default virtual
+            # host monster
+            from Products.SiteAccess.VirtualHostMonster \
+                import manage_addVirtualHostMonster
+            manage_addVirtualHostMonster(self.app, 'virtual_hosting')
+        self.app.manage_addFolder('folder')
+        self.app.folder.manage_addDTMLMethod('doc', '')
+        self.app.REQUEST.set('PARENTS', [self.app])
+        self.traverse = self.app.REQUEST.traverse
+
+    def tearDown(self):
+        import transaction
+        transaction.abort()
+        self.app._p_jar.close()
+
+    def test_no_port_set(self):
+        req = self.app.REQUEST
+        req['method'] = 'GET'
+
+        self.traverse('/folder/doc')
+        self.assertFalse(req.get('WEBDAV_SOURCE_PORT'))
+
+    def test_wrong_port(self):
+        from ..VirtualHostMonster import ZOPE_CONFIG
+        setattr(ZOPE_CONFIG, 'webdav_source_port', 9800)
+        req = self.app.REQUEST
+        req['method'] = 'GET'
+        req['SERVER_PORT'] = 8080
+
+        self.traverse('/folder/doc')
+        self.assertFalse(req.get('WEBDAV_SOURCE_PORT'))
+
+        del ZOPE_CONFIG.webdav_source_port
+
+    def test_correct_port_wrong_method(self):
+        from ..VirtualHostMonster import ZOPE_CONFIG
+        setattr(ZOPE_CONFIG, 'webdav_source_port', 9800)
+        req = self.app.REQUEST
+        req['method'] = 'POST'
+        req['SERVER_PORT'] = 9800
+
+        # This won't raise an Unauthorized error because it never
+        # gets forced to go to manage_DAVget
+        self.traverse('/folder/doc')
+        self.assertEqual(req['PATH_INFO'], '')
+        # But it is still marked as a WebDAV source port request
+        self.assertTrue(req.get('WEBDAV_SOURCE_PORT'))
+
+        del ZOPE_CONFIG.webdav_source_port
+
+    def test_correct_port_correct_method(self):
+        from zExceptions import Unauthorized
+        from ..VirtualHostMonster import ZOPE_CONFIG
+        setattr(ZOPE_CONFIG, 'webdav_source_port', 9800)
+        req = self.app.REQUEST
+        req['method'] = 'GET'
+        req['SERVER_PORT'] = 9800
+
+        # The traversal will raise Unauthorizd because the WebDAV handling
+        # will force the request to go to /folder/doc/manage_DAVget,
+        # which is protected.
+        with self.assertRaises(Unauthorized):
+            self.traverse('/folder/doc')
+        # We only see /manage_DAVget here because PATH_INFO gets consumed
+        # during traversal
+        self.assertEqual(req['PATH_INFO'], '/manage_DAVget')
+        self.assertTrue(req.get('WEBDAV_SOURCE_PORT'))
+
+        del ZOPE_CONFIG.webdav_source_port
