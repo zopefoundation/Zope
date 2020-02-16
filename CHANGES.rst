@@ -11,6 +11,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 ----------------
 
 - Enable WebDAV support independent of ``ZServer``
+  (`#787 <https://github.com/zopefoundation/Zope/pull/787>`_)
 
 - Deprecate unused ``postProcessInputs`` request method for removal in Zope 5
   (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
