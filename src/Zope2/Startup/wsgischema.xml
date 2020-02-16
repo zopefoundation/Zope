@@ -358,9 +358,6 @@
       backwards-compatible for existing code that offers WebDAV handling under
       ZServer.
 
-      The support is integrated into the Virtual Host Monster code, so make
-      sure you instantiate a Virtual Host Monster in your Zope root folder.
-
       Please note that Zope itself has no server capabilities and cannot open
       network ports. You need to configure your WSGI server to listen on the
       designated port.

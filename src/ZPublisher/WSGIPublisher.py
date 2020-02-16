@@ -56,6 +56,7 @@ _DEFAULT_DEBUG_MODE = False
 _DEFAULT_REALM = None
 _MODULE_LOCK = allocate_lock()
 _MODULES = {}
+_WEBDAV_SOURCE_PORT = 0
 
 
 def call_object(obj, args, request):
@@ -79,6 +80,11 @@ def validate_user(request, user):
 def set_default_debug_exceptions(debug_exceptions):
     global _DEFAULT_DEBUG_EXCEPTIONS
     _DEFAULT_DEBUG_EXCEPTIONS = debug_exceptions
+
+
+def set_webdav_source_port(port):
+    global _WEBDAV_SOURCE_PORT
+    _WEBDAV_SOURCE_PORT = port
 
 
 def get_debug_exceptions():
@@ -313,6 +319,21 @@ def publish_module(environ, start_response,
         path_info = path_info.decode('utf-8')
 
         environ['PATH_INFO'] = path_info
+
+    # See if this should be be marked up as WebDAV request.
+    try:
+        server_port = int(environ['SERVER_PORT'])
+    except (KeyError, ValueError):
+        server_port = 0
+
+    if _WEBDAV_SOURCE_PORT and _WEBDAV_SOURCE_PORT == server_port:
+        environ['WEBDAV_SOURCE_PORT'] = 1
+
+        # GET needs special treatment. Traversal is forced to the
+        # manage_DAVget method to get the unrendered sources.
+        if environ['REQUEST_METHOD'].upper() == 'GET':
+            environ['PATH_INFO'] = '%s/manage_DAVget' % environ['PATH_INFO']
+
     with closing(BytesIO()) as stdout, closing(BytesIO()) as stderr:
         new_response = (
             _response

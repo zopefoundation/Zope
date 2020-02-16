@@ -427,6 +427,11 @@ class HTTPRequest(BaseRequest):
         other['URL'] = self.script = script
         other['method'] = environ.get('REQUEST_METHOD', 'GET').upper()
 
+        # Make WEBDAV_SOURCE_PORT reachable with a simple REQUEST.get
+        # to stay backwards-compatible
+        if environ.get('WEBDAV_SOURCE_PORT'):
+            other['WEBDAV_SOURCE_PORT'] = environ.get('WEBDAV_SOURCE_PORT')
+
         ################################################################
         # Cookie values should *not* be appended to existing form
         # vars with the same name - they are more like default values

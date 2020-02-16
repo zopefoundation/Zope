@@ -144,27 +144,6 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def __call__(self, client, request, response=None):
         '''Traversing at home'''
-
-        # Before starting on the normal processing, see if this request
-        # must be marked up as WebDAV request.
-        try:
-            server_port = int(request['SERVER_PORT'])
-        except ValueError:
-            server_port = 0
-        webdav_source_port = getattr(ZOPE_CONFIG, 'webdav_source_port', 0)
-
-        if webdav_source_port and webdav_source_port == server_port:
-            request['WEBDAV_SOURCE_PORT'] = 1
-
-            # GET needs special treatment. Traversal is forced to the
-            # manage_DAVget method to get the unrendered sources.
-            if (request.get('method', '') or '').upper() == 'GET':
-                request['PATH_INFO'] = (
-                    '%s/manage_DAVget' % request['PATH_INFO'])
-                request['TraversalRequestNameStack'] = (
-                    ['manage_DAVget'] + request['TraversalRequestNameStack'])
-
-        # Returning to the "real" virtual hosting processing
         vh_used = 0
         stack = request['TraversalRequestNameStack']
         path = None
