@@ -6,7 +6,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view as View  # NOQA
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.config import getConfiguration
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Persistent
@@ -17,9 +16,6 @@ from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
-
-
-ZOPE_CONFIG = getConfiguration()
 
 
 class VirtualHostMonster(Persistent, Item, Implicit):
