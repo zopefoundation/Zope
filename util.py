@@ -29,7 +29,7 @@ def generate(in_, requirements_file, constraints_file):
     constraints = []
     versions = parser.items('versions')
     zope_requirement = (
-        '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
+        '-e git+https://github.com/zopefoundation/Zope.git@4.x#egg=Zope\n')
     for name, pin in versions:
         if name == 'Zope':
             if pin:
