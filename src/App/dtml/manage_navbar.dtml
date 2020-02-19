@@ -9,7 +9,8 @@
        aria-label="Toggle Tab-Navigation">
     <i class="fa fa-bars"></i>
   </div>
-  <a class="navbar-brand" title="To Zope Root" href="/manage" target="_parent">
+  <a class="navbar-brand" title="To Zope Root"
+     href="<dtml-var "REQUEST.getVirtualRoot()">/manage" target="_parent">
     <span class="product">ZOPE 4</span>
   </a>
   <ul class="navbar-nav flex-row ml-sm-auto d-flex">
@@ -33,7 +34,7 @@
 
     <li class="form-inline zmi-cp">
       <a title="Control Panel"
-         href="/Control_Panel/manage_main" target="_self">
+         href="<dtml-var "REQUEST.getVirtualRoot()">/Control_Panel/manage_main" target="_self">
         <i class="fa fa-cog"></i>
         <span class="zmi-label">Control&nbsp;Panel</span>
       </a>
