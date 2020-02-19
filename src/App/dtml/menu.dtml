@@ -11,21 +11,22 @@
 		><i class="fa fa-cog"></i>
 	</a>
 	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+	  <dtml-let cp_url="Control_Panel.absolute_url()">
 		<li><a id="menu_refresh" href="manage_menu">Refresh</a></li>
 		<li><a id="menu_save" href="manage_menu?save_layout=1">Save layout</a></li>
 
 		<li><a id="menu_cp" title="Control Panel"
-			href="/Control_Panel/manage_main" target="manage_main">Control Panel</a></li>
+			href="&dtml-cp_url;/manage_main" target="manage_main">Control Panel</a></li>
 		<dtml-try>
 			<dtml-in "Control_Panel.Database.getDatabaseNames(quote=True)">
 				<li><a title="Zope Object Database Manager" target="manage_main"
-					href="/Control_Panel/Database/<dtml-var "_['sequence-item']">/manage_main">ZODB <dtml-var "_['sequence-item']"></a></li>
+					href="&dtml-cp_url;/Database/<dtml-var "_['sequence-item']">/manage_main">ZODB <dtml-var "_['sequence-item']"></a></li>
 			</dtml-in>
 		<dtml-except AttributeError>
 		<dtml-except NameError>
 		</dtml-try>
 		<li><a id="menu_undo"
-			href="/Control_Panel/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
+			href="&dtml-cp_url;/Database/main/manage_UndoForm" target="manage_main">Undo</a></li>
 
 		<li><a id="menu_logout" href="manage_zmi_logout">Logout</a></li>
 		<li role="separator" class="divider">&nbsp;</li>
@@ -33,6 +34,7 @@
 			target="manage_main">&copy; Zope Foundation</a></li>
 		<li><a id="menu_zope" href="http://www.zope.org"
 			target="_blank">www.zope.org</a></li>
+	  </dtml-let>
 	</ul>
 </div>
 

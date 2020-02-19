@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Fix several ZMI links so they respect virtual hosting
+  (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
+
 - Remove deprecated ``postProcessInputs`` request method
   (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
 
