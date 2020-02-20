@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Improve detection of HTTPS requests
+  (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
+
 - Fix several ZMI links so they respect virtual hosting
   (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
 
