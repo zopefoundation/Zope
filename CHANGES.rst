@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.3 (unreleased)
 ----------------
 
+- Improve detection of HTTPS requests
+  (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
+
 - Fix several ZMI links so they respect virtual hosting
   (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
 

@@ -121,7 +121,7 @@ class HTTPRequestFactoryMixin(object):
             environ['REQUEST_METHOD'] = 'GET'
 
         if 'SERVER_NAME' not in environ:
-            environ['SERVER_NAME'] = 'http://localhost'
+            environ['SERVER_NAME'] = 'localhost'
 
         if 'SERVER_PORT' not in environ:
             environ['SERVER_PORT'] = '8080'
@@ -1258,6 +1258,39 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         gsm.registerUtility(allow, IXmlrpcChecker)
         yield
         gsm.unregisterUtility(allow, IXmlrpcChecker)
+
+    def test_url_scheme(self):
+        # The default is http
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 80}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'http://myhost')
+
+        # If we bang a SERVER_URL into the environment it is retained
+        env = {'SERVER_URL': 'https://anotherserver:8443'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://anotherserver:8443')
+
+        # Now go through the various environment values that signal
+        # a request uses the https URL scheme
+        for val in ('on', 'ON', '1'):
+            env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443, 'HTTPS': val}
+            req = self._makeOne(environ=env)
+            self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'SERVER_PORT_SECURE': 1}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'REQUEST_SCHEME': 'HTTPS'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'wsgi.url_scheme': 'https'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
 
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
