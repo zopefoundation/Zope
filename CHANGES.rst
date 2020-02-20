@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.3 (unreleased)
 ----------------
 
+- Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method
+  (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
+
 - Improve detection of HTTPS requests
   (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
 

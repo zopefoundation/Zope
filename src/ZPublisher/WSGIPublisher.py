@@ -358,7 +358,8 @@ def publish_module(environ, start_response,
 
         if isinstance(response.body, _FILE_TYPES) or \
            IUnboundStreamIterator.providedBy(response.body):
-            if 'wsgi.file_wrapper' in environ:
+            if hasattr(response.body, 'read') and \
+               'wsgi.file_wrapper' in environ:
                 result = environ['wsgi.file_wrapper'](response.body)
             else:
                 result = response.body

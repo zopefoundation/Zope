@@ -457,6 +457,9 @@ class TestPublishModule(ZopeTestCase):
             def __len__(self):
                 return len(self.data)
 
+            def read(self):
+                return self.data
+
         class Wrapper(object):
             def __init__(self, file):
                 self.file = file
@@ -489,6 +492,9 @@ class TestPublishModule(ZopeTestCase):
             def __len__(self):
                 return len(self.data)
 
+            def read(self):
+                return self.data
+
         class Wrapper(object):
             def __init__(self, file):
                 self.file = file
@@ -506,6 +512,40 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertTrue(app_iter.file is body)
         self.assertTrue(isinstance(app_iter, Wrapper))
+        self.assertEqual(
+            int(_response.headers['content-length']), len(body))
+        self.assertTrue(
+            _response.headers['content-type'].startswith('text/plain'))
+        self.assertEqual(_response.status, 200)
+
+    def test_stream_file_wrapper_without_read(self):
+        from ZPublisher.Iterators import IStreamIterator
+        from zope.interface import implementer
+        from ZPublisher.HTTPResponse import WSGIResponse
+
+        @implementer(IStreamIterator)
+        class TestStreamIterator(object):
+            data = "hello" * 20
+
+            def __len__(self):
+                return len(self.data)
+
+        class Wrapper(object):
+            def __init__(self, file):
+                self.file = file
+
+        _response = WSGIResponse()
+        _response.setHeader('Content-Type', 'text/plain')
+        body = _response.body = TestStreamIterator()
+        environ = self._makeEnviron(**{'wsgi.file_wrapper': Wrapper})
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        # The stream iterator has no ``read`` and will not be used
+        # for ``wsgi.file_wrapper``. It is returned as-is.
+        self.assertTrue(app_iter is body)
+        self.assertTrue(isinstance(app_iter, TestStreamIterator))
         self.assertEqual(
             int(_response.headers['content-length']), len(body))
         self.assertTrue(
