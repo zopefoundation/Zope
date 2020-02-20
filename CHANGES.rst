@@ -9,6 +9,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method
+  (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
+
 - Improve detection of HTTPS requests
   (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
 
