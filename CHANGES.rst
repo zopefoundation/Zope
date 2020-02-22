@@ -13,6 +13,15 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Enable WebDAV support independent of ``ZServer``
   (`#787 <https://github.com/zopefoundation/Zope/pull/787>`_)
 
+- Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method
+  (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
+
+- Improve detection of HTTPS requests
+  (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
+
+- Fix several ZMI links so they respect virtual hosting
+  (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
+
 - Deprecate unused ``postProcessInputs`` request method for removal in Zope 5
   (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
 

@@ -387,6 +387,10 @@ class HTTPRequest(BaseRequest):
                 protocol = 'https'
             elif environ.get('SERVER_PORT_SECURE', None) == 1:
                 protocol = 'https'
+            elif (environ.get('REQUEST_SCHEME', '') or '').lower() == 'https':
+                protocol = 'https'
+            elif environ.get('wsgi.url_scheme') == 'https':
+                protocol = 'https'
             else:
                 protocol = 'http'
 
