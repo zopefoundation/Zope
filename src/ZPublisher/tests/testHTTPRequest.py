@@ -122,7 +122,7 @@ class HTTPRequestFactoryMixin:
             environ['REQUEST_METHOD'] = 'GET'
 
         if 'SERVER_NAME' not in environ:
-            environ['SERVER_NAME'] = 'http://localhost'
+            environ['SERVER_NAME'] = 'localhost'
 
         if 'SERVER_PORT' not in environ:
             environ['SERVER_PORT'] = '8080'
@@ -793,34 +793,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.form['foo'], '1')
         self.assertEqual(req.form['bar'], '2')
 
-    def test_postProcessInputs(self):
-        from ZPublisher.HTTPRequest import default_encoding
-
-        _NON_ASCII = '\xc4\xd6\xdc'
-        req = self._makeOne()
-        req.form = {'foo': _NON_ASCII.encode(default_encoding),
-                    'foo_list': [_NON_ASCII.encode(default_encoding), 'SPAM'],
-                    'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
-                    'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
-        req.postProcessInputs()
-        self.assertIsInstance(req.form['foo'], str)
-        self.assertEqual(req.form['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'], list)
-        self.assertIsInstance(req.form['foo_list'][0], str)
-        self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'][1], str)
-        self.assertEqual(req.form['foo_list'][1], 'SPAM')
-        self.assertIsInstance(req.form['foo_tuple'], tuple)
-        self.assertIsInstance(req.form['foo_tuple'][0], str)
-        self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_tuple'][1], str)
-        self.assertEqual(req.form['foo_tuple'][1], 'HAM')
-        self.assertIsInstance(req.form['foo_dict'], dict)
-        self.assertIsInstance(req.form['foo_dict']['foo'], str)
-        self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_dict']['bar'], str)
-        self.assertEqual(req.form['foo_dict']['bar'], 'EGGS')
-
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
         # request.close().  Otherwise a tempfile may stick around.
@@ -1258,6 +1230,39 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         gsm.registerUtility(allow, IXmlrpcChecker)
         yield
         gsm.unregisterUtility(allow, IXmlrpcChecker)
+
+    def test_url_scheme(self):
+        # The default is http
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 80}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'http://myhost')
+
+        # If we bang a SERVER_URL into the environment it is retained
+        env = {'SERVER_URL': 'https://anotherserver:8443'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://anotherserver:8443')
+
+        # Now go through the various environment values that signal
+        # a request uses the https URL scheme
+        for val in ('on', 'ON', '1'):
+            env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443, 'HTTPS': val}
+            req = self._makeOne(environ=env)
+            self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'SERVER_PORT_SECURE': 1}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'REQUEST_SCHEME': 'HTTPS'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'wsgi.url_scheme': 'https'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
 
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
