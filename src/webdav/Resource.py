@@ -23,7 +23,7 @@ from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import manage_properties
-from AccessControl.Permissions import view as View
+from AccessControl.Permissions import view
 from AccessControl.Permissions import webdav_access
 from AccessControl.Permissions import webdav_lock_items
 from AccessControl.Permissions import webdav_unlock_items
@@ -199,7 +199,7 @@ class Resource(Base, LockableItem):
             return 0
 
     # WebDAV class 1 support
-    @security.protected(View)
+    @security.protected(view)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)

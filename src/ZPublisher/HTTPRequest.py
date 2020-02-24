@@ -378,6 +378,10 @@ class HTTPRequest(BaseRequest):
                 protocol = 'https'
             elif environ.get('SERVER_PORT_SECURE', None) == 1:
                 protocol = 'https'
+            elif (environ.get('REQUEST_SCHEME', '') or '').lower() == 'https':
+                protocol = 'https'
+            elif environ.get('wsgi.url_scheme') == 'https':
+                protocol = 'https'
             else:
                 protocol = 'http'
 
@@ -1149,12 +1153,6 @@ class HTTPRequest(BaseRequest):
             other['PATH_INFO'] = "%s/%s" % (path, meth)
             self._hacked_path = 1
 
-    def postProcessInputs(self):
-        """Process the values in request.form to decode strings to unicode.
-        """
-        for name, value in self.form.items():
-            self.form[name] = _decode(value, default_encoding)
-
     def resolve_url(self, url):
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
@@ -1800,20 +1798,6 @@ def _filterPasswordFields(items):
         result.append((k, v))
 
     return result
-
-
-def _decode(value, charset):
-    """Recursively look for string values and decode.
-    """
-    if isinstance(value, list):
-        return [_decode(v, charset) for v in value]
-    elif isinstance(value, tuple):
-        return tuple(_decode(v, charset) for v in value)
-    elif isinstance(value, dict):
-        return {k: _decode(v, charset) for k, v in value.items()}
-    elif isinstance(value, bytes):
-        return str(value, charset, 'replace')
-    return value
 
 
 def use_builtin_xmlrpc(request):

@@ -9,6 +9,20 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a1 (unreleased)
 ------------------
 
+- Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method
+  (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
+
+- Improve detection of HTTPS requests
+  (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
+
+- Fix several ZMI links so they respect virtual hosting
+  (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
+
+- Remove deprecated ``postProcessInputs`` request method
+  (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
+
+- Clean up and sanitize permissions used for WebDAV-related methods
+
 - Fix sort link URLs on ``manage_main``
   (`#748 <https://github.com/zopefoundation/Zope/issues/748>`_)
 
