@@ -6,15 +6,15 @@ environment:
     - PROFILE: py37
       PYTHON_VERSION: 3.7"
       TOXENV: "py37"
-    - PROFILE: py27
-      PYTHON_VERSION: 2.7"
-      TOXENV: "py27"
-    - PROFILE: py35
-      PYTHON_VERSION: 3.5"
-      TOXENV: "py35"
     - PROFILE: py36
       PYTHON_VERSION: 3.6"
       TOXENV: "py36"
+    - PROFILE: py35
+      PYTHON_VERSION: 3.5"
+      TOXENV: "py35"
+    - PROFILE: py27
+      PYTHON_VERSION: 2.7"
+      TOXENV: "py27"
     - PROFILE: py37-conventions
       PYTHON_VERSION: 3.7"
       TOXENV: "lint"
