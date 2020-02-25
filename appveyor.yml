@@ -6,9 +6,6 @@ environment:
     - PROFILE: py37
       PYTHON_VERSION: 3.7"
       TOXENV: "py37"
-    - PROFILE: py37-conventions
-      PYTHON_VERSION: 3.7"
-      TOXENV: "lint"
     - PROFILE: py27
       PYTHON_VERSION: 2.7"
       TOXENV: "py27"
@@ -18,6 +15,9 @@ environment:
     - PROFILE: py36
       PYTHON_VERSION: 3.6"
       TOXENV: "py36"
+    - PROFILE: py37-conventions
+      PYTHON_VERSION: 3.7"
+      TOXENV: "lint"
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
