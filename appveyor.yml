@@ -3,21 +3,28 @@
 environment:
   WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
-    - PROFILE: py37
-      PYTHON_VERSION: 3.7"
-      TOXENV: "py37"
-    - PROFILE: py36
-      PYTHON_VERSION: 3.6"
-      TOXENV: "py36"
-    - PROFILE: py35
-      PYTHON_VERSION: 3.5"
-      TOXENV: "py35"
-    - PROFILE: py27
-      PYTHON_VERSION: 2.7"
-      TOXENV: "py27"
-    - PROFILE: py37-conventions
-      PYTHON_VERSION: 3.7"
-      TOXENV: "lint"
+    - TOXENV: py27
+    - TOXENV: py35
+    - TOXENV: py36
+    - TOXENV: py37
+    - TOXENV: py38
+    - TOXENV: lint-py36
+
+#    - PROFILE: py37
+#      PYTHON_VERSION: 3.7"
+#      TOXENV: "py37"
+#    - PROFILE: py36
+#      PYTHON_VERSION: 3.6"
+#      TOXENV: "py36"
+#    - PROFILE: py35
+#      PYTHON_VERSION: 3.5"
+#      TOXENV: "py35"
+#    - PROFILE: py27
+#      PYTHON_VERSION: 2.7"
+#      TOXENV: "py27"
+#    - PROFILE: py37-conventions
+#      PYTHON_VERSION: 3.7"
+#      TOXENV: "lint"
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
