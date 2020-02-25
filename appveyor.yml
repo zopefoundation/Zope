@@ -1,6 +1,7 @@
 # AppVeyor CI settings (Windows Machine CI Tests)
 
 environment:
+  WIN_COV: '  ' # some whitespaces to have a trueish value.
   matrix:
     - TOXENV: py38
     - TOXENV: py37
@@ -9,12 +10,20 @@ environment:
     - TOXENV: lint-py36
     - TOXENV: py27
 
+#cache:
+#  - '%LOCALAPPDATA%\pip\Cache'
+#
+#version: '{branch}.{build}'
+
 install:
   - pip install tox
 
 build: off
 
 max_jobs: 2
+
+matrix:
+  fast_finish: true
 
 test_script:
   - tox
