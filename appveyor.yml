@@ -10,17 +10,10 @@ environment:
     - TOXENV: lint-py36
     - TOXENV: py27
 
-#cache:
-#  - '%LOCALAPPDATA%\pip\Cache'
-#
-#version: '{branch}.{build}'
-
 install:
   - pip install tox
 
 build: off
-
-max_jobs: 2
 
 matrix:
   fast_finish: true
