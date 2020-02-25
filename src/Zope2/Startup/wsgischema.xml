@@ -343,6 +343,27 @@
    </description>
   </multisection>
 
+  <key name="webdav-source-port" datatype="integer" default="0">
+    <description>
+      This value designates a network port number as WebDAV source port.
+
+      WebDAV requires special handling for GET requests. A WebDAV
+      client expects to receive the un-rendered source in the returned
+      response body, not the rendered result a web browser would get.
+
+      If this value is set to a positive integer, any GET request coming into
+      Zope via the designated port will be marked up to signal that this is a
+      WebDAV request. This request markup resembles what ZServer did for
+      requests coming though its designated WebDAV source server port, so it is
+      backwards-compatible for existing code that offers WebDAV handling under
+      ZServer.
+
+      Please note that Zope itself has no server capabilities and cannot open
+      network ports. You need to configure your WSGI server to listen on the
+      designated port.
+    </description>
+  </key>
+
   <key name="enable-ms-public-header"
        datatype="boolean"
        handler="enable_ms_public_header"

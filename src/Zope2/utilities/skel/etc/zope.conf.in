@@ -105,6 +105,29 @@ instancehome $INSTANCE
 #    http-realm Slipknot
 
 
+# Directive: webdav-source-port
+#
+# Description:
+#     This value designates a network port number as WebDAV source port.
+#
+#     If this value is set to a positive integer, any GET request coming into
+#     Zope via the designated port will be marked up to signal that this is a
+#     WebDAV request. This request markup resembles what ZServer did for
+#     requests coming though its designated WebDAV source server port, so it is
+#     backwards-compatible for existing code that offers WebDAV handling under
+#     ZServer.
+#
+#     Please note that Zope itself has no server capabilities and cannot open
+#     network ports. You need to configure your WSGI server to listen on the
+#     designated port.
+#
+# Default: Off
+#
+# Example:
+#
+#     webdav-source-port 9800
+
+
 # Directive:  zmi-bookmarkable-urls
 #
 # Description:

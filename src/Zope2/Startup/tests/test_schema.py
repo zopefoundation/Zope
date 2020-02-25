@@ -160,6 +160,20 @@ class WSGIStartupTestCase(unittest.TestCase):
         self.assertEqual(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', ''),
                          '0')
 
+    def test_webdav_source_port(self):
+        conf, handler = self.load_config_text(u"""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertEqual(conf.webdav_source_port, 0)
+
+        conf, handler = self.load_config_text(u"""\
+            instancehome <<INSTANCE_HOME>>
+            webdav-source-port 9800
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertEqual(conf.webdav_source_port, 9800)
+
     def test_ms_public_header(self):
         import webdav
 

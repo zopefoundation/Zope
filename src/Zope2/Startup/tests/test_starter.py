@@ -101,3 +101,23 @@ class WSGIStarterTestCase(unittest.TestCase):
             max-conflict-retries 25""")
         root_wsgi_handler(conf)
         self.assertEqual(HTTPRequest.retry_max_count, 25)
+
+    def test_webdav_source_port(self):
+        from ZPublisher import WSGIPublisher
+
+        # If no value is provided, the default is 0
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>""")
+        starter = self.get_starter(conf)
+        starter.setupPublisher()
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 0)
+
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>
+            webdav-source-port 9800""")
+        starter = self.get_starter(conf)
+        starter.setupPublisher()
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 9800)
+
+        # Cleanup
+        WSGIPublisher.set_webdav_source_port(0)

@@ -72,6 +72,7 @@ class WSGIStarter:
         WSGIPublisher.set_default_debug_exceptions(self.cfg.debug_exceptions)
         WSGIPublisher.set_default_authentication_realm(
             self.cfg.http_realm)
+        WSGIPublisher.set_webdav_source_port(self.cfg.webdav_source_port)
         if self.cfg.trusted_proxies:
             mapped = []
             for name in self.cfg.trusted_proxies:
