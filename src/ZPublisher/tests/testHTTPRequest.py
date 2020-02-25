@@ -231,6 +231,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
 
+    def test_webdav_source_port_available(self):
+        req = self._makeOne()
+        self.assertFalse(req.get('WEBDAV_SOURCE_PORT'))
+
+        req = self._makeOne(environ={'WEBDAV_SOURCE_PORT': 1})
+        self.assertTrue(req.get('WEBDAV_SOURCE_PORT'))
+
     def test_no_docstring_on_instance(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
         req = self._makeOne(environ=env)

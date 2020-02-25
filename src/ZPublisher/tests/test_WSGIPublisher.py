@@ -784,6 +784,52 @@ class TestPublishModule(ZopeTestCase):
         self._callFUT(environ, start_response, _publish)
         self.assertFalse('REMOTE_USER' in environ)
 
+    def test_webdav_source_port(self):
+        from ZPublisher import WSGIPublisher
+        old_webdav_source_port = WSGIPublisher._WEBDAV_SOURCE_PORT
+        start_response = DummyCallable()
+        _response = DummyResponse()
+        _publish = DummyCallable()
+        _publish._result = _response
+
+        # WebDAV source port not configured
+        environ = self._makeEnviron(PATH_INFO='/test')
+        self.assertNotIn('WEBDAV_SOURCE_PORT', environ)
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 0)
+        self._callFUT(environ, start_response, _publish)
+        self.assertNotIn('WEBDAV_SOURCE_PORT', environ)
+        self.assertEqual(environ['PATH_INFO'], '/test')
+
+        # Configuring the port
+        WSGIPublisher.set_webdav_source_port(9800)
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 9800)
+
+        # Coming through the wrong port
+        environ = self._makeEnviron(SERVER_PORT=8080, PATH_INFO='/test')
+        self._callFUT(environ, start_response, _publish)
+        self.assertNotIn('WEBDAV_SOURCE_PORT', environ)
+        self.assertEqual(environ['PATH_INFO'], '/test')
+
+        # Using the wrong request method, environ gets marked
+        # but the path doesn't get changed
+        environ = self._makeEnviron(SERVER_PORT=9800,
+                                    PATH_INFO='/test',
+                                    REQUEST_METHOD='POST')
+        self._callFUT(environ, start_response, _publish)
+        self.assertIn('WEBDAV_SOURCE_PORT', environ)
+        self.assertEqual(environ['PATH_INFO'], '/test')
+
+        # All stars aligned
+        environ = self._makeEnviron(SERVER_PORT=9800,
+                                    PATH_INFO='/test',
+                                    REQUEST_METHOD='GET')
+        self._callFUT(environ, start_response, _publish)
+        self.assertTrue(environ['WEBDAV_SOURCE_PORT'])
+        self.assertEqual(environ['PATH_INFO'], '/test/manage_DAVget')
+
+        # Clean up
+        WSGIPublisher.set_webdav_source_port(old_webdav_source_port)
+
 
 class ExcViewCreatedTests(ZopeTestCase):
 

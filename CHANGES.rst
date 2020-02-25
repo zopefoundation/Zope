@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.3 (unreleased)
 ----------------
 
+- Enable WebDAV support independent of ``ZServer``
+  (`#787 <https://github.com/zopefoundation/Zope/pull/787>`_)
+
 - Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method
   (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
 
