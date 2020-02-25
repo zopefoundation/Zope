@@ -125,6 +125,9 @@ class WSGIStarterTestCase(unittest.TestCase):
         starter.setupPublisher()
         self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 9800)
 
+        # Cleanup
+        WSGIPublisher.set_webdav_source_port(0)
+
     @unittest.skipUnless(six.PY2, 'Python 2 specific checkinterval test.')
     def testConfigureInterpreter(self):
         oldcheckinterval = sys.getcheckinterval()

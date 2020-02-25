@@ -786,6 +786,7 @@ class TestPublishModule(ZopeTestCase):
 
     def test_webdav_source_port(self):
         from ZPublisher import WSGIPublisher
+        old_webdav_source_port = WSGIPublisher._WEBDAV_SOURCE_PORT
         start_response = DummyCallable()
         _response = DummyResponse()
         _publish = DummyCallable()
@@ -825,6 +826,9 @@ class TestPublishModule(ZopeTestCase):
         self._callFUT(environ, start_response, _publish)
         self.assertTrue(environ['WEBDAV_SOURCE_PORT'])
         self.assertEqual(environ['PATH_INFO'], '/test/manage_DAVget')
+
+        # Clean up
+        WSGIPublisher.set_webdav_source_port(old_webdav_source_port)
 
 
 class ExcViewCreatedTests(ZopeTestCase):
