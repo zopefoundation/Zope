@@ -25,7 +25,6 @@ ZEO==5.2.1
 ZODB==5.5.1
 Zope2==4.0
 cryptography==2.8
-five.globalrequest==99.1
 five.localsitemanager==3.2.2
 funcsigs==1.0.2
 future==0.18.2
