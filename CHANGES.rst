@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.3 (unreleased)
+4.3 (2020-02-25)
 ----------------
 
 - Enable WebDAV support independent of ``ZServer``
