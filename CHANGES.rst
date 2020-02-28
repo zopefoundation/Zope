@@ -30,7 +30,7 @@ Bug fixes
 Other changes
 +++++++++++++
 
-- None, yet.
+- Update to newest versions of dependencies.
 
 
 5.0a1 (2020-02-28)
