@@ -6,7 +6,7 @@ These are all the changes for Zope 5, starting with the alpha releases.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.0a1 (unreleased)
+5.0a1 (2020-02-28)
 ------------------
 
 - Enable WebDAV support independent of ``ZServer``
