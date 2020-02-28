@@ -9,7 +9,28 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+(These are the changes since Zope 4.3 Besides the backwards incompatible
+changes all changes have been merged back to Zope 4.x.)
+
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- None, yet.
+
+New features
+++++++++++++
+
+- None, yet.
+
+Bug fixes
++++++++++
+
+- None, yet.
+
+Other changes
++++++++++++++
+
+- None, yet.
 
 
 5.0a1 (2020-02-28)
@@ -62,7 +83,6 @@ New features
 - Add ``wsgi.file_wrapper`` implementation
   https://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling
   (`#719 <https://github.com/zopefoundation/Zope/pull/719>`_)
-
 
 Bug fixes
 +++++++++
