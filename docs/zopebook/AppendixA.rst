@@ -656,14 +656,14 @@ Basic batch processing::
   <p>
   <dtml-in largeSequence size=10 start=start previous>
     <a href="<dtml-var absolute_url>
-      <dtml-var sequence-query>start=<dtml-var previous-sequence-start-number>">
+      <dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
       Previous
     </a>
   </dtml-in>
 
   <dtml-in largeSequence size=10 start=start next>
     <a href="<dtml-var absolute_url>
-      <dtml-var sequence-query>start=<dtml-var next-sequence-start-number>">
+      <dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
       Next
     </a>
   </dtml-in>
