@@ -16,6 +16,6 @@ from zope.deferredimport import deprecated
 
 # BBB Zope 5.0
 deprecated(
-    'Please import from .six.moves._thread',
+    'Please import from six.moves._thread',
     allocate_lock='six.moves._thread:allocate_lock',
 )
