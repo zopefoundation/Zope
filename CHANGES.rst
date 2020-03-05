@@ -25,15 +25,14 @@ New features
 Bug fixes
 +++++++++
 
-- None, yet.
+- Fixed encoding issue of `displayname` WebDAV property 
+  (`#478 <https://github.com/zopefoundation/Zope/issues/797>`_)
+
 
 Other changes
 +++++++++++++
 
 - Update to newest versions of dependencies.
-
-- Fixed encoding issue of `displayname` WebDAV property 
-  (`#478 <https://github.com/zopefoundation/Zope/issues/799>`_)
 
 
 5.0a1 (2020-02-28)
