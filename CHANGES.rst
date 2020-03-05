@@ -11,7 +11,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 ------------------
 
 - Fixed encoding issue of `displayname` WebDAV property
-  (`#478 <https://github.com/zopefoundation/Zope/issues/797>`_)
+  (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
 
 4.3 (2020-02-25)
