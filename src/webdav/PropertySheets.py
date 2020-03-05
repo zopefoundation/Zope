@@ -32,8 +32,7 @@ def xml_escape(value):
         value = str(value)
     if not isinstance(value, str):
         value = value.decode('utf-8')
-    value = xmltools_escape(value)
-    return value.encode('utf-8')
+    return xmltools_escape(value)
 
 
 class DAVProperties(Virtual, PropertySheet, View):
