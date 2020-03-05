@@ -11,6 +11,8 @@
 #
 ##############################################################################
 
+import six
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
 from App.Common import iso8601_date
@@ -36,8 +38,10 @@ def xml_escape(value):
         value = str(value)
     if not isinstance(value, str):
         value = value.decode('utf-8')
-    value = xmltools_escape(value)
-    return value.encode('utf-8')
+    if six.PY3:
+        return xmltools_escape(value)
+    else:
+        return xmltools_escape(value).encode('UTF-8')
 
 
 class DAVProperties(Virtual, PropertySheet, View):
