@@ -677,8 +677,6 @@ class Resource(Base, LockableItem):
     def manage_DAVget(self):
         """Gets the document source"""
         # The default implementation calls PrincipiaSearchSource
-        print('DAV')
-        import pdb; pdb.set_trace()
         try:
             return bytes(self)
         except TypeError:
