@@ -5,6 +5,7 @@ include buildout.cfg
 include sources.cfg
 include versions-prod.cfg
 include versions.cfg
+include zope-ecosystem.cfg
 
 include *.yml
 exclude *.yml
@@ -36,12 +37,14 @@ recursive-include src *.ico
 recursive-include src *.in
 recursive-include src *.js
 recursive-include src *.map
+recursive-include src *.md
 recursive-include src *.mo
 recursive-include src *.pdf
 recursive-include src *.png
 recursive-include src *.po
 recursive-include src *.pot
 recursive-include src *.pt
+recursive-include src *.py
 recursive-include src *.rst
 recursive-include src *.svg
 recursive-include src *.ttf

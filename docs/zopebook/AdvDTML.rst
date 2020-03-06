@@ -1267,7 +1267,7 @@ of presenting the the user page numbers from which to select::
                <p>Pages: 
                <dtml-call "REQUEST.set('actual_page',1)">
                <dtml-in previous-batches mapping>   
-                 <a href="<dtml-var URL><dtml-var sequence-query>start=<dtml-var "_['batch-start-index']+1">">
+                 <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var "_['batch-start-index']+1">">
                  <dtml-var sequence-number></a>&nbsp;
                  <dtml-call "REQUEST.set('actual_page',_['sequence-number']+1)">     
                </dtml-in>
@@ -1275,7 +1275,7 @@ of presenting the the user page numbers from which to select::
              </dtml-if>
              <dtml-if sequence-end>
                <dtml-in next-batches mapping>&nbsp;
-                  <a href="<dtml-var URL><dtml-var sequence-query>start=<dtml-var "_['batch-start-index']+1">">
+                  <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var "_['batch-start-index']+1">">
                   <dtml-var "_['sequence-number']+_['actual_page']"></a>
                 </dtml-in>
              </dtml-if>

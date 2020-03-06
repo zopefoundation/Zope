@@ -235,7 +235,7 @@ def simple_type(ob):
 def b2a(s):
     '''Encode a bytes/string as a cookie- and url-safe string.
 
-    Encoded string use only alpahnumeric characters, and "._-".
+    Encoded string use only alphanumeric characters, and "._-".
     '''
     if not isinstance(s, bytes):
         s = str(s)
