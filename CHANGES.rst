@@ -20,12 +20,12 @@ Backwards incompatible changes
 New features
 ++++++++++++
 
-- None, yet.
+- Add preliminary support for Python 3.9: the latest pre-release is tested.
 
 Bug fixes
 +++++++++
 
-- Fixed encoding issue of `displayname` WebDAV property 
+- Fixed encoding issue of `displayname` WebDAV property
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
 
