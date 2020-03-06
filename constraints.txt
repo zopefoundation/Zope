@@ -31,7 +31,7 @@ ipaddress==1.0.23
 jeepney==0.4.2
 mock==4.0.1
 pbr==5.4.4
-persistent==4.5.1
+persistent==4.6.1
 pytz==2019.3
 roman==3.2
 shutilwhich==1.1.0
