@@ -14,10 +14,6 @@ matrix:
           env: TOXENV=py38
         - python: "3.9-dev"
           env: TOXENV=py39
-          before_install:
-            - /opt/python/3.9-dev/bin/python -m venv py39
-            - cd py39
-            - . bin/activate
 
 install:
     - travis_retry pip install -U pip setuptools
