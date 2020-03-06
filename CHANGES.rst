@@ -28,6 +28,9 @@ Bug fixes
 - Fixed encoding issue of `displayname` WebDAV property 
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
+- Fixed issue where GET on a binary WebDAV resource returned improper
+  data (empty string instead of the binary data)
+  (`#797 <https://github.com/zopefoundation/Zope/issues/801>`_)
 
 Other changes
 +++++++++++++
