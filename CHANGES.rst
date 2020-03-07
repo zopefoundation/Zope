@@ -28,6 +28,9 @@ Bug fixes
 - Fixed encoding issue of `displayname` WebDAV property
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
+- Fixed fallback implementation of ``manage_DAVget``
+  (`#799 <https://github.com/zopefoundation/Zope/issues/799>`_)
+
 
 Other changes
 +++++++++++++

@@ -84,3 +84,7 @@ class TestNullResource(unittest.TestCase):
             nonesuch.PUT(request, response)
         except Unauthorized as e:
             self.assertTrue(str(e).startswith('Unable to create object'))
+
+    def test_manage_DAVget(self):
+        nonesuch = self._makeOne()
+        self.assertFalse(nonesuch.manage_DAVget())
