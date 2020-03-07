@@ -28,6 +28,7 @@ from AccessControl.Permissions import change_images_and_files  # NOQA
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import view_management_screens
+from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.Common import rfc1123_date
@@ -708,6 +709,32 @@ class File(
         data = bytes(self.data)
         return len(data)
 
+    @security.protected(webdav_access)
+    def manage_DAVget(self):
+        """Return body for WebDAV."""
+        RESPONSE = self.REQUEST.RESPONSE
+
+        if self.ZCacheable_isCachingEnabled():
+            result = self.ZCacheable_get(default=None)
+            if result is not None:
+                # We will always get None from RAMCacheManager but we will
+                # get something implementing the IStreamIterator interface
+                # from FileCacheManager.
+                # the content-length is required here by HTTPResponse.
+                RESPONSE.setHeader('Content-Length', self.size)
+                return result
+
+        data = self.data
+        if isinstance(data, binary_type):
+            RESPONSE.setBase(None)
+            return data
+
+        while data is not None:
+            RESPONSE.write(data.data)
+            data = data.next
+
+        return b''
+
     if bbb.HAS_ZSERVER:
 
         @security.protected(ftp_access)
@@ -715,29 +742,7 @@ class File(
             """Return body for ftp."""
             warn(u'manage_FTPget is deprecated and will be removed in Zope 5.',
                  DeprecationWarning, stacklevel=2)
-            RESPONSE = self.REQUEST.RESPONSE
-
-            if self.ZCacheable_isCachingEnabled():
-                result = self.ZCacheable_get(default=None)
-                if result is not None:
-                    # We will always get None from RAMCacheManager but we will
-                    # get something implementing the IStreamIterator interface
-                    # from FileCacheManager.
-                    # the content-length is required here by HTTPResponse,
-                    # even though FTP doesn't use it.
-                    RESPONSE.setHeader('Content-Length', self.size)
-                    return result
-
-            data = self.data
-            if isinstance(data, binary_type):
-                RESPONSE.setBase(None)
-                return data
-
-            while data is not None:
-                RESPONSE.write(data.data)
-                data = data.next
-
-            return b''
+            return self.manage_DAVget()
 
 
 InitializeClass(File)

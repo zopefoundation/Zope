@@ -304,6 +304,15 @@ class FileTests(unittest.TestCase):
                                        b'come to the aid of the Party.')
         self.assertTrue(b'Party' in self.file.PrincipiaSearchSource())
 
+    def test_manage_DAVget_binary(self):
+        self.assertEqual(self.file.manage_DAVget(), self.data)
+
+    def test_manage_DAVget_text(self):
+        text = (b'Now is the time for all good men to '
+                b'come to the aid of the Party.')
+        self.file.manage_edit('foobar', 'text/plain', filedata=text)
+        self.assertEqual(self.file.manage_DAVget(), text)
+
     def test_interfaces(self):
         from zope.interface.verify import verifyClass
         from OFS.Image import File
