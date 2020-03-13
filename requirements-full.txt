@@ -73,7 +73,7 @@ zope.lifecycleevent==4.3.0
 zope.location==4.2
 zope.pagetemplate==4.5.0
 zope.processlifetime==2.3.0
-zope.proxy==4.3.3
+zope.proxy==4.3.4
 zope.ptresource==4.2.0
 zope.publisher==5.1.1
 zope.ramcache==2.3
