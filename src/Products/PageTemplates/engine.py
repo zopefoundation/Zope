@@ -1,28 +1,23 @@
+"""``chameleon`` template engine integration."""
+
+
 import logging
 import re
 
 from chameleon.tal import RepeatDict
-from chameleon.tales import NotExpr
-from chameleon.tales import StringExpr
 from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.Expressions import getEngine
-from z3c.pt.expressions import ProviderExpr
-from z3c.pt.expressions import PythonExpr
+from Products.PageTemplates.expression import getEngine
 from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 from zope.interface import implementer
 from zope.interface import provider
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
 
-from .expression import ExistsExpr
-from .expression import NocallExpr
-from .expression import PathExpr
-from .expression import TrustedPathExpr
-from .expression import UntrustedPythonExpr
+from .expression import ZopeEngine, createTrustedZopeEngine
 
 
 # Declare Chameleon's repeat dictionary public
@@ -43,28 +38,6 @@ logger = logging.getLogger('Products.PageTemplates')
 @implementer(IPageTemplateProgram)
 @provider(IPageTemplateEngine)
 class Program(object):
-
-    # Zope 2 Page Template expressions
-    secure_expression_types = {
-        'python': UntrustedPythonExpr,
-        'string': StringExpr,
-        'not': NotExpr,
-        'exists': ExistsExpr,
-        'path': PathExpr,
-        'provider': ProviderExpr,
-        'nocall': NocallExpr,
-    }
-
-    # Zope 3 Page Template expressions
-    expression_types = {
-        'python': PythonExpr,
-        'string': StringExpr,
-        'not': NotExpr,
-        'exists': ExistsExpr,
-        'path': TrustedPathExpr,
-        'provider': ProviderExpr,
-        'nocall': NocallExpr,
-    }
 
     extra_builtins = {
         'modules': ZRPythonExpr._SecureModuleImporter()
@@ -89,7 +62,24 @@ class Program(object):
 
     @classmethod
     def cook(cls, source_file, text, engine, content_type):
-        if engine is getEngine():
+        if not isinstance(engine, ZopeEngine):
+            # HACK
+            #  The ``chameleoon`` integration happens at the
+            #  ``zope.pagetemplate`` level.
+            #  There are users (e.g. ``z3c.form``) which use templates
+            #  directly from ``zope.pagetemplate`` and are unaware
+            #  of the switch to ``chameleon`` and its special
+            #  TALES engine requirements. As a consequence, they
+            #  provide a wrong *engine*.
+            #  We ignore *engine* is this case and replace it
+            #  with a trusted engine compatible with ``chameleon``.
+            #
+            #  This is compatible with the previous behaviour
+            #  (hacky, too) which used *engine* only to check
+            #  against ``getEngine()`` and use the trusted engine
+            #  if not identical.
+            engine = createTrustedZopeEngine()
+        elif engine is getEngine():
             def sanitize(m):
                 match = m.group(1)
                 logger.info(
@@ -108,9 +98,7 @@ class Program(object):
                     )
                 )
 
-            expression_types = cls.secure_expression_types
-        else:
-            expression_types = cls.expression_types
+        expression_types = engine.types
 
         # BBB: Support CMFCore's FSPagetemplateFile formatting
         if source_file is not None and source_file.startswith('file:'):

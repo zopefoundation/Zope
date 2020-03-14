@@ -1,8 +1,14 @@
+"""Specialized TALES implementation
+for use with the ``chameleon`` template engine.
+"""
+
 from ast import NodeTransformer
 from ast import parse
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
+from chameleon.tales import NotExpr
+from chameleon.tales import StringExpr
 from chameleon.codegen import template
 from six import class_types
 
@@ -12,14 +18,17 @@ from AccessControl.ZopeGuards import guarded_getitem
 from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
-from Products.PageTemplates.Expressions import render
 from RestrictedPython import RestrictingNodeTransformer
 from RestrictedPython.Utilities import utility_builtins
 from z3c.pt import expressions
+from z3c.pt.expressions import ProviderExpr
+from z3c.pt.expressions import PythonExpr
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
+
+from .Expressions import render, ZopeEngine
 
 
 _marker = object()
@@ -173,3 +182,39 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         self.page_templates_expression_transformer.visit(node)
 
         return node
+
+
+def createZopeEngine(
+    expression_types={
+        'python': UntrustedPythonExpr,
+        'string': StringExpr,
+        'not': NotExpr,
+        'exists': ExistsExpr,
+        'path': PathExpr,
+        'provider': ProviderExpr,
+        'nocall': NocallExpr,
+        }):
+    """untrusted TALES engine for `chameleion` template engine."""
+    e = ZopeEngine()
+    for t, h in expression_types.items():
+        e.registerType(t, h)
+    return e
+
+def createTrustedZopeEngine(
+    expression_types={
+        'python': PythonExpr,
+        'string': StringExpr,
+        'not': NotExpr,
+        'exists': ExistsExpr,
+        'path': TrustedPathExpr,
+        'provider': ProviderExpr,
+        'nocall': NocallExpr,
+    }):
+    """trusted TALES engine for `chameleion` template engine."""
+    return createZopeEngine(expression_types)
+
+
+_engine = createZopeEngine()
+
+def getEngine():
+    return _engine

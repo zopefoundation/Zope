@@ -20,10 +20,20 @@ import zope.pagetemplate.pagetemplate
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.PageTemplates.Expressions import getEngine
+from zope.component import queryUtility
+from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.pagetemplate.pagetemplate import PTRuntimeError
+from zope.pagetemplate.pagetemplate import PageTemplateEngine
 from zope.tales.expressions import SimpleModuleImporter
+
+from .Expressions import getEngine as getPtEngine, \
+     createZopeEngine as createPtZopeEngine, \
+     createTrustedZopeEngine as createPtTrustedZopeEngine
+
+from .expression import getEngine as getChEngine, \
+     createZopeEngine as createChZopeEngine, \
+     createTrustedZopeEngine as createChTrustedZopeEngine
 
 
 class PageTemplate(ExtensionClass.Base,
@@ -126,3 +136,41 @@ class PageTemplate(ExtensionClass.Base,
         if not hasattr(aq_base(self), 'is_html'):
             return self.content_type == 'text/html'
         return self.is_html
+
+
+def get_template_engine_type():
+    """return template engine type.
+
+    Currently knows ``'ch'`` (``chameleon``) and
+    ``'pt'`` (``zope.pagetemplate``).
+    Raises ``SystemError`` for an unknown type.
+    """
+    from . engine import Program
+    # copy logic from `zope.pagetemplate.pagetemplate.PageTemplate._cook`
+    engine = queryUtility(IPageTemplateEngine, default=PageTemplateEngine)
+    if issubclass(engine, Program):
+        return "ch"
+    elif issubclass(engine, PageTemplateEngine):
+        return "pt"
+    else:
+        raise SystemError("unknown page template engine: %s" % engine)
+
+
+def createZopeEngine():
+    return createPtZopeEngine() if get_template_engine_type() == "pt" \
+        else createChZopeEngine()
+
+def createTrustedZopeEngine():
+    return createPtTrustedZopeEngine() if get_template_engine_type() == "pt" \
+        else createChTrustedZopeEngine()
+
+
+# we must delay the engine choice because the switch from
+#  `zope.pagetemplate` to `chameleon` happens quite late
+#  (maybe after the import of this module)
+_pt_engine = getPtEngine()
+_ch_engine = getChEngine()
+
+def getEngine():
+    return _pt_engine if get_template_engine_type() == "pt" else _ch_engine
+

@@ -14,6 +14,9 @@
 
 Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
+
+Used by the (old) ``zope.pagetemplate`` template engine and
+other components (such as ``Products.CMFCore``).
 """
 
 import logging
@@ -403,6 +406,7 @@ class UnicodeAwareStringExpr(StringExpr):
 
 
 def createZopeEngine(zpe=ZopePathExpr):
+    """untrusted TALES engine for `zope.pagetemplate` template engine."""
     e = ZopeEngine()
     e.iteratorFactory = PathIterator
     for pt in zpe._default_type_names:
@@ -418,7 +422,7 @@ def createZopeEngine(zpe=ZopePathExpr):
 
 
 def createTrustedZopeEngine():
-    # same as createZopeEngine, but use non-restricted Python
+    """trusted TALES engine for `zope.pagetemplate` template engine."""
     # expression evaluator
     e = createZopeEngine(TrustedZopePathExpr)
     e.types['python'] = PythonExpr

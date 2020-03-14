@@ -10,6 +10,15 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.3.1 (unreleased)
 ------------------
 
+- Improve *engine* handling of
+  ``Products.PageTempates.engine.Program.cook``
+  to support TALES extensions/adaptations (such as those by
+  ``Products.TrustedExecutables``).
+  However, *engine* is still not honoured for templates
+  used directly from ``zope.pagetemplate`` (rather than ``Zope``);
+  for them, the previous behaviour is unchanged.
+  (`#717 <https://github.com/zopefoundation/Zope/issues/717>`_).
+
 - Fixed encoding issue of `displayname` WebDAV property
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
