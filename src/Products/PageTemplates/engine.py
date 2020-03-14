@@ -17,7 +17,8 @@ from zope.interface import provider
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
 
-from .expression import ZopeEngine, createTrustedZopeEngine
+from .expression import ZopeEngine
+from .expression import createTrustedZopeEngine
 
 
 # Declare Chameleon's repeat dictionary public

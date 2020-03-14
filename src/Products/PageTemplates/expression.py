@@ -7,9 +7,9 @@ from ast import parse
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
+from chameleon.codegen import template
 from chameleon.tales import NotExpr
 from chameleon.tales import StringExpr
-from chameleon.codegen import template
 from six import class_types
 
 from AccessControl.ZopeGuards import guarded_apply
@@ -28,7 +28,8 @@ from zExceptions import Unauthorized
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from .Expressions import render, ZopeEngine
+from .Expressions import ZopeEngine
+from .Expressions import render
 
 
 _marker = object()
@@ -168,7 +169,6 @@ class UntrustedPythonExpr(expressions.PythonExpr):
             node.id = 'wrapped_repeat'
         else:
             node = super(UntrustedPythonExpr, self).rewrite(node)
-
         return node
 
     def parse(self, string):
@@ -192,13 +192,13 @@ def createZopeEngine(
         'exists': ExistsExpr,
         'path': PathExpr,
         'provider': ProviderExpr,
-        'nocall': NocallExpr,
-        }):
+        'nocall': NocallExpr}):
     """untrusted TALES engine for `chameleion` template engine."""
     e = ZopeEngine()
     for t, h in expression_types.items():
         e.registerType(t, h)
     return e
+
 
 def createTrustedZopeEngine(
     expression_types={
@@ -208,13 +208,13 @@ def createTrustedZopeEngine(
         'exists': ExistsExpr,
         'path': TrustedPathExpr,
         'provider': ProviderExpr,
-        'nocall': NocallExpr,
-    }):
+        'nocall': NocallExpr}):
     """trusted TALES engine for `chameleion` template engine."""
     return createZopeEngine(expression_types)
 
 
 _engine = createZopeEngine()
+
 
 def getEngine():
     return _engine

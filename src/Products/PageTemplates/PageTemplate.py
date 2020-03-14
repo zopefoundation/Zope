@@ -22,18 +22,17 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from zope.component import queryUtility
 from zope.pagetemplate.interfaces import IPageTemplateEngine
+from zope.pagetemplate.pagetemplate import PageTemplateEngine
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.pagetemplate.pagetemplate import PTRuntimeError
-from zope.pagetemplate.pagetemplate import PageTemplateEngine
 from zope.tales.expressions import SimpleModuleImporter
 
-from .Expressions import getEngine as getPtEngine, \
-     createZopeEngine as createPtZopeEngine, \
-     createTrustedZopeEngine as createPtTrustedZopeEngine
-
-from .expression import getEngine as getChEngine, \
-     createZopeEngine as createChZopeEngine, \
-     createTrustedZopeEngine as createChTrustedZopeEngine
+from .expression import createTrustedZopeEngine as createChTrustedZopeEngine
+from .expression import createZopeEngine as createChZopeEngine
+from .expression import getEngine as getChEngine
+from .Expressions import createTrustedZopeEngine as createPtTrustedZopeEngine
+from .Expressions import createZopeEngine as createPtZopeEngine
+from .Expressions import getEngine as getPtEngine
 
 
 class PageTemplate(ExtensionClass.Base,
@@ -160,6 +159,7 @@ def createZopeEngine():
     return createPtZopeEngine() if get_template_engine_type() == "pt" \
         else createChZopeEngine()
 
+
 def createTrustedZopeEngine():
     return createPtTrustedZopeEngine() if get_template_engine_type() == "pt" \
         else createChTrustedZopeEngine()
@@ -171,6 +171,6 @@ def createTrustedZopeEngine():
 _pt_engine = getPtEngine()
 _ch_engine = getChEngine()
 
+
 def getEngine():
     return _pt_engine if get_template_engine_type() == "pt" else _ch_engine
-

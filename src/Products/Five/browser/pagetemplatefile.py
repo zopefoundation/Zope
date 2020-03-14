@@ -18,12 +18,12 @@ from os.path import basename
 
 from AccessControl import getSecurityManager
 from Acquisition import aq_get
+from Products.PageTemplates.expression import \
+    createTrustedZopeEngine as createChTrustedZopeEngine
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import \
-     createTrustedZopeEngine as createPtTrustedZopeEngine
+    createTrustedZopeEngine as createPtTrustedZopeEngine
 from Products.PageTemplates.PageTemplate import get_template_engine_type
-from Products.PageTemplates.expression import \
-     createTrustedZopeEngine as createChTrustedZopeEngine
 from zope.component import getMultiAdapter
 from zope.pagetemplate.engine import TrustedAppPT
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
