@@ -33,7 +33,7 @@ from zope.pagetemplate.interfaces import IPageTemplateProgram
 RepeatDict.security = ClassSecurityInfo()
 RepeatDict.security.declareObjectPublic()
 RepeatDict.security.declarePrivate(
-    *(set(dir(RepeatDict)) - set(dir(MultiMapping))))
+    *(set(dir(RepeatDict)) - set(dir(MultiMapping))))  # NOQA: D001
 RepeatDict.__allow_access_to_unprotected_subobjects__ = True
 InitializeClass(RepeatDict)
 
