@@ -72,9 +72,9 @@ options_capture_update_base = """
 
 lp_848200_source = """
 <tal:block>
-  <tag tal:condition="False"
+  <tag tal:condition="python:False"
        tal:attributes="attrib string:false" />
-  <tag tal:condition="True"
+  <tag tal:condition="python:True"
        tal:attributes="attrib string:true" />
 </tal:block>
 """.strip()

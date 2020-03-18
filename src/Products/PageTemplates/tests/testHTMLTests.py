@@ -178,3 +178,18 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
         # be used together with 'default'.
         self.assert_expected(self.folder.t, 'BooleanAttributesAndDefault.html')
+
+    def test_zt_expr_registry(self):
+        from ..engine import _zt_expr_registry
+        # clear registry to remove effects from other tests
+        _zt_expr_registry.clear()
+        self.assertEqual(len(_zt_expr_registry), 0)
+        self.testBooleanAttributesAndDefault()
+        self.assertTrue(_zt_expr_registry)
+        del self.folder
+        # ``chameleon.utils.Scope`` introduces cycles (via its `set_global`
+        #  definition) (in version 3.6.2)
+        # try to release them (may not work in Python 2.7)
+        import gc
+        gc.collect()
+        self.assertEqual(len(_zt_expr_registry), 0)
