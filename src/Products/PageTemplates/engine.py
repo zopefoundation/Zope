@@ -1,7 +1,7 @@
 """``chameleon`` integration.
 
 We use the ``zope.tales`` expression implementation (as adapted for ``Zope``)
-not that of ``chemeleon.tales``.
+not that of ``chameleon.tales``.
 """
 
 import ast

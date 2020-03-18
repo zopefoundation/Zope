@@ -12,7 +12,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Fix issue 717 by using ``zope.tales.tales`` expressions even with
   the ``Chameleon`` template engine.
-  (`#717 <https://github.com/zopefoundation/Zope/issues/797>`_).
+  (`#717 <https://github.com/zopefoundation/Zope/issues/717>`_).
 
 - Fixed encoding issue of `displayname` WebDAV property
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
