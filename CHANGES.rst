@@ -10,9 +10,12 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.3.1 (unreleased)
 ------------------
 
-- Fix issue 717 by using ``zope.tales.tales`` expressions even with
-  the ``Chameleon`` template engine.
+- Fix issue 717 by fully honoring the engine returned by
+  ``PageTemplate.pt_getEngine``
   (`#717 <https://github.com/zopefoundation/Zope/issues/717>`_).
+  The engine also decides about the use of ``zope.tales``
+  (engine is an instance of ``zope.pagetemplate.engine.ZopeBaseEngine``)
+  or ``chameleon.tales`` (otherwise) TALES expressions.
 
 - Fixed encoding issue of `displayname` WebDAV property
   (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)

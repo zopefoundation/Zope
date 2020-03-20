@@ -8,8 +8,6 @@ import ast
 import copy
 import logging
 import re
-import uuid
-import weakref
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
@@ -19,13 +17,16 @@ from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.version_txt import getZopeVersion
 from MultiMapping import MultiMapping
-from Products.PageTemplates.Expressions import getEngine
 from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 from zope.interface import implementer
 from zope.interface import provider
+from zope.pagetemplate.engine import ZopeBaseEngine
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
+
+from .Expressions import SecureModuleImporter
 
 
 # Declare Chameleon's repeat dictionary public but prevent modifications
@@ -47,33 +48,60 @@ logger = logging.getLogger('Products.PageTemplates')
 
 # zt_expr registry management
 #  ``chameleon`` compiles TALES expressions to Python byte code
-#  which has no support for arbitrary Python expressions but
-#  can handle global (called `Static`) objects which include
-#  globally defined functions.
-#  We must pass ``MappedExpr`` instances to the ``zope`` TALES
-#  expressions. We use a zt_expr registry accessed via the global
-#  function ``_fetch_zt_expr``.
+#  and includes it in the byte code generated for the complete
+#  template. In production mode, the whole is cached
+#  in a long term (across process invocations) file system based
+#  cache, keyed with the digest of the template's source and
+#  some names.
+#  ``zope.tales`` expressions are essentially runtime objects
+#  (general "callables", usually class instances with a ``__call__``
+#  method. They cannot be (easily) represented via byte code.
+#  We address this problem by representing such an expression
+#  in the byte code as a function call to compile the expression.
+#  For efficiency, a (process local) compile cache is used
+#  to cache compilation results, the ``zt_expr_registry``,
+#  keyed by the engine id, the expression type and the expression source.
 
 _zt_expr_registry = {}
 
 
-def _fetch_zt_expr(eid):
-    return _zt_expr_registry[eid]
+def _compile_zt_expr(type, expression, engine=None, econtext=None):
+    """compile *expression* of type *type*.
+
+    The engine is derived either directly from *engine* or the
+    execution content *econtext*. One of them must be given.
+
+    The compilation result is cached in ``_zt_expr_registry``.
+    """
+    if engine is None:
+        engine = econtext["__zt_engine__"]
+    key = id(engine), type, expression
+    # cache lookup does not need to be protected by locking
+    #  (but we could potentially prevent unnecessary computations)
+    expr = _zt_expr_registry.get(key)
+    if expr is None:
+        expr = engine.types[type](type, expression, engine)
+        _zt_expr_registry[key] = expr
+    return expr
 
 
-_fetch_zt_expr_node = Static(Symbol(_fetch_zt_expr))
-
-
-def _del_zt_expr(ref):
-    try:
-        del _zt_expr_registry[ref.eid]
-    except KeyError:
-        pass
+_compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 
 def _c_context_2_z_context(c_context):
     z_context = copy.copy(c_context["__zt_context__"])
     # not sure that ``lazy`` works as expected
+    # An upcoming ``chameleon`` version will (potentially) have
+    #   a ``root`` attribute with global assignments.
+    #   Uncomment the code below once ``Zope`` uses such a version.
+    #   The code is not yet active because we cannot yet test it.
+#    root = getattr(c_context, "root", None)
+#    if root is not None:
+#        z_context.vars = dict(root.vars)
+#        z_context.vars.update(c_context.vars)
+#    else:
+#        z_context.vars = dict(c_context.vars)
+    # Comment the line below once the comment block above is uncommented
     z_context.vars = dict(c_context.vars)
     return z_context
 
@@ -81,52 +109,41 @@ def _c_context_2_z_context(c_context):
 _c_context_2_z_context_node = Static(Symbol(_c_context_2_z_context))
 
 
-class LifetimeRef(weakref.ref):
-    atexit = False
-
-    def __init__(self, obj, callback, eid):
-        self.eid = eid
-        super(LifetimeRef, self).__init__(obj, callback)
-
-
 class MappedExpr(object):
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
-    def __init__(self, z_expr, lifetime_ref):
-        eid = self.eid = uuid.uuid4().int
-        z_expr.lifetime_ref = \
-            LifetimeRef(lifetime_ref(), _del_zt_expr, eid=eid)
-        _zt_expr_registry[eid] = z_expr
+    def __init__(self, type, expression, zt_engine):
+        self.type = type
+        self.expression = expression
+        # compile to be able to report errors
+        _compile_zt_expr(type, expression, engine=zt_engine)
 
     def __call__(self, target, c_engine):
         return template(
-            "target = fetch_zt_expr(eid)(c2z_context(econtext))",
+            "target = compile_zt_expr(type, expression, econtext=econtext)"
+            "(c2z_context(econtext))",
             target=target,
-            fetch_zt_expr=_fetch_zt_expr_node,
-            eid=ast.Num(self.eid),
+            compile_zt_expr=_compile_zt_expr_node,
+            type=ast.Str(self.type),
+            expression=ast.Str(self.expression),
             c2z_context=_c_context_2_z_context_node)
 
 
 class MappedExprType(object):
     """map expression type: ``zope.tales`` --> ``chameleon.tales``."""
-    def __init__(self, type, handler, engine, lifetime_ref):
-        self.type = type
-        self.handler = handler
+    def __init__(self, engine, type):
         self.engine = engine
-        self.lifetime_ref = lifetime_ref
+        self.type = type
 
     def __call__(self, expression):
-        return MappedExpr(self.handler(self.type, expression, self.engine),
-                          self.lifetime_ref)
+        return MappedExpr(self.type, expression, self.engine)
 
 
-class Lifetime(object):
-    """Auxiliary class to clean up resources when a template is deleted."""
+class ZtPageTemplate(ChameleonPageTemplate):
+    """``ChameleonPageTemplate`` for use with ``zope.tales`` expressions."""
 
-
-class ChPageTemplate(ChameleonPageTemplate):
-    """override to get an integrated default marker."""
+    # override to get the proper ``zope.tales`` default marker
     def _compile(self, body, builtins):
-        code = super(ChPageTemplate, self)._compile(body, builtins)
+        code = super(ZtPageTemplate, self)._compile(body, builtins)
         # redefine ``__default`` as ``zope.tales.tales._default``
         #  Potentially this could be simpler
         frags = code.split("\n", 5)
@@ -143,27 +160,28 @@ class ChPageTemplate(ChameleonPageTemplate):
 @provider(IPageTemplateEngine)
 class Program(object):
 
-    def __init__(self, template, lifetime):
+    def __init__(self, template, engine):
         self.template = template
-        self.lifetime = lifetime
+        self.engine = engine
 
     def __call__(self, context, macros, tal=True, **options):
         if tal is False:
             return self.template.body
 
         # Swap out repeat dictionary for Chameleon implementation
-        # and store wrapped dictionary in new variable -- this is
-        # in turn used by the secure Python expression
-        # implementation whenever a 'repeat' symbol is found
         kwargs = context.vars
         kwargs['repeat'] = RepeatDict(context.repeat_vars)
+        # provide context for ``zope.tales`` expression compilation
+        #   and evaluation
+        #   unused for ``chameleon.tales`` expressions
+        kwargs["__zt_engine__"] = self.engine
         kwargs["__zt_context__"] = context
 
         return self.template.render(**kwargs)
 
     @classmethod
     def cook(cls, source_file, text, engine, content_type):
-        if engine is getEngine():
+        if getattr(engine, "untrusted", False):
             def sanitize(m):
                 match = m.group(1)
                 logger.info(
@@ -182,12 +200,15 @@ class Program(object):
                     )
                 )
 
-        lifetime = Lifetime()
-        lifetime_ref = weakref.ref(lifetime)
-
-        expr_types = {}
-        for ty, expr in engine.types.items():
-            expr_types[ty] = MappedExprType(ty, expr, engine, lifetime_ref)
+        if isinstance(engine, ZopeBaseEngine):
+            # use ``zope.tales`` expressions
+            expr_types = dict((ty, MappedExprType(engine, ty))
+                              for ty in engine.types)
+            template_class = ZtPageTemplate
+        else:
+            # use ``chameleon.tales`` expressions
+            expr_types = engine.types
+            template_class = ChameleonPageTemplate
 
         # BBB: Support CMFCore's FSPagetemplateFile formatting
         if source_file is not None and source_file.startswith('file:'):
@@ -197,10 +218,17 @@ class Program(object):
             # Default to '<string>'
             source_file = ChameleonPageTemplate.filename
 
-        template = ChPageTemplate(
+        template = template_class(
             text, filename=source_file, keep_body=True,
             expression_types=expr_types,
             encoding='utf-8',
+            extra_builtins={
+                "modules": SecureModuleImporter,
+                # effectively invalidate the template file cache for
+                #   every new ``Zope`` version
+                "zope_version_" + "_".join(
+                    str(c) for c in getZopeVersion()
+                    if not (isinstance(c, int) and c < 0)): getZopeVersion}
         )
 
-        return cls(template, lifetime), template.macros
+        return cls(template, engine), template.macros
