@@ -123,8 +123,8 @@ class MappedExpr(object):
             zt_expr = _compile_zt_expr(type, expression, engine=zt_engine)
         except compiler_error as e:
             raise ExpressionError(str(e), self.expression)
-        if self.type == "path" and "$" in self.expression \
-               and isinstance(zt_expr, PathExpr):
+        if (self.type == "path" and "$" in self.expression
+                and isinstance(zt_expr, PathExpr)):
             # the ``chameleon`` template engine has a really curious
             #   implementation of global ``$`` interpolation
             #   (see ``chameleon.compiler.Interpolator``):
@@ -146,11 +146,11 @@ class MappedExpr(object):
                 # ``SubPathExpr`` have flagged out ``$`` use already
                 # we know that this assumption is wrong in some cases
                 if isinstance(se, SubPathExpr):
-                   for pe in se._compiled_path:
-                       if isinstance(pe, tuple):  # standard path
-                           for spe in pe:
-                               if "$" in spe:
-                                   raise ExpressionError("$ unsupported", spe)
+                    for pe in se._compiled_path:
+                        if isinstance(pe, tuple):  # standard path
+                            for spe in pe:
+                                if "$" in spe:
+                                    raise ExpressionError("$ unsupported", spe)
 
     def __call__(self, target, c_engine):
         return template(
