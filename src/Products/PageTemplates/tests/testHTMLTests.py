@@ -13,9 +13,9 @@
 
 import unittest
 
+from chameleon.exc import ExpressionError
 from six import text_type
 
-from chameleon.exc import ExpressionError
 import zope.component.testing
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
