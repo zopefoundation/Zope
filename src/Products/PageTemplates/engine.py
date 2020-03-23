@@ -12,6 +12,7 @@ import re
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
 from chameleon.codegen import template
+from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
 from chameleon.zpt.template import Macros
 
@@ -25,6 +26,8 @@ from zope.interface import provider
 from zope.pagetemplate.engine import ZopeBaseEngine
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
+from zope.tales.expressions import PathExpr
+from zope.tales.expressions import SubPathExpr
 
 from .Expressions import SecureModuleImporter
 
@@ -115,7 +118,39 @@ class MappedExpr(object):
         self.type = type
         self.expression = expression
         # compile to be able to report errors
-        _compile_zt_expr(type, expression, engine=zt_engine)
+        compiler_error = zt_engine.getCompilerError()
+        try:
+            zt_expr = _compile_zt_expr(type, expression, engine=zt_engine)
+        except compiler_error as e:
+            raise ExpressionError(str(e), self.expression)
+        if self.type == "path" and "$" in self.expression \
+               and isinstance(zt_expr, PathExpr):
+            # the ``chameleon`` template engine has a really curious
+            #   implementation of global ``$`` interpolation
+            #   (see ``chameleon.compiler.Interpolator``):
+            #   when it sees ``${``, it starts with the largest
+            #   substring starting at this position and ending in ``}``
+            #   and tries to generate code for it. If this fails, it
+            #   retries with the second largest such substring, etc.
+            # Of course, this fails with ``zope.tales`` ``path`` expressions
+            #   where almost any character is syntactically legal.
+            #   Thus, it happily generates code for e.g.
+            #   ``d/a} ${d/b`` (resulting from ``${d/a} ${d/b}``)
+            #   but its evaluation will fail (with high likelyhood).
+            # We use a heuristics here to handle many (but not all)
+            #   resulting problems: forbid ``$`` in ``SubPathExpr``s.
+            for se in zt_expr._subexprs:
+                # dereference potential evaluation method
+                se = getattr(se, "__self__", se)
+                # we assume below that expressions other than
+                # ``SubPathExpr`` have flagged out ``$`` use already
+                # we know that this assumption is wrong in some cases
+                if isinstance(se, SubPathExpr):
+                   for pe in se._compiled_path:
+                       if isinstance(pe, tuple):  # standard path
+                           for spe in pe:
+                               if "$" in spe:
+                                   raise ExpressionError("$ unsupported", spe)
 
     def __call__(self, target, c_engine):
         return template(

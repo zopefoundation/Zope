@@ -15,6 +15,7 @@ import unittest
 
 from six import text_type
 
+from chameleon.exc import ExpressionError
 import zope.component.testing
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -182,3 +183,15 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
         # be used together with 'default'.
         self.assert_expected(self.folder.t, 'BooleanAttributesAndDefault.html')
+
+    def testInterpolationInContent(self):
+        # the chameleon template engine supports ``${path}``
+        # interpolations not only as part of ``string`` expressions
+        # but globally
+        self.assert_expected(self.folder.t, 'InterpolationInContent.html')
+
+    def testBadExpression(self):
+        t = self.folder.t
+        t.write("<p tal:define='p a//b' />")
+        with self.assertRaises(ExpressionError):
+            t()
