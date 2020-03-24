@@ -54,21 +54,16 @@ class BoboAwareZopeTraverse(object):
     def traverse(cls, base, request, path_items):
         """See ``zope.app.pagetemplate.engine``."""
 
-        length = len(path_items)
-        if length:
-            i = 0
-            method = cls.traverse_method
-            while i < length:
-                name = path_items[i]
-                i += 1
+        path_items = list(path_items)
+        path_items.reverse()
 
-                if ITraversable.providedBy(base):
-                    traverser = getattr(base, method)
-                    base = traverser(name)
-                else:
-                    base = traversePathElement(
-                        base, name, path_items[i:], request=request
-                    )
+        while path_items:
+            name = path_items.pop()
+            if ITraversable.providedBy(base):
+                base = getattr(base, cls.traverseMethod)(name)
+            else:
+                base = traversePathElement(base, name, path_items,
+                                           request=request)
 
         return base
 
@@ -158,14 +153,6 @@ class UntrustedPythonExpr(expressions.PythonExpr):
     builtins.update(dict(
         (name, static(builtin)) for (name, builtin) in utility_builtins.items()
     ))
-
-    def rewrite(self, node):
-        if node.id == 'repeat':
-            node.id = 'wrapped_repeat'
-        else:
-            node = super(UntrustedPythonExpr, self).rewrite(node)
-
-        return node
 
     def parse(self, string):
         encoded = string.encode('utf-8')

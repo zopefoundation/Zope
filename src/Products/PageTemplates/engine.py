@@ -29,17 +29,65 @@ from zope.pagetemplate.interfaces import IPageTemplateProgram
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import SubPathExpr
 
+from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
 
 
-# Declare Chameleon's repeat dictionary public but prevent modifications
-#  by untrusted code
-RepeatDict.security = ClassSecurityInfo()
-RepeatDict.security.declareObjectPublic()
-RepeatDict.security.declarePrivate(  # NOQA: D001
-    *(set(dir(RepeatDict)) - set(dir(MultiMapping))))  # NOQA: D001
-RepeatDict.__allow_access_to_unprotected_subobjects__ = True
+class _PseudoContext(object):
+    """auxiliary context object.
+
+    Used to bridge between ``chameleon`` and ``zope.tales`` iterators.
+    """
+    @staticmethod
+    def setLocal(*args):
+        pass
+
+
+class RepeatDictWrapper(RepeatDict):
+    """Wrap ``chameleon``s ``RepeatDict``.
+
+    Aims:
+
+      1. make it safely usable by untrusted code
+
+      2. let it use a ``zope.tales`` compatible ``RepeatItem``
+    """
+
+    security = ClassSecurityInfo()
+    security.declareObjectPublic()
+    security.declarePrivate(  # NOQA: D001
+        *(set(dir(RepeatDict)) - set(dir(MultiMapping))))  # NOQA: D001
+    __allow_access_to_unprotected_subobjects__ = True
+
+    # Logic (mostly) from ``chameleon.tal.RepeatDict``
+    def __call__(self, key, iterable):
+        """We coerce the iterable to a tuple and return an iterator
+        after registering it in the repeat dictionary."""
+        iterable = list(iterable) if iterable is not None else ()
+
+        length = len(iterable)
+        iterator = iter(iterable)
+
+        # Insert as repeat item
+        ri = self[key] = RepeatItem(None, iterator, _PseudoContext)
+
+        return ri, length
+
+
 InitializeClass(RepeatDict)
+
+
+class RepeatItem(PathIterator):
+    """Iterator compatible with ``chameleon`` and ``zope.tales``."""
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if super(RepeatItem, self).__next__():
+            return self.item
+        else:
+            raise StopIteration
+
 
 # Declare Chameleon Macros object accessible
 # This makes subscripting work, as in template.macros['name']
@@ -205,7 +253,7 @@ class Program(object):
 
         # Swap out repeat dictionary for Chameleon implementation
         kwargs = context.vars
-        kwargs['repeat'] = RepeatDict(context.repeat_vars)
+        kwargs['repeat'] = RepeatDictWrapper(context.repeat_vars)
         # provide context for ``zope.tales`` expression compilation
         #   and evaluation
         #   unused for ``chameleon.tales`` expressions

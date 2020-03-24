@@ -20,9 +20,3 @@ class ChameleonTalesExpressionTests(HTMLTests):
     #   expressions (e.g. the ``zope.tales`` ``not`` expression
     #   returns ``int``, that of ``chameleon.tales`` ``bool``
     PREFIX = "CH_"
-
-    def testFancyLoop(self):
-        self.skipTest("`testFancyLoop` cannot be run with `chameleon`")
-
-    def testRepeatVariable(self):
-        self.skipTest("`testRepeatVariable` cannot be run with `chameleon`")
