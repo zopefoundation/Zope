@@ -64,7 +64,7 @@ zope.exceptions==4.3
 zope.filerepresentation==4.2.0
 zope.formlib==4.7.0
 zope.globalrequest==1.5
-zope.hookable==5.0.0
+zope.hookable==5.0.1
 zope.i18n==4.7.0
 zope.i18nmessageid==5.0.1
 zope.interface==4.7.2
