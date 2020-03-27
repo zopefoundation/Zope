@@ -13,6 +13,7 @@
 
 import unittest
 
+from chameleon.exc import ExpressionError
 from six import text_type
 
 import zope.component.testing
@@ -28,7 +29,6 @@ from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 
 from .util import useChameleonEngine
-from .util import useOldZopeEngine
 
 
 class AqPageTemplate(Implicit, PageTemplate):
@@ -59,6 +59,7 @@ class UnitTestSecurityPolicy(object):
 
 
 class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
+    PREFIX = None
 
     def setUp(self):
         super(HTMLTests, self).setUp()
@@ -83,6 +84,9 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def assert_expected(self, t, fname, *args, **kwargs):
         t.write(util.read_input(fname))
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
+        if self.PREFIX is not None \
+                and util.exists_output(self.PREFIX + fname):
+            fname = self.PREFIX + fname
         expect = util.read_output(fname)
         out = t(*args, **kwargs)
         util.check_html(expect, out)
@@ -127,10 +131,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.assert_expected(self.folder.t, 'Loop1.html')
 
     def testFancyLoop(self):
-        # BBB This only works with the old Zope page template engine.
-        # It uses attributes ``first`` and ``last`` on a repeat variable,
-        # which does not work in Chameleon.
-        useOldZopeEngine()
         self.assert_expected(self.folder.t, 'Loop2.html')
 
     def testGlobalsShadowLocals(self):
@@ -167,10 +167,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.assert_expected(self.folder.t, 'CheckImportOldStyleClass.html')
 
     def testRepeatVariable(self):
-        # This should work with the new Chameleon engine, but apparently there
-        # is too much futzing around with traversal during test setup, so
-        # Chameleon fails to traverse to repeat variables. Using old engine.
-        useOldZopeEngine()
         self.assert_expected(self.folder.t, 'RepeatVariable.html')
 
     def testBooleanAttributesAndDefault(self):
@@ -178,3 +174,15 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
         # be used together with 'default'.
         self.assert_expected(self.folder.t, 'BooleanAttributesAndDefault.html')
+
+    def testInterpolationInContent(self):
+        # the chameleon template engine supports ``${path}``
+        # interpolations not only as part of ``string`` expressions
+        # but globally
+        self.assert_expected(self.folder.t, 'InterpolationInContent.html')
+
+    def testBadExpression(self):
+        t = self.folder.t
+        t.write("<p tal:define='p a//b' />")
+        with self.assertRaises(ExpressionError):
+            t()
