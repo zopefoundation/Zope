@@ -93,8 +93,6 @@ class RepeatItem(PathIterator):
         else:
             raise StopIteration
 
-    next = __next__  # Python 2 compatibility
-
 
 # Declare Chameleon Macros object accessible
 # This makes subscripting work, as in template.macros['name']
