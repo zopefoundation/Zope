@@ -12,6 +12,7 @@
 ##############################################################################
 
 import os
+import os.path
 import re
 import sys
 import unittest
@@ -141,6 +142,11 @@ def read_output(filename):
     with _open(filename, 'r') as fd:
         data = fd.read()
     return data
+
+
+def exists_output(filename):
+    filename = os.path.join(output_dir, filename)
+    return os.path.exists(filename)
 
 
 def useChameleonEngine():

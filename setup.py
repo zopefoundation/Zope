@@ -72,6 +72,7 @@ setup(
         'AccessControl >= 4.0b4',
         'Acquisition',
         'BTrees',
+        'Chameleon >= 3.7.0',
         'DateTime',
         'DocumentTemplate >= 3.0b9',
         'ExtensionClass',

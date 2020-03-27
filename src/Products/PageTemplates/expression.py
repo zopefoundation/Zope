@@ -1,9 +1,13 @@
+"""``chameleon.tales`` expressions."""
+
 from ast import NodeTransformer
 from ast import parse
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
 from chameleon.codegen import template
+from chameleon.tales import NotExpr
+from chameleon.tales import StringExpr
 
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
@@ -17,6 +21,7 @@ from RestrictedPython.Utilities import utility_builtins
 from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized
+from zope.tales.tales import ExpressionEngine
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
@@ -48,21 +53,16 @@ class BoboAwareZopeTraverse:
     def traverse(cls, base, request, path_items):
         """See ``zope.app.pagetemplate.engine``."""
 
-        length = len(path_items)
-        if length:
-            i = 0
-            method = cls.traverse_method
-            while i < length:
-                name = path_items[i]
-                i += 1
+        path_items = list(path_items)
+        path_items.reverse()
 
-                if ITraversable.providedBy(base):
-                    traverser = getattr(base, method)
-                    base = traverser(name)
-                else:
-                    base = traversePathElement(
-                        base, name, path_items[i:], request=request
-                    )
+        while path_items:
+            name = path_items.pop()
+            if ITraversable.providedBy(base):
+                base = getattr(base, cls.traverseMethod)(name)
+            else:
+                base = traversePathElement(base, name, path_items,
+                                           request=request)
 
         return base
 
@@ -153,14 +153,6 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         name: static(builtin) for (name, builtin) in utility_builtins.items()
     })
 
-    def rewrite(self, node):
-        if node.id == 'repeat':
-            node.id = 'wrapped_repeat'
-        else:
-            node = super().rewrite(node)
-
-        return node
-
     def parse(self, string):
         encoded = string.encode('utf-8')
         node = parse(encoded, mode='eval')
@@ -172,3 +164,61 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         self.page_templates_expression_transformer.visit(node)
 
         return node
+
+
+class ChameleonEngine(ExpressionEngine):
+    """Expression engine for ``chameleon.tales``.
+
+    Only partially implemented: its ``compile`` is currently unusable
+    """
+    def compile(self, expression):
+        raise NotImplementedError()
+
+
+types = dict(
+    python=UntrustedPythonExpr,
+    string=StringExpr,
+    not_=NotExpr,
+    exists=ExistsExpr,
+    path=PathExpr,
+    provider=expressions.ProviderExpr,
+    nocall=NocallExpr)
+
+
+def createChameleonEngine(types=types, untrusted=True, **overrides):
+    e = ChameleonEngine()
+
+    def norm(k):
+        return k[:-1] if k.endswith("_") else k
+
+    e.untrusted = untrusted
+    ts = e.types
+    for k, v in types.items():
+        k = norm(k)
+        e.registerType(k, v)
+    for k, v in overrides.items():
+        k = norm(k)
+        if k in ts:
+            del ts[k]
+        e.registerType(k, v)
+    return e
+
+
+def createTrustedChameleonEngine(**overrides):
+    ovr = dict(python=expressions.PythonExpr, path=TrustedPathExpr)
+    ovr.update(overrides)
+    return createChameleonEngine(untrusted=False, **ovr)
+
+
+_engine = createChameleonEngine()
+
+
+def getEngine():
+    return _engine
+
+
+_trusted_engine = createTrustedChameleonEngine()
+
+
+def getTrustedEngine():
+    return _trusted_engine
