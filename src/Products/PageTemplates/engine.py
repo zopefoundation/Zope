@@ -1,7 +1,12 @@
 """``chameleon`` integration.
 
-We use the ``zope.tales`` expression implementation (as adapted for ``Zope``)
-not that of ``chameleon.tales``.
+The engine returned  by the template's ``pt_getEngine`` decides
+whether the ``zope.tales`` or
+the ``chameleon.tales`` TALES implementation is used:
+``zope.tales`` is used when the engine is an instance of
+``zope.pagetemplate.enging.ZopeBaseEngine``,
+``chameleon.tales`` otherwise. This could get more flexible
+in the future.
 """
 
 import ast
@@ -143,19 +148,12 @@ _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 def _c_context_2_z_context(c_context):
     z_context = copy.copy(c_context["__zt_context__"])
-    # not sure that ``lazy`` works as expected
-    # An upcoming ``chameleon`` version will (potentially) have
-    #   a ``root`` attribute with global assignments.
-    #   Uncomment the code below once ``Zope`` uses such a version.
-    #   The code is not yet active because we cannot yet test it.
-#    root = getattr(c_context, "root", None)
-#    if root is not None:
-#        z_context.vars = dict(root.vars)
-#        z_context.vars.update(c_context.vars)
-#    else:
-#        z_context.vars = dict(c_context.vars)
-    # Comment the line below once the comment block above is uncommented
-    z_context.vars = dict(c_context.vars)
+    root = getattr(c_context, "root", None)
+    if root is not None:
+        z_context.vars = dict(root.vars)
+        z_context.vars.update(c_context.vars)
+    else:
+        z_context.vars = dict(c_context.vars)
     return z_context
 
 
@@ -224,8 +222,12 @@ class MappedExprType(object):
 
 
 class ZtPageTemplate(ChameleonPageTemplate):
-    """``ChameleonPageTemplate`` for use with ``zope.tales`` expressions."""
+    """``ChameleonPageTemplate`` using ``zope.tales.tales._default``.
 
+    Note: this is not necessary when ``chameleon.tales`` is used
+    but it does not hurt to use the fixed value to represent ``default``
+    rather than a template specific value.
+    """
     # override to get the proper ``zope.tales`` default marker
     def _compile(self, body, builtins):
         code = super(ZtPageTemplate, self)._compile(body, builtins)
@@ -289,11 +291,9 @@ class Program(object):
             # use ``zope.tales`` expressions
             expr_types = dict((ty, MappedExprType(engine, ty))
                               for ty in engine.types)
-            template_class = ZtPageTemplate
         else:
             # use ``chameleon.tales`` expressions
             expr_types = engine.types
-            template_class = ChameleonPageTemplate
 
         # BBB: Support CMFCore's FSPagetemplateFile formatting
         if source_file is not None and source_file.startswith('file:'):
@@ -303,7 +303,7 @@ class Program(object):
             # Default to '<string>'
             source_file = ChameleonPageTemplate.filename
 
-        template = template_class(
+        template = ZtPageTemplate(
             text, filename=source_file, keep_body=True,
             expression_types=expr_types,
             encoding='utf-8',
