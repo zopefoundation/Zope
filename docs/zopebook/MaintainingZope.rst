@@ -526,24 +526,20 @@ Log Rotation
 ++++++++++++
 
 Log files always grow, so it is customary to periodically rotate logs. This
-means logfiles are closed, renamed (and optionally compressed) and new logfiles
-get created. On Unix, there is the `logrotate` package which traditionally
+means logfiles are copied, optionally compressed, and the current logfile
+is truncated. On Unix, there is the `logrotate` package which traditionally
 handles this. A sample configuration might look like this::
 
-  compress 
   /usr/local/zope/var/Z2.log {
   rotate 25
   weekly
-  postrotate
-  /sbin/kill -USR2 `cat /usr/local/zope/var/Z2.pid`
-  endscript
+  copytruncate
+  compress
   }
 
-This would tell logrotate to compress all log files (not just Zope's!), handle
-Zopes access log file, keep 25 rotated log files, do a log rotation every week,
-and send the SIGUSR2 signal to Zope after rotation. This will cause Zope to
-close the logfile and start a new one. See the documentation to `logrotate` for
-further details.
+This would tell logrotate to handle Zopes access log file, keep 25 rotated log
+files and do a log rotation every week. After the old log file has been saved
+it will be compressed. See the documentation to `logrotate` for further details.
 
 On Windows there are no widespread tools for log rotation. You might try the
 `KiWi Syslog Daemon <http://www.kiwisyslog.com>`_ and configure Zope to log to
