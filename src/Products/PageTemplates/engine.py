@@ -180,6 +180,9 @@ class _C2ZContextWrapper(Context):
     # delegate reading ``dict`` methods to ``c_context``
     #   Note: some "global"s might be missing
     #   Note: we do not expect that modifying ``dict`` methods are used
+    def __iter__(self):
+        return iter(self.__c_context)
+
     def keys(self):
         return self.__c_context.keys()
 

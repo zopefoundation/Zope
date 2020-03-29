@@ -35,6 +35,7 @@ class C2ZContextTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             c["c"]
         self.assertEqual(sorted(c.keys()), ["__zt_context__", "a", "b"])
+        self.assertEqual(sorted(c), ["__zt_context__", "a", "b"])
         vs = c.values()
         for v in ("A", "B"):
             self.assertIn(v, vs)
