@@ -10,7 +10,6 @@ in the future.
 """
 
 import ast
-import copy
 import logging
 import re
 
@@ -33,6 +32,7 @@ from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import SubPathExpr
+from zope.tales.tales import Context
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
@@ -146,15 +146,72 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
 _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 
+class _C2ZContextWrapper(Context):
+    """Behaves like "zope" context with vars from "chameleon" context."""
+    def __init__(self, c_context):
+        self.__c_context = c_context
+        self.__z_context = c_context["__zt_context__"]
+
+    # delegate to ``__c_context``
+    @property
+    def vars(self):
+        return self
+
+    def __getitem__(self, key):
+        try:
+            return self.__c_context.__getitem__(key)
+        except NameError:  # Exception for missing key
+            raise KeyError(key)
+
+    def getValue(self, name, default=None):
+        try:
+            return self[name]
+        except KeyError:
+            return default
+
+    get = getValue
+
+    def setLocal(self, name, value):
+        self.__c_context.setLocal(name, value)
+
+    def setGlobal(self, name, value):
+        self.__c_context.setGlobal(name, value)
+
+    # delegate reading ``dict`` methods to ``c_context``
+    #   Note: some "global"s might be missing
+    #   Note: we do not expect that modifying ``dict`` methods are used
+    def keys(self):
+        return self.__c_context.keys()
+
+    def values(self):
+        return self.__c_context.values()
+
+    def items(self):
+        return self.__c_context.items()
+
+    def __len__(self):
+        return len(self.__c_context)
+
+    def __contains__(self, k):
+        return k in self.__c_context
+
+    # unsupported methods
+    def beginScope(self, *args, **kw):
+        """will not work as the scope is controlled by ``chameleon``."""
+        raise NotImplementedError()
+
+    endScope = beginScope
+    setContext = beginScope
+    setSourceFile = beginScope
+    setPosition = beginScope
+
+    # delegate all else to ``__z_context``
+    def __getattr__(self, attr):
+        return getattr(self.__z_context, attr)
+
+
 def _c_context_2_z_context(c_context):
-    z_context = copy.copy(c_context["__zt_context__"])
-    root = getattr(c_context, "root", None)
-    if root is not None:
-        z_context.vars = dict(root.vars)
-        z_context.vars.update(c_context.vars)
-    else:
-        z_context.vars = dict(c_context.vars)
-    return z_context
+    return _C2ZContextWrapper(c_context)
 
 
 _c_context_2_z_context_node = Static(Symbol(_c_context_2_z_context))
@@ -303,6 +360,7 @@ class Program(object):
             # Default to '<string>'
             source_file = ChameleonPageTemplate.filename
 
+        zope_version = getZopeVersion()
         template = ZtPageTemplate(
             text, filename=source_file, keep_body=True,
             expression_types=expr_types,
@@ -312,7 +370,7 @@ class Program(object):
                 # effectively invalidate the template file cache for
                 #   every new ``Zope`` version
                 "zope_version_" + "_".join(
-                    str(c) for c in getZopeVersion()
+                    str(c) for c in zope_version
                     if not (isinstance(c, int) and c < 0)): getZopeVersion}
         )
 
