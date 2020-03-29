@@ -395,51 +395,6 @@ ZServer threads by a few (it doesn't make sense to have fewer database
 connections than threads). See above on how to change the number of ZServer
 threads.
 
-Signals (POSIX only)
-====================
-
-Signals are a POSIX inter-process communications mechanism. If you are using
-Windows then this documentation does not apply.
-
-Zope responds to signals which are sent to the process id specified in the file
-'$ZOPE_HOME/var/Z2.pid':
-
-SIGHUP
-  close open database connections, then restart the server process. The common
-  idiom for restarting a Zope server is::
-
-    kill -HUP `cat $ZOPE_HOME/var/Z2.pid`
-
-SIGTERM
-  close open database connections then shut down. The common idiom for shutting
-  down Zope is::
-
-    kill -TERM `cat $ZOPE_HOME/var/Z2.pid`
-
-SIGINT
-  same as SIGTERM
-
-SIGUSR2
-  close and re-open all Zope log files (z2.log, event log, detailed log.) The
-  common idiom after rotating Zope log files is::
-
-    kill -USR2 `cat $ZOPE_HOME/var/Z2.pid`
-
-The process id written to the::
-
-  Z2.pid
-
-file depends on whether Zope is run under the::
-
-  zdaemon
-
-management process. If Zope is run under a management process (as it is by
-default) then the pid of the management process is recorded here. Relevant
-signals sent to the management process are forwarded on to the server process.
-Specifically, it forwards all those signals listed above, plus SIGQUIT and
-SIGUSR1. If Zope is not using a management process (-Z0 on the z2.py command
-line), the server process records its own pid into `z2.pid`, but all signals
-work the same way.
 
 Monitoring
 ==========
@@ -571,24 +526,20 @@ Log Rotation
 ++++++++++++
 
 Log files always grow, so it is customary to periodically rotate logs. This
-means logfiles are closed, renamed (and optionally compressed) and new logfiles
-get created. On Unix, there is the `logrotate` package which traditionally
+means logfiles are copied, optionally compressed, and the current logfile
+is truncated. On Unix, there is the `logrotate` package which traditionally
 handles this. A sample configuration might look like this::
 
-  compress 
   /usr/local/zope/var/Z2.log {
   rotate 25
   weekly
-  postrotate
-  /sbin/kill -USR2 `cat /usr/local/zope/var/Z2.pid`
-  endscript
+  copytruncate
+  compress
   }
 
-This would tell logrotate to compress all log files (not just Zope's!), handle
-Zopes access log file, keep 25 rotated log files, do a log rotation every week,
-and send the SIGUSR2 signal to Zope after rotation. This will cause Zope to
-close the logfile and start a new one. See the documentation to `logrotate` for
-further details.
+This would tell logrotate to handle Zopes access log file, keep 25 rotated log
+files and do a log rotation every week. After the old log file has been saved
+it will be compressed. See the documentation to `logrotate` for further details.
 
 On Windows there are no widespread tools for log rotation. You might try the
 `KiWi Syslog Daemon <http://www.kiwisyslog.com>`_ and configure Zope to log to
