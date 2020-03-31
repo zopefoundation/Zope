@@ -398,7 +398,7 @@ class UnicodeAwareStringExpr(StringExpr):
         return self._expr % tuple(vvals)
 
 
-def createZopeEngine(zpe=ZopePathExpr):
+def createZopeEngine(zpe=ZopePathExpr, untrusted=True):
     e = ZopeEngine()
     e.iteratorFactory = PathIterator
     for pt in zpe._default_type_names:
@@ -410,13 +410,15 @@ def createZopeEngine(zpe=ZopePathExpr):
     e.registerType('lazy', LazyExpr)
     e.registerType('provider', TALESProviderExpression)
     e.registerBaseName('modules', SecureModuleImporter)
+    e.untrusted = untrusted
     return e
 
 
 def createTrustedZopeEngine():
     # same as createZopeEngine, but use non-restricted Python
     # expression evaluator
-    e = createZopeEngine(TrustedZopePathExpr)
+    # still uses the ``SecureModuleImporter``
+    e = createZopeEngine(TrustedZopePathExpr, untrusted=False)
     e.types['python'] = PythonExpr
     return e
 
@@ -426,3 +428,10 @@ _engine = createZopeEngine()
 
 def getEngine():
     return _engine
+
+
+_trusted_engine = createTrustedZopeEngine()
+
+
+def getTrustedEngine():
+    return _trusted_engine

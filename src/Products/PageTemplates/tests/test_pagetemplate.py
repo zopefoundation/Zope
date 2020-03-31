@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from AccessControl import safe_builtins
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -18,6 +19,8 @@ class TestPageTemplateFile(ZopeTestCase):
     def _makeOne(self, name):
         return PageTemplateFile(os.path.join(path, name)).__of__(self.app)
 
+    @unittest.skipIf("sorted" not in safe_builtins,
+                     "`sorted` not allowed by `AccessControl`")
     def test_rr(self):
         class Prioritzed:
             __allow_access_to_unprotected_subobjects__ = 1
