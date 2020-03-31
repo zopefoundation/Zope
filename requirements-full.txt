@@ -39,7 +39,7 @@ shutilwhich==1.1.0
 six==1.14.0
 transaction==3.0.0
 waitress==1.4.3
-z3c.pt==3.2.0
+z3c.pt==3.3.0
 zExceptions==4.1
 zc.lockfile==2.0
 zdaemon==4.3
