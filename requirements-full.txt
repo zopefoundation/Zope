@@ -85,7 +85,7 @@ zope.site==4.2.2
 zope.size==4.3
 zope.structuredtext==4.3
 zope.tal==4.4
-zope.tales==5.0.1
+zope.tales==5.0.2
 zope.testbrowser==5.5.1
 zope.testing==4.7
 zope.testrunner==5.1

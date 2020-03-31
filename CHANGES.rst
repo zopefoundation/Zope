@@ -25,6 +25,12 @@ New features
 Bug fixes
 +++++++++
 
+- Improve ``chameleon`` --> ``zope.tales`` context wrapper
+  (support for template variable injection)
+  (`#812 <https://github.com/zopefoundation/Zope/pull/812>`_).
+
+- Require ``zope.tales>=5.0.2``
+
 - Fix issue 717 by fully honoring the engine returned by
   ``PageTemplate.pt_getEngine``
   (`#717 <https://github.com/zopefoundation/Zope/issues/717>`_).

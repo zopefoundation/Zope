@@ -185,3 +185,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         t.write("<p tal:define='p a//b' />")
         with self.assertRaises(ExpressionError):
             t()
+
+    def testPathAlternativesWithSpaces(self):
+        self.assert_expected(self.folder.t, 'PathAlternativesWithSpaces.html')

@@ -1,0 +1,9 @@
+<html>
+  <body>
+    <p tal:define="d python:{'a':1}"
+       tal:attributes="
+         a1 string:${d/a | nothing};
+	 a2 string:${d/b | nothing};
+	 "></p>
+  </body>
+</html>
