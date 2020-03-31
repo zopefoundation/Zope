@@ -119,7 +119,7 @@ setup(
         'zope.site',
         'zope.size',
         'zope.tal',
-        'zope.tales >= 3.5.0',
+        'zope.tales >= 5.0.2',
         'zope.testbrowser',
         'zope.testing',
         'zope.traversing',
