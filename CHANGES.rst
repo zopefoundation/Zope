@@ -7,8 +7,8 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.3.1 (unreleased)
-------------------
+4.4 (2020-03-31)
+----------------
 
 - Fix incompatiblities with ``Archetypes``
 
