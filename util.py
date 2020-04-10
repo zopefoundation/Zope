@@ -1,9 +1,6 @@
 import os
+from configparser import RawConfigParser
 
-try:
-    from configparser import RawConfigParser
-except ImportError:
-    from ConfigParser import RawConfigParser
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
