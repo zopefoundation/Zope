@@ -648,6 +648,21 @@ class TestBaseRequestViews(TestRequestViewsBase):
         ob = r.traverse('folder/obj')
         self.assertEqual(ob(), 'view on obj')
 
+    def test_traverse_view_HEAD(self):
+        # Make sure traversal to views works for HEAD requests
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('obj', self._makeDummyObject('obj'))
+        r = self._makeOne(root)
+        r['REQUEST_METHOD'] = 'HEAD'
+        ob = r.traverse('folder/obj/meth')
+        self.assertEqual(ob(), 'view on obj')
+        ob = r.traverse('folder/obj/@@meth')
+        self.assertEqual(ob(), 'view on obj')
+        # using default view
+        self._setDefaultViewName('meth')
+        ob = r.traverse('folder/obj')
+        self.assertEqual(ob(), 'view on obj')
+
     def test_traverse_view_attr_local(self):
         # method on object used first
         root, folder = self._makeRootAndFolder()

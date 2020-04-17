@@ -10,7 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix ``HEAD`` requests on registered views
+  (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
 
 
 4.4 (2020-03-31)
