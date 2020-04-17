@@ -389,12 +389,12 @@ class BaseRequest(object):
 
         # Probably a browser
         no_acquire_flag = 0
-        if method in ('GET', 'HEAD', 'POST', 'PURGE') and \
+        if method in ('GET', 'POST', 'PURGE') and \
            not is_xmlrpc_response(response):
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
-        elif self.maybe_webdav_client:
+        elif method != 'HEAD' and self.maybe_webdav_client:
             # Probably a WebDAV client.
             no_acquire_flag = 1
 
