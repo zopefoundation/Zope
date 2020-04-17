@@ -388,7 +388,7 @@ class BaseRequest:
 
         # Probably a browser
         no_acquire_flag = 0
-        if method in ('GET', 'POST', 'PURGE') and \
+        if method in ('GET', 'HEAD', 'POST', 'PURGE') and \
            not is_xmlrpc_response(response):
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method

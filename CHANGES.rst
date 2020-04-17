@@ -25,6 +25,9 @@ New features
 Bug fixes
 +++++++++
 
+- Fix ``HEAD`` requests on registered views
+  (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
+
 - Improve ``chameleon`` --> ``zope.tales`` context wrapper
   (support for template variable injection)
   (`#812 <https://github.com/zopefoundation/Zope/pull/812>`_).
