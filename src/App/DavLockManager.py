@@ -18,7 +18,12 @@ from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 from OFS.Lockable import wl_isLocked
 from OFS.SimpleItem import Item
-from webdav import webdav_manage_locks
+
+
+try:
+    from webdav import webdav_manage_locks
+except ImportError:  # ZServer shadows our own webdav module
+    from OFS.bbb import webdav_manage_locks
 
 
 class DavLockManager(Item, Implicit):

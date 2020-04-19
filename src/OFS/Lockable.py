@@ -20,8 +20,13 @@ from OFS.EtagSupport import EtagSupport
 from OFS.interfaces import ILockItem
 from OFS.interfaces import IWriteLock
 from Persistence import PersistentMapping
-from webdav import webdav_manage_locks
 from zope.interface import implementer
+
+
+try:
+    from webdav import webdav_manage_locks
+except ImportError:  # ZServer shadows our own webdav module
+    from OFS.bbb import webdav_manage_locks
 
 
 @implementer(IWriteLock)
