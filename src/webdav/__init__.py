@@ -36,6 +36,3 @@
    Microsoft, U.C. Irvine, Netscape, Novell.  February, 1999."""
 
 enable_ms_public_header = False
-
-# This permission does not exist in AccessControl.Permissions
-webdav_manage_locks = 'Manage WebDAV Locks'

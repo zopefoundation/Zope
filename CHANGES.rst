@@ -25,6 +25,8 @@ New features
 Bug fixes
 +++++++++
 
+- Pin ``AccessControl`` 4.2 for the `Manage WebDAV Locks` permission
+
 - Fix ``HEAD`` requests on registered views
   (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
 
