@@ -13,6 +13,7 @@
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import webdav_lock_items
+from AccessControl.Permissions import webdav_manage_locks
 from AccessControl.Permissions import webdav_unlock_items
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
@@ -21,12 +22,6 @@ from OFS.interfaces import ILockItem
 from OFS.interfaces import IWriteLock
 from Persistence import PersistentMapping
 from zope.interface import implementer
-
-
-try:
-    from webdav import webdav_manage_locks
-except ImportError:  # ZServer shadows our own webdav module
-    from OFS.bbb import webdav_manage_locks
 
 
 @implementer(IWriteLock)

@@ -23,11 +23,6 @@ except pkg_resources.DistributionNotFound:
     HAS_ZSERVER = False
 
 
-# Alternative import location for ZServer, where the ZServer-provided
-# webdav package will shadow our own
-webdav_manage_locks = 'Manage WebDAV Locks'
-
-
 # BBB Zope 5
 deprecated(
     'Please import from webdav.Resource. '

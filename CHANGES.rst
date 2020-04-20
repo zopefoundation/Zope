@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.1 (unreleased)
 ------------------
 
+- Pin ``AccessControl`` to 4.2, it gained a missing WebDAV permission name
+
 - Fix ``HEAD`` requests on registered views
   (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
 
