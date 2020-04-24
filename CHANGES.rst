@@ -1,16 +1,14 @@
 Change log
 ==========
 
-These are all the changes for Zope 5, starting with the alpha releases.
+These are all the changes for Zope 5, starting with the alpha releases,
+since the branch point at Zope 4.1.2.
 
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 5.0a2 (unreleased)
 ------------------
-
-(These are the changes since Zope 4.3 Besides the backwards incompatible
-changes all changes have been merged back to Zope 4.x.)
 
 Bug fixes
 +++++++++
@@ -47,10 +45,6 @@ Other changes
 
 5.0a1 (2020-02-28)
 ------------------
-
-These are the changes since Zope 4.1.2 where the Zope 5 branch was created
-from. Besides the backwards incompatible changes all changes have been merged
-back to Zope 4.x.
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++
