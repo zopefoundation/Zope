@@ -12,16 +12,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 (These are the changes since Zope 4.3 Besides the backwards incompatible
 changes all changes have been merged back to Zope 4.x.)
 
-Backwards incompatible changes
-++++++++++++++++++++++++++++++
-
-- None, yet.
-
-New features
-++++++++++++
-
-- Add preliminary support for Python 3.9: the latest pre-release is tested.
-
 Bug fixes
 +++++++++
 
@@ -48,7 +38,6 @@ Bug fixes
 
 - Fixed fallback implementation of ``manage_DAVget``
   (`#799 <https://github.com/zopefoundation/Zope/issues/799>`_)
-
 
 Other changes
 +++++++++++++
