@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.2 (2020-04-30)
 ------------------
 
-- Nothing changed yet.
+- Fix faulty 4.4.1 release.
 
 
 4.4.1 (2020-04-30)
