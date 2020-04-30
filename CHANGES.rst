@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.4.1 (unreleased)
+4.4.1 (2020-04-30)
 ------------------
 
 - Fix ``HEAD`` requests on registered views.
