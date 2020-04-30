@@ -8,7 +8,9 @@ coverage.xml
 default.profraw
 develop-eggs/
 dist/
+etc/
+lib/
 parts/
 pyvenv.cfg
 src/
-lib/
+var/
