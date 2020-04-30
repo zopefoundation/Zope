@@ -18,7 +18,7 @@ Record==3.5
 RestrictedPython==5.0
 WSGIProxy2==0.4.6
 WebOb==1.8.6
-WebTest==2.0.34
+WebTest==2.0.35
 ZConfig==3.5.0
 ZEO==5.2.1
 ZODB==5.5.1
@@ -29,7 +29,7 @@ funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
 mock==3.0.5
-pbr==5.4.4
+pbr==5.4.5
 persistent==4.5.1
 pytz==2019.3
 roman==3.2

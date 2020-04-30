@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update dependencies to newest releases.
 
 
 4.4.2 (2020-04-30)
