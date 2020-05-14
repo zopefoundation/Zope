@@ -135,6 +135,10 @@ In short, the default Zope security policy ensures the following:
   user does not possess a role that has been granted the permission
   in question, access is denied.
 
+- not directly part of the security policy, but also important is the
+  rule, that objects can only be published if they have a doc string. 
+
+
 As we delve further into Zope security within this chapter, we'll see
 exactly what it means to associate security information with an
 object.
