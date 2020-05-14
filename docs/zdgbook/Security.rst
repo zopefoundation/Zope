@@ -40,9 +40,9 @@ particular object.  For example, when a user visits the root
 consulted by ``ZPublisher`` to determine whether the user has
 permission to view the ``index_html`` object itself.
 
-On top of that, publisher also defines other rules to determine which
-objects can be published. The most important of these is that Objects
-which are published must have a docstring.
+On top of that, the publisher also defines other rules to determine
+which objects can be published. The most important of these is that 
+objects which are published must have a docstring.
 
 For more information on this topic, see the chapter on 
 :doc:`ObjectPublishing`.
@@ -135,8 +135,8 @@ In short, the default Zope security policy ensures the following:
   user does not possess a role that has been granted the permission
   in question, access is denied.
 
-- not directly part of the security policy, but also important is the
-  rule, that objects can only be published if they have a doc string. 
+- objects can only be published if they have a doc string. This
+  restriction exists outside the security policy itself. 
 
 
 As we delve further into Zope security within this chapter, we'll see
