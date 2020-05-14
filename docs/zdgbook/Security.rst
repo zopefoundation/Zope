@@ -38,8 +38,14 @@ determine whether to allow or deny access to a visitor for a
 particular object.  For example, when a user visits the root
 ``index_html`` object of your site via HTTP, the security policy is
 consulted by ``ZPublisher`` to determine whether the user has
-permission to view the ``index_html`` object itself.  For more
-information on this topic, see the chapter on :doc:`ObjectPublishing`.
+permission to view the ``index_html`` object itself.
+
+On top of that, publisher also defines other rules to determine which
+objects can be published. The most important of these is that Objects
+which are published must have a docstring.
+
+For more information on this topic, see the chapter on 
+:doc:`ObjectPublishing`.
 
 
 How The Security Policy Relates to Restricted Code
