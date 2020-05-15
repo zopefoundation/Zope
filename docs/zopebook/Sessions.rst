@@ -11,7 +11,7 @@ deprecated so server side sessions cannot be used 'as is' anymore in Zope 4+.
 
 For this reason, and especially if you need only very few small session values, 
 consider using cookies as a replacement. The API for that would be 
-``REQUEST.cookis.get("cookie_name", "default_value_if_cookie_not_set")`` and 
+``REQUEST.cookies.get("cookie_name", "default_value_if_cookie_not_set")`` and 
 ``RESPONSE.setCookie("cookie_name", "cookie_value")``. Plone has 
 `a bit more documentation on how to work with cookies <https://docs.plone.org/develop/plone/sessions/cookies.html>`_.
 
