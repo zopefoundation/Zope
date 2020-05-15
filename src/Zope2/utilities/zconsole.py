@@ -38,9 +38,9 @@ def main(args=sys.argv):
     import argparse
     parser = argparse.ArgumentParser(description='Zope console')
     parser.add_argument(
-            'mode',
-            choices=['run', 'debug'],
-            help='mode of operation, run: run script; debug: interactive console')  # noqa: E501
+        'mode',
+        choices=['run', 'debug'],
+        help='mode of operation, run: run script; debug: interactive console')  # noqa: E501
     parser.add_argument('zopeconf', help='path to zope.conf')
     parser.add_argument('scriptargs', nargs=argparse.REMAINDER)
     namespace, unused = parser.parse_known_args(args[1:])
