@@ -1,6 +1,27 @@
 Session Management
 ##################
 
+Sessions in Zope have historically been server side. They are simple to use, 
+and (usually) only rely on one cookie that contains the browser id. However, 
+server side sessions are hard to scale in horizontal deployments where you are 
+using ZEO, or have many Zope servers with read only ZODBs. Also the historical 
+backend implementation of sessions 
+`tempstorage <https://github.com/zopefoundation/tempstorage>`_ is broken and 
+deprecated so server side sessions cannot be used 'as is' anymore in Zope 4+.
+
+For this reason, and especially if you need only very few small session values, 
+consider using cookies as a replacement. The API for that would be 
+``REQUEST.get()`` and ``RESPONSE.setCookie()``. Plone has 
+`a bit more documentation on how to work with cookies <https://docs.plone.org/develop/plone/sessions/cookies.html>`_.
+
+If you still need server side sessions (perhaps to migrate a old project) there 
+are several ways to go about it. See the section 
+`Alternative Server Side Session Backends for Zope 4+`_.
+
+For the rest of this chapter, even though it was written for Zope 2 it is still 
+mostly relevant to explain how the built in server side sessions work. But: all 
+reference to tempstorage are outdated (see above). With that, please note:
+
 .. include:: includes/zope2_notice.rst
 
 This chapter describes Zope's built-in Session Management.
@@ -1435,3 +1456,120 @@ attempt to provide application-level conflict resolution to reduce the
 limitations imposed by conflict errors NOTE: to take advantage of this feature,
 you must store your transient object container in a storage such as FileStorage
 or TemporaryStorage which supports application-level conflict resolution.
+
+Alternative Server Side Session Backends for Zope 4+
+====================================================
+
+To re-enable server side sessions on Zope 4+, you have two  ways to go about 
+it. You can use a seperate session server, most likely using 
+`Memcached <https://memcached.org>`_, or place the session storage in either a 
+``<filestorage>`` or ``<mappingstorage>`` backed ZODB.
+
+Use of an alternative session server
+++++++++++++++++++++++++++++++++++++
+
+There are two projects that enable you to use 
+`Memcached <https://memcached.org>`_ in Zope projects. This is the recommended 
+way to use server side sessions.
+
+- `Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ is a drop 
+  in replacement for `tempstorage <https://github.com/zopefoundation/tempstorage>`_ 
+  that allows storing session values in Memcached. This allows to retain all 
+  existing API calls to session objects and still works well in e.g. ZEO contexts 
+  where multiple Zope Servers need to share session data. Upgrading to it from 
+  existing session usage is 
+  `quite simple <https://mcdutils.readthedocs.io/en/latest/usage_zmi.html>`_. 
+
+- `collective.beaker <https://pypi.org/project/collective.beaker/>`_ is a 
+  plugin that makes makes `Beaker <https://pypi.org/project/Beaker/>`_ available 
+  in a Zope context. You can use Beaker for sessions, but of course it has lots 
+  of support for caching (with different cache reagions to support different 
+  cache timeouts) and support for different backends like 
+  `Redis <https://redis.io>`_ 
+
+Use of an internal session server
++++++++++++++++++++++++++++++++++
+
+For development environments or low traffic sites it is possible to just store 
+the sessions data in a ZODB. You have to use a different ZODB for this. Example 
+config: ::
+
+    <zodb_db temporary>
+        <filestorage>
+          path $INSTANCE/var/temporary.fs
+        </filestorage>
+        mount-point /temp_folder
+        container-class Products.TemporaryFolder.TemporaryContainer
+    </zodb_db>
+    
+You can use <mappingstorage> instead of the <filestorage> for a bit better 
+perfomance. This also erases all session data on Zope restarts, as 
+`mappingstorage <http://www.zodb.org/en/latest/reference/storages.html#ZODB.MappingStorage.MappingStorage>`_ 
+is an im memory store, which is closer to how the tempstorage backend worked.
+Config example: ::
+
+    <zodb_db temporary>
+        <mappingstorage>
+        </mappingstorage>
+        mount-point /temp_folder
+        container-class Products.TemporaryFolder.TemporaryContainer
+    </zodb_db>
+
+This can also work in a ZEO environment. Example config Zope side: ::
+
+    %import ZEO
+    
+    <zodb_db main>
+        <clientstorage>
+            server $INSTANCE/var/zeosocket
+            storage main
+            name zeostorage Data.fs
+        </clientstorage>
+        mount-point /
+    </zodb_db>
+    
+    <zodb_db temporary>
+        <clientstorage>
+            server $INSTANCE/var/zeosocket
+            storage temporary
+            name zeostorage temporary
+        </clientstorage>
+        mount-point /temp_folder
+        container-class Products.TemporaryFolder.TemporaryContainer
+    </zodb_db>
+
+Example config ZEO side: ::
+
+    %define INSTANCE /path/to/instance/dir
+    
+    <zeo>
+        address $INSTANCE/var/zeosocket
+    </zeo>
+    
+    <filestorage main>
+        path $INSTANCE/var/Data.fs
+    </filestorage>
+    
+    <mappingstorage temporary>
+    </mappingstorage>
+
+
+Even though this works, there are some important caveats when going this route. 
+If you use a ZODB ``<filestorage>`` backend, even two parallel requests that 
+write to the session can overwrite each other silently, even if they write to 
+different session keys. I.e. only one of the writes will succeed - without 
+errors. ``<mappingstorage>`` based ZODBs are quite a bit more reliable in this 
+regard, but if you use a ``<mappingstorage>`` via ZEO, restarting the ZEO 
+server will drop all session data and the Zope frontends will block as they see 
+an older transaction number than what they last saw. That means you will need 
+to ensure that Zope frontends restart if ZEO backends restart, which is quite a 
+PITA.
+
+Given all of this: Production deployments with ZEO should avoid 
+``<mappingstorage>`` based sessions. Since ZEO is usually used for performance
+``<filestorage>`` based sessions are probably to slow anyway. Also the problem 
+of silentlly dropped sessions writes with parallel requests remains. Use of 
+Memcached based sessions is much safer and with 
+`Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ just a drop 
+in replacment for native Zope sessions. For developmment environments however 
+``<mappingstorage>`` solutions are fine and allow a simpler setup.
