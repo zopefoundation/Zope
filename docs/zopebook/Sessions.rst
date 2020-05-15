@@ -15,8 +15,7 @@ consider using cookies as a replacement. The API for that would be
 ``RESPONSE.setCookie("cookie_name", "cookie_value")``. Plone has 
 `a bit more documentation on how to work with cookies <https://docs.plone.org/develop/plone/sessions/cookies.html>`_.
 
-If you still need server side sessions (perhaps to migrate a old project) there 
-are several ways to go about it. See the section 
+If you need server side sessions, see the section 
 `Alternative Server Side Session Backends for Zope 4+`_.
 
 For the rest of this chapter, even though it was written for Zope 2 it is still 
