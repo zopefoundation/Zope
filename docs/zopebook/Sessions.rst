@@ -3,9 +3,9 @@ Session Management
 
 Sessions in Zope have historically been server side. They are simple to use, 
 and (usually) only rely on one cookie that contains the browser id. However, 
-server side sessions are hard to scale in horizontal deployments where you are 
-using ZEO, or have many Zope servers with read only ZODBs. Also the historical 
-backend implementation of sessions 
+server side sessions require additional work to scale in horizontal deployments 
+where you are using ZEO, or have many Zope servers with read only ZODBs. Also 
+the historical backend implementation of sessions 
 `tempstorage <https://github.com/zopefoundation/tempstorage>`_ is broken and 
 deprecated so server side sessions cannot be used 'as is' anymore in Zope 4+.
 
