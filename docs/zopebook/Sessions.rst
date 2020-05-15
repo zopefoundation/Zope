@@ -1473,11 +1473,11 @@ There are two projects that enable you to use
 way to use server side sessions.
 
 - `Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ is a drop 
-  in replacement for `tempstorage <https://github.com/zopefoundation/tempstorage>`_ 
-  that allows storing session values in Memcached. This allows to retain all 
-  existing API calls to session objects and still works well in e.g. ZEO contexts 
-  where multiple Zope Servers need to share session data. Upgrading to it from 
-  existing session usage is 
+  in replacement for the Zope 2 session implementation, that allows storing 
+  session values in Memcached. This allows to retain all existing API calls to 
+  session objects and still works well in e.g. ZEO contexts where multiple Zope 
+  Servers need to share session data. Upgrading to it from existing session 
+  usage is 
   `quite simple <https://mcdutils.readthedocs.io/en/latest/usage_zmi.html>`_. 
 
 - `collective.beaker <https://pypi.org/project/collective.beaker/>`_ is a 
