@@ -1245,8 +1245,8 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('qux', path='/')
         result = bytes(response)
         lines = result.split(b'\r\n')
-        cookie_line = [l for l in lines if b'Set-Cookie' in l][0]
-        other_lines = [l for l in lines if b'Set-Cookie' not in l]
+        cookie_line = [line for line in lines if b'Set-Cookie' in line][0]
+        other_lines = [line for line in lines if b'Set-Cookie' not in line]
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
