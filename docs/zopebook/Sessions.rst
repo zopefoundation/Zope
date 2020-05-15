@@ -1460,8 +1460,8 @@ or TemporaryStorage which supports application-level conflict resolution.
 Alternative Server Side Session Backends for Zope 4+
 ====================================================
 
-To re-enable server side sessions on Zope 4+, you have two  ways to go about 
-it. You can use a seperate session server, most likely using 
+To use server side sessions on Zope 4+, you have two  ways to go about 
+it. You can use a separate session server, most likely using 
 `Memcached <https://memcached.org>`_, or place the session storage in either a 
 ``<filestorage>`` or ``<mappingstorage>`` backed ZODB.
 
@@ -1568,8 +1568,8 @@ PITA.
 Given all of this: Production deployments with ZEO should avoid 
 ``<mappingstorage>`` based sessions. Since ZEO is usually used for performance
 ``<filestorage>`` based sessions are probably to slow anyway. Also the problem 
-of silentlly dropped sessions writes with parallel requests remains. Use of 
+of silently dropped sessions writes with parallel requests remains. Use of 
 Memcached based sessions is much safer and with 
 `Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ just a drop 
-in replacment for native Zope sessions. For developmment environments however 
+in replacment for native Zope sessions. For development environments however 
 ``<mappingstorage>`` solutions are fine and allow a simpler setup.
