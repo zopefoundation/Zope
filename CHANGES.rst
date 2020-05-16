@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 ------------------
 
 - Update dependencies to newest releases.
+- Improve solidity of the ``debugError`` method.
+  (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
 
 4.4.2 (2020-04-30)
