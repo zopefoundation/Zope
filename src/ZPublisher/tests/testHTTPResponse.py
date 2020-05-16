@@ -873,7 +873,7 @@ class HTTPResponseTests(unittest.TestCase):
         except NotFound as raised:
             self.assertEqual(response.status, 200)
             self.assertTrue("Zope has encountered a problem publishing "
-                            "your object.<p>\ntesting</p>" in str(raised))
+                            "your object. <p>'testing'</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
 

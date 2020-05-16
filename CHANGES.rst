@@ -10,7 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Improve solidity of the ``debugError`` method.
+  (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
 
 5.0a2 (2020-04-24)
