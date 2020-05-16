@@ -780,8 +780,11 @@ class HTTPResponse(HTTPBaseResponse):
     def debugError(self, entry):
         raise NotFound(self._error_html(
             "Debugging Notice",
-            ("Zope has encountered a problem publishing your object.<p>"
-             "\n" + entry + "</p>")))
+            (
+                "Zope has encountered a problem publishing your object. "
+                "<p>%r</p>" % entry
+            )
+        ))
 
     def badRequestError(self, name):
         self.setStatus(400)
