@@ -782,7 +782,7 @@ class HTTPResponse(HTTPBaseResponse):
             "Debugging Notice",
             (
                 "Zope has encountered a problem publishing your object. "
-                "<p>%r</p>" % entry
+                "<p>%s</p>" % repr(entry)
             )
         ))
 
@@ -950,8 +950,9 @@ class WSGIResponse(HTTPBaseResponse):
         exc = NotFound(entry)
         exc.title = 'Debugging Notice'
         exc.detail = (
-            'Zope has encountered a problem publishing your object.<p>'
-            '\n%s</p>' % entry)
+            "Zope has encountered a problem publishing your object. "
+            "<p>%s</p>" % repr(entry)
+        )
         raise exc
 
     def badRequestError(self, name):
