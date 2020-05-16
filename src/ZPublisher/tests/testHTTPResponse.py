@@ -876,6 +876,16 @@ class HTTPResponseTests(unittest.TestCase):
                             "your object. <p>'testing'</p>" in str(raised))
         else:
             self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("testing",))
+        except NotFound as raised:
+            self.assertEqual(response.status, 200)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>'testing'</p>",  # noqa: E501
+                str(raised),
+            )
+        else:
+            self.fail("Didn't raise NotFound")
 
     def test_badRequestError_valid_parameter_name(self):
         response = self._makeOne()
