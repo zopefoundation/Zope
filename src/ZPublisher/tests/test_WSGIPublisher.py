@@ -21,6 +21,7 @@ import transaction
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import user_name
+from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
@@ -173,6 +174,39 @@ class WSGIResponseTests(unittest.TestCase):
         with self.assertRaises(Unauthorized):
             response.exception(info=(Unauthorized, Unauthorized('fail'), None))
         self.assertEqual(_unauthorized._called_with, ((), {}))
+
+    def test_debugError(self):
+        response = self._makeOne()
+        try:
+            response.debugError('testing')
+        except NotFound as raised:
+            self.assertEqual(response.status, 404)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>'testing'</p>",  # noqa: E501
+                raised.detail,
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("testing",))
+        except NotFound as raised:
+            self.assertEqual(response.status, 404)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'testing\',)</p>",  # noqa: E501
+                raised.detail,
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("foo", "bar"))
+        except NotFound as raised:
+            self.assertEqual(response.status, 404)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'foo\', \'bar\')</p>",  # noqa: E501
+                raised.detail,
+            )
+        else:
+            self.fail("Didn't raise NotFound")
 
 
 class TestPublish(unittest.TestCase):

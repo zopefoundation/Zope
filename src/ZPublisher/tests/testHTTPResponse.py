@@ -874,8 +874,30 @@ class HTTPResponseTests(unittest.TestCase):
             response.debugError('testing')
         except NotFound as raised:
             self.assertEqual(response.status, 200)
-            self.assertTrue("Zope has encountered a problem publishing "
-                            "your object. <p>'testing'</p>" in str(raised))
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>'testing'</p>",  # noqa: E501
+                str(raised),
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("testing",))
+        except NotFound as raised:
+            self.assertEqual(response.status, 200)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'testing\',)</p>",  # noqa: E501
+                str(raised),
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("foo", "bar"))
+        except NotFound as raised:
+            self.assertEqual(response.status, 200)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'foo\', \'bar\')</p>",  # noqa: E501
+                str(raised),
+            )
         else:
             self.fail("Didn't raise NotFound")
 
