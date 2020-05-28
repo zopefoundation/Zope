@@ -30,3 +30,6 @@ Zope 5
 * It is currently actively supported, all features and bugfixes are backported to Zope 4.
 * After the final release only bug fixes will be backported to Zope 4.
 * The final release is planned for September 2020.
+
+See `Plone release schedule <https://plone.org/download/release-schedule>`_ for details about the
+plans of the Plone development team.
