@@ -302,8 +302,8 @@ class ZtPageTemplate(ChameleonPageTemplate):
             raise RuntimeError("unexpected code prelude %s" % frags[:-1])
         return "\n".join(frags)
 
-    # use (upcoming) `chameleon` configuration to obtain more
-    #  informative error information
+    # use `chameleon` configuration to obtain more
+    # informative error information
     value_repr = staticmethod(repr)
 
 
