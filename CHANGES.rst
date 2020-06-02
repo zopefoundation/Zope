@@ -14,8 +14,6 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Improve solidity of the ``debugError`` method.
   (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
-- Require ``Chameleon >= 3.7.2``.
-
 - Use ``Chameleon`` (>= 3.7.2) configuration to get better
   information for errors detected during template execution
   (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
