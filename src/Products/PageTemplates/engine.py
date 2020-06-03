@@ -79,7 +79,7 @@ class RepeatDictWrapper(RepeatDict):
         return ri, length
 
 
-InitializeClass(RepeatDict)
+InitializeClass(RepeatDictWrapper)
 
 
 class RepeatItem(PathIterator):
@@ -301,6 +301,10 @@ class ZtPageTemplate(ChameleonPageTemplate):
         else:
             raise RuntimeError("unexpected code prelude %s" % frags[:-1])
         return "\n".join(frags)
+
+    # use `chameleon` configuration to obtain more
+    # informative error information
+    value_repr = staticmethod(repr)
 
 
 @implementer(IPageTemplateProgram)
