@@ -11,7 +11,7 @@
   </div>
   <a class="navbar-brand" title="To Zope Root"
      href="<dtml-var "REQUEST.getVirtualRoot()">/manage" target="_parent">
-    <span class="product">ZOPE 4</span>
+    <span class="product">ZOPE 5</span>
   </a>
   <ul class="navbar-nav flex-row ml-sm-auto d-flex">
 
