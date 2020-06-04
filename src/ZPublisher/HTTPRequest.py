@@ -42,7 +42,7 @@ from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.publisher.base import DebugFlags
 from zope.publisher.http import splitport
-from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.http import IHTTPRequest
 from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
@@ -109,7 +109,7 @@ class NestedLoopExit(Exception):
     pass
 
 
-@implementer(IBrowserRequest)
+@implementer(IHTTPRequest)
 class HTTPRequest(BaseRequest):
     """ Model HTTP request data.
 

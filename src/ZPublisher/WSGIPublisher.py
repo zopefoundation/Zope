@@ -35,6 +35,9 @@ from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.globalrequest import clearRequest
 from zope.globalrequest import setRequest
+from zope.interface import directlyProvides
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.http import IJSONRequest
 from zope.publisher.skinnable import setDefaultSkin
 from zope.security.management import endInteraction
 from zope.security.management import newInteraction
@@ -348,6 +351,11 @@ def publish_module(environ, start_response,
             else _request_factory(environ['wsgi.input'],
                                   environ,
                                   new_response))
+
+        if environ.get('HTTP_ACCEPT', None) == 'application/json':
+            directlyProvides(new_request, IJSONRequest)
+        else:
+            directlyProvides(new_request, IBrowserRequest)
 
         for i in range(getattr(new_request, 'retry_max_count', 3) + 1):
             request = new_request
