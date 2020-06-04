@@ -122,6 +122,16 @@ class ApplicationTests(unittest.TestCase):
                 RedirectException,
                 method, 'http://google.nl', 'http://other.url')
 
+    def test_ZopeVersion(self):
+        from App.version_txt import getZopeVersion
+
+        app = self._makeOne()
+        zversion = getZopeVersion()
+
+        self.assertEqual(app.ZopeVersion(major=True), zversion.major)
+        self.assertEqual(app.ZopeVersion(),
+                         '.'.join([str(x) for x in zversion]))
+
 
 class ApplicationPublishTests(FunctionalTestCase):
 

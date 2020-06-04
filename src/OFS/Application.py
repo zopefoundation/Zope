@@ -26,6 +26,7 @@ from Acquisition import aq_base
 from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
+from App.version_txt import getZopeVersion
 from DateTime import DateTime
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
@@ -138,6 +139,14 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def ZopeTime(self, *args):
         """Utility function to return current date/time"""
         return DateTime(*args)
+
+    def ZopeVersion(self, major=False):
+        """Utility method to return the Zope version"""
+        zversion = getZopeVersion()
+        if major:
+            return zversion.major
+        else:
+            return '.'.join([str(x) for x in zversion])
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""

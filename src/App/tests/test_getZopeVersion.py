@@ -31,3 +31,22 @@ class Test(unittest.TestCase):
         for i in (0, 1, 2, 4):
             self.assertIsInstance(zv[i], int, str(i))
         self.assertIsInstance(zv[3], str, '3')
+
+    def test_complete(self):
+        positions = {
+            0: 'major',
+            1: 'minor',
+            2: 'micro',
+            3: 'status',
+            4: 'release',
+        }
+        distversion = get_distribution('Zope').version
+        zversion = getZopeVersion()
+
+        for (pos, value) in enumerate(distversion.split('.')):
+            if pos < 3:
+                self.assertEqual(int(value), getattr(zversion, positions[pos]))
+            elif pos == 3:
+                zstatus = getattr(zversion, positions[pos])
+                zrelease = getattr(zversion, positions[pos + 1])
+                self.assertEqual(value, '%s%s' % (zstatus, zrelease))
