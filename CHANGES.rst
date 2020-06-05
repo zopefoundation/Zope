@@ -10,7 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.3 (unreleased)
 ------------------
 
+- Fix parsing of package version and show correct major version in the ZMI
+
 - Update dependencies to newest releases.
+
 - Improve solidity of the ``debugError`` method.
   (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
