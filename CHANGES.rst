@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.3 (unreleased)
 ------------------
 
+- Fix ``default`` keyword handling in page templates
+  (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
+
 - Fix parsing of package version and show correct major version in the ZMI
 
 - Update dependencies to newest releases.

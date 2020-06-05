@@ -1,0 +1,8 @@
+<html>
+<head></head>
+<body>
+<p tal:define="foo string:"
+   tal:content="python: foo or default">Default in Python expression</p>
+<p tal:content="context/I_Fail|default">Default in Path expression</p>
+</body>
+</html>
