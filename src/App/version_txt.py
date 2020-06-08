@@ -32,17 +32,21 @@ def _prep_version_data():
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
         dist = pkg_resources.get_distribution('Zope')
         _version_string = "%s, %s" % (dist.version, pyver)
+        _zope_version = _parse_version_data(dist.version)
 
-        expr = re.compile(
-            r'(?P<major>[0-9]+)\.(?P<minor>[0-9]+)(\.(?P<micro>[0-9]+))?'
-            r'\.(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
-        version_dict = expr.match(dist.version).groupdict()
-        _zope_version = ZopeVersion(
-            int(version_dict.get('major') or -1),
-            int(version_dict.get('minor') or -1),
-            int(version_dict.get('micro') or -1),
-            version_dict.get('status') or '',
-            int(version_dict.get('release') or -1))
+
+def _parse_version_data(version_string):
+    expr = re.compile(
+        r'(?P<major>[0-9]+)\.(?P<minor>[0-9]+)(\.(?P<micro>[0-9]+))?'
+        r'\.(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
+    version_dict = expr.match(version_string).groupdict()
+
+    return ZopeVersion(
+        int(version_dict.get('major') or -1),
+        int(version_dict.get('minor') or -1),
+        int(version_dict.get('micro') or 0),
+        version_dict.get('status') or '',
+        int(version_dict.get('release') or -1))
 
 
 def version_txt():
