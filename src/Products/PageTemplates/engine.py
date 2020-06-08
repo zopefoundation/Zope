@@ -329,16 +329,15 @@ class Program(object):
         kwargs["__zt_context__"] = context
 
         template = self.template
-        if hasattr(context, "vars"):  # `zope.tales` context
-            # work around ``https://github.com/zopefoundation/Zope/issues/846``
-            template.cook_check()  # ensure `_render` is computed
-            rf = getattr(template, "_render", None)
-            if rf is not None:
-                defs = [c for c in rf.__code__.co_consts if c == '__default']
-                if len(defs) == 1:
-                    # use the template's private ``default`` representation
-                    # as our TALES ``default`` value
-                    context.vars["default"] = defs[0]
+        # work around ``https://github.com/zopefoundation/Zope/issues/846``
+        template.cook_check()  # ensure `_render` is computed
+        rf = getattr(template, "_render", None)
+        if rf is not None:
+            defs = [c for c in rf.__code__.co_consts if c == '__default']
+            if len(defs) == 1:
+                # use the template's private ``default`` representation
+                # as our TALES ``default`` value
+                kwargs["default"] = defs[0]
 
         return template.render(**kwargs)
 
