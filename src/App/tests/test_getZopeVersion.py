@@ -15,7 +15,6 @@
 
 import unittest
 
-from packaging import version
 from pkg_resources import get_distribution
 
 from App.version_txt import getZopeVersion
@@ -71,6 +70,13 @@ class Test(unittest.TestCase):
         self.assertEqual(parsed.status, '')
         self.assertEqual(parsed.release, -1)
 
+        parsed = _parse_version_data('5.1a2.dev0')
+        self.assertEqual(parsed.major, 5)
+        self.assertEqual(parsed.minor, 1)
+        self.assertEqual(parsed.micro, '0a2')
+        self.assertEqual(parsed.status, 'dev')
+        self.assertEqual(parsed.release, 0)
+
         parsed = _parse_version_data('5.1.2')
         self.assertEqual(parsed.major, 5)
         self.assertEqual(parsed.minor, 1)
@@ -85,28 +91,31 @@ class Test(unittest.TestCase):
         self.assertEqual(parsed.status, 'dev')
         self.assertEqual(parsed.release, 0)
 
+        parsed = _parse_version_data('5.1.3a1.dev0')
+        self.assertEqual(parsed.major, 5)
+        self.assertEqual(parsed.minor, 1)
+        self.assertEqual(parsed.micro, '3a1')
+        self.assertEqual(parsed.status, 'dev')
+        self.assertEqual(parsed.release, 0)
+
     def test_complete(self):
-        distversion = version.parse(get_distribution('Zope').version)
+        positions = {
+            0: 'major',
+            1: 'minor',
+            2: 'micro',
+            3: 'status',
+            4: 'release',
+        }
+        distversion = get_distribution('Zope').version
         zversion = getZopeVersion()
 
-        major = distversion.release[0]
-        minor = micro = 0
-
-        if len(distversion.release) > 1:
-            minor = distversion.release[1]
-        if len(distversion.release) > 2:
-            micro = distversion.release[2]
-
-        self.assertEqual(zversion.major, major)
-        self.assertEqual(zversion.minor, minor)
-
-        if distversion.pre:
-            exp_micro = '%s%s' % (micro,
-                                  ''.join([str(x) for x in distversion.pre]))
-        else:
-            exp_micro = micro
-        self.assertEqual(zversion.micro, exp_micro)
-
-        if distversion.dev is not None:
-            self.assertEqual(zversion.status, 'dev')
-            self.assertEqual(zversion.release, distversion.dev)
+        for (pos, value) in enumerate(distversion.split('.')):
+            if pos < 2:
+                self.assertEqual(int(value), getattr(zversion, positions[pos]))
+            elif pos == 2:
+                # Could be int or string
+                self.assertEqual(value, str(getattr(zversion, positions[pos])))
+            elif pos == 3:
+                zstatus = getattr(zversion, positions[pos])
+                zrelease = getattr(zversion, positions[pos + 1])
+                self.assertEqual(value, '%s%s' % (zstatus, zrelease))
