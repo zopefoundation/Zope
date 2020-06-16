@@ -10,16 +10,16 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.3 (unreleased)
 ------------------
 
-- Fix parsing of package version and show correct major version in the ZMI
-
-- Update dependencies to newest releases.
+- Fix parsing of package version and show correct major version in the ZMI.
 
 - Improve solidity of the ``debugError`` method.
   (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
 - Use ``Chameleon`` (>= 3.7.2) configuration to get better
-  information for errors detected during template execution
-  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
+  information for errors detected during template execution.
+  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_)
+
+- Update dependencies to newest releases.
 
 
 4.4.2 (2020-04-30)
