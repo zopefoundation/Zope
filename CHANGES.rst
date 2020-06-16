@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.4.3 (unreleased)
+4.4.3 (2020-06-16)
 ------------------
 
 - Fix parsing of package version and show correct major version in the ZMI.
