@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Fix ``default`` keyword handling in page templates
+  (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
+
 - Fix parsing of package version and show correct major version in the ZMI
 
 - Improve solidity of the ``debugError`` method.
