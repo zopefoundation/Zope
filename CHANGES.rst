@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.4 (unreleased)
 ------------------
 
+- Fix ``default`` keyword handling in page templates
+  (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
+
 - Update dependencies to newest bugfix releases.
 
 
