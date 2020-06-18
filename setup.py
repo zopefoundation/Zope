@@ -129,6 +129,7 @@ setup(
             'Sphinx',
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
+            'tempstorage',
         ],
         'wsgi': [
             'Paste',
