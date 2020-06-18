@@ -79,7 +79,7 @@ class RepeatDictWrapper(RepeatDict):
         return ri, length
 
 
-InitializeClass(RepeatDict)
+InitializeClass(RepeatDictWrapper)
 
 
 class RepeatItem(PathIterator):
@@ -300,6 +300,10 @@ class ZtPageTemplate(ChameleonPageTemplate):
             raise RuntimeError("unexpected code prelude %s" % frags[:-1])
         return "\n".join(frags)
 
+    # use `chameleon` configuration to obtain more
+    # informative error information
+    value_repr = staticmethod(repr)
+
 
 @implementer(IPageTemplateProgram)
 @provider(IPageTemplateEngine)
@@ -322,7 +326,18 @@ class Program:
         kwargs["__zt_engine__"] = self.engine
         kwargs["__zt_context__"] = context
 
-        return self.template.render(**kwargs)
+        template = self.template
+        # work around ``https://github.com/zopefoundation/Zope/issues/846``
+        template.cook_check()  # ensure `_render` is computed
+        rf = getattr(template, "_render", None)
+        if rf is not None:
+            defs = [c for c in rf.__code__.co_consts if c == '__default']
+            if len(defs) == 1:
+                # use the template's private ``default`` representation
+                # as our TALES ``default`` value
+                kwargs["default"] = defs[0]
+
+        return template.render(**kwargs)
 
     @classmethod
     def cook(cls, source_file, text, engine, content_type):

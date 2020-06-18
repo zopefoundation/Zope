@@ -1,11 +1,15 @@
 Creating Basic Zope Applications
 ================================
 
-.. include:: includes/zope2_notice.rst
-
 .. todo:
    
    - add new screen shots
+
+.. note::
+
+    In order to create objects of type `Script (Python)` make sure to also
+    install the package ``Products.PythonScripts``.
+
 
 This chapter will take you, step by step, through building a basic web
 application in Zope.  As we go through the chapter, we will examine some of
@@ -70,15 +74,14 @@ familiar with the ZMI, refer to the `Installing and Starting Zope
 
 1. Navigate to Zope's top-level *root* folder.
 
-2. Use the *Add* list to create a new *Folder*.
+2. Use the *Select type to add* dropdown to create a new *Folder*. (We will
+   refer to this dropdown as "*Add* list" from here on out)
 
 3. Give the new folder the *Id* 'ZopeZoo'.
 
-4. Check *Create public interface*.
+4. Click *Add*.
 
-5. Click *Add*.
-
-(For now, we will ignore the optional *Title* fields.)
+(For now, we will ignore the optional *Title* field.)
 
 Designing a Navigable Zoo
 -------------------------
@@ -113,9 +116,10 @@ Step 2: Create Site Organization
    'Lizards' and 'Snakes'.
 
 In Zope's Navigator frame on the left side, you should see an icon for the
-*ZopeZoo* folder.  (If you don't see it, click *Refresh* in the Navigator).
+*ZopeZoo* folder.  (If you don't see it, click on the cogwheel icon and then
+click *Refresh* in the Navigator).
 To view the *ZopeZoo* folder hierarchy - i.e. our nascent web site's
-structure - expand the *ZopeZoo* folder by clicking the little plus sign
+structure - expand the *ZopeZoo* folder by clicking the little triangle
 next to the icon.  Similarly expand the zoo subfolders.  You'll see
 something like the figure below.
 
@@ -174,9 +178,15 @@ Step 3: Create the Style Sheet
 At this stage, the HTML page the web designer created for us is valid XHTML
 1.0 Strict and could also live in a static *File* object.  But in the next
 steps we will convert the page into a dynamic template by adding TAL and
-METAL statements, so we need a *Page Template* object.  For now we use the
-*index_html* method already added by selecting *Create public interface* in
-step 1.
+METAL statements, so we need a *Page Template* object:
+
+1. Go back to the top level of our zoo website, the *ZopeZoo* folder.
+
+2. Select *Page Template* from the *Add* list.
+
+3. Give the Page Template an *Id* of 'index_html'.
+
+4. Click *Add*.
 
 Step 4: Create the Main Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,8 +195,7 @@ Step 4: Create the Main Template
 
 2. Replace all of the stock template code with this::
 
-    <!DOCTYPE html PUBLIC
-        "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+    <!DOCTYPE html>
     <html>
     <head>
 
@@ -362,8 +371,7 @@ Step 10: Factor out Basic Look and Feel
    all these changes our main template - now called *z_zoo.pt* - looks
    like this::
 
-    <metal:macro metal:define-macro="page"><!DOCTYPE html PUBLIC
-        "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+    <metal:macro metal:define-macro="page"><!DOCTYPE html>
     <html>
     <head>
 
@@ -530,16 +538,13 @@ Step 14: Adding *index_html* Script and Template
 1. Within the *Files* folder, add this new *Script (Python)* with the
    *Id* 'index_html'::
 
-    ## Script (Python) "index_html"
-    ##parameters=
-    ##
     library_items = []
     items = context.objectValues(['File'])
     for item in items:
         library_items.append(
                 { 'title': item.title_or_id(),
                   'url': item.absolute_url(),
-                  'modified': item.bobobase_modification_time().aCommon()
+                  'modified': container.last_modified(item),
                   } )
 
     options = { 'library_items': tuple(library_items) }
@@ -653,7 +658,7 @@ Step 16: Making the Library Sortable
         sort_title_url = ''
         sort_modified_url = '%s?sort=modified' % context.absolute_url()
     else:
-        sort_on = ( ('bobobase_modification_time', 'cmp', 'desc'), )
+        sort_on = ( ('_p_mtime', 'cmp', 'desc'), )
         sort_title_url = '%s?sort=title' % context.absolute_url()
         sort_modified_url = ''
     items = sequence.sort(items, sort_on)
@@ -661,7 +666,7 @@ Step 16: Making the Library Sortable
         library_items.append(
                 { 'title': item.title_or_id(),
                   'url': item.absolute_url(),
-                  'modified': item.bobobase_modification_time().aCommon()
+                  'modified': container.last_modified(item),
                   } )
 
     options = { 'sort_title_url': sort_title_url,

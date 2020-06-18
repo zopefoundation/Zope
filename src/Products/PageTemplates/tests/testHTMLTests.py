@@ -188,3 +188,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def testPathAlternativesWithSpaces(self):
         self.assert_expected(self.folder.t, 'PathAlternativesWithSpaces.html')
+
+    def testDefaultKeywordHandling(self):
+        self.assert_expected(self.folder.t, 'Default.html')
