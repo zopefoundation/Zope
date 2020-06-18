@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Decrease cookie size for copy/paste clipboard cookie
+  (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)
+
 - Fix ``default`` keyword handling in page templates
   (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
 
