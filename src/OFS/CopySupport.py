@@ -689,6 +689,8 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
+    if six.PY3 and isinstance(s, str):
+        s = s.encode('latin-1')
     data = dec.decompress(decodebytes(s), maxsize)
     if dec.unconsumed_tail:
         raise ValueError
