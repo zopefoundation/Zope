@@ -23,8 +23,6 @@ from zlib import compress
 from zlib import decompressobj
 
 import six
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -54,6 +52,14 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
+
+
+try:
+    from base64 import decodebytes
+    from base64 import encodebytes
+except ImportError:  # Python 2
+    from base64 import decodestring as decodebytes
+    from base64 import encodestring as encodebytes
 
 
 class CopyError(Exception):
@@ -671,10 +677,7 @@ def _cb_encode(d):
     json_bytes = dumps(d).encode('utf-8')
     squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
     # quote for embeding in cookie
-    if six.PY2:
-        return quote(squashed_bytes)
-    else:
-        return quote(squashed_bytes.decode('latin-1'))
+    return encodebytes(squashed_bytes)
 
 
 def _cb_decode(s, maxsize=8192):
@@ -686,11 +689,7 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
-    if six.PY2:
-        squashed = unquote(s)
-    else:
-        squashed = unquote(s).encode('latin-1')
-    data = dec.decompress(squashed, maxsize)
+    data = dec.decompress(decodebytes(s), maxsize)
     if dec.unconsumed_tail:
         raise ValueError
     json_bytes = data.decode('utf-8')
