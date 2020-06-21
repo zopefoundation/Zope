@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.4 (unreleased)
 ------------------
 
+- Decrease cookie size for copy/paste clipboard cookie
+  (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)
+
 - Fix ``default`` keyword handling in page templates
   (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
 
