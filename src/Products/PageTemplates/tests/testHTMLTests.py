@@ -168,6 +168,11 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def testRepeatVariable(self):
         self.assert_expected(self.folder.t, 'RepeatVariable.html')
 
+    def testBooleanAttributes(self):
+        # Test rendering an attribute that should be empty or left out
+        # if the value is non-True
+        self.assert_expected(self.folder.t, 'BooleanAttributes.html')
+
     def testBooleanAttributesAndDefault(self):
         # Zope 2.9 and below support the semantics that an HTML
         # "boolean" attribute (e.g. 'selected', 'disabled', etc.) can
