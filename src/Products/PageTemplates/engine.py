@@ -18,6 +18,7 @@ from chameleon.astutil import Symbol
 from chameleon.codegen import template
 from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
+from chameleon.tales import DEFAULT_MARKER  # ``chameleon>=3.7.5``
 from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
@@ -316,10 +317,7 @@ class Program(object):
         kwargs["__zt_context__"] = context
 
         template = self.template
-        # ``chameleon`` uses ``intern('__default__')`` as TALES ``default``
-        # from version 3.7.4 on. The code below will not work
-        # for earlier versions
-        kwargs["default"] = intern('__default__')
+        kwargs["default"] = DEFAULT_MARKER
 
         return template.render(**kwargs)
 
