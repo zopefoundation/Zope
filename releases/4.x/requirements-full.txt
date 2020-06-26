@@ -3,13 +3,13 @@ AccessControl==4.2
 Acquisition==4.6
 AuthEncoding==4.1
 BTrees==4.6.1
-Chameleon==3.7.2
+Chameleon==3.8.0
 DateTime==4.3
 DocumentTemplate==3.2.3
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
-Paste==3.4.0
+Paste==3.4.1
 PasteDeploy==2.1.0
 Persistence==3.0
 Products.BTreeFolder2==4.2
@@ -36,7 +36,7 @@ roman==3.2
 shutilwhich==1.1.0
 six==1.14.0
 transaction==3.0.0
-waitress==1.4.3
+waitress==1.4.4
 z3c.pt==3.3.0
 zExceptions==4.1
 zc.lockfile==2.0
