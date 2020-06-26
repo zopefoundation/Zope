@@ -18,6 +18,7 @@ from chameleon.astutil import Symbol
 from chameleon.codegen import template
 from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
+from chameleon.tales import DEFAULT_MARKER  # only in chameleon 3.8.0 and up
 from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
@@ -288,19 +289,6 @@ class ZtPageTemplate(ChameleonPageTemplate):
     but it does not hurt to use the fixed value to represent ``default``
     rather than a template specific value.
     """
-    # override to get the proper ``zope.tales`` default marker
-    def _compile(self, body, builtins):
-        code = super(ZtPageTemplate, self)._compile(body, builtins)
-        # redefine ``__default`` as ``zope.tales.tales._default``
-        #  Potentially this could be simpler
-        frags = code.split("\n", 5)
-        for i, frag in enumerate(frags[:-1]):
-            if frag.startswith("__default = "):
-                frags[i] = "from zope.tales.tales import _default as __default"
-                break
-        else:
-            raise RuntimeError("unexpected code prelude %s" % frags[:-1])
-        return "\n".join(frags)
 
     # use `chameleon` configuration to obtain more
     # informative error information
@@ -329,15 +317,7 @@ class Program(object):
         kwargs["__zt_context__"] = context
 
         template = self.template
-        # work around ``https://github.com/zopefoundation/Zope/issues/846``
-        template.cook_check()  # ensure `_render` is computed
-        rf = getattr(template, "_render", None)
-        if rf is not None:
-            defs = [c for c in rf.__code__.co_consts if c == '__default']
-            if len(defs) == 1:
-                # use the template's private ``default`` representation
-                # as our TALES ``default`` value
-                kwargs["default"] = defs[0]
+        kwargs["default"] = DEFAULT_MARKER
 
         return template.render(**kwargs)
 

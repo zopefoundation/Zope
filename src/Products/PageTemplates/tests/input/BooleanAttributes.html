@@ -1,0 +1,7 @@
+<select>
+  <option value="" tal:attributes="selected python: True">Selected</option>
+  <option value="a" tal:attributes="selected python: False">Not selected</option>
+  <option value="ok" tal:attributes="selected python: None">Not selected</option>
+  <option value="b" tal:attributes="selected nothing">Not selected</option>
+  <option value="c" tal:attributes="selected string:">Not selected</option>
+</select>
