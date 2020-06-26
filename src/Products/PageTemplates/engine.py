@@ -373,9 +373,3 @@ class Program(object):
         )
 
         return cls(template, engine), template.macros
-
-
-try:
-    intern
-except NameError:  # Python 3; ``intern`` from ``sys``
-    from sys import intern
