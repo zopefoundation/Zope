@@ -18,7 +18,7 @@ from chameleon.astutil import Symbol
 from chameleon.codegen import template
 from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
-from chameleon.tales import DEFAULT_MARKER  # ``chameleon>=3.7.5``
+from chameleon.tales import DEFAULT_MARKER  # only in chameleon 3.8.0 and up
 from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
