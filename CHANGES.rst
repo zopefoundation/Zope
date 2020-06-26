@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.4.4 (unreleased)
+4.4.4 (2020-06-26)
 ------------------
 
 - Decrease cookie size for copy/paste clipboard cookie
