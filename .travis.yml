@@ -25,7 +25,8 @@ script:
 
 after_success:
     - coverage combine
-    - coveralls
+    - if: env(TOXENV) != "lint"
+      coveralls
 
 notifications:
     email: mh@gocept.com
