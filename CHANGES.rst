@@ -7,8 +7,12 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
+
 5.0a3 (unreleased)
 ------------------
+
+- Drop support for Python 3.5 as it will run out of support soon.
+  (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
 - Decrease cookie size for copy/paste clipboard cookie
   (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)

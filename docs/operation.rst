@@ -446,7 +446,7 @@ done.
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 3.5 and later.
+- This version of Zope requires Python 3.6 and later.
   It will *not* run with any version of PyPy.
 
 - To build Python extensions you need to have Python configuration
