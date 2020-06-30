@@ -140,7 +140,7 @@ def gen_cases():
 
 for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
     def test(self, vaddr=vaddr, vr=vr, _vh=_vh, p=p, ubase=ubase):
-        ob = self.traverse('%s/%s/' % (vaddr, p))
+        ob = self.traverse(f'{vaddr}/{p}/')
         sl_vh = (_vh and ('/' + _vh))
         aup = sl_vh + (p and ('/' + p))
         self.assertEqual(ob.absolute_url_path(), aup)

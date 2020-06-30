@@ -60,7 +60,7 @@ class MapplyTests(unittest.TestCase):
 
         class CallableObject:
             def __call__(self, a, b):
-                return '%s%s' % (a, b)
+                return f'{a}{b}'
 
         class Container:
             __call__ = CallableObject()

@@ -61,7 +61,7 @@ class PageTemplate(ExtensionClass.Base,
             __traceback_supplement__ = (
                 PageTemplateTracebackSupplement, self, {})
             raise PTRuntimeError(
-                'Page Template %s has errors: %s' % (
+                'Page Template {} has errors: {}'.format(
                     self.id, self._v_errors
                 ))
         return self._v_macros
@@ -114,9 +114,9 @@ class PageTemplate(ExtensionClass.Base,
                         (self._error_start, "%s: %s" % sys.exc_info()[:2],
                          self._text))
 
-        return ('%s\n %s\n-->\n%s' % (self._error_start,
-                                      '\n '.join(self._v_errors),
-                                      self._text))
+        return ('{}\n {}\n-->\n{}'.format(self._error_start,
+                                          '\n '.join(self._v_errors),
+                                          self._text))
 
     # convenience method for the ZMI which allows to explicitly
     # specify the HTMLness of a template. The old Zope 2

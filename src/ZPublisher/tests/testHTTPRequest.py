@@ -79,7 +79,7 @@ class RecordTests(unittest.TestCase):
         rec = self._makeOne()
         rec.a = b'foo'
         rec.b = 8
-        rec.c = u'bar'
+        rec.c = 'bar'
         self.assertIsInstance(str(rec), str)
 
     def test_str(self):
@@ -145,7 +145,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         query_string = []
         add = query_string.append
         for key, val in inputs:
-            add("%s=%s" % (quote_plus(key), quote_plus(val)))
+            add("{}={}".format(quote_plus(key), quote_plus(val)))
         query_string = '&'.join(query_string)
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}

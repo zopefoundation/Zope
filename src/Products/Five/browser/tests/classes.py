@@ -33,4 +33,4 @@ class ViewOne(BrowserView):
     'Yet another class'
 
     def my_method(self, arg1, arg2, kw1=None, kw2='D'):
-        print('CALLED %s %s %s %s' % (arg1, arg2, kw1, kw2))
+        print(f'CALLED {arg1} {arg2} {kw1} {kw2}')

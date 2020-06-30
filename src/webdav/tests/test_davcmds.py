@@ -8,14 +8,14 @@ from zExceptions import Forbidden
 from zope.interface import implementer
 
 
-class _DummySecurityPolicy(object):
+class _DummySecurityPolicy:
 
     def checkPermission(self, permission, object, context):
         return False
 
 
 @implementer(IWriteLock)
-class _DummyContent(object):
+class _DummyContent:
 
     def __init__(self, token=None):
         self.token = token

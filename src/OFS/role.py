@@ -126,7 +126,7 @@ class RoleManager(BaseRoleManager):
             for role in valid_roles:
                 role_name = role
                 role_hash = _string_hash(role_name)
-                if have("permission_%srole_%s" % (permission_hash, role_hash)):
+                if have(f"permission_{permission_hash}role_{role_hash}"):
                     roles.append(role)
             name, value = permissions[ip][:2]
             try:

@@ -61,7 +61,7 @@ class DAVProps(DAVProperties):
     p_self = v_self
 
 
-class PropFind(object):
+class PropFind:
     """Model a PROPFIND request."""
 
     def __init__(self, request):
@@ -145,7 +145,7 @@ class PropFind(object):
                 if ps is not None and hasattr(aq_base(ps), 'dav__propstat'):
                     ps.dav__propstat(name, rdict)
                 else:
-                    prop = '<n:%s xmlns:n="%s"/>' % (name, ns)
+                    prop = f'<n:{name} xmlns:n="{ns}"/>'
                     code = '404 Not Found'
                     if code not in rdict:
                         rdict[code] = [prop]
@@ -187,7 +187,7 @@ class PropFind(object):
         return result.getvalue()
 
 
-class PropPatch(object):
+class PropPatch:
     """Model a PROPPATCH request."""
 
     def __init__(self, request):
@@ -306,7 +306,7 @@ class PropPatch(object):
         return result
 
 
-class Lock(object):
+class Lock:
     """Model a LOCK request."""
 
     def __init__(self, request):
@@ -433,7 +433,7 @@ class Lock(object):
         return token, result.getvalue()
 
 
-class Unlock(object):
+class Unlock:
     """ Model an Unlock request """
 
     def apply(self, obj, token, url=None, result=None, top=1):
@@ -499,7 +499,7 @@ class Unlock(object):
         return result.getvalue()
 
 
-class DeleteCollection(object):
+class DeleteCollection:
     """ With WriteLocks in the picture, deleting a collection involves
     checking *all* descendents (deletes on collections are always of depth
     infinite) for locks and if the locks match. """

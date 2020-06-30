@@ -1,5 +1,3 @@
-# *-* coding: iso-8859-1 -*-
-
 import unittest
 
 from zope.component.testing import PlacelessSetup
@@ -22,13 +20,13 @@ class EngineTestsBase(PlacelessSetup):
 
     def _makeContext(self, bindings=None):
 
-        class Dummy(object):
+        class Dummy:
             __allow_access_to_unprotected_subobjects__ = 1
 
             def __call__(self):
                 return 'dummy'
 
-        class DummyDocumentTemplate(object):
+        class DummyDocumentTemplate:
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
 
@@ -87,7 +85,7 @@ class EngineTestsBase(PlacelessSetup):
         self.assertEqual(ec.evaluate('dummy'), 'dummy')
 
     def test_evaluate_with_unimplemented_call(self):
-        class Dummy(object):
+        class Dummy:
             def __call__(self):
                 raise NotImplementedError()
 
@@ -183,7 +181,7 @@ class EngineTestsBase(PlacelessSetup):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors
         eng = self._makeEngine()
         ec = self._makeContext()
-        expr = eng.compile(u'string:$eightbit')
+        expr = eng.compile('string:$eightbit')
         self.assertRaises(UnicodeDecodeError,
                           ec.evaluate, expr)
         # But registering an appropriate IUnicodeEncodingConflictResolver
@@ -195,7 +193,7 @@ class EngineTestsBase(PlacelessSetup):
             import IUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
-        self.assertEqual(ec.evaluate(expr), u'äüö')
+        self.assertEqual(ec.evaluate(expr), 'Ã¤Ã¼Ã¶')
 
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
@@ -241,7 +239,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
-        text = u'\xe4\xfc\xe4'
+        text = '\xe4\xfc\xe4'
         self.assertEqual(resolver.resolve(None, text, None), text)
 
     def testIgnoringResolver(self):
@@ -267,7 +265,7 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None),
-                         u'\ufffd\ufffd\ufffd')
+                         '\ufffd\ufffd\ufffd')
 
 
 class ZopeContextTests(unittest.TestCase):
@@ -284,7 +282,7 @@ class ZopeContextTests(unittest.TestCase):
         return self._getTargetClass()(engine, contexts)
 
     def _makeEngine(self):
-        class DummyEngine(object):
+        class DummyEngine:
             pass
         return DummyEngine()
 

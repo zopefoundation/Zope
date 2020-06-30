@@ -71,7 +71,7 @@ def unescape(value, entities=None):
 zope_encoding = 'utf-8'
 
 
-class Node(object):
+class Node:
     """ Our nodes no matter what type
     """
 
@@ -90,7 +90,7 @@ class Node(object):
         return nodes
 
     def qname(self):
-        return '%s%s' % (self.namespace(), self.name())
+        return '{}{}'.format(self.namespace(), self.name())
 
     def addNode(self, node):
         # XXX: no support for adding nodes here
@@ -158,7 +158,7 @@ class Node(object):
 
     def __repr__(self):
         if self.namespace():
-            return "<Node %s (from %s)>" % (self.name(), self.namespace())
+            return "<Node {} (from {})>".format(self.name(), self.namespace())
         else:
             return "<Node %s>" % self.name()
 
@@ -167,7 +167,7 @@ class Element(Node):
 
     def toxml(self):
         # When dealing with Elements, we only want the Element's content.
-        writer = StringIO(u'')
+        writer = StringIO('')
         for n in self.node.childNodes:
             if n.nodeType == n.CDATA_SECTION_NODE:
                 # CDATA sections should not be unescaped.
@@ -216,7 +216,7 @@ class ProtectedExpatParser(ExpatParser):
             self._parser.UnparsedEntityDeclHandler = self.unparsed_entity_decl
 
 
-class XmlParser(object):
+class XmlParser:
     """ Simple wrapper around minidom to support the required
     interfaces for zope.webdav
     """

@@ -186,7 +186,7 @@ class TestCopySupportSublocation(EventTest):
         #      relied on between objects.
         if not set(first) == set(second):
             raise self.failureException(
-                msg or '%r != %r' % (first, second))
+                msg or f'{first!r} != {second!r}')
 
     def test_1_Clone(self):
         # Test clone

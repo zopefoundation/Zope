@@ -316,7 +316,7 @@ class File(
                     )
                     RESPONSE.setHeader(
                         'Content-Type',
-                        'multipart/%sbyteranges; boundary=%s' % (
+                        'multipart/{}byteranges; boundary={}'.format(
                             draftprefix,
                             boundary,
                         )
@@ -975,25 +975,25 @@ class Image(File):
 
         if alt is None:
             alt = getattr(self, 'alt', '')
-        result = '%s alt="%s"' % (result, html.escape(alt, True))
+        result = '{} alt="{}"'.format(result, html.escape(alt, True))
 
         if title is None:
             title = getattr(self, 'title', '')
-        result = '%s title="%s"' % (result, html.escape(title, True))
+        result = '{} title="{}"'.format(result, html.escape(title, True))
 
         if height:
-            result = '%s height="%s"' % (result, height)
+            result = f'{result} height="{height}"'
 
         if width:
-            result = '%s width="%s"' % (result, width)
+            result = f'{result} width="{width}"'
 
         if css_class is not None:
-            result = '%s class="%s"' % (result, css_class)
+            result = f'{result} class="{css_class}"'
 
         for key in list(args.keys()):
             value = args.get(key)
             if value:
-                result = '%s %s="%s"' % (result, key, value)
+                result = f'{result} {key}="{value}"'
 
         return '%s />' % result
 

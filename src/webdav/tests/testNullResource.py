@@ -30,7 +30,7 @@ class TestNullResource(unittest.TestCase):
         from zExceptions import NotFound
 
         # See https://bugs.launchpad.net/bugs/239636
-        class DummyResponse(object):
+        class DummyResponse:
             _server_version = 'Dummy'  # emulate ZServer response
             locked = False
             body = None
@@ -57,14 +57,14 @@ class TestNullResource(unittest.TestCase):
         from OFS.CopySupport import CopyError
         from zExceptions import Unauthorized
 
-        class DummyRequest(object):
+        class DummyRequest:
             def get_header(self, header, default=''):
                 return default
 
             def get(self, name, default=None):
                 return default
 
-        class DummyResponse(object):
+        class DummyResponse:
             _server_version = 'Dummy'  # emulate ZServer response
 
             def setHeader(self, *args):

@@ -90,7 +90,7 @@ class DavLockManager(Item, Implicit):
         addresult = result.append
         for id, ob in items:
             if path:
-                p = '%s/%s' % (path, id)
+                p = f'{path}/{id}'
             else:
                 p = id
 

@@ -475,6 +475,6 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
         except Exception:
             u = REQUEST['URL1']
         if submit == "Add and Edit":
-            u = "%s/%s" % (u, quote(id))
+            u = f"{u}/{quote(id)}"
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

@@ -90,7 +90,7 @@ python_path_source = """
 
 
 def generate_capture_source(names):
-    params = ", ".join("%s=%s" % (name, name)
+    params = ", ".join(f"{name}={name}"
                        for name in names)
     return options_capture_update_base % (params,)
 

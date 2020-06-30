@@ -340,7 +340,7 @@ def resource(_context, name, layer=IDefaultBrowserLayer,
     factory_info = _factory_map.get(res_type)
     factory_info['count'] += 1
     res_factory = factory_info['factory']
-    class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
+    class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
     new_class = type(class_name, (res_factory.resource,), {})
     factory = res_factory(name, res, resource_factory=new_class)
 
@@ -390,8 +390,8 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             continue
         factory_info = _rd_map.get(factory)
         factory_info['count'] += 1
-        class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
-        factory_name = '%s%s' % (factory.__name__, factory_info['count'])
+        class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
+        factory_name = f'{factory.__name__}{factory_info["count"]}'
         f_resource = type(class_name, (factory.resource,), {})
         f_cache[factory] = type(factory_name, (factory,),
                                 {'resource': f_resource})
@@ -405,7 +405,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
 
     factory_info = _rd_map.get(DirectoryResourceFactory)
     factory_info['count'] += 1
-    class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
+    class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
     dir_factory = type(class_name, (resource,), cdict)
     factory = DirectoryResourceFactory(name, directory,
                                        resource_factory=dir_factory)

@@ -172,7 +172,7 @@ class ProductContext:
             # 'action': The action in the add drop down in the ZMI. This is
             #           currently also required by the _verifyObjectPaste
             #           method of CopyContainers like Folders.
-            'action': ('manage_addProduct/%s/%s' % (pid, name)),
+            'action': (f'manage_addProduct/{pid}/{name}'),
             # 'product': product id
             'product': pid,
             # 'permission': Guards the add action.

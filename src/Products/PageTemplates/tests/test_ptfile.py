@@ -127,7 +127,7 @@ class TypeSniffingTestCase(unittest.TestCase):
         pt_id = pt.getId()
         self.assertEqual(
             pt_id, desired_id,
-            'getId() returned %r. Expecting %r' % (pt_id, desired_id)
+            f'getId() returned {pt_id!r}. Expecting {desired_id!r}'
         )
 
     def test_getPhysicalPath(self):
@@ -140,9 +140,8 @@ class TypeSniffingTestCase(unittest.TestCase):
         pt_path = pt.getPhysicalPath()
         self.assertEqual(
             pt_path, desired_path,
-            'getPhysicalPath() returned %r. Expecting %r' % (
-                desired_path, pt_path,
-            )
+            f'getPhysicalPath() returned {desired_path!r}.'
+            f' Expecting {pt_path!r}'
         )
 
 

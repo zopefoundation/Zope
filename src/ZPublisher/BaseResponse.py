@@ -104,7 +104,7 @@ class BaseResponse:
         return bytes(self.body)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.body)
+        return f'{self.__class__.__name__}({self.body!r})'
 
     def flush(self):
         pass

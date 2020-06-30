@@ -81,7 +81,7 @@ class Tabs(Base):
                 'You are not authorized to view this object.')
 
         if m.find('/'):
-            return REQUEST.RESPONSE.redirect("%s/%s" % (REQUEST['URL1'], m))
+            return REQUEST.RESPONSE.redirect(f"{REQUEST['URL1']}/{m}")
 
         return getattr(self, m)(self, REQUEST)
 
@@ -99,11 +99,11 @@ class Tabs(Base):
             return
         last = steps.pop()
         for step in steps:
-            script = '%s/%s' % (script, step)
+            script = f'{script}/{step}'
             yield {'url': linkpat.format(html.escape(script, True)),
                    'title': html.escape(unquote(step)),
                    'last': False}
-        script = '%s/%s' % (script, last)
+        script = f'{script}/{last}'
         yield {'url': linkpat.format(html.escape(script, True)),
                'title': html.escape(unquote(last)),
                'last': True}
@@ -127,8 +127,8 @@ class Tabs(Base):
         last = path[-1]
         del path[-1]
         for p in path:
-            script = "%s/%s" % (script, quote(p))
-            out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
+            script = f"{script}/{quote(p)}"
+            out.append(f'<a href="{script}/manage_workspace">{p}</a>')
         out.append(last)
         return '/'.join(out)
 

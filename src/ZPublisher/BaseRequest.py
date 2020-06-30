@@ -509,7 +509,7 @@ class BaseRequest:
                         break
                 step = quote(entry_name)
                 _steps.append(step)
-                request['URL'] = URL = '%s/%s' % (request['URL'], step)
+                request['URL'] = URL = f'{request["URL"]}/{step}'
 
                 try:
                     subobject = self.traverseName(object, entry_name)

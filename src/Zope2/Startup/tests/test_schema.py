@@ -161,13 +161,13 @@ class WSGIStartupTestCase(unittest.TestCase):
                          '0')
 
     def test_webdav_source_port(self):
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             """)
         handleWSGIConfig(None, handler)
         self.assertEqual(conf.webdav_source_port, 0)
 
-        conf, handler = self.load_config_text(u"""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             webdav-source-port 9800
             """)

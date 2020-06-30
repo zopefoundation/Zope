@@ -115,7 +115,7 @@ ListItem = re.compile(
     re.I)
 
 
-class TagList(object):
+class TagList:
     def __init__(self):
         self.resource = None
         self.list = []

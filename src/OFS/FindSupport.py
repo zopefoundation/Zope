@@ -115,7 +115,7 @@ class FindSupport(Base):
 
         for id, ob in items:
             if pre:
-                p = "%s/%s" % (pre, id)
+                p = f"{pre}/{id}"
             else:
                 p = id
 

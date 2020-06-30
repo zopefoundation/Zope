@@ -90,9 +90,9 @@ class UndoSupport(Tabs, Implicit):
                 desc = ' '.join(desc[1:])
                 if len(desc) > 60:
                     desc = desc[:56] + ' ...'
-                tid = "%s %s %s %s" % (encode64(tid), t, d1, desc)
+                tid = f"{encode64(tid)} {t} {d1} {desc}"
             else:
-                tid = "%s %s" % (encode64(tid), t)
+                tid = f"{encode64(tid)} {t}"
             d['id'] = tid
 
         return r

@@ -310,7 +310,7 @@ class TestRequestRange(unittest.TestCase):
         length = len(self.data)
         start, end = length - 100, length + 100
         self.expectMultipleRanges(
-            '3-700,%s-%s' % (start, end),
+            f'3-700,{start}-{end}',
             [(3, 701), (len(self.data) - 100, len(self.data))])
 
     # If-Range headers

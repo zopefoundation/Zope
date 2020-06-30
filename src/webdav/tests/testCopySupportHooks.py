@@ -15,7 +15,7 @@ from zope.testing import cleanup
 Zope2.startup_wsgi()
 
 
-class EventLogger(object):
+class EventLogger:
     def __init__(self):
         self.reset()
 
@@ -66,7 +66,7 @@ class TestFolder(Folder):
         Folder.manage_beforeDelete(self, item, container)
 
 
-class HookLayer(object):
+class HookLayer:
 
     @classmethod
     def setUp(cls):

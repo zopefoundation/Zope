@@ -76,7 +76,7 @@ class HTTPHeaderOutput:
         out = ["%s: %s" % header for header in self.headers.items()]
         out.extend(["%s: %s" % header for header in self.headersl])
         out.sort()
-        out.insert(0, "%s %s %s" % (self.protocol, self.status, self.reason))
+        out.insert(0, f"{self.protocol} {self.status} {self.reason}")
         return '\n'.join(out)
 
 
@@ -93,7 +93,7 @@ class DocResponseWrapper(ResponseWrapper):
     def __str__(self):
         body = self._decode(self.getBody())
         if body:
-            return "%s\n\n%s" % (self.header_output, body)
+            return f"{self.header_output}\n\n{body}"
         return "%s\n" % (self.header_output)
 
 

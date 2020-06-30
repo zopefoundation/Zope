@@ -127,7 +127,7 @@ class NameAssignments:
             if name in asgns:
                 assigned_name = asgns[name]
                 assigned_names.append(assigned_name)
-                exprtext.append('"%s":%s,' % (assigned_name, expr))
+                exprtext.append(f'"{assigned_name}":{expr},')
         text = '{%s}' % ''.join(exprtext)
         return self._generateCodeBlock(text, assigned_names)
 

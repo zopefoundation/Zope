@@ -202,8 +202,8 @@ class HTTPRequest(BaseRequest):
         if (port is None or default_port[protocol] == port):
             host = hostname
         else:
-            host = '{}:{}'.format(hostname, port)
-        server_url = other['SERVER_URL'] = '%s://%s' % (protocol, host)
+            host = f'{hostname}:{port}'
+        server_url = other['SERVER_URL'] = f'{protocol}://{host}'
         self._resetURLS()
         return server_url
 
@@ -410,13 +410,13 @@ class HTTPRequest(BaseRequest):
             server_url = server_url[:-1]
 
         if b:
-            self.base = "%s/%s" % (server_url, b)
+            self.base = f"{server_url}/{b}"
         else:
             self.base = server_url
         while script[:1] == '/':
             script = script[1:]
         if script:
-            script = "%s/%s" % (server_url, script)
+            script = f"{server_url}/{script}"
         else:
             script = server_url
         other['URL'] = self.script = script
@@ -1155,7 +1155,7 @@ class HTTPRequest(BaseRequest):
                     path = path[:-1]
             else:
                 path = ''
-            other['PATH_INFO'] = "%s/%s" % (path, meth)
+            other['PATH_INFO'] = f"{path}/{meth}"
             self._hacked_path = 1
 
     def resolve_url(self, url):
@@ -1497,7 +1497,7 @@ class HTTPRequest(BaseRequest):
         return result + "</table>"
 
     def __repr__(self):
-        return "<%s, URL=%s>" % (self.__class__.__name__, self.get('URL'))
+        return "<{}, URL={}>".format(self.__class__.__name__, self.get('URL'))
 
     def text(self):
         result = "FORM\n\n"
@@ -1781,7 +1781,7 @@ class record:
     def __repr__(self):
         # return repr( self.__dict__ )
         return '{%s}' % ', '.join(
-            "'%s': %s" % (item[0], repr(item[1])) for item in
+            "'{}': {!r}".format(*item) for item in
             sorted(self.__dict__.items()))
 
     def __eq__(self, other):

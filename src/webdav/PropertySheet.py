@@ -22,7 +22,7 @@ def xml_escape(value):
     return escape(value)
 
 
-class DAVPropertySheetMixin(object):
+class DAVPropertySheetMixin:
 
     propstat = ('<d:propstat xmlns:n="%s">\n'
                 '  <d:prop>\n'
@@ -57,7 +57,7 @@ class DAVPropertySheetMixin(object):
                 attrs = ''
                 if not hasattr(self, "dav__" + name):
                     value = xml_escape(value)
-            prop = '  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
+            prop = f'  <n:{name}{attrs}>{value}</n:{name}>'
 
             result.append(prop)
         if not result:
@@ -85,7 +85,7 @@ class DAVPropertySheetMixin(object):
         propdict = self._propdict()
         if name not in propdict:
             if xml_id:
-                prop = '<n:%s xmlns:n="%s"/>\n' % (name, xml_id)
+                prop = f'<n:{name} xmlns:n="{xml_id}"/>\n'
             else:
                 prop = '<%s xmlns=""/>\n' % name
             code = '404 Not Found'
@@ -115,11 +115,10 @@ class DAVPropertySheetMixin(object):
                 if not hasattr(self, 'dav__%s' % name):
                     value = xml_escape(value)
             if xml_id:
-                prop = '<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
+                prop = '<n:{}{} xmlns:n="{}">{}</n:{}>\n'.format(
                     name, attrs, xml_id, value, name)
             else:
-                prop = '<%s%s xmlns="">%s</%s>\n' % (
-                    name, attrs, value, name)
+                prop = f'<{name}{attrs} xmlns="">{value}</{name}>\n'
             code = '200 OK'
             if code not in result:
                 result[code] = [prop]

@@ -17,7 +17,7 @@ from zope.testing import cleanup
 Zope2.startup_wsgi()
 
 
-class EventLogger(object):
+class EventLogger:
     def __init__(self):
         self.reset()
 
@@ -59,7 +59,7 @@ class TestFolder(Folder):
         pass  # Always allow
 
 
-class EventLayer(object):
+class EventLayer:
 
     @classmethod
     def setUp(cls):
@@ -182,7 +182,7 @@ class TestCopySupportSublocation(EventTest):
         #      relied on between objects.
         if not set(first) == set(second):
             raise self.failureException(
-                (msg or '%r != %r' % (first, second)))
+                msg or f'{first!r} != {second!r}')
 
     def test_5_COPY(self):
         # Test COPY

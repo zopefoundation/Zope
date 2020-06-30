@@ -183,7 +183,7 @@ class Item(
                 id = id.decode(default_encoding)
             if isinstance(title, bytes):
                 title = title.decode(default_encoding)
-        return title and ("%s (%s)" % (title, id)) or id
+        return title and f"{title} ({id})" or id
 
     def this(self):
         # Handy way to talk to ourselves in document templates.
@@ -347,7 +347,7 @@ class Item_w__name__(Item):
         If the title is not blank, then the id is included in parens.
         """
         t = self.title
-        return t and ("%s (%s)" % (t, self.__name__)) or self.__name__
+        return t and f"{t} ({self.__name__})" or self.__name__
 
     def _setId(self, id):
         self.__name__ = id

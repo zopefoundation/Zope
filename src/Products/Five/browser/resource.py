@@ -50,7 +50,7 @@ class Resource:
         url = unquote(absoluteURL(container, self.request))
         if not isinstance(container, DirectoryResource):
             name = '++resource++%s' % name
-        return "%s/%s" % (url, name)
+        return f"{url}/{name}"
 
 
 @implementer(IBrowserPublisher)
