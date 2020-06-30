@@ -13,14 +13,13 @@
 """Copy interface
 """
 
+import base64
 import logging
 import re
 import tempfile
 import warnings
 from json import dumps
 from json import loads
-from urllib.parse import quote
-from urllib.parse import unquote
 from zlib import compress
 from zlib import decompressobj
 
@@ -669,7 +668,7 @@ def _cb_encode(d):
     json_bytes = dumps(d).encode('utf-8')
     squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
     # quote for embeding in cookie
-    return quote(squashed_bytes.decode('latin-1'))
+    return base64.encodebytes(squashed_bytes)
 
 
 def _cb_decode(s, maxsize=8192):
@@ -681,8 +680,9 @@ def _cb_decode(s, maxsize=8192):
     Return a list of text IDs.
     """
     dec = decompressobj()
-    squashed = unquote(s).encode('latin-1')
-    data = dec.decompress(squashed, maxsize)
+    if isinstance(s, str):
+        s = s.encode('latin-1')
+    data = dec.decompress(base64.decodebytes(s), maxsize)
     if dec.unconsumed_tail:
         raise ValueError
     json_bytes = data.decode('utf-8')

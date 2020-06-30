@@ -20,7 +20,7 @@ What's new in Zope 5
 
 Dropped support for Python 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Zope 5 supports Python 3 only, versions 3.5 up through 3.8. All support code
+Zope 5 supports Python 3 only, versions 3.6 up through 3.8. All support code
 and special casing for Python 2, including the use of the ``six`` package, have
 been removed.
 

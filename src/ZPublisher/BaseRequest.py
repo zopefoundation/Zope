@@ -393,7 +393,7 @@ class BaseRequest:
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
-        elif self.maybe_webdav_client:
+        elif method != 'HEAD' and self.maybe_webdav_client:
             # Probably a WebDAV client.
             no_acquire_flag = 1
 

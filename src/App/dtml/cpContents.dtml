@@ -11,7 +11,7 @@
   <table class="table">
     <tr>
       <th class="text-muted">Zope Version</th>
-      <td class="code">&dtml-version_txt;</td>
+      <td class="code">&dtml-ZopeVersion;</td>
     </tr>
     <tr>
       <th class="text-muted">Python Version</th>

@@ -1,29 +1,45 @@
 Change log
 ==========
 
-These are all the changes for Zope 5, starting with the alpha releases.
+These are all the changes for Zope 5, starting with the alpha releases,
+since the branch point at Zope 4.1.2.
 
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.0a2 (unreleased)
+
+5.0a3 (unreleased)
 ------------------
 
-(These are the changes since Zope 4.3 Besides the backwards incompatible
-changes all changes have been merged back to Zope 4.x.)
+- Drop support for Python 3.5 as it will run out of support soon.
+  (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
-Backwards incompatible changes
-++++++++++++++++++++++++++++++
+- Decrease cookie size for copy/paste clipboard cookie
+  (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)
 
-- None, yet.
+- Fix ``default`` keyword handling in page templates
+  (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
 
-New features
-++++++++++++
+- Fix parsing of package version and show correct major version in the ZMI
 
-- Add preliminary support for Python 3.9: the latest pre-release is tested.
+- Improve solidity of the ``debugError`` method.
+  (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
+
+- Use ``Chameleon`` (>= 3.7.2) configuration to get better
+  information for errors detected during template execution
+  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
+
+
+5.0a2 (2020-04-24)
+------------------
 
 Bug fixes
 +++++++++
+
+- Pin ``AccessControl`` 4.2 for the `Manage WebDAV Locks` permission
+
+- Fix ``HEAD`` requests on registered views
+  (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
 
 - Improve ``chameleon`` --> ``zope.tales`` context wrapper
   (support for template variable injection)
@@ -44,7 +60,6 @@ Bug fixes
 - Fixed fallback implementation of ``manage_DAVget``
   (`#799 <https://github.com/zopefoundation/Zope/issues/799>`_)
 
-
 Other changes
 +++++++++++++
 
@@ -53,10 +68,6 @@ Other changes
 
 5.0a1 (2020-02-28)
 ------------------
-
-These are the changes since Zope 4.1.2 where the Zope 5 branch was created
-from. Besides the backwards incompatible changes all changes have been merged
-back to Zope 4.x.
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++

@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.0a2.dev0'
+version = '5.0a3.dev0'
 
 
 setup(
@@ -55,7 +55,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -67,9 +66,9 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
-    python_requires='>= 3.5',
+    python_requires='>= 3.6',
     install_requires=[
-        'AccessControl >= 4.0b4',
+        'AccessControl >= 4.2',
         'Acquisition',
         'BTrees',
         'Chameleon >= 3.7.0',
@@ -129,6 +128,7 @@ setup(
             'Sphinx',
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
+            'tempstorage',
         ],
         'wsgi': [
             'Paste',

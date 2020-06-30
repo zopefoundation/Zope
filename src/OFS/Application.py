@@ -22,10 +22,12 @@ import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
+from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
 from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
+from App.version_txt import getZopeVersion
 from DateTime import DateTime
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
@@ -136,6 +138,24 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
     def ZopeTime(self, *args):
         """Utility function to return current date/time"""
         return DateTime(*args)
+
+    @security.protected(view_management_screens)
+    def ZopeVersion(self, major=False):
+        """Utility method to return the Zope version
+
+        Restricted to ZMI to prevent information disclosure
+        """
+        zversion = getZopeVersion()
+        if major:
+            return zversion.major
+        else:
+            version = '%s.%s.%s' % (zversion.major,
+                                    zversion.minor,
+                                    zversion.micro)
+            if zversion.status:
+                version += '.%s%s' % (zversion.status, zversion.release)
+
+            return version
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
