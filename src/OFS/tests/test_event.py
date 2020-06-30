@@ -57,7 +57,7 @@ class NotifyBase(DontComplain):
     manage_beforeDelete.__five_method__ = True  # Shut up deprecation warnings
 
     def manage_afterClone(self, item):
-        print('old manage_afterClone {} {}'.format(self.getId(), item.getId()))
+        print(f'old manage_afterClone {self.getId()} {item.getId()}')
         super().manage_afterClone(item)
     manage_afterClone.__five_method__ = True  # Shut up deprecation warnings
 

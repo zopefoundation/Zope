@@ -90,7 +90,7 @@ class Node:
         return nodes
 
     def qname(self):
-        return '{}{}'.format(self.namespace(), self.name())
+        return f'{self.namespace()}{self.name()}'
 
     def addNode(self, node):
         # XXX: no support for adding nodes here
@@ -158,7 +158,7 @@ class Node:
 
     def __repr__(self):
         if self.namespace():
-            return "<Node {} (from {})>".format(self.name(), self.namespace())
+            return f"<Node {self.name()} (from {self.namespace()})>"
         else:
             return "<Node %s>" % self.name()
 
