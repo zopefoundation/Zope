@@ -188,7 +188,7 @@ class Response:
                 from traceback import format_exception
                 value = '\n' + ''.join(format_exception(t, vstr, tb))
             else:
-                value = '%s - %s' % (t, vstr)
+                value = f'{t} - {vstr}'
             if isinstance(v, Fault):
                 f = v
             elif isinstance(v, Exception):

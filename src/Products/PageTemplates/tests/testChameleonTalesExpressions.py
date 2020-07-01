@@ -10,7 +10,7 @@ class ChameleonAqPageTemplate(AqPageTemplate):
 
 class ChameleonTalesExpressionTests(HTMLTests):
     def setUp(self):
-        super(ChameleonTalesExpressionTests, self).setUp()
+        super().setUp()
         # override with templates using chameleon TALES expressions
         self.folder.laf = ChameleonAqPageTemplate()
         self.folder.t = ChameleonAqPageTemplate()

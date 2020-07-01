@@ -132,7 +132,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
         if id in self.__reserved_ids:
             raise ValueError(
-                "'%s' is a reserved Id (forbidden Ids are: %s) " % (
+                "'{}' is a reserved Id (forbidden Ids are: {}) ".format(
                     id, self.__reserved_ids))
 
         self.id = id

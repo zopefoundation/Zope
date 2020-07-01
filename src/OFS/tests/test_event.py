@@ -44,7 +44,7 @@ class DontComplain:
 class NotifyBase(DontComplain):
 
     def manage_afterAdd(self, item, container):
-        print('old manage_afterAdd %s %s %s' % (
+        print('old manage_afterAdd {} {} {}'.format(
             self.getId(), item.getId(), container.getId()))
         super().manage_afterAdd(item, container)
 
@@ -52,12 +52,12 @@ class NotifyBase(DontComplain):
 
     def manage_beforeDelete(self, item, container):
         super().manage_beforeDelete(item, container)
-        print('old manage_beforeDelete %s %s %s' % (
+        print('old manage_beforeDelete {} {} {}'.format(
             self.getId(), item.getId(), container.getId()))
     manage_beforeDelete.__five_method__ = True  # Shut up deprecation warnings
 
     def manage_afterClone(self, item):
-        print('old manage_afterClone %s %s' % (self.getId(), item.getId()))
+        print(f'old manage_afterClone {self.getId()} {item.getId()}')
         super().manage_afterClone(item)
     manage_afterClone.__five_method__ = True  # Shut up deprecation warnings
 

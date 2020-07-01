@@ -55,7 +55,7 @@ def _getPath(home, prefix, name, suffixes):
 
     for suffix in suffixes:
         if suffix:
-            fqn = "%s.%s" % (fn, suffix)
+            fqn = f"{fn}.{suffix}"
         else:
             fqn = fn
         if os.path.exists(fqn):
@@ -138,7 +138,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
 
             for suffix in suffixes:
                 if suffix:
-                    fn = "%s.%s" % (prefix, suffix)
+                    fn = f"{prefix}.{suffix}"
                 else:
                     fn = prefix
                 if os.path.exists(fn):

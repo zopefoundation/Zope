@@ -107,7 +107,7 @@ class LockItem(Persistent):
     def getCreatorPath(self):
         db, name = self._creator
         path = '/'.join(db)
-        return "/%s/%s" % (path, name)
+        return f"/{path}/{name}"
 
     @security.public
     def getOwner(self):

@@ -72,7 +72,7 @@ def importable_name(name):
         IO = io.StringIO()
         traceback.print_exc(file=IO)
         raise ValueError(
-            'The object named by "%s" could not be imported\n%s' % (
+            'The object named by "{}" could not be imported\n{}'.format(
                 name, IO.getvalue()))
 
 

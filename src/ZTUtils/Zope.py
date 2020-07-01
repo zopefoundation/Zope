@@ -70,7 +70,7 @@ class LazyFilter(Lazy):
                 except Unauthorized as vv:
                     if skip is None:
                         self._eindex = e
-                        msg = '(item %s): %s' % (index, vv)
+                        msg = f'(item {index}): {vv}'
                         raise Unauthorized(msg)
                     skip_this = 1
                 else:
@@ -208,7 +208,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
+        qlist[i] = '{}{}={}'.format(quote(k), m, quote(str(v)))
 
     return '&'.join(qlist)
 
@@ -272,11 +272,11 @@ def complex_marshal(pairs):
                 if isinstance(sv, list):
                     for ssv in sv:
                         sm = simple_marshal(ssv)
-                        sublist.append(('%s.%s' % (k, sk),
+                        sublist.append((f'{k}.{sk}',
                                         '%s:list:record' % sm, ssv))
                 else:
                     sm = simple_marshal(sv)
-                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm, sv))
+                    sublist.append((f'{k}.{sk}', '%s:record' % sm, sv))
         elif isinstance(v, list):
             sublist = []
             for sv in v:
@@ -301,7 +301,7 @@ def simple_marshal(v):
     if isinstance(v, str):
         # Py 2 only
         encoding = _default_encoding()
-        return ':%s:ustring' % (encoding,)
+        return f':{encoding}:ustring'
     if isinstance(v, bool):
         return ':boolean'
     if isinstance(v, int):
@@ -350,4 +350,4 @@ def url_query(request, req_name="URL", omit=None):
         qs = '&'.join([part for part in qsparts if part])
 
     # We always append '?' since arguments will be appended to the URL
-    return '%s?%s' % (base, qs)
+    return f'{base}?{qs}'

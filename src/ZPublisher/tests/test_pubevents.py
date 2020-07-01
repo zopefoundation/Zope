@@ -181,7 +181,7 @@ class ExceptionView:
     def __call__(self):
         global_request = getRequest()
         self.request.response.events.append('exc_view')
-        return ('Exception: %s\nRequest: %r' % (
+        return ('Exception: {}\nRequest: {!r}'.format(
             self.context.__class__, global_request))
 
 
@@ -241,7 +241,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.folder.addDTMLDocument('index_html', file='index')
         response = self.publish(
             self.folder.absolute_url_path(),
-            basic='%s:%s' % (user_name, user_password))
+            basic=f'{user_name}:{user_password}')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubAfterTraversal',

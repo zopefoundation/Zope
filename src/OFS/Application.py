@@ -101,7 +101,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # available as url.
         if destination.find('//') >= 0:
             raise RedirectException(destination)
-        raise RedirectException("%s/%s" % (URL1, destination))
+        raise RedirectException(f"{URL1}/{destination}")
 
     ZopeRedirect = Redirect
 
@@ -131,7 +131,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
         # There is probably a better fix for this.
         try:
-            REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
+            REQUEST.RESPONSE.notFoundError(f"{name}\n{method}")
         except AttributeError:
             raise KeyError(name)
 
@@ -149,11 +149,9 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         if major:
             return zversion.major
         else:
-            version = '%s.%s.%s' % (zversion.major,
-                                    zversion.minor,
-                                    zversion.micro)
+            version = f'{zversion.major}.{zversion.minor}.{zversion.micro}'
             if zversion.status:
-                version += '.%s%s' % (zversion.status, zversion.release)
+                version += f'.{zversion.status}{zversion.release}'
 
             return version
 

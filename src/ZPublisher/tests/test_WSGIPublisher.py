@@ -492,7 +492,7 @@ class TestPublishModule(ZopeTestCase):
             def read(self):
                 return self.data
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, file):
                 self.file = file
 
@@ -527,7 +527,7 @@ class TestPublishModule(ZopeTestCase):
             def read(self):
                 return self.data
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, file):
                 self.file = file
 
@@ -556,13 +556,13 @@ class TestPublishModule(ZopeTestCase):
         from ZPublisher.HTTPResponse import WSGIResponse
 
         @implementer(IStreamIterator)
-        class TestStreamIterator(object):
+        class TestStreamIterator:
             data = "hello" * 20
 
             def __len__(self):
                 return len(self.data)
 
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, file):
                 self.file = file
 
@@ -988,7 +988,7 @@ class CustomExceptionView:
         self.request = request
 
     def __call__(self):
-        return ('Exception View: %s\nContext: %s' % (
+        return ('Exception View: {}\nContext: {}'.format(
                 self.context.__class__.__name__,
                 self.__parent__.__class__.__name__))
 

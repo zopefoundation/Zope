@@ -61,7 +61,7 @@ def _prep_version_data():
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
         dist = pkg_resources.get_distribution('Zope')
-        _version_string = "%s, %s" % (dist.version, pyver)
+        _version_string = f"{dist.version}, {pyver}"
         _zope_version = _parse_version_data(dist.version)
 
 
@@ -72,7 +72,7 @@ def _parse_version_data(version_string):
     rel = tuple(int(i) for i in version_dict['release'].split('.'))
     micro = rel[2] if len(rel) >= 3 else 0
     if version_dict['pre']:
-        micro = '%s%s' % (micro, version_dict['pre'])
+        micro = f'{micro}{version_dict["pre"]}'
 
     return ZopeVersion(
         rel[0] if len(rel) >= 1 else 0,

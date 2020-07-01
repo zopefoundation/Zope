@@ -11,7 +11,7 @@ class NodeTests(unittest.TestCase):
         return self._getTargetClass()(wrapped)
 
     def test_remove_namespace_attrs(self):
-        class DummyMinidomNode(object):
+        class DummyMinidomNode:
             def __init__(self):
                 self.attributes = {
                     'xmlns:foo': 'foo',

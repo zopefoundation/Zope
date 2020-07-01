@@ -160,7 +160,7 @@ class CopyContainer(Base):
         while 1:
             if self._getOb(id, None) is None:
                 return id
-            id = 'copy%s_of_%s' % (n and n + 1 or '', orig_id)
+            id = 'copy{}_of_{}'.format(n and n + 1 or '', orig_id)
             n = n + 1
 
     def _pasteObjects(self, cp, cb_maxsize=0):

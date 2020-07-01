@@ -132,7 +132,7 @@ class Adding(BrowserView):
 
         if queryMultiAdapter((self, self.request),
                              name=view_name) is not None:
-            url = "%s/%s=%s" % (
+            url = "{}/{}={}".format(
                 absoluteURL(self, self.request), type_name, id)
             self.request.response.redirect(url)
             return

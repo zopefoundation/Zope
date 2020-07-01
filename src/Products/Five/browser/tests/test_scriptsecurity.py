@@ -14,7 +14,7 @@ def checkRestricted(folder, path, method=''):
     if not method:
         body = '<dtml-call "%s()">' % traverse
     else:
-        body = '<dtml-call "%s.%s()">' % (traverse, method)
+        body = f'<dtml-call "{traverse}.{method}()">'
 
     addDTMLMethod(folder, 'ps', body=body)
     try:
@@ -30,7 +30,7 @@ def checkUnauthorized(folder, path, method=''):
     if not method:
         body = '<dtml-call "%s()">' % traverse
     else:
-        body = '<dtml-call "%s.%s()">' % (traverse, method)
+        body = f'<dtml-call "{traverse}.{method}()">'
     addDTMLMethod(folder, 'ps', body=body)
     try:
         folder.ps(client=folder)

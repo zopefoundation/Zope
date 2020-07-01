@@ -39,7 +39,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
     def afterSetUp(self):
         self.folder_path = '/' + self.folder.absolute_url(1)
-        self.basic_auth = '%s:%s' % (user_name, user_password)
+        self.basic_auth = f'{user_name}:{user_password}'
 
         # A simple document
         self.folder.addDTMLDocument('index_html', file=b'index')

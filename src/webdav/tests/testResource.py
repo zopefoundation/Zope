@@ -27,7 +27,7 @@ def make_request_response(environ=None):
     return req, resp
 
 
-class DummyLock(object):
+class DummyLock:
 
     def isValid(self):
         return True
@@ -45,7 +45,7 @@ class DummyContent(Implicit):
         return True
 
 
-class DummyRequest(object):
+class DummyRequest:
 
     def __init__(self, form, headers):
         self.form = form
@@ -64,7 +64,7 @@ class DummyRequest(object):
         return ['']
 
 
-class DummyResponse(object):
+class DummyResponse:
 
     def __init__(self):
         self.headers = {}
@@ -73,7 +73,7 @@ class DummyResponse(object):
         self.headers[name] = value
 
 
-class _DummySecurityPolicy(object):
+class _DummySecurityPolicy:
 
     def validate(self, *args, **kw):
         return True

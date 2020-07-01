@@ -1,7 +1,7 @@
 from Poll import Poll
 
 
-class PollImplementation(object):
+class PollImplementation:
     """
     A multiple choice poll, implements the Poll interface.
 

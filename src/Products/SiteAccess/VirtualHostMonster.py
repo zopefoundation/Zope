@@ -105,7 +105,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
             except ValueError as msg:
-                line = '%s #! %s' % (line, msg)
+                line = f'{line} #! {msg}'
             new_lines.append(line)
         self.lines = tuple(new_lines)
         self.have_map = bool(fixed_map or sub_map)  # booleanize
@@ -263,7 +263,7 @@ def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
     if REQUEST is not None:
         goto = '%s/manage_main' % self.absolute_url()
         qs = 'manage_tabs_message=Virtual+Host+Monster+added.'
-        REQUEST['RESPONSE'].redirect('%s?%s' % (goto, qs))
+        REQUEST['RESPONSE'].redirect(f'{goto}?{qs}')
 
 
 constructors = (

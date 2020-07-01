@@ -21,11 +21,11 @@ from .util import useChameleonEngine
 
 class ErrorHandlingTests(PlacelessSetup, TestCase):
     def setUp(self):
-        super(ErrorHandlingTests, self).setUp()
+        super().setUp()
         useChameleonEngine()
 
     def test_repr_error_info(self):
-        class WithRepr(object):
+        class WithRepr:
             def __repr__(self):
                 return "with repr"
 

@@ -301,7 +301,7 @@ class HTTPBaseResponse(BaseResponse):
         else:
             cookie = cookies[name] = {}
         if 'value' in cookie:
-            cookie['value'] = '%s:%s' % (cookie['value'], value)
+            cookie['value'] = '{}:{}'.format(cookie['value'], value)
         else:
             cookie['value'] = value
 
@@ -383,7 +383,7 @@ class HTTPBaseResponse(BaseResponse):
         headers = self.headers
         if name in headers:
             h = headers[name]
-            h = "%s%s%s" % (h, delimiter, value)
+            h = f"{h}{delimiter}{value}"
         else:
             h = value
         self.setHeader(name, h, scrubbed=True)
@@ -524,15 +524,14 @@ class HTTPBaseResponse(BaseResponse):
 
         if content_type is None:
             if self.isHTML(body):
-                content_type = 'text/html; charset=%s' % self.charset
+                content_type = f'text/html; charset={self.charset}'
             else:
-                content_type = 'text/plain; charset=%s' % self.charset
+                content_type = f'text/plain; charset={self.charset}'
             self.setHeader('content-type', content_type)
         else:
             if content_type.startswith('text/') and \
                'charset=' not in content_type:
-                content_type = '%s; charset=%s' % (content_type,
-                                                   self.charset)
+                content_type = f'{content_type}; charset={self.charset}'
                 self.setHeader('content-type', content_type)
 
         self.setHeader('content-length', len(self.body))
@@ -644,21 +643,21 @@ class HTTPBaseResponse(BaseResponse):
             # of name=value pairs may be quoted.
 
             if attrs.get('quoted', True):
-                cookie = '%s="%s"' % (name, quote(attrs['value']))
+                cookie = '{}="{}"'.format(name, quote(attrs['value']))
             else:
-                cookie = '%s=%s' % (name, quote(attrs['value']))
+                cookie = '{}={}'.format(name, quote(attrs['value']))
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':
-                    cookie = '%s; Expires=%s' % (cookie, v)
+                    cookie = f'{cookie}; Expires={v}'
                 elif name == 'domain':
-                    cookie = '%s; Domain=%s' % (cookie, v)
+                    cookie = f'{cookie}; Domain={v}'
                 elif name == 'path':
-                    cookie = '%s; Path=%s' % (cookie, v)
+                    cookie = f'{cookie}; Path={v}'
                 elif name == 'max_age':
-                    cookie = '%s; Max-Age=%s' % (cookie, v)
+                    cookie = f'{cookie}; Max-Age={v}'
                 elif name == 'comment':
-                    cookie = '%s; Comment=%s' % (cookie, v)
+                    cookie = f'{cookie}; Comment={v}'
                 elif name == 'secure' and v:
                     cookie = '%s; Secure' % cookie
                 # Some browsers recognize this cookie attribute
@@ -670,7 +669,7 @@ class HTTPBaseResponse(BaseResponse):
                 # providing some protection against CSRF attacks
                 # https://tools.ietf.org/html/draft-west-first-party-cookies-07
                 elif name == 'same_site' and v:
-                    cookie = '%s; SameSite=%s' % (cookie, v)
+                    cookie = f'{cookie}; SameSite={v}'
             cookie_list.append(('Set-Cookie', cookie))
 
         # Should really check size of cookies here!
@@ -1009,7 +1008,7 @@ class WSGIResponse(HTTPBaseResponse):
         if content_length is None and not self._streaming:
             self.setHeader('content-length', len(self.body))
 
-        return '%s %s' % (self.status, self.errmsg), self.listHeaders()
+        return f'{self.status} {self.errmsg}', self.listHeaders()
 
     def listHeaders(self):
         result = []

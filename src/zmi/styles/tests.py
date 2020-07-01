@@ -29,7 +29,7 @@ class SubscriberTests(Testing.ZopeTestCase.FunctionalTestCase):
             # which the WSGI publisher does not expect.
             endInteraction()
             response = self.publish(
-                '/{0.folder_name}/manage_main'.format(Testing.ZopeTestCase),
+                f'/{Testing.ZopeTestCase.folder_name}/manage_main',
                 basic=basic_auth)
             return str(response)
         return temporaryPlacelessSetUp(

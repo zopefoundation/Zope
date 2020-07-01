@@ -10,12 +10,12 @@ class ZopeTalesExpressionTests(HTMLTests):
     is cleared at the start and end of each test.
     """
     def setUp(self):
-        super(ZopeTalesExpressionTests, self).setUp()
+        super().setUp()
         _zt_expr_registry.clear()
 
     def tearDown(self):
         _zt_expr_registry.clear()
-        super(ZopeTalesExpressionTests, self).tearDown()
+        super().tearDown()
 
     def testCaching(self):
         self.test_2()  # fill the cache
