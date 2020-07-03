@@ -1,4 +1,4 @@
-# *-* coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import unittest
 
@@ -197,7 +197,7 @@ class EngineTestsBase(PlacelessSetup):
             import IUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
-        self.assertEqual(ec.evaluate(expr), u'äüö')
+        self.assertEqual(ec.evaluate(expr), u'Ã¤Ã¼Ã¶')
 
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):

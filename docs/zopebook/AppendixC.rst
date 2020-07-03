@@ -674,10 +674,6 @@ These are the names always available to TALES expressions in Zope:
 - *attrs*- - a dictionary containing the initial values of the attributes of
   the current statement tag.
 
-- *CONTEXTS*- - the list of standard names (this list). This can be used to
-  access a built-in variable that has been hidden by a local or global variable
-  with the same name.
-
 - *root*- - the system's top-most object: the Zope root folder.
 
 - *context*- - the object to which the template is being applied.
