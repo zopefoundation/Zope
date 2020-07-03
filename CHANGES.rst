@@ -14,7 +14,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
   far as ``chameleon`` allows it)
   (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
 
-- in the "Zope Book" remove ``CONTENTS`` from the list of predefined
+- in the "Zope Book" remove ``CONTEXTS`` from the list of predefined
   template variables (because it was never implemented).
   
 - Update dependencies to the latest releases that still support Python 2.
