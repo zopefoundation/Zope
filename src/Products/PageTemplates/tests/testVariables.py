@@ -1,11 +1,10 @@
 from unittest import TestCase
 
-from zope.component.testing import PlacelessSetup
 from OFS.Folder import Folder
+from zope.component.testing import PlacelessSetup
 
 from ..Expressions import getTrustedEngine
 from ..ZopePageTemplate import ZopePageTemplate
-
 from .util import useChameleonEngine
 
 
