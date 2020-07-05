@@ -19,6 +19,27 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
     as documented by
     `<https://zope.readthedocs.io/en/latest/zopebook/AppendixC.html#built-in-names`_
     """
+
+    # variables documented in the Zope Book
+    VARIABLES = set((
+        "nothing",
+        "default",
+        "options",
+        "repeat",
+        # "attrs",  # special -- not contained in ``CONTEXTS``
+        "root",
+        "context",
+        "container",
+        "template",
+        "request",
+        "user",
+        "modules",
+        #   special
+        #     - only usable as initial component in path expr
+        #     - not contained in ``CONTEXTS``
+        # "CONTEXTS",
+        ))  # noqa: E123
+
     def setUp(self):
         super(TestPredefinedVariables, self).setUp()
 
@@ -86,6 +107,24 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
 
     def test_modules(self):
         self.check("modules")
+
+    def test_CONTEXTS(self):
+        # the "Zope Book" describes ``CONTEXTS`` as a variable.
+        # But, in fact, it is not a (regular) variable but a special
+        # case of the initial component of a (sub)path expression.
+        # As a consequence, it cannot be used in a Python expression
+        # but only as the first component in a path expression
+        # Therefore, we cannot use ``check`` to access it.
+        t = self.g.t
+        t.write("""<div tal:define="
+                x CONTEXTS;
+                dummy python:options['acc'].append(x)" />""")
+        acc = []
+        t(acc=acc)
+        ctx = acc[0]
+        self.assertIsInstance(ctx, dict)
+        # all variables included?
+        self.assertEqual(len(self.VARIABLES - set(ctx)), 0)
 
     def check(self, what):
         t = self.g.t
