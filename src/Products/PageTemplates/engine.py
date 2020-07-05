@@ -261,10 +261,13 @@ class MappedExpr(object):
                                     raise ExpressionError("$ unsupported", spe)
 
     def __call__(self, target, c_engine):
-        # the convoluted handling of attrs is necessary to work around
-        # "https://github.com/malthe/chameleon/issues/323"
+        # The convoluted handling of ``attrs`` below was necessary
+        # for some ``chameleon`` versions to work around
+        # "https://github.com/malthe/chameleon/issues/323".
         # The work round is partial only: until the ``chameleon``
-        # problem is fixed, `attrs` cannot be used inside ``tal:define``
+        # problem is fixed, `attrs` cannot be used inside ``tal:define``.
+        # Potentially, ``attrs`` handling could be simplified
+        # for ``chameleon > 3.8.0``.
         return template(
             "try: __zt_tmp = attrs\n"
             "except NameError: __zt_tmp = None\n"

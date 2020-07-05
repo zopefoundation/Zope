@@ -54,10 +54,11 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
 
     # ``test_attrs`` should have the previous definition
     # Unfortunately, "https://github.com/malthe/chameleon/issues/323"
-    # (``attrs`` cannot be used in ``tal:define`` nor in ``tal:replace``)
+    # (``attrs`` cannot be used in ``tal:define``)
     # lets it fail.
     # We must therefore test (what works with the current
     # ``chameleon``) in a different way.
+    # Note ``chameleon > 3.8.0`` likely will allow the previous definition
     def test_attrs(self):  # noqa: F811
         t = self.g.t
         t.write("<div attr='attr' tal:content='python: attrs[\"attr\"]'/>")

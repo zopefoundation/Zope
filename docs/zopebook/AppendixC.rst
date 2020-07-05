@@ -694,6 +694,11 @@ Note the names `root`, `context`, `container`, `template`, `request`, `user`, an
 `modules` are optional names supported by Zope, but are not required by the
 TALES standard.
 
+Note that the (popular) ``chameleon`` template engine implements ``attrs``
+and ``default`` not as standard variables but in a special way.
+Trying to change their value may have undefined effects.
+
+
 TALES Exists expressions
 ========================
 
