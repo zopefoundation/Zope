@@ -266,8 +266,10 @@ class MappedExpr(object):
         # The work round is partial only: until the ``chameleon``
         # problem is fixed, `attrs` cannot be used inside ``tal:define``
         return template(
+            "try: __zt_tmp = attrs\n"
+            "except NameError: __zt_tmp = None\n"
             "target = compile_zt_expr(type, expression, econtext=econtext)"
-            "(c2z_context(econtext, attrs))",
+            "(c2z_context(econtext, __zt_tmp))",
             target=target,
             compile_zt_expr=_compile_zt_expr_node,
             type=ast.Str(self.type),

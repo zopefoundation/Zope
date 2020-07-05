@@ -52,6 +52,19 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
         attrs = self.check("attrs")
         self.assertEqual(attrs["attr"], "attr")
 
+    # ``test_attrs`` should have the previous definition
+    # Unfortunately, "https://github.com/malthe/chameleon/issues/323"
+    # (``attrs`` cannot be used in ``tal:define`` nor in ``tal:replace``)
+    # lets it fail.
+    # We must therefore test (what works with the current
+    # ``chameleon``) in a different way.
+    def test_attrs(self):  # noqa: F811
+        t = self.g.t
+        t.write("<div attr='attr' tal:content='python: attrs[\"attr\"]'/>")
+        # the two template engines use different quotes - we
+        #  must normalize
+        self.assertEqual(t().replace("'", '"'), '<div attr="attr">attr</div>')
+
     def test_root(self):
         self.assertEqual(self.check("root"), self.root)
 
