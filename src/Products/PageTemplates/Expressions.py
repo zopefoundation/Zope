@@ -22,6 +22,7 @@ from six import binary_type
 from six import text_type
 
 import OFS.interfaces
+from AccessControl import safe_builtins
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
 from Products.PageTemplates import ZRPythonExpr
@@ -39,6 +40,7 @@ from zope.tales.expressions import LazyExpr
 from zope.tales.expressions import NotExpr
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import StringExpr
+from zope.tales.expressions import SubPathExpr
 from zope.tales.expressions import Undefs
 from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import Context
@@ -125,9 +127,41 @@ def render(ob, ns):
     return ob
 
 
+class _CombinedMapping(object):
+    """Minimal auxiliary class to combine several mappings.
+
+    Earlier mappings take precedence.
+    """
+    def __init__(self, *ms):
+        self.mappings = ms
+
+    def get(self, key, default):
+        for m in self.mappings:
+            value = m.get(key, self)
+            if value is not self:
+                return value
+        return default
+
+
+class UntrustedSubPathExpr(SubPathExpr):
+    ALLOWED_BUILTINS = safe_builtins
+
+
+class TrustedSubPathExpr(SubPathExpr):
+    # we allow both Python's builtins (we are trusted)
+    # as well as ``safe_builtins`` (because it may contain extensions)
+    # Python's builtins take precedence, because those of
+    # ``safe_builtins`` may have special restrictions for
+    # the use in an untrusted context
+    ALLOWED_BUILTINS = _CombinedMapping(
+        __builtins__,
+        safe_builtins)
+
+
 class ZopePathExpr(PathExpr):
 
     _TRAVERSER = staticmethod(boboAwareZopeTraverse)
+    SUBEXPR_FACTORY = UntrustedSubPathExpr
 
     def __init__(self, name, expr, engine):
         if not expr.strip():
@@ -174,6 +208,7 @@ class ZopePathExpr(PathExpr):
 
 class TrustedZopePathExpr(ZopePathExpr):
     _TRAVERSER = staticmethod(trustedBoboAwareZopeTraverse)
+    SUBEXPR_FACTORY = TrustedSubPathExpr
 
 
 class SafeMapping(MultiMapping):

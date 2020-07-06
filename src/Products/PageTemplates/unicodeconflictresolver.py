@@ -17,7 +17,7 @@ import sys
 
 from six import text_type
 
-import ZPublisher
+import ZPublisher.HTTPRequest
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.i18n.interfaces import IUserPreferredCharsets
