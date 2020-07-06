@@ -6,6 +6,7 @@ _build/
 bin/
 coverage.xml
 default.profraw
+develop/
 develop-eggs/
 dist/
 etc/
