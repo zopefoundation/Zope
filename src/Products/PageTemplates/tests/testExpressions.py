@@ -5,7 +5,6 @@ import unittest
 from six import text_type
 
 from AccessControl import safe_builtins
-
 from zope.component.testing import PlacelessSetup
 
 
