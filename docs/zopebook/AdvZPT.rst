@@ -750,7 +750,8 @@ Path Expressions
 Path expressions refer to objects with a path that resembles a
 URL path. A path describes a traversal from object to
 object. All paths begin with a known object (such as a built-in
-variable, a repeat variable, or a user defined variable) and
+variable, a built-in (such as ``True``),
+a repeat variable, or a user defined variable) and
 depart from there to the desired object. Here are some example
 paths expressions::
 
@@ -760,6 +761,7 @@ paths expressions::
   container/master.html/macros/header
   request/form/address
   root/standard_look_and_feel.html
+  True
 
 With path expressions you can traverse from an object to its
 sub-objects including properties and methods. You can also use
