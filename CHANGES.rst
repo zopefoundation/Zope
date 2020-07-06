@@ -13,6 +13,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Add ``tal:switch`` test
 
+- Support the ``attrs`` predefined template variable again (as
+  far as ``chameleon`` allows it)
+  (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
+
+- Improve documentation of ``CONTEXTS`` in the "Zope Book".
+  
 - Drop support for Python 3.5 as it will run out of support soon.
   (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
