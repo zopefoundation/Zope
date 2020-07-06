@@ -11,6 +11,13 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Allow (some) builtins as first element of a (TALES) path expression:
+  in an untrusted context, the builtins from
+  ``AccessControl.safe_builtins`` are allowed;
+  in a trusted context, all Python builtins are allowed in addition
+  (and take precedence)
+  (`zope.tales#23 <https://github.com/zopefoundation/zope.tales/issues/23>`_).
+
 - Add ``tal:switch`` test
 
 - Support the ``attrs`` predefined template variable again (as

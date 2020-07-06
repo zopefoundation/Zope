@@ -201,7 +201,8 @@ be useful.  We'll come back to that later in this chapter::
   <p tal:content="request/URL"></p>
   <p tal:content="user/getUserName"></p>
 
-Every *path expression* starts with a variable name.  The available
+Every *path expression* starts either with a variable name or with
+a (supported) builtin.  The available
 variable names refer either to objects like *context*, *request* or
 *user* that are bound to every *Page Template* by default or variables
 defined within the *Page Template* using TAL.  Note that *here* is an
@@ -215,6 +216,15 @@ If the variable itself returns the value you want, you are done.
 Otherwise, you add a slash ('/') and the name of a sub-object or
 attribute.  You may need to work your way through several
 sub-objects to get to the value you're looking for.
+
+Which builtins are supported as first element of a path
+expression depends on the context. In an untrusted context,
+only "safe builtins" (as specified by ``AccessControl.safe_builtins``)
+are supported; in a trusted context, beside those all
+Python builtins are supported in addition (and take precedence over
+the former). Note that many builtins are callable. For those,
+you will refer to them usually via the ``nocall`` variant of
+a path expression.
 
 Python Expressions
 %%%%%%%%%%%%%%%%%%

@@ -1,5 +1,6 @@
 import unittest
 
+from AccessControl import safe_builtins
 from zope.component.testing import PlacelessSetup
 
 
@@ -195,6 +196,12 @@ class EngineTestsBase(PlacelessSetup):
                        IUnicodeEncodingConflictResolver)
         self.assertEqual(ec.evaluate(expr), 'äüö')
 
+    def test_builtin_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('True'), True)
+        self.assertIs(ec.evaluate('False'), False)
+        self.assertIs(ec.evaluate('nocall: test'), safe_builtins["test"])
+
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
@@ -204,6 +211,15 @@ class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
     # XXX:  add tests that show security checks being enforced
 
+    def test_open_in_path_expr(self):
+        ec = self._makeContext()
+        with self.assertRaises(KeyError):
+            ec.evaluate("nocall:open")
+
+    def test_list_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('nocall: list'), safe_builtins["list"])
+
 
 class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
@@ -212,6 +228,14 @@ class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
         return createTrustedZopeEngine()
 
     # XXX:  add tests that show security checks *not* being enforced
+
+    def test_open_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate("nocall:open"), open)
+
+    def test_list_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('nocall: list'), list)
 
 
 class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
