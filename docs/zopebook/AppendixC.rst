@@ -674,10 +674,6 @@ These are the names always available to TALES expressions in Zope:
 - *attrs*- - a dictionary containing the initial values of the attributes of
   the current statement tag.
 
-- *CONTEXTS*- - the list of standard names (this list). This can be used to
-  access a built-in variable that has been hidden by a local or global variable
-  with the same name.
-
 - *root*- - the system's top-most object: the Zope root folder.
 
 - *context*- - the object to which the template is being applied.
@@ -697,6 +693,18 @@ These are the names always available to TALES expressions in Zope:
 Note the names `root`, `context`, `container`, `template`, `request`, `user`, and
 `modules` are optional names supported by Zope, but are not required by the
 TALES standard.
+
+Note that the (popular) ``chameleon`` template engine implements ``attrs``
+and ``default`` not as standard variables but in a special way.
+Trying to change their value may have undefined effects.
+
+Note that beside variables you can use ``CONTEXTS``
+as initial element in a path expression. Its value is a mapping
+from predefined variable names to their value. This can be used to
+access the predefined variable when it is hidden by a user defined
+definition for its name. Again, `attrs` is special; it is not covered
+by `CONTEXTS`.
+
 
 TALES Exists expressions
 ========================

@@ -23,7 +23,7 @@ class C2ZContextTests(unittest.TestCase):
     def setUp(self):
         self.c_context = c_context = Scope()
         c_context["__zt_context__"] = Context(None, {})
-        self.z_context = _C2ZContextWrapper(c_context)
+        self.z_context = _C2ZContextWrapper(c_context, None)
 
     def test_elementary_functions(self):
         c = self.z_context
@@ -51,7 +51,7 @@ class C2ZContextTests(unittest.TestCase):
     def test_setGlobal(self):
         top_context = self.z_context
         c_context = self.c_context.copy()  # context push
-        c = _C2ZContextWrapper(c_context)  # local ``zope`` context
+        c = _C2ZContextWrapper(c_context, None)  # local ``zope`` context
         c.setLocal("a", "A")
         self.assertIn("a", c)
         self.assertNotIn("a", top_context)
@@ -77,3 +77,9 @@ class C2ZContextTests(unittest.TestCase):
     def test_attribute_delegation(self):
         c = self.z_context
         self.assertIsNone(c._engine)
+
+    def test_attrs(self):
+        c = self.z_context
+        self.assertIsNone(c["attrs"])
+        c.setLocal("attrs", "hallo")
+        self.assertEqual(c["attrs"], "hallo")
