@@ -196,3 +196,6 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def testDefaultKeywordHandling(self):
         self.assert_expected(self.folder.t, 'Default.html')
+
+    def testSwitch(self):
+        self.assert_expected(self.folder.t, 'switch.html')

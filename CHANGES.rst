@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Add ``tal:switch`` test
+
 - Drop support for Python 3.5 as it will run out of support soon.
   (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
