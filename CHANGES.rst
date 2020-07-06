@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.5 (unreleased)
 ------------------
 
+- Add ``tal:switch`` test
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
