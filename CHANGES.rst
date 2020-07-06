@@ -12,6 +12,12 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Add ``tal:switch`` test
 
+- Support the ``attrs`` predefined template variable again (as
+  far as ``chameleon`` allows it)
+  (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
+
+- Improve documentation of ``CONTEXTS`` in the "Zope Book".
+  
 - Update dependencies to the latest releases that still support Python 2.
 
 

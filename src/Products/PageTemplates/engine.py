@@ -149,9 +149,10 @@ _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 class _C2ZContextWrapper(Context):
     """Behaves like "zope" context with vars from "chameleon" context."""
-    def __init__(self, c_context):
+    def __init__(self, c_context, attrs):
         self.__c_context = c_context
         self.__z_context = c_context["__zt_context__"]
+        self.__attrs = attrs
 
     # delegate to ``__c_context``
     @property
@@ -162,6 +163,8 @@ class _C2ZContextWrapper(Context):
         try:
             return self.__c_context.__getitem__(key)
         except NameError:  # Exception for missing key
+            if key == "attrs":
+                return self.__attrs
             raise KeyError(key)
 
     def getValue(self, name, default=None):
@@ -214,11 +217,7 @@ class _C2ZContextWrapper(Context):
         return getattr(self.__z_context, attr)
 
 
-def _c_context_2_z_context(c_context):
-    return _C2ZContextWrapper(c_context)
-
-
-_c_context_2_z_context_node = Static(Symbol(_c_context_2_z_context))
+_c_context_2_z_context_node = Static(Symbol(_C2ZContextWrapper))
 
 
 class MappedExpr(object):
@@ -262,14 +261,24 @@ class MappedExpr(object):
                                     raise ExpressionError("$ unsupported", spe)
 
     def __call__(self, target, c_engine):
+        # The convoluted handling of ``attrs`` below was necessary
+        # for some ``chameleon`` versions to work around
+        # "https://github.com/malthe/chameleon/issues/323".
+        # The work round is partial only: until the ``chameleon``
+        # problem is fixed, `attrs` cannot be used inside ``tal:define``.
+        # Potentially, ``attrs`` handling could be simplified
+        # for ``chameleon > 3.8.0``.
         return template(
+            "try: __zt_tmp = attrs\n"
+            "except NameError: __zt_tmp = None\n"
             "target = compile_zt_expr(type, expression, econtext=econtext)"
-            "(c2z_context(econtext))",
+            "(c2z_context(econtext, __zt_tmp))",
             target=target,
             compile_zt_expr=_compile_zt_expr_node,
             type=ast.Str(self.type),
             expression=ast.Str(self.expression),
-            c2z_context=_c_context_2_z_context_node)
+            c2z_context=_c_context_2_z_context_node,
+            attrs=ast.Name("attrs", ast.Load()))
 
 
 class MappedExprType(object):
