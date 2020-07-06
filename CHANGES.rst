@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.5 (unreleased)
 ------------------
 
+- Add ``tal:switch`` test
+
 - Support the ``attrs`` predefined template variable again (as
   far as ``chameleon`` allows it)
   (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
