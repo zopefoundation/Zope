@@ -124,7 +124,7 @@ def render(ob, ns):
     return ob
 
 
-class _CombinedMapping(object):
+class _CombinedMapping:
     """Minimal auxiliary class to combine several mappings.
 
     Earlier mappings take precedence.
