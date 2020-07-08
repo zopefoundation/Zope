@@ -27,3 +27,7 @@ class IUnicodeEncodingConflictResolver(Interface):
             'expression' is the original expression (can be used for
             logging purposes)
         """
+
+
+class IZopeAwareEngine(Interface):
+    """Interface to mark a TALES engine aware of Zope specifics."""

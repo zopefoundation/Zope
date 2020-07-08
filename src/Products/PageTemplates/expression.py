@@ -16,15 +16,18 @@ from AccessControl.ZopeGuards import guarded_getitem
 from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
-from Products.PageTemplates.Expressions import render
 from RestrictedPython import RestrictingNodeTransformer
 from RestrictedPython.Utilities import utility_builtins
 from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized
+from zope.interface import implementer
 from zope.tales.tales import ExpressionEngine
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
+
+from .Expressions import render
+from .interfaces import IZopeAwareEngine
 
 
 _marker = object()
@@ -167,6 +170,12 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         return node
 
 
+# Whether an engine is Zope aware does not depend on the class
+# but how it is configured - especially, that is uses a Zope aware
+# `PathExpr` implementation.
+# Nevertheless, we mark the class as "Zope aware" for simplicity
+# assuming that users of the class use a proper `PathExpr`
+@implementer(IZopeAwareEngine)
 class ChameleonEngine(ExpressionEngine):
     """Expression engine for ``chameleon.tales``.
 

@@ -37,6 +37,7 @@ from zope.tales.tales import Context
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
+from .interfaces import IZopeAwareEngine
 
 
 class _PseudoContext(object):
@@ -310,7 +311,7 @@ class Program(object):
 
     def __init__(self, template, engine):
         self.template = template
-        self.engine = engine
+        self.engine = IZopeAwareEngine(engine, engine)
 
     def __call__(self, context, macros, tal=True, **options):
         if tal is False:
