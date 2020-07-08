@@ -8,9 +8,7 @@ from chameleon.astutil import Symbol
 from chameleon.codegen import template
 from chameleon.tales import NotExpr
 from chameleon.tales import StringExpr
-from Products.PageTemplates.Expressions import render
 from six import class_types
-from z3c.pt import expressions
 
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
@@ -20,6 +18,7 @@ from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
 from RestrictedPython import RestrictingNodeTransformer
 from RestrictedPython.Utilities import utility_builtins
+from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.interface import implementer
@@ -27,6 +26,7 @@ from zope.tales.tales import ExpressionEngine
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
+from .Expressions import render
 from .interfaces import IZopeAwareEngine
 
 

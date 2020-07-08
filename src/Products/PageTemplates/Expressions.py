@@ -18,8 +18,6 @@ for Python expressions, string literals, and paths.
 
 import logging
 
-from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from six import binary_type
 from six import text_type
 
@@ -49,6 +47,8 @@ from zope.tales.tales import Iterator
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import ITraversable
 
+from . import ZRPythonExpr
+from .interfaces import IUnicodeEncodingConflictResolver
 from .interfaces import IZopeAwareEngine
 
 

@@ -20,12 +20,12 @@ from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
 from chameleon.tales import DEFAULT_MARKER  # only in chameleon 3.8.0 and up
 from chameleon.zpt.template import Macros
-from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.version_txt import getZopeVersion
 from MultiMapping import MultiMapping
+from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 from zope.interface import implementer
 from zope.interface import provider
 from zope.pagetemplate.engine import ZopeBaseEngine
