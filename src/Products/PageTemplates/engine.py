@@ -20,12 +20,12 @@ from chameleon.exc import ExpressionError
 from chameleon.tal import RepeatDict
 from chameleon.tales import DEFAULT_MARKER  # only in chameleon 3.8.0 and up
 from chameleon.zpt.template import Macros
+from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.version_txt import getZopeVersion
 from MultiMapping import MultiMapping
-from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 from zope.interface import implementer
 from zope.interface import provider
 from zope.pagetemplate.engine import ZopeBaseEngine
@@ -37,6 +37,7 @@ from zope.tales.tales import Context
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
+from .interfaces import IZopeAwareEngine
 
 
 class _PseudoContext(object):
@@ -310,7 +311,7 @@ class Program(object):
 
     def __init__(self, template, engine):
         self.template = template
-        self.engine = engine
+        self.engine = IZopeAwareEngine(engine, engine)
 
     def __call__(self, context, macros, tal=True, **options):
         if tal is False:

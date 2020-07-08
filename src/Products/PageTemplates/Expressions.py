@@ -18,6 +18,8 @@ for Python expressions, string literals, and paths.
 
 import logging
 
+from Products.PageTemplates import ZRPythonExpr
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from six import binary_type
 from six import text_type
 
@@ -25,8 +27,6 @@ import OFS.interfaces
 from AccessControl import safe_builtins
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
-from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.component import queryUtility
@@ -48,6 +48,8 @@ from zope.tales.tales import ErrorInfo as BaseErrorInfo
 from zope.tales.tales import Iterator
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import ITraversable
+
+from .interfaces import IZopeAwareEngine
 
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
@@ -325,6 +327,12 @@ class ErrorInfo(BaseErrorInfo):
     __allow_access_to_unprotected_subobjects__ = True
 
 
+# Whether an engine is Zope aware does not depend on the class
+# but how it is configured - especially, that is uses a Zope aware
+# `PathExpr` implementation.
+# Nevertheless, we mark the class as "Zope aware" for simplicity
+# assuming that users of the class use a proper `PathExpr`
+@implementer(IZopeAwareEngine)
 class ZopeEngine(Z3Engine):
 
     _create_context = ZopeContext
