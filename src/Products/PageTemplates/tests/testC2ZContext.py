@@ -94,10 +94,10 @@ class C2ZContextTests(unittest.TestCase):
 
             def my_get(self, k):
                 return self[k]
-        
+
         c_context = self.c_context
         c_context["__zt_context__"] = my_context = MyContext()
-        zc = _C2ZContextWrapper(c_context, None) 
+        zc = _C2ZContextWrapper(c_context, None)
         # attributes in ``my_context``
         #   -- via method
         zc.set("attr")
