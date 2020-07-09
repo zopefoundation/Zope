@@ -1,14 +1,13 @@
 from ..expression import getEngine
-from .testHTMLTests import AqPageTemplate
-from .testHTMLTests import HTMLTests
+from . import testHTMLTests
 
 
-class ChameleonAqPageTemplate(AqPageTemplate):
+class ChameleonAqPageTemplate(testHTMLTests.AqPageTemplate):
     def pt_getEngine(self):
         return getEngine()
 
 
-class ChameleonTalesExpressionTests(HTMLTests):
+class ChameleonTalesExpressionTests(testHTMLTests.HTMLTests):
     def setUp(self):
         super().setUp()
         # override with templates using chameleon TALES expressions
