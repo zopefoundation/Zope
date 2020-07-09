@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.1 (unreleased)
 ------------------
 
+- Let "unicode conflict resolution" work for all templates (not just
+  ``ZopePageTemplate``).
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
