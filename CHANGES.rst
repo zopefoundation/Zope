@@ -11,6 +11,16 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
+  It can be used as the "provides" of an adapter registration
+  to adapt a non ``Zope`` tales engine to an engine to be used
+  by ``Zope`` page templates
+  (`#864 <https://github.com/zopefoundation/Zope/issues/864>`_).
+  Currently, the adaptation is used only when the
+  template is rendered with ``chameleon``;
+  with ``zope.pagetemplate``, the engine is used
+  as is - this may change in the future.
+
 - Allow (some) builtins as first element of a (TALES) path expression:
   in an untrusted context, the builtins from
   ``AccessControl.safe_builtins`` are allowed;
