@@ -1,10 +1,10 @@
 from ..engine import _compile_zt_expr
 from ..engine import _zt_expr_registry
 from ..Expressions import getEngine
-from .testHTMLTests import HTMLTests
+from . import testHTMLTests
 
 
-class ZopeTalesExpressionTests(HTMLTests):
+class ZopeTalesExpressionTests(testHTMLTests.HTMLTests):
     """The tests (currently) always use ``zope.tales`` expressions.
     The tests in this class ensure that the ``_zt_expr_registry``
     is cleared at the start and end of each test.
