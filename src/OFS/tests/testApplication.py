@@ -131,7 +131,12 @@ class ApplicationTests(unittest.TestCase):
         zversion = getZopeVersion()
 
         self.assertEqual(app.ZopeVersion(major=True), zversion.major)
-        self.assertEqual(app.ZopeVersion(), pkg_version)
+        # ZopeVersion will always return a normalized version with
+        # MAJOR.MINOR.FIX but pkg_version takes whatever the package claims,
+        # so we need to "normalize" pkg_version because we are not strict
+        # in our package version numbering.
+        self.assertEqual(app.ZopeVersion(),
+                         (pkg_version + ((2 - pkg_version.count('.')) * '.0')))
 
 
 class ApplicationPublishTests(FunctionalTestCase):
