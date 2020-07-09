@@ -1,11 +1,11 @@
-Zope==4.5
+-e git+https://github.com/zopefoundation/Zope.git@4.x#egg=Zope
 AccessControl==4.2
 Acquisition==4.6
 AuthEncoding==4.1
 BTrees==4.7.2
 Chameleon==3.8.1
 DateTime==4.3
-DocumentTemplate==3.2.3
+DocumentTemplate==3.3
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
@@ -48,7 +48,7 @@ zope.browsermenu==4.4
 zope.browserpage==4.4.0
 zope.browserresource==4.4
 zope.cachedescriptors==4.3.1
-zope.component==4.6.1
+zope.component==4.6.2
 zope.componentvocabulary==2.2.0
 zope.configuration==4.4.0
 zope.container==4.4.0
@@ -86,6 +86,6 @@ zope.tal==4.4
 zope.tales==5.1
 zope.testbrowser==5.5.1
 zope.testing==4.7
-zope.testrunner==5.1
+zope.testrunner==5.2
 zope.traversing==4.4.1
 zope.viewlet==4.2.1
