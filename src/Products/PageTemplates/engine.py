@@ -33,10 +33,10 @@ from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import SubPathExpr
-from zope.tales.tales import Context
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
+from .Expressions import ZopeContext
 from .interfaces import IZopeAwareEngine
 
 
@@ -148,7 +148,7 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
 _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 
-class _C2ZContextWrapper(Context):
+class _C2ZContextWrapper(ZopeContext):
     """Behaves like "zope" context with vars from "chameleon" context."""
     def __init__(self, c_context, attrs):
         self.__c_context = c_context

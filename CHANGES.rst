@@ -10,6 +10,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.4.5 (unreleased)
 ------------------
 
+- Make "Unicode Conflict Resolution" available for templates
+  rendered with ``chameleon``
+  (`Products.CMFPlone#3145
+  <https://github.com/plone/Products.CMFPlone/issues/3145>`_).
+
 - New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
   It can be used as the "provides" of an adapter registration
   to adapt a non ``Zope`` tales engine to an engine to be used
