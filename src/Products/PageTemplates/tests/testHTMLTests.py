@@ -24,6 +24,8 @@ from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
+from Products.PageTemplates.unicodeconflictresolver import \
+    PreferredCharsetResolver
 from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 
@@ -199,3 +201,9 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def testSwitch(self):
         self.assert_expected(self.folder.t, 'switch.html')
+
+    def test_unicode_conflict_resolution(self):
+        # override with the more "demanding" resolver
+        provideUtility(PreferredCharsetResolver)
+        t = PageTemplate()
+        self.assert_expected(t, 'UnicodeResolution.html')

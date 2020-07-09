@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Let "unicode conflict resolution" work for all templates (not just
+  ``ZopePageTemplate``).
+
 - Make "Unicode Conflict Resolution" available for templates
   rendered with ``chameleon``
   (`Products.CMFPlone#3145

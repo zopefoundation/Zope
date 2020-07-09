@@ -288,7 +288,8 @@ class ZopeContext(Context):
                 return text.decode('ascii')
 
             try:
-                return resolver.resolve(self.contexts['context'], text, expr)
+                return resolver.resolve(
+                    self.contexts.get('context'), text, expr)
             except UnicodeDecodeError as e:
                 LOG.error("UnicodeDecodeError detected for expression \"%s\"\n"
                           "Resolver class: %s\n"

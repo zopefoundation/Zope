@@ -96,6 +96,9 @@ class argv(Base):
 
 
 def check_html(s1, s2):
+    if not isinstance(s2, bytes) and isinstance(s1, bytes):
+        # convert to common type
+        s1 = s1.decode("utf-8")  # our encoding
     s1 = normalize_html(s1)
     s2 = normalize_html(s2)
     TEST_CASE.assertEqual(s1, s2)
