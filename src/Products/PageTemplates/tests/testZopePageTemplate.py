@@ -127,11 +127,11 @@ class ZPTUtilsTests(unittest.TestCase):
 
 
 class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
-    # BBB The unicode conflict resolution feature is only available
-    # for the old Zope page template engine!
+
+    select_engine = staticmethod(useOldZopeEngine)
 
     def afterSetUp(self):
-        useOldZopeEngine()
+        self.select_engine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         zope.component.provideAdapter(HTTPCharsets, (None,))
         provideUtility(PreferredCharsetResolver,
@@ -235,6 +235,12 @@ class ZPTUnicodeEncodingConflictResolution(ZopeTestCase):
                          u'<div tal:content="string:foo">foo</div>')
         self.app.REQUEST.debug.sourceAnnotations = True
         self.assertEqual(zpt.pt_render().startswith(u'<!--'), True)
+
+
+class ZPTUnicodeEncodingConflictResolution_chameleon(
+        ZPTUnicodeEncodingConflictResolution):
+
+    select_engine = staticmethod(useChameleonEngine)
 
 
 class ZopePageTemplateFileTests(ZopeTestCase):
