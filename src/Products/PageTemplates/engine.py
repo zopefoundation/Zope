@@ -36,7 +36,6 @@ from zope.tales.expressions import SubPathExpr
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
-from .Expressions import ZopeContext
 from .interfaces import IZopeAwareEngine
 
 
@@ -148,12 +147,12 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
 _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 
-class _C2ZContextWrapper(ZopeContext):
+class _C2ZContextWrapper(object):
     """Behaves like "zope" context with vars from "chameleon" context."""
     def __init__(self, c_context, attrs):
-        self.__c_context = c_context
-        self.__z_context = c_context["__zt_context__"]
-        self.__attrs = attrs
+        self._setattr("__c_context", c_context)
+        self._setattr("__z_context", c_context["__zt_context__"])
+        self._setattr("__attrs", attrs)
 
     # delegate to ``__c_context``
     @property
@@ -215,7 +214,26 @@ class _C2ZContextWrapper(ZopeContext):
 
     # delegate all else to ``__z_context``
     def __getattr__(self, attr):
-        return getattr(self.__z_context, attr)
+        zc = self.__z_context
+        a = getattr(zc, attr)
+        if getattr(a, "__self__", None) is zc:
+            # a method - we must rebind ``a`` to
+            # ensure it accesses the right ``vars``
+            a = type(a)(a.__func__, self)
+        return a
+
+    # put attributes into ``__z_context``
+    def __setattr__(self, attr, v):
+        setattr(self.__z_context, attr, v)
+
+    def __delattr__(self, attr):
+        delattr(self.__z_context, attr)
+
+    # auxiliary
+    def _setattr(self, attr, v):
+        # currently used only for *attr* with ``__`` prefix
+        super(_C2ZContextWrapper, self).__setattr__(
+            "_C2ZContextWrapper" + attr, v)
 
 
 _c_context_2_z_context_node = Static(Symbol(_C2ZContextWrapper))

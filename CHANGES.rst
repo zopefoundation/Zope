@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.1 (unreleased)
 ------------------
 
+- Make "chameleon-zope context wrapping" more faithful
+
 - Update dependencies to the latest releases that still support Python 2.
 
 

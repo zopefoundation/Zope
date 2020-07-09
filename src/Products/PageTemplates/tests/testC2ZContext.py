@@ -83,3 +83,33 @@ class C2ZContextTests(unittest.TestCase):
         self.assertIsNone(c["attrs"])
         c.setLocal("attrs", "hallo")
         self.assertEqual(c["attrs"], "hallo")
+
+    def test_faithful_wrapping(self):
+        class MyContext(object):
+            def set(self, v):
+                self.attr = v
+
+            def get_vars(self):
+                return self.vars
+
+            def my_get(self, k):
+                return self[k]
+        
+        c_context = self.c_context
+        c_context["__zt_context__"] = my_context = MyContext()
+        zc = _C2ZContextWrapper(c_context, None) 
+        # attributes in ``my_context``
+        #   -- via method
+        zc.set("attr")
+        self.assertEqual(my_context.attr, "attr")
+        #  -- via wrapper
+        zc.wattr = "wattr"
+        self.assertEqual(my_context.wattr, "wattr")
+        # correct ``vars``
+        self.assertIs(zc.get_vars(), zc)
+        # correct subscription
+        zc.setLocal("a", "a")
+        self.assertEqual(zc.my_get("a"), "a")
+        # correct attribute access
+        my_context.my_attr = "my_attr"
+        self.assertEqual(zc.my_attr, "my_attr")
