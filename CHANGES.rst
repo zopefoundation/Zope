@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.5 (unreleased)
+4.5 (2020-07-09)
 ----------------
 
 - Make "Unicode Conflict Resolution" available for templates
