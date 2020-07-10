@@ -187,6 +187,9 @@ class Name2KeyError(Mapping):
     def __iter__(self):
         return iter(self.data)
 
+    def __len__(self):
+        return len(self.data)
+
 
 class _C2ZContextWrapperBase(object):
     """Behaves like "zope" context with vars from "chameleon" context.
