@@ -16,6 +16,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Let "unicode conflict resolution" work for all templates (not just
   ``ZopePageTemplate``).
+  (`#872 <https://github.com/zopefoundation/Zope/pull/872/files>`_)
 
 - Update dependencies to the latest releases that still support Python 2.
 
