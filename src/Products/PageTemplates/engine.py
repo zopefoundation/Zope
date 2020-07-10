@@ -12,6 +12,8 @@ in the future.
 import ast
 import logging
 import re
+from collections.abc import Mapping
+from weakref import ref
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
@@ -36,7 +38,6 @@ from zope.tales.expressions import SubPathExpr
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter
-from .Expressions import ZopeContext
 from .interfaces import IZopeAwareEngine
 
 
@@ -146,60 +147,66 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
 _compile_zt_expr_node = Static(Symbol(_compile_zt_expr))
 
 
-class _C2ZContextWrapper(ZopeContext):
-    """Behaves like "zope" context with vars from "chameleon" context."""
-    def __init__(self, c_context, attrs):
-        self.__c_context = c_context
-        self.__z_context = c_context["__zt_context__"]
-        self.__attrs = attrs
+# map context class to context wrapper class
+_context_class_registry = {}
 
-    # delegate to ``__c_context``
-    @property
-    def vars(self):
-        return self
+
+def _with_vars_from_chameleon(context):
+    """prepare *context* to get its ``vars`` from ``chameleon``."""
+    cc = context.__class__
+    wc = _context_class_registry.get(cc)
+    if wc is None:
+        class ContextWrapper(_C2ZContextWrapperBase, cc):
+            pass
+
+        wc = _context_class_registry[cc] = ContextWrapper
+    context.__class__ = wc
+    return ref(context)
+
+
+class Name2KeyError(Mapping):
+    # auxiliary class to convert ``chameleon``'s ``NameError``
+    # into ``KeyError``
+    def __init__(self, mapping):
+        self.data = mapping
 
     def __getitem__(self, key):
         try:
-            return self.__c_context.__getitem__(key)
-        except NameError:  # Exception for missing key
-            if key == "attrs":
-                return self.__attrs
+            return self.data[key]
+        except NameError:
             raise KeyError(key)
 
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+
+class _C2ZContextWrapperBase(object):
+    """Behaves like "zope" context with vars from "chameleon" context.
+
+    It is assumed that an instance holds the current ``chameleon``
+    context in its attribute ``_c_context``.
+    """
+    @property
+    def vars(self):
+        return Name2KeyError(self._c_context)
+
+    # delegate to `_c_context`
     def getValue(self, name, default=None):
         try:
-            return self[name]
-        except KeyError:
+            return self._c_context[name]
+        except NameError:
             return default
 
     get = getValue
 
     def setLocal(self, name, value):
-        self.__c_context.setLocal(name, value)
+        self._c_context.setLocal(name, value)
 
     def setGlobal(self, name, value):
-        self.__c_context.setGlobal(name, value)
-
-    # delegate reading ``dict`` methods to ``c_context``
-    #   Note: some "global"s might be missing
-    #   Note: we do not expect that modifying ``dict`` methods are used
-    def __iter__(self):
-        return iter(self.__c_context)
-
-    def keys(self):
-        return self.__c_context.keys()
-
-    def values(self):
-        return self.__c_context.values()
-
-    def items(self):
-        return self.__c_context.items()
-
-    def __len__(self):
-        return len(self.__c_context)
-
-    def __contains__(self, k):
-        return k in self.__c_context
+        self._c_context.setGlobal(name, value)
 
     # unsupported methods
     def beginScope(self, *args, **kw):
@@ -207,13 +214,20 @@ class _C2ZContextWrapper(ZopeContext):
         raise NotImplementedError()
 
     endScope = beginScope
-    setContext = beginScope
     setSourceFile = beginScope
     setPosition = beginScope
+    setRepeat = beginScope
 
-    # delegate all else to ``__z_context``
-    def __getattr__(self, attr):
-        return getattr(self.__z_context, attr)
+    # work around bug in ``zope.tales.tales.Context``
+    def getDefault(self):
+        return self.contexts["default"]
+
+
+def _C2ZContextWrapper(c_context, attrs):
+    c_context["attrs"] = attrs
+    zt_context = c_context["__zt_context__"]()
+    zt_context._c_context = c_context
+    return zt_context
 
 
 _c_context_2_z_context_node = Static(Symbol(_C2ZContextWrapper))
@@ -322,9 +336,11 @@ class Program:
         #   and evaluation
         #   unused for ``chameleon.tales`` expressions
         kwargs["__zt_engine__"] = self.engine
-        kwargs["__zt_context__"] = context
+        kwargs["__zt_context__"] = _with_vars_from_chameleon(context)
 
         template = self.template
+        # ensure ``chameleon`` ``default`` representation
+        context.setContext("default", DEFAULT_MARKER)
         kwargs["default"] = DEFAULT_MARKER
 
         return template.render(**kwargs)
