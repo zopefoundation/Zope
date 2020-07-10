@@ -12,7 +12,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 ------------------
 
 
-- Make "chameleon-zope context wrapping" more faithful
+- Make "chameleon-zope context wrapping" more faithful.
+  (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)
 
 - Let "unicode conflict resolution" work for all templates (not just
   ``ZopePageTemplate``).
