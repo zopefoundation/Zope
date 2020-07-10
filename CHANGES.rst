@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.1 (unreleased)
 ------------------
 
+
+- Make "chameleon-zope context wrapping" more faithful
+
 - Let "unicode conflict resolution" work for all templates (not just
   ``ZopePageTemplate``).
 
