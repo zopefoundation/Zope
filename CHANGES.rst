@@ -17,6 +17,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Let "unicode conflict resolution" work for all templates (not just
   ``ZopePageTemplate``).
+  (`#872 <https://github.com/zopefoundation/Zope/pull/872/files>`_)
 
 - Make "Unicode Conflict Resolution" available for templates
   rendered with ``chameleon``
