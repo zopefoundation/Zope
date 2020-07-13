@@ -1,8 +1,6 @@
 Appendix C: Zope Page Templates Reference
 #########################################
 
-.. include:: includes/zope2_notice.rst
-
 Zope Page Templates are an HTML/XML generation tool. This appendix is a
 reference to Zope Page Templates standards: Template Attribute Language (TAL),
 TAL Expression Syntax (TALES), and Macro Expansion TAL (METAL). It also
@@ -20,7 +18,7 @@ attributes can be applied to an XML or HTML document in order to make it act as
 a template.
 
 A **TAL statement** has a name (the attribute name) and a body (the attribute
-value). For example, an `content` statement might look like::
+value). For example, a ``content`` statement might look like::
 
   tal:content="string:Hello"
 
@@ -40,7 +38,7 @@ This is not a URL, but merely a unique identifier. Do not expect a browser to
 resolve it successfully.
 
 Zope does not require an XML namespace declaration when creating templates with
-a content-type of `text/html`. However, it does require an XML namespace
+a content-type of ``text/html``. However, it does require an XML namespace
 declaration for all other content-types.
 
 TAL Statements
@@ -52,7 +50,11 @@ These are the tal statements:
 
 - tal:define - define variables.
 
+- tal:switch - define a switch condition
+
 - tal:condition - test conditions.
+
+- tal:case - include element only if expression is equal to parent switch
 
 - tal:content - replace the content of an element.
 
@@ -80,7 +82,7 @@ are executed, then each of its child elements is visited, in order, to do the
 same.
 
 Any combination of statements may appear on the same elements, except that the
-`content` and `replace` statements may not appear together.
+``content`` and ``replace`` statements may not appear together.
 
 Due to the fact that TAL sees statements as XML attributes, even in HTML
 documents, it cannot use the order in which statements are written in the tag
@@ -93,17 +95,21 @@ When an element has multiple statements, they are executed in this order:
 
 1. define
 
-2. condition
+2. switch
 
-3. repeat
+3. condition
 
-4. content or replace
+4. repeat
 
-5. attributes
+5. case
 
-6. omit-tag
+6. content or replace
 
-Since the `on-error` statement is only invoked when an error occurs, it does
+7. attributes
+
+8. omit-tag
+
+Since the ``on-error`` statement is only invoked when an error occurs, it does
 not appear in the list.
 
 It may not be apparent that there needs to be an ordering. The reason that
@@ -116,14 +122,15 @@ complex TAL, a precedence order was chosen according to the following
 rationale.
 
 The reasoning behind this ordering goes like this: You often want to set up
-variables for use in other statements, so `define` comes first. The very next
-thing to do is decide whether this element will be included at all, so
-`condition` is next; since the condition may depend on variables you just set,
-it comes after `define`. It is valuable be able to replace various parts of an
-element with different values on each iteration of a repeat, so `repeat` is
-next. It makes no sense to replace attributes and then throw them away, so
-`attributes` is last. The remaining statements clash, because they each replace
-or edit the statement element.
+variables for use in other statements, so ``define`` comes first. Then any
+switch statement. The very next thing to do is decide whether this element
+will be included at all, so ``condition`` is next; since the condition may depend
+on variables you just set, it comes after ``define``. It is valuable be able to
+replace various parts of an element with different values on each iteration of
+a repeat, so ``repeat`` is next, followed by ``case``. It makes no sense to
+replace attributes and then throw them away, so ``attributes`` is last. The
+remaining statements clash, because they each replace or edit the statement
+element.
 
 attributes: Replace element attributes
 ======================================
@@ -144,7 +151,7 @@ escaped by doubling it (;;).*
 Description
 +++++++++++
 
-The `tal:attributes` statement replaces the value of an attribute (or creates
+The ``tal:attributes`` statement replaces the value of an attribute (or creates
 an attribute) with a dynamic value. You can qualify an attribute name with a
 namespace prefix, for example::
 
@@ -159,11 +166,11 @@ expression evaluates to *default*, then that attribute is left unchanged. Each
 attribute assignment is independent, so attributes may be assigned in the same
 statement in which some attributes are deleted and others are left alone.
 
-If you use `tal:attributes` on an element with an active `tal:replace` command,
-the `tal:attributes` statement is ignored.
+If you use ``tal:attributes`` on an element with an active ``tal:replace``
+command, the ``tal:attributes`` statement is ignored.
 
 
-If you use `tal:attributes` on an element with a `tal:repeat` statement, the
+If you use ``tal:attributes`` on an element with a ``tal:repeat`` statement, the
 replacement is made on each repetition of the element, and the replacement
 expression is evaluated fresh for each repetition.
 
@@ -194,7 +201,7 @@ tal:condition syntax::
 Description
 +++++++++++
 
-The `tal:condition` statement includes the statement element in the template
+The ``tal:condition`` statement includes the statement element in the template
 only if the condition is met, and omits it otherwise. If its expression
 evaluates to a *true* value, then normal processing of the element continues,
 otherwise the statement element is immediately removed from the template. For
@@ -237,14 +244,14 @@ Description
 +++++++++++
 
 Rather than replacing an entire element, you can insert text or structure in
-place of its children with the `tal:content` statement. The statement argument
-is exactly like that of `tal:replace`, and is interpreted in the same fashion.
+place of its children with the ``tal:content`` statement. The statement argument
+is exactly like that of ``tal:replace``, and is interpreted in the same fashion.
 If the expression evaluates to *nothing*, the statement element is left
 childless. If the expression evaluates to *default*, then the element's
 contents are unchanged.
 
-The default replacement behavior is `text`, which replaces angle-brackets and
-ampersands with their HTML entity equivalents. The `structure` keyword passes
+The default replacement behavior is ``text``, which replaces angle-brackets and
+ampersands with their HTML entity equivalents. The ``structure`` keyword passes
 the replacement text through unchanged, allowing HTML/XML markup to be
 inserted. This can break your page if the text contains unanticipated markup
 (e.g.. text submitted via a web form), which is the reason that it is not the
@@ -282,7 +289,7 @@ escaped by doubling it (;;).*
 Description
 +++++++++++
 
-The `tal:define` statement defines variables. You can define two different
+The ``tal:define`` statement defines variables. You can define two different
 kinds of TAL variables: local and global. When you define a local variable in a
 statement element, you can only use that variable in that element and the
 elements it contains. If you redefine a local variable in a contained element,
@@ -311,6 +318,56 @@ Defining two variables, where the second depends on the first::
   tal:define="mytitle template/title; tlen python:len(mytitle)"
 
 
+switch and case: Set up a switch statement
+==========================================
+
+Defines a switch clause.
+
+::
+
+  <ul tal:switch="len(items) % 2">
+    <li tal:case="True">odd</li>
+    <li tal:case="False">even</li>
+  </ul>
+
+Syntax
+++++++
+
+``tal:case`` and ``tal:switch`` syntax::
+
+    argument ::= expression
+
+Description
++++++++++++
+
+The *switch* and *case* construct is a short-hand syntax for matching
+a set of expressions against a single parent.
+
+The ``tal:switch`` statement is used to set a new parent expression
+and the contained ``tal:case`` statements are then matched in sequence
+such that only the first match succeeds.
+
+Note that the symbol ``default`` affirms the case precisely when no
+previous case has been successful. It should therefore be placed last.
+
+Examples
+++++++++
+
+::
+
+  <ul tal:switch="item/type">
+    <li tal:case="string:document">
+      Document
+    </li>
+    <li tal:case="string:folder">
+      Folder
+    </li>
+    <li tal:case="default">
+      Other
+    </li>
+  </ul>
+
+
 omit-tag: Remove an element, leaving its contents
 =================================================
 
@@ -324,7 +381,7 @@ tal:omit-tag syntax::
 Description
 +++++++++++
 
-The `tal:omit-tag` statement leaves the contents of an element in place while
+The ``tal:omit-tag`` statement leaves the contents of an element in place while
 omitting the surrounding start and end tags.
 
 If the expression evaluates to a *false* value, then normal processing of the
@@ -350,7 +407,7 @@ Conditionally omitting a tag::
     I may be bold.
   </b>
 
-The above example will omit the `b` tag if the variable `bold` is false.
+The above example will omit the ``b`` tag if the variable ``bold`` is false.
 
 Creating ten paragraph tags, with no enclosing tag::
 
@@ -373,13 +430,13 @@ tal:on-error syntax::
 Description
 +++++++++++
 
-The `tal:on-error` statement provides error handling for your template. When a
+The ``tal:on-error`` statement provides error handling for your template. When a
 TAL statement produces an error, the TAL interpreter searches for a
-`tal:on-error` statement on the same element, then on the enclosing element,
-and so forth. The first `tal:on-error` found is invoked. It is treated as a
-`tal:content` statement.
+``tal:on-error`` statement on the same element, then on the enclosing element,
+and so forth. The first ``tal:on-error`` found is invoked. It is treated as a
+``tal:content`` statement.
 
-A local variable `error` is set. This variable has these attributes:
+A local variable ``error`` is set. This variable has these attributes:
 
 type
   the exception type
@@ -390,7 +447,7 @@ value
 traceback
   the traceback object
 
-The simplest sort of `tal:on-error` statement has a literal error string or
+The simplest sort of ``tal:on-error`` statement has a literal error string or
 *nothing* for an expression. A more complex handler may call a script that
 examines the error and either emits error text or raises an exception to
 propagate the error outwards.
@@ -442,13 +499,13 @@ tal:repeat syntax::
 Description
 +++++++++++
 
-The `tal:repeat` statement replicates a sub-tree of your document once for each
+The ``tal:repeat`` statement replicates a sub-tree of your document once for each
 item in a sequence. The expression should evaluate to a sequence. If the
 sequence is empty, then the statement element is deleted, otherwise it is
 repeated for each value in the sequence. If the expression is *default*, then
 the element is left unchanged, and no new variables are defined.
 
-The `variable_name` is used to define a local variable and a repeat variable.
+The ``variable_name`` is used to define a local variable and a repeat variable.
 For each repetition, the local variable is set to the current sequence element,
 and the repeat variable is set to an iteration object.
 
@@ -457,7 +514,7 @@ Repeat Variables
 
 You use repeat variables to access information about the current repetition
 (such as the repeat index). The repeat variable has the same name as the local
-variable, but is only accessible through the built-in variable named `repeat`.
+variable, but is only accessible through the built-in variable named ``repeat``.
 
 
 The following information is available from the repeat variable:
@@ -480,7 +537,7 @@ The following information is available from the repeat variable:
 - *last*- - true for the last item in a group - see note below
 
 - *length*- - length of the sequence, which will be the total number of
-  repetitions.
+  repetitions - unsafe, see note below
 
 - *letter*- - repetition number as a lower-case letter: "a" - "z", "aa" - "az",
   "ba" - "bz", ..., "za" - "zz", "aaa" - "aaz", and so forth.
@@ -494,16 +551,19 @@ The following information is available from the repeat variable:
 
 You can access the contents of the repeat variable using path expressions or
 Python expressions. In path expressions, you write a three-part path consisting
-of the name `repeat`, the statement variable's name, and the name of the
-information you want, for example, `repeat/item/start`. In Python expressions,
+of the name ``repeat``, the statement variable's name, and the name of the
+information you want, for example, ``repeat/item/start``. In Python expressions,
 you use normal dictionary notation to get the repeat variable, then attribute
-access to get the information, for example, "python:repeat['item'].start".
+access to get the information, for example, ``python:repeat['item'].start``.
 
-With the exception of `start`, `end`, and `index`, all of the attributes of a
-repeat variable are methods. Thus, when you use a Python expression to access
-them, you must call them, as in "python:repeat['item'].length()".
+With the exception of ``start``, ``end``, and ``index``, all of the attributes
+of a repeat variable are methods. Thus, when you use a Python expression to
+access them, you must call them, as in ``python:repeat['item'].length()``.
 
-Note that `first` and `last` are intended for use with sorted sequences. They
+The ``length`` attrubute will lead to a page error if the sequence that is
+being iterated has no ``len`` method, thus it is somewhat unsafe to use.
+
+Note that ``first`` and ``last`` are intended for use with sorted sequences. They
 try to divide the sequence into group of items with the same value. If you
 provide a path, then the value obtained by following that path from a sequence
 item is used for grouping, otherwise the value of the item is used. You can
@@ -512,7 +572,7 @@ provide the path by passing it as a parameter, as in::
   python:repeat['item'].first(color)
   
 or by appending it to the path from the repeat variable, as in
-"repeat/item/first/color".
+``repeat/item/first/color``.
 
 Examples
 ++++++++
@@ -575,13 +635,13 @@ tal:replace syntax::
 Description
 +++++++++++
 
-The `tal:replace` statement replaces an element with dynamic content. It
+The ``tal:replace`` statement replaces an element with dynamic content. It
 replaces the statement element with either text or a structure (unescaped
 markup). The body of the statement is an expression with an optional type
 prefix. The value of the expression is converted into an escaped string if you
-prefix the expression with `text` or omit the prefix, and is inserted unchanged
-if you prefix it with `structure`. Escaping consists of converting "&amp;" to
-"&amp;amp;", "&lt;" to "&amp;lt;", and "&gt;" to "&amp;gt;".
+prefix the expression with ``text`` or omit the prefix, and is inserted unchanged
+if you prefix it with ``structure``. Escaping consists of converting ``&amp;`` to
+``&amp;amp;``, ``&lt;`` to ``&amp;lt;``, and ``&gt;`` to ``&amp;gt;``.
 
 If the value is *nothing*, then the element is simply removed. If the value is
 *default*, then the element is left unchanged.
@@ -669,7 +729,7 @@ These are the names always available to TALES expressions in Zope:
   generally available when a template is called from Methods and Scripts,
   rather than from the web.
 
-- *repeat*- - the repeat variables; see the tal:repeat documentation.
+- *repeat*- - the repeat variables; see the ``tal:repeat`` documentation.
 
 - *attrs*- - a dictionary containing the initial values of the attributes of
   the current statement tag.
@@ -690,20 +750,20 @@ These are the names always available to TALES expressions in Zope:
   accessed. Only modules which are approved by the Zope security policy can be
   accessed.
 
-Note the names `root`, `context`, `container`, `template`, `request`, `user`, and
-`modules` are optional names supported by Zope, but are not required by the
-TALES standard.
+Note the names ``root``, ``context``, ``container``, ``template``, ``request``,
+``user``, and ``modules`` are optional names supported by Zope, but are not
+required by the TALES standard.
 
 Note that the (popular) ``chameleon`` template engine implements ``attrs``
 and ``default`` not as standard variables but in a special way.
 Trying to change their value may have undefined effects.
 
-Note that beside variables you can use ``CONTEXTS``
+Besides variables you can use ``CONTEXTS``
 as initial element in a path expression. Its value is a mapping
 from predefined variable names to their value. This can be used to
 access the predefined variable when it is hidden by a user defined
-definition for its name. Again, `attrs` is special; it is not covered
-by `CONTEXTS`.
+definition for its name. Again, ``attrs`` is special; it is not covered
+by ``CONTEXTS``.
 
 
 TALES Exists expressions
@@ -732,8 +792,8 @@ Testing for the existence of a form variable::
     Please enter a number between 0 and 5
   </p>
 
-Note that in this case you can't use the expression, `not:request/form/number`,
-since that expression will be true if the `number` variable exists and is zero.
+Note that in this case you can't use the expression, ``not:request/form/number``,
+since that expression will be true if the ``number`` variable exists and is zero.
 
 TALES Nocall expressions
 ========================
@@ -772,7 +832,7 @@ Using nocall expressions on a functions::
 
   <p tal:define="join nocall:modules/string/join">
 
-This example defines a variable:: `join` which is bound to the `string.join`
+This example defines a variable:: ``join`` which is bound to the ``string.join``
 function.
 
 TALES Not expressions
@@ -838,14 +898,14 @@ Description
 +++++++++++
 
 A path expression consists of a *path* optionally followed by a vertical bar
-(|) and alternate expression. A path consists of one or more non-empty strings
+(``|``) and alternate expression. A path consists of one or more non-empty strings
 separated by slashes. The first string must be a variable name (a built-in
 variable or a user defined variable), and the remaining strings, the *path
 segments*, may contain letters, digits, spaces, and the punctuation characters
 underscore, dash, period, comma, and tilde.
 
 A limited amount of indirection is possible by using a variable name prefixed
-with `?` as a path segment. The variable must contain a string, which replaces
+with ``?`` as a path segment. The variable must contain a string, which replaces
 that segment before the path is traversed.
 
 For example::
@@ -888,10 +948,10 @@ Since every path must start with a variable name, you need a set of starting
 variables that you can use to find other objects and values. See the TALES
 overview for a list of built-in variables. Variable names are looked up first
 in locals, then in globals, then in the built-in list, so the built-in
-variables act just like built-ins in Python; They are always available, but
+variables act just like built-ins in Python: They are always available, but
 they can be shadowed by a global or local variable declaration. You can always
-access the built-in names explicitly by prefixing them with *CONTEXTS*. (e.g.
-CONTEXTS/root, CONTEXTS/nothing, etc).
+access the built-in names explicitly by prefixing them with ``CONTEXTS``. (e.g.
+``CONTEXTS/root``, ``CONTEXTS/nothing``, etc).
 
 Examples
 ++++++++
@@ -956,6 +1016,8 @@ These standard Python built-ins are available:
 
 - apply
 
+- bytes
+
 - callable
 
 - chr
@@ -1006,12 +1068,14 @@ These standard Python built-ins are available:
 
 - setattr
 
+- sorted
+
 - str
 
 - tuple
 
-The `range` and `pow` functions are available and work the same way they do in
-standard Python; however, they are limited to keep them from generating very
+The ``range`` and ``pow`` functions are available and work the same way they do
+in standard Python; however, they are limited to keep them from generating very
 large numbers and sequences. This limitation helps to avoid accidental long
 execution times.
 
@@ -1035,8 +1099,8 @@ Python Modules
 
 A number of Python modules are available by default. You can make more modules
 available. You can access modules either via path expressions (for example
-`modules/string/join`) or in Python with the `modules` mapping object (for
-example `modules["string"].join`). Here are the default modules:
+``modules/string/join``) or in Python with the ``modules`` mapping object (for
+example ``modules["string"].join``). Here are the default modules:
 
 string
   The standard `Python string module
@@ -1044,9 +1108,7 @@ string
   the functions in the module are also available as methods on string objects.
 
 random
-
-The standard 
-  `Python random module
+  The standard `Python random module
   <http://www.python.org/doc/current/lib/module-random.html>`_
 
 math
@@ -1059,9 +1121,11 @@ sequence
 Products.PythonScripts.standard
   Various HTML formatting functions available in DTML. See
   Products.PythonScripts.standard for more information.
+  You need to install the ``Products.PythonScripts`` package before you can use
+  this module.
 
 ZTUtils
-  Batch processing facilities similar to those offered by `dtml-in`. See
+  Batch processing facilities similar to those offered by ``dtml-in``. See
   ZTUtils for more information.
 
 AccessControl
@@ -1114,10 +1178,10 @@ Description
 
 String expressions interpret the expression string as text. If no expression
 string is supplied the resulting string is *empty*. The string can contain
-variable substitutions of the form `$name` or `${path}`, where `name` is a
-variable name, and `path` is a path expression. The escaped string value of the
-path expression is inserted into the string. To prevent a `$` from being
-interpreted this way, it must be escaped as `$$`.
+variable substitutions of the form ``$name`` or ``${path}``, where ``name`` is a
+variable name, and ``path`` is a path expression. The escaped string value of the
+path expression is inserted into the string. To prevent a ``$`` from being
+interpreted this way, it must be escaped as ``$$``.
 
 Examples
 ++++++++
@@ -1164,7 +1228,7 @@ Just like the TAL namespace URI, this URI is not attached to a web page; it's
 just a unique identifier.
 
 Zope does not require an XML namespace declaration when creating templates with
-a content-type of `text/html`. However, it does require an XML namespace
+a content-type of ``text/html``. However, it does require an XML namespace
 declaration for all other content-types.
 
 METAL Statements
@@ -1197,12 +1261,12 @@ metal:define-macro syntax::
 Description
 +++++++++++
 
-The `metal:define-macro` statement defines a macro. The macro is named by the
+The ``metal:define-macro`` statement defines a macro. The macro is named by the
 statement expression, and is defined as the element and its sub-tree.
 
 In Zope, a macro definition is available as a sub-object of a template's
-`macros` object. For example, to access a macro named `header` in a template
-named `master.html`, you could use the path expression::
+``macros`` object. For example, to access a macro named ``header`` in a template
+named ``master.html``, you could use the path expression::
 
   master.html/macros/header
 
@@ -1229,13 +1293,13 @@ metal:define-slot syntax::
 Description
 +++++++++++
 
-The `metal:define-slot` statement defines a macro customization point or
+The ``metal:define-slot`` statement defines a macro customization point or
 *slot*. When a macro is used, its slots can be replaced, in order to customize
 the macro. Slot definitions provide default content for the slot. You will get
 the default slot contents if you decide not to customize the macro when using
 it.
 
-The `metal:define-slot` statement must be used inside a `metal:define-macro`
+The ``metal:define-slot`` statement must be used inside a ``metal:define-macro``
 statement.
 
 Slot names must be unique within a macro.
@@ -1249,8 +1313,8 @@ Simple macro with slot::
     Hello <b metal:define-slot="name">World</b>
   </p>
 
-This example defines a macro with one slot named `name`. When you use this
-macro you can customize the `b` element by filling the `name` slot.
+This example defines a macro with one slot named ``name``. When you use this
+macro you can customize the ``b`` element by filling the ``name`` slot.
 
 fill-slot: Customize a macro
 ============================
@@ -1265,10 +1329,10 @@ metal:fill-slot syntax::
 Description
 +++++++++++
 
-The `metal:fill-slot` statement customizes a macro by replacing a *slot* in the
+The ``metal:fill-slot`` statement customizes a macro by replacing a *slot* in the
 macro with the statement element (and its content).
 
-The `metal:fill-slot` statement must be used inside a `metal:use-macro`
+The ``metal:fill-slot`` statement must be used inside a ``metal:use-macro``
 statement. Slot names must be unique within a macro.
 
 If the named slot does not exist within the macro, the slot contents will be
@@ -1283,7 +1347,7 @@ Given this macro::
     Hello <b metal:define-slot="name">World</b>
   </p>
 
-You can fill the `name` slot like so::
+You can fill the ``name`` slot like so::
 
   <p metal:use-macro="container/master.html/macros/hello">
     Hello <b metal:fill-slot="name">Kevin Bacon</b>
@@ -1302,22 +1366,22 @@ metal:use-macro syntax::
 Description
 +++++++++++
 
-The `metal:use-macro` statement replaces the statement element with a macro.
+The ``metal:use-macro`` statement replaces the statement element with a macro.
 The statement expression describes a macro definition.
 
 In Zope the expression will generally be a path expression referring to a macro
-defined in another template. See "metal:define-macro" for more information.
+defined in another template. See ``metal:define-macro`` for more information.
 
 The effect of expanding a macro is to graft a subtree from another document (or
 from elsewhere in the current document) in place of the statement element,
 replacing the existing sub-tree. Parts of the original subtree may remain,
-grafted onto the new subtree, if the macro has *slots*. See metal:define-slot
-for more information. If the macro body uses any macros, they are expanded
-first.
+grafted onto the new subtree, if the macro has *slots*. See
+``metal:define-slot`` for more information. If the macro body uses any macros,
+they are expanded first.
 
-When a macro is expanded, its `metal:define-macro` attribute is replaced with
-the `metal:use-macro` attribute from the statement element. This makes the root
-of the expanded macro a valid `use-macro` statement element.
+When a macro is expanded, its ``metal:define-macro`` attribute is replaced with
+the ``metal:use-macro`` attribute from the statement element. This makes the root
+of the expanded macro a valid ``use-macro`` statement element.
 
 Examples
 ++++++++
@@ -1328,10 +1392,10 @@ Basic macro usage::
     header macro from defined in other.html template
   </p>
 
-This example refers to the `header` macro defined in the `other.html` template
-which is in the same folder as the current template. When the macro is
-expanded, the `p` element and its contents will be replaced by the macro. Note:
-there will still be a `metal:use-macro` attribute on the replacement element.
+This example refers to the ``header`` macro defined in the ``other.html``
+template which is in the same folder as the current template. When the macro is
+expanded, the ``p`` element and its contents will be replaced by the macro. Note:
+there will still be a ``metal:use-macro`` attribute on the replacement element.
 
 ZPT-specific Behaviors
 ======================
@@ -1343,30 +1407,30 @@ features that are not described in the standards.
 HTML Support Features
 +++++++++++++++++++++
 
-When the content-type of a Page Template is set to `text/html`, Zope processes
+When the content-type of a Page Template is set to ``text/html``, Zope processes
 the template somewhat differently than with any other content-type. As
 mentioned under TAL Namespace, HTML documents are not required to declare
-namespaces, and are provided with `tal` and `metal` namespaces by default.
+namespaces, and are provided with ``tal`` and ``metal`` namespaces by default.
 
 HTML documents are parsed using a non-XML parser that is somewhat more
 forgiving of malformed markup. In particular, elements that are often written
 without closing tags, such as paragraphs and list items, are not treated as
 errors when written that way, unless they are statement elements. This laxity
-can cause a confusing error in at least one case; a `<div>` element is
-block-level, and therefore technically not allowed to be nested in a `<p>`
+can cause a confusing error in at least one case; a ``<div>`` element is
+block-level, and therefore technically not allowed to be nested in a ``<p>``
 element, so it will cause the paragraph to be implicitly closed. The closing
-`</p>` tag will then cause a NestingError, since it is not matched up with the
-opening tag. The solution is to use `<span>` instead.
+``</p>`` tag will then cause a NestingError, since it is not matched up with the
+opening tag. The solution is to use ``<span>`` instead.
 
 Unclosed statement elements are always treated as errors, so as not to cause
 subtle errors by trying to infer where the element ends. Elements which
 normally do not have closing tags in HTML, such as image and input elements,
-are not required to have a closing tag, or to use the XHTML `<tag />` form.
+are not required to have a closing tag, or to use the XHTML ``<tag />`` form.
 
-Certain boolean attributes, such as `checked` and `selected`, are treated
-differently by `tal:attributes`. The value is treated as true or false (as
-defined by `tal:condition`). The attribute is set to `attr="attr"` in the true
-case and omitted otherwise. If the value is `default`, then it is treated as
+Certain boolean attributes, such as ``checked`` and ``selected``, are treated
+differently by ``tal:attributes``. The value is treated as true or false (as
+defined by ``tal:condition``). The attribute is set to ``attr="attr"`` in the true
+case and omitted otherwise. If the value is ``default``, then it is treated as
 true if the attribute already exists, and false if it does not. For example,
 each of the following lines::
 

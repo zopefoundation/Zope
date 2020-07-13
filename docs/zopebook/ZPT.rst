@@ -1,8 +1,6 @@
 Using Zope Page Templates
 =========================
 
-.. include:: includes/zope2_notice.rst
-
 *Page Templates* are a web page generation tool.  They help programmers and
 designers collaborate in producing dynamic web pages for Zope web
 applications.  Designers can use them to maintain pages without having to
@@ -41,7 +39,7 @@ HTML Page Templates
 *Page Templates* can operate in two modes: *HTML Mode* and *XML Mode*.
 Later in this chapter we will show you how to use the *XML Mode*, but in
 most cases we want to use the *HTML Mode* which is also the default mode.
-For the *HTML Mode* the *Content-Type* has to be set to 'text/html'.
+For the *HTML Mode* the *Content-Type* has to be set to ``text/html``.
 
 HTML isn't XML-conform and can't be extended by a template language.  So
 while rendered HTML *Page Templates* should return valid HTML, their
@@ -65,20 +63,20 @@ headline might look like this::
 
   <h1 tal:content="context/title">Sample Page Title</h1>
 
-The 'tal:content' attribute is a *TAL* statement.  Since it has an XML
-namespace (the 'tal:' part) most editing tools will not complain that
+The ``tal:content`` attribute is a *TAL* statement.  Since it has an XML
+namespace (the ``tal:`` part) most editing tools will not complain that
 they don't understand it, and will not remove it.  It will not change
 the structure or appearance of the template when loaded into a WYSIWYG
 editor or a web browser.  The name *content* indicates that it will set
-the text contained by the 'h1' tag, and the value 'context/title' is an
+the text contained by the ``h1`` tag, and the value ``context/title`` is an
 expression providing the text to insert into the tag.  Given the text
-specified by 'context/title' resolves to "Susan Jones Home Page", the
+specified by ``context/title`` resolves to "Susan Jones Home Page", the
 generated HTML snippet looks like this::
 
   <h1>Susan Jones Home Page</h1>
 
 All *TAL* statements consist of tag attributes whose name starts with
-'tal:' and all *TAL* statements have values associated with them.  The
+``tal:`` and all *TAL* statements have values associated with them.  The
 value of a *TAL* statement is shown inside quotes.  See Appendix C,
 `Zope Page Templates Reference <AppendixC.html>`_, for more information
 on *TAL*.
@@ -95,7 +93,7 @@ The template provides an example of how generated documents will look.
 
 When this template is saved in Zope and viewed by a user, Zope turns the
 dummy content into dynamic content, replacing "Sample Page Title" with
-whatever 'context/title' resolves to.  In this case, 'context/title'
+whatever ``context/title`` resolves to.  In this case, ``context/title``
 resolves to the title of the object to which the template is applied.
 This substitution is done dynamically, when the template is viewed.
 
@@ -123,15 +121,15 @@ Creating a Page Template
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use your web browser to log into the Zope Management Interface as a manager.
-Create a *Folder* to work in named 'template_test' in the root of your Zope.
+Create a *Folder* to work in named ``template_test`` in the root of your Zope.
 Visit this folder and choose *Page Template* from Zope's add list. Type
-'simple_page' in the add form's *Id* field, then push the *Add and Edit*
+``simple_page`` in the add form's *Id* field, then push the *Add and Edit*
 button.
 
 You should now see the main editing page for the new *Page Template*.
 The title is blank and the default template text is in the editing area.
 
-Now let's create a simple dynamic page.  Type the words 'a Simple Page'
+Now let's create a simple dynamic page.  Type the words ``a Simple Page``
 in the *Title* field.  Then, edit the template text to look like this::
 
   <html>
@@ -150,10 +148,10 @@ correctly and save it again.
 
 Click on the *Test* tab.  You should see a page with "This is **a Simple
 Page**." at the top.  Notice that the title is bold.  This is because
-the 'tal:content' statement just replaces the content of the *bold* tag.
+the ``tal:content`` statement just replaces the content of the *bold* tag.
 
-Back up, then click on the *Browse HTML source* link under the
-*Content-Type* field.  This will show you the *unrendered* source of the
+Back up, then click on the eye symbol on the right hand side above the source
+code input field.  This will show you the *unrendered* source of the
 template.  You should see, "This is **the Title**." The bold text acts
 as a placeholder for the dynamic title text.  Back up again, so that you
 are ready to edit the example further.
@@ -161,13 +159,13 @@ are ready to edit the example further.
 You can find two options on the *Edit* tab we will not touch for now:
 The *Content-Type* field allows you to specify the content type of
 your page.  Changing that value switches the *Page Template* into *XML
-Mode*, discussed later in this chapter.  The *Expand macros with
+Mode*, discussed later in this chapter.  The *Expand macros when
 editing* control is explained in the "Macros" section of this chapter.
 
 *TALES* Expressions
 ~~~~~~~~~~~~~~~~~~~
 
-The expression "template/title" in your simple Page Template is a *path
+The expression ``template/title`` in your simple Page Template is a *path
 expression*.  This is the most common type of expression.  There are
 several other types of expressions defined by the *TAL Expression
 Syntax* (*TALES*) specification.  For more information on TALES see
@@ -176,25 +174,25 @@ Appendix C, `Zope Page Templates Reference`_.
 Path Expressions
 %%%%%%%%%%%%%%%%
 
-The 'template/title' *path expression* fetches the *title* attribute
+The ``template/title`` *path expression* fetches the *title* attribute
 of the template.  Here are some other common path expressions:
 
-- 'context/objectValues': A list of the sub-objects of the folder on
+- ``context/objectValues``: A list of the sub-objects of the folder on
   which the template is called.
 
-- 'request/URL': The URL of the current web request.
+- ``request/URL``: The URL of the current web request.
 
-- 'user/getUserName': The authenticated user's login name.
+- ``user/getUserName``: The authenticated user's login name.
 
 From the last chapter you should already be familiar with the context
 variable that is also available in *Python-based Scripts* and the
-attribute 'objectValues' that specifies an API method.  The other two
+attribute ``objectValues`` that specifies an API method.  The other two
 examples are just to show you the pattern.  You will learn more about
 them later in the book.
 
 To see what these examples return, just copy the following lines into
 a *Page Template* and select the *Test* tab.  You'll notice that
-'context/objectValues' returns a list that needs further treatment to
+``context/objectValues`` returns a list that needs further treatment to
 be useful.  We'll come back to that later in this chapter::
 
   <p tal:content="context/objectValues"></p>
@@ -213,7 +211,7 @@ described in the chapter entitled `Advanced Page Templates`_.
 You will also learn how to define your own variables in that chapter.
 
 If the variable itself returns the value you want, you are done.
-Otherwise, you add a slash ('/') and the name of a sub-object or
+Otherwise, you add a slash ('``/``) and the name of a sub-object or
 attribute.  You may need to work your way through several
 sub-objects to get to the value you're looking for.
 
@@ -244,9 +242,9 @@ Let's try to rewrite it using a *Python expression*::
   <h1 tal:content="python: context.title">Sample Page Title</h1>
 
 While *path expressions* are the default, we need a prefix to indicate other
-expression types. This expression with the prefix 'python:' does (at least
+expression types. This expression with the prefix ``python:`` does (at least
 here) the same as the *path expression* above. *Path expressions* try different
-ways to access 'title', so in general they are more flexible, but less
+ways to access ``title``, so in general they are more flexible, but less
 explicit.
 
 There are some simple things you can't do with *path expressions*.
@@ -269,7 +267,7 @@ remove or repeat example elements depending on dynamic values.
 Inserting Text
 %%%%%%%%%%%%%%
 
-  In your "simple_page" template, you used the 'tal:content' statement
+  In your "simple_page" template, you used the ``tal:content`` statement
   on a *bold* tag.  When you tested it, Zope replaced the content of the
   HTML *bold* element with the title of the template.
 
@@ -278,14 +276,14 @@ Inserting Text
   an element?
 
   In order to place dynamic text inside of other text, you typically use
-  'tal:replace' on an additional 'span' tag.  For example, add the
+  ``tal:replace`` on an additional ``span`` tag.  For example, add the
   following lines to your example::
 
     <p>The URL is
       <span tal:replace="request/URL">
         http://www.example.com</span>.</p>
 
-  The 'span' tag is structural, not visual, so this looks like "The URL
+  The ``span`` tag is structural, not visual, so this looks like "The URL
   is http://www.example.com." when you view the source in an editor or
   browser.  When you view the rendered version, however, it may look
   something like::
@@ -295,7 +293,7 @@ Inserting Text
   If you look at the source code of the rendered version, the *span*
   tags are removed.
 
-  To see the difference between 'tal:replace' and 'tal:content', create
+  To see the difference between ``tal:replace`` and ``tal:content``, create
   a page template and include the following in the body::
 
     <b tal:content="template/title"></b>
@@ -319,16 +317,16 @@ Inserting Text
       <tal:span tal:content="request/URL">
         http://www.example.com</tal:span>.</p>
 
-  While you can get really far by using HTML elements and 'tal:replace'
-  or 'tal:omit-tag', some people prefer to use *TAL* elements if the
+  While you can get really far by using HTML elements and ``tal:replace``
+  or ``tal:omit-tag``, some people prefer to use *TAL* elements if the
   elements are only used to add *TAL* attributes.  *TAL* is an attribute
-  language and doesn't define any elements like 'tal:span', but it uses
+  language and doesn't define any elements like ``tal:span``, but it uses
   a complete XML namespace and allows to use any element name you like.
   They are silently removed while the *Page Template* is rendered.
 
-  This is useful for using speaking names like 'tal:loop', 'tal:case' or
-  'tal:span' and to insert additional elements where HTML doesn't allow
-  elements like 'span' or 'div'.  And if her browser or editor also
+  This is useful for using speaking names like ``tal:loop``, ``tal:case`` or
+  ``tal:span`` and to insert additional elements where HTML doesn't allow
+  elements like ``span`` or ``div``.  And if her browser or editor also
   ignores these tags, the designer will have less trouble with *TAL*
   elements than with additional HTML elements.
 
@@ -341,17 +339,17 @@ Let's start with a simple three-liner::
     999
   </p>
 
-'number' is our *repeat variable* and 'range(4)' is a *Python
-expression* that returns the list '[0, 1, 2, 3]'.  If this code is
-rendered, the 'repeat' statement repeats the *paragraph* element for
-each value of the sequence, replacing the variable 'number' by the
+``number`` is our *repeat variable* and ``range(4)`` is a *Python
+expression* that returns the list ``[0, 1, 2, 3]``.  If this code is
+rendered, the ``repeat`` statement repeats the *paragraph* element for
+each value of the sequence, replacing the variable ``number`` by the
 current sequence value.  So the rendered page will not show the
-example number '999', but 4 *paragraph* elements containing the
+example number ``999``, but 4 *paragraph* elements containing the
 numbers of our list.
 
 In most cases we want to iterate over more complex sequences.  Our
 next example shows how to use a sequence of (references to) objects.
-The 'simple_page' template could be improved by adding an item list,
+The "simple_page" template could be improved by adding an item list,
 in the form of a list of the objects that are in the same *Folder* as
 the template.  You will make a table that has a row for each object,
 and columns for the id, meta-type and title.  Add these lines to the
@@ -370,17 +368,17 @@ bottom of your example template::
     </tr>
   </table>
 
-The 'tal:repeat' statement on the table row means "repeat this row for
+The ``tal:repeat`` statement on the table row means "repeat this row for
 each item in my context's list of object values".  The *repeat*
 statement puts the objects from the list into the *item* variable one
 at a time (this is called the *repeat variable*), and makes a copy of
-the row using that variable.  The value of 'item/getId' in each row is
-the Id of the object for that row, and likewise with 'item/meta_type'
-and 'item/title'.
+the row using that variable.  The value of ``item/getId`` in each row is
+the Id of the object for that row, and likewise with ``item/meta_type``
+and ``item/title``.
 
-You can use any name you like for the repeat variable ("item" is only
+You can use any name you like for the repeat variable (``item`` is only
 an example), as long as it starts with a letter and contains only
-letters, numbers, and underscores ('_').  The repeat variable is only
+letters, numbers, and underscores (``_``).  The repeat variable is only
 defined in the repeat tag.  If you try to use it above or below the
 *tr* tag you will get an error.
 
@@ -403,16 +401,16 @@ could display special information in response to a cookie::
   </p>
 
 This paragraph will be included in the output only if there is a
-'verbose' cookie set.  The expression, 'request/cookies/verbose |
-nothing' is true only when there is a cookie named 'verbose' set.
+``verbose`` cookie set.  The expression, ``request/cookies/verbose |
+nothing`` is true only when there is a cookie named ``verbose`` set.
 You'll learn more about this kind of expression in the chapter
 entitled `Advanced Page Templates`_.
 
-Using the 'tal:condition' statement you can check all kinds of
-conditions.  A 'tal:condition' statement leaves the tag and its
+Using the ``tal:condition`` statement you can check all kinds of
+conditions.  A ``tal:condition`` statement leaves the tag and its
 contents in place if its expression has a true value, but removes them
 if the value is false.  Zope considers the number zero, a  blank
-string, an empty list, and the built-in variable 'nothing' to be false
+string, an empty list, and the built-in variable ``nothing`` to be false
 values.  Nearly every other value is true, including non-zero numbers,
 and strings with anything in them (even spaces!).
 
@@ -425,16 +423,16 @@ no table is drawn.
 To allow you to see the effect, we first have to modify that example
 a bit, showing only *Folder* objects in the context folder.  Because
 we can't specify parameters using *path expressions* like
-'context/objectValues', we first convert it into the *Python
-expression* 'context.objectValues()' and then add the argument that
-tells the 'objectValues' method to return only sub-folders::
+``context/objectValues``, we first convert it into the *Python
+expression* ``context.objectValues()`` and then add the argument that
+tells the ``objectValues`` method to return only sub-folders::
 
   <tr tal:repeat="item python: context.objectValues(['Folder'])">
 
 If you did not add any sub-folders to the *template_test* folder so
 far, you will notice that using the *Test* tab the table header is
 still shown even if we have no table body.  To avoid this we add a
-'tal:condition' statement in the table tag.  The complete table now
+``tal:condition`` statement in the table tag.  The complete table now
 looks like this::
 
   <table tal:condition="python: context.objectValues(['Folder'])"
@@ -455,7 +453,7 @@ If the list of sub-folders is an empty list, the condition is false
 and the entire table is omitted.  You can verify this by using the
 *Test* tab again.
 
-Go and add three Folders named '1', '2', and '3' to the
+Go and add three Folders named ``1``, ``2``, and ``3`` to the
 *template_test* folder in which your *simple_page* template lives.
 Revisit the *simple_page* template and view the rendered output via
 the *Test* tab.  You will see a table that looks much like the below::
@@ -465,46 +463,25 @@ the *Test* tab.  You will see a table that looks much like the below::
   2           Folder
   3           Folder
 
-Changing Attributes
-%%%%%%%%%%%%%%%%%%%
-
-Most, if not all, of the objects listed by your template have an
-*icon* attribute that contains the path to the icon for that kind of
-object.  In order to show this icon in the meta-type column, you will
-need to insert this path into the 'src' attribute of an 'img' tag.
-Edit the table cell in the meta-type column of the above example to
-look like this::
-
-  <td><img src="file_icon.gif"
-           tal:attributes="src item/icon" />
-    <span tal:replace="item/meta_type">Meta-Type</span></td>
-
-The 'tal:attributes' statement replaces the 'src' attribute of the
-'img' tag with the value of 'item/icon'.  The 'src` attribute in the
-template (whose value is "file_icon.gif") acts as a placeholder.
-
-Notice that we've replaced the 'tal:content' attribute on the table
-cell with a 'tal:replace' statement on a 'span' tag.  This change
-allows you to have both an image and text in the table cell.
 
 XML Page Templates
 ------------------
 
 Creating XML with *Page Templates* is almost exactly like creating HTML.
 You switch to *XML Mode* by setting the *content-type* field to
-'text/xml' or whatever the content-type for your XML should be.
+``text/xml`` or whatever the content-type for your XML should be.
 
 In *XML Mode* no "loose" markup is allowed.  Zope assumes that your
 template is well-formed XML.  Zope also requires an explicit TAL and METAL
 XML namespace declarations in order to emit XML.  For example, if you wish
-to emit XHTML, you might put your namespace declarations on the 'html'
+to emit XHTML, you might put your namespace declarations on the ``html``
 tag::
 
   <html xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal">
 
-To browse the source of an XML template you go to 'source.xml' rather than
-'source.html'.
+To browse the source of an XML template you go to ``source.xml`` rather than
+``source.html``.
 
 Debugging and Testing
 
@@ -514,19 +491,25 @@ Template*, and when you're viewing a *Page Template*.  Zope catches
 different types of problems when you're editing and than when you're
 viewing a *Page Template*.
 
-You may have already seen the trouble-shooting comments that Zope inserts
+You may have already seen the troubleshooting comments that Zope inserts
 into your Page Templates when it runs into problems.  These comments tell
 you about problems that Zope finds while you're editing your templates.
 The sorts of problems that Zope finds when you're editing are mostly
 errors in your *TAL* statements.  For example::
 
-  <!-- Page Template Diagnostics
-   Compilation failed
-   TAL.TALDefs.TALError: bad TAL attribute: 'contents', at line 10, column 1
-  -->
+    <!-- Page Template Diagnostics
+     Compilation failed
+     chameleon.exc.CompilationError: Bad attribute for namespace 'http://xml.zope.org/namespaces/tal'
+    
+     - String:     "contents"
+     - Filename:   /template_test/simple_page
+     - Location:   (line 4: col 21)
+     - Source:     This is <b tal:contents="template/title">the Title</b>.
+                                  ^^^^^^^^
+    -->
 
 This diagnostic message lets you know that you mistakenly used
-'tal:contents' rather than 'tal:content' on line 10 of your template.
+``tal:contents`` rather than ``tal:content`` on line 4 of your template.
 Other diagnostic messages will tell you about problems with your template
 expressions and macros.
 
@@ -573,8 +556,8 @@ information about the place where the error occurred and the environment::
 
 This information is a bit cryptic, but with a little detective work it can
 help you figure out what went wrong.  In this case, it tells us that the
-'context' variable is an "Application instance".  This means that it is
-the top-level Zope folder (notice how 'root' variable is the same
+``context`` variable is an "Application instance".  This means that it is
+the top-level Zope folder (notice how ``root`` variable is the same
 "Application instance").  Perhaps the problem is that you wanted to apply
 the template to a folder that had a *unicorn* property, but the root on
 which you called the template hasn't such a property.
@@ -608,9 +591,9 @@ Macro tag attributes are called *Macro Expansion Tag Attribute Language*
     Copyright 2009, <em>Foo, Bar, and Associates</em> Inc.
   </p>
 
-This 'metal:define-macro' statement defines a macro named "copyright".
-The macro consists of the 'p' element (including all contained elements,
-ending with the closing 'p' tag).
+This ``metal:define-macro`` statement defines a macro named "copyright".
+The macro consists of the ``p`` element (including all contained elements,
+ending with the closing ``p`` tag).
 
 Macros defined in a Page Template are stored in the template's *macros*
 attribute.  You can use macros from other *Page Templates* by referring
@@ -624,7 +607,7 @@ macro from another *Page Template*::
     Macro goes here
   </b>
 
-In this *Page Template*, the 'b' element will be completely replaced by
+In this *Page Template*, the ``b`` element will be completely replaced by
 the macro when Zope renders the page::
 
   <hr />
@@ -637,13 +620,13 @@ then all *Page Templates* that use the macro will automatically reflect
 the change.
 
 Notice how the macro is identified by a *path expression* using the
-'metal:use-macro' statement.  The 'metal:use-macro' statement replaces
+``metal:use-macro`` statement.  The ``metal:use-macro`` statement replaces
 the statement element with the named macro.
 
 Macro Details
 ~~~~~~~~~~~~~
 
-The 'metal:define-macro' and 'metal:use-macro' statements are pretty
+The ``metal:define-macro`` and ``metal:use-macro`` statements are pretty
 simple.  However there are a few subtleties to using them which are
 worth mentioning.
 
@@ -651,7 +634,7 @@ A macro's name must be unique within the Page Template in which it is
 defined.  You can define more than one macro in a template, but they all
 need to have different names.
 
-Normally you'll refer to a macro in a 'metal:use-macro' statement with a
+Normally you'll refer to a macro in a ``metal:use-macro`` statement with a
 path expression.  However, you can use any expression type you wish so
 long as it returns a macro.  For example::
 
@@ -660,29 +643,29 @@ long as it returns a macro.  For example::
     which is located by the getMacro script.
   </p>
 
-In this case the path expression returns a macro defined dynamically by
+In this case the python expression returns a macro defined dynamically by
 the 'getMacro' script.  Using *Python expressions* to locate macros lets
 you dynamically vary which macro your template uses.  An example
-of the body of a "getMacro" Script (Python) is as follows::
+of the body of a ``getMacro`` Script (Python) is as follows::
 
   return container.ptMacros.macros['amacroname']
 
-You can use the 'default' variable with the 'metal:use-macro'
+You can use the '``default`` variable with the 'metal:use-macro'
 statement::
 
   <p metal:use-macro="default">
     This content remains - no macro is used
   </p>
 
-The result is the same as using *default* with 'tal:content' and
-'tal:replace'.  The "default" content in the tag doesn't change when it
+The result is the same as using *default* with ``tal:content`` and
+``tal:replace``.  The "default" content in the tag doesn't change when it
 is rendered.  This can be handy if you need to conditionally use a macro
 or fall back on the default content if it doesn't exist.
 
-If you try to use the 'nothing' variable with 'metal:use-macro' you will
-get an error, since 'nothing' is not a macro.  If you want to use
-'nothing' to conditionally include a macro, you should instead enclose
-the 'metal:use-macro' statement with a 'tal:condition' statement.
+If you try to use the ``nothing`` variable with ``metal:use-macro`` you will
+get an error, since ``nothing`` is not a macro.  If you want to use
+``nothing`` to conditionally include a macro, you should instead enclose
+the ``metal:use-macro`` statement with a ``tal:condition`` statement.
 
 Zope handles macros first when rendering your templates.  Then Zope
 evaluates TAL expressions.  For example, consider this macro::
@@ -759,15 +742,15 @@ information that you provided in the slot::
     </b>
   </div>
 
-Notice how the 'span' element that defines the slot is replaced with the
-'b' element that fills the slot.
+Notice how the ``span`` element that defines the slot is replaced with the
+``b`` element that fills the slot.
 
 Customizing Default Presentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A common use of slot is to provide default presentation which you can
 customize.  In the slot example in the last section, the slot definition
-was just an empty 'span' element.  However, you can provide default
+was just an empty ``span`` element.  However, you can provide default
 presentation in a slot definition.  For example, consider this revised
 sidebar macro::
 
@@ -809,8 +792,8 @@ slots::
   </div>
 
 If you wish to customize the sidebar links you can either fill the
-'links' slot to completely override the links, or you can fill the
-'additional_links' slot to insert some extra links after the default
+``links`` slot to completely override the links, or you can fill the
+``additional_links`` slot to insert some extra links after the default
 links.  You can nest slots as deeply as you wish.
 
 Combining METAL and TAL
@@ -828,14 +811,14 @@ example::
     </li>
   </ul>
 
-In this case, 'getLinks' is an (imaginary) Script that assembles a list
+In this case, ``getLinks`` is an (imaginary) Script that assembles a list
 of link objects, possibly using a Catalog query.
 
 Since METAL statements are evaluated before *TAL* statements, there are
 no conflicts.  This example is also interesting since it customizes a
-macro without using slots.  The macro calls the 'getLinks' Script to
+macro without using slots.  The macro calls the ``getLinks`` Script to
 determine the links.  You can thus customize your site's links by
-redefining the 'getLinks' Script at different locations within your
+redefining the ``getLinks`` Script at different locations within your
 site.
 
 It's not always easy to figure out the best way to customize look and
@@ -873,8 +856,8 @@ possible.  Here's an example macro that defines an entire page::
     </body>
   </html>
 
-This macro defines a page with three slots, 'headline', 'body', and
-'footer'.  Notice how the 'headline' slot includes a *TAL* statement to
+This macro defines a page with three slots, ``headline``, ``body``, and
+``footer``.  Notice how the ``headline`` slot includes a *TAL* statement to
 dynamically determine the headline content.
 
 You can then use this macro in templates for different types of content,
@@ -895,13 +878,13 @@ news items might use this macro::
 
   </html>
 
-This template redefines the 'headline' slot to include the words "Press
-Release" and call the 'getHeadline' method on the current object.  It
-also redefines the 'body' slot to call the 'getBody' method on the
+This template redefines the ``headline`` slot to include the words "Press
+Release" and call the ``getHeadline`` method on the current object.  It
+also redefines the ``body`` slot to call the ``getBody`` method on the
 current object.
 
 The powerful thing about this approach is that you can now change the
-'page' macro and the press release template will be automatically
+``page`` macro and the press release template will be automatically
 updated.  For example you could put the body of the page in a table and
 add a sidebar on the left and the press release template would
 automatically use these new presentation elements.
@@ -913,13 +896,7 @@ In general Zope supports content, presentation and logic components.
 *Page Templates* are presentation components and they can be used to
 display content components.
 
-Zope ships with several content components: ZSQL Methods, Files, and Images.
+Zope ships with several content components such as Files, and Images.
 You can use Files for textual content since you can edit the contents of Files
 if the file is less than 64K and contains text. However, the File object is
 fairly basic and may not provide all of the features or metadata that you need.
-
-Zope's `Content Management Framework <http://cmf.zope.org>`_ (CMF) solves
-this problem by providing an assortment of rich content components.  The
-CMF is Zope's content management add on.  It introduces all kinds of
-enhancements including workflow, skins and content objects.  The CMF makes
-a lot of use of *Page Templates*.
