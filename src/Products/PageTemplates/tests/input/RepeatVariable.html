@@ -1,9 +1,18 @@
 <html>
   <body>
     <ol tal:define="results python:range(5)">
-      <tal:block tal:repeat="items results">
-        <li tal:define="odd repeat/items/odd"
-            tal:content="python:odd and 'odd' or 'even'">Content</li>
+      <tal:block tal:repeat="item results">
+        <li tal:content="string:index: ${repeat/item/index}"/>
+        <li tal:content="string:number: ${repeat/item/number}"/>
+        <li tal:content="string:even: ${repeat/item/even}"/>
+        <li tal:content="string:odd: ${repeat/item/odd}"/>
+        <li tal:content="string:parity: ${repeat/item/parity}"/>
+        <li tal:content="string:letter: ${repeat/item/letter}"/>
+        <li tal:content="string:Letter: ${repeat/item/Letter}"/>
+        <li tal:content="string:roman: ${repeat/item/roman}"/>
+        <li tal:content="string:Roman: ${repeat/item/Roman}"/>
+        <li tal:content="string:start: ${repeat/item/start}"/>
+        <li tal:content="string:end: ${repeat/item/end}"/>
       </tal:block>
     </ol>
   </body>
