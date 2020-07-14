@@ -73,7 +73,7 @@
     <dtml-else>
       <dtml-if frompath>
         <div class="alert alert-info my-5">
-          Found no locked items under path <em>&dtml-frompath;.
+          Found no locked items under path <em>&dtml-frompath;</em>.
         </div>
       </dtml-if>
     </dtml-if>
