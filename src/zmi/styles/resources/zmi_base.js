@@ -104,8 +104,13 @@ function fix_modern_modal_gui() {
 	// Aggregate multiple Help-Paragraphs
 	if ( $('#zmi-modal .modal-body p.form-help').length > 1) {
 		var help_text = $('#zmi-modal .modal-body p.form-help').text();
+		var help_text_html = '<p class="form-help">' + help_text +'</p>';
 		$('#zmi-modal .modal-body p.form-help').remove();
-		$('#zmi-modal .modal-body').prepend('<p class="form-help">' + help_text +'</p>');
+		if ( 0 === $('.modal-body main').length ) {
+			$('#zmi-modal .modal-body').prepend(help_text_html);
+		} else {
+			$('#zmi-modal .modal-body main').prepend(help_text_html);
+		}
 	}
 	$('#zmi-modal .modal-body p.form-help').before('<i title="Help" class="zmi-help-icon fas fa-question-circle" onclick="$(\'#zmi-modal .form-help\').toggle();$(this).toggleClass(\'active\')"></i>');
 	$('#zmi-modal .modal-body p.form-help').hide();
