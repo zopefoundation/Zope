@@ -11,13 +11,12 @@
     provided path.
   </p>
 
-  <form action="&dtml-URL0;" name="finderform">
-    <p class="form-help">Search path:
-      <input type="text" size="14" name="frompath"
-             value="&dtml.missing-frompath;" 
-             class="form-element" />
-      <input class="btn btn-primary" type="submit" value="Go"/>
-    </p>
+  <form action="&dtml-URL0;" name="finderform" class="form-inline">
+    <label for="frompath" class="form-label mr-3">Search path</label>
+        <input type="text" name="frompath" id="frompath" 
+              value="&dtml.missing-frompath;" 
+              class="form-control mr-3" />
+        <input class="btn btn-primary" type="submit" value="Go" />
   </form>
 
   <form action="manage_unlockObjects" name="objectItems" method="post">
@@ -25,7 +24,7 @@
   
     <dtml-if lockedobjs>
     
-      <table class="table table-striped table-hover table-sm objectItems">
+      <table class="table table-striped table-hover table-sm objectItems my-5">
       
         <thead class="thead-light">
           <th scope="col" class="zmi-object-check text-right">
@@ -73,9 +72,9 @@
       </div>
     <dtml-else>
       <dtml-if frompath>
-        <p class="form-help">
+        <div class="alert alert-info my-5">
           Found no locked items under path <em>&dtml-frompath;</em>.
-        </p>
+        </div>
       </dtml-if>
     </dtml-if>
   </form>
