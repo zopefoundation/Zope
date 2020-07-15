@@ -105,10 +105,10 @@ a:hover {
 .zmi-controls > * {
 	margin-bottom:.6rem;
 }
-
 .zmi .zmi-controls .btn.btn-primary,
 .zmi a.btn.btn-primary,
-.zmi input.btn.btn-primary {
+.zmi input.btn.btn-primary,
+.zmi .btn-primary:not(:disabled):not(.disabled):active {
   background-color:white !important;
   color:#6c757d;
   border-color:#6c757d;
