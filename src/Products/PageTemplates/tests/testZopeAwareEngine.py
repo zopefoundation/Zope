@@ -51,7 +51,7 @@ class TestsWithoutAdapter(PlacelessSetup, TestCase):
 
 class TestWithsAdapter(TestsWithoutAdapter):
     def setUp(self):
-        super(TestWithsAdapter, self).setUp()
+        super().setUp()
         provideAdapter(adapt, (None,), IZopeAwareEngine)
 
     def should(self, zengine):

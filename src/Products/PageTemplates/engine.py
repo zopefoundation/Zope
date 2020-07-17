@@ -183,7 +183,7 @@ class Name2KeyError(Mapping):
         return len(self.data)
 
 
-class _C2ZContextWrapperBase(object):
+class _C2ZContextWrapperBase:
     """Behaves like "zope" context with vars from "chameleon" context.
 
     It is assumed that an instance holds the current ``chameleon``
