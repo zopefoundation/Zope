@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Add ``pyupgrade`` via ``pre-commit``
+  (`#859 <https://github.com/zopefoundation/Zope/issues/859>`_)
 
 - Make "chameleon-zope context wrapping" more faithful.
   (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)
