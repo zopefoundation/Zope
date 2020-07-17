@@ -13,8 +13,6 @@ matrix:
           env: TOXENV=py38
         - python: "3.9-dev"
           env: TOXENV=py39
-        - python: "3.8"
-          env: TOXENV=pre-commit
     allow_failures:
         - python: "3.9-dev"
           env: TOXENV=py39
