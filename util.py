@@ -32,7 +32,7 @@ def generate(in_, requirements_file, constraints_file):
         if not pin:
             continue
 
-        spec = '%s==%s' % (name, pin)
+        spec = f'{name}=={pin}'
         requirements.append(spec + '\n')
         constraints.append(spec + '\n')
 

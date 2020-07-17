@@ -21,7 +21,7 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
     """
 
     # variables documented in the Zope Book
-    VARIABLES = set((
+    VARIABLES = {
         "nothing",
         "default",
         "options",
@@ -38,10 +38,10 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
         #     - only usable as initial component in path expr
         #     - not contained in ``CONTEXTS``
         # "CONTEXTS",
-        ))  # noqa: E123
+        }  # noqa: E123
 
     def setUp(self):
-        super(TestPredefinedVariables, self).setUp()
+        super().setUp()
 
         def add(dest, id, factory):
             nid = dest._setObject(id, factory(id))
@@ -138,5 +138,5 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
 
 class TestPredefinedVariables_chameleon(TestPredefinedVariables):
     def setUp(self):
-        super(TestPredefinedVariables_chameleon, self).setUp()
+        super().setUp()
         useChameleonEngine()

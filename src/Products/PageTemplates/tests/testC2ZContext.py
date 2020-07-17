@@ -92,7 +92,7 @@ class C2ZContextTests(unittest.TestCase):
         self.assertEqual(c.vars["attrs"], "hallo")
 
     def test_faithful_wrapping(self):
-        class MyContextBase(object):
+        class MyContextBase:
             var = None
             var2 = None
 
@@ -106,7 +106,7 @@ class C2ZContextTests(unittest.TestCase):
                 self.attr = v
 
             def get_vars(self):
-                return super(MyContext, self).get_vars()
+                return super().get_vars()
 
             def my_get(self, k):
                 return self.vars[k]
@@ -142,7 +142,7 @@ class C2ZContextTests(unittest.TestCase):
         self.assertEqual(zc.var2, "var2")
 
     def test_context_class_registry(self):
-        class MyContext(object):
+        class MyContext:
             pass
 
         class_regs = len(_context_class_registry)
