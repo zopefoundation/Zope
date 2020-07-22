@@ -14,7 +14,10 @@
 from unittest import TestCase
 
 from z3c.pt import pagetemplate
+from zope.component import provideAdapter
 from zope.component.testing import PlacelessSetup
+from zope.i18nmessageid import ZopeMessageFactory as _
+from zope.traversing.adapters import DefaultTraversable
 
 from ..PageTemplate import PageTemplate
 from .util import useChameleonEngine
@@ -41,6 +44,7 @@ class TranslationTests(PlacelessSetup, TestCase):
 
     def setUp(self):
         super(TranslationTests, self).setUp()
+        provideAdapter(DefaultTraversable, (None,))
         useChameleonEngine()
 
     def test_translation_body(self):
@@ -57,6 +61,11 @@ class TranslationTests(PlacelessSetup, TestCase):
         t = PageTemplate()
         t.write("""<p i18n:translate="" tal:replace="string:x">text</p>""")
         self.assertEqual(t(), "translated")
+
+    def test_translation_msgid(self):
+        t = PageTemplate()
+        t.write("""<p tal:replace="options/msgid">text</p>""")
+        self.assertEqual(t(msgid=_(u"x")), "translated")
 
     def test_no_translation_body(self):
         t = PageTemplate()
