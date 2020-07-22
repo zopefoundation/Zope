@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.1 (unreleased)
 ------------------
 
+- Avoid unsolicited translations
+  (`#876 <https://github.com/zopefoundation/Zope/issues/876>`_)
 
 - Make "chameleon-zope context wrapping" more faithful.
   (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)

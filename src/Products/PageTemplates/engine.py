@@ -14,6 +14,7 @@ import logging
 import re
 from weakref import ref
 
+import six
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
 from chameleon.codegen import template
@@ -135,6 +136,13 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
     """
     if engine is None:
         engine = econtext["__zt_engine__"]
+    # *expression* is a ``chameleon.tokenize.Token`` when
+    # the template is compiled but "text" when the template code
+    # comes from the ``chameleon`` cache.
+    # Under PY3, ``chameleon`` wrongly translates ``Token``;
+    # convert to ``str`` to avoid this
+    if six.PY3:
+        expression = str(expression)
     key = id(engine), type, expression
     # cache lookup does not need to be protected by locking
     #  (but we could potentially prevent unnecessary computations)
