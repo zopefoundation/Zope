@@ -136,13 +136,6 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
     """
     if engine is None:
         engine = econtext["__zt_engine__"]
-    # *expression* is a ``chameleon.tokenize.Token`` when
-    # the template is compiled but "text" when the template code
-    # comes from the ``chameleon`` cache.
-    # Under PY3, ``chameleon`` wrongly translates ``Token``;
-    # convert to ``str`` to avoid this
-    if six.PY3:
-        expression = str(expression)
     key = id(engine), type, expression
     # cache lookup does not need to be protected by locking
     #  (but we could potentially prevent unnecessary computations)
@@ -253,6 +246,12 @@ class MappedExpr(object):
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
     def __init__(self, type, expression, zt_engine):
         self.type = type
+        # at this place, *expression* is a `chameleon.tokenize.Token`
+        # the ``_compile_zt_expr`` below causes this to be cached
+        # which can lead under Python 3 to unsolicited translations
+        # (details "https://github.com/zopefoundation/Zope/issues/876")
+        if six.PY3:
+            expression = str(expression)
         self.expression = expression
         # compile to be able to report errors
         compiler_error = zt_engine.getCompilerError()
