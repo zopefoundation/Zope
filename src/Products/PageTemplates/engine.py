@@ -250,13 +250,13 @@ class MappedExpr(object):
         # the ``_compile_zt_expr`` below causes this to be cached
         # which can lead under Python 3 to unsolicited translations
         # (details "https://github.com/zopefoundation/Zope/issues/876")
-        if six.PY3:
-            expression = str(expression)
+        # call ``_compile_zt_expr`` with a "plain" string under PY3
+        expr = str(expression) if six.PY3 else expression
         self.expression = expression
         # compile to be able to report errors
         compiler_error = zt_engine.getCompilerError()
         try:
-            zt_expr = _compile_zt_expr(type, expression, engine=zt_engine)
+            zt_expr = _compile_zt_expr(type, expr, engine=zt_engine)
         except compiler_error as e:
             raise ExpressionError(str(e), self.expression)
         if (self.type == "path" and "$" in self.expression
