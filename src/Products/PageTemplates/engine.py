@@ -41,6 +41,10 @@ from .Expressions import SecureModuleImporter
 from .interfaces import IZopeAwareEngine
 
 
+if six.PY3:
+    unicode = str
+
+
 class _PseudoContext(object):
     """auxiliary context object.
 
@@ -253,7 +257,7 @@ class MappedExpr(object):
         # (details "https://github.com/zopefoundation/Zope/issues/876")
         # To avoid this, call ``_compile_zt_expr`` with
         # *expression* cast to the `Token` base type.
-        expr = str(expression) if six.PY3 else unicode(expression)
+        expr = unicode(expression)
         self.expression = expression
         # compile to be able to report errors
         compiler_error = zt_engine.getCompilerError()
