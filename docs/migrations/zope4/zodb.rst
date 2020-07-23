@@ -130,7 +130,7 @@ Going from Python 2 to Python 3
 
   - Zope 4 (latest),
   - all relevant applications and addons for your ZODB, (make sure they are
-    compatible with Pyton 3)
+    compatible with Python 3)
   - `zodbupdate <https://pypi.org/project/zodbupdate/>`_
   - `zodbverify <https://pypi.org/project/zodbverify/>`_
 
