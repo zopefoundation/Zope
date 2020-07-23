@@ -246,11 +246,13 @@ class MappedExpr(object):
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
     def __init__(self, type, expression, zt_engine):
         self.type = type
-        # at this place, *expression* is a `chameleon.tokenize.Token`
-        # the ``_compile_zt_expr`` below causes this to be cached
+        # At this place, *expression* is a `chameleon.tokenize.Token`
+        # (a subtype of `str` for PY3 and of `unicode` for PY2).
+        # The ``_compile_zt_expr`` below causes this to be cached
         # which can lead under Python 3 to unsolicited translations
         # (details "https://github.com/zopefoundation/Zope/issues/876")
-        # call ``_compile_zt_expr`` with a "plain" string
+        # To avoid this, call ``_compile_zt_expr`` with
+        # *expression* cast to the `Token` base type.
         expr = str(expression) if six.PY3 else unicode(expression)
         self.expression = expression
         # compile to be able to report errors
