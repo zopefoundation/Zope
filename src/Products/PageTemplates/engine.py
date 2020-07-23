@@ -134,12 +134,6 @@ def _compile_zt_expr(type, expression, engine=None, econtext=None):
     """
     if engine is None:
         engine = econtext["__zt_engine__"]
-    # *expression* is a ``chameleon.tokenize.Token`` when
-    # the template is compiled but "text" when the template code
-    # comes from the ``chameleon`` cache.
-    # Under Python 3, ``chameleon`` wrongly translates ``Token``;
-    # convert to ``str`` to avoid this
-    expression = str(expression)
     key = id(engine), type, expression
     # cache lookup does not need to be protected by locking
     #  (but we could potentially prevent unnecessary computations)
@@ -243,11 +237,19 @@ class MappedExpr:
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
     def __init__(self, type, expression, zt_engine):
         self.type = type
+        # At this place, *expression* is a `chameleon.tokenize.Token`
+        # (a subtype of `str` for PY3 and of `unicode` for PY2).
+        # The ``_compile_zt_expr`` below causes this to be cached
+        # which can lead under Python 3 to unsolicited translations
+        # (details "https://github.com/zopefoundation/Zope/issues/876")
+        # To avoid this, call ``_compile_zt_expr`` with
+        # *expression* cast to the `Token` base type.
+        expr = str(expression)
         self.expression = expression
         # compile to be able to report errors
         compiler_error = zt_engine.getCompilerError()
         try:
-            zt_expr = _compile_zt_expr(type, expression, engine=zt_engine)
+            zt_expr = _compile_zt_expr(type, expr, engine=zt_engine)
         except compiler_error as e:
             raise ExpressionError(str(e), self.expression)
         if (self.type == "path" and "$" in self.expression
