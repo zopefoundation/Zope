@@ -38,7 +38,7 @@ class TestPredefinedVariables(PlacelessSetup, TestCase):
         #     - only usable as initial component in path expr
         #     - not contained in ``CONTEXTS``
         # "CONTEXTS",
-        }  # noqa: E123
+    }
 
     def setUp(self):
         super().setUp()
