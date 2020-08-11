@@ -20,7 +20,7 @@ WSGIProxy2==0.4.6
 WebOb==1.8.6
 WebTest==2.0.35
 ZConfig==3.5.0
-ZEO==5.2.1
+ZEO==5.2.2
 ZODB==5.6.0
 Zope2==4.0
 five.globalrequest==99.1
