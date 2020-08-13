@@ -1,4 +1,4 @@
--e git+https://github.com/zopefoundation/Zope.git@4.x#egg=Zope
+Zope==4.5.1
 AccessControl==4.2
 Acquisition==4.6
 AuthEncoding==4.1
@@ -9,7 +9,7 @@ DocumentTemplate==3.3
 ExtensionClass==4.4
 Missing==4.1
 MultiMapping==4.1
-Paste==3.4.3
+Paste==3.4.1
 PasteDeploy==2.1.0
 Persistence==3.0
 Products.BTreeFolder2==4.2
