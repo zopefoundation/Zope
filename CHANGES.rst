@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update dependencies to the latest releases that still support Python 2.
 
 
 4.5.1 (2020-08-13)
