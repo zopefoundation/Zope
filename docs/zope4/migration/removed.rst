@@ -24,34 +24,18 @@ its ``eggs`` attribute and also add the flag ``wsgi = off``.
 Sessioning
 ----------
 If you have used (or want to use) the built-in support for sessioning, add the
-egg ``Products.Sessions`` to your application buildout, which provides the
-basic infrastructure without the actual session data storage.
+egg ``Products.Sessions`` to your application buildout.
 
-For non-production environments you can use the old
-``Products.TemporaryFolder`` temporary folder solution for storing session
-data. But this implementation is known to randomly lose session data, so do not
-use it in production. Add the package ``Products.TemporaryFolder`` to your
-application buildout and make sure your Zope configuration file contains a ZODB
+You also need to make sure that your Zope configuration file contains a ZODB
 configuration for a temporary folder like this::
 
   <zodb_db temporary>
-      <mappingstorage>
+      <temporarystorage>
         name Temporary database (for sessions)
-      </mappingstorage>
+      </temporarystorage>
       mount-point /temp_folder
       container-class Products.TemporaryFolder.TemporaryContainer
   </zodb_db>
-
-If sessions are used very sparingly you can even get away with just adding a
-Folder object named ``temp_folder`` at the root of the ZODB and restarting
-Zope so the necessary ZODB objects for session support are created. This will
-not lose session data, but it has a high risk of producing ZODB conflict errors
-when storing data unless the session is used very carefully to minimize write
-activity.
-  
-For production deployments see, see `the Zope book chapter on sessioning
-for alternative session storage options
-<https://zope.readthedocs.io/en/latest/zopebook/Sessions.html#alternative-server-side-session-backends-for-zope-4>`_.
 
 
 External Methods
