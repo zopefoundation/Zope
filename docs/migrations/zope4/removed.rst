@@ -26,16 +26,18 @@ Sessioning
 If you have used (or want to use) the built-in support for sessioning, add the
 egg ``Products.Sessions`` to your application buildout.
 
-You also need to make sure that your Zope configuration file contains a ZODB
+For development you need to make sure that your Zope configuration file contains a ZODB
 configuration for a temporary folder like this::
 
   <zodb_db temporary>
-      <temporarystorage>
+      <mappingstorage>
         name Temporary database (for sessions)
-      </temporarystorage>
+      </mappingstorage>
       mount-point /temp_folder
       container-class Products.TemporaryFolder.TemporaryContainer
   </zodb_db>
+  
+For production deployments see, see `the Zope book chapter on sessioning for your options <https://zope.readthedocs.io/en/latest/zopebook/Sessions.html#alternative-server-side-session-backends-for-zope-4>`_.
 
 
 External Methods
