@@ -31,6 +31,8 @@ Steps for creating a new Zope release
 
 - Garden the change log and check it for spelling issues.
 
+- Possibly update the roadmap document so the to be created release matches the roadmap.
+
 - Check the future PyPI long description for ReST errors::
 
   $ bin/longtest
