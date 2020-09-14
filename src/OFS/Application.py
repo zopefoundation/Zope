@@ -217,7 +217,7 @@ def initialize(app):
 
 
 class AppInitializer(object):
-    """ Initialze an Application object (called at startup) """
+    """ Initialize an Application object (called at startup) """
 
     def __init__(self, app):
         self.app = (app,)
