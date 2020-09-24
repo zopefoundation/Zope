@@ -3,7 +3,7 @@ language: python
 matrix:
     include:
         - python: "3.6"
-          env: TOXENV=lint
+          env: TOXENV=isort
           after_success:
         - python: "3.6"
           env: TOXENV=py36
