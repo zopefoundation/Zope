@@ -614,8 +614,7 @@ class ObjectManager(
                 RESPONSE.setHeader('Content-type', 'application/data')
                 RESPONSE.setHeader(
                     'Content-Disposition',
-                    make_content_disposition(
-                        'inline', f'filename={id}.{suffix}')
+                    make_content_disposition('inline', f'{id}.{suffix}')
                 )
             return result
 

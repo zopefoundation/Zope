@@ -33,5 +33,5 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         """
         self.assertEqual(
             make_content_disposition("inline", "ıq.png"),
-            """inline; filename="q.png"; filename*=UTF-8''%C4%B1q.png"""
+            """inline; filename*=UTF-8''%C4%B1q.png"""
         )
