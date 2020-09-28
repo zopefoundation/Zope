@@ -28,7 +28,7 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         """HTTP headers need to be latin-1 compatible
 
         In order to offer file downloads which contain unicode file names,
-        the file name has to be treated in a special way, see 
+        the file name has to be treated in a special way, see
         https://stackoverflow.com/questions/1361604 .
         """
         self.assertEqual(
