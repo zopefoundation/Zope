@@ -137,8 +137,8 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
         found = False
         for header in response.listHeaders():
             if header[0] == 'Content-Disposition':
-                # value needs to be latin-1 compatible
-                assert header[1].encode("latin-1")
+                # value needs to be `us-ascii` compatible
+                assert header[1].encode("us-ascii")
                 found = True
         self.assertTrue(found)
 

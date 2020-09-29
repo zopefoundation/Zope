@@ -22,13 +22,15 @@ def make_content_disposition(disposition, file_name):
     """
     header = f'{disposition}'
     try:
-        file_name.encode("latin-1")
+        file_name.encode('us-ascii')
     except UnicodeEncodeError:
-        # the file cannot be encoded using the `latin-1` encoding
-        # which is required for HTTP headers
+        # the file cannot be encoded using the `us-ascii` encoding
+        # which is advocated by RFC 7230 - 7237
         #
         # a special header has to be crafted
         # also see https://tools.ietf.org/html/rfc6266#appendix-D
+        encoded_file_name = file_name.encode('us-ascii', errors='ignore')
+        header += f'; filename="{encoded_file_name}"'
         quoted_file_name = urllib.parse.quote(file_name)
         header += f'; filename*=UTF-8\'\'{quoted_file_name}'
         return header

@@ -24,6 +24,12 @@ class MakeDispositionHeaderTests(unittest.TestCase):
             make_content_disposition("inline", "iq.png"),
             'inline; filename="iq.png"')
 
+    def test_latin_one(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'Dänemark.png'),
+            'inline; filename="b\'Dnemark.png\'"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
+        )
+
     def test_unicode(self):
         """HTTP headers need to be latin-1 compatible
 
@@ -33,5 +39,5 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         """
         self.assertEqual(
             make_content_disposition("inline", "ıq.png"),
-            """inline; filename*=UTF-8''%C4%B1q.png"""
+            'inline; filename="b\'q.png\'"; filename*=UTF-8\'\'%C4%B1q.png'
         )
