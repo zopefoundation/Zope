@@ -115,6 +115,30 @@ def build_http_date(when):
         WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
+def make_content_disposition(disposition, file_name):
+    """Create HTTP header for downloading a file with a UTF-8 filename.
+
+    See this and related answers: https://stackoverflow.com/a/8996249/2173868.
+    """
+    header = f'{disposition}'
+    try:
+        file_name.encode('us-ascii')
+    except UnicodeEncodeError:
+        # the file cannot be encoded using the `us-ascii` encoding
+        # which is advocated by RFC 7230 - 7237
+        #
+        # a special header has to be crafted
+        # also see https://tools.ietf.org/html/rfc6266#appendix-D
+        encoded_file_name = file_name.encode('us-ascii', errors='ignore')
+        header += f'; filename="{encoded_file_name}"'
+        quoted_file_name = quote(file_name)
+        header += f'; filename*=UTF-8\'\'{quoted_file_name}'
+        return header
+    else:
+        header += f'; filename="{file_name}"'
+        return header
+
+
 class HTTPBaseResponse(BaseResponse):
     """ An object representation of an HTTP response.
 

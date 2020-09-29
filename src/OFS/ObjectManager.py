@@ -61,7 +61,7 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
-from ZPublisher.http_header_utils import make_content_disposition
+from ZPublisher.HTTPResponse import make_content_disposition
 
 
 # Constants: __replaceable__ flags:
