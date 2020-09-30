@@ -61,6 +61,7 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from ZPublisher.HTTPResponse import make_content_disposition
 
 
 # Constants: __replaceable__ flags:
@@ -611,8 +612,10 @@ class ObjectManager(
 
             if RESPONSE is not None:
                 RESPONSE.setHeader('Content-type', 'application/data')
-                RESPONSE.setHeader('Content-Disposition',
-                                   f'inline;filename={id}.{suffix}')
+                RESPONSE.setHeader(
+                    'Content-Disposition',
+                    make_content_disposition('inline', f'{id}.{suffix}')
+                )
             return result
 
         f = os.path.join(CONFIG.clienthome, f'{id}.{suffix}')

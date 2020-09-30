@@ -8,6 +8,7 @@ from zExceptions import InternalError
 from zExceptions import NotFound
 from zExceptions import ResourceLockedError
 from zExceptions import Unauthorized
+from ZPublisher.HTTPResponse import make_content_disposition
 
 
 class HTTPResponseTests(unittest.TestCase):
@@ -1373,3 +1374,29 @@ class HTTPResponseTests(unittest.TestCase):
     def test_isHTML_not_decodable_bytes(self):
         response = self._makeOne()
         self.assertFalse(response.isHTML('bïñårÿ'.encode('latin1')))
+
+
+class MakeDispositionHeaderTests(unittest.TestCase):
+
+    def test_ascii(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'iq.png'),
+            'inline; filename="iq.png"')
+
+    def test_latin_one(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'Dänemark.png'),
+            'inline; filename="b\'Dnemark.png\'"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
+        )
+
+    def test_unicode(self):
+        """HTTP headers need to be latin-1 compatible
+
+        In order to offer file downloads which contain unicode file names,
+        the file name has to be treated in a special way, see
+        https://stackoverflow.com/questions/1361604 .
+        """
+        self.assertEqual(
+            make_content_disposition('inline', 'ıq.png'),
+            'inline; filename="b\'q.png\'"; filename*=UTF-8\'\'%C4%B1q.png'
+        )
