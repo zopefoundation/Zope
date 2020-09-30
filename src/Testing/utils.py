@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-""" Some utility functiions for unit tests
+""" Some utility functions for unit tests
 """
 import contextlib
 import sys
