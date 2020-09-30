@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope-specific versions of ZTUTils classes
+"""Zope-specific versions of ZTUtils classes
 """
 
 import html
