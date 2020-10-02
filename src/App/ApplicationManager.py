@@ -14,18 +14,22 @@
 import os
 import sys
 import time
+import types
 
+from six.moves._thread import get_ident
 from six.moves.urllib import parse
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
+from App.CacheManager import CacheManager
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
+from DateTime.DateTime import DateTime
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -59,6 +63,8 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
         {'label': 'Control Panel', 'action': '../manage_main'},
         {'label': 'Databases', 'action': 'manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
+        {'label': 'DAV Locks', 'action': '../DAVLocks/manage_main'},
+        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -103,6 +109,7 @@ class ConfigurationViewer(Tabs, Traversable, Implicit):
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': 'manage_main'},
         {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
+        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -133,7 +140,105 @@ class ConfigurationViewer(Tabs, Traversable, Implicit):
 InitializeClass(ConfigurationViewer)
 
 
-class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
+# refcount snapshot info
+_v_rcs = None
+_v_rst = None
+
+
+class DebugManager(Tabs, Traversable, Implicit):
+    """ Debug and profiling information
+    """
+    manage = manage_main = manage_workspace = DTMLFile('dtml/debug', globals())
+    manage_main._setName('manage_main')
+    id = 'DebugInfo'
+    name = title = 'Debug Information'
+    meta_type = name
+
+    manage_options = (
+        {'label': 'Control Panel', 'action': '../manage_main'},
+        {'label': 'Databases', 'action': '../Database/manage_main'},
+        {'label': 'Configuration', 'action': '../Configuration/manage_main'},
+        {'label': 'DAV Locks', 'action': '../DAVLocks/manage_main'},
+        {'label': 'Debug Information', 'action': 'manage_main'},
+    )
+
+    def refcount(self, n=None, t=(type(Implicit), )):
+        # return class reference info
+        counts = {}
+        for m in list(sys.modules.values()):
+            if m is None:
+                continue
+            if not isinstance(m, types.ModuleType) or 'six.' in m.__name__:
+                continue
+            for sym in dir(m):
+                ob = getattr(m, sym)
+                if type(ob) in t:
+                    counts[ob] = sys.getrefcount(ob)
+        pairs = []
+        for ob, v in counts.items():
+            if hasattr(ob, '__module__'):
+                name = '%s.%s' % (ob.__module__, ob.__name__)
+            else:
+                name = '%s' % ob.__name__
+            pairs.append((v, name))
+        pairs.sort()
+        pairs.reverse()
+        if n is not None:
+            pairs = pairs[:n]
+        return pairs
+
+    def refdict(self):
+        counts = {}
+        for v, n in self.refcount():
+            counts[n] = v
+        return counts
+
+    def rcsnapshot(self):
+        global _v_rcs
+        global _v_rst
+        _v_rcs = self.refdict()
+        _v_rst = DateTime()
+
+    def rcdate(self):
+        return _v_rst
+
+    def rcdeltas(self):
+        if _v_rcs is None:
+            self.rcsnapshot()
+        nc = self.refdict()
+        rc = _v_rcs
+        rd = []
+        for n, c in nc.items():
+            try:
+                prev = rc.get(n, 0)
+                if c > prev:
+                    rd.append((c - prev, (c, prev, n)))
+            except Exception:
+                pass
+        rd.sort()
+        rd.reverse()
+        return [{'name': n[1][2],
+                 'delta': n[0],
+                 'pc': n[1][1],
+                 'rc': n[1][0],
+                 } for n in rd]
+
+    def dbconnections(self):
+        import Zope2  # for data
+        return Zope2.DB.connectionDebugInfo()
+
+    def manage_getSysPath(self):
+        return list(sys.path)
+
+
+InitializeClass(DebugManager)
+
+
+class ApplicationManager(CacheManager,
+                         Persistent,
+                         Tabs,
+                         Traversable,
+                         Implicit):
     """System management
     """
     __allow_access_to_unprotected_subobjects__ = 1
@@ -148,6 +253,7 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
     Database = DatabaseChooser()
     Configuration = ConfigurationViewer()
     DavLocks = DavLockManager()
+    DebugInfo = DebugManager()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
@@ -156,6 +262,7 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
         {'label': 'Databases', 'action': 'Database/manage_main'},
         {'label': 'Configuration', 'action': 'Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': 'DavLocks/manage_main'},
+        {'label': 'Debug Information', 'action': 'DebugInfo/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -189,6 +296,9 @@ class ApplicationManager(Persistent, Tabs, Traversable, Implicit):
 
     def sys_platform(self):
         return sys.platform
+
+    def thread_get_ident(self):
+        return get_ident()
 
     def debug_mode(self):
         return getConfiguration().debug_mode
