@@ -153,6 +153,7 @@ class DebugManager(Tabs, Traversable, Implicit):
     id = 'DebugInfo'
     name = title = 'Debug Information'
     meta_type = name
+    zmi_icon = 'fas fa-bug'
 
     manage_options = (
         {'label': 'Control Panel', 'action': '../manage_main'},
