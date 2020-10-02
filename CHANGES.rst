@@ -12,7 +12,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases that still support Python 2.
 
-- Update to ``zope.interface 5.1.1`` which fixes a memory leak.
+- Update to ``zope.interface > 5.1.0`` to fix a memory leak.
 
 
 4.5.1 (2020-08-13)
