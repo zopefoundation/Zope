@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Update to ``zope.interface > 5.1.0`` to fix a memory leak.
+
 - Fix export of files with non-latin-1 compatible names
   (`#890 <https://github.com/zopefoundation/Zope/issues/890>`_)
 
