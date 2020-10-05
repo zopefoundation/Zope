@@ -30,6 +30,6 @@ from .Zope import url_query  # NOQA: F401
 security = ModuleSecurityInfo('ZTUtils')
 
 for name in ('encodeExpansion', 'decodeExpansion', 'a2b', 'b2a',
-             'Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter'
+             'Batch', 'TreeMaker', 'SimpleTreeMaker', 'LazyFilter',
              'url_query', 'make_query', 'make_hidden_input'):
     security.declarePublic(name)  # NOQA: D001
