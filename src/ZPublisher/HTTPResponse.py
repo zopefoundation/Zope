@@ -800,7 +800,7 @@ class HTTPResponse(HTTPBaseResponse):
     def _error_html(self, title, body):
         return ("""<!DOCTYPE html><html>
   <head><title>Site Error</title><meta charset="utf-8" /></head>
-  <body bgcolor='#FFFFFF'>
+  <body bgcolor="#FFFFFF">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
