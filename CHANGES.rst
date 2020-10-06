@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.2 (unreleased)
 ------------------
 
+- HTTP header encoding support
+
 - Update dependencies to the latest releases that still support Python 2.
 
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.

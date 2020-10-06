@@ -18,6 +18,9 @@ import struct
 import sys
 import time
 import zlib
+from email.header import Header
+from email.message import _parseparam
+from email.utils import encode_rfc2231
 from io import BytesIO
 
 from six import PY2
@@ -25,6 +28,7 @@ from six import PY3
 from six import binary_type
 from six import class_types
 from six import reraise
+from six import string_types
 from six import text_type
 from six.moves.urllib.parse import quote
 from six.moves.urllib.parse import urlparse
@@ -109,7 +113,9 @@ _CRLF = re.compile(r'[\r\n]')
 
 
 def _scrubHeader(name, value):
-    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
+    if not isinstance(value, string_types):
+        value = str(value)
+    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(value))
 
 
 _NOW = None  # overwrite for testing
@@ -709,20 +715,24 @@ class HTTPBaseResponse(BaseResponse):
         """ Return a list of (key, value) pairs for our headers.
 
         o Do appropriate case normalization.
+
+        o Encode header values via `header_encoding_registry`
         """
 
         result = [
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
         ]
 
+        encode = header_encoding_registry.encode
         for key, value in self.headers.items():
             if key.lower() == key:
                 # only change non-literal header names
                 key = '-'.join([x.capitalize() for x in key.split('-')])
-            result.append((key, value))
+            result.append((key, encode(key, value)))
 
         result.extend(self._cookie_list())
-        result.extend(self.accumulated_headers)
+        for key, value in self.accumulated_headers:
+            result.append((key, encode(key, value)))
         return result
 
     def _unauthorized(self):
@@ -1111,3 +1121,129 @@ class WSGIResponse(HTTPBaseResponse):
 
     def __str__(self):
         raise NotImplementedError
+
+
+# HTTP header encoding
+class HeaderEncodingRegistry(dict):
+    """Encode HTTP headers.
+
+    HTTP/1.1 uses `ISO-8859-1` as charset for its headers
+    (the modern spec (RFC 7230-7235) has deprecated non ASCII characters
+    but for the sake of older browsers we still use `ISO-8859-1`).
+    Header values need encoding if they contain characters
+    not expressible in this charset.
+
+    HTTP/1.1 is based on MIME
+    ("Multimedia Internet Mail Extensions" RFC 2045-2049).
+    MIME knows about 2 header encodings:
+     - one for parameter values (RFC 2231)
+     - and one word words as part of text, phrase or comment (RFC 2047)
+    For use with HTTP/1.1 MIME's parameter value encoding (RFC 2231)
+    was specialized and simplified via RFC 5987 and RFC 8187.
+
+    For efficiency reasons and because HTTP is an extensible
+    protocol (an application can use headers not specified
+    by HTTP), we use an encoding registry to guide the header encoding.
+    An application can register an encoding for specific keys and/or
+    a default encoding to be used for keys without specific registration.
+    If there is neither a specific encoding nor a default encoding,
+    a header value remains unencoded.
+    Header values are encoded only if they contain non `ISO-8859-1` characters.
+    """
+
+    def register(self, header, encoder, **kw):
+        """register *encoder* as encoder for header *header*.
+
+        If *encoder* is `None`, this indicates that *header* should not
+        get encoded.
+
+        If *header* is `None`, this indicates that *encoder* is defined
+        as the default encoder.
+
+        When encoding is necessary, *encoder* is called with
+        the header value and the keywords specified by *kw*.
+        """
+        if header is not None:
+            header = header.lower()
+        self[header] = encoder, kw
+
+    def unregister(self, header):
+        """remove any registration for *header*.
+
+        *header* can be either a header name or `None`.
+        In the latter case, a default registration is removed.
+        """
+        if header is not None:
+            header = header.lower()
+        if header in self:
+            del self[header]
+
+    def encode(self, header, value):
+        """encode *value* as specified for *header*.
+
+        encoding takes only place if *value* contains non ISO-8859-1 chars.
+        """
+        if not isinstance(value, text_type):
+            return value
+        header = header.lower()
+        reg = self.get(header) or self.get(None)
+        if reg is None or reg[0] is None or non_latin_1(value) is None:
+            return value
+        return reg[0](value, **reg[1])
+
+
+non_latin_1 = re.compile(r"[^\x00-\xff]").search
+
+
+def encode_words(value):
+    """RFC 2047 word encoding.
+
+    Note: treats *value* as unstructured data
+    and therefore must not be applied for headers with
+    a structured value (unless the structure is garanteed
+    to only contain ISO-8859-1 chars).
+    """
+    return Header(value, 'utf-8', 1000000).encode()
+
+
+def encode_params(value):
+    """RFC 5987(8187) (specialized from RFC 2231) parameter encoding.
+
+    This encodes parameters as specified by RFC 5987 using
+    fixed `UTF-8` encoding (as required by RFC 8187).
+    However, all parameters with non latin-1 values are
+    automatically transformed and a `*` suffixed parameter is added
+    (RFC 8187 allows this only for parameters explicitly specified
+    to have this behavior).
+
+    Many HTTP headers use `,` separated lists. For simplicity,
+    such headers are not supported (we would need to recognize
+    `,` inside quoted strings as special).1G
+    """
+    params = []
+    for p in _parseparam(";" + value):
+        p = p.strip()
+        if not p:
+            continue
+        params.append([s.strip() for s in p.split("=", 1)])
+    known_params = set(p[0] for p in params)
+    for p in params[:]:
+        if len(p) == 2 and non_latin_1(p[1]):  # need encoding
+            pn = p[0]
+            pnc = pn + "*"
+            pv = p[1]
+            if pnc not in known_params:
+                if pv.startswith('"'):
+                    pv = pv[1:-1]  # remove quotes
+                if PY2:
+                    # we know `pv` is unicode
+                    pv = pv.encode("utf-8")
+                params.append((pnc, encode_rfc2231(pv, "utf-8", None)))
+            # backward compatibility for clients not understanding RFC 5987
+            p[1] = p[1].encode("iso-8859-1", "replace").decode("iso-8859-1")
+    return "; ".join("=".join(p) for p in params)
+
+
+header_encoding_registry = HeaderEncodingRegistry()
+header_encoding_registry.register("content-type", encode_params)
+header_encoding_registry.register("content-disposition", encode_params)
