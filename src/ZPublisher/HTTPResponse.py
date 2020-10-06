@@ -1218,7 +1218,7 @@ def encode_params(value):
 
     Many HTTP headers use `,` separated lists. For simplicity,
     such headers are not supported (we would need to recognize
-    `,` inside quoted strings as special).1G
+    `,` inside quoted strings as special).
     """
     params = []
     for p in _parseparam(";" + value):
