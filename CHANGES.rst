@@ -11,6 +11,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 ------------------
 
 - HTTP header encoding support
+  (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
 
 - Update dependencies to the latest releases that still support Python 2.
 
