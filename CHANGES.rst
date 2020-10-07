@@ -14,6 +14,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.
 
+- Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
+  Python script.
+  (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
+
 
 4.5.1 (2020-08-13)
 ------------------
