@@ -18,9 +18,14 @@ about all minor new features and bugs being solved in the latest release.
 What's new in Zope 5
 --------------------
 
+Added support for Python 3.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Python 3.9 is now fully supported by Zope 5.
+
 Dropped support for Python 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Zope 5 supports Python 3 only, versions 3.6 up through 3.8. All support code
+Zope 5 supports Python 3 only, versions 3.6 up through 3.9. All support code
 and special casing for Python 2, including the use of the ``six`` package, have
 been removed.
 
