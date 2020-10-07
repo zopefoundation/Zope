@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
+- Add support for Python 3.9.
+
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.
 
 - Fix export of files with non-latin-1 compatible names
@@ -58,7 +60,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
 
 - Improve documentation of ``CONTEXTS`` in the "Zope Book".
-  
+
 - Drop support for Python 3.5 as it will run out of support soon.
   (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
@@ -76,7 +78,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Use ``Chameleon`` (>= 3.7.2) configuration to get better
   information for errors detected during template execution
   (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
-  
+
 - Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
   Python script.
   (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
