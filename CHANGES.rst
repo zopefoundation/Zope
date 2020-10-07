@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.2 (unreleased)
 ------------------
 
+- HTTP header encoding support
+  (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
+
 - Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
   to avoid bugs by use of deprecated direct ``id`` access
   (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).

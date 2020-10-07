@@ -11,6 +11,10 @@ from zExceptions import NotFound
 from zExceptions import ResourceLockedError
 from zExceptions import Unauthorized
 
+from ..HTTPResponse import encode_params
+from ..HTTPResponse import encode_words
+from ..HTTPResponse import header_encoding_registry
+
 
 class HTTPResponseTests(unittest.TestCase):
 
@@ -1377,3 +1381,75 @@ class HTTPResponseTests(unittest.TestCase):
     def test_isHTML_not_decodable_bytes(self):
         response = self._makeOne()
         self.assertFalse(response.isHTML(u'bïñårÿ'.encode('latin1')))
+
+    def test_header_encoding(self):
+        r = self._makeOne()
+        r.setHeader("unencoded1", u"€")
+        r.setHeader("content-disposition", u"a; p=€")
+        r.addHeader("unencoded2", u"€")
+        r.addHeader("content-disposition", u"a2; p2=€")
+        hdrs = r.listHeaders()[1:]  # drop `X-Powered...`
+        shdrs, ahdrs = dict(hdrs[:2]), dict(hdrs[2:])
+        # for some reasons, `set` headers change their name
+        #   while `add` headers do not
+        self.assertEqual(shdrs["Unencoded1"], u"€")
+        self.assertEqual(ahdrs["unencoded2"], u"€")
+        self.assertEqual(shdrs["Content-Disposition"],
+                         u"a; p=?; p*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["content-disposition"],
+                         u"a2; p2=?; p2*=utf-8''%E2%82%AC")
+
+
+class TestHeaderEncodingRegistry(unittest.TestCase):
+    def setUp(self):
+        self._copy = header_encoding_registry.copy()
+
+    def tearDown(self):
+        header_encoding_registry.clear()
+        header_encoding_registry.update(self._copy)
+
+    def test_default_registrations(self):
+        self.assertIn('content-type', header_encoding_registry)
+        self.assertEqual(header_encoding_registry["content-disposition"],
+                         (encode_params, {}))
+
+    def test_encode(self):
+        def encode(value, param):
+            return param
+        header_encoding_registry.register("my-header", encode, param=1)
+        # non-ISO-8859-1 encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", u"€"),
+                         1)
+        # ISO-8859-1 not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", u"ä"),
+                         u"ä")
+        # unregistered not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header2", u"€"),
+                         u"€")
+        # test header name not case sensitive
+        self.assertEqual(header_encoding_registry.encode("My-Header", u"€"),
+                         1)
+        # default
+        header_encoding_registry.register(None, encode, param=2)
+        self.assertEqual(header_encoding_registry.encode("my-header2", u"€"),
+                         2)
+        self.assertEqual(header_encoding_registry.encode("my-header", u"€"),
+                         1)
+
+    def test_encode_words(self):
+        self.assertEqual(encode_words(u"ä"), "=?utf-8?b?w6Q=?=")
+
+    def test_encode_params(self):
+        self.assertEqual(encode_params(u'abc; p1=1; p2="2"; p3="€"; p4=€; '
+                                       u'p5="€"; p5*=5'),
+                         u'abc; p1=1; p2="2"; p3="?"; p4=?; p5="?"; p5*=5; '
+                         u'p3*=utf-8\'\'%E2%82%AC; p4*=utf-8\'\'%E2%82%AC')
+
+    def test_case_insensitivity(self):
+        header_encoding_registry.register("HdR", lambda value: 0)
+        # Note: case insensitivity not implemented for `dict` methods
+        self.assertIn("hdr", header_encoding_registry)
+        self.assertEqual(header_encoding_registry.encode("HDR", u"€"), 0)
+        header_encoding_registry.unregister("hDr")
+        header_encoding_registry.unregister("hDr")  # no exception
+        self.assertNotIn("hdr", header_encoding_registry)
