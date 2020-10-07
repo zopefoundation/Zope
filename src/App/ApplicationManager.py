@@ -16,6 +16,7 @@ import sys
 import time
 import types
 
+from six import class_types
 from six.moves._thread import get_ident
 from six.moves.urllib import parse
 
@@ -163,7 +164,7 @@ class DebugManager(Tabs, Traversable, Implicit):
         {'label': 'Debug Information', 'action': 'manage_main'},
     )
 
-    def refcount(self, n=None, t=(type(Implicit), )):
+    def refcount(self, n=None, t=(type(Implicit),) + class_types):
         # return class reference info
         counts = {}
         for m in list(sys.modules.values()):
@@ -177,10 +178,11 @@ class DebugManager(Tabs, Traversable, Implicit):
                     counts[ob] = sys.getrefcount(ob)
         pairs = []
         for ob, v in counts.items():
+            ob_name = getattr(ob, "__name__", "unknown")
             if hasattr(ob, '__module__'):
-                name = '%s.%s' % (ob.__module__, ob.__name__)
+                name = '%s.%s' % (ob.__module__, ob_name)
             else:
-                name = '%s' % ob.__name__
+                name = '%s' % ob_name
             pairs.append((v, name))
         pairs.sort()
         pairs.reverse()

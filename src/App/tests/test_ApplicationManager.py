@@ -5,6 +5,7 @@ import tempfile
 import time
 import unittest
 
+import Testing.testbrowser
 import Testing.ZopeTestCase
 
 
