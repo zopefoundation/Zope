@@ -13,9 +13,17 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
   ``getId`` calls.
 
+- Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
+  to avoid bugs by use of deprecated direct ``id`` access
+  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+
 - Update dependencies to the latest releases that still support Python 2.
 
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.
+
+- Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
+  Python script.
+  (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
 
 
 4.5.1 (2020-08-13)

@@ -79,6 +79,17 @@ class TestItem_w__name__(unittest.TestCase):
 
         verifyClass(IItemWithName, Item_w__name__)
 
+    def test_id(self):
+        from OFS.SimpleItem import Item_w__name__
+        itm = Item_w__name__()
+        # fall back to inherited `id`
+        self.assertEqual(itm.id, "")
+        itm.id = "id"
+        self.assertEqual(itm.id, "id")
+        del itm.id
+        itm._setId("name")
+        self.assertEqual(itm.id, "name")
+
 
 class TestSimpleItem(unittest.TestCase):
 
