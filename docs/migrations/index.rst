@@ -8,3 +8,4 @@ Zope.
    :maxdepth: 2
 
    zope4/index
+   zope5
