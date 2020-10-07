@@ -11,28 +11,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.0a3 (unreleased)
 ------------------
 
-- Update to ``zope.interface > 5.1.0`` to fix a memory leak.
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
 
-- Fix export of files with non-latin-1 compatible names
-  (`#890 <https://github.com/zopefoundation/Zope/issues/890>`_)
+- Drop support for Python 3.5 as it will run out of support soon.
+  (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
-- Add ``pyupgrade`` via ``pre-commit``
-  (`#859 <https://github.com/zopefoundation/Zope/issues/859>`_)
 
-- Avoid unsolicited translations
-  (`#876 <https://github.com/zopefoundation/Zope/issues/876>`_)
-
-- Make "chameleon-zope context wrapping" more faithful.
-  (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)
-
-- Let "unicode conflict resolution" work for all templates (not just
-  ``ZopePageTemplate``).
-  (`#872 <https://github.com/zopefoundation/Zope/pull/872/files>`_)
-
-- Make "Unicode Conflict Resolution" available for templates
-  rendered with ``chameleon``
-  (`Products.CMFPlone#3145
-  <https://github.com/plone/Products.CMFPlone/issues/3145>`_).
+Features
+++++++++
 
 - New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
   It can be used as the "provides" of an adapter registration
@@ -51,16 +38,38 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (and take precedence)
   (`zope.tales#23 <https://github.com/zopefoundation/zope.tales/issues/23>`_).
 
-- Add ``tal:switch`` test
-
 - Support the ``attrs`` predefined template variable again (as
   far as ``chameleon`` allows it)
   (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
 
+- Use ``Chameleon`` (>= 3.7.2) configuration to get better
+  information for errors detected during template execution
+  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
+
+Fixes
++++++
+
+- Update to ``zope.interface > 5.1.0`` to fix a memory leak.
+
+- Fix export of files with non-latin-1 compatible names
+  (`#890 <https://github.com/zopefoundation/Zope/issues/890>`_)
+
+- Avoid unsolicited translations
+  (`#876 <https://github.com/zopefoundation/Zope/issues/876>`_)
+
+- Make "chameleon-zope context wrapping" more faithful.
+  (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)
+
+- Let "unicode conflict resolution" work for all templates (not just
+  ``ZopePageTemplate``).
+  (`#872 <https://github.com/zopefoundation/Zope/pull/872/files>`_)
+
+- Make "Unicode Conflict Resolution" available for templates
+  rendered with ``chameleon``
+  (`Products.CMFPlone#3145
+  <https://github.com/plone/Products.CMFPlone/issues/3145>`_).
+
 - Improve documentation of ``CONTEXTS`` in the "Zope Book".
-  
-- Drop support for Python 3.5 as it will run out of support soon.
-  (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
 
 - Decrease cookie size for copy/paste clipboard cookie
   (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)
@@ -73,13 +82,17 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Improve solidity of the ``debugError`` method.
   (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
 
-- Use ``Chameleon`` (>= 3.7.2) configuration to get better
-  information for errors detected during template execution
-  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
-  
 - Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
   Python script.
   (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
+
+Other changes
++++++++++++++
+
+- Add ``pyupgrade`` via ``pre-commit``
+  (`#859 <https://github.com/zopefoundation/Zope/issues/859>`_)
+
+- Add ``tal:switch`` test
 
 
 5.0a2 (2020-04-24)
