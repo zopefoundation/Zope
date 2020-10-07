@@ -614,7 +614,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         from transaction import commit
         try:
             tf = None  # temporary file required for export/import
-            tdir_created = False
             # export/import needs the object manager in ZODB
             s = DemoStorage()
             db = DB(s)
@@ -628,18 +627,15 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
             top._setObject(tmp.getId(), tmp)
             commit()
             exported = top.manage_exportObject("f", True)
-            if tempfile.tempdir is None:  # pragma: no cover
-                tempfile.mktemp()  # initialize `tempdir`
-            tdir = join(tempfile.tempdir, "import")
-            if not exists(tdir):  # pragma: no cover
-                tdir_created = True
-                mkdir(tdir)
+            tdir = tempfile.mkdtemp()
+            idir = join(tdir, "import")
+            mkdir(idir)
             tf = tempfile.NamedTemporaryFile(
-                dir=tdir, delete=False)
+                dir=idir, delete=False)
             tf.write(exported)
             tf.close()
             unused, tname = split(tf.name)
-            tmp._getImportPaths = _CallResult((tempfile.tempdir,))
+            tmp._getImportPaths = _CallResult((tdir,))
             tmp.manage_importObject(tname, set_owner=False,
                                     suppress_events=True)
             imp_f = tmp["f"]  # exception if import unsuccessful
@@ -648,7 +644,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         finally:
             if tf is not None:  # pragma: no cover
                 unlink(tf.name)
-            if tdir_created:  # pragma: no cover
+                rmdir(idir)
                 rmdir(tdir)
             c.close()
             db.close()
