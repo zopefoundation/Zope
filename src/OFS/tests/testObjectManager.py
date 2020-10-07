@@ -603,7 +603,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         from os import mkdir
         from os import rmdir
         from os import unlink
-        from os.path import exists
         from os.path import join
         from os.path import split
 
