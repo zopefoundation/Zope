@@ -76,6 +76,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Use ``Chameleon`` (>= 3.7.2) configuration to get better
   information for errors detected during template execution
   (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
+  
+- Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
+  Python script.
+  (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
 
 
 5.0a2 (2020-04-24)
