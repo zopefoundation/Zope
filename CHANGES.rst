@@ -21,6 +21,9 @@ Backwards incompatible changes
 Features
 ++++++++
 
+- HTTP header encoding support
+  (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
+
 - Add support for Python 3.9.
 
 - New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
