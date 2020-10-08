@@ -18,7 +18,7 @@ import sys
 import types
 from time import asctime
 
-import AccessControl.User
+import AccessControl.users
 import App.ZApplication
 import OFS.Application
 import ZODB
@@ -120,7 +120,7 @@ def startup():
     DB.classFactory = ClassFactory.ClassFactory
 
     # "Log on" as system user
-    newSecurityManager(None, AccessControl.User.system)
+    newSecurityManager(None, AccessControl.users.system)
 
     # Set up the CA
     load_zcml()
