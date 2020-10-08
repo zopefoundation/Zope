@@ -111,6 +111,7 @@ class ApplicationTests(unittest.TestCase):
 
     def test_ZopeVersion(self):
         import pkg_resources
+
         from App.version_txt import getZopeVersion
 
         app = self._makeOne()
