@@ -1,0 +1,107 @@
+<dtml-var manage_page_header>
+<dtml-if debug_auto_reload>
+<meta HTTP-EQUIV="Refresh"
+  CONTENT="&dtml-debug_auto_reload;;URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
+</dtml-if>
+<dtml-with "_(management_view='Debug Information')">
+  <dtml-var manage_tabs>
+</dtml-with>
+
+<dtml-if update_snapshot>
+  <dtml-call rcsnapshot>
+</dtml-if>
+
+<main class="container-fluid">
+
+  <p class="form-help mt-4">
+    Reference count and database connection information
+  </p>
+
+  <h4>Top 100 reference counts</h4>
+  <select name="foo" size="10">
+    <dtml-in "refcount(100)">
+      <option>&dtml-sequence-item;: &dtml-sequence-key;</option>
+    </dtml-in>
+  </select>
+
+  <dtml-let delta_info="rcdeltas">
+    <dtml-if delta_info>
+      <p><br/></p>
+      <h4>Changes since last refresh</h4>
+
+      <table border="1">
+      <dtml-in rcdeltas mapping>
+      <dtml-if sequence-start>
+      <tr>
+      <th class="header" align="left" valign="top">
+      Class
+      </th>
+      <th class="header" align="left" valign="top">
+      <dtml-var rcdate fmt="fCommon" null="">
+      </th>
+      <th class="header" align="left" valign="top">
+      <dtml-var ZopeTime fmt="fCommon">
+      </th>
+      <th class="header" align="left" valign="top">
+      Delta
+      </th>
+      </tr>
+      </dtml-if>
+      <tr>
+      <td class="cell" align="left" valign="top">
+      &dtml-name;
+      </td>
+      <td class="cell" align="left" valign="top">
+      &dtml-pc;
+      </td>
+      <td class="cell" align="left" valign="top">
+      &dtml-rc;
+      </td>
+      <td class="cell" align="left" valign="top">
+      +&dtml-delta;
+      </td>
+      </tr>
+      </dtml-in>
+      </table>
+    </dtml-if>
+  </dtml-let>
+  
+  <p>
+    <a href="../Database/cache_detail">Cache detail</a> |
+    <a href="../Database/cache_extreme_detail">Cache extreme detail</a>
+  </p>
+
+  <p>
+    <form action="&dtml-URL;" method="GET">
+    <a href="&dtml-URL;?update_snapshot=1">Update Snapshot</a> | 
+    <dtml-if debug_auto_reload>
+      <a href="&dtml-URL;">Stop auto refresh</a>
+    <dtml-else>
+        <a href="&dtml-URL;">Refresh</a> |
+        Auto refresh interval (seconds):
+        <input type="text" name="debug_auto_reload" size="3" value="10">
+        <input type="submit" value="Start auto refresh">
+      </form>
+    </dtml-if>
+    </form>
+  </p>
+  
+  <h4>ZODB database connections</h4>
+  <table border="1">
+    <tr>
+      <th>Opened</th>
+      <th>Info</th>
+    </tr>
+    <dtml-in dbconnections mapping>
+      <tr>
+        <td>&dtml-opened;</td>
+        <td>&dtml-info;</td>
+      </tr>
+    </dtml-in>
+  </table>
+
+  <p><br/></p>
+  
+</main>
+
+<dtml-var manage_page_footer>

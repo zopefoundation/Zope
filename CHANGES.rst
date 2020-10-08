@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.2 (unreleased)
 ------------------
 
+- Restore the ZMI `Debug Information` control panel page
+  (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
+
 - HTTP header encoding support
   (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
 
