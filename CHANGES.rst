@@ -11,7 +11,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Update to newest versions of dependencies.
 
 
 5.0 (2020-10-08)
