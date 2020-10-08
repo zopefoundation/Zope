@@ -446,6 +446,10 @@ class Item_w__name__(Item):
         """
         return self.__name__
 
+    # Alias (deprecated) `id` to `getId()` (but avoid recursion)
+    id = ComputedAttribute(
+        lambda self: self.getId() if "__name__" in self.__dict__ else "")
+
     def title_or_id(self):
         """Return the title if it is not blank and the id otherwise.
         """
