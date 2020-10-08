@@ -21,6 +21,11 @@ Backwards incompatible changes
 Features
 ++++++++
 
+- HTTP header encoding support
+  (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
+
+- Add support for Python 3.9.
+
 - New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
   It can be used as the "provides" of an adapter registration
   to adapt a non ``Zope`` tales engine to an engine to be used
@@ -48,6 +53,10 @@ Features
 
 Fixes
 +++++
+
+- Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
+  to avoid bugs by use of deprecated direct ``id`` access
+  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
 
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.
 
