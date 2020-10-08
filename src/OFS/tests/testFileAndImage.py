@@ -4,23 +4,22 @@ import time
 import unittest
 from io import BytesIO
 
-import transaction
-from Acquisition import aq_base
-from zExceptions import Redirect
-from zope.component import adapter
-from zope.lifecycleevent.interfaces import IObjectCreatedEvent
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
-
 import OFS.Image
 import Testing.testbrowser
 import Testing.ZopeTestCase
+import transaction
 import Zope2
+from Acquisition import aq_base
 from App.Common import rfc1123_date
 from OFS.Application import Application
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
+from zExceptions import Redirect
+from zope.component import adapter
+from zope.lifecycleevent.interfaces import IObjectCreatedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -310,10 +309,9 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.manage_DAVget(), text)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.Image import File
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
         verifyClass(HTTPRangeInterface, File)
@@ -377,10 +375,9 @@ class ImageTests(FileTests):
         self.assertEqual(result, self.data)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.Image import Image
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, Image)
 

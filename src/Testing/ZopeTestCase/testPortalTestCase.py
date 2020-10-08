@@ -24,7 +24,6 @@ import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_inner
-
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from OFS.userfolder import UserFolder

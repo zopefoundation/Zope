@@ -19,7 +19,6 @@ import tempfile
 import unittest
 
 import ZConfig
-
 from Zope2.Startup import get_wsgi_starter
 from Zope2.Startup.options import ZopeWSGIOptions
 

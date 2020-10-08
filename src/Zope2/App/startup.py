@@ -19,17 +19,16 @@ import types
 from time import asctime
 
 import AccessControl.User
+import App.ZApplication
+import OFS.Application
 import ZODB
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from App.config import getConfiguration
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
-
-import App.ZApplication
-import OFS.Application
-import Zope2
-from App.config import getConfiguration
 
 
 app = None

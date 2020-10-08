@@ -33,7 +33,15 @@ from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.special_dtml import DTMLFile
 from ExtensionClass import Base
+from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
+from OFS.interfaces import ICopyContainer
+from OFS.interfaces import ICopySource
+from OFS.Moniker import Moniker
+from OFS.Moniker import loadMoniker
+from OFS.subscribers import compatibilityCall
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zExceptions import Unauthorized
@@ -43,15 +51,6 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
-
-from App.special_dtml import DTMLFile
-from OFS.event import ObjectClonedEvent
-from OFS.event import ObjectWillBeMovedEvent
-from OFS.interfaces import ICopyContainer
-from OFS.interfaces import ICopySource
-from OFS.Moniker import Moniker
-from OFS.Moniker import loadMoniker
-from OFS.subscribers import compatibilityCall
 
 
 class CopyError(Exception):

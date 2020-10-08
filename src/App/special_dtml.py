@@ -17,11 +17,14 @@ from logging import getLogger
 import DocumentTemplate
 import MethodObject
 import Persistence
+import Zope2
 from AccessControl import getSecurityManager
 from Acquisition import Explicit
 from Acquisition import aq_acquire
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App import Common
+from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
 from DocumentTemplate import OLD_DEFAULT_ENCODING
 from DocumentTemplate._DocumentTemplate import InstanceDict
@@ -30,9 +33,6 @@ from DocumentTemplate._DocumentTemplate import render_blocks
 from DocumentTemplate.DT_String import DTReturn
 from DocumentTemplate.DT_String import _marker
 
-import Zope2
-from App import Common
-from App.config import getConfiguration
 from Shared.DC.Scripts.Bindings import Bindings
 
 

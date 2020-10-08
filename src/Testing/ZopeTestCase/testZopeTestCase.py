@@ -23,7 +23,6 @@ way of getting started.
 import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
-
 from OFS.userfolder import UserFolder
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import folder_name

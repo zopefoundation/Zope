@@ -24,7 +24,6 @@ from Acquisition import Acquired
 from Acquisition import Implicit
 from Acquisition import aq_base
 from ExtensionClass import Base
-
 from OFS.metaconfigure import get_registered_packages
 
 

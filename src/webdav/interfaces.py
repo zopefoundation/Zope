@@ -13,10 +13,9 @@
 """webdav interfaces.
 """
 
+from OFS.interfaces import IWriteLock
 from zope.schema import Bool
 from zope.schema import Tuple
-
-from OFS.interfaces import IWriteLock
 
 
 # XXX: might contain non-API methods and outdated comments;

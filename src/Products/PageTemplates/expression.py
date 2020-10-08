@@ -14,6 +14,7 @@ from AccessControl.ZopeGuards import guarded_getattr
 from AccessControl.ZopeGuards import guarded_getitem
 from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
+from OFS.interfaces import ITraversable
 from RestrictedPython import RestrictingNodeTransformer
 from RestrictedPython.Utilities import utility_builtins
 from z3c.pt import expressions
@@ -23,8 +24,6 @@ from zope.interface import implementer
 from zope.tales.tales import ExpressionEngine
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
-
-from OFS.interfaces import ITraversable
 
 from .Expressions import render
 from .interfaces import IZopeAwareEngine

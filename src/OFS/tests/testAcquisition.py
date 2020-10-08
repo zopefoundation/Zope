@@ -13,14 +13,13 @@
 
 import unittest
 
+import Zope2
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeGuards import guarded_getattr
-
-import Zope2
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 

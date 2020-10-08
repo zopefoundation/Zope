@@ -19,16 +19,15 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.tainted import TaintedString
 from Acquisition import aq_base
 from Acquisition import aq_parent
+from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from DocumentTemplate._DocumentTemplate import InstanceDict
 from DocumentTemplate._DocumentTemplate import TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
-from zope.interface import implementer
-
-from App.special_dtml import DTMLFile
 from OFS.interfaces import IFindSupport
+from zope.interface import implementer
 from ZPublisher.HTTPRequest import default_encoding
 
 

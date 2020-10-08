@@ -14,10 +14,9 @@
 
 import os.path
 
+from App.config import getConfiguration
 from zope.configuration import xmlconfig
 from zope.testing.cleanup import addCleanUp  # NOQA
-
-from App.config import getConfiguration
 
 
 _initialized = False

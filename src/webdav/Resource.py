@@ -30,7 +30,15 @@ from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.Common import rfc1123_date
 from ExtensionClass import Base
+from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
+from OFS.interfaces import IWriteLock
+from OFS.Lockable import LockableItem
+from OFS.Lockable import wl_isLockable
+from OFS.Lockable import wl_isLocked
+from OFS.subscribers import compatibilityCall
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import MethodNotAllowed
@@ -41,15 +49,8 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
+from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
-from App.Common import rfc1123_date
-from OFS.event import ObjectClonedEvent
-from OFS.event import ObjectWillBeMovedEvent
-from OFS.interfaces import IWriteLock
-from OFS.Lockable import LockableItem
-from OFS.Lockable import wl_isLockable
-from OFS.Lockable import wl_isLocked
-from OFS.subscribers import compatibilityCall
 from webdav import enable_ms_public_header
 from webdav.common import Conflict
 from webdav.common import IfParser
@@ -61,7 +62,6 @@ from webdav.common import tokenFinder
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.interfaces import IDAVResource
-from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")

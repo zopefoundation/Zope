@@ -1,8 +1,7 @@
-from zope.security.management import endInteraction
-
 import Testing.ZopeTestCase
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
 from Testing.ZopeTestCase.placeless import zcml
+from zope.security.management import endInteraction
 
 
 basic_auth = "{0.user_name}:{0.user_password}".format(Testing.ZopeTestCase)
@@ -11,9 +10,9 @@ basic_auth = "{0.user_name}:{0.user_password}".format(Testing.ZopeTestCase)
 def setupZCML():
     """Set up the ZCML needed to render the ZMI and the assets."""
     import AccessControl
+    import Zope2.App
 
     import zmi.styles
-    import Zope2.App
     zcml.load_config('meta.zcml', Zope2.App)
     zcml.load_config('permissions.zcml', AccessControl)
     zcml.load_config('traversing.zcml', Zope2.App)

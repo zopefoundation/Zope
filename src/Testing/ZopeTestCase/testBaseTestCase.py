@@ -24,7 +24,6 @@ import transaction
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_base
-
 from Testing.ZopeTestCase import base
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import sandbox

@@ -35,9 +35,22 @@ from Acquisition import Implicit
 from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_parent
+from App.config import getConfiguration
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
 from DateTime import DateTime
 from DateTime.interfaces import DateTimeError
+from OFS.CopySupport import CopyContainer
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.interfaces import IObjectManager
+from OFS.Lockable import LockableItem
+from OFS.subscribers import compatibilityCall
+from OFS.Traversable import Traversable
 from Persistence import Persistent
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -46,23 +59,10 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from ZPublisher.HTTPResponse import make_content_disposition
 
-from App.config import getConfiguration
-from App.FactoryDispatcher import ProductDispatcher
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from OFS.CopySupport import CopyContainer
-from OFS.event import ObjectWillBeAddedEvent
-from OFS.event import ObjectWillBeRemovedEvent
-from OFS.interfaces import IObjectManager
-from OFS.Lockable import LockableItem
-from OFS.subscribers import compatibilityCall
-from OFS.Traversable import Traversable
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from webdav.Collection import Collection
 from webdav.NullResource import NullResource
-from ZPublisher.HTTPResponse import make_content_disposition
 
 
 # Constants: __replaceable__ flags:

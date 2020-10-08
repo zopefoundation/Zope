@@ -17,12 +17,11 @@ from AccessControl.Permissions import webdav_manage_locks
 from AccessControl.Permissions import webdav_unlock_items
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from Persistence import PersistentMapping
-from zope.interface import implementer
-
 from OFS.EtagSupport import EtagSupport
 from OFS.interfaces import ILockItem
 from OFS.interfaces import IWriteLock
+from Persistence import PersistentMapping
+from zope.interface import implementer
 
 
 @implementer(IWriteLock)

@@ -37,7 +37,6 @@ from zope.interface import implementer
 from zope.publisher.base import DebugFlags
 from zope.publisher.http import splitport
 from zope.publisher.interfaces.browser import IBrowserRequest
-
 from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote

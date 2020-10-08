@@ -18,13 +18,12 @@ from urllib.error import HTTPError
 
 import transaction
 from AccessControl.Permissions import view
-from zExceptions import NotFound
-
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
+from zExceptions import NotFound
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.WSGIPublisher import publish_module
 

@@ -69,13 +69,12 @@ class TestTraverse(unittest.TestCase):
         import transaction
         from AccessControl import SecurityManager
         from AccessControl.SecurityManagement import newSecurityManager
-        from ZODB.DB import DB
-        from ZODB.DemoStorage import DemoStorage
-
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
         from OFS.Image import manage_addFile
         from Testing.makerequest import makerequest
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
 
         s = DemoStorage()
         self.connection = DB(s).open()
@@ -215,10 +214,9 @@ class TestTraverse(unittest.TestCase):
         SecurityManager.setSecurityPolicy(policy)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.interfaces import ITraversable
         from OFS.Traversable import Traversable
+        from zope.interface.verify import verifyClass
 
         verifyClass(ITraversable, Traversable)
 
@@ -398,9 +396,8 @@ class TestTraverse(unittest.TestCase):
     def testNotFoundIsRaised(self):
         from operator import getitem
 
-        from zExceptions import NotFound
-
         from OFS.SimpleItem import SimpleItem
+        from zExceptions import NotFound
         self.folder1._setObject('foo', SimpleItem('foo'))
         self.assertRaises(AttributeError, getitem, self.folder1.foo,
                           'doesntexist')

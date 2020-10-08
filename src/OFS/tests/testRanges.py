@@ -52,7 +52,6 @@ class TestRequestRange(unittest.TestCase):
 
         import string
         import transaction
-
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
         from OFS.Image import manage_addFile

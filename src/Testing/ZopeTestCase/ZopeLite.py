@@ -27,15 +27,12 @@ import os
 import sys
 import time
 
-import ZODB
-# ZODB sandbox factory
-from ZODB.DemoStorage import DemoStorage  # NOQA
-
 import App.ProductContext  # NOQA
 import OFS.Application
 import OFS.ObjectManager
 import OFS.SimpleItem
 import Products
+import ZODB
 import Zope2
 import Zope2.Startup.run
 # Allow test authors to install Zope products into the test environment. Note
@@ -46,6 +43,8 @@ from OFS.Application import install_package
 from OFS.Application import install_product
 from OFS.Folder import Folder  # NOQA
 from Testing.ZopeTestCase import layer
+# ZODB sandbox factory
+from ZODB.DemoStorage import DemoStorage  # NOQA
 
 
 # Allow code to tell it is run by the test framework

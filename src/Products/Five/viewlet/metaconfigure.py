@@ -19,6 +19,8 @@ import os
 from AccessControl.class_init import InitializeClass
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
+from Products.Five.viewlet import manager
+from Products.Five.viewlet import viewlet
 from zope.browser.interfaces import IBrowserView
 from zope.browserpage.metaconfigure import _handle_for
 from zope.component import zcml
@@ -26,9 +28,6 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.interface import Interface
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.viewlet import interfaces
-
-from Products.Five.viewlet import manager
-from Products.Five.viewlet import viewlet
 
 
 def viewletManagerDirective(

@@ -23,7 +23,6 @@ from AccessControl import getSecurityManager
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view
 from DocumentTemplate.permissions import change_dtml_documents
-
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password

@@ -18,6 +18,7 @@ for Python expressions, string literals, and paths.
 
 import logging
 
+import OFS.interfaces
 from AccessControl import safe_builtins
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
@@ -42,8 +43,6 @@ from zope.tales.tales import ErrorInfo as BaseErrorInfo
 from zope.tales.tales import Iterator
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import ITraversable
-
-import OFS.interfaces
 
 from . import ZRPythonExpr
 from .interfaces import IUnicodeEncodingConflictResolver

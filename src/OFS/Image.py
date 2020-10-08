@@ -18,6 +18,7 @@ import struct
 from email.generator import _make_boundary
 from io import BytesIO
 
+import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_images_and_files  # NOQA
 from AccessControl.Permissions import view as View
@@ -25,7 +26,15 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from App.Common import rfc1123_date
+from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
+from OFS.Cache import Cacheable
+from OFS.interfaces import IWriteLock
+from OFS.PropertyManager import PropertyManager
+from OFS.role import RoleManager
+from OFS.SimpleItem import Item_w__name__
+from OFS.SimpleItem import PathReprProvider
 from Persistence import Persistent
 from zExceptions import Redirect
 from zExceptions import ResourceLockedError
@@ -34,16 +43,6 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
-
-import ZPublisher.HTTPRequest
-from App.Common import rfc1123_date
-from App.special_dtml import DTMLFile
-from OFS.Cache import Cacheable
-from OFS.interfaces import IWriteLock
-from OFS.PropertyManager import PropertyManager
-from OFS.role import RoleManager
-from OFS.SimpleItem import Item_w__name__
-from OFS.SimpleItem import PathReprProvider
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 

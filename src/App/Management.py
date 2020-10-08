@@ -23,13 +23,12 @@ from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
-from ExtensionClass import Base
-from zope.interface import implementer
-
 from App.interfaces import ICSSPaths
 from App.interfaces import IJSPaths
 from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
+from ExtensionClass import Base
+from zope.interface import implementer
 
 
 class Tabs(Base):

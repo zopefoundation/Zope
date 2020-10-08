@@ -35,7 +35,6 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
-
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 from ZPublisher.xmlrpc import is_xmlrpc_response

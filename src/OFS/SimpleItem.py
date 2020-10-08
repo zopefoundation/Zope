@@ -32,19 +32,14 @@ from Acquisition import aq_acquire
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from ComputedAttribute import ComputedAttribute
-from DocumentTemplate.html_quote import html_quote
-from DocumentTemplate.ustr import ustr
-from ExtensionClass import Base
-from Persistence import Persistent
-from zExceptions import Redirect
-from zExceptions.ExceptionFormatter import format_exception
-from zope.interface import implementer
-
 from App.Management import Navigation
 from App.Management import Tabs
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
+from ComputedAttribute import ComputedAttribute
+from DocumentTemplate.html_quote import html_quote
+from DocumentTemplate.ustr import ustr
+from ExtensionClass import Base
 from OFS.CopySupport import CopySource
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
@@ -53,8 +48,13 @@ from OFS.Lockable import LockableItem
 from OFS.owner import Owned
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
-from webdav.Resource import Resource
+from Persistence import Persistent
+from zExceptions import Redirect
+from zExceptions.ExceptionFormatter import format_exception
+from zope.interface import implementer
 from ZPublisher.HTTPRequest import default_encoding
+
+from webdav.Resource import Resource
 
 
 logger = logging.getLogger()

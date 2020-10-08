@@ -19,10 +19,9 @@ import sys
 from functools import partial
 
 import transaction
-from zope.interface import implementer
-
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
+from zope.interface import implementer
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 

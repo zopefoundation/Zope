@@ -22,14 +22,14 @@ from AccessControl.Permissions import delete_objects
 from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from Acquisition import aq_parent
+from OFS.interfaces import IWriteLock
+from OFS.LockItem import LockItem
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import HTTPPreconditionFailed
 from zExceptions import MethodNotAllowed
 from zExceptions import ResourceLockedError
 
-from OFS.interfaces import IWriteLock
-from OFS.LockItem import LockItem
 from webdav.common import Locked
 from webdav.common import PreconditionFailed
 from webdav.common import absattr

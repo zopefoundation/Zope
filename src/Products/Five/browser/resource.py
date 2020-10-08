@@ -19,14 +19,13 @@ from urllib.parse import unquote
 
 import zope.browserresource.directory
 import zope.browserresource.file
+from Products.Five.browser import BrowserView
 from zope.browserresource.file import File
 from zope.interface import implementer
 from zope.ptresource.ptresource import PageTemplate
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.browser import absoluteURL
-
-from Products.Five.browser import BrowserView
 
 
 _marker = object()

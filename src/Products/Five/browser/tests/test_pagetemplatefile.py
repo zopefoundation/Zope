@@ -35,15 +35,14 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(vptf.id, 'dirpage1.pt')
 
     def test_pt_getEngine(self):
+        from Products.PageTemplates.Expressions import SecureModuleImporter
+        from Products.PageTemplates.Expressions import TrustedZopePathExpr
+        from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
         from zope.contentprovider.tales import TALESProviderExpression
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import LazyExpr
         from zope.tales.expressions import NotExpr
         from zope.tales.pythonexpr import PythonExpr
-
-        from Products.PageTemplates.Expressions import SecureModuleImporter
-        from Products.PageTemplates.Expressions import TrustedZopePathExpr
-        from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
 
         vptf = self._makeOne('seagull.pt')
         engine = vptf.pt_getEngine()
@@ -61,7 +60,6 @@ class ViewPageTemplateFileTests(unittest.TestCase):
 
     def test_pt_getContext_no_kw_no_physicalRoot(self):
         from AccessControl.SecurityManagement import newSecurityManager
-
         from Products.Five.browser.pagetemplatefile import ViewMapper
         from Products.PageTemplates.Expressions import SecureModuleImporter
         newSecurityManager(None, DummyUser('a_user'))

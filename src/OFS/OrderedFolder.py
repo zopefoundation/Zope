@@ -13,12 +13,11 @@
 """ 'Folder' with order support.
 """
 
-from zope.interface import implementer
-
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
 from OFS.interfaces import IOrderedFolder
 from OFS.OrderSupport import OrderSupport
+from zope.interface import implementer
 
 
 manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())

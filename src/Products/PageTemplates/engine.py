@@ -25,6 +25,7 @@ from chameleon.zpt.template import Macros
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from App.version_txt import getZopeVersion
 from MultiMapping import MultiMapping
 from z3c.pt.pagetemplate import PageTemplate as ChameleonPageTemplate
 from zope.interface import implementer
@@ -34,8 +35,6 @@ from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.interfaces import IPageTemplateProgram
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import SubPathExpr
-
-from App.version_txt import getZopeVersion
 
 from .Expressions import PathIterator
 from .Expressions import SecureModuleImporter

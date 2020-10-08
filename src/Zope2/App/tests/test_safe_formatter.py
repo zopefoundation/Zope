@@ -1,8 +1,7 @@
 """This module contains integration tests for AccessControl.safe_formatter."""
 
-from zExceptions import Unauthorized
-
 from Testing.ZopeTestCase import FunctionalTestCase
+from zExceptions import Unauthorized
 
 
 BAD_ATTR_STR = """
@@ -146,7 +145,6 @@ class FormatterFunctionalTest(FunctionalTestCase):
         from AccessControl.SecurityManagement import getSecurityManager
         from AccessControl.SecurityManagement import noSecurityManager
         from AccessControl.SecurityManager import setSecurityPolicy
-
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 
         pt = ZopePageTemplate('mytemplate', pt_content)

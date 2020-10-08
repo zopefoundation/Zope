@@ -8,7 +8,6 @@ e.g. request and error rate determination, writing high resolution logfiles
 for detailed time related analysis, inline request monitoring.
 '''
 from zope.interface import implementer
-
 from ZPublisher.interfaces import IPubAfterTraversal
 from ZPublisher.interfaces import IPubBeforeAbort
 from ZPublisher.interfaces import IPubBeforeCommit

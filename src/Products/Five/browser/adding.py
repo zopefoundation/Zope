@@ -21,6 +21,9 @@ factory screen.
 
 import operator
 
+from OFS.SimpleItem import SimpleItem
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import BadRequest
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
@@ -40,10 +43,6 @@ from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
-
-from OFS.SimpleItem import SimpleItem
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 @implementer(IAdding, IPublishTraverse)

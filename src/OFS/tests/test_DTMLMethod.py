@@ -1,17 +1,15 @@
 import io
 import unittest
 
-import zExceptions
-
 import Testing.testbrowser
 import Testing.ZopeTestCase
+import zExceptions
 import Zope2.App.zcml
 from Testing.makerequest import makerequest
 
 
 def _lock_item(item):
     from AccessControl.SpecialUsers import nobody
-
     from OFS.LockItem import LockItem
     item.wl_setLock('token', LockItem(nobody, token='token'))
 
@@ -26,9 +24,8 @@ class DTMLMethodTests(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_class_conforms_to_IWriteLock(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_edit_taintedstring(self):

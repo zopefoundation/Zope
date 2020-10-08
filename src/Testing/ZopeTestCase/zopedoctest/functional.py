@@ -25,7 +25,6 @@ from functools import partial
 from io import BytesIO
 
 import transaction
-
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase

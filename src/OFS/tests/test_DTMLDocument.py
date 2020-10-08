@@ -14,9 +14,8 @@ class DTMLDocumentTests(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_class_conforms_to_IWriteLock(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_manage_upload__bytes(self):

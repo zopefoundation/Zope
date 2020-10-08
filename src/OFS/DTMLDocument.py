@@ -17,17 +17,16 @@ from urllib.parse import quote
 
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from DocumentTemplate.permissions import change_dtml_documents
-from DocumentTemplate.permissions import change_dtml_methods
-from zExceptions.TracebackSupplement import PathTracebackSupplement
-from zope.contenttype import guess_content_type
-
 from App.special_dtml import HTML
 from App.special_dtml import DTMLFile
+from DocumentTemplate.permissions import change_dtml_documents
+from DocumentTemplate.permissions import change_dtml_methods
 from OFS.DTMLMethod import DTMLMethod
 from OFS.DTMLMethod import decapitate
 from OFS.DTMLMethod import safe_file_data
 from OFS.PropertyManager import PropertyManager
+from zExceptions.TracebackSupplement import PathTracebackSupplement
+from zope.contenttype import guess_content_type
 from ZPublisher.HTTPRequest import default_encoding
 
 

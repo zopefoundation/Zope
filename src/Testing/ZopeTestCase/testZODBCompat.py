@@ -21,7 +21,6 @@ import tempfile
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
-
 from OFS.SimpleItem import SimpleItem
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import layer

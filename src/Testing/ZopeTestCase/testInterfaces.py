@@ -13,9 +13,6 @@
 """Interface tests
 """
 
-from zope.interface.verify import verifyClass
-from zope.interface.verify import verifyObject
-
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import PortalTestCase
@@ -26,6 +23,8 @@ from Testing.ZopeTestCase.interfaces import IPortalSecurity
 from Testing.ZopeTestCase.interfaces import IPortalTestCase
 from Testing.ZopeTestCase.interfaces import IZopeSecurity
 from Testing.ZopeTestCase.interfaces import IZopeTestCase
+from zope.interface.verify import verifyClass
+from zope.interface.verify import verifyObject
 
 
 class TestAbstractClasses(TestCase):

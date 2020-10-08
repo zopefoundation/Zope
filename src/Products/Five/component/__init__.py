@@ -27,7 +27,6 @@ from zope.component.interfaces import IPossibleSite
 from zope.component.interfaces import ISite
 from zope.interface.interfaces import IComponentLookup
 from zope.traversing.interfaces import BeforeTraverseEvent
-
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse

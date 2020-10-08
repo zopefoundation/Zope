@@ -26,10 +26,9 @@ class TestPropertyManager(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.interfaces import IPropertyManager
         from OFS.PropertyManager import PropertyManager
+        from zope.interface.verify import verifyClass
 
         verifyClass(IPropertyManager, PropertyManager)
 

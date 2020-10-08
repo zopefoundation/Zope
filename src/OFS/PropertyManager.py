@@ -20,14 +20,13 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
-from ExtensionClass import Base
-from zExceptions import BadRequest
-from zope.interface import implementer
-
 from App.special_dtml import DTMLFile
+from ExtensionClass import Base
 from OFS.interfaces import IPropertyManager
 from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
+from zExceptions import BadRequest
+from zope.interface import implementer
 from ZPublisher.Converters import type_converters
 
 

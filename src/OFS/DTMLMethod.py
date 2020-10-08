@@ -24,22 +24,21 @@ from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
+from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from DocumentTemplate.DT_Util import ParseError
 from DocumentTemplate.permissions import change_dtml_methods
 from DocumentTemplate.security import RestrictedDTML
-from zExceptions import Forbidden
-from zExceptions import ResourceLockedError
-from zExceptions.TracebackSupplement import PathTracebackSupplement
-from zope.contenttype import guess_content_type
-
-from App.special_dtml import HTML
-from App.special_dtml import DTMLFile
 from OFS.Cache import Cacheable
 from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
 from OFS.SimpleItem import PathReprProvider
+from zExceptions import Forbidden
+from zExceptions import ResourceLockedError
+from zExceptions.TracebackSupplement import PathTracebackSupplement
+from zope.contenttype import guess_content_type
 from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 

@@ -27,8 +27,6 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from zope.interface import implementer
-
 from Testing.ZopeTestCase import base
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import functional
@@ -36,6 +34,7 @@ from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import utils
 from Testing.ZopeTestCase.base import app  # NOQA
 from Testing.ZopeTestCase.base import close  # NOQA
+from zope.interface import implementer
 
 
 folder_name = 'test_folder_1_'

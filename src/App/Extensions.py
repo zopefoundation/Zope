@@ -17,9 +17,8 @@ Extensions currently include external methods.
 import os
 from functools import total_ordering
 
-from zExceptions import NotFound
-
 import Products
+from zExceptions import NotFound
 
 
 @total_ordering

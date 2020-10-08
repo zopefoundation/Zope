@@ -20,20 +20,20 @@ from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_get
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from App.Common import package_home
+from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
+from OFS.SimpleItem import SimpleItem
+from OFS.Traversable import Traversable
+from Products.PageTemplates.Expressions import SecureModuleImporter
+from Products.PageTemplates.PageTemplate import PageTemplate
+from Products.PageTemplates.utils import encodingFromXMLPreamble
 from zope.contenttype import guess_content_type
 from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
 from zope.pagetemplate.pagetemplatefile import XML_PREFIX_MAX_LENGTH
 from zope.pagetemplate.pagetemplatefile import meta_pattern
 from zope.pagetemplate.pagetemplatefile import sniff_type
 
-from App.Common import package_home
-from App.config import getConfiguration
-from OFS.SimpleItem import SimpleItem
-from OFS.Traversable import Traversable
-from Products.PageTemplates.Expressions import SecureModuleImporter
-from Products.PageTemplates.PageTemplate import PageTemplate
-from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 

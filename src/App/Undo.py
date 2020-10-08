@@ -20,10 +20,9 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import undo_changes
 from Acquisition import Implicit
-from DateTime.DateTime import DateTime
-
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
 
 
 class UndoSupport(Tabs, Implicit):

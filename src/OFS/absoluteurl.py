@@ -15,14 +15,13 @@
 from urllib.parse import quote
 
 from Acquisition import aq_parent
+from OFS.interfaces import ITraversable
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import _insufficientContext
 from zope.traversing.browser.absoluteurl import _safe
 from zope.traversing.browser.interfaces import IAbsoluteURL
-
-from OFS.interfaces import ITraversable
 
 
 @implementer(IAbsoluteURL)

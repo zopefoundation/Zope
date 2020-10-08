@@ -1,8 +1,7 @@
 from unittest import TestCase
 
-from Acquisition import Implicit
-
 import Zope2
+from Acquisition import Implicit
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 

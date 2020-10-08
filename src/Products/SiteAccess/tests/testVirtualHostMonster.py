@@ -12,7 +12,6 @@ class VHMRegressions(unittest.TestCase):
 
     def setUp(self):
         import transaction
-
         from Testing.makerequest import makerequest
         from Testing.ZopeTestCase.ZopeLite import app
         transaction.begin()
@@ -166,7 +165,6 @@ class VHMPort(unittest.TestCase):
 
     def setUp(self):
         import transaction
-
         from Testing.makerequest import makerequest
         from Testing.ZopeTestCase.ZopeLite import app
         transaction.begin()
@@ -245,10 +243,9 @@ class VHMAddingTests(unittest.TestCase):
         return VirtualHostMonster()
 
     def test_add_with_existing_vhm(self):
-        from zExceptions import BadRequest
-
         from Products.SiteAccess.VirtualHostMonster import \
             manage_addVirtualHostMonster
+        from zExceptions import BadRequest
         vhm1 = self._makeOne()
         vhm1.manage_addToContainer(self.root)
 
@@ -257,11 +254,10 @@ class VHMAddingTests(unittest.TestCase):
         self.assertRaises(BadRequest, manage_addVirtualHostMonster, self.root)
 
     def test_add_id_collision(self):
-        from zExceptions import BadRequest
-
         from OFS.Folder import Folder
         from Products.SiteAccess.VirtualHostMonster import \
             manage_addVirtualHostMonster
+        from zExceptions import BadRequest
         self.root._setObject('virtual_hosting', Folder('virtual_hosting'))
         vhm1 = self._makeOne()
 

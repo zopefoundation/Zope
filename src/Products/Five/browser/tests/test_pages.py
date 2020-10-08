@@ -15,14 +15,13 @@
 """
 import unittest
 
-import zope.component.testing
-from zope.testbrowser.browser import HTTPError
-
 import Products.Five.browser.tests
 import Testing.ZopeTestCase
+import zope.component.testing
 from Products.Five.tests.testing.simplecontent import manage_addSimpleContent
 from Testing.testbrowser import Browser
 from Zope2.App import zcml
+from zope.testbrowser.browser import HTTPError
 
 
 def test_view_with_unwrapped_context():

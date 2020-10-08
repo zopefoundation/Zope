@@ -25,7 +25,6 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
-
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -166,7 +165,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
         from AccessControl.tainted import TaintedString
-
         from ZPublisher.HTTPRequest import record
 
         retval = 0
@@ -716,7 +714,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
         from DateTime.interfaces import SyntaxError
-
         from ZPublisher.Converters import type_converters
         for type, convert in list(type_converters.items()):
             try:

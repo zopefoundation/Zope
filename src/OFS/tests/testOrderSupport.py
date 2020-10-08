@@ -49,10 +49,9 @@ class TestOrderSupport(unittest.TestCase):
         return f
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
-
         from OFS.interfaces import IOrderedContainer
         from OFS.OrderSupport import OrderSupport
+        from zope.interface.verify import verifyClass
 
         verifyClass(IOrderedContainer, OrderSupport)
 

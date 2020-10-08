@@ -22,11 +22,10 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_base
+from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from ExtensionClass import Base
 from zExceptions import Redirect
-
-from App.special_dtml import DTMLFile
 
 
 view_history = 'View History'

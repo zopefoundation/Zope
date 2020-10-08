@@ -19,12 +19,11 @@ from logging import getLogger
 
 from Acquisition import Acquired
 from Acquisition import Explicit
+from App.special_dtml import DTMLFile
+from OFS.SimpleItem import Item
 from Persistence import Overridable
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
-
-from App.special_dtml import DTMLFile
-from OFS.SimpleItem import Item
 
 
 broken_klasses = {}

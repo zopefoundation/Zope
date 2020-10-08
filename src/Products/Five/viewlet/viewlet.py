@@ -17,7 +17,6 @@
 import os
 
 import zope.viewlet.viewlet
-
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 

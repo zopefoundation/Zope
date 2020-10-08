@@ -6,12 +6,11 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
+from App.special_dtml import DTMLFile
+from OFS.SimpleItem import Item
 from Persistence import Persistent
 from zExceptions import BadRequest
 from zope.publisher.http import splitport
-
-from App.special_dtml import DTMLFile
-from OFS.SimpleItem import Item
 from ZPublisher.BaseRequest import quote
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import queryBeforeTraverse

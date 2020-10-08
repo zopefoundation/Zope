@@ -3,10 +3,9 @@ import unittest
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
+from OFS.interfaces import IWriteLock
 from zExceptions import Forbidden
 from zope.interface import implementer
-
-from OFS.interfaces import IWriteLock
 
 
 class _DummySecurityPolicy:

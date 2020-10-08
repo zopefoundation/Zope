@@ -14,18 +14,17 @@ import io
 import unittest
 from urllib.parse import quote
 
+import Testing.testbrowser
 import transaction
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import user_name
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IForbidden
 from zope.security.interfaces import IUnauthorized
-
-import Testing.testbrowser
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import ZopeTestCase
-from Testing.ZopeTestCase import user_name
 from ZPublisher.WSGIPublisher import get_module_info
 
 
@@ -100,7 +99,6 @@ class WSGIResponseTests(unittest.TestCase):
 
     def test_setBody_IUnboundStreamIterator(self):
         from zope.interface import implementer
-
         from ZPublisher.Iterators import IUnboundStreamIterator
 
         @implementer(IUnboundStreamIterator)
@@ -126,7 +124,6 @@ class WSGIResponseTests(unittest.TestCase):
 
     def test_setBody_IStreamIterator(self):
         from zope.interface import implementer
-
         from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
@@ -274,11 +271,10 @@ class TestPublishModule(ZopeTestCase):
         return publish_module(environ, start_response)
 
     def _registerView(self, factory, name, provides=None):
+        from OFS.interfaces import IApplication
         from zope.component import provideAdapter
         from zope.interface import Interface
         from zope.publisher.browser import IDefaultBrowserLayer
-
-        from OFS.interfaces import IApplication
         if provides is None:
             provides = Interface
         requires = (IApplication, IDefaultBrowserLayer)
@@ -428,7 +424,6 @@ class TestPublishModule(ZopeTestCase):
 
     def test_response_is_stream(self):
         from zope.interface import implementer
-
         from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
@@ -457,7 +452,6 @@ class TestPublishModule(ZopeTestCase):
 
     def test_response_is_unboundstream(self):
         from zope.interface import implementer
-
         from ZPublisher.Iterators import IUnboundStreamIterator
 
         @implementer(IUnboundStreamIterator)
@@ -485,7 +479,6 @@ class TestPublishModule(ZopeTestCase):
 
     def test_stream_file_wrapper(self):
         from zope.interface import implementer
-
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.Iterators import IStreamIterator
 
@@ -521,7 +514,6 @@ class TestPublishModule(ZopeTestCase):
 
     def test_unboundstream_file_wrapper(self):
         from zope.interface import implementer
-
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.Iterators import IUnboundStreamIterator
 
@@ -560,7 +552,6 @@ class TestPublishModule(ZopeTestCase):
 
     def test_stream_file_wrapper_without_read(self):
         from zope.interface import implementer
-
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.Iterators import IStreamIterator
 
@@ -877,7 +868,6 @@ class ExcViewCreatedTests(ZopeTestCase):
     def _callFUT(self, exc):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-
         from ZPublisher.WSGIPublisher import _exc_view_created_response
         req = DummyRequest()
         req['PARENTS'] = [self.app]
@@ -885,16 +875,14 @@ class ExcViewCreatedTests(ZopeTestCase):
         return _exc_view_created_response(exc, req, DummyResponse())
 
     def _registerStandardErrorView(self):
-        from zope.interface import Interface
-
         from OFS.browser import StandardErrorMessageView
+        from zope.interface import Interface
         registerExceptionView(Interface, factory=StandardErrorMessageView,
                               name='standard_error_message')
 
     def _unregisterStandardErrorView(self):
-        from zope.interface import Interface
-
         from OFS.browser import StandardErrorMessageView
+        from zope.interface import Interface
         unregisterExceptionView(Interface, factory=StandardErrorMessageView,
                                 name='standard_error_message')
 
@@ -908,9 +896,8 @@ class ExcViewCreatedTests(ZopeTestCase):
             self._unregisterStandardErrorView()
 
     def testWithStandardErrorMessage(self):
-        from zExceptions import NotFound
-
         from OFS.DTMLMethod import addDTMLMethod
+        from zExceptions import NotFound
         self._registerStandardErrorView()
 
         addDTMLMethod(self.app, 'standard_error_message', file='OOPS')

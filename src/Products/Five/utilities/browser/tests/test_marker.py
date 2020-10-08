@@ -14,11 +14,6 @@
 """ Tests for the marker interface edit views
 """
 import AccessControl
-from zope.component import ComponentLookupError
-from zope.component.interface import provideInterface
-from zope.component.testing import setUp as component_setUp
-from zope.component.testing import tearDown as component_tearDown
-
 import Products.Five
 import Products.Five.utilities
 from Products.Five.tests.testing.simplecontent import ISimpleContent
@@ -26,6 +21,10 @@ from Products.Five.tests.testing.simplecontent import SimpleContent
 from Products.Five.utilities.browser.marker import EditView
 from Testing.ZopeTestCase import ZopeTestCase
 from Zope2.App import zcml
+from zope.component import ComponentLookupError
+from zope.component.interface import provideInterface
+from zope.component.testing import setUp as component_setUp
+from zope.component.testing import tearDown as component_tearDown
 
 
 ISimpleContentName = 'Products.Five.tests.testing.simplecontent.ISimpleContent'

@@ -18,11 +18,10 @@ from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base
+from OFS.interfaces import IOrderedContainer as IOrderedContainer
 from zope.container.contained import notifyContainerModified
 from zope.interface import implementer
 from zope.sequencesort.ssort import sort
-
-from OFS.interfaces import IOrderedContainer as IOrderedContainer
 
 
 @implementer(IOrderedContainer)

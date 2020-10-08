@@ -1,7 +1,6 @@
 import doctest
 
 from Acquisition import Implicit
-
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 

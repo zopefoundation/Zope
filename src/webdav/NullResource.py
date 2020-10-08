@@ -27,14 +27,6 @@ from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from Persistence import Persistent
-from zExceptions import BadRequest
-from zExceptions import Forbidden
-from zExceptions import MethodNotAllowed
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-from zope.contenttype import guess_content_type
-
 from App.special_dtml import DTMLFile
 from OFS.CopySupport import CopyError
 from OFS.DTMLDocument import DTMLDocument
@@ -42,7 +34,15 @@ from OFS.Image import File
 from OFS.Image import Image
 from OFS.interfaces import IWriteLock
 from OFS.SimpleItem import Item_w__name__
+from Persistence import Persistent
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
+from zExceptions import Unauthorized
+from zope.contenttype import guess_content_type
+
 from webdav.common import Conflict
 from webdav.common import IfParser
 from webdav.common import Locked

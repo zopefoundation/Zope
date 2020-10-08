@@ -13,7 +13,6 @@
 
 from Acquisition import aq_base
 from Acquisition import aq_parent
-
 from Products.Five import BrowserView
 
 

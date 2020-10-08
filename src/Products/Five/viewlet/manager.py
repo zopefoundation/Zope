@@ -19,10 +19,9 @@ from operator import itemgetter
 import zope.interface
 import zope.security
 from AccessControl.ZopeGuards import guarded_hasattr
+from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from zope.viewlet import interfaces
 from zope.viewlet.manager import ViewletManagerBase as origManagerBase
-
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
 
 class ViewletManagerBase(origManagerBase):
