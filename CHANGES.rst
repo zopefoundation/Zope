@@ -101,6 +101,9 @@ Fixes
   Python script.
   (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
 
+- Update `isort` to version 5.
+  (`#892 <https://github.com/zopefoundation/Zope/pull/892>`_)
+
 Other changes
 +++++++++++++
 

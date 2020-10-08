@@ -45,8 +45,8 @@ class ProtectedMethodSecurityPolicy:
     """Check security strictly on bound methods.
     """
     def validate(self, accessed, container, name, value, *args):
-        from Acquisition import aq_base
         from AccessControl import Unauthorized
+        from Acquisition import aq_base
         if getattr(aq_base(value), '__self__', None) is None:
             return 1
 
@@ -65,6 +65,7 @@ class TestTraverse(unittest.TestCase):
 
     def setUp(self):
         import io
+
         import transaction
         from AccessControl import SecurityManager
         from AccessControl.SecurityManagement import newSecurityManager
@@ -393,9 +394,10 @@ class TestTraverse(unittest.TestCase):
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
 
     def testNotFoundIsRaised(self):
+        from operator import getitem
+
         from OFS.SimpleItem import SimpleItem
         from zExceptions import NotFound
-        from operator import getitem
         self.folder1._setObject('foo', SimpleItem('foo'))
         self.assertRaises(AttributeError, getitem, self.folder1.foo,
                           'doesntexist')

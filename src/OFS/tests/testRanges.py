@@ -49,6 +49,7 @@ class TestRequestRange(unittest.TestCase):
     def setUp(self):
         import io
         import string
+
         import transaction
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
@@ -168,9 +169,9 @@ class TestRequestRange(unittest.TestCase):
         self.assertEqual(body, self.data[start:end])
 
     def expectMultipleRanges(self, range, sets, draft=0):
+        import email
         import io
         import re
-        import email
         rangeParse = re.compile(r'bytes\s*(\d+)-(\d+)/(\d+)')
         req = self.app.REQUEST
         rsp = req.RESPONSE

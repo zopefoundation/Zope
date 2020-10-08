@@ -132,6 +132,7 @@ def http(request_string, handle_errors=True):
     This is used for HTTP doc tests.
     """
     from urllib.parse import unquote
+
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module

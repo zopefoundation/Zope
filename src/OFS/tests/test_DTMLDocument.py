@@ -14,8 +14,8 @@ class DTMLDocumentTests(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_class_conforms_to_IWriteLock(self):
-        from zope.interface.verify import verifyClass
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_manage_upload__bytes(self):
@@ -69,8 +69,8 @@ class FactoryTests(unittest.TestCase):
 
     def test_defaults_no_standard_html_header(self):
         # see LP #496961
-        from OFS.DTMLDocument import addDTMLDocument
         from OFS.DTMLDocument import DTMLDocument
+        from OFS.DTMLDocument import addDTMLDocument
         dispatcher = DummyDispatcher()
         addDTMLDocument(dispatcher, 'id')
         method = dispatcher._set['id']

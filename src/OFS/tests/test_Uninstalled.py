@@ -112,10 +112,10 @@ class TestsOfBroken(unittest.TestCase):
 class TestsIntegratedBroken(base.TestCase):
 
     def test_Broken_instance___getstate___gives_access_to_its_state(self):
-        from Acquisition import aq_base
-        from OFS.Uninstalled import BrokenClass
-        from OFS.tests import test_Uninstalled
         import transaction
+        from Acquisition import aq_base
+        from OFS.tests import test_Uninstalled
+        from OFS.Uninstalled import BrokenClass
 
         # store an instance
         tr = ToBreak()

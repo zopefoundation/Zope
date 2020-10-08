@@ -518,7 +518,8 @@ class TestSetUpRaises(HookTest):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestPortalTestCase))
     suite.addTest(makeSuite(TestPlainUserFolder))
