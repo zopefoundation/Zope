@@ -51,6 +51,10 @@ Features
 Fixes
 +++++
 
+- Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
+  to avoid bugs by use of deprecated direct ``id`` access
+  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+
 - Update to ``zope.interface > 5.1.0`` to fix a memory leak.
 
 - Fix export of files with non-latin-1 compatible names
