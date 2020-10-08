@@ -8,8 +8,14 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.0a3 (unreleased)
-------------------
+5.1 (unreleased)
+----------------
+
+- Update to newest versions of dependencies.
+
+
+5.0 (2020-10-08)
+----------------
 
 Backwards incompatible changes
 ++++++++++++++++++++++++++++++

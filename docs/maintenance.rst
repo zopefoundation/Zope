@@ -51,7 +51,7 @@ Steps for creating a new Zope release
 
 - Run all tests::
 
-  $ bin/tox
+  $ bin/tox --pall
 
 - Upload the tagged release to PyPI::
 
@@ -108,6 +108,11 @@ Steps for creating a new Zope release
 
     The script is called two times so the rendered version updates can be
     easily assigned to the correct file.
+
+- Run the tests: ``bin/tox -pall``
+- Build the documentation: ``bin/make-docs``
+- Fix problems.
+- Commit and push the changes.
 
 - Announce the release to the world via zope-announce@zope.org and https://community.plone.org/c/announcements.
 

@@ -13,7 +13,7 @@ Zope 2.13 - old version
 * Support schedule:
     - Full support: -
     - Bug fixes: -
-    - Security fixes: until 12/31/2020 [1]_
+    - Security fixes: until 2020-12-31-2020 [1]_
 
 
 Zope 4 - previous version
@@ -27,9 +27,9 @@ Zope 4 - previous version
     - 3.8
 
 * Support schedule:
-    - Full support: until Zope 5.0 is released, (October 2020)
-    - Bug fixes: until 12/31/2021
-    - Security fixes: until 12/31/2022 [2]_
+    - Full support: until 2020-10-08
+    - Bug fixes: until 2021-12-31
+    - Security fixes: until 2022-12-31 [2]_
 
 
 Zope 5 - stable version

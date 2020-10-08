@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.0a3.dev0'
+version = '5.1.dev0'
 
 
 setup(
