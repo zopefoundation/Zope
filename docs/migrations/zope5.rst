@@ -12,5 +12,5 @@ Prerequisites
 Migration
 ---------
 
-* Switch to use Zope 5.0 by using its dependencies for ypur project.
+* Switch to use Zope 5.0 by using its dependencies for your project.
 * No additional steps should be necessary if the prerequisites are fulfilled.
