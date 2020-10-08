@@ -13,18 +13,20 @@
 """Placeless setup tests
 """
 
+from zope.component import adapter
+from zope.interface import Interface
+from zope.interface import implementer
+
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase.placeless import setUp
 from Testing.ZopeTestCase.placeless import tearDown
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
 from Testing.ZopeTestCase.placeless import zcml
-from zope.component import adapter
-from zope.interface import Interface
-from zope.interface import implementer
 
 
 def setupZCML():
     import AccessControl
+
     import Zope2.App
     zcml.load_config('meta.zcml', Zope2.App)
     zcml.load_config('permissions.zcml', AccessControl)
@@ -117,7 +119,8 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestPlacelessSetUp))
     return suite

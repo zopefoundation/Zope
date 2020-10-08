@@ -17,26 +17,27 @@ import os
 import sys
 from logging import getLogger
 
-import Products
 import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
+from DateTime import DateTime
+from zExceptions import Forbidden
+from zExceptions import Redirect as RedirectException
+from zope.interface import implementer
+
+import Products
 from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
 from App.version_txt import getZopeVersion
-from DateTime import DateTime
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
 from webdav.NullResource import NullResource
-from zExceptions import Forbidden
-from zExceptions import Redirect as RedirectException
-from zope.interface import implementer
 
 from . import Folder
 from . import misc_
@@ -291,8 +292,8 @@ class AppInitializer:
     def install_virtual_hosting(self):
         app = self.getApp()
         if 'virtual_hosting' not in app:
-            from Products.SiteAccess.VirtualHostMonster \
-                import VirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                VirtualHostMonster
             any_vhm = [obj for obj in app.values()
                        if isinstance(obj, VirtualHostMonster)]
             if not any_vhm:
@@ -304,8 +305,8 @@ class AppInitializer:
     def install_root_view(self):
         app = self.getApp()
         if 'index_html' not in app:
-            from Products.PageTemplates.ZopePageTemplate \
-                import ZopePageTemplate
+            from Products.PageTemplates.ZopePageTemplate import \
+                ZopePageTemplate
             root_pt = ZopePageTemplate('index_html')
             root_pt.pt_setTitle('Auto-generated default page')
             app._setObject('index_html', root_pt)

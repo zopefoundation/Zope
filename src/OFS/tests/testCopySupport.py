@@ -7,6 +7,7 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import Implicit
 from Acquisition import aq_base
+
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
@@ -128,11 +129,12 @@ class TestCopySupport(CopySupportTestBase):
         self._cleanApp()
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from OFS.CopySupport import CopyContainer
         from OFS.CopySupport import CopySource
         from OFS.interfaces import ICopyContainer
         from OFS.interfaces import ICopySource
-        from zope.interface.verify import verifyClass
 
         verifyClass(ICopyContainer, CopyContainer)
         verifyClass(ICopySource, CopySource)
@@ -362,7 +364,9 @@ class TestCopySupportSecurity(CopySupportTestBase):
     def _assertCopyErrorUnauth(self, callable, *args, **kw):
 
         import re
+
         from zExceptions import Unauthorized
+
         from OFS.CopySupport import CopyError
 
         ce_regex = kw.get('ce_regex')

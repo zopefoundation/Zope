@@ -13,14 +13,16 @@ class ApplicationTests(unittest.TestCase):
         return self._getTargetClass()()
 
     def test_class_provides_IApplication(self):
-        from OFS.interfaces import IApplication
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IApplication
 
         verifyClass(IApplication, self._getTargetClass())
 
     def test_instance_conforms_to_IApplication(self):
-        from OFS.interfaces import IApplication
         from zope.interface.verify import verifyObject
+
+        from OFS.interfaces import IApplication
 
         verifyObject(IApplication, self._makeOne())
 
@@ -111,6 +113,7 @@ class ApplicationTests(unittest.TestCase):
 
     def test_ZopeVersion(self):
         import pkg_resources
+
         from App.version_txt import getZopeVersion
 
         app = self._makeOne()

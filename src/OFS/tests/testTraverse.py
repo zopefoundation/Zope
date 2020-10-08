@@ -45,8 +45,8 @@ class ProtectedMethodSecurityPolicy:
     """Check security strictly on bound methods.
     """
     def validate(self, accessed, container, name, value, *args):
-        from Acquisition import aq_base
         from AccessControl import Unauthorized
+        from Acquisition import aq_base
         if getattr(aq_base(value), '__self__', None) is None:
             return 1
 
@@ -65,15 +65,17 @@ class TestTraverse(unittest.TestCase):
 
     def setUp(self):
         import io
+
         import transaction
         from AccessControl import SecurityManager
         from AccessControl.SecurityManagement import newSecurityManager
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
+
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
         from OFS.Image import manage_addFile
         from Testing.makerequest import makerequest
-        from ZODB.DB import DB
-        from ZODB.DemoStorage import DemoStorage
 
         s = DemoStorage()
         self.connection = DB(s).open()
@@ -213,9 +215,10 @@ class TestTraverse(unittest.TestCase):
         SecurityManager.setSecurityPolicy(policy)
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from OFS.interfaces import ITraversable
         from OFS.Traversable import Traversable
-        from zope.interface.verify import verifyClass
 
         verifyClass(ITraversable, Traversable)
 
@@ -393,9 +396,11 @@ class TestTraverse(unittest.TestCase):
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
 
     def testNotFoundIsRaised(self):
-        from OFS.SimpleItem import SimpleItem
-        from zExceptions import NotFound
         from operator import getitem
+
+        from zExceptions import NotFound
+
+        from OFS.SimpleItem import SimpleItem
         self.folder1._setObject('foo', SimpleItem('foo'))
         self.assertRaises(AttributeError, getitem, self.folder1.foo,
                           'doesntexist')

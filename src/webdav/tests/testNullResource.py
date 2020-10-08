@@ -4,9 +4,10 @@ import unittest
 class TestLockNullResource(unittest.TestCase):
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from OFS.interfaces import IWriteLock
         from webdav.NullResource import LockNullResource
-        from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, LockNullResource)
 
@@ -21,8 +22,9 @@ class TestNullResource(unittest.TestCase):
         return self._getTargetClass()(parent, name, **kw)
 
     def test_interfaces(self):
-        from OFS.interfaces import IWriteLock
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IWriteLock
 
         verifyClass(IWriteLock, self._getTargetClass())
 
@@ -54,8 +56,9 @@ class TestNullResource(unittest.TestCase):
     def test_PUT_unauthorized_message(self):
         # See https://bugs.launchpad.net/bugs/143946
         import ExtensionClass
-        from OFS.CopySupport import CopyError
         from zExceptions import Unauthorized
+
+        from OFS.CopySupport import CopyError
 
         class DummyRequest:
             def get_header(self, header, default=''):

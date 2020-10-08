@@ -14,8 +14,9 @@
 """Test i18n.
 """
 
-from Products.Five import BrowserView
 from zope.i18nmessageid import MessageFactory
+
+from Products.Five import BrowserView
 
 
 _ = MessageFactory('fivetest')

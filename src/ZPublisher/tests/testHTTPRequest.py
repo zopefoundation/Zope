@@ -25,6 +25,7 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
+
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -137,6 +138,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
         from urllib.parse import quote_plus
+
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -163,8 +165,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # when one is found.
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
-        from ZPublisher.HTTPRequest import record
         from AccessControl.tainted import TaintedString
+
+        from ZPublisher.HTTPRequest import record
 
         retval = 0
 
@@ -713,6 +716,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
         from DateTime.interfaces import SyntaxError
+
         from ZPublisher.Converters import type_converters
         for type, convert in list(type_converters.items()):
             try:
@@ -866,6 +870,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def test_debug_not_in_qs_still_gets_attr(self):
         from zope.publisher.base import DebugFlags
+
         # when accessing request.debug we will see the DebugFlags instance
         request = self._makeOne()
         self.assertIsInstance(request.debug, DebugFlags)
@@ -1118,8 +1123,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertIsInstance(clone, SubRequest)
 
     def test_clone_preserves_direct_interfaces(self):
-        from zope.interface import directlyProvides
         from zope.interface import Interface
+        from zope.interface import directlyProvides
 
         class IFoo(Interface):
             pass

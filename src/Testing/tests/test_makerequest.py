@@ -16,6 +16,7 @@
 import unittest
 
 from Acquisition import Implicit
+
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 

@@ -4,9 +4,10 @@ import Testing.ZopeTestCase
 class TestNavigation(Testing.ZopeTestCase.ZopeTestCase):
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from App.interfaces import INavigation
         from App.Management import Navigation
-        from zope.interface.verify import verifyClass
 
         verifyClass(INavigation, Navigation)
 

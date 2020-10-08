@@ -16,6 +16,7 @@ import unittest
 
 import Acquisition
 import ExtensionClass
+
 from ZPublisher.mapply import mapply
 
 

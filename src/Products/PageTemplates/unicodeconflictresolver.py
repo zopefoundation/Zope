@@ -15,11 +15,12 @@
 
 import sys
 
-import ZPublisher.HTTPRequest
 from Acquisition import aq_get
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.interface import implementer
+
+import ZPublisher.HTTPRequest
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 
 
 default_encoding = sys.getdefaultencoding()

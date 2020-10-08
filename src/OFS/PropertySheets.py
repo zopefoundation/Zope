@@ -23,13 +23,14 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_base
 from Acquisition import aq_parent
+from ExtensionClass import Base
+from Persistence import Persistent
+from zExceptions import BadRequest
+
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
-from ExtensionClass import Base
 from OFS.Traversable import Traversable
-from Persistence import Persistent
 from webdav.PropertySheet import DAVPropertySheetMixin
-from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
 
 

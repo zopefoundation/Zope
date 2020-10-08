@@ -19,9 +19,10 @@ import sys
 from functools import partial
 
 import transaction
+from zope.interface import implementer
+
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
-from zope.interface import implementer
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 
@@ -60,6 +61,7 @@ class Functional(sandbox.Sandboxed):
         '''Publishes the object at 'path' returning a response object.'''
 
         from io import BytesIO
+
         from ZPublisher.HTTPRequest import WSGIRequest as Request
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.WSGIPublisher import publish_module

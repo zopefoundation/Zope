@@ -7,8 +7,13 @@ Ensures that adding a page template works correctly.
 import unittest
 
 import transaction
-import Zope2
 import zope.component.testing
+from zope.component import provideUtility
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+from zope.publisher.http import HTTPCharsets
+from zope.traversing.adapters import DefaultTraversable
+
+import Zope2
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.unicodeconflictresolver import \
@@ -22,10 +27,6 @@ from Testing.testbrowser import Browser
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import installProduct
-from zope.component import provideUtility
-from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
-from zope.publisher.http import HTTPCharsets
-from zope.traversing.adapters import DefaultTraversable
 
 from .util import useChameleonEngine
 from .util import useOldZopeEngine
@@ -247,6 +248,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def test_class_conforms_to_IWriteLock(self):
         from zope.interface.verify import verifyClass
+
         from OFS.interfaces import IWriteLock
         verifyClass(IWriteLock, ZopePageTemplate)
 

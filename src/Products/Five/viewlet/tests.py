@@ -16,11 +16,12 @@
 
 import unittest
 
-from OFS.SimpleItem import SimpleItem
-from Testing.ZopeTestCase import FunctionalDocFileSuite
 from zope.interface import Interface
 from zope.interface import implementer
 from zope.viewlet import interfaces
+
+from OFS.SimpleItem import SimpleItem
+from Testing.ZopeTestCase import FunctionalDocFileSuite
 
 
 @implementer(Interface)

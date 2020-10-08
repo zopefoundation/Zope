@@ -18,11 +18,12 @@ from os.path import basename
 
 from AccessControl import getSecurityManager
 from Acquisition import aq_get
-from Products.PageTemplates.Expressions import SecureModuleImporter
-from Products.PageTemplates.Expressions import getTrustedEngine
 from zope.component import getMultiAdapter
 from zope.pagetemplate.engine import TrustedAppPT
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+
+from Products.PageTemplates.Expressions import SecureModuleImporter
+from Products.PageTemplates.Expressions import getTrustedEngine
 
 
 _engine = getTrustedEngine()

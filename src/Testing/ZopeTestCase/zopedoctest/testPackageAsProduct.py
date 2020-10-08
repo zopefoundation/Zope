@@ -16,11 +16,12 @@
 import sys
 from unittest import TestSuite
 
+from zope.testing import cleanup
+
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import ZopeDocTestSuite
 from Testing.ZopeTestCase import ZopeLite
 from Zope2.App import zcml
-from zope.testing import cleanup
 
 
 def testInstallPackage():

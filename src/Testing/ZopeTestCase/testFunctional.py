@@ -23,6 +23,7 @@ from AccessControl import getSecurityManager
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view
 from DocumentTemplate.permissions import change_dtml_documents
+
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
@@ -147,7 +148,8 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestFunctional))
     return suite

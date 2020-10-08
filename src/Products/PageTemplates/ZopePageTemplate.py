@@ -24,6 +24,8 @@ from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import Acquired
 from Acquisition import Explicit
 from Acquisition import aq_get
+from zExceptions import ResourceLockedError
+
 from App.Common import package_home
 from OFS.Cache import Cacheable
 from OFS.History import Historical
@@ -38,7 +40,6 @@ from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.utils import convertToUnicode
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
-from zExceptions import ResourceLockedError
 
 
 preferred_encodings = ['utf-8', 'iso-8859-15']

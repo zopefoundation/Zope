@@ -32,8 +32,9 @@ class TestFindSupport(unittest.TestCase):
         self.base['3'] = DummyItem('3')
 
     def test_interfaces(self):
-        from OFS.interfaces import IFindSupport
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IFindSupport
 
         verifyClass(IFindSupport, FindSupport)
 

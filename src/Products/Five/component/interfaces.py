@@ -14,8 +14,9 @@
 """Component interfaces
 """
 
-from OFS.interfaces import IObjectManager
 from zope.component.interfaces import ISite
+
+from OFS.interfaces import IObjectManager
 
 
 class IObjectManagerSite(IObjectManager, ISite):

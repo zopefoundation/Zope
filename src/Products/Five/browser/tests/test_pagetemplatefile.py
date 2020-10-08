@@ -35,13 +35,14 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(vptf.id, 'dirpage1.pt')
 
     def test_pt_getEngine(self):
+        from zope.contentprovider.tales import TALESProviderExpression
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import LazyExpr
         from zope.tales.expressions import NotExpr
         from zope.tales.pythonexpr import PythonExpr
-        from zope.contentprovider.tales import TALESProviderExpression
-        from Products.PageTemplates.Expressions import TrustedZopePathExpr
+
         from Products.PageTemplates.Expressions import SecureModuleImporter
+        from Products.PageTemplates.Expressions import TrustedZopePathExpr
         from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
 
         vptf = self._makeOne('seagull.pt')
@@ -59,9 +60,10 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(engine.base_names['modules'], SecureModuleImporter)
 
     def test_pt_getContext_no_kw_no_physicalRoot(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+
         from Products.Five.browser.pagetemplatefile import ViewMapper
         from Products.PageTemplates.Expressions import SecureModuleImporter
-        from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
         request = DummyRequest()
@@ -191,8 +193,8 @@ class ViewMapperTests(unittest.TestCase):
         self.assertRaises(ComponentLookupError, mapper.__getitem__, 'nonesuch')
 
     def test___getitem___hit(self):
-        from zope.interface import Interface
         from zope.component import provideAdapter
+        from zope.interface import Interface
 
         def _adapt(context, request):
             return self

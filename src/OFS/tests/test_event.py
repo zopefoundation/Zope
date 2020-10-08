@@ -17,11 +17,12 @@
 # These classes aren't defined in the doctest because otherwise
 # they wouldn't be picklable, and we need that to test copy/paste.
 
+from zope.component import eventtesting
+from zope.component import testing
+
 from OFS.Folder import Folder
 from OFS.OrderedFolder import OrderedFolder
 from OFS.SimpleItem import SimpleItem
-from zope.component import eventtesting
-from zope.component import testing
 
 
 def setUp(test):

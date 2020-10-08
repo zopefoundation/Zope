@@ -13,9 +13,10 @@
 
 from os.path import dirname
 
-import App
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+
+import App
 from App.ImageFile import ImageFile
 
 

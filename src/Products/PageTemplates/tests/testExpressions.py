@@ -188,10 +188,11 @@ class EngineTestsBase(PlacelessSetup):
         # But registering an appropriate IUnicodeEncodingConflictResolver
         # should fix it
         from zope.component import provideUtility
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
+
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         self.assertEqual(ec.evaluate(expr), 'äüö')
@@ -243,10 +244,11 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
     def testDefaultResolver(self):
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import DefaultUnicodeEncodingConflictResolver
+
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            DefaultUnicodeEncodingConflictResolver
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -256,10 +258,11 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
     def testStrictResolver(self):
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
+
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -269,10 +272,11 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
     def testIgnoringResolver(self):
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import IgnoringUnicodeEncodingConflictResolver
+
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            IgnoringUnicodeEncodingConflictResolver
         provideUtility(IgnoringUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -281,10 +285,11 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
     def testReplacingResolver(self):
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import ReplacingUnicodeEncodingConflictResolver
+
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            ReplacingUnicodeEncodingConflictResolver
         provideUtility(ReplacingUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)

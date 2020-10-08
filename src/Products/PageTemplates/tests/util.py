@@ -18,10 +18,11 @@ import sys
 import unittest
 
 from ExtensionClass import Base
-from Products.PageTemplates.engine import Program
 from zope.component import provideUtility
 from zope.pagetemplate.interfaces import IPageTemplateEngine
 from zope.pagetemplate.pagetemplate import PageTemplateEngine
+
+from Products.PageTemplates.engine import Program
 
 
 # Dummy TestCase to use the assertions outside the actual tests.

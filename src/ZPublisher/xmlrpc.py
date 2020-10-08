@@ -23,12 +23,13 @@ import re
 import sys
 import xmlrpc.client
 
-from App.config import getConfiguration
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
 from DateTime.DateTime import DateTime
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
+
+from App.config import getConfiguration
 
 
 WRAPPERS = xmlrpc.client.WRAPPERS + (DateTime, )

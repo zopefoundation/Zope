@@ -16,6 +16,7 @@ from AccessControl.Permissions import webdav_manage_locks
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from Acquisition import aq_base
+
 from App.special_dtml import DTMLFile
 from OFS.Lockable import wl_isLocked
 from OFS.SimpleItem import Item

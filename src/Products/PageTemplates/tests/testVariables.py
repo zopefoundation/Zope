@@ -1,7 +1,8 @@
 from unittest import TestCase
 
-from OFS.Folder import Folder
 from zope.component.testing import PlacelessSetup
+
+from OFS.Folder import Folder
 
 from ..Expressions import getTrustedEngine
 from ..ZopePageTemplate import ZopePageTemplate

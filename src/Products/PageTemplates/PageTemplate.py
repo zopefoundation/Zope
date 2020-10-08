@@ -20,10 +20,11 @@ import zope.pagetemplate.pagetemplate
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.PageTemplates.Expressions import getEngine
 from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
 from zope.pagetemplate.pagetemplate import PTRuntimeError
 from zope.tales.expressions import SimpleModuleImporter
+
+from Products.PageTemplates.Expressions import getEngine
 
 
 class PageTemplate(ExtensionClass.Base,

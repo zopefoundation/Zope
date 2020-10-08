@@ -17,12 +17,13 @@ import unittest
 
 import transaction
 from AccessControl.SecurityManagement import noSecurityManager
+from zope.interface import implementer
+
 from Testing.makerequest import makerequest
 from Testing.ZopeTestCase import ZopeLite as Zope2
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import layer
-from zope.interface import implementer
 
 
 def app():

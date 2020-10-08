@@ -17,9 +17,10 @@
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
-from OFS.SimpleItem import SimpleItem
 from zope.interface import Interface
 from zope.interface import implementer
+
+from OFS.SimpleItem import SimpleItem
 
 
 class IFancyContent(Interface):

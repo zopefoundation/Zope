@@ -1,7 +1,8 @@
 """This module contains integration tests for AccessControl.safe_formatter."""
 
-from Testing.ZopeTestCase import FunctionalTestCase
 from zExceptions import Unauthorized
+
+from Testing.ZopeTestCase import FunctionalTestCase
 
 
 BAD_ATTR_STR = """
@@ -126,6 +127,7 @@ class FormatterFunctionalTest(FunctionalTestCase):
 
     def test_access_to_private_content_not_allowed_via_any_attribute(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+
         # If access to _delObject would be allowed, it would still only say
         # something like 'bound method _delObject', without actually deleting
         # anything, because methods are not executed in str.format, but there
@@ -141,10 +143,11 @@ class FormatterFunctionalTest(FunctionalTestCase):
             str(err.exception))
 
     def assert_is_checked_via_security_manager(self, pt_content):
-        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-        from AccessControl.SecurityManager import setSecurityPolicy
-        from AccessControl.SecurityManagement import noSecurityManager
         from AccessControl.SecurityManagement import getSecurityManager
+        from AccessControl.SecurityManagement import noSecurityManager
+        from AccessControl.SecurityManager import setSecurityPolicy
+
+        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 
         pt = ZopePageTemplate('mytemplate', pt_content)
         noSecurityManager()

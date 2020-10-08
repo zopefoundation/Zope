@@ -190,7 +190,9 @@ def default_zpublisher_encoding(value):
     # so a module-level call to getConfiguration in any of them
     # results in getting config data structure without the necessary
     # value in it.
-    from ZPublisher import Converters, HTTPRequest, HTTPResponse
+    from ZPublisher import Converters
+    from ZPublisher import HTTPRequest
+    from ZPublisher import HTTPResponse
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPRequest.HTTPRequest.charset = value

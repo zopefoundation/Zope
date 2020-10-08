@@ -186,6 +186,7 @@ def get_inituser():
 
 def write_inituser(fn, user, password):
     import binascii
+
     from hashlib import sha1 as sha
     pw = binascii.b2a_base64(sha(password.encode('utf-8')).digest())[:-1]
     with open(fn, "wb") as fp:

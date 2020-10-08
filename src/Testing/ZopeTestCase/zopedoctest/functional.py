@@ -25,6 +25,7 @@ from functools import partial
 from io import BytesIO
 
 import transaction
+
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
@@ -132,6 +133,7 @@ def http(request_string, handle_errors=True):
     This is used for HTTP doc tests.
     """
     from urllib.parse import unquote
+
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module

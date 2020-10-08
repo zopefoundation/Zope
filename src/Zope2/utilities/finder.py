@@ -27,9 +27,10 @@ class ZopeFinder:
         # given a config file, return a Zope application object
         if config_file is None:
             config_file = self.get_zope_conf()
-        from Zope2.Startup import options, handlers
         import App.config
         import Zope2
+        from Zope2.Startup import handlers
+        from Zope2.Startup import options
         opts = options.ZopeWSGIOptions(configfile=config_file)()
         handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
         App.config.setConfiguration(opts.configroot)

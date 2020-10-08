@@ -20,10 +20,11 @@ import glob
 import logging
 import os
 
-from App.config import getConfiguration
-from Products.Five.browser.metaconfigure import page
 from zope.configuration.exceptions import ConfigurationError
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+
+from App.config import getConfiguration
+from Products.Five.browser.metaconfigure import page
 
 
 logger = logging.getLogger('Products.Five')

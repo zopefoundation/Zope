@@ -151,6 +151,7 @@ def test_allowed_interface():
 
 
 def test_suite():
-    from Testing.ZopeTestCase import FunctionalDocTestSuite
     from doctest import ELLIPSIS
+
+    from Testing.ZopeTestCase import FunctionalDocTestSuite
     return FunctionalDocTestSuite(optionflags=ELLIPSIS)

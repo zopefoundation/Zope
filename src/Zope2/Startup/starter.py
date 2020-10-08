@@ -17,9 +17,10 @@ import locale
 import logging
 
 from ZConfig import ConfigurationError
-from Zope2.Startup.handlers import _name_to_ips
 from zope.event import notify
 from zope.processlifetime import ProcessStarting
+
+from Zope2.Startup.handlers import _name_to_ips
 
 
 logger = logging.getLogger("Zope")

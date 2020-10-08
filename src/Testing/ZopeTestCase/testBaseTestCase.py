@@ -20,11 +20,11 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 import gc
-
 import transaction
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_base
+
 from Testing.ZopeTestCase import base
 from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import sandbox
@@ -451,7 +451,8 @@ class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestTestCase))
     suite.addTest(makeSuite(TestSetUpRaises))

@@ -11,6 +11,7 @@ MS_DAV_AGENT = "Microsoft Data Access Internet Publishing Provider DAV"
 
 def make_request_response(environ=None):
     from io import StringIO
+
     from ZPublisher.HTTPRequest import HTTPRequest
     from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -99,9 +100,10 @@ class TestResource(unittest.TestCase):
         setSecurityPolicy(self._oldPolicy)
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from OFS.interfaces import IWriteLock
         from webdav.interfaces import IDAVResource
-        from zope.interface.verify import verifyClass
 
         verifyClass(IDAVResource, self._getTargetClass())
         verifyClass(IWriteLock, self._getTargetClass())
@@ -150,8 +152,9 @@ class TestResource(unittest.TestCase):
         inst.restrictedTraverse = lambda *arg: app
         inst.getId = lambda *arg: '123'
         inst._dav_writelocks = {'a': DummyLock()}
-        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
+
+        from OFS.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.MOVE, request, response)
@@ -173,8 +176,9 @@ class TestResource(unittest.TestCase):
                                {'If': ifhdr})
         response = DummyResponse()
         inst = self._makeOne()
-        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
+
+        from OFS.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import PreconditionFailed
         self.assertRaises(PreconditionFailed, inst.dav__simpleifhandler,
@@ -199,8 +203,9 @@ class TestResource(unittest.TestCase):
         response = DummyResponse()
         inst = self._makeOne()
         inst._dav_writelocks = {'a': DummyLock()}
-        from OFS.interfaces import IWriteLock
         from zope.interface import directlyProvides
+
+        from OFS.interfaces import IWriteLock
         directlyProvides(inst, IWriteLock)
         from webdav.common import Locked
         self.assertRaises(Locked, inst.dav__simpleifhandler, request, response)

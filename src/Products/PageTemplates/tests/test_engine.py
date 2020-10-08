@@ -87,9 +87,10 @@ class TestPatches(Sandboxed, ZopeTestCase):
         self.assertIn('world', template())
 
     def test_macros_access(self):
+        from zExceptions import Unauthorized
+
         from Products.PageTemplates.ZopePageTemplate import \
             manage_addPageTemplate
-        from zExceptions import Unauthorized
         template = manage_addPageTemplate(self.folder, 'test')
 
         # aq-wrap before we proceed

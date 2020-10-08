@@ -14,8 +14,9 @@
 import logging
 import unittest
 
-from Testing.ZopeTestCase import ZopeTestCase
 from zope.testing.loggingsupport import InstalledHandler
+
+from Testing.ZopeTestCase import ZopeTestCase
 
 
 logged = """Zope2.App.test_startup INFO
@@ -52,10 +53,11 @@ def logevent(event):
 class StartupTests(ZopeTestCase):
 
     def test_database_events(self):
-        from Zope2.App.startup import startup
         from zope.component import provideHandler
         from zope.processlifetime import IDatabaseOpened
         from zope.processlifetime import IDatabaseOpenedWithRoot
+
+        from Zope2.App.startup import startup
 
         handler = InstalledHandler('Zope2.App.test_startup')
         provideHandler(logevent, [IDatabaseOpenedWithRoot])

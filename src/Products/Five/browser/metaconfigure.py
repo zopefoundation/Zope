@@ -29,11 +29,6 @@ from AccessControl.security import CheckerPrivateId
 from AccessControl.security import getSecurityInfo
 from AccessControl.security import protectClass
 from AccessControl.security import protectName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.browser.resource import DirectoryResourceFactory
-from Products.Five.browser.resource import FileResourceFactory
-from Products.Five.browser.resource import ImageResourceFactory
-from Products.Five.browser.resource import PageTemplateResourceFactory
 from zope.browserpage.metaconfigure import _handle_allowed_attributes
 from zope.browserpage.metaconfigure import _handle_allowed_interface
 from zope.browserpage.metaconfigure import _handle_for
@@ -52,6 +47,12 @@ from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.security.zcml import Permission
+
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Five.browser.resource import DirectoryResourceFactory
+from Products.Five.browser.resource import FileResourceFactory
+from Products.Five.browser.resource import ImageResourceFactory
+from Products.Five.browser.resource import PageTemplateResourceFactory
 
 
 def is_method(func):

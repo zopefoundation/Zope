@@ -11,14 +11,16 @@ class TestItem(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_conforms_to_IItem(self):
-        from OFS.interfaces import IItem
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IItem
 
         verifyClass(IItem, self._getTargetClass())
 
     def test_conforms_to_IManageable(self):
-        from OFS.interfaces import IManageable
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IManageable
 
         verifyClass(IManageable, self._getTargetClass())
 
@@ -71,9 +73,10 @@ class TestItem(unittest.TestCase):
 class TestItem_w__name__(unittest.TestCase):
 
     def test_interfaces(self):
+        from zope.interface.verify import verifyClass
+
         from OFS.interfaces import IItemWithName
         from OFS.SimpleItem import Item_w__name__
-        from zope.interface.verify import verifyClass
 
         verifyClass(IItemWithName, Item_w__name__)
 
@@ -88,8 +91,9 @@ class TestSimpleItem(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_interfaces(self):
-        from OFS.interfaces import ISimpleItem
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import ISimpleItem
 
         verifyClass(ISimpleItem, self._getTargetClass())
 

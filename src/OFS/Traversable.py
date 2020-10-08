@@ -26,8 +26,6 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from OFS.interfaces import IApplication
-from OFS.interfaces import ITraversable
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.component import queryMultiAdapter
@@ -36,6 +34,9 @@ from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
+
+from OFS.interfaces import IApplication
+from OFS.interfaces import ITraversable
 from ZPublisher.interfaces import UseTraversalDefault
 
 

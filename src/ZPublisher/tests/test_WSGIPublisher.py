@@ -14,17 +14,18 @@ import io
 import unittest
 from urllib.parse import quote
 
-import Testing.testbrowser
 import transaction
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import ZopeTestCase
-from Testing.ZopeTestCase import user_name
 from zExceptions import NotFound
 from ZODB.POSException import ConflictError
 from zope.interface.common.interfaces import IException
 from zope.publisher.interfaces import INotFound
 from zope.security.interfaces import IForbidden
 from zope.security.interfaces import IUnauthorized
+
+import Testing.testbrowser
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import user_name
 from ZPublisher.WSGIPublisher import get_module_info
 
 
@@ -98,8 +99,9 @@ class WSGIResponseTests(unittest.TestCase):
         self.assertIn(('Date', whenstr), headers)
 
     def test_setBody_IUnboundStreamIterator(self):
-        from ZPublisher.Iterators import IUnboundStreamIterator
         from zope.interface import implementer
+
+        from ZPublisher.Iterators import IUnboundStreamIterator
 
         @implementer(IUnboundStreamIterator)
         class TestStreamIterator:
@@ -123,8 +125,9 @@ class WSGIResponseTests(unittest.TestCase):
         self.assertEqual(response._streaming, 1)
 
     def test_setBody_IStreamIterator(self):
-        from ZPublisher.Iterators import IStreamIterator
         from zope.interface import implementer
+
+        from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
         class TestStreamIterator:
@@ -274,6 +277,7 @@ class TestPublishModule(ZopeTestCase):
         from zope.component import provideAdapter
         from zope.interface import Interface
         from zope.publisher.browser import IDefaultBrowserLayer
+
         from OFS.interfaces import IApplication
         if provides is None:
             provides = Interface
@@ -423,8 +427,9 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(app_iter is body)
 
     def test_response_is_stream(self):
-        from ZPublisher.Iterators import IStreamIterator
         from zope.interface import implementer
+
+        from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
         class TestStreamIterator:
@@ -451,8 +456,9 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(app_iter is body)
 
     def test_response_is_unboundstream(self):
-        from ZPublisher.Iterators import IUnboundStreamIterator
         from zope.interface import implementer
+
+        from ZPublisher.Iterators import IUnboundStreamIterator
 
         @implementer(IUnboundStreamIterator)
         class TestUnboundStreamIterator:
@@ -478,9 +484,10 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(app_iter is body)
 
     def test_stream_file_wrapper(self):
-        from ZPublisher.Iterators import IStreamIterator
         from zope.interface import implementer
+
         from ZPublisher.HTTPResponse import WSGIResponse
+        from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
         class TestStreamIterator:
@@ -513,9 +520,10 @@ class TestPublishModule(ZopeTestCase):
         self.assertEqual(_response.status, 200)
 
     def test_unboundstream_file_wrapper(self):
-        from ZPublisher.Iterators import IUnboundStreamIterator
         from zope.interface import implementer
+
         from ZPublisher.HTTPResponse import WSGIResponse
+        from ZPublisher.Iterators import IUnboundStreamIterator
 
         @implementer(IUnboundStreamIterator)
         class TestUnboundStreamIterator:
@@ -551,9 +559,10 @@ class TestPublishModule(ZopeTestCase):
         self.assertEqual(_response.status, 200)
 
     def test_stream_file_wrapper_without_read(self):
-        from ZPublisher.Iterators import IStreamIterator
         from zope.interface import implementer
+
         from ZPublisher.HTTPResponse import WSGIResponse
+        from ZPublisher.Iterators import IStreamIterator
 
         @implementer(IStreamIterator)
         class TestStreamIterator:
@@ -868,6 +877,7 @@ class ExcViewCreatedTests(ZopeTestCase):
     def _callFUT(self, exc):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
+
         from ZPublisher.WSGIPublisher import _exc_view_created_response
         req = DummyRequest()
         req['PARENTS'] = [self.app]
@@ -875,14 +885,16 @@ class ExcViewCreatedTests(ZopeTestCase):
         return _exc_view_created_response(exc, req, DummyResponse())
 
     def _registerStandardErrorView(self):
-        from OFS.browser import StandardErrorMessageView
         from zope.interface import Interface
+
+        from OFS.browser import StandardErrorMessageView
         registerExceptionView(Interface, factory=StandardErrorMessageView,
                               name='standard_error_message')
 
     def _unregisterStandardErrorView(self):
-        from OFS.browser import StandardErrorMessageView
         from zope.interface import Interface
+
+        from OFS.browser import StandardErrorMessageView
         unregisterExceptionView(Interface, factory=StandardErrorMessageView,
                                 name='standard_error_message')
 
@@ -896,8 +908,9 @@ class ExcViewCreatedTests(ZopeTestCase):
             self._unregisterStandardErrorView()
 
     def testWithStandardErrorMessage(self):
-        from OFS.DTMLMethod import addDTMLMethod
         from zExceptions import NotFound
+
+        from OFS.DTMLMethod import addDTMLMethod
         self._registerStandardErrorView()
 
         addDTMLMethod(self.app, 'standard_error_message', file='OOPS')
@@ -995,8 +1008,8 @@ class CustomExceptionView:
 
 def registerExceptionView(for_, factory=CustomExceptionView,
                           name='index.html'):
-    from zope.interface import Interface
     from zope.component import getGlobalSiteManager
+    from zope.interface import Interface
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
     gsm = getGlobalSiteManager()
     gsm.registerAdapter(
@@ -1009,8 +1022,8 @@ def registerExceptionView(for_, factory=CustomExceptionView,
 
 def unregisterExceptionView(for_, factory=CustomExceptionView,
                             name='index.html'):
-    from zope.interface import Interface
     from zope.component import getGlobalSiteManager
+    from zope.interface import Interface
     from zope.publisher.interfaces.browser import IDefaultBrowserLayer
     gsm = getGlobalSiteManager()
     gsm.unregisterAdapter(

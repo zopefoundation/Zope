@@ -13,15 +13,16 @@ from AccessControl.SpecialUsers import system
 from AccessControl.User import User  # before SpecialUsers
 from Acquisition import Implicit
 from Acquisition import aq_self
+from zExceptions import BadRequest
+from zope.component.testing import PlacelessSetup
+from zope.interface import implementer
+
 from App.config import getConfiguration
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
-from zExceptions import BadRequest
 from Zope2.App import zcml
-from zope.component.testing import PlacelessSetup
-from zope.interface import implementer
 
 
 logger = getLogger('OFS.subscribers')
@@ -104,10 +105,11 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         return self._getTargetClass()(*args, **kw).__of__(FauxRoot())
 
     def test_interfaces(self):
-        from OFS.interfaces import IObjectManager
-        from OFS.ObjectManager import ObjectManager
         from zope.container.interfaces import IContainer
         from zope.interface.verify import verifyClass
+
+        from OFS.interfaces import IObjectManager
+        from OFS.ObjectManager import ObjectManager
 
         verifyClass(IContainer, ObjectManager)
         verifyClass(IObjectManager, ObjectManager)

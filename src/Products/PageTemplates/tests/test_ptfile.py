@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 import transaction
+
 import Zope2
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.makerequest import makerequest
@@ -19,10 +20,12 @@ class TypeSniffingTestCase(unittest.TestCase):
 
     def setUp(self):
         from zope.component import provideUtility
+
         from Products.PageTemplates.interfaces import \
             IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver import \
             DefaultUnicodeEncodingConflictResolver
+
         # Make sure we use the new default chameleon engine
         useChameleonEngine()
         provideUtility(DefaultUnicodeEncodingConflictResolver,

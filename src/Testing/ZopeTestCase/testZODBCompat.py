@@ -21,6 +21,7 @@ import tempfile
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
+
 from OFS.SimpleItem import SimpleItem
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import layer
@@ -34,6 +35,7 @@ cutpaste_permissions = [add_documents_images_and_files, delete_objects]
 
 def make_request_response(environ=None):
     from io import StringIO
+
     from ZPublisher.HTTPRequest import HTTPRequest
     from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -335,7 +337,8 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestCopyPaste))
     suite.addTest(makeSuite(TestImportExport))

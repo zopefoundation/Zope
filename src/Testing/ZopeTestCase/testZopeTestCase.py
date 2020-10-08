@@ -23,6 +23,7 @@ way of getting started.
 import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
+
 from OFS.userfolder import UserFolder
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import folder_name
@@ -391,7 +392,8 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestZopeTestCase))
     suite.addTest(makeSuite(TestPlainUserFolder))

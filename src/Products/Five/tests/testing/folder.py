@@ -14,9 +14,10 @@
 """Test folders
 """
 
+from zope.interface import implementer
+
 from OFS.Folder import Folder
 from OFS.interfaces import IFolder
-from zope.interface import implementer
 
 
 class NoVerifyPasteFolder(Folder):

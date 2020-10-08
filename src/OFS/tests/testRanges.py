@@ -28,6 +28,7 @@ def createBigFile():
     # Make sure we create a file that isn't of x * 1<<16 length! Coll #671
     import io
     import random
+
     import string
     size = (1 << 16) * 5 + 12345
     file = io.BytesIO()
@@ -48,8 +49,10 @@ class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
     def setUp(self):
         import io
+
         import string
         import transaction
+
         from OFS.Application import Application
         from OFS.Folder import manage_addFolder
         from OFS.Image import manage_addFile
@@ -168,9 +171,9 @@ class TestRequestRange(unittest.TestCase):
         self.assertEqual(body, self.data[start:end])
 
     def expectMultipleRanges(self, range, sets, draft=0):
+        import email
         import io
         import re
-        import email
         rangeParse = re.compile(r'bytes\s*(\d+)-(\d+)/(\d+)')
         req = self.app.REQUEST
         rsp = req.RESPONSE

@@ -22,7 +22,9 @@ class TestRegisterClass(unittest.TestCase):
 
     def tearDown(self):
         from zope.component.testing import tearDown
+
         import OFS.metaconfigure
+
         # restore registrations
         OFS.metaconfigure._meta_type_regs[:] = self._old_mt_regs
         OFS.metaconfigure._register_monkies[:] = self._old_monkies

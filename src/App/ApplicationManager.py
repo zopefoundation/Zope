@@ -19,6 +19,8 @@ from urllib import parse
 from AccessControl.class_init import InitializeClass
 from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
+from Persistence import Persistent
+
 from App.config import getConfiguration
 from App.DavLockManager import DavLockManager
 from App.Management import Tabs
@@ -26,7 +28,6 @@ from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
 from OFS.Traversable import Traversable
-from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 

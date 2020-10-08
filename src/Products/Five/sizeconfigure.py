@@ -15,10 +15,11 @@
 Zope 2 objects.
 """
 
-from Products.Five import fivemethod
-from Products.Five import isFiveMethod
 from zope.size.interfaces import ISized
 from zope.testing.cleanup import addCleanUp  # NOQA
+
+from Products.Five import fivemethod
+from Products.Five import isFiveMethod
 
 
 # holds classes that were monkeyed with; for clean up

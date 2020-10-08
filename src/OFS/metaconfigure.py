@@ -1,14 +1,15 @@
 import logging
 import os
 
-import App.config
-import Products
-from OFS.subscribers import deprecatedManageAddDeleteClasses
 from zope.component import getUtility
 from zope.configuration import xmlconfig
 from zope.interface import implementedBy
 from zope.security.interfaces import IPermission
 from zope.testing.cleanup import addCleanUp  # NOQA
+
+import App.config
+import Products
+from OFS.subscribers import deprecatedManageAddDeleteClasses
 
 
 debug_mode = App.config.getConfiguration().debug_mode

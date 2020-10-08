@@ -16,12 +16,13 @@
 import os
 from logging import getLogger
 
-import Products
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
+from zope.interface import implementedBy
+
+import Products
 from App.FactoryDispatcher import FactoryDispatcher
 from OFS.ObjectManager import ObjectManager
-from zope.interface import implementedBy
 
 
 if not hasattr(Products, 'meta_types'):

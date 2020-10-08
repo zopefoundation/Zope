@@ -5,8 +5,9 @@
 
 
 def initialize(context):
-    from OFS.Folder import Folder
     import transaction
+
+    from OFS.Folder import Folder
 
     app = context.getApplication()
     folder = Folder('some_folder')

@@ -30,8 +30,19 @@ from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.Common import rfc1123_date
 from ExtensionClass import Base
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
+from zExceptions import Unauthorized
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCopiedEvent
+from zope.lifecycleevent import ObjectMovedEvent
+
+from App.Common import rfc1123_date
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import IWriteLock
@@ -50,16 +61,6 @@ from webdav.common import tokenFinder
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.interfaces import IDAVResource
-from zExceptions import BadRequest
-from zExceptions import Forbidden
-from zExceptions import MethodNotAllowed
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-from zope.container.contained import notifyContainerModified
-from zope.event import notify
-from zope.interface import implementer
-from zope.lifecycleevent import ObjectCopiedEvent
-from zope.lifecycleevent import ObjectMovedEvent
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 

@@ -16,7 +16,6 @@
 from AccessControl.interfaces import IOwned
 from AccessControl.interfaces import IRoleManager
 from Acquisition.interfaces import IAcquirer
-from App.interfaces import INavigation
 from persistent.interfaces import IPersistent
 from zope.component.interfaces import IPossibleSite
 from zope.container.interfaces import IContainer
@@ -27,6 +26,8 @@ from zope.location.interfaces import IRoot
 from zope.schema import Bool
 from zope.schema import NativeStringLine
 from zope.schema import Tuple
+
+from App.interfaces import INavigation
 
 
 class IOrderedContainer(Interface):
