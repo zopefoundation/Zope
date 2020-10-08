@@ -21,6 +21,8 @@ Backwards incompatible changes
 Features
 ++++++++
 
+- Add support for Python 3.9.
+
 - New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
   It can be used as the "provides" of an adapter registration
   to adapt a non ``Zope`` tales engine to an engine to be used

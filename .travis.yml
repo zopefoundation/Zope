@@ -13,9 +13,6 @@ matrix:
           env: TOXENV=py38
         - python: "3.9-dev"
           env: TOXENV=py39
-    allow_failures:
-        - python: "3.9-dev"
-          env: TOXENV=py39
 
 install:
     - pip install -U pip setuptools
