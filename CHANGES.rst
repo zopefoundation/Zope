@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1 (unreleased)
 ----------------
 
+- Restore the ZMI `Debug Information` control panel page
+  (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
+
 - Update to newest versions of dependencies.
 
 
