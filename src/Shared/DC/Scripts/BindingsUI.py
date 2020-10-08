@@ -15,7 +15,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.special_dtml import DTMLFile
-
 from Shared.DC.Scripts.Bindings import Bindings
 
 

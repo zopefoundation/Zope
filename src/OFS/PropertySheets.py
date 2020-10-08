@@ -28,10 +28,9 @@ from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from OFS.Traversable import Traversable
 from Persistence import Persistent
+from webdav.PropertySheet import DAVPropertySheetMixin
 from zExceptions import BadRequest
 from ZPublisher.Converters import type_converters
-
-from webdav.PropertySheet import DAVPropertySheetMixin
 
 
 class Virtual:

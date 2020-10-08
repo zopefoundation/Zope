@@ -23,11 +23,10 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.special_dtml import DTMLFile
 from DocumentTemplate._DocumentTemplate import TemplateDict
 from OFS.SimpleItem import SimpleItem
-from zExceptions import Redirect
-
 from Shared.DC.Scripts.Bindings import defaultBindings  # NOQA
 from Shared.DC.Scripts.BindingsUI import BindingsUI
 from Shared.DC.Scripts.Signature import FuncCode  # NOQA
+from zExceptions import Redirect
 
 
 class Script(SimpleItem, BindingsUI):

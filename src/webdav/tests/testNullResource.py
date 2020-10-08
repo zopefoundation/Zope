@@ -5,9 +5,8 @@ class TestLockNullResource(unittest.TestCase):
 
     def test_interfaces(self):
         from OFS.interfaces import IWriteLock
-        from zope.interface.verify import verifyClass
-
         from webdav.NullResource import LockNullResource
+        from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, LockNullResource)
 

@@ -32,7 +32,6 @@ from DocumentTemplate._DocumentTemplate import TemplateDict
 from DocumentTemplate._DocumentTemplate import render_blocks
 from DocumentTemplate.DT_String import DTReturn
 from DocumentTemplate.DT_String import _marker
-
 from Shared.DC.Scripts.Bindings import Bindings
 
 

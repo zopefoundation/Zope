@@ -51,6 +51,8 @@ from OFS.subscribers import compatibilityCall
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from webdav.Collection import Collection
+from webdav.NullResource import NullResource
 from zExceptions import BadRequest
 from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
@@ -60,9 +62,6 @@ from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
 from ZPublisher.HTTPResponse import make_content_disposition
-
-from webdav.Collection import Collection
-from webdav.NullResource import NullResource
 
 
 # Constants: __replaceable__ flags:

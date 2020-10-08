@@ -49,12 +49,11 @@ from OFS.owner import Owned
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
 from Persistence import Persistent
+from webdav.Resource import Resource
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
 from ZPublisher.HTTPRequest import default_encoding
-
-from webdav.Resource import Resource
 
 
 logger = logging.getLogger()

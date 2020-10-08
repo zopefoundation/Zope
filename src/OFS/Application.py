@@ -33,11 +33,10 @@ from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
+from webdav.NullResource import NullResource
 from zExceptions import Forbidden
 from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
-
-from webdav.NullResource import NullResource
 
 from . import Folder
 from . import misc_

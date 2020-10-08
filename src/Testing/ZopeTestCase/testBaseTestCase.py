@@ -20,6 +20,7 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 import gc
+
 import transaction
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager

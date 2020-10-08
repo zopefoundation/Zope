@@ -101,9 +101,8 @@ class TestResource(unittest.TestCase):
 
     def test_interfaces(self):
         from OFS.interfaces import IWriteLock
-        from zope.interface.verify import verifyClass
-
         from webdav.interfaces import IDAVResource
+        from zope.interface.verify import verifyClass
 
         verifyClass(IDAVResource, self._getTargetClass())
         verifyClass(IWriteLock, self._getTargetClass())

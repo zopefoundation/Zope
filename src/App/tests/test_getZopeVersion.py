@@ -14,9 +14,9 @@
 """Tests for the recreated `getZopeVersion`."""
 
 import unittest
-from pkg_resources import get_distribution
 
 from App.version_txt import getZopeVersion
+from pkg_resources import get_distribution
 
 
 class Test(unittest.TestCase):

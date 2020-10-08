@@ -2,7 +2,6 @@ import unittest
 from urllib.parse import quote
 
 from DateTime import DateTime
-
 from ZTUtils.Zope import complex_marshal
 from ZTUtils.Zope import make_hidden_input
 from ZTUtils.Zope import make_query

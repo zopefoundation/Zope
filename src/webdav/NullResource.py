@@ -36,13 +36,6 @@ from OFS.interfaces import IWriteLock
 from OFS.SimpleItem import Item_w__name__
 from Persistence import Persistent
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-from zExceptions import BadRequest
-from zExceptions import Forbidden
-from zExceptions import MethodNotAllowed
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-from zope.contenttype import guess_content_type
-
 from webdav.common import Conflict
 from webdav.common import IfParser
 from webdav.common import Locked
@@ -53,6 +46,12 @@ from webdav.common import tokenFinder
 from webdav.davcmds import Lock
 from webdav.davcmds import Unlock
 from webdav.Resource import Resource
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
+from zExceptions import Unauthorized
+from zope.contenttype import guess_content_type
 
 
 # XXX Originall in ZServer.Zope2.Startup.config

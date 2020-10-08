@@ -39,18 +39,6 @@ from OFS.Lockable import LockableItem
 from OFS.Lockable import wl_isLockable
 from OFS.Lockable import wl_isLocked
 from OFS.subscribers import compatibilityCall
-from zExceptions import BadRequest
-from zExceptions import Forbidden
-from zExceptions import MethodNotAllowed
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-from zope.container.contained import notifyContainerModified
-from zope.event import notify
-from zope.interface import implementer
-from zope.lifecycleevent import ObjectCopiedEvent
-from zope.lifecycleevent import ObjectMovedEvent
-from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
-
 from webdav import enable_ms_public_header
 from webdav.common import Conflict
 from webdav.common import IfParser
@@ -62,6 +50,17 @@ from webdav.common import tokenFinder
 from webdav.common import urlbase
 from webdav.common import urlfix
 from webdav.interfaces import IDAVResource
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import MethodNotAllowed
+from zExceptions import NotFound
+from zExceptions import Unauthorized
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCopiedEvent
+from zope.lifecycleevent import ObjectMovedEvent
+from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")

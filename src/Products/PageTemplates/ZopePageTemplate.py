@@ -36,10 +36,9 @@ from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.PageTemplateFile import guess_type
 from Products.PageTemplates.utils import convertToUnicode
-from zExceptions import ResourceLockedError
-
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
+from zExceptions import ResourceLockedError
 
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
