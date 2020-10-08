@@ -13,7 +13,7 @@ Paste==3.4.1
 PasteDeploy==2.1.0
 Persistence==3.0
 Products.BTreeFolder2==4.2
-Products.ZCatalog==5.1
+Products.ZCatalog==6.0
 Record==3.5
 RestrictedPython==5.1
 SecretStorage==3.1.2
