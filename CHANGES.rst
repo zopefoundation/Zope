@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1 (unreleased)
 ----------------
 
+- Fix ``length`` for page template repeat variables
+  (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
+
 - Restore the ZMI `Debug Information` control panel page
   (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
 
