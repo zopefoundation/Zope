@@ -255,7 +255,7 @@ ZServer
 -------
 
 Zope comes with a built-in web server that serves content to you and your
-users.  This web server also serves Zope content via FTP, WebDAV, and
+users.  This web server also serves Zope content via WebDAV and
 XML-RPC (a remote procedure call facility).
 
 Web Server

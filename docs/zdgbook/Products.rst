@@ -244,8 +244,8 @@ OFS.SimpleItem.Item
 This base class provides your product with the basics needed to work
 with the Zope management interface.  By inheriting from ``Item`` your
 product class gains a whole host of features: the ability to be cut
-and pasted, capability with management views, WebDAV support, basic
-FTP support, undo support, ownership support, and traversal controls.
+and pasted, capability with management views, WebDAV support,
+undo support, ownership support, and traversal controls.
 It also gives you some standard methods for management views and
 error display including ``manage_main()``.  You also get the
 ``getId()``, ``title_or_id()``, ``title_and_id()`` methods and the
@@ -309,7 +309,7 @@ This base class gives your product the ability to contain other
 ``Item`` instances.  In other words, it makes your product class like
 a Zope folder.  This base class is optional. See the *API Reference*
 for more details.  This base class gives you facilities for adding
-Zope objects, importing and exporting Zope objects, WebDAV, and FTP.
+Zope objects, importing and exporting Zope objects and WebDAV.
 It also gives you the ``objectIds``, ``objectValues``, and
 ``objectItems`` methods.
 
@@ -1088,21 +1088,20 @@ In addition to providing a through the web management interface your
 products may also support many other user interfaces.  You product
 might have no web management interfaces, and might be controlled
 completely through some other network protocol.  Zope provides
-interfaces and support for FTP, WebDAV and XML-RPC.  If this isn't
+interfaces and support for WebDAV and XML-RPC.  If this isn't
 enough you can add other protocols.
 
-FTP and WebDAV Interfaces
--------------------------
+WebDAV Interfaces
+-----------------
 
-Both FTP and WebDAV treat Zope objects like files and
-directories.  See Chapter 3 for more information on FTP and WebDAV.
+WebDAV treats Zope objects like files and
+directories.  See Chapter 3 for more information on WebDAV.
 
 By simply sub-classing from 'SimpleItem.Item' and 'ObjectManager' if
-necessary, you gain basic FTP and WebDAV support.  Without any work
-your objects will appear in FTP directory listings and if your class
-is an 'ObjectManager' its contents will be accessible via FTP and
-WebDAV.  See Chapter 2 for more information on implementing FTP and
-WebDAV support.
+necessary, you gain basic WebDAV support.  Without any work
+your objects will appear in directory listings and if your class
+is an 'ObjectManager' its contents will be accessible via WebDAV.
+See Chapter 2 for more information on implementing WebDAV support.
 
 XML-RPC and Network Services
 ----------------------------

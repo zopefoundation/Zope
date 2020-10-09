@@ -32,7 +32,7 @@ system.
 How The Security Policy Relates to Zope's Publishing Machinery
 --------------------------------------------------------------
 
-When access to Zope is performed via HTTP, WebDAV, or FTP, Zope's
+When access to Zope is performed via HTTP or WebDAV, Zope's
 publishing machinery consults the security policy in order to
 determine whether to allow or deny access to a visitor for a
 particular object.  For example, when a user visits the root
@@ -52,7 +52,7 @@ How The Security Policy Relates to Restricted Code
 --------------------------------------------------
 
 *Restricted code* is generally any sort of logic that may be edited
-remotely (through the Web, FTP, via WebDAV or by other means). DTML
+remotely (through the Web, via WebDAV or by other means). DTML
 Methods, SQLMethods, Python Scripts and Page Templates are examples of
 restricted code.
 
@@ -304,7 +304,7 @@ When Should I Use Security Assertions?
 
 If you are building an object that will be used from a Page Template or
 other restricted code, or that will be accessible directly through the web
-(or other remote protocols such as FTP or WebDAV) then you need to
+(or other remote protocols such as WebDAV) then you need to
 define security information for your object.
 
 

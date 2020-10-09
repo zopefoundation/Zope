@@ -779,8 +779,8 @@ to the types of objects they expose.
 
 Some permissions are only relevant for one type of object.
 Other permissions protect many types of objects, such
-as the *FTP access* and *WebDAV access* permissions which
-control whether objects are available via FTP and WebDAV.
+as the *WebDAV access* permission which
+controls whether objects are available via WebDAV.
 
 You can find out what permissions are available on a given object
 by going to the *Security* management tab.

@@ -279,7 +279,7 @@ Zope instance fails to start, make sure that another application isn't
 already running on the same TCP port (8080).
 
 Zope also has the capability to listen on other TCP ports.  Zope supports
-separate TCP ports for FTP (File Transfer Protocol), "monitor" (internal
+separate TCP ports for "monitor" (internal
 debugging), WebDAV (Web Distributed Authoring and Versioning), and ICP
 (Internet Cache Protocol) access.  If you see messages that indicate that
 Zope is listening on ports other than the default 8080 HTTP, don't panic:
@@ -349,7 +349,7 @@ Starting Zope as the Root User
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``ZServer`` (Zope's server) supports ``setuid()`` on POSIX systems in order
-to be able to listen on low-numbered ports, such as 21 (FTP) and 80 (HTTP),
+to be able to listen on low-numbered ports, such as 80 (HTTP),
 but drop root privileges when running; on most POSIX systems, only the
 ``root`` user can do this.
 
@@ -476,9 +476,7 @@ Zope requests. The stanzas are formed with XML-like constructs::
    # valid keys are "address" and "force-connection-close"
    address 8080
  </http-server>
- <ftp-server>
-   ...
- </ftp-server>
+
  <webdav-source-server>
    ...
  </webdav-source-server>
@@ -492,8 +490,7 @@ which **all** servers listen.  Let us assume that our HTTP Server's
 'address' directive is set to 8080, as in our example above, and
 'port-base' is specified as 1000. The port on which the HTTP server will
 listen, will be the ``address`` value of 8080, plus the ``port-base`` offset
-value of 1000, or 9080.  Assuming the FTP server's ``address`` directive is
-set to 8021, the FTP Server will then listen on port 9021, and so on.
+value of 1000, or 9080.
 
 The ``debug-mode`` directive
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -552,22 +549,7 @@ instance may be running on a non-standard TCP port (for example, some
 versions of Debian Linux ship with Zope's default TCP port as 9673).  To
 find out exactly which URL to use, look at the logging information Zope
 prints as it starts up when started in the foreground, i.e., when started
-with ``./runzope`` or ``./zopectl fg``. For example::
-
- ...
- ------
- 2009-01-21T21:48:27 INFO(0) ZServer HTTP server started at Wed Jan 21 21:48:27 2009
- Hostname: arod
- Port: 9673
- ------
- 2009-01-21T21:48:27 INFO(0) ZServer FTP server started at Wed Jan 21 21:48:27 2009
- Hostname: arod
- Port: 8021
- ...
-
-The first log entry indicates that Zope's web server is listening on port
-9673 on host ``arod``. This means that the management URL is
-http://arod:9673/manage.
+with ``./runzope`` or ``./zopectl fg``.
 
 As mentioned previously, Zope only prints to the console when started in
 the foreground, with ``./runzope`` or ``runzope.bat``. This logging
