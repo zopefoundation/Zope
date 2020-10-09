@@ -13,6 +13,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
   ``getId`` calls.
 
+- Restore the ZMI `Debug Information` control panel page
+  (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
+
 - HTTP header encoding support
   (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
 

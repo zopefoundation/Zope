@@ -31,10 +31,16 @@ class DavLockManager(Item, Implicit):
 
     security.declareProtected(webdav_manage_locks,  # NOQA: D001
                               'manage_davlocks')
-    manage_davlocks = manage_main = manage = DTMLFile(
+    manage_davlocks = manage_main = manage = manage_workspace = DTMLFile(
         'dtml/davLockManager', globals())
     manage_davlocks._setName('manage_davlocks')
-    manage_options = ({'label': 'Write Locks', 'action': 'manage_main'}, )
+    manage_options = (
+        {'label': 'Control Panel', 'action': '../manage_main'},
+        {'label': 'Databases', 'action': 'manage_main'},
+        {'label': 'Configuration', 'action': '../Configuration/manage_main'},
+        {'label': 'DAV Locks', 'action': 'manage_main'},
+        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
+    )
 
     @security.protected(webdav_manage_locks)
     def findLockedObjects(self, frompath=''):

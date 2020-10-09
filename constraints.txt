@@ -12,7 +12,7 @@ Paste==3.4.3
 PasteDeploy==2.1.0
 Persistence==3.0
 Products.BTreeFolder2==4.2
-Products.ZCatalog==5.1
+Products.ZCatalog==5.2
 Record==3.5
 RestrictedPython==5.0
 WSGIProxy2==0.4.6

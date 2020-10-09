@@ -248,6 +248,18 @@ def publish(request, module_info):
     request['PARENTS'] = [obj]
 
     obj = request.traverse(path, validated_hook=validate_user)
+
+    # Set debug information from the active request on the open connection
+    # Used to be done in ZApplicationWrapper.__bobo_traverse__ for ZServer
+    try:
+        # Grab the connection from the last (root application) object,
+        # which usually has a connection available.
+        request['PARENTS'][-1]._p_jar.setDebugInfo(request.environ,
+                                                   request.other)
+    except AttributeError:
+        # If there is no connection don't worry
+        pass
+
     notify(pubevents.PubAfterTraversal(request))
     recordMetaData(obj, request)
 
