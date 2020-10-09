@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Restore the ZMI `Debug Information` control panel page
   (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
 
+- Update `isort` to version 5.
+  (`#892 <https://github.com/zopefoundation/Zope/pull/892>`_)
+
 - Update to newest versions of dependencies.
 
 
@@ -103,9 +106,6 @@ Fixes
 - Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
   Python script.
   (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
-
-- Update `isort` to version 5.
-  (`#892 <https://github.com/zopefoundation/Zope/pull/892>`_)
 
 Other changes
 +++++++++++++
