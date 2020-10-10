@@ -75,7 +75,7 @@ setup. Functional testing (testbrowser) support also uses the new
 WSGI publisher.
 
 The ZServer based publisher got moved into its own optional project.
-So if you rely on ZServer features, like Webdav, FTP, zdaemon or zopectl
+So if you rely on ZServer features, like FTP, zdaemon or zopectl
 support, please make sure to install ZServer and use its ``mkzopeinstance``
 script to create a Zope instance.
 
