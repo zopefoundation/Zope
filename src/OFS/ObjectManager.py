@@ -717,7 +717,8 @@ class ObjectManager(
         # Book and from `AccessControl.Permissions`
         import warnings
         warnings.warn(
-            "This method is deprecated and will be removed in future.",
+            "`ObjectManager.manage_hasId` is deprecated "
+            "and will be removed in future.",
             DeprecationWarning)
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
