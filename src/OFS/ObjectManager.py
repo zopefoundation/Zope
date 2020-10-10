@@ -712,7 +712,14 @@ class ObjectManager(
     @security.protected(ftp_access)
     def manage_hasId(self, REQUEST):
         """Check if the folder has an object with REQUEST['id']."""
-
+        # When this method will be removed, please also remove
+        # `ftp_access` both from `AppendixA`from the Zope Developers
+        # Book and from `AccessControl.Permissions`
+        import warnings
+        warnings.warn(
+            "`ObjectManager.manage_hasId` is deprecated "
+            "and will be removed in future.",
+            DeprecationWarning)
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
 

@@ -80,13 +80,12 @@ To set up a Zope binary package with built-in python situated in::
   PYTHON_BIN=$ZOPE_HOME/bin/python
   COMMON_PARAMS="-u zope -z $ZOPE_HOME -Z /var/run/zope.pid -l /var/log/Z2.log -W 8081"
 
-You can also set up a file `/etc/sysconfig/zope` with variables ZOPE_FTP_PORT,
+You can also set up a file `/etc/sysconfig/zope` with variable
 ZOPE_HTTP_PORT::
 
   ZOPE_HTTP_PORT=80
-  ZOPE_FTP_PORT=21
 
-to set the HTTP and FTP ports. The default is to start them at port 8080 and
+to set the HTTP port. The default is to start them at port 8080 and
 8021.
 
 Unfortunately, all Linux distributions start and stop services a little

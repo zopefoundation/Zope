@@ -46,7 +46,7 @@ designed to be used and managed through a network interface, most
 commonly HTTP.
 
 Zope provides network access to components by "publishing" them
-through various network interfaces like HTTP, FTP, WebDAV and
+through various network interfaces like HTTP, WebDAV and
 XML-RPC.  This chapter describes how a component developer can
 publish their components "through the web" and other network
 protocols.
