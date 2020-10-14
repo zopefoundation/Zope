@@ -15,7 +15,7 @@ available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include
-  **3.6** up to **3.8**.
+  **3.6** up to **3.9**.
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -55,7 +55,7 @@ steps:
 
 - Run the buildout
 
-The following examples are from Linux and use Zope version 4.3. Just replace
+The following examples are from Linux and use Zope version 5.0. Just replace
 that version number with your desired version.
 
 Built-in standard buildout configuration
@@ -63,11 +63,11 @@ Built-in standard buildout configuration
 
 .. code-block:: console
 
-  $ wget https://pypi.org/packages/source/Z/Zope/Zope-4.3.tar.gz
-  $ tar xfvz Zope-4.3.tar.gz
-  $ cd Zope-4.3
+  $ wget https://pypi.org/packages/source/Z/Zope/Zope-5.0.tar.gz
+  $ tar xfvz Zope-5.0.tar.gz
+  $ cd Zope-5.0
   $ python3.7 -m venv .
-  $ bin/pip install -U pip zc.buildout
+  $ bin/pip install -U pip wheel zc.buildout
   $ bin/buildout
 
 
@@ -84,7 +84,7 @@ to download Zope first:
    $ python3.7 -m venv zope
    $ cd zope
    <create buildout.cfg in this folder>
-   $ bin/pip install -U pip zc.buildout
+   $ bin/pip install -U pip wheel zc.buildout
    $ bin/buildout
 
 
@@ -96,7 +96,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.3/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/5.0/versions-prod.cfg
     parts =
         zopescripts
 
@@ -119,7 +119,7 @@ options, please see the
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/4.3/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/5.0/versions-prod.cfg
     parts =
         zopeinstance
 
@@ -156,16 +156,16 @@ steps:
 
 - Install Zope and its dependencies
 
-Example steps on Linux. Replace the version number "4.3" with the latest
+Example steps on Linux. Replace the version number "5.0" with the latest
 version you find on https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
 
   $ python3.7 -m venv zope
   $ cd zope
-  $ bin/pip install -U pip
-  $ bin/pip install Zope[wsgi]==4.3 \
-    -c https://zopefoundation.github.io/Zope/releases/4.3/constraints.txt
+  $ bin/pip install -U pip wheel
+  $ bin/pip install Zope[wsgi]==5.0 \
+    -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt
 
 You can also install Zope using a single requirements file. **Note that this
 installation method might install packages that are not actually needed** (i. e.
@@ -174,7 +174,7 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/4.3/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/5.0/requirements-full.txt
 
 
 Building the documentation with ``Sphinx``
