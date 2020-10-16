@@ -16,7 +16,8 @@ import transaction
 
 def appcall(func, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''
-    from .base import app, close
+    from .base import app
+    from .base import close
     app = app()
     args = (app,) + args
     try:

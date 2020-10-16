@@ -3,7 +3,7 @@
 Defines the VirtualHostMonster class
 """
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view as View  # NOQA
+from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile

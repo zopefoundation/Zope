@@ -187,11 +187,11 @@ class EngineTestsBase(PlacelessSetup):
                           ec.evaluate, expr)
         # But registering an appropriate IUnicodeEncodingConflictResolver
         # should fix it
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         from zope.component import provideUtility
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         self.assertEqual(ec.evaluate(expr), 'äüö')
@@ -241,12 +241,12 @@ class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
 class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
 
     def testDefaultResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            DefaultUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import DefaultUnicodeEncodingConflictResolver
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -254,12 +254,12 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
                           resolver.resolve, None, b'\xe4\xfc\xf6', None)
 
     def testStrictResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -267,24 +267,24 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual(resolver.resolve(None, text, None), text)
 
     def testIgnoringResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            IgnoringUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import IgnoringUnicodeEncodingConflictResolver
         provideUtility(IgnoringUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None), '')
 
     def testReplacingResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            ReplacingUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import ReplacingUnicodeEncodingConflictResolver
         provideUtility(ReplacingUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)

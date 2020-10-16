@@ -32,6 +32,25 @@ folder_name = ZopeTestCase.folder_name
 cutpaste_permissions = [add_documents_images_and_files, delete_objects]
 
 
+def make_request_response(environ=None):
+    from io import StringIO
+
+    from ZPublisher.HTTPRequest import HTTPRequest
+    from ZPublisher.HTTPResponse import HTTPResponse
+
+    if environ is None:
+        environ = {}
+
+    stdout = StringIO()
+    stdin = StringIO()
+    resp = HTTPResponse(stdout=stdout)
+    environ.setdefault('SERVER_NAME', 'foo')
+    environ.setdefault('SERVER_PORT', '80')
+    environ.setdefault('REQUEST_METHOD', 'GET')
+    req = HTTPRequest(stdin, environ, resp)
+    return req, resp
+
+
 class DummyObject(SimpleItem):
     id = 'dummy'
     foo = None
@@ -96,6 +115,8 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
         self.setupLocalEnvironment()
         self.folder.addDTMLMethod('doc', file='foo')
+        # please note the usage of the turkish i
+        self.folder.addDTMLMethod('ıq', file='foo')
         # _p_oids are None until we create a savepoint
         self.assertEqual(self.folder._p_oid, None)
         transaction.savepoint(optimistic=True)
@@ -104,6 +125,23 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
     def testExport(self):
         self.folder.manage_exportObject('doc')
         self.assertTrue(os.path.exists(self.zexp_file))
+
+    def testExportNonLatinFileNames(self):
+        """Test compatibility of the export with unicode characters.
+
+        Since Zope 4 also unicode ids can be used."""
+        _, response = make_request_response()
+        # please note the usage of a turkish `i`
+        self.folder.manage_exportObject(
+            'ıq', download=1, RESPONSE=response)
+
+        found = False
+        for header in response.listHeaders():
+            if header[0] == 'Content-Disposition':
+                # value needs to be `us-ascii` compatible
+                assert header[1].encode("us-ascii")
+                found = True
+        self.assertTrue(found)
 
     def testImport(self):
         self.folder.manage_exportObject('doc')
@@ -298,7 +336,8 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestCopyPaste))
     suite.addTest(makeSuite(TestImportExport))

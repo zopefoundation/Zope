@@ -5,6 +5,7 @@ import tempfile
 import time
 import unittest
 
+import Testing.testbrowser
 import Testing.ZopeTestCase
 
 
@@ -364,6 +365,123 @@ class AltDatabaseManagerTests(unittest.TestCase):
         self.assertIsNone(am.manage_pack(days='foo'))
         # The dummy storage value should not change because pack was not called
         self.assertIsNone(am._getDB()._packed)
+
+
+class DebugManagerTests(unittest.TestCase):
+
+    def setUp(self):
+        import sys
+        self._sys = sys
+        self._old_sys_modules = sys.modules.copy()
+
+    def tearDown(self):
+        self._sys.modules.clear()
+        self._sys.modules.update(self._old_sys_modules)
+
+    def _getTargetClass(self):
+        from App.ApplicationManager import DebugManager
+        return DebugManager
+
+    def _makeOne(self, id):
+        return self._getTargetClass()(id)
+
+    def _makeModuleClasses(self):
+        import sys
+        import types
+
+        from ExtensionClass import Base
+
+        class Foo(Base):
+            pass
+
+        class Bar(Base):
+            pass
+
+        class Baz(Base):
+            pass
+
+        foo = sys.modules['foo'] = types.ModuleType('foo')
+        foo.Foo = Foo
+        Foo.__module__ = 'foo'
+        foo.Bar = Bar
+        Bar.__module__ = 'foo'
+        qux = sys.modules['qux'] = types.ModuleType('qux')
+        qux.Baz = Baz
+        Baz.__module__ = 'qux'
+        return Foo, Bar, Baz
+
+    def test_refcount_no_limit(self):
+        import sys
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        pairs = dm.refcount()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        foo_count = sys.getrefcount(Foo)
+        self.assertTrue((foo_count + 1, 'foo.Foo') in pairs)
+        bar_count = sys.getrefcount(Bar)
+        self.assertTrue((bar_count + 1, 'foo.Bar') in pairs)
+        baz_count = sys.getrefcount(Baz)
+        self.assertTrue((baz_count + 1, 'qux.Baz') in pairs)
+
+    def test_refdict(self):
+        import sys
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        mapping = dm.refdict()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        foo_count = sys.getrefcount(Foo)
+        self.assertEqual(mapping['foo.Foo'], foo_count + 1)
+        bar_count = sys.getrefcount(Bar)
+        self.assertEqual(mapping['foo.Bar'], bar_count + 1)
+        baz_count = sys.getrefcount(Baz)
+        self.assertEqual(mapping['qux.Baz'], baz_count + 1)
+
+    def test_rcsnapshot(self):
+        import sys
+
+        import App.ApplicationManager
+        from DateTime.DateTime import DateTime
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        before = DateTime()
+        dm.rcsnapshot()
+        after = DateTime()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        self.assertTrue(before <= App.ApplicationManager._v_rst <= after)
+        mapping = App.ApplicationManager._v_rcs
+        foo_count = sys.getrefcount(Foo)
+        self.assertEqual(mapping['foo.Foo'], foo_count + 1)
+        bar_count = sys.getrefcount(Bar)
+        self.assertEqual(mapping['foo.Bar'], bar_count + 1)
+        baz_count = sys.getrefcount(Baz)
+        self.assertEqual(mapping['qux.Baz'], baz_count + 1)
+
+    def test_rcdate(self):
+        import App.ApplicationManager
+        dummy = object()
+        App.ApplicationManager._v_rst = dummy
+        dm = self._makeOne('test')
+        found = dm.rcdate()
+        App.ApplicationManager._v_rst = None
+        self.assertTrue(found is dummy)
+
+    def test_rcdeltas(self):
+        dm = self._makeOne('test')
+        dm.rcsnapshot()
+        Foo, Bar, Baz = self._makeModuleClasses()
+        mappings = dm.rcdeltas()
+        self.assertTrue(len(mappings))
+        mapping = mappings[0]
+        self.assertTrue('rc' in mapping)
+        self.assertTrue('pc' in mapping)
+        self.assertEqual(mapping['delta'], mapping['rc'] - mapping['pc'])
+
+    # def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
+
+    def test_manage_getSysPath(self):
+        import sys
+        dm = self._makeOne('test')
+        self.assertEqual(dm.manage_getSysPath(), list(sys.path))
 
 
 class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):

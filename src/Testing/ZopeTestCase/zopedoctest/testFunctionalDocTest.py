@@ -21,8 +21,8 @@ from Testing.ZopeTestCase import FunctionalDocTestSuite
 class HTTPHeaderOutputTests(unittest.TestCase):
 
     def _getTargetClass(self):
-        from Testing.ZopeTestCase.zopedoctest.functional \
-            import HTTPHeaderOutput
+        from Testing.ZopeTestCase.zopedoctest.functional import \
+            HTTPHeaderOutput
         return HTTPHeaderOutput
 
     def _makeOne(self, protocol, omit):

@@ -309,9 +309,9 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.manage_DAVget(), text)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
         from OFS.Image import File
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
         verifyClass(HTTPRangeInterface, File)
@@ -375,9 +375,9 @@ class ImageTests(FileTests):
         self.assertEqual(result, self.data)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
         from OFS.Image import Image
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, Image)
 

@@ -246,8 +246,8 @@ class ZopePageTemplateFileTests(ZopeTestCase):
         useChameleonEngine()
 
     def test_class_conforms_to_IWriteLock(self):
-        from zope.interface.verify import verifyClass
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         verifyClass(IWriteLock, ZopePageTemplate)
 
     def testPT_RenderWithAscii(self):

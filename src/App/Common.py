@@ -81,10 +81,14 @@ def absattr(attr, callable=callable):
 def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
     # Return true if this object is not considered to be
     # a direct subobject of its acquisition parent
-    # Used to prevent acquisition side-affects in FTP traversal
     # Note that this method is misnamed since parents can (and do)
     # spoof it. It is not a true measure of whether something is
     # acquired, it relies on the parent's parent-ness exclusively
+    import warnings
+    warnings.warn(
+        "The function `is_acquired` is deprecated "
+        "and will be removed in future.",
+        DeprecationWarning)
     if not hasattr(ob, '__parent__'):
         # We can't be acquired if we don't have an __parent__
         return 0

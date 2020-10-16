@@ -83,7 +83,8 @@ def test_zpt_i18n():
 
 
 def test_suite():
-    from Testing.ZopeTestCase import FunctionalDocTestSuite
     import doctest
+
+    from Testing.ZopeTestCase import FunctionalDocTestSuite
     return FunctionalDocTestSuite(
         optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)

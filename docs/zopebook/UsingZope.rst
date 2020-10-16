@@ -38,7 +38,7 @@ Instead, the objects that Zope creates are stored in a database called the
 creates a file named "Data.fs" in which Zope stores its objects.  The ZMI
 is the primary way by which you interact with Zope objects stored in this
 database.  Note that there are other methods of interacting with objects
-stored in the ZODB, including FTP and WebDAV, which are detailed in the
+stored in the ZODB, including WebDAV, which are detailed in the
 chapter in this book entitled `Managing Zope Using External
 Tools <ExternalTools.stx>`_, but the ZMI is the primary management
 tool.

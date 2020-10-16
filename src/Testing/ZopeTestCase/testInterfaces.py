@@ -91,7 +91,8 @@ class TestPortalTestCase(PortalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestAbstractClasses))
     suite.addTest(makeSuite(TestBaseTestCase))

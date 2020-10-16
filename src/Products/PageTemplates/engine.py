@@ -74,10 +74,9 @@ class RepeatDictWrapper(RepeatDict):
         iterable = list(iterable) if iterable is not None else ()
 
         length = len(iterable)
-        iterator = iter(iterable)
 
         # Insert as repeat item
-        ri = self[key] = RepeatItem(None, iterator, _PseudoContext)
+        ri = self[key] = RepeatItem(None, iterable, _PseudoContext)
 
         return ri, length
 

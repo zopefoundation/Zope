@@ -18,11 +18,12 @@ class TypeSniffingTestCase(unittest.TestCase):
     TEMPFILENAME = tempfile.mktemp(".zpt")
 
     def setUp(self):
-        from zope.component import provideUtility
         from Products.PageTemplates.interfaces import \
             IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver import \
             DefaultUnicodeEncodingConflictResolver
+        from zope.component import provideUtility
+
         # Make sure we use the new default chameleon engine
         useChameleonEngine()
         provideUtility(DefaultUnicodeEncodingConflictResolver,

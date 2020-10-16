@@ -10,7 +10,7 @@ from AccessControl.SecurityManager import setSecurityPolicy
 from AccessControl.SpecialUsers import emergency_user
 from AccessControl.SpecialUsers import nobody
 from AccessControl.SpecialUsers import system
-from AccessControl.User import User  # before SpecialUsers
+from AccessControl.users import User  # before SpecialUsers
 from Acquisition import Implicit
 from Acquisition import aq_self
 from App.config import getConfiguration

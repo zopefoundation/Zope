@@ -9,6 +9,11 @@ from zExceptions import NotFound
 from zExceptions import ResourceLockedError
 from zExceptions import Unauthorized
 
+from ..HTTPResponse import encode_params
+from ..HTTPResponse import encode_words
+from ..HTTPResponse import header_encoding_registry
+from ..HTTPResponse import make_content_disposition
+
 
 class HTTPResponseTests(unittest.TestCase):
 
@@ -1373,3 +1378,101 @@ class HTTPResponseTests(unittest.TestCase):
     def test_isHTML_not_decodable_bytes(self):
         response = self._makeOne()
         self.assertFalse(response.isHTML('bïñårÿ'.encode('latin1')))
+
+    def test_header_encoding(self):
+        r = self._makeOne()
+        r.setHeader("unencoded1", "€")
+        r.setHeader("content-disposition", "a; p=€")
+        r.addHeader("unencoded2", "€")
+        r.addHeader("content-disposition", "a2; p2=€")
+        hdrs = r.listHeaders()[1:]  # drop `X-Powered...`
+        shdrs, ahdrs = dict(hdrs[:2]), dict(hdrs[2:])
+        # for some reasons, `set` headers change their name
+        #   while `add` headers do not
+        self.assertEqual(shdrs["Unencoded1"], "€")
+        self.assertEqual(ahdrs["unencoded2"], "€")
+        self.assertEqual(shdrs["Content-Disposition"],
+                         "a; p=?; p*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["content-disposition"],
+                         "a2; p2=?; p2*=utf-8''%E2%82%AC")
+
+
+class MakeDispositionHeaderTests(unittest.TestCase):
+
+    def test_ascii(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'iq.png'),
+            'inline; filename="iq.png"')
+
+    def test_latin_one(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'Dänemark.png'),
+            'inline; filename="b\'Dnemark.png\'"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
+        )
+
+    def test_unicode(self):
+        """HTTP headers need to be latin-1 compatible
+
+        In order to offer file downloads which contain unicode file names,
+        the file name has to be treated in a special way, see
+        https://stackoverflow.com/questions/1361604 .
+        """
+        self.assertEqual(
+            make_content_disposition('inline', 'ıq.png'),
+            'inline; filename="b\'q.png\'"; filename*=UTF-8\'\'%C4%B1q.png'
+        )
+
+
+class TestHeaderEncodingRegistry(unittest.TestCase):
+    def setUp(self):
+        self._copy = header_encoding_registry.copy()
+
+    def tearDown(self):
+        header_encoding_registry.clear()
+        header_encoding_registry.update(self._copy)
+
+    def test_default_registrations(self):
+        self.assertIn('content-type', header_encoding_registry)
+        self.assertEqual(header_encoding_registry["content-disposition"],
+                         (encode_params, {}))
+
+    def test_encode(self):
+        def encode(value, param):
+            return param
+        header_encoding_registry.register("my-header", encode, param=1)
+        # non-ISO-8859-1 encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", "€"),
+                         1)
+        # ISO-8859-1 not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", "ä"),
+                         "ä")
+        # unregistered not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header2", "€"),
+                         "€")
+        # test header name not case sensitive
+        self.assertEqual(header_encoding_registry.encode("My-Header", "€"),
+                         1)
+        # default
+        header_encoding_registry.register(None, encode, param=2)
+        self.assertEqual(header_encoding_registry.encode("my-header2", "€"),
+                         2)
+        self.assertEqual(header_encoding_registry.encode("my-header", "€"),
+                         1)
+
+    def test_encode_words(self):
+        self.assertEqual(encode_words("ä"), "=?utf-8?b?w6Q=?=")
+
+    def test_encode_params(self):
+        self.assertEqual(encode_params('abc; p1=1; p2="2"; p3="€"; p4=€; '
+                                       'p5="€"; p5*=5'),
+                         'abc; p1=1; p2="2"; p3="?"; p4=?; p5="?"; p5*=5; '
+                         'p3*=utf-8\'\'%E2%82%AC; p4*=utf-8\'\'%E2%82%AC')
+
+    def test_case_insensitivity(self):
+        header_encoding_registry.register("HdR", lambda value: 0)
+        # Note: case insensitivity not implemented for `dict` methods
+        self.assertIn("hdr", header_encoding_registry)
+        self.assertEqual(header_encoding_registry.encode("HDR", "€"), 0)
+        header_encoding_registry.unregister("hDr")
+        header_encoding_registry.unregister("hDr")  # no exception
+        self.assertNotIn("hdr", header_encoding_registry)

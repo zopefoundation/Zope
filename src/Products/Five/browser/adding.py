@@ -34,7 +34,7 @@ from zope.component import queryUtility
 from zope.component.interfaces import IFactory
 from zope.container.constraints import checkFactory
 from zope.container.constraints import checkObject
-from zope.container.i18n import ZopeMessageFactory as _  # NOQA
+from zope.container.i18n import ZopeMessageFactory as _
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
 from zope.event import notify
