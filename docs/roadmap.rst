@@ -1,7 +1,7 @@
 Zope development roadmap
 ========================
 
-The Zope development and support roadmap. **Last updated: June 2020**
+The Zope development and support roadmap. **Last updated: November 2020**
 
 
 Zope 2.13 - old version
@@ -13,7 +13,7 @@ Zope 2.13 - old version
 * Support schedule:
     - Full support: -
     - Bug fixes: -
-    - Security fixes: until 2020-12-31-2020 [1]_
+    - Security fixes: until 2020-12-31 [1]_
 
 
 Zope 4 - previous version
@@ -27,7 +27,7 @@ Zope 4 - previous version
     - 3.8
 
 * Support schedule:
-    - Full support: until 2020-10-08
+    - Full support: until 2020-10-08 (the Zope 5.0 release date)
     - Bug fixes: until 2021-12-31
     - Security fixes: until 2022-12-31 [2]_
 
@@ -42,7 +42,7 @@ Zope 5 - stable version
     - 3.9
 
 * Support schedule:
-    - Full support: starting with the Zope 5.0 release, TBD
+    - Full support: starting with the Zope 5.0 release (2020-10-08)
     - Bug fixes: TBD
     - Security fixes: TBD
 
@@ -51,6 +51,7 @@ Zope 5.1 or 6 - development version
 -----------------------------------
 
 * TBD
+
 
 See the `Plone release schedule <https://plone.org/download/release-schedule>`_
 for details about Plone version support. Zope will track some of their
