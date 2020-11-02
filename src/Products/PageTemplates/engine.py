@@ -245,6 +245,13 @@ def _C2ZContextWrapper(c_context, attrs):
 _c_context_2_z_context_node = Static(Symbol(_C2ZContextWrapper))
 
 
+# exclude characters special for ``chameleon``'s interpolation syntax
+# from use in path expressions to reduce the failure risk
+# for the ``chameleon`` interpolation heuristics
+BAD_PATH_CHARS = "${}"
+contains_bad_path_chars = re.compile("[%s]" % BAD_PATH_CHARS).search
+
+
 class MappedExpr(object):
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
     def __init__(self, type, expression, zt_engine):
@@ -264,8 +271,9 @@ class MappedExpr(object):
             zt_expr = _compile_zt_expr(type, expr, engine=zt_engine)
         except compiler_error as e:
             raise ExpressionError(str(e), self.expression)
-        if (self.type == "path" and "$" in self.expression
-                and isinstance(zt_expr, PathExpr)):
+        if (self.type == "path"
+                and isinstance(zt_expr, PathExpr)
+                and contains_bad_path_chars(self.expression)):
             # the ``chameleon`` template engine has a really curious
             #   implementation of global ``$`` interpolation
             #   (see ``chameleon.compiler.Interpolator``):
@@ -279,19 +287,23 @@ class MappedExpr(object):
             #   ``d/a} ${d/b`` (resulting from ``${d/a} ${d/b}``)
             #   but its evaluation will fail (with high likelyhood).
             # We use a heuristics here to handle many (but not all)
-            #   resulting problems: forbid ``$`` in ``SubPathExpr``s.
+            #   resulting problems: forbid special characters
+            #   for interpolation in ``SubPathExpr``s.
             for se in zt_expr._subexprs:
                 # dereference potential evaluation method
                 se = getattr(se, "__self__", se)
                 # we assume below that expressions other than
-                # ``SubPathExpr`` have flagged out ``$`` use already
+                # ``SubPathExpr`` have flagged out use of the special
+                # characters already
                 # we know that this assumption is wrong in some cases
                 if isinstance(se, SubPathExpr):
                     for pe in se._compiled_path:
                         if isinstance(pe, tuple):  # standard path
                             for spe in pe:
-                                if "$" in spe:
-                                    raise ExpressionError("$ unsupported", spe)
+                                if contains_bad_path_chars(spe):
+                                    raise ExpressionError(
+                                        "%s unsupported",
+                                        BAD_PATH_CHARS)
 
     def __call__(self, target, c_engine):
         # The convoluted handling of ``attrs`` below was necessary
