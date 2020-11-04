@@ -11,6 +11,17 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1 (unreleased)
 ----------------
 
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- Exclude characters special for ``chameleon``'s interpolation syntax
+  (i.e. ``${}``) from use in TALES path expressions to reduce the failure risk
+  for the ``chameleon`` interpolation heuristics
+  (`#925 <https://github.com/zopefoundation/Zope/issues/925>`_)
+
+Fixes
++++++
+
 - Fix ``length`` for page template repeat variables
   (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
 
