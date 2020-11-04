@@ -10,10 +10,16 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.2 (unreleased)
 ------------------
 
+Backward incompatible changes
++++++++++++++++++++++++++++++
+
 - Exclude characters special for ``chameleon``'s interpolation syntax
-  (i.e. ``${}``) from use in path expressions to reduce the failure risk
+  (i.e. ``${}``) from use in TALES path expressions to reduce the failure risk
   for the ``chameleon`` interpolation heuristics
   (`#925 <https://github.com/zopefoundation/Zope/issues/925>`_)
+
+Fixes
++++++
 
 - Fix ``length`` for page template repeat variables
   (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
