@@ -278,7 +278,7 @@
 
 * [Zope-2.11.8-final.tgz](pre-egg-releases/Zope-2.11.8-final.tgz)
 * [Zope-2.10.13-final.tgz](pre-egg-releases/Zope-2.10.13-final.tgz)
-* [Zope-2.9.9-final.tgz](pre-egg-releases/Zope-2.9.9-final.tgz)
+* [Zope-2.9.12-final.tgz](pre-egg-releases/Zope-2.9.12-final.tgz)
 * [Zope-2.8.12-final.tgz](pre-egg-releases/Zope-2.8.12-final.tgz)
 * [Zope-2.7.8-final.tgz](pre-egg-releases/Zope-2.7.8-final.tgz)
 * [Zope-2.6.4-src.tgz](pre-egg-releases/Zope-2.6.4-src.tgz)
