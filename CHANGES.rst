@@ -33,6 +33,8 @@ Fixes
 
 - Update to newest versions of dependencies.
 
+- Fix ZMI visibility of pre elements in error log
+
 
 5.0 (2020-10-08)
 ----------------
