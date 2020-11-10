@@ -859,7 +859,7 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	color:inherit;
 	padding:inherit;
 	font-size:inherit;
-	overflow:inherit
+	overflow:inherit;
 }
 .zmi-Site-Error-Log div.zmi-request-object table {
 	background: #212529;
