@@ -5,6 +5,10 @@ The article explains the new high-level features and changes found in Zope.
 You can have a look at the `detailed change log <./changes.html>`_ to learn
 about all minor new features and bugs being solved in the latest release.
 
+The `Zope development roadmap <https://www.zope.org/developer/roadmap.html>`_
+on `www.zope.org <https://www.zope.org>`_ explains which versions are
+supported and for how long.
+
 .. attention::
 
     If you are upgrading from Zope 2, make sure you study the
