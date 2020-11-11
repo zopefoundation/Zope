@@ -32,7 +32,9 @@ Fixes
 
 - Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
   to avoid bugs by use of deprecated direct ``id`` access
-  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+  (as e.g. `#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+
+- Fix ZMI visibility of pre elements in error log
 
 - Update dependencies to the latest releases that still support Python 2.
 

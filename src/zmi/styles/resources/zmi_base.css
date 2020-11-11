@@ -854,6 +854,13 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	margin: 1rem 0;
 	color: white;
 }
+.zmi-Site-Error-Log div.zmi-traceback.code pre {
+	margin:inherit;
+	color:inherit;
+	padding:inherit;
+	font-size:inherit;
+	overflow:inherit;
+}
 .zmi-Site-Error-Log div.zmi-request-object table {
 	background: #212529;
 	width: 100%;
