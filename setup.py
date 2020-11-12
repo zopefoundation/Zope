@@ -74,7 +74,7 @@ setup(
         'BTrees',
         'Chameleon >= 3.7.0',
         'DateTime',
-        'DocumentTemplate >= 3.0b9',
+        'DocumentTemplate >= 4.0',
         'ExtensionClass',
         'MultiMapping',
         'PasteDeploy',
