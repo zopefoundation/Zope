@@ -19,21 +19,26 @@ Backwards incompatible changes
   for the ``chameleon`` interpolation heuristics
   (`#925 <https://github.com/zopefoundation/Zope/issues/925>`_)
 
-Fixes
-+++++
-
-- Fix ``length`` for page template repeat variables
-  (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
+Features
+++++++++
 
 - Restore the ZMI `Debug Information` control panel page
   (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
+
+Fixes
++++++
+
+- Fix ZMI visibility of pre elements in error log
+  (`Products.SiteErrorLog#26
+  <https://github.com/zopefoundation/Products.SiteErrorLog/issues/26>`_)
+
+- Fix ``length`` for page template repeat variables
+  (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
 
 - Update `isort` to version 5.
   (`#892 <https://github.com/zopefoundation/Zope/pull/892>`_)
 
 - Update to newest versions of dependencies.
-
-- Fix ZMI visibility of pre elements in error log
 
 
 5.0 (2020-10-08)
