@@ -113,6 +113,10 @@ _CRLF = re.compile(r'[\r\n]')
 
 
 def _scrubHeader(name, value):
+    if PY3 and isinstance(value, bytes):
+        # handle ``bytes`` values correctly
+        # we assume that the provider knows that HTTP 1.1 stipulates ISO-8859-1
+        value = value.decode('ISO-8859-1')
     if not isinstance(value, string_types):
         value = str(value)
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(value))
@@ -723,7 +727,12 @@ class HTTPBaseResponse(BaseResponse):
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
         ]
 
-        encode = header_encoding_registry.encode
+        def encode(key, value, henc=header_encoding_registry.encode):
+            value = henc(key, value)
+            if PY2 and not isinstance(value, str):
+                # ``value`` is ``unicode``
+                value = value.encode('ISO-8859-1')
+            return value
         for key, value in self.headers.items():
             if key.lower() == key:
                 # only change non-literal header names
@@ -800,7 +809,7 @@ class HTTPResponse(HTTPBaseResponse):
     def _error_html(self, title, body):
         return ("""<!DOCTYPE html><html>
   <head><title>Site Error</title><meta charset="utf-8" /></head>
-  <body bgcolor="#FFFFFF">
+  <body bgcolor="white">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
