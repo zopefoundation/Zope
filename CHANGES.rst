@@ -12,6 +12,14 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases that still support Python 2.
 
+Fixes
++++++
+
+- Convert ``bytes`` (Python 3) and ``unicode`` (Python 2) values for
+  HTTP response headers into native strings using the HTTP/1.1
+  stipulated ``ISO-8859-1`` encoding. This makes ``waitress`` happy
+  which insists on native strings for those values.
+
 
 4.5.2 (2020-11-12)
 ------------------
