@@ -113,6 +113,10 @@ _CRLF = re.compile(r'[\r\n]')
 
 
 def _scrubHeader(name, value):
+    if PY3 and isinstance(value, bytes):
+        # handle ``bytes`` values correctly
+        # we assume that the provider knows that HTTP 1.1 stipulates ISO-8859-1
+        value = value.decode("ISO-8859-1")
     if not isinstance(value, string_types):
         value = str(value)
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(value))
