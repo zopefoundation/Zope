@@ -19,6 +19,7 @@ Fixes
   HTTP response headers into native strings using the HTTP/1.1
   stipulated ``ISO-8859-1`` encoding. This makes ``waitress`` happy
   which insists on native strings for those values.
+  (Fix for `#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
 
 
 4.5.2 (2020-11-12)
