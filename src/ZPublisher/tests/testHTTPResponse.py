@@ -1385,6 +1385,7 @@ class HTTPResponseTests(unittest.TestCase):
         r.setHeader("content-disposition", "a; p=€")
         r.addHeader("unencoded2", "€")
         r.addHeader("content-disposition", "a2; p2=€")
+        r.addHeader("bytes", b"abc")
         hdrs = r.listHeaders()[1:]  # drop `X-Powered...`
         shdrs, ahdrs = dict(hdrs[:2]), dict(hdrs[2:])
         # for some reasons, `set` headers change their name
@@ -1395,6 +1396,7 @@ class HTTPResponseTests(unittest.TestCase):
                          "a; p=?; p*=utf-8''%E2%82%AC")
         self.assertEqual(ahdrs["content-disposition"],
                          "a2; p2=?; p2*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["bytes"], "abc")
 
 
 class MakeDispositionHeaderTests(unittest.TestCase):
