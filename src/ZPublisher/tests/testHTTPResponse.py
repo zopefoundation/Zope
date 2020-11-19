@@ -651,7 +651,7 @@ class HTTPResponseTests(unittest.TestCase):
         # (r19315): "merged content type on error fixes from 2.3
         # If the str of the object returs a Python "pointer" looking mess,
         # don't let it get treated as HTML.
-        BOGUS = b'<Bogus a39d53d>'
+        BOGUS = b'<Bogus 0xa39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
 
