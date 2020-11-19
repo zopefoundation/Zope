@@ -69,7 +69,7 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
-bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
+bogus_str_search = re.compile(b" 0x[a-fA-F0-9]+>$").search
 charset_re_str = (r'(?:application|text)/[-+0-9a-z]+\s*;\s*'
                   r'charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)')
 charset_re_match = re.compile(charset_re_str, re.IGNORECASE).match
