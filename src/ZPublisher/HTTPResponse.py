@@ -534,7 +534,6 @@ class HTTPBaseResponse(BaseResponse):
         elif isinstance(body, bytes):
             pass
         elif isinstance(body, BytesIO):
-            print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
             body = body.getvalue()
         else:
             try:
