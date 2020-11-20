@@ -14,6 +14,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Convert ``bytes`` ``HTTPResponse`` header value to ``str``
   via ``ISO-8859-1`` (the default encoding of ``HTTP/1.1``).
   
+- Fix rendering of not found resources.
+  (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
+  
 - Update to newest versions of dependencies.
 
 
