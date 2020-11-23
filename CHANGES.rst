@@ -10,7 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix rendering of not found resources.
+  (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
 
 
 4.5.3 (2020-11-16)

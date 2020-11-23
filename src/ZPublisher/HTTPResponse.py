@@ -22,6 +22,7 @@ from email.header import Header
 from email.message import _parseparam
 from email.utils import encode_rfc2231
 from io import BytesIO
+from io import IOBase
 
 from six import PY2
 from six import PY3
@@ -54,10 +55,10 @@ try:
 except ImportError:  # PY2
     from cgi import escape
 
-if sys.version_info >= (3, ):
-    from io import IOBase
+if PY2:
+    stream_handle = (file, IOBase)  # NOQA: F821
 else:
-    IOBase = file  # NOQA
+    stream_handle = IOBase
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -85,7 +86,7 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
-bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
+bogus_str_search = re.compile(b" 0x[a-fA-F0-9]+>$").search
 charset_re_str = (r'(?:application|text)/[-+0-9a-z]+\s*;\s*'
                   r'charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)')
 charset_re_match = re.compile(charset_re_str, re.IGNORECASE).match
@@ -1104,7 +1105,7 @@ class WSGIResponse(HTTPBaseResponse):
         if self._locked_body:
             return
 
-        if isinstance(body, IOBase):
+        if isinstance(body, stream_handle):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)
