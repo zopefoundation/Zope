@@ -17,6 +17,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix rendering of not found resources.
   (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
   
+-  Revised debug info GUI
+  
 - Update to newest versions of dependencies.
 
 
