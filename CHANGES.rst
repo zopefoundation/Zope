@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.1 (unreleased)
 ------------------
 
+- Revised debug info GUI
+  (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
+
 - Convert ``bytes`` ``HTTPResponse`` header value to ``str``
   via ``ISO-8859-1`` (the default encoding of ``HTTP/1.1``).
   
