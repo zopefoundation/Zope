@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.4 (unreleased)
 ------------------
 
+- Revised debug info GUI
+  (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
+
 - Fix rendering of not found resources.
   (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
 

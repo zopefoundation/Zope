@@ -10,22 +10,24 @@
     Configuration information for the running Zope process.
   </p>
 
-  <table class="table">
+  <div class="table-responsive">
+  <table class="table table-sm table-striped">
     <dtml-in manage_getConfiguration mapping sort="name">
       <tr>
         <th class="text-muted">&dtml-name;</th>
-        <td class="code syspath">&dtml-value;</td>
+        <td class="code text-nowrap">&dtml-value;</td>
       </tr>
     </dtml-in>
     <tr>
       <th class="text-muted">Python path (sys.path)</th>
-      <td class="code syspath">
+      <td class="code text-nowrap">
         <dtml-in manage_getSysPath>
           <dtml-var sequence-item><br/>
         </dtml-in>
       </td>
     </tr>
   </table>
+  </div>
 
 </main>
 
