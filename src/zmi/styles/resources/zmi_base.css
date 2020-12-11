@@ -512,7 +512,7 @@ textarea.zmi-code {
 #editor_container {
 	height:30rem;
 }
-.zmi.zmi-SQLAlchemyDA- #editor_container {
+.ace-brief #editor_container {
 	height:15rem;
 }
 #editor_container:after {
