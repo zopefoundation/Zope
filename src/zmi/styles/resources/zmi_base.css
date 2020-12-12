@@ -20,6 +20,7 @@ body.zmi {
 	padding-left: 1rem;
 	margin-right: auto;
 	margin-left: auto;
+	min-height: calc(100vh - 17rem);
 }
 .alert {
 	margin: 0 1rem 1rem;
@@ -511,6 +512,9 @@ textarea.zmi-code {
 #editor_container {
 	height:30rem;
 }
+.zmi-ace-brief #editor_container {
+	height:15rem;
+}
 #editor_container:after {
 	content:"Please press F10 for full screen view";
 	display:block;
@@ -925,7 +929,11 @@ table.zmi-patch td {
 table.zmi-patch  {
 	background-color:transparent !important;
 }
-
+legend {
+	font-size:1rem;
+	font-weight:bold;
+	color:#6c757d !important;
+}
 
 /* EXAMPLE: CUSTOMIZE HEADER */
 header.navbar,
