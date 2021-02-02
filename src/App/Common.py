@@ -40,6 +40,8 @@ def iso8601_date(ts=None):
     # '2000-11-10T16:21:09-08:00
     if ts is None:
         ts = time.time()
+    else:
+        ts = int(ts)
     return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(ts))
 
 
@@ -48,6 +50,8 @@ def rfc850_date(ts=None):
     # 'Friday, 10-Nov-00 16:21:09 GMT'
     if ts is None:
         ts = time.time()
+    else:
+        ts = int(ts)
     year, month, day, hh, mm, ss, wd, y, z = time.gmtime(ts)
     return "%s, %02d-%3s-%2s %02d:%02d:%02d GMT" % (
         weekday_full[wd],
@@ -62,6 +66,8 @@ def rfc1123_date(ts=None):
     # 'Fri, 10 Nov 2000 16:21:09 GMT'
     if ts is None:
         ts = time.time()
+    else:
+        ts = int(ts)
     year, month, day, hh, mm, ss, wd, y, z = time.gmtime(ts)
     return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
         weekday_abbr[wd],
