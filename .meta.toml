@@ -112,3 +112,11 @@ ignore-bad-ideas = [
     "src/Products/Five/tests/locales/de/LC_MESSAGES/fivetest.mo",
     "src/Products/Five/tests/locales/en/LC_MESSAGES/fivetest.mo",
     ]
+
+[appveyor]
+install-steps = [
+    "- pip install -U tox",
+    ]
+test-steps = [
+    "- tox",
+    ]
