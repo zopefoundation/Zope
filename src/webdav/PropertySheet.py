@@ -115,8 +115,9 @@ class DAVPropertySheetMixin:
                 if not hasattr(self, 'dav__%s' % name):
                     value = xml_escape(value)
             if xml_id:
-                prop = '<n:{}{} xmlns:n="{}">{}</n:{}>\n'.format(
-                    name, attrs, xml_id, value, name)
+                prop = (
+                    f'<n:{name}{attrs} xmlns:n="{xml_id}">{value}</n:{name}>\n'
+                )
             else:
                 prop = f'<{name}{attrs} xmlns="">{value}</{name}>\n'
             code = '200 OK'

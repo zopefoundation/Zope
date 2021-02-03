@@ -146,7 +146,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         query_string = []
         add = query_string.append
         for key, val in inputs:
-            add("{}={}".format(quote_plus(key), quote_plus(val)))
+            add(f"{quote_plus(key)}={quote_plus(val)}")
         query_string = '&'.join(query_string)
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
