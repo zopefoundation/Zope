@@ -27,6 +27,8 @@ install:
   - pip install -U tox
 
 build: false
+matrix:
+  fast_finish: true
 
 test_script:
   - tox
