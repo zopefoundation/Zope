@@ -20,9 +20,8 @@ known_zope = "AccessControl, Acquisition, App, DateTime, DocumentTemplate, Exten
 
 [flake8]
 additional-config = [
-    "# P102 docstring does contain unindexed parameters",
     "# W503 line break before binary operator",
-    "ignore = P102, W503",
+    "ignore = W503",
     ]
 
 [tox]
