@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.4 (unreleased)
 ------------------
 
+- Fixed Unauthorized exception handling when a view has been registered for it
+  (`#943 <https://github.com/zopefoundation/Zope/issues/943>`_)
+
 - Revised debug info GUI
   (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
 

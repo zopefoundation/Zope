@@ -208,7 +208,11 @@ def transaction_pubevents(request, response, tm=transaction.manager):
                     unauth = True
                     exc.setRealm(response.realm)
                     response._unauthorized()
-                    response.setStatus(exc.getStatus())
+                    # Only force a 401 Unauthorized status on the response if
+                    # there's no view available for the exception, which may
+                    # set a different status.
+                    if not exc_view_created:
+                        response.setStatus(exc.getStatus())
 
             # Notify subscribers that this request is failing.
             notify(pubevents.PubBeforeAbort(request, exc_info, retry))
