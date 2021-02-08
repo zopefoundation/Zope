@@ -26,7 +26,7 @@ install:
   - python -m pip install -U pip
   - pip install -U setuptools wheel
   - pip install -U tox
-  - "SET TOXENV=%PYTHONVERSION:-x64=%"
+  - "SET TOXENV=py%PYTHONVERSION:-x64=%"
 
 build: false
 matrix:

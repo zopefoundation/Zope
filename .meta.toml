@@ -115,7 +115,7 @@ ignore-bad-ideas = [
 [appveyor]
 install-steps = [
     "- pip install -U tox",
-    "- \"SET TOXENV=%PYTHONVERSION:-x64=%\"",
+    "- \"SET TOXENV=py%PYTHONVERSION:-x64=%\"",
     ]
 test-steps = [
     "- tox",
