@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "dff30b80f91fd1b4e68f2a73f7de721d9559de17"
+commit-id = "6e23b147f1aa88406648f4a20963f19329cfe8db"
 
 [python]
 with-appveyor = true
@@ -115,6 +115,7 @@ ignore-bad-ideas = [
 [appveyor]
 install-steps = [
     "- pip install -U tox",
+    "- \"SET TOXENV=%PYTHONVERSION:-x64=%\"",
     ]
 test-steps = [
     "- tox",
