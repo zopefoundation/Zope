@@ -23,7 +23,7 @@ install:
       }
   - ps: if (-not (Test-Path $env:PYTHON)) { throw "No $env:PYTHON" }
   - echo "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64 > "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"
-  - pip install -U tox
+  - pip install tox wheel
   - "SET TOXENV=py%PYTHONVERSION:-x64=%"
 
 build: false
