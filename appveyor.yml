@@ -8,7 +8,6 @@ environment:
     - TOXENV: py36
 
 install:
-  - pip install "setuptools < 52"
   - pip install tox
 
 build: off
