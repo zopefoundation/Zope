@@ -36,7 +36,7 @@ class DavLockManager(Item, Implicit):
     manage_davlocks._setName('manage_davlocks')
     manage_options = (
         {'label': 'Control Panel', 'action': '../manage_main'},
-        {'label': 'Databases', 'action': 'manage_main'},
+        {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': 'manage_main'},
         {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},

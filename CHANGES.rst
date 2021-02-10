@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.2 (unreleased)
 ------------------
 
+- Fix control panel tab links on all control panel pages
+
 - Update to newest versions of dependencies.
 
 
