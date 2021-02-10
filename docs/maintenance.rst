@@ -65,7 +65,7 @@ Steps for creating a new Zope release
 - Update version information::
 
   $ bin/postrelease
-  $ vi versions-prod.cfg (remove Zope pin)
+  $ vi versions-prod.cfg (set version pin of Zope back to ``< 5``)
   $ bin/buildout
 
 - Commit and push the changes.

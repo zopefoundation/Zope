@@ -22,6 +22,7 @@ from email.header import Header
 from email.message import _parseparam
 from email.utils import encode_rfc2231
 from io import BytesIO
+from io import IOBase
 
 from six import PY2
 from six import PY3
@@ -54,10 +55,10 @@ try:
 except ImportError:  # PY2
     from cgi import escape
 
-if sys.version_info >= (3, ):
-    from io import IOBase
+if PY2:
+    stream_handle = (file, IOBase)  # NOQA: F821
 else:
-    IOBase = file  # NOQA
+    stream_handle = IOBase
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -85,7 +86,7 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
-bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
+bogus_str_search = re.compile(b" 0x[a-fA-F0-9]+>$").search
 charset_re_str = (r'(?:application|text)/[-+0-9a-z]+\s*;\s*'
                   r'charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)')
 charset_re_match = re.compile(charset_re_str, re.IGNORECASE).match
@@ -113,6 +114,10 @@ _CRLF = re.compile(r'[\r\n]')
 
 
 def _scrubHeader(name, value):
+    if PY3 and isinstance(value, bytes):
+        # handle ``bytes`` values correctly
+        # we assume that the provider knows that HTTP 1.1 stipulates ISO-8859-1
+        value = value.decode('ISO-8859-1')
     if not isinstance(value, string_types):
         value = str(value)
     return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(value))
@@ -723,7 +728,12 @@ class HTTPBaseResponse(BaseResponse):
             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
         ]
 
-        encode = header_encoding_registry.encode
+        def encode(key, value, henc=header_encoding_registry.encode):
+            value = henc(key, value)
+            if PY2 and not isinstance(value, str):
+                # ``value`` is ``unicode``
+                value = value.encode('ISO-8859-1')
+            return value
         for key, value in self.headers.items():
             if key.lower() == key:
                 # only change non-literal header names
@@ -800,7 +810,7 @@ class HTTPResponse(HTTPBaseResponse):
     def _error_html(self, title, body):
         return ("""<!DOCTYPE html><html>
   <head><title>Site Error</title><meta charset="utf-8" /></head>
-  <body bgcolor="#FFFFFF">
+  <body bgcolor="white">
   <h2>Site Error</h2>
   <p>An error was encountered while publishing this resource.
   </p>
@@ -1095,7 +1105,7 @@ class WSGIResponse(HTTPBaseResponse):
         if self._locked_body:
             return
 
-        if isinstance(body, IOBase):
+        if isinstance(body, stream_handle):
             body.seek(0, 2)
             length = body.tell()
             body.seek(0)

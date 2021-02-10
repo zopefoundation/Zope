@@ -7,11 +7,52 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.5.2 (unreleased)
+4.5.4 (unreleased)
 ------------------
 
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
   ``getId`` calls.
+
+- Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
+
+- Revised debug info GUI
+  (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
+
+- Fix rendering of not found resources.
+  (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
+
+
+4.5.3 (2020-11-16)
+------------------
+
+- Update dependencies to the latest releases that still support Python 2.
+
+Fixes
++++++
+
+- Convert ``bytes`` (Python 3) and ``unicode`` (Python 2) values for
+  HTTP response headers into native strings using the HTTP/1.1
+  stipulated ``ISO-8859-1`` encoding. This makes ``waitress`` happy
+  which insists on native strings for those values.
+  (Fix for `#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
+
+
+4.5.2 (2020-11-12)
+------------------
+
+Backward incompatible changes
++++++++++++++++++++++++++++++
+
+- Exclude characters special for ``chameleon``'s interpolation syntax
+  (i.e. ``${}``) from use in TALES path expressions to reduce the failure risk
+  for the ``chameleon`` interpolation heuristics
+  (`#925 <https://github.com/zopefoundation/Zope/issues/925>`_)
+
+Fixes
++++++
+
+- Fix ``length`` for page template repeat variables
+  (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
 
 - Restore the ZMI `Debug Information` control panel page
   (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
@@ -21,7 +62,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
   to avoid bugs by use of deprecated direct ``id`` access
-  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+  (as e.g. `#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+
+- Fix ZMI visibility of pre elements in error log
 
 - Update dependencies to the latest releases that still support Python 2.
 

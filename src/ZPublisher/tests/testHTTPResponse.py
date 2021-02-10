@@ -4,6 +4,8 @@ import traceback
 import unittest
 from io import BytesIO
 
+from six import PY2
+
 from zExceptions import BadRequest
 from zExceptions import Forbidden
 from zExceptions import InternalError
@@ -652,7 +654,7 @@ class HTTPResponseTests(unittest.TestCase):
         # (r19315): "merged content type on error fixes from 2.3
         # If the str of the object returs a Python "pointer" looking mess,
         # don't let it get treated as HTML.
-        BOGUS = b'<Bogus a39d53d>'
+        BOGUS = b'<Bogus 0xa39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
 
@@ -1384,20 +1386,24 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_header_encoding(self):
         r = self._makeOne()
-        r.setHeader("unencoded1", u"€")
+        ae = u"ä"
+        ae_enc = ae.encode("ISO-8859-1") if PY2 else ae
+        r.setHeader("unencoded1", ae)
         r.setHeader("content-disposition", u"a; p=€")
-        r.addHeader("unencoded2", u"€")
+        r.addHeader("unencoded2", ae)
         r.addHeader("content-disposition", u"a2; p2=€")
+        r.addHeader("bytes", b"abc")
         hdrs = r.listHeaders()[1:]  # drop `X-Powered...`
         shdrs, ahdrs = dict(hdrs[:2]), dict(hdrs[2:])
         # for some reasons, `set` headers change their name
         #   while `add` headers do not
-        self.assertEqual(shdrs["Unencoded1"], u"€")
-        self.assertEqual(ahdrs["unencoded2"], u"€")
+        self.assertEqual(shdrs["Unencoded1"], ae_enc)
+        self.assertEqual(ahdrs["unencoded2"], ae_enc)
         self.assertEqual(shdrs["Content-Disposition"],
                          u"a; p=?; p*=utf-8''%E2%82%AC")
         self.assertEqual(ahdrs["content-disposition"],
                          u"a2; p2=?; p2*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["bytes"], "abc")
 
 
 class TestHeaderEncodingRegistry(unittest.TestCase):

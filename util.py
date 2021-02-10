@@ -32,7 +32,7 @@ def generate(in_, requirements_file, constraints_file):
         '-e git+https://github.com/zopefoundation/Zope.git@4.x#egg=Zope\n')
     for name, pin in versions:
         if name == 'Zope':
-            if pin:
+            if pin and pin != '< 5':
                 zope_requirement = 'Zope==%s\n' % pin
             continue
 

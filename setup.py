@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '4.5.2.dev0'
+version = '4.5.4.dev0'
 
 
 setup(
@@ -75,7 +75,7 @@ setup(
         'BTrees',
         'Chameleon >= 3.7.0',
         'DateTime',
-        'DocumentTemplate >= 3.0b9',
+        'DocumentTemplate >=3.0, <4.0',
         'ExtensionClass',
         'MultiMapping',
         'PasteDeploy',

@@ -1,7 +1,7 @@
 /* FONTAWESOME 5+ */
-@import "fontawesome-free-5.8.1/css/fontawesome.css";
+@import "fontawesome-free-5.15.2/css/fontawesome.css";
 
-/* ZOPE 4 Base Styles */
+/* ZOPE 4+ Base Styles */
 
 @media (max-width: 576px) {
 	.hidden-xs {
@@ -20,6 +20,7 @@ body.zmi {
 	padding-left: 1rem;
 	margin-right: auto;
 	margin-left: auto;
+	min-height: calc(100vh - 17rem);
 }
 .alert {
 	margin: 0 1rem 1rem;
@@ -511,6 +512,9 @@ textarea.zmi-code {
 #editor_container {
 	height:30rem;
 }
+.zmi-ace-brief #editor_container {
+	height:15rem;
+}
 #editor_container:after {
 	content:"Please press F10 for full screen view";
 	display:block;
@@ -854,6 +858,13 @@ header.navbar ul.navbar-nav li.zmi-addItemSelect select.form-control-sm:not([dis
 	margin: 1rem 0;
 	color: white;
 }
+.zmi-Site-Error-Log div.zmi-traceback.code pre {
+	margin:inherit;
+	color:inherit;
+	padding:inherit;
+	font-size:inherit;
+	overflow:inherit;
+}
 .zmi-Site-Error-Log div.zmi-request-object table {
 	background: #212529;
 	width: 100%;
@@ -918,7 +929,11 @@ table.zmi-patch td {
 table.zmi-patch  {
 	background-color:transparent !important;
 }
-
+legend {
+	font-size:1rem;
+	font-weight:bold;
+	color:#6c757d !important;
+}
 
 /* EXAMPLE: CUSTOMIZE HEADER */
 header.navbar,

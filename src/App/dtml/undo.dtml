@@ -38,7 +38,7 @@
 						&nbsp;
 					</dtml-if>
 				</div>
-			</nav>	
+			</nav>
 
 			<table class="table table-sm table-striped">
 				<tbody>
@@ -51,7 +51,7 @@
 								<dtml-var description html_quote newline_to_br> 
 								by <strong><dtml-if user_name>&dtml-user_name;<dtml-else><em>Zope</em></dtml-if></strong>
 							</td>
-							<td style="white-space:nowrap">
+							<td class="text-nowrap">
 								<dtml-var time fmt="%Y-%m-%d %H:%M:%S">
 							</td>
 						</tr>
