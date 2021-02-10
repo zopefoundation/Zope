@@ -36,7 +36,7 @@
 		<div class="form-group row">
 			<label for="file" class="form-label col-sm-3 col-md-2">File</label>
 			<div class="col-sm-9 col-md-10">
-				<input type="file" id="file" class="form-control form-control-file" name="file:string" value="" />
+				<input type="file" id="file" class="btn btn-primary form-control-file" name="file:string" value="" />
 			</div>
 		</div>
 

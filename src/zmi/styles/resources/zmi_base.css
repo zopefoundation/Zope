@@ -1,7 +1,7 @@
 /* FONTAWESOME 5+ */
-@import "fontawesome-free-5.8.1/css/fontawesome.css";
+@import "fontawesome-free-5.15.2/css/fontawesome.css";
 
-/* ZOPE 4 Base Styles */
+/* ZOPE 4+ Base Styles */
 
 @media (max-width: 576px) {
 	.hidden-xs {
