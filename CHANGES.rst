@@ -8,10 +8,24 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.1.1 (unreleased)
+5.1.2 (unreleased)
 ------------------
 
-- Revised debug info GUI
+- Fix control panel tab links on all control panel pages
+
+- Update to newest versions of dependencies.
+
+
+5.1.1 (2021-02-10)
+------------------
+
+- Replace (in ``OFS``) the deprecated direct ``id`` access by
+  ``getId`` calls.
+  (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_)
+
+- Update ZMI dependencies for Font Awesome, jQuery and bootstrap.
+
+- Revise debug info GUI
   (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
 
 - Convert ``bytes`` ``HTTPResponse`` header value to ``str``
