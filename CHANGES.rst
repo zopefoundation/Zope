@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.1 (unreleased)
 ------------------
 
+- Replace (in ``OFS``) the deprecated direct ``id`` access by
+  ``getId`` calls.
+
 - Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
 
 - Revised debug info GUI
