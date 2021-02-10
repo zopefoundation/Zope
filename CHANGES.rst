@@ -20,9 +20,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
   ``getId`` calls.
   (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_)
 
-- Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
+- Update ZMI dependencies for Font Awesome, jQuery and bootstrap.
 
-- Revised debug info GUI
+- Revise debug info GUI
   (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
 
 - Fix rendering of not found resources.
