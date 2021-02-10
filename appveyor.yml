@@ -3,14 +3,10 @@
 environment:
 
   matrix:
-    - python: 36
-    - python: 36-x64
-    - python: 37
-    - python: 37-x64
-    - python: 38
-    - python: 38-x64
-    - python: 39
-    - python: 39-x64
+    - TOXENV: py38
+    - TOXENV: py37
+    - TOXENV: py36
+    - TOXENV: py39
 
 install:
   - "SET PYTHONVERSION=%PYTHON%"
@@ -23,8 +19,9 @@ install:
       }
   - ps: if (-not (Test-Path $env:PYTHON)) { throw "No $env:PYTHON" }
   - echo "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64 > "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"
-  - pip install tox wheel
-  - "SET TOXENV=py%PYTHONVERSION:-x64=%"
+  - python -m pip install -U pip
+  - pip install -U setuptools wheel
+  - pip install -U tox
 
 build: false
 matrix:
