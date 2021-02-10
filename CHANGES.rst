@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.5.4 (unreleased)
+4.5.4 (2021-02-10)
 ------------------
 
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
