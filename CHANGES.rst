@@ -13,6 +13,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
   ``getId`` calls.
+  (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_)
 
 - Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
 
