@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.1.1 (unreleased)
+5.1.1 (2021-02-10)
 ------------------
 
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
