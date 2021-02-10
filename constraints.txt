@@ -23,13 +23,14 @@ ZConfig==3.5.0
 ZEO==5.2.2
 ZODB==5.6.0
 Zope2==4.0
-cryptography==3.4.3
+cryptography==3.4.4
 five.localsitemanager==3.2.2
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
 jeepney==0.6.0
 mock==4.0.3
+multipart==0.2.4
 pbr==5.5.1
 persistent==4.6.4
 pytz==2021.1
@@ -74,7 +75,7 @@ zope.pagetemplate==4.5.0
 zope.processlifetime==2.3.0
 zope.proxy==4.3.5
 zope.ptresource==4.2.0
-zope.publisher==5.2.1
+zope.publisher==6.0.0
 zope.ramcache==2.3
 zope.schema==6.1.0
 zope.security==5.1.1
