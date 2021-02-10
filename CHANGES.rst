@@ -8,6 +8,12 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
+5.1.2 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 5.1.1 (2021-02-10)
 ------------------
 
