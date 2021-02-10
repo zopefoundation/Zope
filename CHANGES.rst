@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.5 (unreleased)
 ------------------
 
+- Fix control panel tab links on all control panel pages
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
