@@ -12,6 +12,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Replace (in ``OFS``) the deprecated direct ``id`` access by
   ``getId`` calls.
+  (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_)
 
 - Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
 
