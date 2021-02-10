@@ -580,6 +580,84 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertEqual(data[0][0], '.')
         self.assertEqual(data[1][0], '..')
 
+    def test_findChildren(self):
+        from OFS.Folder import Folder
+        from OFS.Image import File
+        from OFS.ObjectManager import findChildren
+        top = Folder("top")
+        f1 = File("f1", "", b"")
+        top._setObject(f1.getId(), f1)
+        fo = Folder("fo")
+        top._setObject(fo.getId(), fo)
+        f2 = File("f2", "", b"")
+        fo._setObject(f2.getId(), f2)
+        self.assertEqual(
+            [ci[0] for ci in findChildren(top)],
+            ["top/f1",
+             # surprisingly, `findChildren` ignores folderish children
+             # "top/fo",
+             "top/fo/f2"])
+
+    def test_export_import(self):
+        import tempfile
+        from os import mkdir
+        from os import rmdir
+        from os import unlink
+        from os.path import join
+        from os.path import split
+
+        from OFS.Folder import Folder
+        from OFS.Image import File
+        from ZODB.DemoStorage import DemoStorage
+        from ZODB.DB import DB
+        from transaction import commit
+        try:
+            tf = None  # temporary file required for export/import
+            # export/import needs the object manager in ZODB
+            s = DemoStorage()
+            db = DB(s)
+            c = db.open()
+            root = c.root()
+            top = Folder("top")
+            f = File("f", "", b"")
+            top._setObject(f.getId(), f)
+            root["top"] = top
+            tmp = Folder("tmp")
+            top._setObject(tmp.getId(), tmp)
+            commit()
+            exported = top.manage_exportObject("f", True)
+            tdir = tempfile.mkdtemp()
+            idir = join(tdir, "import")
+            mkdir(idir)
+            tf = tempfile.NamedTemporaryFile(
+                dir=idir, delete=False)
+            tf.write(exported)
+            tf.close()
+            unused, tname = split(tf.name)
+            tmp._getImportPaths = _CallResult((tdir,))
+            tmp.manage_importObject(tname, set_owner=False,
+                                    suppress_events=True)
+            imp_f = tmp["f"]  # exception if import unsuccessful
+            self.assertIsInstance(imp_f, File)
+            commit()
+        finally:
+            if tf is not None:  # pragma: no cover
+                unlink(tf.name)
+                rmdir(idir)
+                rmdir(tdir)
+            c.close()
+            db.close()
+            s.close()
+
+
+class _CallResult(object):
+    """Auxiliary class to provide defined call results."""
+    def __init__(self, result):
+        self.result = result
+
+    def __call__(self):
+        return self.result
+
 
 _marker = object()
 

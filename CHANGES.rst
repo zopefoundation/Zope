@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.4 (unreleased)
 ------------------
 
+- Replace (in ``OFS``) the deprecated direct ``id`` access by
+  ``getId`` calls.
+
 - Updated ZMI dependencies for Font Awesome, jQuery and bootstrap
 
 - Revised debug info GUI
