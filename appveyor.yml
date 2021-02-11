@@ -16,7 +16,8 @@ install:
 build: false
 matrix:
   fast_finish: true
-  allow_failures: TOXENV: py38
+  allow_failures:
+    - TOXENV: py38
 
 test_script:
   - tox
