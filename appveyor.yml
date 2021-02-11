@@ -6,6 +6,7 @@ environment:
     - TOXENV: py38
     - TOXENV: py37
     - TOXENV: py36
+    - TOXENV: py39
 
 install:
   - python -m pip install -U pip
@@ -15,6 +16,7 @@ install:
 build: false
 matrix:
   fast_finish: true
+  allow_failures: TOXENV: py38
 
 test_script:
   - tox
