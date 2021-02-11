@@ -6,7 +6,6 @@ environment:
     - TOXENV: py38
     - TOXENV: py37
     - TOXENV: py36
-    - TOXENV: py39
 
 install:
   - python -m pip install -U pip
