@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.5 (unreleased)
 ------------------
 
+- The ``compute_size`` method properly returns None if the content does not
+  have a ``get_size`` method but the parent has.
+  (`#948 <https://github.com/zopefoundation/Zope/issues/948>`_)
+
 - Fix control panel tab links on all control panel pages
 
 - Update dependencies to the latest releases that still support Python 2.
