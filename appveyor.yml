@@ -17,7 +17,7 @@ build: false
 matrix:
   fast_finish: true
   allow_failures:
-    - TOXENV: py38
+    - TOXENV: py39
 
 test_script:
   - tox
