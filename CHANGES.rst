@@ -11,6 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.2 (unreleased)
 ------------------
 
+- The ``compute_size`` method properly returns None if the content does not
+  have a ``get_size`` method but the parent has.
+  (`#948 <https://github.com/zopefoundation/Zope/issues/948>`_)
+
 - Fix control panel tab links on all control panel pages
 
 - Update to newest versions of dependencies.
