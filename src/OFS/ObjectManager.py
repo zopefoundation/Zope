@@ -884,7 +884,7 @@ class ObjectManager(
 
     @security.protected(access_contents_information)
     def compute_size(self, ob):
-        if hasattr(ob, 'get_size'):
+        if hasattr(aq_base(ob), 'get_size'):
             ob_size = ob.get_size()
             if ob_size < 1024:
                 return '1 KiB'
