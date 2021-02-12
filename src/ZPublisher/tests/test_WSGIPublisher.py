@@ -917,7 +917,7 @@ class WSGIPublisherTests(FunctionalTestCase):
         browser = Testing.testbrowser.Browser()
         browser.login('manager', 'manager_pass')
 
-        browser.open('http://localhost/{}'.format(quote('täst')))
+        browser.open(f'http://localhost/{quote("täst")}')
         self.assertEqual(browser.contents.decode('utf-8'), 'çöńtêñt')
 
 
@@ -988,9 +988,9 @@ class CustomExceptionView:
         self.request = request
 
     def __call__(self):
-        return ('Exception View: {}\nContext: {}'.format(
-                self.context.__class__.__name__,
-                self.__parent__.__class__.__name__))
+        return (
+            f'Exception View: {self.context.__class__.__name__}\n'
+            f'Context: {self.__parent__.__class__.__name__}')
 
 
 def registerExceptionView(for_, factory=CustomExceptionView,

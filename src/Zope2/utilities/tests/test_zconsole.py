@@ -10,7 +10,7 @@ from App.config import setConfiguration
 
 
 zope_conf_template = """
-%define INSTANCE {}
+%define INSTANCE {0}
 
 instancehome $INSTANCE
 
@@ -92,6 +92,6 @@ class ZConsoleTestCase(unittest.TestCase):
         # so we have the raw string in there.
         expected = (
             "42\n"
-            r"['run', {!r}, {!r}, {!r}, 'baz']"
-            "\nPropertyManager\n".format(self.zopeconf, script, bar))
+            rf"['run', {self.zopeconf!r}, {script!r}, {bar!r}, 'baz']"
+            "\nPropertyManager\n")
         self.assertEqual(expected, got)

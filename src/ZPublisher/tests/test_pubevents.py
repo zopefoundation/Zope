@@ -181,8 +181,9 @@ class ExceptionView:
     def __call__(self):
         global_request = getRequest()
         self.request.response.events.append('exc_view')
-        return ('Exception: {}\nRequest: {!r}'.format(
-            self.context.__class__, global_request))
+        return (
+            f'Exception: {self.context.__class__}\n'
+            f'Request: {global_request!r}')
 
 
 class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):

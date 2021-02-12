@@ -61,9 +61,7 @@ class PageTemplate(ExtensionClass.Base,
             __traceback_supplement__ = (
                 PageTemplateTracebackSupplement, self, {})
             raise PTRuntimeError(
-                'Page Template {} has errors: {}'.format(
-                    self.id, self._v_errors
-                ))
+                f'Page Template {self.id} has errors: {self._v_errors}')
         return self._v_macros
 
     # these methods are reimplemented or duplicated here because of
