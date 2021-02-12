@@ -1497,7 +1497,7 @@ class HTTPRequest(BaseRequest):
         return result + "</table>"
 
     def __repr__(self):
-        return "<{}, URL={}>".format(self.__class__.__name__, self.get('URL'))
+        return f"<{self.__class__.__name__}, URL={self.get('URL')}>"
 
     def text(self):
         result = "FORM\n\n"
@@ -1781,8 +1781,8 @@ class record:
     def __repr__(self):
         # return repr( self.__dict__ )
         return '{%s}' % ', '.join(
-            "'{}': {!r}".format(*item) for item in
-            sorted(self.__dict__.items()))
+            f"'{key}': {value!r}"
+            for key, value in sorted(self.__dict__.items()))
 
     def __eq__(self, other):
         if not isinstance(other, record):

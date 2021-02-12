@@ -139,10 +139,9 @@ class DAVProperties(Virtual, PropertySheet, View):
                 else:
                     fake = 1
 
-                out = '{}\n{}'.format(
-                    out, lock.asLockDiscoveryProperty('n', fake=fake))
+                out = f'{out}\n{lock.asLockDiscoveryProperty("n", fake=fake)}'
 
-            out = '%s\n' % out
+            out = f'{out}\n'
 
         return out
 

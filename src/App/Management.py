@@ -91,7 +91,7 @@ class Tabs(Base):
     def tabs_path_default(self, REQUEST):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']
-        linkpat = '{}/manage_workspace'
+        linkpat = '{0}/manage_workspace'
         yield {'url': linkpat.format(html.escape(script, True)),
                'title': 'Root',
                'last': not bool(steps)}

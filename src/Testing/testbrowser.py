@@ -72,4 +72,4 @@ class Browser(browser.Browser):
         if not isinstance(password, bytes):
             password = password.encode('UTF-8')
         hdr = codecs.encode(b'%s:%s' % (username, password), 'base64')
-        self.addHeader('Authorization', 'basic {}'.format(hdr.decode('UTF-8')))
+        self.addHeader('Authorization', f'basic {hdr.decode("UTF-8")}')

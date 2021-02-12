@@ -208,7 +208,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        qlist[i] = '{}{}={}'.format(quote(k), m, quote(str(v)))
+        qlist[i] = f'{quote(k)}{m}={quote(str(v))}'
 
     return '&'.join(qlist)
 

@@ -81,7 +81,7 @@ def testBeforeTraverse(self):
     ...
     TypeError: BrokenHook
 
-    Unregister the borken hook:
+    Unregister the broken hook:
 
     >>> _ = BeforeTraverse.unregisterBeforeTraverse(container, 'broken_hook')
 
@@ -117,7 +117,7 @@ def testBeforeTraverse(self):
     ...
     TypeError: BrokenHook
 
-    Unregister the borken hook:
+    Unregister the broken hook:
 
     >>> _ = BeforeTraverse.unregisterBeforeTraverse(
     ...         container, 'broken_callable')

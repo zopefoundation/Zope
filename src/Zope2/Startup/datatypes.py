@@ -72,8 +72,8 @@ def importable_name(name):
         IO = io.StringIO()
         traceback.print_exc(file=IO)
         raise ValueError(
-            'The object named by "{}" could not be imported\n{}'.format(
-                name, IO.getvalue()))
+            f'The object named by {name!r} could not be imported\n'
+            f'{IO.getvalue()}')
 
 
 class ZDaemonEnvironDict(UserDict):
