@@ -113,10 +113,24 @@ ignore-bad-ideas = [
     ]
 
 [appveyor]
-install-steps = [
-    "- pip install -U tox",
-    "- \"SET TOXENV=py%PYTHONVERSION:-x64=%\"",
-    ]
-test-steps = [
-    "- tox",
+replacement = [
+    "environment:",
+    "  matrix:",
+    "    - TOXENV: py38",
+    "    - TOXENV: py37",
+    "    - TOXENV: py36",
+    "    - TOXENV: py39",
+    "install:",
+    "  - python -m pip install -U pip",
+    "  - pip install -U setuptools wheel",
+    "  - pip install -U tox",
+    "build: false",
+    "matrix:",
+    "  fast_finish: true",
+    "  allow_failures:",
+    "    - TOXENV: py39",
+    "test_script:",
+    "  - tox",
+    "on_success:",
+    "  - echo Build succesful!",
     ]
