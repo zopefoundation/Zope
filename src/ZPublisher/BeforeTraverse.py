@@ -110,8 +110,8 @@ class MultiHook:
             try:
                 cob(container, request)
             except TypeError:
-                LOG.error('{!r} call {!r} failed.'.format(
-                    self._hookname, cob), exc_info=True)
+                LOG.error(f'{self._hookname!r} call {cob!r} failed.',
+                          exc_info=True)
 
     def add(self, cob):
         self._list.append(cob)

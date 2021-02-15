@@ -1,0 +1,136 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+[meta]
+template = "zope-product"
+commit-id = "211d612c86d6754ebe13fad9b7081533bb603ed9"
+
+[python]
+with-appveyor = true
+with-pypy = false
+with-legacy-python = false
+with-docs = true
+with-sphinx-doctests = false
+
+[coverage]
+fail-under = 80
+
+[isort]
+known_third_party = "ipaddress, PasteDeploy, waitress, chameleon, paste, pkg_resources"
+known_zope = "AccessControl, Acquisition, App, DateTime, DocumentTemplate, ExtensionClass, MultiMapping, OFS, Persistence, persistent, Products, RestrictedPython, Shared, Testing, transaction, webdav, ZConfig, zExceptions, zmi, ZODB, zope, Zope2, ZPublisher, ZTUtils"
+
+[flake8]
+additional-config = [
+    "# W503 line break before binary operator",
+    "ignore = W503",
+    ]
+
+[tox]
+additional-envlist = [
+    "pre-commit",
+    ]
+testenv-commands-pre = [
+    "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install alltests",
+    ]
+testenv-commands = [
+    "{envdir}/bin/alltests {posargs:-vc}",
+    ]
+coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
+testenv-additional = [
+    "",
+    "[testenv:pre-commit]",
+    "basepython = python3",
+    "description = This env runs all linters configured in .pre-commit-config.yaml",
+    "skip_install = true",
+    "deps =",
+    "    pre-commit",
+    "commands_pre =",
+    "commands =",
+    "    pre-commit run --all-files --show-diff-on-failure",
+    "",
+    "[testenv:autopep8]",
+    "basepython = python3.6",
+    "skip_install = true",
+    "deps =",
+    "    -cconstraints.txt",
+    "    autopep8",
+    "    docformatter",
+    "commands =",
+    "    autopep8 --verbose --in-place --recursive --aggressive --aggressive {toxinidir}/src setup.py",
+    "    docformatter --in-place --recursive {toxinidir}/src setup.py",
+    ]
+
+[manifest]
+additional-rules = [
+    "include *.py",
+    "include *.yaml",
+    "include sources.cfg",
+    "include versions-prod.cfg",
+    "include versions.cfg",
+    "include zope-ecosystem.cfg",
+    "recursive-include docs *.css",
+    "recursive-include docs *.jpg",
+    "recursive-include docs *.png",
+    "recursive-include docs *.tgz",
+    "recursive-include src *.css",
+    "recursive-include src *.dtml",
+    "recursive-include src *.eot",
+    "recursive-include src *.gif",
+    "recursive-include src *.htm",
+    "recursive-include src *.html",
+    "recursive-include src *.ico",
+    "recursive-include src *.in",
+    "recursive-include src *.js",
+    "recursive-include src *.map",
+    "recursive-include src *.md",
+    "recursive-include src *.pdf",
+    "recursive-include src *.png",
+    "recursive-include src *.po",
+    "recursive-include src *.pot",
+    "recursive-include src *.svg",
+    "recursive-include src *.ttf",
+    "recursive-include src *.webmanifest",
+    "recursive-include src *.woff",
+    "recursive-include src *.woff2",
+    "recursive-include src *.xml",
+    "recursive-include src *.zpt",
+    ]
+
+[check-manifest]
+additional-ignores = [
+    "docs/_build/html/_images/*",
+    "docs/_build/html/_sources/migrations/*",
+    "docs/_build/html/_sources/migrations/zope4/*",
+    "docs/_build/html/_sources/zdgbook/*",
+    "docs/_build/html/_sources/zdgbook/includes/*",
+    "docs/_build/html/_sources/zopebook/*",
+    "docs/_build/html/_sources/zopebook/includes/*",
+    "docs/_build/html/_static/*",
+    "docs/_build/html/_static/css/*",
+    ]
+ignore-bad-ideas = [
+    "src/Products/Five/tests/locales/de/LC_MESSAGES/fivetest.mo",
+    "src/Products/Five/tests/locales/en/LC_MESSAGES/fivetest.mo",
+    ]
+
+[appveyor]
+replacement = [
+    "environment:",
+    "  matrix:",
+    "    - TOXENV: py38",
+    "    - TOXENV: py37",
+    "    - TOXENV: py36",
+    "    - TOXENV: py39",
+    "install:",
+    "  - python -m pip install -U pip",
+    "  - pip install -U setuptools wheel",
+    "  - pip install -U tox",
+    "build: false",
+    "matrix:",
+    "  fast_finish: true",
+    "  allow_failures:",
+    "    - TOXENV: py39",
+    "test_script:",
+    "  - tox",
+    "on_success:",
+    "  - echo Build succesful!",
+    ]

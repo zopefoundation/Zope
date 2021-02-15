@@ -62,7 +62,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
         {'label': 'Control Panel', 'action': '../manage_main'},
         {'label': 'Databases', 'action': 'manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
-        {'label': 'DAV Locks', 'action': '../DAVLocks/manage_main'},
+        {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
         {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
@@ -158,7 +158,7 @@ class DebugManager(Tabs, Traversable, Implicit):
         {'label': 'Control Panel', 'action': '../manage_main'},
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
-        {'label': 'DAV Locks', 'action': '../DAVLocks/manage_main'},
+        {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
         {'label': 'Debug Information', 'action': 'manage_main'},
     )
 

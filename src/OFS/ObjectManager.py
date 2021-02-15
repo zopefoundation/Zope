@@ -653,7 +653,8 @@ class ObjectManager(
         imported = self._importObjectFromFile(
             filepath, verify=bool(REQUEST), set_owner=set_owner,
             suppress_events=suppress_events)
-        id = imported.id
+        getId = getattr(aq_base(imported), "getId", None)  # aq wrapped
+        id = imported.getId() if getId is not None else imported.id
         if getattr(id, '__func__', None) is not None:
             id = id()
 
@@ -678,7 +679,8 @@ class ObjectManager(
         ob = connection.importFile(filepath)
         if verify:
             self._verifyObjectPaste(ob, validate_src=0)
-        id = ob.id
+        getId = getattr(ob, "getId", None)  # not acquisition wrapped
+        id = getId() if getId is not None else ob.id
         if getattr(id, '__func__', None) is not None:
             id = id()
         self._setObject(id, ob, set_owner=set_owner,
@@ -777,7 +779,7 @@ class ObjectManager(
 
     @security.protected(access_contents_information)
     def compute_size(self, ob):
-        if hasattr(ob, 'get_size'):
+        if hasattr(aq_base(ob), 'get_size'):
             ob_size = ob.get_size()
             if ob_size < 1024:
                 return '1 KiB'
@@ -862,9 +864,9 @@ def findChildren(obj, dirname=''):
     for name, child in obj.objectItems():
         if hasattr(aq_base(child), 'isPrincipiaFolderish') and \
            child.isPrincipiaFolderish:
-            lst.extend(findChildren(child, dirname + obj.id + '/'))
+            lst.extend(findChildren(child, dirname + obj.getId() + '/'))
         else:
-            lst.append((dirname + obj.id + "/" + name, child))
+            lst.append((dirname + obj.getId() + "/" + name, child))
 
     return lst
 

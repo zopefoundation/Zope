@@ -334,7 +334,7 @@ class HTTPBaseResponse(BaseResponse):
         else:
             cookie = cookies[name] = {}
         if 'value' in cookie:
-            cookie['value'] = '{}:{}'.format(cookie['value'], value)
+            cookie['value'] = f'{cookie["value"]}:{value}'
         else:
             cookie['value'] = value
 
@@ -675,10 +675,11 @@ class HTTPBaseResponse(BaseResponse):
             # quoted cookie attr values, so only the value part
             # of name=value pairs may be quoted.
 
+            v = quote(attrs['value'])
             if attrs.get('quoted', True):
-                cookie = '{}="{}"'.format(name, quote(attrs['value']))
+                cookie = f'{name}="{v}"'
             else:
-                cookie = '{}={}'.format(name, quote(attrs['value']))
+                cookie = f'{name}={v}'
             for name, v in attrs.items():
                 name = name.lower()
                 if name == 'expires':

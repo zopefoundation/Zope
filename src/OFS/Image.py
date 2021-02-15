@@ -316,10 +316,8 @@ class File(
                     )
                     RESPONSE.setHeader(
                         'Content-Type',
-                        'multipart/{}byteranges; boundary={}'.format(
-                            draftprefix,
-                            boundary,
-                        )
+                        f'multipart/{draftprefix}byteranges;'
+                        f' boundary={boundary}'
                     )
                     RESPONSE.setStatus(206)  # Partial content
 
@@ -975,11 +973,11 @@ class Image(File):
 
         if alt is None:
             alt = getattr(self, 'alt', '')
-        result = '{} alt="{}"'.format(result, html.escape(alt, True))
+        result = f'{result} alt="{html.escape(alt, True)}"'
 
         if title is None:
             title = getattr(self, 'title', '')
-        result = '{} title="{}"'.format(result, html.escape(title, True))
+        result = f'{result} title="{html.escape(title, True)}"'
 
         if height:
             result = f'{result} height="{height}"'
