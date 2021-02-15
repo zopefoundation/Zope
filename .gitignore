@@ -10,6 +10,7 @@
 .installed.cfg
 .mr.developer.cfg
 .tox/
+.vscode/
 __pycache__/
 bin/
 build/
