@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/zopefoundation/Zope.svg?branch=master
-        :target: https://travis-ci.org/zopefoundation/Zope
+.. image:: https://github.com/zopefoundation/Zope/actions/workflows/tests.yml/badge.svg
+        :target: https://github.com/zopefoundation/Zope/actions/workflows/tests.yml
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/Zope/badge.svg?branch=master
         :target: https://coveralls.io/github/zopefoundation/Zope?branch=master

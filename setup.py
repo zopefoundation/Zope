@@ -68,7 +68,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,<3.9',
     install_requires=[
         'AccessControl >= 4.2',
         'Acquisition',
@@ -132,6 +132,7 @@ setup(
             'Sphinx',
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
+            'tempstorage',
         ],
         'wsgi': [
             'Paste',
