@@ -30,7 +30,6 @@ from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from zope.datetime import rfc1123_date
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent
@@ -56,6 +55,7 @@ from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.container.contained import notifyContainerModified
+from zope.datetime import rfc1123_date
 from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent

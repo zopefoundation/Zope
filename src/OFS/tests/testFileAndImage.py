@@ -10,7 +10,6 @@ import Testing.ZopeTestCase
 import transaction
 import Zope2
 from Acquisition import aq_base
-from zope.datetime import rfc1123_date
 from OFS.Application import Application
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
@@ -18,6 +17,7 @@ from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
 from zope.component import adapter
+from zope.datetime import rfc1123_date
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from ZPublisher.HTTPRequest import HTTPRequest
