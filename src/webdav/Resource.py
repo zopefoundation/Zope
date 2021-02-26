@@ -30,7 +30,7 @@ from AccessControl.Permissions import webdav_unlock_items
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from App.Common import rfc1123_date
+from zope.datetime import rfc1123_date
 from ExtensionClass import Base
 from OFS.event import ObjectClonedEvent
 from OFS.event import ObjectWillBeMovedEvent

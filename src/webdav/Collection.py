@@ -21,7 +21,7 @@ from AccessControl.Permissions import view
 from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from App.Common import rfc1123_date
+from zope.datetime import rfc1123_date
 from OFS.Lockable import wl_isLocked
 from webdav.common import Locked
 from webdav.common import PreconditionFailed

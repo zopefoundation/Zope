@@ -26,7 +26,7 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.Common import rfc1123_date
+from zope.datetime import rfc1123_date
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from OFS.Cache import Cacheable

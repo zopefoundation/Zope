@@ -10,7 +10,7 @@ import Testing.ZopeTestCase
 import transaction
 import Zope2
 from Acquisition import aq_base
-from App.Common import rfc1123_date
+from zope.datetime import rfc1123_date
 from OFS.Application import Application
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
