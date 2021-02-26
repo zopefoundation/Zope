@@ -19,6 +19,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest versions of dependencies.
 
+- Depend on ``zope.datetime`` for the functions ``iso8601_date``,
+  ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
+  keeping backwards-compatibility imports in place.
+
 
 5.1.1 (2021-02-10)
 ------------------
@@ -34,10 +38,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Convert ``bytes`` ``HTTPResponse`` header value to ``str``
   via ``ISO-8859-1`` (the default encoding of ``HTTP/1.1``).
-  
+
 - Fix rendering of not found resources.
   (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
-  
+
 - Update to newest versions of dependencies.
 
 
