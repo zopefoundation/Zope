@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.5 (unreleased)
 ------------------
 
-- Enforce Zope permissions for recursive XML-RPC data dumps
+- Enforce Zope permissions during recursive XML-RPC data dumps
   (`#954 <https://github.com/zopefoundation/Zope/issues/954>`_)
 
 - The ``compute_size`` method properly returns None if the content does not
