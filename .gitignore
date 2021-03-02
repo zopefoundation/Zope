@@ -18,5 +18,6 @@ include/
 lib/
 log/
 parts/
+pyvenv.cfg
 var/
 doc/_build/
