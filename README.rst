@@ -12,12 +12,12 @@
         :target: https://pypi.org/project/Zope/
         :alt: Current version on PyPI
 
-.. image:: https://img.shields.io/pypi/pyversions/Zope.svg
+.. image:: https://img.shields.io/pypi/pyversions/Zope/4.5.5
         :target: https://pypi.org/project/Zope/
         :alt: Supported Python versions
 
-.. image:: https://requires.io/github/zopefoundation/Zope/requirements.svg?branch=master
-        :target: https://requires.io/github/zopefoundation/Zope/requirements/?branch=master
+.. image:: https://requires.io/github/zopefoundation/Zope/requirements.svg?branch=4.x
+        :target: https://requires.io/github/zopefoundation/Zope/requirements/?branch=4.x
         :alt: Requirements Status
 
 Zope is an open-source web application server.
