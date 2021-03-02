@@ -123,6 +123,26 @@ class XMLRPCResponseTests(unittest.TestCase):
         data = data[0]['faux']
         self.assertEqual(data, {'public': 'def'})
 
+    def test_instance_security(self):
+        # Make sure instances' Zope permission settings are respected
+        from AccessControl.Permissions import view
+        from OFS.Folder import Folder
+        from OFS.Image import manage_addFile
+
+        folder = Folder('folder')
+        manage_addFile(folder, 'file1')
+        folder.file1.manage_permission(view, ('Manager',), 0)
+        manage_addFile(folder, 'file2')
+        folder.file2.manage_permission(view, ('Manager', 'Anonymous'), 0)
+
+        faux = FauxResponse()
+        response = self._makeOne(faux)
+        response.setBody(folder)
+        data, method = xmlrpclib.loads(faux._body)
+
+        self.assertFalse('file1' in data[0].keys())
+        self.assertTrue('file2' in data[0].keys())
+
     def test_zopedatetimeinstance(self):
         # DateTime instance at top-level
         body = DateTime('2006-05-24 07:00:00 GMT+0')

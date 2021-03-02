@@ -18,7 +18,6 @@ recursive-include src *.rst
 recursive-include src *.txt
 recursive-include src *.zcml
 include *.py
-include *.yaml
 include sources.cfg
 include versions-prod.cfg
 include versions.cfg
