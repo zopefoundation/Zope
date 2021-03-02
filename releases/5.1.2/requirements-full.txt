@@ -1,4 +1,4 @@
--e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
+Zope==5.1.2
 AccessControl==5.0
 Acquisition==4.7
 AuthEncoding==4.2
@@ -18,13 +18,13 @@ Record==3.5
 RestrictedPython==5.1
 SecretStorage==3.3.1
 WSGIProxy2==0.4.6
-WebOb==1.8.7
+WebOb==1.8.6
 WebTest==2.0.35
 ZConfig==3.5.0
 ZEO==5.2.2
 ZODB==5.6.0
 Zope2==4.0
-cryptography==3.4.6
+cryptography==3.4.4
 five.localsitemanager==3.2.2
 funcsigs==1.0.2
 future==0.18.2
@@ -57,7 +57,7 @@ zope.configuration==4.4.0
 zope.container==4.4.0
 zope.contentprovider==4.2.1
 zope.contenttype==4.5.0
-zope.datetime==4.3.0
+zope.datetime==4.2.0
 zope.deferredimport==4.3.1
 zope.deprecation==4.4.0
 zope.dottedname==4.3
