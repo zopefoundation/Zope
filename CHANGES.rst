@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.2 (unreleased)
 ------------------
 
+- Enforce Zope permissions during recursive XML-RPC data dumps
+  (`#954 <https://github.com/zopefoundation/Zope/issues/954>`_)
+
 - The ``compute_size`` method properly returns None if the content does not
   have a ``get_size`` method but the parent has.
   (`#948 <https://github.com/zopefoundation/Zope/issues/948>`_)

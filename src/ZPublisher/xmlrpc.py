@@ -23,10 +23,13 @@ import re
 import sys
 import xmlrpc.client
 
+from AccessControl import getSecurityManager
+from AccessControl.Permissions import view
 from App.config import getConfiguration
 # Make DateTime.DateTime marshallable via XML-RPC
 # http://www.zope.org/Collectors/Zope/2109
 from DateTime.DateTime import DateTime
+from ExtensionClass import Base
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
 
@@ -45,9 +48,19 @@ def dump_instance(self, value, write):
         # We want to avoid disclosing private attributes.
         # Private attributes are by convention named with
         # a leading underscore character.
-        value = {k: v for (k, v) in value.__dict__.items()
-                 if k[:1] != '_'}
-        self.dump_struct(value, write)
+        ob_dict = {k: v for (k, v) in value.__dict__.items() if k[:1] != '_'}
+
+        # If the instance attribute is a Zope object we also want to prevent
+        # disclosing it to users without at least View permission.
+        zope_objects = [(k, v) for (k, v) in ob_dict.items()
+                        if isinstance(v, Base)]
+        if zope_objects:
+            sm = getSecurityManager()
+            for ob_id, ob in zope_objects:
+                if not sm.checkPermission(view, getattr(value, ob_id)):
+                    del ob_dict[ob_id]
+
+        self.dump_struct(ob_dict, write)
 
 
 # Override the standard marshaller for object instances
