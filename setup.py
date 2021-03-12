@@ -99,6 +99,7 @@ setup(
         'zope.container',
         'zope.contentprovider',
         'zope.contenttype',
+        'zope.datetime >= 4.3',
         'zope.deferredimport',
         'zope.event',
         'zope.exceptions',

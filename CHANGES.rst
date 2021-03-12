@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.6 (unreleased)
 ------------------
 
+- Depend on ``zope.datetime`` for the functions ``iso8601_date``,
+  ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
+  keeping backwards-compatibility imports in place.
+
 - Update dependencies to the latest releases that still support Python 2.
 
 

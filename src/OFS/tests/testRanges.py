@@ -115,7 +115,7 @@ class TestRequestRange(unittest.TestCase):
         return body + rv
 
     def createLastModifiedDate(self, offset=0):
-        from App.Common import rfc1123_date
+        from zope.datetime import rfc1123_date
         return rfc1123_date(self.file._p_mtime + offset)
 
     def expectUnsatisfiable(self, range):

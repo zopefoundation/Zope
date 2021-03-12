@@ -15,8 +15,6 @@ import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityManagement import getSecurityManager
-from App.Common import iso8601_date
-from App.Common import rfc1123_date
 from OFS.interfaces import IWriteLock
 from OFS.PropertySheets import PropertySheet
 from OFS.PropertySheets import View
@@ -25,6 +23,8 @@ from webdav.common import absattr
 from webdav.common import isDavCollection
 from webdav.common import urlbase
 from webdav.xmltools import escape as xmltools_escape
+from zope.datetime import iso8601_date
+from zope.datetime import rfc1123_date
 
 
 try:
