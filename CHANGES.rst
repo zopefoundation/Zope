@@ -8,8 +8,17 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.1.2 (unreleased)
+5.1.3 (unreleased)
 ------------------
+
+- Update to newest versions of dependencies.
+
+
+5.1.2 (2021-03-02)
+------------------
+
+- Enforce Zope permissions during recursive XML-RPC data dumps
+  (`#954 <https://github.com/zopefoundation/Zope/issues/954>`_)
 
 - The ``compute_size`` method properly returns None if the content does not
   have a ``get_size`` method but the parent has.
