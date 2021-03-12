@@ -26,7 +26,6 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from OFS.Cache import Cacheable
@@ -39,6 +38,7 @@ from Persistence import Persistent
 from zExceptions import Redirect
 from zExceptions import ResourceLockedError
 from zope.contenttype import guess_content_type
+from zope.datetime import rfc1123_date
 from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent

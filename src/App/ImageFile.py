@@ -22,10 +22,10 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
 from App.Common import package_home
-from App.Common import rfc1123_date
 from App.config import getConfiguration
 from DateTime.DateTime import DateTime
 from zope.contenttype import guess_content_type
+from zope.datetime import rfc1123_date
 from ZPublisher.Iterators import filestream_iterator
 
 
