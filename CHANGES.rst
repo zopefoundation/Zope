@@ -13,6 +13,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest versions of dependencies.
 
+- Depend on ``zope.datetime`` for the functions ``iso8601_date``,
+  ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
+  keeping backwards-compatibility imports in place.
+
 
 5.1.2 (2021-03-02)
 ------------------
@@ -27,10 +31,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix control panel tab links on all control panel pages
 
 - Update to newest versions of dependencies.
-
-- Depend on ``zope.datetime`` for the functions ``iso8601_date``,
-  ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
-  keeping backwards-compatibility imports in place.
 
 
 5.1.1 (2021-02-10)
