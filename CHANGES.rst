@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.1.3 (unreleased)
 ------------------
 
+- Updated/fixed the poll application tutorial in the Zope Developers Guide
+  (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
+
 - Update to newest versions of dependencies.
 
 - Depend on ``zope.datetime`` for the functions ``iso8601_date``,
