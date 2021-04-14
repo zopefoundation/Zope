@@ -60,6 +60,7 @@ and create an instance, create a buildout configuration file
   recipe = zc.recipe.egg
   eggs =
       Zope
+      Paste
 
 The ``[zope4]`` part uses ``zc.recipe.egg`` which will download
 ``Zope`` and all its dependencies.  It will create few console
@@ -70,6 +71,7 @@ command to build the system.
 
 ::
 
+  $ cd poll/poll_build
   $ buildout
 
 The initial build will take some time to complete.
@@ -238,18 +240,38 @@ Here is the code for ``app.py``...
 
 ::
 
-  <html xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:tal="http://xml.zope.org/namespaces/tal">
-    <body>
-
-      <h2>Add POLL</h2>
-      <form action="addPollMain" method="post">
-        Id: <input type="text" name="id" /><br />
-        Title: <input type="text" name="title" /><br />
-        <input type="submit" value="Add" />
-      </form>
-    </body>
-  </html>
+  <h1 tal:replace="structure context/manage_page_header">Header</h1>
+  
+  <main class="container-fluid">
+  
+    <h2 tal:define="form_title string:Add POLL"
+        tal:replace="structure here/manage_form_title">Form Title</h2>
+  
+    <form action="addPollMain" method="post">
+  
+      <div class="form-group row">
+        <label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+        <div class="col-sm-9 col-md-10">
+          <input id="id" name="id" class="form-control" type="text" />
+        </div>
+      </div>
+  
+      <div class="form-group row form-optional">
+        <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+        <div class="col-sm-9 col-md-10">
+          <input id="title" name="title" class="form-control" type="text" />
+        </div>
+      </div>
+  
+      <div class="zmi-controls">
+        <input class="btn btn-primary" type="submit" name="submit" value="Add" />
+      </div>
+  
+    </form>
+  
+  </main>
+  
+  <h1 tal:replace="structure context/manage_page_footer">Footer</h1>
 
 Finally, we can register it within ``src/poll/main/__init__.py``::
 
@@ -284,8 +306,10 @@ Also, we need to add ``poll.main`` to the ``eggs`` option in the
 ::
 
   ...
-  eggs = Zope2
-         poll.main
+  eggs =
+      Zope
+      Paste
+      poll.main
   ...
 
 The final `buildout.cfg` will look like this.
@@ -302,6 +326,7 @@ The final `buildout.cfg` will look like this.
   recipe = zc.recipe.egg
   eggs =
       Zope
+      Paste
       poll.main
 
 To make these change effective, run the buildout again.
@@ -311,13 +336,12 @@ To make these change effective, run the buildout again.
   $ buildout
 
 Finally, we have to include our package within
-``poll_build/etc/site.zcml``.
+``poll_build/etc/site.zcml``. Add the following towards the bottom
+of that file:
 
 ::
 
-  ...
   <include package="poll.main" />
-  ...
 
 Now, we can run application instance again.
 

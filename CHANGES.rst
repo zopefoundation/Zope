@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.6 (unreleased)
 ------------------
 
+- Updated/fixed the poll application tutorial in the Zope Developers Guide
+  (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
+
 - Depend on ``zope.datetime`` for the functions ``iso8601_date``,
   ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
   keeping backwards-compatibility imports in place.
