@@ -23,13 +23,8 @@ default_encoding = 'utf-8'
 
 
 def field2string(v):
-    """Converts value to native strings.
-
-    So always to `str` no matter which Python version you are on.
-    """
-    if hasattr(v, 'read'):
-        return v.read()
-    elif isinstance(v, bytes):
+    """Converts value to string."""
+    if isinstance(v, bytes):
         return v.decode(default_encoding)
     else:
         return str(v)
