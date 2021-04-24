@@ -163,6 +163,7 @@ class ConvertersTests(unittest.TestCase):
     def test_field2bytes_with_filelike_object(self):
         from ZPublisher.Converters import field2bytes
         to_convert = b'to_convert'
+
         class Filelike:
             def read(self):
                 return to_convert
