@@ -167,8 +167,6 @@ class _unicode_converter:
         #       <input name="description:utf8:ustring" .....
         # rather than
         #       <input name="description:ustring" .....
-        if hasattr(v, 'read'):
-            v = v.read()
         v = str(v)
         return self.convert_unicode(v)
 
