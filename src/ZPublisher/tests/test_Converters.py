@@ -160,6 +160,14 @@ class ConvertersTests(unittest.TestCase):
         expected = b'to_convert'
         self.assertEqual(field2bytes(to_convert), expected)
 
+    def test_field2bytes_with_filelike_object(self):
+        from ZPublisher.Converters import field2bytes
+        to_convert = b'to_convert'
+        class Filelike:
+            def read(self):
+                return to_convert
+        self.assertEqual(field2bytes(Filelike()), to_convert)
+
     def test_field2date_international_with_proper_date_string(self):
         from ZPublisher.Converters import field2date_international
         to_convert = "2.1.2019"

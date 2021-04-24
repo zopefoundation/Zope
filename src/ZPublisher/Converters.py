@@ -31,7 +31,7 @@ def field2string(v):
 
 
 def field2bytes(v):
-    # Converts value to bytes.
+    """Converts value to bytes."""
     if hasattr(v, 'read'):
         return v.read()
     elif isinstance(v, str):
