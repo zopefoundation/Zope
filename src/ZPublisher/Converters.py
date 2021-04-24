@@ -204,8 +204,6 @@ field2utext = field2utext()
 
 class field2ulines:
     def __call__(self, v):
-        if hasattr(v, 'read'):
-            v = v.read()
         if isinstance(v, (list, tuple)):
             return [field2ustring(x) for x in v]
         v = str(v)
