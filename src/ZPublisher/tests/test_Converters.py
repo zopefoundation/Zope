@@ -46,7 +46,7 @@ class ConvertersTests(unittest.TestCase):
         expected = False
         self.assertEqual(field2boolean(to_convert), expected)
 
-    def test_field2boolean_with_emtpy_list(self):
+    def test_field2boolean_with_empty_list(self):
         from ZPublisher.Converters import field2boolean
         to_convert = []
         expected = False
