@@ -143,12 +143,6 @@ class ConvertersTests(unittest.TestCase):
         to_convert = 'to_convert'
         self.assertEqual(field2string(to_convert), to_convert)
 
-    def test_field2string_with_unicode_default_encoding(self):
-        from ZPublisher.Converters import field2string
-        to_convert = 'to_convert'
-        expected = 'to_convert'
-        self.assertEqual(field2string(to_convert), expected)
-
     def test_field2string_with_filelike_object(self):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
