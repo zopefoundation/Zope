@@ -46,7 +46,7 @@ class ConvertersTests(unittest.TestCase):
         expected = False
         self.assertEqual(field2boolean(to_convert), expected)
 
-    def test_field2boolean_with_emtpy_list(self):
+    def test_field2boolean_with_empty_list(self):
         from ZPublisher.Converters import field2boolean
         to_convert = []
         expected = False
@@ -142,12 +142,6 @@ class ConvertersTests(unittest.TestCase):
         from ZPublisher.Converters import field2string
         to_convert = 'to_convert'
         self.assertEqual(field2string(to_convert), to_convert)
-
-    def test_field2string_with_unicode_default_encoding(self):
-        from ZPublisher.Converters import field2string
-        to_convert = 'to_convert'
-        expected = 'to_convert'
-        self.assertEqual(field2string(to_convert), expected)
 
     def test_field2bytes_with_bytes(self):
         from ZPublisher.Converters import field2bytes
