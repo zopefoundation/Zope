@@ -8,8 +8,8 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.1.3 (unreleased)
-------------------
+5.2 (unreleased)
+----------------
 
 - Updated/fixed the poll application tutorial in the Zope Developers Guide
   (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
@@ -20,8 +20,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
   keeping backwards-compatibility imports in place.
 
-- With the exception of ``field2bytes``, field converters should not handle
-  files (`#558 <https://github.com/zopefoundation/Zope/issues/558>`_)
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- With the exception of ``field2bytes``, field converters do no longer try to
+  read file like objects
+  (`#558 <https://github.com/zopefoundation/Zope/issues/558>`_)
 
 
 5.1.2 (2021-03-02)
