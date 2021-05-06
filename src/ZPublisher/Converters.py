@@ -23,20 +23,15 @@ default_encoding = 'utf-8'
 
 
 def field2string(v):
-    """Converts value to native strings.
-
-    So always to `str` no matter which Python version you are on.
-    """
-    if hasattr(v, 'read'):
-        return v.read()
-    elif isinstance(v, bytes):
+    """Converts value to string."""
+    if isinstance(v, bytes):
         return v.decode(default_encoding)
     else:
         return str(v)
 
 
 def field2bytes(v):
-    # Converts value to bytes.
+    """Converts value to bytes."""
     if hasattr(v, 'read'):
         return v.read()
     elif isinstance(v, str):
@@ -172,8 +167,6 @@ class _unicode_converter:
         #       <input name="description:utf8:ustring" .....
         # rather than
         #       <input name="description:ustring" .....
-        if hasattr(v, 'read'):
-            v = v.read()
         v = str(v)
         return self.convert_unicode(v)
 
@@ -209,8 +202,6 @@ field2utext = field2utext()
 
 class field2ulines:
     def __call__(self, v):
-        if hasattr(v, 'read'):
-            v = v.read()
         if isinstance(v, (list, tuple)):
             return [field2ustring(x) for x in v]
         v = str(v)
