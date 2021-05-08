@@ -109,4 +109,9 @@ def package_home(globals_dict):
 
 
 def Dictionary(**kw):
+    import warnings
+    warnings.warn(
+        "The function `Dictionary` is deprecated "
+        "and will be removed in Zope 6.",
+        DeprecationWarning)
     return kw  # Sorry Guido
