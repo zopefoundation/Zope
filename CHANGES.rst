@@ -8,10 +8,15 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.2.2 (unreleased)
-------------------
+5.3 (unreleased)
+----------------
 
 - Update to newest compatible versions of dependencies.
+
+- Deprecate usage of "unicode" converters. Also, the behavior of
+  ``field2lines`` is now aligned to the other converters and returns a list of
+  strings instead of a list of bytes.
+  (`#962 <https://github.com/zopefoundation/Zope/issues/962>`_)
 
 
 5.2.1 (2021-06-08)

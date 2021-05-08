@@ -749,6 +749,10 @@ The publisher supports many converters:
 - **ulines**, **utokens**, **utext** -- like **lines**, **tokens**,
   **text**, but always converts into unicode strings.
 
+.. note::
+  Please note that the above listed **unicode converters** are deprecated,
+  and will be removed in Zope 6.
+
 The full list of supported converters can be found
 in ``ZPublisher.Converters.type_converters``.
 
@@ -770,6 +774,22 @@ could create a list of integers like so::
         <input type="checkbox" name="numbers:list:int" value="1">
         <input type="checkbox" name="numbers:list:int" value="2">
         <input type="checkbox" name="numbers:list:int" value="3">
+
+
+Create and register a custom converter
+++++++++++++++++++++++++++++++++++++++
+
+If you need a custom converter, you can create one on your own and register
+it as follows::
+
+        from ZPublisher.Converters import field2bytes, type_converters
+
+        def field2bytelines(v)
+            if isinstance(v, (list, tuple)):
+                return [field2bytes(item) for item in v]
+            return field2bytes(v).splitlines()
+
+        type_converters['bytelines'] = field2bytelines
 
 
 Aggregators

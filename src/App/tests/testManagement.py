@@ -1,3 +1,5 @@
+import warnings
+
 import Testing.ZopeTestCase
 
 
@@ -18,21 +20,39 @@ class TestNavigation(Testing.ZopeTestCase.ZopeTestCase):
 
     def test_Management__Navigation__manage_page_header__2(self):
         """It respects `zmi_additional_css_paths` ustring property."""
-        self.folder.manage_addProperty(
-            'zmi_additional_css_paths', '/foo/bar.css', 'ustring')
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.folder.manage_addProperty(
+                'zmi_additional_css_paths', '/foo/bar.css', 'ustring')
         self.assertIn('href="/foo/bar.css"', self.folder.manage_page_header())
 
     def test_Management__Navigation__manage_page_header__3(self):
         """It respects `zmi_additional_css_paths` lines property."""
-        self.folder.manage_addProperty(
-            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'ulines')
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.folder.manage_addProperty(
+                'zmi_additional_css_paths',
+                ['/foo/bar.css', '/baz.css'],
+                'ulines'
+            )
         self.assertIn('href="/foo/bar.css"', self.folder.manage_page_header())
         self.assertIn('href="/baz.css"', self.folder.manage_page_header())
 
     def test_Management__Navigation__manage_page_header__4(self):
         """It respects `zmi_additional_css_paths` ulines property."""
-        self.folder.manage_addProperty(
-            'zmi_additional_css_paths', ['/foo/bar.css', '/baz.css'], 'ulines')
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.folder.manage_addProperty(
+                'zmi_additional_css_paths',
+                ['/foo/bar.css', '/baz.css'],
+                'ulines'
+            )
         self.assertIn('href="/foo/bar.css"', self.folder.manage_page_header())
         self.assertIn('href="/baz.css"', self.folder.manage_page_header())
 

@@ -13,6 +13,7 @@
 
 import html
 import re
+import warnings
 
 from DateTime import DateTime
 from DateTime.interfaces import SyntaxError
@@ -22,12 +23,17 @@ from DateTime.interfaces import SyntaxError
 default_encoding = 'utf-8'
 
 
-def field2string(v):
-    """Converts value to string."""
+def convert_single_value_to_string(v):
+    """Converts a single value to string."""
     if isinstance(v, bytes):
         return v.decode(default_encoding)
     else:
         return str(v)
+
+
+def field2string(v):
+    """Converts value to string."""
+    return convert_single_value_to_string(v)
 
 
 def field2bytes(v):
@@ -41,7 +47,7 @@ def field2bytes(v):
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
-    value = field2string(value)
+    value = convert_single_value_to_string(value)
     match_object = nl(value)
     if match_object is None:
         return value
@@ -63,7 +69,7 @@ def field2text(value, nl=re.compile('\r\n|\n\r').search):
 
 
 def field2required(v):
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     if v.strip():
         return v
     raise ValueError('No input for required field<p>')
@@ -72,7 +78,7 @@ def field2required(v):
 def field2int(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2int, v))
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     if v:
         try:
             return int(v)
@@ -88,7 +94,7 @@ def field2int(v):
 def field2float(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2float, v))
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     if v:
         try:
             return float(v)
@@ -104,7 +110,7 @@ def field2float(v):
 def field2long(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2long, v))
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     # handle trailing 'L' if present.
     if v[-1:] in ('L', 'l'):
         v = v[:-1]
@@ -120,21 +126,18 @@ def field2long(v):
 
 
 def field2tokens(v):
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     return v.split()
 
 
 def field2lines(v):
     if isinstance(v, (list, tuple)):
-        result = []
-        for item in v:
-            result.append(field2bytes(item))
-        return result
-    return field2bytes(v).splitlines()
+        return [convert_single_value_to_string(item) for item in v]
+    return convert_single_value_to_string(v).splitlines()
 
 
 def field2date(v):
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     try:
         v = DateTime(v)
     except SyntaxError:
@@ -143,7 +146,7 @@ def field2date(v):
 
 
 def field2date_international(v):
-    v = field2string(v)
+    v = convert_single_value_to_string(v)
     try:
         v = DateTime(v, datefmt="international")
     except SyntaxError:
@@ -157,68 +160,47 @@ def field2boolean(v):
     return bool(v)
 
 
-class _unicode_converter:
-
-    def __call__(self, v):
-        # Convert a regular python string. This probably doesn't do
-        # what you want, whatever that might be. If you are getting
-        # exceptions below, you probably missed the encoding tag
-        # from a form field name. Use:
-        #       <input name="description:utf8:ustring" .....
-        # rather than
-        #       <input name="description:ustring" .....
-        v = str(v)
-        return self.convert_unicode(v)
-
-    def convert_unicode(self, v):
-        raise NotImplementedError('convert_unicode')
+def field2ustring(v):
+    warnings.warn(
+        "The converter `(field2)ustring` is deprecated "
+        "and will be removed in Zope 6. "
+        "Please use `(field2)string` instead.",
+        DeprecationWarning)
+    return field2string(v)
 
 
-class field2ustring(_unicode_converter):
-    def convert_unicode(self, v):
-        return v
+def field2utokens(v):
+    warnings.warn(
+        "The converter `(field2)utokens` is deprecated "
+        "and will be removed in Zope 6. "
+        "Please use `(field2)tokens` instead.",
+        DeprecationWarning)
+    return field2tokens(v)
 
 
-field2ustring = field2ustring()
+def field2utext(v):
+    warnings.warn(
+        "The converter `(field2)utext` is deprecated "
+        "and will be removed in Zope 6. "
+        "Please use `(field2)text` instead.",
+        DeprecationWarning)
+    return field2text(v)
 
 
-class field2utokens(_unicode_converter):
-    def convert_unicode(self, v):
-        return v.split()
-
-
-field2utokens = field2utokens()
-
-
-class field2utext(_unicode_converter):
-    def convert_unicode(self, v):
-        if isinstance(v, bytes):
-            return str(field2text(v.encode('utf8')), 'utf8')
-        return v
-
-
-field2utext = field2utext()
-
-
-class field2ulines:
-    def __call__(self, v):
-        if isinstance(v, (list, tuple)):
-            return [field2ustring(x) for x in v]
-        v = str(v)
-        return self.convert_unicode(v)
-
-    def convert_unicode(self, v):
-        return field2utext.convert_unicode(v).splitlines()
-
-
-field2ulines = field2ulines()
+def field2ulines(v):
+    warnings.warn(
+        "The converter `(field2u)lines` is deprecated "
+        "and will be removed in Zope 6. "
+        "Please use `(field2)lines` instead.",
+        DeprecationWarning)
+    return field2lines(v)
 
 
 type_converters = {
     'float': field2float,
     'int': field2int,
     'long': field2long,
-    'string': field2string,  # to native str
+    'string': field2string,
     'bytes': field2bytes,
     'date': field2date,
     'date_international': field2date_international,

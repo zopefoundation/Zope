@@ -12,6 +12,7 @@
 ##############################################################################
 
 import unittest
+import warnings
 
 
 class ConvertersTests(unittest.TestCase):
@@ -173,13 +174,13 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_list(self):
         from ZPublisher.Converters import field2lines
         to_convert = ['one', b'two']
-        expected = [b'one', b'two']
+        expected = ['one', 'two']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_tuple(self):
         from ZPublisher.Converters import field2lines
         to_convert = ('one', b'two')
-        expected = [b'one', b'two']
+        expected = ['one', 'two']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_empty_string(self):
@@ -190,13 +191,13 @@ class ConvertersTests(unittest.TestCase):
     def test_field2lines_with_string_no_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc def ghi'
-        expected = [b'abc def ghi']
+        expected = ['abc def ghi']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2lines_with_string_with_newlines(self):
         from ZPublisher.Converters import field2lines
         to_convert = 'abc\ndef\nghi'
-        expected = [b'abc', b'def', b'ghi']
+        expected = ['abc', 'def', 'ghi']
         self.assertEqual(field2lines(to_convert), expected)
 
     def test_field2text_with_string_with_newlines(self):
@@ -208,26 +209,46 @@ class ConvertersTests(unittest.TestCase):
     def test_field2ulines_with_list(self):
         from ZPublisher.Converters import field2ulines
         to_convert = ['one', 'two']
-        self.assertEqual(field2ulines(to_convert),
-                         [str(x) for x in to_convert])
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(field2ulines(to_convert),
+                             [str(x) for x in to_convert])
 
     def test_field2ulines_with_tuple(self):
         from ZPublisher.Converters import field2ulines
         to_convert = ('one', 'two')
-        self.assertEqual(field2ulines(to_convert),
-                         [str(x) for x in to_convert])
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(field2ulines(to_convert),
+                             [str(x) for x in to_convert])
 
     def test_field2ulines_with_empty_string(self):
         from ZPublisher.Converters import field2ulines
         to_convert = ''
-        self.assertEqual(field2ulines(to_convert), [])
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(field2ulines(to_convert), [])
 
     def test_field2ulines_with_string_no_newlines(self):
         from ZPublisher.Converters import field2ulines
         to_convert = 'abc def ghi'
-        self.assertEqual(field2ulines(to_convert), [to_convert])
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(field2ulines(to_convert), [to_convert])
 
     def test_field2ulines_with_string_with_newlines(self):
         from ZPublisher.Converters import field2ulines
         to_convert = 'abc\ndef\nghi'
-        self.assertEqual(field2ulines(to_convert), to_convert.splitlines())
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(field2ulines(to_convert), to_convert.splitlines())

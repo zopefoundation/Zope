@@ -13,6 +13,7 @@
 
 import sys
 import unittest
+import warnings
 from contextlib import contextmanager
 from io import BytesIO
 
@@ -305,7 +306,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req['bign'], 45)
         self.assertEqual(req['fract'], 4.2)
         self.assertEqual(req['morewords'], 'one\ntwo\n')
-        self.assertEqual(req['multiline'], [b'one', b'two'])
+        self.assertEqual(req['multiline'], ['one', 'two'])
         self.assertEqual(req['num'], 42)
         self.assertEqual(req['words'], 'Some words')
 
@@ -323,7 +324,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                   ('ulines:ulines:utf8',
                    'test' + reg_char + '\ntest' + reg_char),
                   ('nouconverter:string:utf8', 'test' + reg_char))
-        req = self._processInputs(inputs)
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            req = self._processInputs(inputs)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -539,7 +544,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
             ('tnouconverter:string:utf8', '<test\xc2\xae>'),
         )
-        req = self._processInputs(inputs)
+
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -717,7 +727,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         from ZPublisher.Converters import type_converters
         for type, convert in list(type_converters.items()):
             try:
-                convert('<html garbage>')
+                # unicode converters will go away with Zope 6
+                # ignore deprecation warning for test run
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    convert('<html garbage>')
             except Exception as e:
                 self.assertFalse(
                     '<' in e.args,
