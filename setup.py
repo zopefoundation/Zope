@@ -129,7 +129,6 @@ setup(
         'docs': [
             'Sphinx',
             'sphinx_rtd_theme',
-            'repoze.sphinx.autointerface',
             'tempstorage',
         ],
         'wsgi': [
