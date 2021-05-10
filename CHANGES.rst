@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.2 (unreleased)
 ----------------
 
+- Provide friendlier ZMI error message for the Transaction Undo form
+  (`#964 <https://github.com/zopefoundation/Zope/issues/964>`_)
+
 - Updated/fixed the poll application tutorial in the Zope Developers Guide
   (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
 

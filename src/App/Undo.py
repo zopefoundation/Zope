@@ -110,8 +110,20 @@ class UndoSupport(Tabs, Implicit):
                 descriptions.append(tid[-1])
 
         if tids:
-            transaction.get().note("Undo %s" % ' '.join(descriptions))
+            ts = transaction.get()
+            ts.note("Undo %s" % ' '.join(descriptions))
             self._p_jar.db().undoMultiple(tids)
+            try:
+                ts.commit()
+            except Exception as exc:
+                if REQUEST is None:
+                    raise
+
+                ts.abort()
+                error = '{}: {}'.format(exc.__class__.__name__, str(exc))
+                return self.manage_UndoForm(self, REQUEST,
+                                            manage_tabs_message=error,
+                                            manage_tabs_type='danger')
 
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect("%s/manage_UndoForm" % REQUEST['URL1'])
