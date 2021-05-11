@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "211d612c86d6754ebe13fad9b7081533bb603ed9"
+commit-id = "f8468b0bc5c92479b3043372d89cf5852176015d"
 
 [python]
 with-appveyor = true
@@ -58,6 +58,7 @@ testenv-additional = [
     "    autopep8 --verbose --in-place --recursive --aggressive --aggressive {toxinidir}/src setup.py",
     "    docformatter --in-place --recursive {toxinidir}/src setup.py",
     ]
+use-flake8 = true
 
 [manifest]
 additional-rules = [
@@ -67,6 +68,7 @@ additional-rules = [
     "include versions-prod.cfg",
     "include versions.cfg",
     "include zope-ecosystem.cfg",
+    "recursive-include docs *.bat",
     "recursive-include docs *.css",
     "recursive-include docs *.jpg",
     "recursive-include docs *.png",
@@ -86,12 +88,16 @@ additional-rules = [
     "recursive-include src *.png",
     "recursive-include src *.po",
     "recursive-include src *.pot",
+    "recursive-include src *.pt",
+    "recursive-include src *.rst",
     "recursive-include src *.svg",
     "recursive-include src *.ttf",
+    "recursive-include src *.txt",
     "recursive-include src *.webmanifest",
     "recursive-include src *.woff",
     "recursive-include src *.woff2",
     "recursive-include src *.xml",
+    "recursive-include src *.zcml",
     "recursive-include src *.zpt",
     ]
 
