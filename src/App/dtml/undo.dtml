@@ -1,6 +1,8 @@
 <dtml-var manage_page_header>
 
-<dtml-var manage_tabs>
+<dtml-with "_(management_view='Undo')">
+  <dtml-var manage_tabs>
+</dtml-with>
 
 <main class="container-fluid">
 

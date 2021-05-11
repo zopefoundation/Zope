@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.5.6 (unreleased)
 ------------------
 
+- Provide friendlier ZMI error message for the Transaction Undo form
+  (`#964 <https://github.com/zopefoundation/Zope/issues/964>`_)
+
 - Updated/fixed the poll application tutorial in the Zope Developers Guide
   (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
 
