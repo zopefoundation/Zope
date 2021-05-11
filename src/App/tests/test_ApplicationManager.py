@@ -432,8 +432,9 @@ class AltDatabaseManagerTests(unittest.TestCase):
             # call arguments so the exception data is visible.
             res = am.manage_undo_transactions(transaction_info=undoable_tids,
                                               REQUEST={})
-            expected = {'manage_tabs_message': 'RuntimeError: This did not work',
-                        'manage_tabs_type': 'danger'}
+            expected = {
+                'manage_tabs_message': 'RuntimeError: This did not work',
+                'manage_tabs_type': 'danger'}
             self.assertDictEqual(res, expected)
             self.assertTrue(current_transaction.aborted)
 
