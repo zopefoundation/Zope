@@ -6,23 +6,19 @@ include buildout.cfg
 include tox.ini
 include appveyor.yml
 
-recursive-include docs *.bat
 recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs *.txt
 recursive-include docs Makefile
 
-recursive-include src *.pt
 recursive-include src *.py
-recursive-include src *.rst
-recursive-include src *.txt
-recursive-include src *.zcml
 include *.py
 include *.yaml
 include sources.cfg
 include versions-prod.cfg
 include versions.cfg
 include zope-ecosystem.cfg
+recursive-include docs *.bat
 recursive-include docs *.css
 recursive-include docs *.jpg
 recursive-include docs *.png
@@ -42,10 +38,14 @@ recursive-include src *.pdf
 recursive-include src *.png
 recursive-include src *.po
 recursive-include src *.pot
+recursive-include src *.pt
+recursive-include src *.rst
 recursive-include src *.svg
 recursive-include src *.ttf
+recursive-include src *.txt
 recursive-include src *.webmanifest
 recursive-include src *.woff
 recursive-include src *.woff2
 recursive-include src *.xml
+recursive-include src *.zcml
 recursive-include src *.zpt
