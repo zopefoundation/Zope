@@ -9,6 +9,12 @@ import Testing.testbrowser
 import Testing.ZopeTestCase
 
 
+class DummyForm:
+
+    def __call__(self, *args, **kw):
+        return kw
+
+
 class DummyConnection:
 
     def __init__(self, db):
@@ -52,6 +58,40 @@ class DummyDB:
 
     def pack(self, when):
         self._packed = when
+
+    def undoInfo(self, first_transaction, last_transaction):
+        return [{'time': 1,
+                 'description': 'Transaction 1',
+                 'id': b'id1'}]
+
+    def undoMultiple(self, tids):
+        pass
+
+
+class DummyTransaction:
+
+    def __init__(self, raises=False):
+        self.raises = raises
+        self.aborted = False
+
+    def note(self, note):
+        self._note = note
+
+    def commit(self):
+        if self.raises:
+            raise RuntimeError('This did not work')
+
+    def abort(self):
+        self.aborted = True
+
+
+class DummyTransactionModule:
+
+    def __init__(self, raises=False):
+        self.ts = DummyTransaction(raises=raises)
+
+    def get(self):
+        return self.ts
 
 
 class ConfigTestBase:
@@ -365,6 +405,42 @@ class AltDatabaseManagerTests(unittest.TestCase):
         self.assertIsNone(am.manage_pack(days='foo'))
         # The dummy storage value should not change because pack was not called
         self.assertIsNone(am._getDB()._packed)
+
+    def test_manage_undoTransactions_raises(self):
+        # Patch in fake transaction module that will raise RuntimeError
+        # on transaction commit
+        try:
+            import App.Undo
+            trs_module = App.Undo.transaction
+            App.Undo.transaction = DummyTransactionModule(raises=True)
+
+            am = self._makeOne()
+            am._p_jar = self._makeJar('foo', '')
+            am.manage_UndoForm = DummyForm()
+            undoable_tids = [x['id'] for x in am.undoable_transactions()]
+            current_transaction = App.Undo.transaction.get()
+
+            # If no REQUEST is passed in, the exception is re-raised unchanged
+            # and the current transaction is left unchanged.
+            self.assertRaises(RuntimeError,
+                              am.manage_undo_transactions,
+                              transaction_info=undoable_tids)
+            self.assertFalse(current_transaction.aborted)
+
+            # If a REQUEST is passed in, the transaction will be aborted and
+            # the exception is caught. The DummyForm instance shows the
+            # call arguments so the exception data is visible.
+            res = am.manage_undo_transactions(transaction_info=undoable_tids,
+                                              REQUEST={})
+            expected = {
+                'manage_tabs_message': 'RuntimeError: This did not work',
+                'manage_tabs_type': 'danger'}
+            self.assertDictEqual(res, expected)
+            self.assertTrue(current_transaction.aborted)
+
+        finally:
+            # Cleanup
+            App.Undo.transaction = trs_module
 
 
 class DebugManagerTests(unittest.TestCase):
