@@ -26,6 +26,7 @@ from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver import \
     PreferredCharsetResolver
+from zExceptions import NotFound
 from zope.component import provideUtility
 from zope.traversing.adapters import DefaultTraversable
 
@@ -155,6 +156,15 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def testPathAlt(self):
         self.assert_expected(self.folder.t, 'CheckPathAlt.html')
 
+    def testPathTraverse(self):
+        # need to perform this test with a "real" folder
+        from OFS.Folder import Folder
+        f = self.folder
+        self.folder = Folder()
+        self.folder.t, self.folder.laf = f.t, f.laf
+        self.folder.laf.write('ok')
+        self.assert_expected(self.folder.t, 'CheckPathTraverse.html')
+
     def testBatchIteration(self):
         self.assert_expected(self.folder.t, 'CheckBatchIteration.html')
 
@@ -207,3 +217,18 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         provideUtility(PreferredCharsetResolver)
         t = PageTemplate()
         self.assert_expected(t, 'UnicodeResolution.html')
+
+    def test_underscore_traversal(self):
+        t = self.folder.t
+
+        t.write('<p tal:define="p context/__class__" />')
+        with self.assertRaises(NotFound):
+            t()
+
+        t.write('<p tal:define="p nocall: random/_itertools/repeat"/>')
+        with self.assertRaises(NotFound):
+            t()
+
+        t.write('<p tal:content="random/_itertools/repeat/foobar"/>')
+        with self.assertRaises(NotFound):
+            t()

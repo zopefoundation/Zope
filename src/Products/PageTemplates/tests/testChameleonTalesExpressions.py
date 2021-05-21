@@ -1,3 +1,5 @@
+import unittest
+
 from ..expression import getEngine
 from . import testHTMLTests
 
@@ -19,3 +21,8 @@ class ChameleonTalesExpressionTests(testHTMLTests.HTMLTests):
     #   expressions (e.g. the ``zope.tales`` ``not`` expression
     #   returns ``int``, that of ``chameleon.tales`` ``bool``
     PREFIX = "CH_"
+
+    @unittest.skip('The test in the base class relies on a Zope context with'
+                   ' the "random" module available in expressions')
+    def test_underscore_traversal(self):
+        pass

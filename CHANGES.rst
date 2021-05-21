@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.2 (unreleased)
 ----------------
 
+- Prevent traversal to names starting with ``_`` in TAL expressions
+  and fix path expressions for the ``chameleon.tales`` expression engine.
+
 - Provide friendlier ZMI error message for the Transaction Undo form
   (`#964 <https://github.com/zopefoundation/Zope/issues/964>`_)
 

@@ -1,6 +1,8 @@
 import unittest
+import warnings
 
 from AccessControl import safe_builtins
+from zExceptions import NotFound
 from zope.component.testing import PlacelessSetup
 
 
@@ -106,8 +108,12 @@ class EngineTestsBase(PlacelessSetup):
         self.assertTrue(ec.evaluate('x | nothing') is None)
 
     def test_evaluate_dict_key_as_underscore(self):
+        # Traversing to the name `_` will raise a DeprecationWarning
+        # because it will go away in Zope 6.
         ec = self._makeContext()
-        self.assertEqual(ec.evaluate('d/_'), 'under')
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(ec.evaluate('d/_'), 'under')
 
     def test_evaluate_dict_with_key_from_expansion(self):
         ec = self._makeContext()
@@ -219,6 +225,19 @@ class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
     def test_list_in_path_expr(self):
         ec = self._makeContext()
         self.assertIs(ec.evaluate('nocall: list'), safe_builtins["list"])
+
+    def test_underscore_traversal(self):
+        # Prevent traversal to names starting with an underscore (_)
+        ec = self._makeContext()
+
+        with self.assertRaises(NotFound):
+            ec.evaluate("context/__class__")
+
+        with self.assertRaises(NotFound):
+            ec.evaluate("nocall: random/_itertools/repeat")
+
+        with self.assertRaises(NotFound):
+            ec.evaluate("random/_itertools/repeat/foobar")
 
 
 class TrustedEngineTests(EngineTestsBase, unittest.TestCase):

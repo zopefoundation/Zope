@@ -1,5 +1,6 @@
 """``chameleon.tales`` expressions."""
 
+import warnings
 from ast import NodeTransformer
 from ast import parse
 
@@ -61,8 +62,16 @@ class BoboAwareZopeTraverse:
 
         while path_items:
             name = path_items.pop()
+
+            if name == '_':
+                warnings.warn('Traversing to the name `_` is deprecated '
+                              'and will be removed in Zope 6.',
+                              DeprecationWarning)
+            elif name.startswith('_'):
+                raise NotFound(name)
+
             if ITraversable.providedBy(base):
-                base = getattr(base, cls.traverseMethod)(name)
+                base = getattr(base, cls.traverse_method)(name)
             else:
                 base = traversePathElement(base, name, path_items,
                                            request=request)
