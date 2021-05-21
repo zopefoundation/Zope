@@ -62,7 +62,7 @@ class BoboAwareZopeTraverse:
         while path_items:
             name = path_items.pop()
             if ITraversable.providedBy(base):
-                base = getattr(base, cls.traverseMethod)(name)
+                base = getattr(base, cls.traverse_method)(name)
             else:
                 base = traversePathElement(base, name, path_items,
                                            request=request)

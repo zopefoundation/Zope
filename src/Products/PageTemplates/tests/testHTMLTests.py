@@ -155,6 +155,15 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def testPathAlt(self):
         self.assert_expected(self.folder.t, 'CheckPathAlt.html')
 
+    def testPathTraverse(self):
+        # need to perform this test with a "real" folder
+        from OFS.Folder import Folder
+        f = self.folder
+        self.folder = Folder()
+        self.folder.t, self.folder.laf = f.t, f.laf
+        self.folder.laf.write('ok')
+        self.assert_expected(self.folder.t, 'CheckPathTraverse.html')
+
     def testBatchIteration(self):
         self.assert_expected(self.folder.t, 'CheckBatchIteration.html')
 
