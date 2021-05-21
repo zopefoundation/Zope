@@ -130,7 +130,7 @@ setup(
     zip_safe=False,
     extras_require={
         'docs': [
-            'Sphinx',
+            'Sphinx < 4',
             'sphinx_rtd_theme',
             'repoze.sphinx.autointerface',
             'tempstorage',
