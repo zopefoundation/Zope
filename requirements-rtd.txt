@@ -1,4 +1,3 @@
-repoze.sphinx.autointerface
 Zope
 ZConfig==3.5.0
 tempstorage
