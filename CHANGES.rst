@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.6 (unreleased)
+4.6 (2021-05-21)
 ----------------
 
 - Prevent traversal to names starting with ``_`` in TAL expressions
