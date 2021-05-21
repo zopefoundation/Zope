@@ -17,6 +17,7 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
+import warnings
 
 from six import binary_type
 from six import text_type
@@ -77,6 +78,14 @@ def boboAwareZopeTraverse(object, path_items, econtext):
 
     while path_items:
         name = path_items.pop()
+
+        if name == '_':
+            warnings.warn('Traversing to the name `_` is deprecated '
+                          'and will be removed in Zope 6.',
+                          DeprecationWarning)
+        elif name.startswith('_'):
+            raise NotFound(name)
+
         if OFS.interfaces.ITraversable.providedBy(object):
             object = object.restrictedTraverse(name)
         else:

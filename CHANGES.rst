@@ -7,8 +7,11 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.5.6 (unreleased)
-------------------
+4.6 (unreleased)
+----------------
+
+- Prevent traversal to names starting with ``_`` in TAL expressions
+  and fix path expressions for the ``chameleon.tales`` expression engine.
 
 - Provide friendlier ZMI error message for the Transaction Undo form
   (`#964 <https://github.com/zopefoundation/Zope/issues/964>`_)
