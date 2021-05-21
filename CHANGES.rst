@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.2 (unreleased)
+5.2 (2021-05-21)
 ----------------
 
 - Prevent traversal to names starting with ``_`` in TAL expressions
