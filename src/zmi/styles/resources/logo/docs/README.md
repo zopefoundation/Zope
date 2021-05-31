@@ -38,7 +38,7 @@ The word "Zope" is made with the technical standard font "Bahnschrift" in capita
 4. optical correction of inverted type: letter spacing +2%
 
 ## Logo Color 
-The primary color is a vivid blue. If color is not avaliable (e.g. laser printer) or a colorful background (e.g. photo) might visually compete with the standard blue, two other oolor variants are available:
+The primary color is a vivid blue. If color is not avaliable (e.g. laser printer) or a colorful background (e.g. photo) might visually compete with the standard blue, two other color variants are available:
 
 <img src="img/3_colors.svg" style="margin:1em 0">
 
