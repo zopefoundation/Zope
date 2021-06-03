@@ -2,17 +2,21 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "f8468b0bc5c92479b3043372d89cf5852176015d"
+commit-id = "10891b6cf9212ecd48f9bc70138aa14324d6a2b0"
 
 [python]
-with-appveyor = true
+with-appveyor = false
 with-pypy = false
 with-legacy-python = false
 with-docs = true
 with-sphinx-doctests = false
+with-windows = true
 
 [coverage]
 fail-under = 80
+
+[coverage-run]
+source = "src"
 
 [isort]
 known_third_party = "ipaddress, PasteDeploy, waitress, chameleon, paste, pkg_resources"
@@ -34,6 +38,7 @@ testenv-commands-pre = [
 testenv-commands = [
     "{envdir}/bin/alltests {posargs:-vc}",
     ]
+coverage-basepython = "python3.8"
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
     "",
@@ -116,27 +121,4 @@ additional-ignores = [
 ignore-bad-ideas = [
     "src/Products/Five/tests/locales/de/LC_MESSAGES/fivetest.mo",
     "src/Products/Five/tests/locales/en/LC_MESSAGES/fivetest.mo",
-    ]
-
-[appveyor]
-replacement = [
-    "environment:",
-    "  matrix:",
-    "    - TOXENV: py38",
-    "    - TOXENV: py37",
-    "    - TOXENV: py36",
-    "    - TOXENV: py39",
-    "install:",
-    "  - python -m pip install -U pip",
-    "  - pip install -U setuptools wheel",
-    "  - pip install -U tox",
-    "build: false",
-    "matrix:",
-    "  fast_finish: true",
-    "  allow_failures:",
-    "    - TOXENV: py39",
-    "test_script:",
-    "  - tox",
-    "on_success:",
-    "  - echo Build succesful!",
     ]
