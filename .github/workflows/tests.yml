@@ -28,9 +28,14 @@ jobs:
         - ["3.9",   "py39"]
         - ["3.8",   "docs"]
         - ["3.8",   "coverage"]
+        exclude:
+          - os: windows-latest
+            config:
+              - ["3.8",   "lint"]
+              - ["3.8",   "docs"]
+              - ["3.8",   "coverage"]
 
-    runs-on: ubuntu-latest
-    name: ${{ matrix.config[1] }}
+    name: ${{ matix.os }}:${{ matrix.config[1] }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
