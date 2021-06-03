@@ -106,7 +106,7 @@ setup(
         'zope.interface >= 3.8',
         'zope.lifecycleevent',
         'zope.location',
-        'zope.pagetemplate >= 4.0.2',
+        'zope.pagetemplate[untrusted] >= 4.0.2',
         'zope.processlifetime',
         'zope.proxy',
         'zope.ptresource',

@@ -13,6 +13,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Switch PageTemplates to use ``zope.untrustedpython``.
+
 
 5.2 (2021-05-21)
 ----------------
