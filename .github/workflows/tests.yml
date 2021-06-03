@@ -16,6 +16,9 @@ jobs:
       # We want do see all failures:
       fail-fast: false
       matrix:
+        os:
+        - ubuntu-latest
+        - windows-latest
         config:
         # [Python version, tox env]
         - ["3.8",   "lint"]
