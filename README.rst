@@ -20,9 +20,14 @@
         :target: https://requires.io/github/zopefoundation/Zope/requirements/?branch=master
         :alt: Requirements Status
 
+.. |nbsp| unicode:: 0xA0 
+        :trim:
+
+|nbsp|
 
 .. image:: https://zopefoundation.github.io/Zope/artwork/Zope.svg
         :alt: Zope logo
+        :width: 300px
 
 **Zope is an open-source web application server.**
 
