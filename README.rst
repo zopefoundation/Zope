@@ -21,7 +21,10 @@
         :alt: Requirements Status
 
 
-Zope is an open-source web application server.
+.. image:: https://zopefoundation.github.io/Zope/artwork/Zope.svg
+        :alt: Zope logo
+
+**Zope is an open-source web application server.**
 
 This document provides some general information about Zope and provides
 links to other documents. The full documentation can be found at
