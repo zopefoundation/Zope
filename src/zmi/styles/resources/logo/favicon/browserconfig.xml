@@ -6,7 +6,7 @@
             <square150x150logo src="/++resource++zmi/logo/favicon/mstile-150x150.png"/>
             <wide310x150logo src="/++resource++zmi/logo/favicon/mstile-310x150.png"/>
             <square310x310logo src="/++resource++zmi/logo/favicon/mstile-310x310.png"/>
-            <TileColor>#2d89ef</TileColor>
+            <TileColor>#00aad4</TileColor>
         </tile>
     </msapplication>
 </browserconfig>
