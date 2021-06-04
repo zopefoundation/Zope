@@ -12,6 +12,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases that still support Python 2.
 
+- Facelift the Zope logo.
+  (`#973 <https://github.com/zopefoundation/Zope/issues/973>`_)
+
 
 4.6 (2021-05-21)
 ----------------
