@@ -110,9 +110,8 @@ Test access to ``context`` from ZPTs:
 Test macro access from ZPT pages:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/seagull.html')
-  >>> view() == ('<html><head><title>bird macro</title></head>'
-  ...            '<body>Color: gray</body></html>\n')
-  True
+  >>> print(view())
+  <html><head><title>bird macro</title></head><body>Color: gray</body></html>
 
 test_zpt_things:
 

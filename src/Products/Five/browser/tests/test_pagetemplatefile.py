@@ -132,7 +132,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('templates/dirpage1.pt')
         body = vptf(view)
-        self.assertEqual(body, DIRPAGE1)
+        self.assertEqual(body.replace('\r\n', '\n'), DIRPAGE1)
         self.assertEqual(response._headers['Content-Type'], 'text/html')
 
     def test___call___w_previous_content_type(self):
