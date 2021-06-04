@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Facelift the Zope logo.
+  (`#973 <https://github.com/zopefoundation/Zope/issues/973>`_)
+
 
 5.2 (2021-05-21)
 ----------------
