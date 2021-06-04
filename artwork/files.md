@@ -3,7 +3,7 @@
 These logos are copyright Zope Foundation and contributors and
 published under the Zope Public License (ZPL) version 2.1.
 
-For logo usage please refer to the [detailed logo explanation](README.html)
+For logo usage please refer to the [detailed logo explanation](./)
 
 
 ## Logos with text (SVG files)
