@@ -10,6 +10,7 @@ from chameleon.codegen import template
 from chameleon.tales import NotExpr
 from chameleon.tales import StringExpr
 
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
 from AccessControl.ZopeGuards import guarded_getitem
@@ -57,24 +58,49 @@ class BoboAwareZopeTraverse:
     def traverse(cls, base, request, path_items):
         """See ``zope.app.pagetemplate.engine``."""
 
+        validate = getSecurityManager().validate
         path_items = list(path_items)
         path_items.reverse()
 
         while path_items:
             name = path_items.pop()
 
-            if name == '_':
-                warnings.warn('Traversing to the name `_` is deprecated '
-                              'and will be removed in Zope 6.',
-                              DeprecationWarning)
-            elif name.startswith('_'):
-                raise NotFound(name)
-
             if ITraversable.providedBy(base):
                 base = getattr(base, cls.traverse_method)(name)
             else:
-                base = traversePathElement(base, name, path_items,
-                                           request=request)
+                found = traversePathElement(base, name, path_items,
+                                            request=request)
+
+                # If traverse_method is something other than
+                # ``restrictedTraverse`` then traversal is assumed to be
+                # unrestricted. This emulates ``unrestrictedTraverse``
+                if cls.traverse_method != 'restrictedTraverse':
+                    base = found
+                    continue
+
+                # Special backwards compatibility exception for the name ``_``,
+                # which was often used for translation message factories.
+                # Allow and continue traversal.
+                if name == '_':
+                    warnings.warn('Traversing to the name `_` is deprecated '
+                                  'and will be removed in Zope 6.',
+                                  DeprecationWarning)
+                    base = found
+                    continue
+
+                # All other names starting with ``_`` are disallowed.
+                # This emulates what restrictedTraverse does.
+                if name.startswith('_'):
+                    raise NotFound(name)
+
+                # traversePathElement doesn't apply any Zope security policy,
+                # so we validate access explicitly here.
+                try:
+                    validate(base, base, name, found)
+                    base = found
+                except Unauthorized:
+                    # Convert Unauthorized to prevent information disclosures
+                    raise NotFound(name)
 
         return base
 

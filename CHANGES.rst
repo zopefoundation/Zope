@@ -11,10 +11,13 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.2.1 (unreleased)
 ------------------
 
-- Update to newest compatible versions of dependencies.
+- Prevent unauthorized traversal through authorized Python modules in
+  TAL expressions
 
 - Facelift the Zope logo.
   (`#973 <https://github.com/zopefoundation/Zope/issues/973>`_)
+
+- Update to newest compatible versions of dependencies.
 
 
 5.2 (2021-05-21)

@@ -4,6 +4,7 @@ import warnings
 from AccessControl import safe_builtins
 from zExceptions import NotFound
 from zope.component.testing import PlacelessSetup
+from zope.location.interfaces import LocationError
 
 
 class EngineTestsBase(PlacelessSetup):
@@ -233,10 +234,10 @@ class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
         with self.assertRaises(NotFound):
             ec.evaluate("context/__class__")
 
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             ec.evaluate("nocall: random/_itertools/repeat")
 
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             ec.evaluate("random/_itertools/repeat/foobar")
 
 

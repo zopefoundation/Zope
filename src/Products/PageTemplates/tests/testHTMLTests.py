@@ -26,14 +26,20 @@ from Products.PageTemplates.unicodeconflictresolver import \
     DefaultUnicodeEncodingConflictResolver
 from Products.PageTemplates.unicodeconflictresolver import \
     PreferredCharsetResolver
+from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 from zExceptions import NotFound
 from zope.component import provideUtility
+from zope.location.interfaces import LocationError
 from zope.traversing.adapters import DefaultTraversable
 
 from .util import useChameleonEngine
 
 
 class AqPageTemplate(Implicit, PageTemplate):
+    pass
+
+
+class AqZopePageTemplate(Implicit, ZopePageTemplate):
     pass
 
 
@@ -74,6 +80,7 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         self.folder = f = Folder()
         f.laf = AqPageTemplate()
         f.t = AqPageTemplate()
+        f.z = AqZopePageTemplate('testing')
         self.policy = UnitTestSecurityPolicy()
         self.oldPolicy = SecurityManager.setSecurityPolicy(self.policy)
         noSecurityManager()  # Use the new policy.
@@ -226,9 +233,45 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
             t()
 
         t.write('<p tal:define="p nocall: random/_itertools/repeat"/>')
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             t()
 
         t.write('<p tal:content="random/_itertools/repeat/foobar"/>')
+        with self.assertRaises((NotFound, LocationError)):
+            t()
+
+    def test_module_traversal(self):
+        t = self.folder.z
+
+        # Need to reset to the standard security policy so AccessControl
+        # checks are actually performed. The test setup initializes
+        # a policy that circumvents those checks.
+        SecurityManager.setSecurityPolicy(self.oldPolicy)
+        noSecurityManager()
+
+        # The getSecurityManager function is explicitly allowed
+        content = ('<p tal:define="a nocall:%s"'
+                   '   tal:content="python: a().getUser().getUserName()"/>')
+        t.write(content % 'modules/AccessControl/getSecurityManager')
+        self.assertEqual(t(), '<p>Anonymous User</p>')
+
+        # Anything else should be unreachable and raise NotFound:
+        # Direct access through AccessControl
+        t.write('<p tal:define="a nocall:modules/AccessControl/users"/>')
+        with self.assertRaises(NotFound):
+            t()
+
+        # Indirect access through an intermediary variable
+        content = ('<p tal:define="mod nocall:modules/AccessControl;'
+                   '               must_fail nocall:mod/users"/>')
+        t.write(content)
+        with self.assertRaises(NotFound):
+            t()
+
+        # Indirect access through an intermediary variable and a dictionary
+        content = ('<p tal:define="mod nocall:modules/AccessControl;'
+                   '               a_dict python: {\'unsafe\': mod};'
+                   '               must_fail nocall: a_dict/unsafe/users"/>')
+        t.write(content)
         with self.assertRaises(NotFound):
             t()
