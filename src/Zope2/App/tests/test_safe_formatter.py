@@ -186,7 +186,7 @@ class FormatterFunctionalTest(FunctionalTestCase):
         # Need to pass a namespace.
         namespace = {'context': self.app}
         self.assertEqual(
-            pt.pt_render(namespace).strip(),
+            pt.pt_render(namespace).strip().replace('\r\n', '\n'),
             u'<p>&lt;application at &gt;</p>\n'
             u'<p>&lt;APPLICATION AT &gt;</p>')
 
@@ -201,7 +201,7 @@ class FormatterFunctionalTest(FunctionalTestCase):
         # template.
         self.app.test_folder_1_.__roles__ = ['Manager']
         self.assertEqual(
-            pt.pt_render(namespace).strip(),
+            pt.pt_render(namespace).strip().replace('\r\n', '\n'),
             u"<p>class of &lt;application at &gt; is "
             u"&lt;class 'ofs.application.application'&gt;</p>\n"
             u"<p>CLASS OF &lt;APPLICATION AT &gt; IS "
