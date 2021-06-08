@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.2.1 (unreleased)
+5.2.1 (2021-06-08)
 ------------------
 
 - Prevent unauthorized traversal through authorized Python modules in
