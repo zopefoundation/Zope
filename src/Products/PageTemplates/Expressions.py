@@ -17,6 +17,7 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
+import types
 import warnings
 
 from six import binary_type
@@ -24,6 +25,7 @@ from six import text_type
 
 import OFS.interfaces
 from AccessControl import safe_builtins
+from AccessControl.ZopeGuards import guarded_import
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
 from zExceptions import NotFound
@@ -88,6 +90,15 @@ def boboAwareZopeTraverse(object, path_items, econtext):
 
         if OFS.interfaces.ITraversable.providedBy(object):
             object = object.restrictedTraverse(name)
+        elif isinstance(object, types.ModuleType):
+            try:
+                # guarded_import will do all necessary security checking
+                # but will not return the imported item itself.
+                guarded_import(object.__name__, fromlist=[name])
+                object = getattr(object, name)
+            except Unauthorized:
+                # Convert Unauthorized to prevent information disclosures
+                raise NotFound(name)
         else:
             object = traversePathElement(object, name, path_items,
                                          request=request)

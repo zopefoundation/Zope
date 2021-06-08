@@ -10,10 +10,13 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.1 (unreleased)
 ------------------
 
-- Update dependencies to the latest releases that still support Python 2.
+- Prevent unauthorized traversal through authorized Python modules in
+  TAL expressions
 
 - Facelift the Zope logo.
   (`#973 <https://github.com/zopefoundation/Zope/issues/973>`_)
+
+- Update dependencies to the latest releases that still support Python 2.
 
 
 4.6 (2021-05-21)

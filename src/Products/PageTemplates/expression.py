@@ -3,6 +3,7 @@
 import warnings
 from ast import NodeTransformer
 from ast import parse
+from types import ModuleType
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
@@ -14,6 +15,7 @@ from six import class_types
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
 from AccessControl.ZopeGuards import guarded_getitem
+from AccessControl.ZopeGuards import guarded_import
 from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
@@ -73,6 +75,15 @@ class BoboAwareZopeTraverse(object):
 
             if ITraversable.providedBy(base):
                 base = getattr(base, cls.traverse_method)(name)
+            elif isinstance(base, ModuleType):
+                try:
+                    # guarded_import will do all necessary security checking
+                    # but will not return the imported item itself.
+                    guarded_import(base.__name__, fromlist=[name])
+                    base = getattr(base, name)
+                except Unauthorized:
+                    # Convert Unauthorized to prevent information disclosures
+                    raise NotFound(name)
             else:
                 base = traversePathElement(base, name, path_items,
                                            request=request)
