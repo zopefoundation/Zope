@@ -19,7 +19,6 @@ from AccessControl.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from OFS.FindSupport import FindSupport
 from OFS.interfaces import IFolder
-from OFS.Lockable import LockableItem
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
@@ -57,7 +56,6 @@ class Folder(
     PropertyManager,
     RoleManager,
     Collection,
-    LockableItem,
     Item,
     FindSupport
 ):

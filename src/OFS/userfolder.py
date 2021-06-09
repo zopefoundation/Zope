@@ -26,8 +26,6 @@ from AccessControl.users import emergency_user
 from AccessControl.users import readUserAccessFile
 from AccessControl.users import reqattr
 from Acquisition import aq_base
-from App.Management import Navigation
-from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
@@ -35,8 +33,6 @@ from zExceptions import BadRequest
 
 
 class BasicUserFolder(
-    Navigation,
-    Tabs,
     Item,
     RoleManager,
     accesscontrol_userfolder.BasicUserFolder

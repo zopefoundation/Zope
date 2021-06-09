@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "10891b6cf9212ecd48f9bc70138aa14324d6a2b0"
+commit-id = "f9baadf16d8091d825297dc11596d4c736ffa908"
 
 [python]
 with-appveyor = false
@@ -37,6 +37,9 @@ testenv-commands-pre = [
     ]
 testenv-commands = [
     "{envdir}/bin/alltests {posargs:-vc}",
+    ]
+testenv-setenv = [
+    "ZOPE_INTERFACE_STRICT_IRO=1",
     ]
 coverage-basepython = "python3.8"
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"

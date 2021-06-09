@@ -29,7 +29,6 @@ from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
 from App.version_txt import getZopeVersion
 from DateTime import DateTime
-from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
@@ -50,7 +49,7 @@ APP_MANAGER = None
 
 
 @implementer(IApplication)
-class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
+class Application(ApplicationDefaultPermissions, Folder.Folder):
     """Top-level system object"""
 
     security = ClassSecurityInfo()

@@ -44,7 +44,6 @@ from OFS.CopySupport import CopySource
 from OFS.interfaces import IItem
 from OFS.interfaces import IItemWithName
 from OFS.interfaces import ISimpleItem
-from OFS.Lockable import LockableItem
 from OFS.owner import Owned
 from OFS.role import RoleManager
 from OFS.Traversable import Traversable
@@ -92,10 +91,8 @@ class PathReprProvider(Base):
 @implementer(IItem)
 class Item(
     PathReprProvider,
-    Base,
     Navigation,
     Resource,
-    LockableItem,
     CopySource,
     Tabs,
     Traversable,
