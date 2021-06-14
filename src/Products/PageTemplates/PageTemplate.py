@@ -26,8 +26,8 @@ from zope.pagetemplate.pagetemplate import PTRuntimeError
 from zope.tales.expressions import SimpleModuleImporter
 
 
-class PageTemplate(ExtensionClass.Base,
-                   zope.pagetemplate.pagetemplate.PageTemplate):
+class PageTemplate(zope.pagetemplate.pagetemplate.PageTemplate,
+                   ExtensionClass.Base):
 
     def pt_getEngine(self):
         return getEngine()

@@ -52,14 +52,12 @@ def manage_addFolder(
 
 @implementer(IFolder)
 class Folder(
-    PathReprProvider,
     ObjectManager,
-    PropertyManager,
-    RoleManager,
-    Collection,
-    LockableItem,
     Item,
-    FindSupport
+    Collection,
+    RoleManager,
+    PropertyManager,
+    FindSupport,
 ):
     """Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement

@@ -67,7 +67,7 @@ ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
 
 @implementer(IDAVResource)
-class Resource(Base, LockableItem):
+class Resource(LockableItem, Base):
 
     """The Resource mixin class provides basic WebDAV support for
     non-collection objects. It provides default implementations

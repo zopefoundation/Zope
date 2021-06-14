@@ -459,7 +459,7 @@ class DebugManagerTests(unittest.TestCase):
         return DebugManager
 
     def _makeOne(self, id):
-        return self._getTargetClass()(id)
+        return self._getTargetClass()()
 
     def _makeModuleClasses(self):
         import sys

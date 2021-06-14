@@ -148,13 +148,12 @@ _marker = []
 
 @implementer(IObjectManager)
 class ObjectManager(
-    CopyContainer,
-    Navigation,
-    Tabs,
     Implicit,
     Persistent,
+    Navigation,
     Collection,
-    LockableItem,
+    CopyContainer,
+    Tabs,
     Traversable
 ):
     """Generic object manager

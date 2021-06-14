@@ -66,10 +66,10 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
             _prefix = PREFIX
         elif not isinstance(_prefix, str):
             _prefix = Common.package_home(_prefix)
-        args = (self, os.path.join(_prefix, name + '.dtml'))
+        args = (os.path.join(_prefix, name + '.dtml'),)
         if '__name__' not in kw:
             kw['__name__'] = os.path.split(name)[-1]
-        ClassicHTMLFile.inheritedAttribute('__init__')(*args, **kw)
+        super().__init__(*args, **kw)
 
     def _cook_check(self):
         if getConfiguration().debug_mode:
@@ -131,7 +131,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     def __init__(self, name, _prefix=None, **kw):
         self.ZBindings_edit(defaultBindings)
         self._setFuncSignature()
-        DTMLFile.inheritedAttribute('__init__')(self, name, _prefix, **kw)
+        super().__init__(name, _prefix, **kw)
 
     def getOwner(self, info=0):
         '''

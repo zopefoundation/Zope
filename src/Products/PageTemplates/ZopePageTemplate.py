@@ -244,7 +244,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             self.output_encoding = encoding
 
         self.ZCacheable_invalidate()
-        ZopePageTemplate.inheritedAttribute('write')(self, text)
+        super().write(text)
 
     def _exec(self, bound_names, args, kw):
         """Call a Page Template"""

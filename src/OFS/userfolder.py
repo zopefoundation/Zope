@@ -35,8 +35,6 @@ from zExceptions import BadRequest
 
 
 class BasicUserFolder(
-    Navigation,
-    Tabs,
     Item,
     RoleManager,
     accesscontrol_userfolder.BasicUserFolder

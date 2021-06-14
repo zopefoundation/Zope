@@ -39,7 +39,7 @@ class AqPageTemplate(Implicit, PageTemplate):
     pass
 
 
-class AqZopePageTemplate(Implicit, ZopePageTemplate):
+class AqZopePageTemplate(ZopePageTemplate):
     pass
 
 

@@ -92,7 +92,6 @@ class PathReprProvider(Base):
 @implementer(IItem)
 class Item(
     PathReprProvider,
-    Base,
     Navigation,
     Resource,
     LockableItem,

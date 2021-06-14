@@ -59,7 +59,7 @@ def guess_type(filename, body):
 # That class has been forked off of this code and now we have duplication.
 # They already share a common superclass
 # zope.pagetemplate.pagetemplate.PageTemplate
-class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
+class PageTemplateFile(Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
 
     meta_type = 'Page Template (File)'

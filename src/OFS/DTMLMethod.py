@@ -52,12 +52,12 @@ class Code:
 
 
 class DTMLMethod(
+    Item_w__name__,
     PathReprProvider,
     RestrictedDTML,
     HTML,
     Implicit,
     RoleManager,
-    Item_w__name__,
     Historical,
     Cacheable
 ):
