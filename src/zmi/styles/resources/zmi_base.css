@@ -958,10 +958,12 @@ header.navbar select.form-control-sm,
 	padding:0;
 }
 .zmi-zope_copyright h2 {
-	font-size: 130%;
+	font-size: 120%;
 	color: white;
 	margin: 0;
-	line-height: 1.5;
+	line-height: 1.65;
+	font-weight:normal;
+	letter-spacing: .05rem;
 }
 .zmi-zope_copyright header {
 	box-sizing: border-box;
