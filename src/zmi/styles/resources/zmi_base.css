@@ -953,10 +953,18 @@ header.navbar select.form-control-sm,
 
 	}
 }
+.zmi-zope_copyright {
+	margin:0;
+	padding:0;
+}
 .zmi-zope_copyright h2 {
 	font-size: 130%;
 	color: white;
 	margin: 0;
+	line-height: 1.5;
+}
+.zmi-zope_copyright header {
+	box-sizing: border-box;
 }
 
 /* EXAMPLE: IMPLANT YOUR LOGO */
