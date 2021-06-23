@@ -248,7 +248,7 @@ parent
 Check the wrapper type
 
   >>> from Acquisition import ImplicitAcquisitionWrapper
-  >>> type(context) == ImplicitAcquisitionWrapper
+  >>> isinstance(context, ImplicitAcquisitionWrapper)
   True
 
 The parent of the view is the view's context:
@@ -279,7 +279,7 @@ The same applies to a view registered with <browser:view /> instead of
   ('Manager',)
   >>> context = view.context
   >>> from Acquisition import ImplicitAcquisitionWrapper
-  >>> type(context) == ImplicitAcquisitionWrapper
+  >>> issubclass(type(context), ImplicitAcquisitionWrapper)
   True
   >>> view.__parent__ == view.context
   True

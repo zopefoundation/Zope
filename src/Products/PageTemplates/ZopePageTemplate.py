@@ -67,7 +67,7 @@ InitializeClass(Src)
 
 
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
-                       Traversable, PropertyManager):
+                       PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
 
     meta_type = 'Page Template'
