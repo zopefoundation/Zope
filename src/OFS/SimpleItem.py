@@ -89,8 +89,7 @@ class PathReprProvider(Base):
         return res
 
 
-@implementer(IItem)
-class Item(
+class BaseItem(
     PathReprProvider,
     Navigation,
     Resource,
@@ -100,29 +99,18 @@ class Item(
     Traversable,
     Owned
 ):
-    """A common base class for simple, non-container objects."""
+    """An (abstract) base class for Zope objects.
 
-    zmi_icon = 'far fa-file'
+    It manages `id` and `title`.
+
+    It is typically used in combination with ``ObjectManager``.
+    In other situation ``Item`` is likely a better base class.
+    """
     zmi_show_add_dialog = True
 
     security = ClassSecurityInfo()
 
-    isPrincipiaFolderish = 0
-    isTopLevelPrincipiaApplicationObject = 0
-
     manage_options = ({'label': 'Interfaces', 'action': 'manage_interfaces'},)
-
-    def manage_afterAdd(self, item, container):
-        pass
-    manage_afterAdd.__five_method__ = True
-
-    def manage_beforeDelete(self, item, container):
-        pass
-    manage_beforeDelete.__five_method__ = True
-
-    def manage_afterClone(self, item):
-        pass
-    manage_afterClone.__five_method__ = True
 
     # Direct use of the 'id' attribute is deprecated - use getId()
     id = ''
@@ -141,10 +129,6 @@ class Item(
 
     # Alias id to __name__, which will make tracebacks a good bit nicer:
     __name__ = ComputedAttribute(lambda self: self.id)
-
-    # Meta type used for selecting all objects of a given type.
-    meta_type = 'simple item'
-
     # Default title.
     title = ''
 
@@ -187,14 +171,6 @@ class Item(
     def this(self):
         # Handy way to talk to ourselves in document templates.
         return self
-
-    def tpURL(self):
-        # My URL as used by tree tag
-        return self.getId()
-
-    def tpValues(self):
-        # My sub-objects as used by the tree tag
-        return ()
 
     _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
 
@@ -307,6 +283,48 @@ class Item(
         """
         raise Redirect("%s/manage_main" % URL1)
 
+    @security.protected(access_contents_information)
+    def getParentNode(self):
+        """The parent of this node.  All nodes except Document
+        DocumentFragment and Attr may have a parent"""
+        return getattr(self, '__parent__', None)
+
+
+InitializeClass(BaseItem)
+
+
+@implementer(IItem)
+class Item(BaseItem):
+    """A common base class for simple, non-container objects."""
+
+    zmi_icon = 'far fa-file'
+
+    isPrincipiaFolderish = 0
+    isTopLevelPrincipiaApplicationObject = 0
+
+    def manage_afterAdd(self, item, container):
+        pass
+    manage_afterAdd.__five_method__ = True
+
+    def manage_beforeDelete(self, item, container):
+        pass
+    manage_beforeDelete.__five_method__ = True
+
+    def manage_afterClone(self, item):
+        pass
+    manage_afterClone.__five_method__ = True
+
+    # Meta type used for selecting all objects of a given type.
+    meta_type = 'simple item'
+
+    def tpURL(self):
+        # My URL as used by tree tag
+        return self.getId()
+
+    def tpValues(self):
+        # My sub-objects as used by the tree tag
+        return ()
+
     # This keeps simple items from acquiring their parents
     # objectValues, etc., when used in simple tree tags.
     def objectValues(self, spec=None):
@@ -315,12 +333,6 @@ class Item(
 
     def __len__(self):
         return 1
-
-    @security.protected(access_contents_information)
-    def getParentNode(self):
-        """The parent of this node.  All nodes except Document
-        DocumentFragment and Attr may have a parent"""
-        return getattr(self, '__parent__', None)
 
 
 InitializeClass(Item)

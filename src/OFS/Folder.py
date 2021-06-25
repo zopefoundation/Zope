@@ -22,7 +22,7 @@ from OFS.interfaces import IFolder
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
-from OFS.SimpleItem import Item
+from OFS.SimpleItem import BaseItem
 from webdav.Collection import Collection
 from zope.interface import implementer
 
@@ -50,8 +50,8 @@ def manage_addFolder(
 
 @implementer(IFolder)
 class Folder(
+    BaseItem,
     ObjectManager,
-    Item,
     Collection,
     RoleManager,
     PropertyManager,
@@ -77,7 +77,7 @@ class Folder(
         + ({'label': 'View', 'action': ''}, )
         + PropertyManager.manage_options
         + RoleManager.manage_options
-        + Item.manage_options
+        + BaseItem.manage_options
         + FindSupport.manage_options
     )
 
