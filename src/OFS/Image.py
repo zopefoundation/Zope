@@ -95,7 +95,6 @@ def manage_addFile(
         REQUEST.RESPONSE.redirect(self.absolute_url() + '/manage_main')
 
 
-
 @implementer(IWriteLock, HTTPRangeSupport.HTTPRangeInterface)
 class File(
     Item_w__name__,

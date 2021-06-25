@@ -46,7 +46,6 @@ from OFS.CopySupport import CopyContainer
 from OFS.event import ObjectWillBeAddedEvent
 from OFS.event import ObjectWillBeRemovedEvent
 from OFS.interfaces import IObjectManager
-from OFS.Lockable import LockableItem
 from OFS.subscribers import compatibilityCall
 from OFS.Traversable import Traversable
 from Persistence import Persistent

@@ -23,7 +23,6 @@ from Acquisition import aq_parent
 from App.Common import package_home
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
-from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
