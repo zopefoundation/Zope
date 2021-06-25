@@ -30,7 +30,6 @@ from OFS.History import Historical
 from OFS.History import html_diff
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
-from OFS.Traversable import Traversable
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
