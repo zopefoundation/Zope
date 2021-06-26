@@ -17,7 +17,6 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
-import types
 import warnings
 
 from six import binary_type
@@ -25,7 +24,7 @@ from six import text_type
 
 import OFS.interfaces
 from AccessControl import safe_builtins
-from AccessControl.ZopeGuards import guarded_import
+from AccessControl.SecurityManagement import getSecurityManager
 from Acquisition import aq_base
 from MultiMapping import MultiMapping
 from zExceptions import NotFound
@@ -75,33 +74,43 @@ def boboAwareZopeTraverse(object, path_items, econtext):
     necessary (bobo-awareness).
     """
     request = getattr(econtext, 'request', None)
+    validate = getSecurityManager().validate
     path_items = list(path_items)
     path_items.reverse()
 
     while path_items:
         name = path_items.pop()
 
-        if name == '_':
-            warnings.warn('Traversing to the name `_` is deprecated '
-                          'and will be removed in Zope 6.',
-                          DeprecationWarning)
-        elif name.startswith('_'):
-            raise NotFound(name)
-
         if OFS.interfaces.ITraversable.providedBy(object):
             object = object.restrictedTraverse(name)
-        elif isinstance(object, types.ModuleType):
+        else:
+            found = traversePathElement(object, name, path_items,
+                                        request=request)
+
+            # Special backwards compatibility exception for the name ``_``,
+            # which was often used for translation message factories.
+            # Allow and continue traversal.
+            if name == '_':
+                warnings.warn('Traversing to the name `_` is deprecated '
+                              'and will be removed in Zope 6.',
+                              DeprecationWarning)
+                object = found
+                continue
+
+            # All other names starting with ``_`` are disallowed.
+            # This emulates what restrictedTraverse does.
+            if name.startswith('_'):
+                raise NotFound(name)
+
+            # traversePathElement doesn't apply any Zope security policy,
+            # so we validate access explicitly here.
             try:
-                # guarded_import will do all necessary security checking
-                # but will not return the imported item itself.
-                guarded_import(object.__name__, fromlist=[name])
-                object = getattr(object, name)
+                validate(object, object, name, found)
+                object = found
             except Unauthorized:
                 # Convert Unauthorized to prevent information disclosures
                 raise NotFound(name)
-        else:
-            object = traversePathElement(object, name, path_items,
-                                         request=request)
+
     return object
 
 

@@ -3,7 +3,6 @@
 import warnings
 from ast import NodeTransformer
 from ast import parse
-from types import ModuleType
 
 from chameleon.astutil import Static
 from chameleon.astutil import Symbol
@@ -12,10 +11,10 @@ from chameleon.tales import NotExpr
 from chameleon.tales import StringExpr
 from six import class_types
 
+from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.ZopeGuards import guarded_apply
 from AccessControl.ZopeGuards import guarded_getattr
 from AccessControl.ZopeGuards import guarded_getitem
-from AccessControl.ZopeGuards import guarded_import
 from AccessControl.ZopeGuards import guarded_iter
 from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
@@ -60,33 +59,49 @@ class BoboAwareZopeTraverse(object):
     def traverse(cls, base, request, path_items):
         """See ``zope.app.pagetemplate.engine``."""
 
+        validate = getSecurityManager().validate
         path_items = list(path_items)
         path_items.reverse()
 
         while path_items:
             name = path_items.pop()
 
-            if name == '_':
-                warnings.warn('Traversing to the name `_` is deprecated '
-                              'and will be removed in Zope 6.',
-                              DeprecationWarning)
-            elif name.startswith('_'):
-                raise NotFound(name)
-
             if ITraversable.providedBy(base):
                 base = getattr(base, cls.traverse_method)(name)
-            elif isinstance(base, ModuleType):
+            else:
+                found = traversePathElement(base, name, path_items,
+                                            request=request)
+
+                # If traverse_method is something other than
+                # ``restrictedTraverse`` then traversal is assumed to be
+                # unrestricted. This emulates ``unrestrictedTraverse``
+                if cls.traverse_method != 'restrictedTraverse':
+                    base = found
+                    continue
+
+                # Special backwards compatibility exception for the name ``_``,
+                # which was often used for translation message factories.
+                # Allow and continue traversal.
+                if name == '_':
+                    warnings.warn('Traversing to the name `_` is deprecated '
+                                  'and will be removed in Zope 6.',
+                                  DeprecationWarning)
+                    base = found
+                    continue
+
+                # All other names starting with ``_`` are disallowed.
+                # This emulates what restrictedTraverse does.
+                if name.startswith('_'):
+                    raise NotFound(name)
+
+                # traversePathElement doesn't apply any Zope security policy,
+                # so we validate access explicitly here.
                 try:
-                    # guarded_import will do all necessary security checking
-                    # but will not return the imported item itself.
-                    guarded_import(base.__name__, fromlist=[name])
-                    base = getattr(base, name)
+                    validate(base, base, name, found)
+                    base = found
                 except Unauthorized:
                     # Convert Unauthorized to prevent information disclosures
                     raise NotFound(name)
-            else:
-                base = traversePathElement(base, name, path_items,
-                                           request=request)
 
         return base
 
