@@ -1,11 +1,12 @@
+Zope==4.6.2
 AccessControl==4.2
 Acquisition==4.7
 AuthEncoding==4.2.1
-BTrees==4.9.2
+BTrees==4.9.1
 Chameleon==3.9.1
 DateTime==4.3
 DocumentTemplate==3.4
-ExtensionClass==4.5.1
+ExtensionClass==4.5.0
 Missing==4.1
 MultiMapping==4.1
 Paste==3.5.0
@@ -21,7 +22,6 @@ WebTest==2.0.35
 ZConfig==3.6.0
 ZEO==5.2.2
 ZODB==5.6.0
-ZServer==4.0.2 ; python_version < '3.0'
 Zope2==4.0
 five.globalrequest==99.1
 five.localsitemanager==3.2.2
