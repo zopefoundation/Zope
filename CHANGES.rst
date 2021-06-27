@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.6.2 (unreleased)
+4.6.2 (2021-06-27)
 ------------------
 
 - Backport stricter traversal checks from Zope 5
