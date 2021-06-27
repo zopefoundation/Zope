@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update dependencies to the latest releases that still support Python 2.
 
 
 4.6.2 (2021-06-27)
