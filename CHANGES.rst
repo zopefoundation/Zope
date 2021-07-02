@@ -24,8 +24,6 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases that still support Python 2.
 
-- Update to newest compatible versions of dependencies.
-
 
 4.6.1 (2021-06-08)
 ------------------
