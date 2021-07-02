@@ -269,7 +269,7 @@ class DTMLMethod(
     def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
         """ Replace contents with 'data', title with 'title'.
         """
-        self._validateProxy(REQUEST)
+        self._validateProxy()
         if self.wl_isLocked():
             raise ResourceLockedError(self._locked_error_text)
 
@@ -299,7 +299,7 @@ class DTMLMethod(
 
         Store `file` as a native `str`.
         """
-        self._validateProxy(REQUEST)
+        self._validateProxy()
         if self.wl_isLocked():
             if REQUEST is not None:
                 return self.manage_main(
@@ -323,32 +323,28 @@ class DTMLMethod(
     def manage_haveProxy(self, r):
         return r in self._proxy_roles
 
-    def _validateProxy(self, request, roles=None):
+    def _validateProxy(self, roles=None):
         if roles is None:
             roles = self._proxy_roles
         if not roles:
             return
-        user = u = getSecurityManager().getUser()
-        user = user.allowed
-        for r in roles:
-            if r and not user(self, (r,)):
-                user = None
-                break
-
-        if user is not None:
+        user = getSecurityManager().getUser()
+        if user is not None and user.allowed(self, roles):
             return
-
         raise Forbidden(
             'You are not authorized to change <em>%s</em> because you '
             'do not have proxy roles.\n<!--%s, %s-->' % (
-                self.__name__, u, roles))
+                self.__name__, user, roles))
 
     @security.protected(change_proxy_roles)
     @requestmethod('POST')
     def manage_proxy(self, roles=(), REQUEST=None):
-        "Change Proxy Roles"
-        self._validateProxy(REQUEST, roles)
-        self._validateProxy(REQUEST)
+        """Change Proxy Roles"""
+        user = getSecurityManager().getUser()
+        if 'Manager' not in user.getRolesInContext(self):
+            self._validateProxy(roles)
+            self._validateProxy()
+        self.ZCacheable_invalidate()
         self._proxy_roles = tuple(roles)
         if REQUEST:
             message = "Saved changes."
@@ -374,7 +370,7 @@ class DTMLMethod(
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         body = safe_file_data(REQUEST.get('BODY', ''))
-        self._validateProxy(REQUEST)
+        self._validateProxy()
         self.munge(body)
         self.ZCacheable_invalidate()
         RESPONSE.setStatus(204)
