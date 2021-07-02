@@ -90,10 +90,10 @@ class TestPropertyManager(unittest.TestCase):
         pm._setProperty('test_lines', [], type='lines')
 
         pm._updateProperty('test_lines', 'foo\nbar')
-        self.assertEqual(pm.getProperty('test_lines'), (b'foo', b'bar'))
+        self.assertEqual(pm.getProperty('test_lines'), ('foo', 'bar'))
 
         pm._updateProperty('test_lines', b'bar\nbaz')
-        self.assertEqual(pm.getProperty('test_lines'), (b'bar', b'baz'))
+        self.assertEqual(pm.getProperty('test_lines'), ('bar', 'baz'))
 
 
 class TestPropertySheets(unittest.TestCase):
@@ -147,7 +147,7 @@ class TestPropertySheet(unittest.TestCase):
         ps._setProperty('test_lines', [], type='lines')
 
         ps._updateProperty('test_lines', 'foo\nbar')
-        self.assertEqual(ps.getProperty('test_lines'), (b'foo', b'bar'))
+        self.assertEqual(ps.getProperty('test_lines'), ('foo', 'bar'))
 
         ps._updateProperty('test_lines', b'bar\nbaz')
-        self.assertEqual(ps.getProperty('test_lines'), (b'bar', b'baz'))
+        self.assertEqual(ps.getProperty('test_lines'), ('bar', 'baz'))
