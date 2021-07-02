@@ -23,17 +23,12 @@ from DateTime.interfaces import SyntaxError
 default_encoding = 'utf-8'
 
 
-def convert_single_value_to_string(v):
-    """Converts a single value to string."""
+def field2string(v):
+    """Converts value to string."""
     if isinstance(v, bytes):
         return v.decode(default_encoding)
     else:
         return str(v)
-
-
-def field2string(v):
-    """Converts value to string."""
-    return convert_single_value_to_string(v)
 
 
 def field2bytes(v):
@@ -47,7 +42,7 @@ def field2bytes(v):
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):
-    value = convert_single_value_to_string(value)
+    value = field2string(value)
     match_object = nl(value)
     if match_object is None:
         return value
@@ -69,7 +64,7 @@ def field2text(value, nl=re.compile('\r\n|\n\r').search):
 
 
 def field2required(v):
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     if v.strip():
         return v
     raise ValueError('No input for required field<p>')
@@ -78,7 +73,7 @@ def field2required(v):
 def field2int(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2int, v))
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     if v:
         try:
             return int(v)
@@ -94,7 +89,7 @@ def field2int(v):
 def field2float(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2float, v))
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     if v:
         try:
             return float(v)
@@ -110,7 +105,7 @@ def field2float(v):
 def field2long(v):
     if isinstance(v, (list, tuple)):
         return list(map(field2long, v))
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     # handle trailing 'L' if present.
     if v[-1:] in ('L', 'l'):
         v = v[:-1]
@@ -126,18 +121,18 @@ def field2long(v):
 
 
 def field2tokens(v):
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     return v.split()
 
 
 def field2lines(v):
     if isinstance(v, (list, tuple)):
-        return [convert_single_value_to_string(item) for item in v]
-    return convert_single_value_to_string(v).splitlines()
+        return [field2string(item) for item in v]
+    return field2string(v).splitlines()
 
 
 def field2date(v):
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     try:
         v = DateTime(v)
     except SyntaxError:
@@ -146,7 +141,7 @@ def field2date(v):
 
 
 def field2date_international(v):
-    v = convert_single_value_to_string(v)
+    v = field2string(v)
     try:
         v = DateTime(v, datefmt="international")
     except SyntaxError:
