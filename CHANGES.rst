@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.3 (unreleased)
 ------------------
 
+- make sure "Manager" users can always modify proxy roles
+  (`see Products.PythonScripts#50
+    <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
@@ -19,6 +23,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Backport stricter traversal checks from Zope 5
 
 - Update dependencies to the latest releases that still support Python 2.
+
+- Update to newest compatible versions of dependencies.
 
 
 4.6.1 (2021-06-08)

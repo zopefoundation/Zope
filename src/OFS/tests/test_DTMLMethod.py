@@ -2,10 +2,15 @@
 import io
 import unittest
 
+from six.moves.urllib.error import HTTPError
+
 import Testing.testbrowser
 import Testing.ZopeTestCase
 import zExceptions
 import Zope2.App.zcml
+from AccessControl.Permissions import change_proxy_roles
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from Testing.makerequest import makerequest
 
 
@@ -173,6 +178,86 @@ class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.browser.getControl('Save').click()
         self.assertIn('Saved changes.', self.browser.contents)
         self.assertEqual(self.browser.getControl(name='data:text').value, code)
+
+    def test_proxyroles_manager(self):
+        test_role = 'Test Role'
+        self.app._addRole(test_role)
+
+        # Test the original state
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role))
+
+        # Go to the "Proxy" ZMI tab, grab the Proxy Roles select box,
+        # select the new role and submit
+        self.browser.open('http://localhost/dtml_meth/manage_proxyForm')
+        roles_selector = self.browser.getControl(name='roles:list')
+        testrole_option = roles_selector.getControl(test_role)
+        self.assertFalse(testrole_option.selected)
+        testrole_option.selected = True
+        self.browser.getControl('Save Changes').click()
+
+        # The Python Script should now have a proxy role set
+        self.assertTrue(self.app.dtml_meth.manage_haveProxy(test_role))
+
+    def test_proxyroles_nonmanager(self):
+        # This test checks an unusual configuration where roles other than
+        # Manager are allowed to change proxy roles.
+        proxy_form_url = 'http://localhost/dtml_meth/manage_proxyForm'
+        test_role = 'Test Role'
+        self.app._addRole(test_role)
+        test_role_2 = 'Unprivileged Role'
+        self.app._addRole(test_role_2)
+        self.app.manage_permission(change_proxy_roles, ['Manager', test_role])
+
+        # Add some test users
+        uf = self.app.acl_users
+        uf.userFolderAddUser('privileged', 'priv', [test_role], [])
+        uf.userFolderAddUser('peon', 'unpriv', [test_role_2], [])
+
+        # Test the original state
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role))
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role_2))
+
+        # Attempt as unprivileged user will fail both in the browser and
+        # from trusted code
+        self.browser.login('peon', 'unpriv')
+        with self.assertRaises(HTTPError):
+            self.browser.open(proxy_form_url)
+
+        newSecurityManager(None, uf.getUser('peon'))
+        with self.assertRaises(zExceptions.Forbidden):
+            self.app.dtml_meth.manage_proxy(roles=(test_role,))
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role))
+
+        # Now log in as privileged user and try to set a proxy role
+        # the privileged user does not have. This must fail.
+        self.browser.login('privileged', 'priv')
+        self.browser.open(proxy_form_url)
+        roles_selector = self.browser.getControl(name='roles:list')
+        bad_option = roles_selector.getControl(test_role_2)
+        self.assertFalse(bad_option.selected)
+        bad_option.selected = True
+        with self.assertRaises(HTTPError):
+            self.browser.getControl('Save Changes').click()
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role_2))
+
+        newSecurityManager(None, uf.getUser('privileged'))
+        with self.assertRaises(zExceptions.Forbidden):
+            self.app.dtml_meth.manage_proxy(roles=(test_role_2,))
+        self.assertFalse(self.app.dtml_meth.manage_haveProxy(test_role_2))
+
+        # Trying again as privileged user with a proxy role the user has
+        self.browser.open(proxy_form_url)
+        roles_selector = self.browser.getControl(name='roles:list')
+        testrole_option = roles_selector.getControl(test_role)
+        self.assertFalse(testrole_option.selected)
+        testrole_option.selected = True
+        self.browser.getControl('Save Changes').click()
+
+        # The Python Script should now have a proxy role set
+        self.assertTrue(self.app.dtml_meth.manage_haveProxy(test_role))
+
+        # Cleanup
+        noSecurityManager()
 
 
 class FactoryTests(unittest.TestCase):
