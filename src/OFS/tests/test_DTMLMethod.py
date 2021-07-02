@@ -195,7 +195,7 @@ class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
         testrole_option.selected = True
         self.browser.getControl('Save Changes').click()
 
-        # The Python Script should now have a proxy role set
+        # The DTML Method should now have a proxy role set
         self.assertTrue(self.app.dtml_meth.manage_haveProxy(test_role))
 
     def test_proxyroles_nonmanager(self):
@@ -253,7 +253,7 @@ class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
         testrole_option.selected = True
         self.browser.getControl('Save Changes').click()
 
-        # The Python Script should now have a proxy role set
+        # The DTML Method should now have a proxy role set
         self.assertTrue(self.app.dtml_meth.manage_haveProxy(test_role))
 
         # Cleanup
