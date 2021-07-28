@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.3 (unreleased)
 ------------------
 
-- Prevent ``DeprecationWarnigs`` from moved imports in ``AccessControl``
+- Prevent ``DeprecationWarnings`` from moved imports in ``AccessControl``
 
 - make sure "Manager" users can always modify proxy roles
   (`see Products.PythonScripts#50
