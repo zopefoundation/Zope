@@ -491,7 +491,7 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
             def validate(self, request, auth='', roles=_noroles):
                 # always validate access as anonymous, good for checking
                 # if things are publishable regardless of authorization
-                from AccessControl.SpecialUsers import nobody
+                from AccessControl.users import nobody
                 return nobody.__of__(self)
         acl_users = AclUsers()
         return acl_users

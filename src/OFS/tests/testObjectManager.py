@@ -7,10 +7,10 @@ from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
-from AccessControl.SpecialUsers import emergency_user
-from AccessControl.SpecialUsers import nobody
-from AccessControl.SpecialUsers import system
-from AccessControl.users import User  # before SpecialUsers
+from AccessControl.users import User
+from AccessControl.users import emergency_user
+from AccessControl.users import nobody
+from AccessControl.users import system
 from Acquisition import Implicit
 from Acquisition import aq_self
 from App.config import getConfiguration

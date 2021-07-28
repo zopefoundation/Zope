@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.3 (unreleased)
 ----------------
 
+- Prevent ``DeprecationWarnings`` from moved imports in ``AccessControl``
+
 - make sure "Manager" users can always modify proxy roles
   (`see Products.PythonScripts#50
     <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
