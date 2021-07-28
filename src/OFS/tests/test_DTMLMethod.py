@@ -16,7 +16,7 @@ from Testing.makerequest import makerequest
 
 def _lock_item(item):
     from OFS.LockItem import LockItem
-    from AccessControl.SpecialUsers import nobody
+    from AccessControl.users import nobody
     item.wl_setLock('token', LockItem(nobody, token='token'))
 
 
