@@ -69,7 +69,7 @@ setup(
     package_dir={'': 'src'},
     python_requires='>= 3.6',
     install_requires=[
-        'AccessControl >= 4.2',
+        'AccessControl >= 5.2',
         'Acquisition',
         'BTrees',
         'Chameleon >= 3.7.0',
