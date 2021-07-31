@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.3 (unreleased)
 ------------------
 
+- Update the ``AccessControl`` version pin to fix a remote code execution issue
+  (see `AccessControl security advisory GHSA-qcx9-j53g-ccgf
+  <https://github.com/zopefoundation/AccessControl/security/advisories/GHSA-qcx9-j53g-ccgf>`_)
+
 - Prevent ``DeprecationWarnings`` from moved imports in ``AccessControl``
 
 - make sure "Manager" users can always modify proxy roles

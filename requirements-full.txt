@@ -1,5 +1,5 @@
 Zope==<5
-AccessControl==4.2
+AccessControl==4.3
 Acquisition==4.7
 AuthEncoding==4.2.1
 BTrees==4.9.2
