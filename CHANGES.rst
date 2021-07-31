@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.6.3 (unreleased)
+4.6.3 (2021-07-31)
 ------------------
 
 - Update the ``AccessControl`` version pin to fix a remote code execution issue
@@ -18,7 +18,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - make sure "Manager" users can always modify proxy roles
   (`see Products.PythonScripts#50
-    <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
+  <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
 
 - Update dependencies to the latest releases that still support Python 2.
 
