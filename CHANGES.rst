@@ -19,7 +19,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - make sure "Manager" users can always modify proxy roles
   (`see Products.PythonScripts#50
-    <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
+  <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
 
 - Deprecate usage of "unicode" converters. Also, the behavior of
   ``field2lines`` is now aligned to the other converters and returns a list of
