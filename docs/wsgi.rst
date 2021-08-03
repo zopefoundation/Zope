@@ -201,7 +201,7 @@ werkzeug
 ++++++++
 `werkzeug <https://palletsprojects.com/p/werkzeug/>`_ is a WSGI library that
 contains not just a WSGI server, but also a powerful debugger. It can
-easily integrate wth Zope using a shim package called `dataflake.wsgi.werkzeug 
+easily integrate with Zope using a shim package called `dataflake.wsgi.werkzeug 
 <https://dataflakewsgiwerkzeug.readthedocs.io/>`_. See the `Using this package`
 section for how to integrate `werkzeug` using Zope's own ``runwsgi`` script and
 how to create a suitable WSGI configuration.
