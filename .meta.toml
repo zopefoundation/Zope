@@ -2,15 +2,15 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "10891b6cf9212ecd48f9bc70138aa14324d6a2b0"
+commit-id = "3329f708f7922fcee2608b4057a3976ee4ed6d72"
 
 [python]
-with-appveyor = false
 with-pypy = false
 with-legacy-python = false
 with-docs = true
 with-sphinx-doctests = false
 with-windows = true
+with-future-python = true
 
 [coverage]
 fail-under = 80
@@ -29,6 +29,9 @@ additional-config = [
     ]
 
 [tox]
+testenv-deps = [
+    "wheel",
+    ]
 additional-envlist = [
     "pre-commit",
     ]

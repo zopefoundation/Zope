@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.3.1 (unreleased)
 ------------------
 
+- Add support for Python 3.10.
+
 - Update to newest compatible versions of dependencies.
 
 

@@ -1,9 +1,11 @@
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
+*.dll
 *.egg-info/
 *.profraw
 *.pyc
 *.pyo
+*.so
 .coverage
 .coverage.*
 .eggs/
