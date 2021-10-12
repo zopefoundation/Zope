@@ -17,6 +17,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.3 (2021-07-31)
 ----------------
 
+- Reinstate simple sessioning with ``Products.TemporaryFolder``
+  because the underlying issues with ``tempstorage`` have been fixed.
+  (`#985 <https://github.com/zopefoundation/Zope/issues/985>`_)
+
 - Update the ``AccessControl`` version pin to fix a remote code execution issue
   (see `AccessControl security advisory GHSA-qcx9-j53g-ccgf
   <https://github.com/zopefoundation/AccessControl/security/advisories/GHSA-qcx9-j53g-ccgf>`_)
