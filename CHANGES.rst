@@ -8,10 +8,12 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.3.1 (unreleased)
-------------------
+5.4 (unreleased)
+----------------
 
 - Add support for Python 3.10.
+
+- Drop support for Python 3.6.
 
 - Update to newest compatible versions of dependencies.
 
