@@ -25,11 +25,12 @@ work.
 
     The main difference between sessioning in Zope 2 and Zope 4 and higher is
     the fact that sessioning is no longer built-in. You need to install the
-    add-on package ``Products.Sessions`` and then manually instantiate the
-    Zope objects once that used to be put into the ZODB automatically.
+    add-on packages ``Products.Sessions`` and ``Products.TemporaryFolder``
+    and then manually instantiate the Zope objects once that used to be put
+    into the ZODB automatically.
 
-To use the simple sessioning offered by ``Products.Sessions`` and described in
-this document, follow these steps after installing it:
+To use the simple sessioning as described in this document, follow these steps
+after installing ``Products.Sessions`` and ``Products.TemporaryFolder``:
 
 - Add or uncomment the following temporary storage database definition in your
   Zope configuration file ``zope.conf``::
