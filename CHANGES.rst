@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.4 (unreleased)
 ------------------
 
+- Reinstate simple sessioning with ``Products.TemporaryFolder``
+  because the underlying issues with ``tempstorage`` have been fixed.
+  (`#985 <https://github.com/zopefoundation/Zope/issues/985>`_)
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
