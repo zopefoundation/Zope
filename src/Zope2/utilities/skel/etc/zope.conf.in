@@ -9,6 +9,17 @@ instancehome $INSTANCE
    mount-point /
 </zodb_db>
 
+
+# Uncomment this if you use Products.Sessions and Products.TemporaryFolder
+# <zodb_db temporary>
+#     <temporarystorage>
+#       name Temporary database (for sessions)
+#     </temporarystorage>
+#     mount-point /temp_folder
+#     container-class Products.TemporaryFolder.TemporaryContainer
+# </zodb_db>
+
+
 # Directive: locale
 #
 # Description:
