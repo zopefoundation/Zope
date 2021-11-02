@@ -55,6 +55,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -67,7 +68,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
-    python_requires='>= 3.7',
+    python_requires='>= 3.6',
     install_requires=[
         'AccessControl >= 5.2',
         'Acquisition',

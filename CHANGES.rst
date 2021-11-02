@@ -13,9 +13,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Add support for Python 3.10.
 
-- Drop support for Python 3.6, it will reach end-of-life in December 2021
-  (see release schedule at https://www.python.org/dev/peps/pep-0494/)
-
 - Update to newest compatible versions of dependencies.
 
 
