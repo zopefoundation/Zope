@@ -1,3 +1,4 @@
-Zope
+Sphinx==4.2.0
 ZConfig
+Zope
 tempstorage
