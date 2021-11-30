@@ -23,7 +23,6 @@ available:
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include:
 
-  * 2.6.x
   * 2.7.x
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
@@ -41,82 +40,56 @@ available:
   __ https://sourceforge.net/projects/pywin32/
 
 
-Installing standalone Zope using zc.buildout
---------------------------------------------
+Installing Zope using zc.buildout
+---------------------------------
 
-In this configuration, we use ``zc.buildout`` to install the Zope software,
-but then generate server "instances" outside the buildout environment.
-
-Installing the Zope software
-::::::::::::::::::::::::::::
+In this configuration, we use ``zc.buildout`` to install the Zope software.
+We are using a buildout recipe which does most of the configuration work.
 
 Installing the Zope software using ``zc.buildout`` involves the following
 steps:
 
-- Download the Zope 2 source distribution from `PyPI`__
+- Create a virtual environment where you install ``zc.buildout``::
 
-  __ http://pypi.python.org/pypi/Zope2
+  $ virtualenv --python 2.7 zope-2.13
+  $ cd zope-2.13
+  $ bin/pip install "zc.buildout<3"
 
-- If your Python has ``setuptools`` installed, create a virtual environment
-  *without setuptools* (newer ``setuptools`` versions in the base Python
-  break the version of buildout we use).
+- Write a minimal ``buildout.cfg`` and store it in the ``zope-2.13``
+  directory::
 
-- Bootstrap the buildout using the virtual environment's Python.
+    $ cat > buildout.cfg << EOF
+    [buildout]
+    extends = https://zopefoundation.github.io/Zope/releases/2.13.30/versions-prod.cfg
+    show-picked-versions = true
+    parts = zopectl
 
-- Run the buildout
+    [versions]
+    plone.recipe.zope2instance = < 5
+    mailinglogger = < 6
 
-On Linux, this can be done as follows::
+    [zopectl]
+    recipe = plone.recipe.zope2instance
+    http-address = 127.0.0.1:8080
+    eggs =
+    EOF
 
-  $ wget https://pypi.python.org/packages/source/Z/Zope2/Zope2-<Zope version>.tar.gz
-  $ tar xfvz Zope2-<Zope version>.tar.gz
-  $ cd Zope2-<Zope version>
-
-Then, either::
-
-  $ /path/to/your/python bootstrap/bootstrap.py
-
-or (if you have ``setuptools`` installed already)::
-
-  $ /path/to/your/virtualenv --no-setuptools .
-  $ bin/python bootstrap/bootstrap.py
-
-Finally::
+- Run ``zc.buildout`` to install Zope::
 
   $ bin/buildout
 
+- The buildout recipe ``plone.recipe.zope2instance`` has many more
+  configuration options which can be leveraged in ``buildout.cfg``,
+  see https://pypi.org/project/plone.recipe.zope2instance/4.4.1/
 
-Creating a Zope instance
-::::::::::::::::::::::::
-
-Once you've installed Zope, you will need to create an "instance
-home". This is a directory that contains configuration and data for a
-Zope server process.  The instance home is created using the
-``mkzopeinstance`` script::
-
-  $ bin/mkzopeinstance
-
-You can specify the Python interpreter to use for the instance
-explicitly::
-
-  $ bin/mkzopeinstance --python=$PWD/bin/zopepy
-
-You will be asked to provide a user name and password for an
-administrator's account during ``mkzopeinstance``.  To see the available
-command-line options, run the script with the ``--help`` option::
-
-  $ bin/mkzopeinstance --help
-
-.. note::
-  The traditional "inplace" build is no longer supported. If using
-  ``mkzopeinstance``, always do so outside the buildout environment.
+After installation, refer to :doc:`operation` for documentation on
+configuring and running Zope.
 
 
-Creating a buildout-based Zope instance
----------------------------------------
+Manually creating a buildout-based Zope instance
+------------------------------------------------
 
-Rather than installing Zope separately from your instance, you may wish
-to use ``zc.buildout`` to create a self-contained environment, containing
-both the Zope software and the configuration and data for your server.
+Rather than installing Zope using a recipe you can also do this by hand.
 This procedure involves the following steps:
 
 - Create the home directory for the buildout, including
@@ -125,8 +98,8 @@ This procedure involves the following steps:
 - Fetch the buildout bootstrap script into the environment.
 
 - Fetch the version files into the environment, for example:
-  https://raw.github.com/zopefoundation/Zope/2.13.29/versions.cfg
-  https://raw.github.com/zopefoundation/Zope/2.13.29/ztk-versions.cfg
+  https://raw.github.com/zopefoundation/Zope/2.13.30/versions.cfg
+  https://raw.github.com/zopefoundation/Zope/2.13.30/ztk-versions.cfg
 
 - Create a buildout configuration as follows:
 
@@ -197,10 +170,6 @@ You can use ``zopectl`` interactively as a command shell by just
 calling it without any arguments. Try ``help`` there and ``help <command>``
 to find out about additionally commands of zopectl. These commands
 also work at the command line.
-
-Note that there are there are recipes such as `plone.recipe.zope2instance
-<http://pypi.python.org/pypi/plone.recipe.zope2instance>`_ which can be
-used to automate this whole process.
 
 After installation, refer to :doc:`operation` for documentation on
 configuring and running Zope.
