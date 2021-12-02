@@ -19,6 +19,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 
 
+logger = logging.getLogger('ZPublisher')
 AC_LOGGER = logging.getLogger('event.AccessControl')
 
 
@@ -100,3 +101,119 @@ def basic_auth_decode(token):
     plain = plain.decode('latin-1')
     user, password = plain.split(':', 1)  # Split at most once
     return (user, password)
+
+
+def _string_tuple(value):
+    if not value:
+        return ()
+    return tuple([safe_unicode(element) for element in value])
+
+
+def fix_properties(obj, path=None):
+    """Fix properties on object.
+
+    This does two things:
+
+    1. Make sure lines contain only strings, instead of bytes,
+       or worse: a combination of strings and bytes.
+    2. Replace deprecated ulines, utext, utoken, and ustring properties
+       with their non-unicode variant, using native strings.
+
+    See https://github.com/zopefoundation/Zope/issues/987
+
+    Since Zope 5.3, a lines property stores strings instead of bytes.
+    But there is no migration yet.  (We do that here.)
+    Result is that getProperty on an already created lines property
+    will return the old value with bytes, but a newly created lines property
+    will return strings.  And you might get combinations.
+
+    Also since Zope 5.3, the ulines property type is deprecated.
+    You should use a lines property instead.
+    Same for a few others: utext, utoken, ustring.
+    The unicode variants are planned to be removed in Zope 6.
+
+    Intended usage:
+    app.ZopeFindAndApply(app, apply_func=fix_properties)
+    """
+    if path is None:
+        # When using ZopeFindAndApply, path is always given.
+        # But we may be called by other code.
+        if hasattr(object, 'getPhysicalPath'):
+            path = '/'.join(object.getPhysicalPath())
+        else:
+            # Some simple object, for example in tests.
+            # We don't care about the path then, it is only shown in logs.
+            path = "/dummy"
+
+    try:
+        prop_map = obj.propertyMap()
+    except AttributeError:
+        # Object does not inherit from PropertyManager.
+        # For example 'MountedObject'.
+        return
+
+    for prop_info in prop_map:
+        # Example: {'id': 'title', 'type': 'string', 'mode': 'w'}
+        prop_id = prop_info.get("id")
+        current = obj.getProperty(prop_id)
+        if current is None:
+            continue
+        new_type = prop_type = prop_info.get("type")
+        if prop_type == "lines":
+            new = _string_tuple(current)
+        elif prop_type == "ulines":
+            new_type = "lines"
+            new = _string_tuple(current)
+        elif prop_type == "utokens":
+            new_type = "tokens"
+            new = _string_tuple(current)
+        elif prop_type == "utext":
+            new_type = "text"
+            new = safe_unicode(current)
+        elif prop_type == "ustring":
+            new_type = "string"
+            new = safe_unicode(current)
+        else:
+            continue
+        if prop_type != new_type:
+            # Replace with non-unicode variant.
+            # This could easily lead to:
+            # Exceptions.BadRequest: Invalid or duplicate property id.
+            #   obj._delProperty(prop_id)
+            #   obj._setProperty(prop_id, new, new_type)
+            # So fix it by using internal details.
+            for prop in obj._properties:
+                if prop.get("id") == prop_id:
+                    prop["type"] = new_type
+                    # This is a tuple, so force a safe, just to be sure.
+                    obj._properties = obj._properties
+                    break
+            else:
+                # This probably cannot happen.
+                # If it does, we want to know.
+                logger.warning(
+                    "Could not change property %s from %s to %s for %s",
+                    prop_id,
+                    prop_type,
+                    new_type,
+                    path,
+                )
+                continue
+            obj._updateProperty(prop_id, new)
+            logger.info(
+                "Changed property %s from %s to %s for %s",
+                prop_id,
+                prop_type,
+                new_type,
+                path,
+            )
+            continue
+        if current != new:
+            obj._updateProperty(prop_id, new)
+            logger.info(
+                "Changed property %s at %s so value fits the type %s: %r",
+                prop_id,
+                path,
+                prop_type,
+                new,
+            )
