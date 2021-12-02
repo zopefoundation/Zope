@@ -11,6 +11,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4 (unreleased)
 ----------------
 
+- Add function ``ZPublisher.utils.fix_properties``.
+  You can call this to fix lines properties to only contain strings, not bytes.
+  It also replaces the deprecated property types ulines, utext, utoken, and ustring
+  with their non-unicode variants.
+  See `issue 987 <https://github.com/zopefoundation/Zope/issues/987>`_.
+
 - Add support for Python 3.10.
 
 - Update to newest compatible versions of dependencies.
