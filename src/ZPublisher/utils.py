@@ -185,8 +185,7 @@ def fix_properties(obj, path=None):
             for prop in obj._properties:
                 if prop.get("id") == prop_id:
                     prop["type"] = new_type
-                    # This is a tuple, so force an object update to be sure
-                    obj._properties = obj._properties
+                    obj._p_changed = True
                     break
             else:
                 # This probably cannot happen.
