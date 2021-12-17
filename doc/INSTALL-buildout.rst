@@ -67,6 +67,7 @@ steps:
     [versions]
     plone.recipe.zope2instance = < 5
     mailinglogger = < 6
+    zc.buildout =
 
     [zopectl]
     recipe = plone.recipe.zope2instance
