@@ -129,7 +129,10 @@
 								</td>
 							<!-- Value column end -->
 							<!-- Type column -->
-								<td>&dtml-type;</td>
+								<td>
+									&dtml-type;
+									<dtml-if "type in ['ulines', 'utext', 'utokens', 'ustring']"><strong><a href="https://github.com/zopefoundation/Zope/issues/962">deprecated</a></strong></dtml-if>
+                </td>
 							</tr>
 						</dtml-let>
 					</dtml-in>
