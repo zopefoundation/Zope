@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4 (unreleased)
 ----------------
 
+- Remove deprecated ulines, utext, utokens, ustring from more code.
+  In the properties form, show a deprecation warning.
+
 - Add function ``ZPublisher.utils.fix_properties``.
   You can call this to fix lines properties to only contain strings, not bytes.
   It also replaces the deprecated property types ulines, utext, utoken, and ustring

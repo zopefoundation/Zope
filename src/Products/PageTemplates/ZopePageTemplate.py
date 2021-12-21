@@ -90,7 +90,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         Cacheable.manage_options
 
     _properties = (
-        {'id': 'title', 'type': 'ustring', 'mode': 'w'},
+        {'id': 'title', 'type': 'string', 'mode': 'w'},
         {'id': 'content_type', 'type': 'string', 'mode': 'w'},
         {'id': 'output_encoding', 'type': 'string', 'mode': 'w'},
         {'id': 'expand', 'type': 'boolean', 'mode': 'w'},

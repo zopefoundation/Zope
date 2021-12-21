@@ -296,12 +296,7 @@ def simple_marshal(v):
     if isinstance(v, str):
         return ''
     if isinstance(v, bytes):
-        # Py 3 only
         return ':bytes'
-    if isinstance(v, str):
-        # Py 2 only
-        encoding = _default_encoding()
-        return f':{encoding}:ustring'
     if isinstance(v, bool):
         return ':boolean'
     if isinstance(v, int):
