@@ -296,7 +296,6 @@ def simple_marshal(v):
     if isinstance(v, str):
         return ''
     if isinstance(v, bytes):
-        # Py 3 only
         return ':bytes'
     if isinstance(v, bool):
         return ':boolean'
