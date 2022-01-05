@@ -11,6 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4 (unreleased)
 ----------------
 
+- Don't coerce file upload fields for adding DTML Documents/Methods to string.
+  This makes the Add forms work again with the ZPublisher converter code
+  changes.
+
 - Remove deprecated ulines, utext, utokens, ustring from more code.
   In the properties form, show a deprecation warning.
 
