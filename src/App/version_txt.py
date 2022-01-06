@@ -57,7 +57,7 @@ VERSION_PATTERN = r"""
 
 def _prep_version_data():
     global _version_string, _zope_version
-    if _version_string is None:
+    if _zope_version is None:
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
         dist = pkg_resources.get_distribution('Zope')
