@@ -95,3 +95,20 @@ class TestPUTFactory(unittest.TestCase):
                          'PUT factory should not acquire content')
         # check for the newly created file
         self.assertEqual(str(self.app.A.B.a), 'bar')
+
+    def testPUT_factory_changes_name(self):
+        # A custom PUT factory may want to change the object ID,
+        # for example to remove file name extensions.
+        from OFS.Image import File
+
+        def custom_put_factory(name, typ, body):
+            new_name = 'newname'
+            if not isinstance(body, bytes):
+                body = body.encode('UTF-8')
+            return File(new_name, '', body, content_type=typ)
+        self.app.folder.PUT_factory = custom_put_factory
+
+        request = self.app.REQUEST
+        put = request.traverse('/folder/doc')
+        put(request, request.RESPONSE)
+        self.assertTrue('newname' in self.folder.objectIds())
