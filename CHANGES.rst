@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4 (unreleased)
 ----------------
 
+- Fix potential race condition in ``App.version_txt.getZopeVersion``
+  (`#999 <https://github.com/zopefoundation/Zope/issues/999>`_)
+
 - Don't coerce file upload fields for adding DTML Documents/Methods to string.
   This makes the Add forms work again with the ZPublisher converter code
   changes.
