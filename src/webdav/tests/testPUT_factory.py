@@ -141,7 +141,7 @@ class TestPUTFactory(unittest.TestCase):
         for html_extension in ('.pt', '.zpt', '.html', '.htm'):
             ob_id = 'zpt%s' % html_extension
             request.environ['CONTENT_TYPE'] = 'application/octet-stream'
-            request['BODY'] = b'bar'
+            request['BODY'] = b'<html></html>'
             put = request.traverse('/folder/%s' % ob_id)
             put(request, request.RESPONSE)
             zope_ob = getattr(self.folder, ob_id)
@@ -177,6 +177,7 @@ class TestPUTFactory(unittest.TestCase):
         for content_type in ('text/plain', 'application/pdf',
                              'application/octet-stream'):
             request.environ['CONTENT_TYPE'] = content_type
+            request['BODY'] = b'foobar'
             ob_id = 'file_%s' % content_type.replace('/', '_')
             put = request.traverse('/folder/%s' % ob_id)
             put(request, request.RESPONSE)

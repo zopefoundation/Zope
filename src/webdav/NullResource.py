@@ -106,21 +106,17 @@ class NullResource(Persistent, Implicit, Resource):
         if not isinstance(body, bytes):
             body = body.encode('UTF-8')
 
+        # Guess the type of file if the passed content-type is
+        # just the generic application/octet-stream
+        if typ == 'application/octet-stream':
+            typ, encoding = guess_content_type(name, body)
+
         if ext == '.dtml':
             ob = DTMLDocument('', __name__=name)
         elif typ in ('text/html', 'text/xml'):
             ob = ZopePageTemplate(name, body, content_type=typ)
-        elif typ[:6] == 'image/':
+        elif typ.startswith('image/'):
             ob = Image(name, '', body, content_type=typ)
-        elif typ == 'application/octet-stream':
-            if ext in ('.jpg', '.jpeg', '.gif', '.png', '.tiff'):
-                ob = Image(name, '', body)
-            elif ext in ('.xml',):
-                ob = ZopePageTemplate(name, body, content_type='text/xml')
-            elif ext in ('.pt', '.zpt', '.html', '.htm'):
-                ob = ZopePageTemplate(name, body, content_type='text/html')
-            else:
-                ob = File(name, '', body, content_type=typ)
         else:
             ob = File(name, '', body, content_type=typ)
 
