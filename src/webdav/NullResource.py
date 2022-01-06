@@ -108,7 +108,7 @@ class NullResource(Persistent, Implicit, Resource):
 
         # Guess the type of file if the passed content-type is
         # just the generic application/octet-stream
-        if typ == 'application/octet-stream':
+        if not typ or typ == 'application/octet-stream':
             typ, encoding = guess_content_type(name, body)
 
         if ext == '.dtml':
