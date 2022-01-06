@@ -184,6 +184,9 @@ class NullResource(Persistent, Implicit, Resource):
                    (ob.__class__, repr(parent), sys.exc_info()[1],)
             raise Unauthorized(sMsg)
 
+        # A PUT factory may have changed the object's ID
+        name = ob.getId() or name
+
         # Delegate actual PUT handling to the new object,
         # SDS: But just *after* it has been stored.
         self.__parent__._setObject(name, ob)
