@@ -100,6 +100,7 @@ class NullResource(Persistent, Implicit, Resource):
     def _default_PUT_factory(self, name, typ, body):
         # See if the name contains a file extension
         shortname, ext = os.path.splitext(name)
+        ext = ext.lower()
 
         # Make sure the body is bytes
         if not isinstance(body, bytes):
@@ -111,6 +112,15 @@ class NullResource(Persistent, Implicit, Resource):
             ob = ZopePageTemplate(name, body, content_type=typ)
         elif typ[:6] == 'image/':
             ob = Image(name, '', body, content_type=typ)
+        elif typ == 'application/octet-stream':
+            if ext in ('.jpg', '.jpeg', '.gif', '.png', '.tiff'):
+                ob = Image(name, '', body)
+            elif ext in ('.xml',):
+                ob = ZopePageTemplate(name, body, content_type='text/xml')
+            elif ext in ('.pt', '.zpt', '.html', '.htm'):
+                ob = ZopePageTemplate(name, body, content_type='text/html')
+            else:
+                ob = File(name, '', body, content_type=typ)
         else:
             ob = File(name, '', body, content_type=typ)
 
