@@ -11,7 +11,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 ------------------
 
 - Fix potential race condition in ``App.version_txt.getZopeVersion``
-  (`#999 <https://github.com/zopefoundation/Zope/issues/985>`_)
+  (`#999 <https://github.com/zopefoundation/Zope/issues/999>`_)
 
 - Reinstate simple sessioning with ``Products.TemporaryFolder``
   because the underlying issues with ``tempstorage`` have been fixed.
