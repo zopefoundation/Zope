@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.4 (unreleased)
 ------------------
 
+- Improve type guessing for the default WebDAV PUT factory
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
+
 - Enable WebDAV PUT factories to change a newly created object's ID
   (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
 

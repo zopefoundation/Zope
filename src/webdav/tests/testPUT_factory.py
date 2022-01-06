@@ -112,3 +112,80 @@ class TestPUTFactory(unittest.TestCase):
         put = request.traverse('/folder/doc')
         put(request, request.RESPONSE)
         self.assertTrue('newname' in self.folder.objectIds())
+
+    def test_default_PUT_factory_type_guessing(self):
+        # Check how the default PUT factory guesses the type of object to
+        # create. It is based on either the content-type request header or the
+        # file name.
+        from OFS.DTMLDocument import DTMLDocument
+        from OFS.Image import File
+        from OFS.Image import Image
+        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+        request = self.app.REQUEST
+
+        # DTML documents
+        put = request.traverse('/folder/doc.dtml')
+        put(request, request.RESPONSE)
+        self.assertIsInstance(self.folder['doc.dtml'], DTMLDocument)
+
+        # Page Templates
+        # PUT and content type guessing is messed up for ZopePageTemplates
+        request.environ['CONTENT_TYPE'] = 'text/html'
+        request['BODY'] = b'bar'
+        put = request.traverse('/folder/zpt1')
+        put(request, request.RESPONSE)
+        self.assertIsInstance(self.folder.zpt1, ZopePageTemplate)
+        self.assertEqual(self.folder.zpt1.content_type, 'text/html')
+
+        request['BODY'] = b'<?xml version="1.0" encoding="UTF-8"?>bar'
+        put = request.traverse('/folder/zpt2')
+        put(request, request.RESPONSE)
+        self.assertIsInstance(self.folder.zpt2, ZopePageTemplate)
+        self.assertEqual(self.folder.zpt2.content_type, 'text/xml')
+
+        for html_extension in ('.pt', '.zpt', '.html', '.htm'):
+            ob_id = 'zpt%s' % html_extension
+            request.environ['CONTENT_TYPE'] = 'application/octet-stream'
+            request['BODY'] = b'<html></html>'
+            put = request.traverse('/folder/%s' % ob_id)
+            put(request, request.RESPONSE)
+            zope_ob = getattr(self.folder, ob_id)
+            self.assertIsInstance(zope_ob, ZopePageTemplate)
+            self.assertEqual(zope_ob.content_type, 'text/html')
+
+        request.environ['CONTENT_TYPE'] = 'application/octet-stream'
+        put = request.traverse('/folder/zpt.xml')
+        put(request, request.RESPONSE)
+        zope_ob = self.folder['zpt.xml']
+        self.assertIsInstance(zope_ob, ZopePageTemplate)
+        self.assertEqual(zope_ob.content_type, 'text/xml')
+
+        # Images
+        for content_type in ('image/jpg', 'image/gif', 'image/png'):
+            request.environ['CONTENT_TYPE'] = content_type
+            ob_id = 'img_%s' % content_type.replace('/', '_')
+            put = request.traverse('/folder/%s' % ob_id)
+            put(request, request.RESPONSE)
+            zope_ob = getattr(self.folder, ob_id)
+            self.assertIsInstance(zope_ob, Image)
+            self.assertEqual(zope_ob.content_type, content_type)
+
+        for extension in ('.jpg', '.jpeg', '.gif', '.png', '.tiff'):
+            ob_id = 'img%s' % extension
+            request.environ['CONTENT_TYPE'] = 'application/octet-stream'
+            put = request.traverse('/folder/%s' % ob_id)
+            put(request, request.RESPONSE)
+            zope_ob = getattr(self.folder, ob_id)
+            self.assertIsInstance(zope_ob, Image)
+
+        # File, the last fallback
+        for content_type in ('text/plain', 'application/pdf',
+                             'application/octet-stream'):
+            request.environ['CONTENT_TYPE'] = content_type
+            request['BODY'] = b'foobar'
+            ob_id = 'file_%s' % content_type.replace('/', '_')
+            put = request.traverse('/folder/%s' % ob_id)
+            put(request, request.RESPONSE)
+            zope_ob = getattr(self.folder, ob_id)
+            self.assertIsInstance(zope_ob, File)
+            self.assertEqual(zope_ob.content_type, content_type)

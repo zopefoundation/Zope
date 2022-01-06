@@ -47,7 +47,7 @@ def guess_type(filename, body):
     # detect text/xml  if 'filename' won't end with .xml
     # XXX: fix this in zope.contenttype
 
-    if body.startswith(b'<?xml'):
+    if body.startswith(b'<?xml') or filename.lower().endswith('.xml'):
         return 'text/xml'
 
     content_type, ignored_encoding = guess_content_type(filename, body)
