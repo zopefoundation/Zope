@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4 (unreleased)
 ----------------
 
+- Enable WebDAV PUT factories to change a newly created object's ID
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
+
 - Fix potential race condition in ``App.version_txt.getZopeVersion``
   (`#999 <https://github.com/zopefoundation/Zope/issues/999>`_)
 
