@@ -610,7 +610,7 @@ Zope's persistence machinery.  If you need to create new
 kinds of persistent objects, it's time to learn about
 writing Zope Products. Writing a Product is beyond the
 scope of this book. You can learn more by reading the
-`Zope Developers'
+`Zope Developer's
 Guide <https://zope.readthedocs.io/en/latest/zdgbook/index.html>`_.
 
 
