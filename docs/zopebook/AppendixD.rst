@@ -41,7 +41,7 @@ edited by Martina Brockman, et. al., published October 2001.
 
 `Zope: Web Application Development and Content Management
 <https://www.amazon.com/Zope-Application-Development-Management-Landmark/dp/0735711100/>`_
-edited by Steve Spicklemire et al.
+edited by Steve Spicklemire et al., published December 2001.
 
 `Zope: Timely, Practical, Reliable
 <https://www.amazon.com/Zope/dp/0470844515/>`_
@@ -50,7 +50,8 @@ written by Pierre Julien Grizel.
 `The Zope Book
 <https://www.amazon.com/Zope-Book-Amos-Latteier/dp/0735711372/>`_
 is the hardcover version of the original edition Zope Book on which the
-first version of this text is based.
+first version of this text is based. The first edition was published in July
+2001.
 
 Mailing Lists
 =============

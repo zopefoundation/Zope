@@ -20,7 +20,7 @@ Other projects include the
 `Zope Toolkit <https://zopetoolkit.readthedocs.io/en/latest/>`_ libraries
 and many individual packages located in the
 `zopefoundation GitHub organization <https://github.com/zopefoundation>`_ as
-well as projects being based or related to these packages. One of the more
+well as projects being based on or related to these packages. One of the more
 widely known applications based on top of Zope is the content management system 
 `Plone <https://plone.org/>`_.
 
@@ -397,8 +397,7 @@ source code.
 The Zope community gets together occasionally at conferences, but it
 commonly discusses all things Zope on the many Zope mailing
 lists and web sites. You can find out more about Zope-related
-mailing lists at
-`Zope.org's mailing list page <https://mail.zope.dev/mailman/listinfo>`_.
+mailing lists at https://mail.zope.dev/mailman/listinfo.
 
 Zope Corporation makes its revenue by using Zope to create web
 applications for its paying customers, by training prospective
