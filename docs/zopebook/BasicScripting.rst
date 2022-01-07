@@ -210,21 +210,18 @@ Now let us take a look at a basic method object: *Script (Python)*.
 The Python Language
 +++++++++++++++++++
 
-`Python <http://www.python.org/>`_ is a high-level, object oriented scripting
+`Python <https://www.python.org/>`_ is a high-level, object oriented scripting
 language. Most of Zope is written in Python. Many folks like Python because of
 its clarity, simplicity, and ability to scale to large projects.
 
 There are many resources available for learning Python. The python.org website
 has lots of Python documentation including a `tutorial
-<http://www.python.org/doc/current/tut/tut.html>`_ by Python's creator, Guido
+<https://docs.python.org/tutorial/index.html>`_ by Python's creator, Guido
 van Rossum.
-
-For people who have already some programming experience, `Dive Into Python
-<http://diveintopython.org/>`_ is a great online resource to learn python.
 
 Python comes with a rich set of modules and packages. You can find out more
 about the `Python standard library
-<http://www.python.org/doc/current/lib/lib.html>`_ at the python.org website.
+<https://docs.python.org/library/index.html>`_ at the python.org website.
 
 Creating Python-based Scripts
 +++++++++++++++++++++++++++++
@@ -447,7 +444,7 @@ The following restricted built-ins work the same as standard Python built-ins:
 *issubclass*, *list*, *len*, *long*, *map*, *max*, *min*, *oct*, *ord*, *repr*,
 *round*, *setattr*, *str*, and *tuple*. For more information on what these
 built-ins do, see the online `Python Documentation
-<http://www.python.org/doc/>`_.
+<https://docs.python.org/>`_.
 
 The *range* and *pow* functions are available and work the same way they do in
 standard Python; however, they are limited to keep them from generating very

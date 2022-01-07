@@ -5,24 +5,26 @@ Introducing Zope
 
 Zope is family of related Python packages focussed on web technologies. The
 first version of Zope has originated from a company called
-`Zope Corporation <http://www.zope.com/>`_.
+Digital Creations, which later morphed into Zope Corporation.
 
-Today the `Zope Foundation <http://foundation.zope.org/>`_ holds the copyright
-of the Zope source code and supervises a diverse community of open-source
-contributers working on a variety of related projects.
+Today the `Zope Foundation <https://www.zope.dev/community.html>`_ and its
+successor, the `Plone Foundation <https://plone.org/foundation>`_, hold the
+copyright of the Zope source code and supervises a diverse community of
+open-source contributers working on a variety of related projects.
 
-This book is about the original Zope project, today known as Zope2. When we
-refer to Zope in this book without a narrower specification we speak of Zope2.
+This book is about the original Zope project as opposed to the discontinued
+`Zope 3`. When we refer to Zope in this book without a narrower specification
+we speak of Zope 2 and its successors (Zope 4, Zope 5 and higher).
 
-Other projects include the `Zope3 <http://wiki.zope.org/zope3/Zope3Wiki/>`_ web
-application framework, many individual packages located in the
-`Zope Subversion Repository <http://svn.zope.org/>`_ and projects being based
-or related to these packages like `Grok <http://grok.zope.org/>`_ and
-`Repoze <http://repoze.org/>`_. One of the more widely known applications
-based on top of Zope2 is a content management system called
-`Plone <http://plone.org/>`_.
+Other projects include the
+`Zope Toolkit <https://zopetoolkit.readthedocs.io/en/latest/>`_ libraries
+and many individual packages located in the
+`zopefoundation GitHub organization <https://github.com/zopefoundation>`_ as
+well as projects being based or related to these packages. One of the more
+widely known applications based on top of Zope is the content management system 
+`Plone <https://plone.org/>`_.
 
-Zope2 itself is a web framework that allows developers of varying skill
+Zope itself is a web framework that allows developers of varying skill
 levels to build *web applications*. This chapter explains Zope's purpose,
 what problems it solves and what audience it targets in greater detail.
 It also describes what makes Zope different and more powerful than
@@ -167,8 +169,10 @@ visited a page in his website.
 A framework that allows people to construct a web application is often called a
 *web application server*, or sometimes just an *application server*. Zope is a
 web application server, as are competing products like `WebSphere
-<http://www.ibm.com/websphere/>`_, `JBoss <http://www.jboss.org/jbossas/>`_,
-and (to some extent) `SAP NetWeaver <http://www.sap.com/>`_.
+<https://www.ibm.com/cloud/websphere-application-server>`_,
+`JBoss <https://www.jboss.org/>`_,
+and (to some extent)
+`SAP NetWeaver <https://www.sap.com/products/netweaver-platform.html>`_.
 
 Zope is a web application server, which is not
 a web application in itself; rather it is *framework that allows
@@ -305,7 +309,7 @@ This claim is backed by a number of Zope features:
   other application server platforms require that you run an
   operating system of their licensor's choosing.
 
-- Zope can be extended using the interpreted `Python <http://www.python.org/>`_
+- Zope can be extended using the interpreted `Python <https://www.python.org/>`_
   scripting language. Python is popular and easy to learn, and it promotes
   rapid development. Many libraries are available for Python that can be used
   when creating your own application. Many other application servers must be
@@ -361,8 +365,9 @@ itself is not a blog, a content management system, or a
 
 However, freely available *Plugins* built on top of Zope offer these kinds of
 services. At the time of this writing, the `Python Package Index
-<http://pypi.python.org/pypi/>`_ lists roughly 400 `Plugins that you can browse
-<http://pypi.python.org/pypi?:action=browse&c=514>`_ and even reuse in your own
+<https://pypi.org/>`_ lists roughly 1700 `Plugins that you can browse
+<https://pypi.org/search/?q=&o=&c=Framework+%3A%3A+Zope>`_
+and even reuse in your own
 applications. These include Plugins for blogging, content management,
 internationalization, and e-commerce.
 
@@ -392,7 +397,8 @@ source code.
 The Zope community gets together occasionally at conferences, but it
 commonly discusses all things Zope on the many Zope mailing
 lists and web sites. You can find out more about Zope-related
-mailing lists at `Zope.org's mailing list page <http://mail.zope.org/mailman/listinfo>`_.
+mailing lists at
+`Zope.org's mailing list page <https://mail.zope.dev/mailman/listinfo>`_.
 
 Zope Corporation makes its revenue by using Zope to create web
 applications for its paying customers, by training prospective
@@ -411,14 +417,15 @@ in your own products and applications without paying royalty fees to Zope's
 licensor, *Zope Foundation*.
 
 Zope is distributed under an open source license, the `Zope Public License or
-'ZPL' <http://www.zope.org/Resources/License>`_. The terms of the ZPL license
+'ZPL' <https://opensource.org/licenses/ZPL-2.1>`_. The terms of the ZPL license
 stipulate that you will be able to obtain and modify the source code for Zope.
 
 The ZPL is different than another popular open source license, the `GNU Public
-License <http://www.gnu.org>`_. The licensing terms of the GPL require that if
+License <https://www.gnu.org/licenses/licenses.html>`_. The licensing terms of
+the GPL require that if
 you intend to redistribute a GPL-licensed application, and you modify or extend
 the application in a meaningful way, when you `redistribute
-<http://www.gnu.org/licenses/gpl-faq.html#GPLRequireSourcePostedPublic>`_ a
+<https://www.gnu.org/licenses/gpl-faq.html>`_ a
 GPL-licensed application, you must distribute it under the terms of the GPL,
 including licensing any modifications or extensions you make under the GPL. You
 must also provide the full source code, including source for your
@@ -432,11 +439,11 @@ Note that the ZPL has been `certified`_ as `OSD`_ compliant by the
 `Open Source Initiative`_ and is listed as `GPL compliant`_ by the
 `Free Software Foundation`_.
 
-.. _certified: http://www.opensource.org/licenses/zpl.php
-.. _OSD: http://www.opensource.org/docs/definition.html
-.. _Open Source Initiative: http://www.opensource.org/
-.. _GPL compliant: http://www.gnu.org/philosophy/license-list.html#GPLCompatibleLicenses
-.. _Free Software Foundation: http://www.fsf.org/
+.. _certified: https://opensource.org/licenses/ZPL-2.1
+.. _OSD: https://opensource.org/osd
+.. _Open Source Initiative: https://opensource.org/
+.. _GPL compliant: https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses
+.. _Free Software Foundation: https://www.fsf.org/
 
 
 Zope History
@@ -461,5 +468,5 @@ server based on their three open-source components. This product was called
 Creations to open source Principia. These packages have evolved into what today
 are the core components of Zope.
 
-Most of Zope is written in the `Python <http://www.python.org/>`_ scripting
+Most of Zope is written in the `Python <https://www.python.org/>`_ scripting
 language, with performance-critical pieces written in C.

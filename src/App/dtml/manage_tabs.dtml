@@ -35,7 +35,7 @@
 <dtml-comment>
 	<dtml-unless MANAGE_TABS_NO_BANNER>
 		<!-- IS THIS STILL NEEDED? WHY SHOW NOT BREADCRUMB etc.?
-			https://mail.zope.org/pipermail/zope-checkins/1999-August/001313.html
+			https://mail.zope.dev/pipermail/zope-checkins/1999-August/001313.html
 		-->
 	</dtml-unless>
 </dtml-comment>

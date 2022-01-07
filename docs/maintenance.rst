@@ -112,7 +112,7 @@ Steps for creating a new Zope release
 - Fix problems.
 - Commit and push the changes.
 
-- Announce the release to the world via zope-announce@zope.org and https://community.plone.org/c/announcements.
+- Announce the release to the world via zope-announce@zope.dev and https://community.plone.org/c/announcements.
 
 
 Maintaining the Zope documentation

@@ -15,7 +15,7 @@ options in depth.  This material is covered more concisely in
 
 In this chapter, the terms `tag` and `element` are used in the
 sense laid out by the `XHTML spec
-<http://www.w3.org/TR/2000/REC-xhtml1-20000126/#defs>`_.
+<https://www.w3.org/TR/xhtml1/#defs>`_.
 ``<p>`` is a *tag*, while the entire block
 ``<p>stuff</p>`` from opening tag through the closing
 tag is an *element*.
@@ -924,7 +924,7 @@ Python Expressions
 The Python programming language is a simple and expressive one.
 If you have never encountered it before, you should read one of
 the excellent tutorials or introductions available at the
-`Python website <http://www.python.org>`_.
+`Python website <https://www.python.org>`_.
 
 A Page Template Python expression can contain anything that the
 Python language considers an expression.  You can't use
@@ -1163,7 +1163,7 @@ get access to it using either of the following statements::
 Many Python modules cannot be accessed from Page Templates
 or Scripts unless you add Zope security assertions to
 them.  See the `Zope Developer's Guide's security
-chapter <http://www.zope.org/Documentation/Books/ZDG/current/Security.stx>`_
+chapter <https://zope.readthedocs.io/en/latest/zdgbook/Security.html>`_
 for more information on making more Python modules available
 to your templates and scripts by using ``ModuleSecurityInfo``.
 

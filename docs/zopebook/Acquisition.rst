@@ -88,7 +88,7 @@ complex cases (e.g., where the same method is defined in several
 ancestors of base classes), the lookup order is too complicated to
 explain within the scope of this book.  Please see the online
 Python documentation for the "method resolution order",
-http://www.python.org/download/releases/2.3/mro/
+https://www.python.org/download/releases/2.3/mro/
 
 Here is an example of calling methods on an instance of the
 above-defined Sub class::
