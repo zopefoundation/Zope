@@ -24,7 +24,7 @@ online help system and from Zope objects through their interfaces.
 
 The majority of the content of this chapter will come from the
 `Interface documentation
-<http://www.zope.org/Wikis/Interfaces/InterfaceUserDocumentation>`_
+<https://zopeinterface.readthedocs.io/en/latest/>`_
 
 1. What are interfaces, why are they useful?
 
@@ -81,7 +81,7 @@ Python-based components.
 
 The majority of the content of this chapter will come from
 Amos/Shane's `Product Tutorial
-<http://www.zope.org/Members/hathawsh/PythonProductTutorial>`_
+<http://old.zope.dev/Members/hathawsh/PythonProductTutorial>`_
 
 1. Introduction
 
@@ -132,7 +132,7 @@ policies specific to their needs or the needs of their components.
 
 The majority of the content of this chapter will come from Chris'
 first cut at `Security documentation
-<http://www.zope.org/Members/mcdonc/PDG/6-1-Security.stx>`_
+<https://old.zope.dev/Members/mcdonc/PDG/6-1-Security.stx/document_view>`_
 
 1. Security architecture
 

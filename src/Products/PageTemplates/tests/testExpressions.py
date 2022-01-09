@@ -102,7 +102,6 @@ class EngineTestsBase(PlacelessSetup):
         self.assertIs(ec.evaluate('dummy'), dummy)
 
     def test_evaluate_with_render_DTML_template(self):
-        # http://www.zope.org/Collectors/Zope/2232
         # DTML templates could not be called from a Page Template
         # due to an ImportError
         ec = self._makeContext()

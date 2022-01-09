@@ -267,7 +267,6 @@ class ZopeSuiteFactory(object):
         if 'test_class' in self._kw:
             del self._kw['test_class']
 
-        # Fix for http://zope.org/Collectors/Zope/2178
         if hasattr(test_class, 'layer'):
             self._layer = test_class.layer
 

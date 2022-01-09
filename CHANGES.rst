@@ -10,6 +10,16 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.6.4 (unreleased)
 ------------------
 
+- Audit and fix all hyperlinks in code and documentation
+
+  - Change zope.org references to zope.dev due to ongoing domain ownership
+    issues. zope.dev is owned by the Plone Foundation and thus safe from
+    interference. XML/ZCML namespace URLs remain unchanged.
+  - Remove all links that are completely dead, such as the old zope.org
+    Collectors issue trackers.
+  - Update all other miscellaneous links to make them work again or remove if
+    the information is gone.
+
 - Improve type guessing for the default WebDAV PUT factory
   (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
 

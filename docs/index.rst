@@ -10,7 +10,7 @@ This is the official home for all Zope documentation.
    operation
    wsgi
    maintenance
-   Zope development roadmap <https://www.zope.org/developer/roadmap.html>
+   Zope development roadmap <https://www.zope.dev/developer/roadmap.html>
    changes
    zopebook/index
    zdgbook/index

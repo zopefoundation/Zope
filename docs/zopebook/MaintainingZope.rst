@@ -117,8 +117,9 @@ symbolic link to the startup script in the::
 
 directories, where `?` is a number from 0-6 which stands for the SystemV run
 levels. You usually will want to start Zope in run levels 3 and 5 (3 is full
-multi-user mode, 5 is multiuser mode with X started, according to the "Linux
-Standard Base":http://www.linuxbase.org), so you would place two links in the
+multi-user mode, 5 is multiuser mode with X started, according to the `"Linux
+Standard Base" <https://wiki.linuxfoundation.org/lsb/start>`_,
+so you would place two links in the
 /etc/rc.d' directories. Be warned that some systems (such as Debian) assume
 that runlevel 2 is full multiuser mode. As stated above, we assume the main
 startup script to located in::
@@ -235,12 +236,14 @@ through products has spawned a broad market of add-on software for Zope.
 
 The guidelines for packaging a product are given in the "Packaging Products"
 section in the `Zope Products chapter of the Zope Developer Guide
-<http://www.zope.org/Products>`_. However, since these guidelines are not
+<https://zope.readthedocs.io/en/latest/zdgbook/Products.html>`_.
+However, since these guidelines are not
 enforced, many Zope products adhere to different conventions. This section will
 discuss the different approaches to installing Zope packages.
 
 To install a Zope product, you first download an archive file from a website,
-such as the `Downloads section <http://www.zope.org/Products>`_ of zope.org.
+such as the `Downloads section <https://old.zope.dev/Products/>`_ of
+old.zope.dev.
 These archive files come in several varieties, such as tgz (gzipped tar files)
 zip (the popular ZIP format common on Windows), and others.
 
@@ -299,8 +302,8 @@ traceback generated when the package was imported.
 A traceback generally will tell you what went wrong with the import. For
 instance, a package the software depends on could be missing. To illustrate
 this take a look at the traceback below - a result of trying to install
-CMFOODocument:http://www.zope.org/Members/longsleep/CMFOODocument without the
-(required) CMF package:::
+`CMFOODocument <https://old.zope.dev/Members/longsleep/CMFOODocument>`_ without
+the (required) CMF package:::
 
   Traceback (most recent call last):
   File "/usr/share/zope/2.6.0/lib/python/OFS/Application.py", line 541, in import_product
@@ -328,10 +331,8 @@ is::
 which comes with Apache distributions. With `ab` you can test individual URLs,
 optionally providing cookies and POST data. Other tools often allow one to
 create or record a user session and playing it back multiple times. See eg. the
-`Open System Testing Architecture <http://www.opensta.org>`_, `JMeter
-<http://jakarta.apache.org/jmeter>`_, or Microsoft's `Web Application Stress
-Tool
-<http://www.microsoft.com/technet/treeview/default.asp?url=/technet/itsolutions/intranet/downloads/webstres.asp>`_.
+`Open System Testing Architecture <http://opensta.org>`_ or `JMeter
+<https://jmeter.apache.org/>`_.
 
 Database Cache
 ++++++++++++++
@@ -434,7 +435,7 @@ messages for Zope and Zope applications that use Zopes' logging system.
 
 You also should look at your access log (usually placed in
 $ZOPE_HOME/var/Z2.log). The Z2.log file is recorded in the `Common Log Format
-<http://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format>`_.
+<https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format>`_.
 The sixth field of each line contains the HTTP status code. Look out for status
 codes of 5xx, server error. Server errors often point to performance problems.
 
@@ -442,8 +443,7 @@ Monitor the HTTP Service
 ++++++++++++++++++++++++
 
 You can find several tools on the net which facilitate monitoring of remote
-services, for example `Nagios <http://www.nagios.org/>`_ or `VisualPulse
-<http://www.visualware.com/visualpulse>`_.
+services, for example `Nagios <https://www.nagios.org/>`_.
 
 For a simple "ping" type of HTTP monitoring, you could also try to put a small
 DTML Method with a known value on your server, for instance only containing the
@@ -489,7 +489,7 @@ Access Log
 
 The access log records every request made to the HTTP server. It is recorded in
 the `Common Log Format
-<http://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format>`_.
+<https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format>`_.
 
 The default target of the access log is the file $ZOPE_HOME/var/Z2.log. Under
 Unix it is however possible to direct this to the syslog by setting the
@@ -542,7 +542,7 @@ files and do a log rotation every week. After the old log file has been saved
 it will be compressed. See the documentation to `logrotate` for further details.
 
 On Windows there are no widespread tools for log rotation. You might try the
-`KiWi Syslog Daemon <http://www.kiwisyslog.com>`_ and configure Zope to log to
+`KiWi Syslog Daemon <https://www.kiwisyslog.com>`_ and configure Zope to log to
 it. Also see the sections "Access Log" and "Event Log" above.
 
 Packing and Backing Up the FileStorage Database

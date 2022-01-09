@@ -292,13 +292,13 @@ None
 See Also
 --------
 
-- `string module <http://docs.python.org/library/string.html>`_
+- `string module <https://docs.python.org/library/string.html>`_
 
-- `random module <http://docs.python.org/library/random.html>`_
+- `random module <https://docs.python.org/library/random.html>`_
 
-- `math module <http://docs.python.org/library/math.html>`_
+- `math module <https://docs.python.org/library/math.html>`_
 
-- `sequence module <http://docs.python.org/library/functions.html>`_
+- `sequence module <https://docs.python.org/library/functions.html>`_
 
 
 if: Tests Conditions
@@ -354,7 +354,7 @@ Testing for expression conditions::
 See Also
 --------
 
-`Python Tutorial If Statements <http://docs.python.org/tutorial/controlflow.html#if-statements>`_
+`Python Tutorial If Statements <https://docs.python.org/3/tutorial/controlflow.html#if-statements>`_
 
 
 in: Loops over sequences
@@ -816,7 +816,7 @@ Sending a file attachment::
 See Also
 --------
 
-- `Python Library mimetools <http://docs.python.org/library/mimetools.html>`_
+- `Python Library mimetools <https://docs.python.org/library/mimetools.html>`_
 
 raise: Raises an exception
 ==========================
@@ -852,9 +852,9 @@ See Also
 
 - try tag
 
-- `Python Tutorial Errors and Exceptions <http://docs.python.org/tutorial/errors.html>`_
+- `Python Tutorial Errors and Exceptions <https://docs.python.org/tutorial/errors.html>`_
 
-- `Python Built-in Exceptions <http://docs.python.org/library/exceptions.html>`_
+- `Python Built-in Exceptions <https://docs.python.org/library/exceptions.html>`_
 
 return: Returns data
 ====================
@@ -946,7 +946,7 @@ Sending an email message using a Mail Host::
 See Also
 --------
 
-- `RFC 821 (SMTP Protocol) <http://www.ietf.org/rfc/rfc0821.txt>`_
+- `RFC 821 (SMTP Protocol) <https://www.ietf.org/rfc/rfc0821.txt>`_
 
 - mime tag
 
@@ -1426,9 +1426,9 @@ See Also
 
 - raise tag
 
-- `Python Tutorial Errors and Exceptions <http://docs.python.org/tutorial/errors.html>`_
+- `Python Tutorial Errors and Exceptions <https://docs.python.org/tutorial/errors.html>`_
 
-- `Python Built-in Exceptions <http://docs.python.org/library/exceptions.html>`_
+- `Python Built-in Exceptions <https://docs.python.org/library/exceptions.html>`_
 
 
 unless: Tests a condition
@@ -1514,7 +1514,7 @@ missing=string
 fmt=string
   Format a variable. Zope provides a few built-in formats including C-style
   format strings. For more information on C-style format strings see the
-  `Python Library Reference <http://docs.python.org/library/stdtypes.html#typesseq-strings>`_.
+  `Python Library Reference <https://docs.python.org/library/stdtypes.html#typesseq-strings>`_.
   If the format string is not a built-in format, then it is assumed to be a
   method of the object, and it called.
 

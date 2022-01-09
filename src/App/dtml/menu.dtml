@@ -32,8 +32,8 @@
 		<li role="separator" class="divider">&nbsp;</li>
 		<li><a id="menu_copyright" href="zope_copyright"
 			target="manage_main">&copy; Zope Foundation</a></li>
-		<li><a id="menu_zope" href="http://www.zope.org"
-			target="_blank">www.zope.org</a></li>
+		<li><a id="menu_zope" href="https://www.zope.dev"
+			target="_blank">www.zope.dev</a></li>
 	  </dtml-let>
 	</ul>
 </div>

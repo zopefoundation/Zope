@@ -269,7 +269,7 @@ consults these sources in order:
    the current object and all of its parents.
 
 3. The CGI environment. The `Common Gateway Interface
-   <http://www.w3.org/CGI/>`_, or CGI interface defines
+   <https://www.w3.org/CGI/>`_, or CGI interface defines
    a standard set of environment variables to be used by
    dynamic web scripts.  These variables are provided by Zope
    in the REQUEST namespace.
@@ -655,8 +655,9 @@ DTML Security
 -------------
 
 Zope can be used by many different kinds of users.  For example, the
-Zope site, `Zope.org <http://www.zope.org/>`_, has over 11,000 community
-members at the time of this writing.  Each member can log into Zope,
+old Zope site, preserved at `old.zope.dev <https://old.zope.dev/>`_,
+had over 11,000
+community members when it was active.  Each member was able to log into Zope,
 add objects and news items, and manage their own personal area.
 
 Because DTML is a scripting language, it is very flexible about

@@ -725,7 +725,7 @@ class HTTPBaseResponse(BaseResponse):
         """
 
         result = [
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)')
         ]
 
         def encode(key, value, henc=header_encoding_registry.encode):

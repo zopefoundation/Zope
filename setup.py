@@ -44,7 +44,7 @@ setup(
     license='ZPL 2.1',
     description='Zope application server / web framework',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     long_description="\n\n".join([README, CHANGES]),
     classifiers=[
         'Development Status :: 6 - Mature',

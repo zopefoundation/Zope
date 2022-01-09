@@ -839,7 +839,7 @@ When creating management views you should include the DTML variables
 by your product and draw a standard management view header, tabs
 widgets, and footer.  The management header also includes CSS
 information which you can take advantage of. You can use any of the styles
-Bootstrap 4 provides. (See http://getbootstrap.com/docs/4.1/)
+Bootstrap 4 provides - see https://getbootstrap.com/docs/4.6/.
 
 Here's an example management view for your poll class.  It allows you
 to edit the poll question and responses (see ``editPollForm.dtml``)::
@@ -1123,20 +1123,6 @@ XML-RPC clients still don't support HTTP basic authorization.
 Depending on which XML-RPC clients you anticipate, you may wish to
 make your XML-RPC methods public and accept authentication
 credentials as arguments to your methods.
-
-Content Management Framework Interface
---------------------------------------
-
-The `Content Management Framework <http://cmf.zope.org>`_ is an
-evolving content management extension for Zope.  It provides a number
-of interfaces and conventions for content objects.  If you wish to
-support the CMF you should consult the CMF user interface guidelines
-and interface documentation.
-
-Supporting the CMF interfaces is not a large burden if you already
-support the Zope management interface.  You should consider
-supporting the CMF if your product class handles user manageable
-content such as documents, images, business forms, etc.
 
 Packaging Products
 ------------------

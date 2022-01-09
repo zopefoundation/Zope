@@ -25,8 +25,6 @@ import sys
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
 from App.config import getConfiguration
-# Make DateTime.DateTime marshallable via XML-RPC
-# http://www.zope.org/Collectors/Zope/2109
 from DateTime.DateTime import DateTime
 from ExtensionClass import Base
 from zExceptions import Unauthorized
@@ -39,6 +37,7 @@ except ImportError:
     import xmlrpclib
 
 
+# Make DateTime.DateTime marshallable via XML-RPC
 WRAPPERS = xmlrpclib.WRAPPERS + (DateTime, )
 
 

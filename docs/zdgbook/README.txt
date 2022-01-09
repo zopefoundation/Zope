@@ -34,7 +34,7 @@ Contact
 
 At this point the book is best discussed at:
 
-http://mail.zope.org/mailman/listinfo/zope-dev
+https://mail.zope.dev/mailman/listinfo/zope-dev
 
 
 .. _Sphinx: http://sphinx.pocoo.org/

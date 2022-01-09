@@ -76,7 +76,7 @@ external tools with Zope:
   of DAV in Windows and Office, each with changes that make life difficult.
 
 - Finally, the semantics of Zope can interfere with the experience. The same
-  file on your hard drive, when copied into www.zope.org and your local copy of
+  file on your hard drive, when copied into your local copy of
   Zope, will have different results. In the case of the CMF, Zope will actually
   alter what you saved (to add metadata).
 
@@ -408,7 +408,7 @@ It is typically invoked from a command-line using the command `cadaver` against
 Zope's WebDAV "source port"::
 
   $ cadaver
-  dav:!> open http://saints.homeunix.com:9800/
+  dav:!> open http://localhost:9800/
   Looking up hostname... Connecting to server... connected.
   Connecting to server... connected.
   dav:/> ls

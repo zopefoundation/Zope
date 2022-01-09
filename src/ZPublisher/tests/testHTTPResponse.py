@@ -392,7 +392,6 @@ class HTTPResponseTests(unittest.TestCase):
 
     def test_expireCookie1160(self):
         # Verify that the cookie is expired even if an expires kw arg is passed
-        # http://zope.org/Collectors/Zope/1160
         response = self._makeOne()
         response.expireCookie('foo', path='/',
                               expires='Mon, 22 Mar 2004 17:59 GMT', max_age=99)
@@ -989,7 +988,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '0'),
                           ])
@@ -1000,7 +999,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '4'),
                           ])
@@ -1011,7 +1010,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '42'),
                           ])
@@ -1022,7 +1021,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Transfer-Encoding', 'slurry'),
                           ])
@@ -1033,7 +1032,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '302 Found')
         expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
             ('Content-Length', '0'),
             ('Location', 'http://example.com/'),
         ])
@@ -1043,7 +1042,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ])
 
@@ -1053,7 +1052,7 @@ class HTTPResponseTests(unittest.TestCase):
         response._wrote = True
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ])
 
@@ -1062,7 +1061,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Content-Length', 42)
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '42'),
                           ])
@@ -1073,7 +1072,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Transfer-Encoding', 'slurry')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Transfer-Encoding', 'slurry'),
                           ])
@@ -1083,7 +1082,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('x-consistency', 'Foolish')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-Consistency', 'Foolish'),
                           ])
@@ -1093,7 +1092,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('X-consistency', 'Foolish', literal=True)
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-consistency', 'Foolish'),
                           ])
@@ -1103,7 +1102,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.redirect('http://example.com/')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Location', 'http://example.com/'),
                           ])
@@ -1114,7 +1113,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.appendCookie('foo', 'baz')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Set-Cookie', 'foo="bar%3Abaz"; Path=/'),
                           ])
@@ -1126,7 +1125,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookie_header = headers.pop('Set-Cookie')
         headers = list(headers.items())
         expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
         ])
         self.assertEqual(set(headers), expected)
         self.assertEqual(
@@ -1141,7 +1140,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.addHeader('X-Consistency', 'Oatmeal')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-Consistency', 'Foolish'),
                           ('X-Consistency', 'Oatmeal'),
@@ -1152,7 +1151,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setBody(b'BLAH')
         headers = response.listHeaders()
         expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
             ('Content-Length', '4'),
             ('Content-Type', 'text/plain; charset=utf-8'),
         ])
@@ -1170,7 +1169,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 5)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
         ])
@@ -1186,7 +1185,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 5)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 42',
             b'',
         ])
@@ -1201,7 +1200,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 5)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Transfer-Encoding: slurry',
             b'',
         ])
@@ -1215,7 +1214,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'',
@@ -1230,7 +1229,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-consistency: Foolish',
             b'',
@@ -1245,7 +1244,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 302 Found',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'Location: http://example.com/',
             b'',
@@ -1261,7 +1260,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'Set-Cookie: foo="bar%3Abaz"; Path=/',
             b'',
@@ -1278,7 +1277,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
         ])
@@ -1299,7 +1298,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 7)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'X-Consistency: Oatmeal',
@@ -1315,7 +1314,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 6)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 4',
             b'Content-Type: text/plain; charset=utf-8',
             b'BLAH',
@@ -1335,7 +1334,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 5)
         expected = set([
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'Kilroy was here!',
             b'',

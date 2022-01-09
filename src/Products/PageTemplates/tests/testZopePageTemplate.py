@@ -264,7 +264,7 @@ class ZopePageTemplateFileTests(ZopeTestCase):
 
     def testPT_RenderUnicodeExpr(self):
         # Check workaround for unicode incompatibility of ZRPythonExpr.
-        # See http://mail.zope.org/pipermail/zope/2007-February/170537.html
+        # See https://mail.zope.dev/pipermail/zope/2007-February/170537.html
         manage_addPageTemplate(self.app, 'test',
                                text=(u'<span tal:content="python: '
                                      u'u\'\xfe\'" />'),

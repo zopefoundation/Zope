@@ -388,13 +388,8 @@ the value of the calling context (in this case, a folder).
 It can be used much like the *context* we have seen in 
 Scripts (Python).
 
-You must have PIL installed for this example to work. Installing
-PIL is beyond the scope of this book, but note that it is
-important to choose a version of PIL that is compatible with the
-version of Python that is used by your version of Zope. See the
-"PythonWorks
-website":http://www.pythonware.com/products/pil/index.htm for more
-information on PIL.  
+You must have `Pillow <https://pypi.org/project/Pillow/>`_ installed for
+this example to work.
 
 To continue our example, create an External Method named
 *makeThumbnail* that uses the *makeThumbnail* function in the
@@ -503,7 +498,7 @@ that take XML arguments which can be called by remote systems.
 Once you have received an XML message you must process the XML to find
 out what it means and how to act on it.  Let's take a quick look at how
 you might parse XML manually using Python. Suppose you want to connect
-your web application to a "Jabber":http://www.jabber.com/ chat
+your web application to a `Jabber <http://www.jabber.org>`_ chat
 server. You might want to allow users to message you and receive
 dynamic responses based on the status of your web application. For
 example suppose you want to allow users to check the status of animals
@@ -525,10 +520,8 @@ Here is a sketch of how you could implement this XML messaging
 facility in your web application using an External Method::
 
   # Uses Python 2.x standard xml processing packages.  See
-  # http://www.python.org/doc/current/lib/module-xml.sax.html for
-  # information about Python's SAX (Simple API for XML) support If
-  # you are using Python 1.5.2 you can get the PyXML package. See
-  # http://pyxml.sourceforge.net for more information about PyXML.
+  # https://docs.python.org/2.7/library/xml.sax.html for
+  # information about Python's SAX (Simple API for XML) support.
 
   from xml.sax import parseString
   from xml.sax.handler import ContentHandler
@@ -617,8 +610,8 @@ Zope's persistence machinery.  If you need to create new
 kinds of persistent objects, it's time to learn about
 writing Zope Products. Writing a Product is beyond the
 scope of this book. You can learn more by reading the
-"Zope Developers'
-Guide":http://www.zope.org/Documentation/Books/ZDG/current
+`Zope Developer's
+Guide <https://zope.readthedocs.io/en/latest/zdgbook/index.html>`_.
 
 
 Advanced Acquisition 
@@ -1230,8 +1223,8 @@ over HTTP and uses XML to encode information. XML-RPC clients
 have been implemented for many languages including Python,
 Java and JavaScript.
 
-In-depth information on XML-RPC can be found at the "XML-RPC
-website":http://www.xmlrpc.com/. 
+In-depth information on XML-RPC can be found at the `XML-RPC
+website <http://xmlrpc.com/>`_.
 
 All Zope scripts that can be called from URLs can be called via
 XML-RPC. Basically XML-RPC provides a system to marshal
@@ -1295,7 +1288,7 @@ have a Zope script that feeds the lions and you would like
 to call it every morning.  You can use *wget* to call the
 script like so::
 
-  $ wget --spider http://www.zopezope.org/Lions/feed
+  $ wget --spider http://www.zopezoo.org/Lions/feed
 
 The *spider* option tells *wget* not to save the response as a
 file. Suppose that your script is protected and requires
@@ -1304,7 +1297,7 @@ access protected scripts::
 
   $ wget --spider --http-user=ZooKeeper \
       --http-passwd=SecretPhrase \
-      http://www.zopezope.org/Lions/feed
+      http://www.zopezoo.org/Lions/feed
 
 Now let's use *cron* to call this command every morning at 8am. Edit
 your crontab file with the *crontab* command::

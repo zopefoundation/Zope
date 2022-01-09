@@ -12,10 +12,10 @@ Relational Database Connectivity
     to deal with database tables, rows etc. like standard Python objects.
 
     The most common and most flexible ORM in the
-    Python world is `SQLAlchemy <http://www.sqlalchemy.org>`_ . You can not use
+    Python world is `SQLAlchemy <https://www.sqlalchemy.org>`_ . You can not use
     SQLAlchemy directly within Zope because the transaction system of the RDBMS
     must participate with Zope transaction. This integration layer is implemented
-    through the `zope.sqlalchemy <http://pypi.python.org/pypi/zope.sqlalchemy>`_
+    through the `zope.sqlalchemy <https://pypi.org/project/zope.sqlalchemy/>`_
     module.
 
 
@@ -65,24 +65,24 @@ Oracle
   Oracle is arguably the most powerful and popular
   commercial relational database. It is, however, relatively
   expensive and complex. Oracle can be purchased or evaluated from
-  the `Oracle Website <http://www.oracle.com/index.html>`_.
+  the `Oracle Website <https://www.oracle.com>`_.
 
 PostgreSQL
   PostgreSQL is a leading open source relational
   database with good support for SQL standards.  You can
   find more information about PostgreSQL at the `PostgreSQL web
-  site <http://www.postgresql.org/>`_.
+  site <https://www.postgresql.org/>`_.
 
-MySQL
+MySQL/MariaDB
   MySQL is a fast open source relational database. You
   can find more information about MySQL at the `MySQL web
-  site <http://www.mysql.com/>`_. 
+  site <https://www.mysql.com/>`_ and the Open Source fork
+  MariaDB at https://mariadb.org/.
 
 SQL Server
   Microsoft's full featured SQL Server for the
   Windows operating systems. For any serious use on Windows, it is
-  preferable to Microsoft Access. Information from
-  http://www.microsoft.com/sql/
+  preferable to Microsoft Access.
 
 The mechanics of setting up relational database is different for
 each database and is thus beyond the scope of this book.  All of the
@@ -103,32 +103,27 @@ Database Adapters
 A database can only be used if a Zope Database Adapter is available,
 though a Database Adapter is fairly easy to write if the database has
 Python support. Database adapters can be found in the
-`Zope Framework category of the Python Package Index <http://pypi.python.org/pypi?:action=browse&c=514>`_.
+`Zope Framework category of the Python Package Index
+<https://pypi.org/search/?q=&o=&c=Framework+%3A%3A+Zope>`_.
 
 At the time of writing the following adapters were available, but this
 list constantly changes as more adapters are added.
 
 Oracle
-  `DCOracle2 <http://www.zope.org/Members/matt/dco2>`_ package
+  `DCOracle2 <https://old.zope.dev/Members/matt/dco2/>`_ package
   from Zope Corporation includes the ZoracleDA
 
 PostgreSQL
-  The newest and prefered DA is ZPsycopgDA included in 
-  `psycopg <http://initd.org/software/psycopg package>`_. The older
-  `ZpopyDA <http://sourceforge.net/projects/zpopyda/>`_ is also
-  available.
+  The newest and prefered DA is
+  `ZPsycopgDA <https://pypi.org/project/ZPsycopgDA/>`_.
 
 MySQL
-  `ZMySQLDA <http://www.zope.org/Members/adustman/Products/ZMySQLDA>`_
+  `ZMySQLDA <https://pypi.org/project/Products.ZMySQLDA/>`_
   Available as source and a Linux binary package.
 
 SQLServer
-  `mxODBC <http://www.egenix.com>`_ is written by Egenix
-  and very well maintained. There is also
-  `ZODBC DA <http://www.zope.org/Products/DA/ZODBCDA>`_ is
-  written by Zope Corporation. Available
-  for the Windows platform only. This DA is no longer actively
-  maintainted.
+  `mxODBC <https://pypi.org/project/egenix-mxodbc/>`_ is written by Egenix
+  and very well maintained.
 
 If you will need to connect to more than one database or wish to connect
 as to the same database as different users then you may use multiple
@@ -1364,9 +1359,9 @@ relational database.
 Further help
 ------------
 
-The zope-db@zope.org is the place to ask questions about relational
+The zope-db@zope.dev is the place to ask questions about relational
 databases. You can subscribe or browse the archive of previous postings
-at http://mail.zope.org/mailman/listinfo/zope-db
+at https://mail.zope.dev/mailman/listinfo/zope-db
 
 Summary
 -------

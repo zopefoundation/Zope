@@ -66,7 +66,7 @@
 
 body {
     font: 75% "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
-    background: #474747 url(http://new.zope.org/body_bg.png) repeat-x scroll left top;
+    background: #474747;
     color: #333;
     margin: 0;
     padding: 0;
@@ -127,7 +127,7 @@ div.footer a {
 }
 
 div.related {
-    background: #F9F9F9 url(http://new.zope.org/light_grey_horizontal.png) repeat-x scroll left top;
+    background: #F9F9F9;
     border-bottom: 1px solid #d3d3d3;
     color: #333;
     width: 999px;
@@ -162,7 +162,7 @@ div.related a {
 
 /* ::: TOC :::: */
 div.sphinxsidebar h3 {
-    background: #333333 url(http://new.zope.org/dark_grey_horizontal.png) repeat-x scroll left bottom;
+    background: #333333;
     color: white;
     font-weight: bold;
     text-align: center;

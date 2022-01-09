@@ -2,8 +2,6 @@
 
 These tests mainly verify that OFS.Traversable.absolute_url()
 works correctly in a VHM environment.
-
-Also see http://zope.org/Collectors/Zope/809
 """
 import unittest
 

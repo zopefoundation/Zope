@@ -38,7 +38,7 @@ Throughout this guide, it is assumed that you know how to program in
 the Python programming language.  Most of the examples in this guide
 will be in Python.  There are a number of great resources and books
 for learning Python; the best online resource is the `python.org web
-site <http://www.python.org/>`_ and many books can be found on the
+site <https://www.python.org/>`_ and many books can be found on the
 shelves of your local bookstore.
 
 Organization of the book

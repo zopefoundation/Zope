@@ -8,8 +8,8 @@ about all minor new features and bugs being solved in this release. When you
 are ready to migrate, make sure you study the :ref:`zope4migration`
 documentation.
 
-The `Zope development roadmap <https://www.zope.org/developer/roadmap.html>`_
-on `www.zope.org <https://www.zope.org>`_ explains which versions are
+The `Zope development roadmap <https://www.zope.dev/developer/roadmap.html>`_
+on `www.zope.dev <https://www.zope.dev>`_ explains which versions are
 supported and for how long.
 
 .. contents::

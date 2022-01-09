@@ -883,7 +883,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(password_x, password)
 
     def test__authUserPW_with_embedded_colon(self):
-        # http://www.zope.org/Collectors/Zope/2039
         user_id = 'user'
         password = 'embedded:colon'
         auth_header = basic_auth_encode(user_id, password)

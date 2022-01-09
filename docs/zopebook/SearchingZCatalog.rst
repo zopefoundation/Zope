@@ -1869,7 +1869,7 @@ attribute or method result together, such as for 'SearchableText'
 or 'PrincipiaSearchSource'.
 
 FieldedTextIndex can be downloaded at
-http://old.zope.org/Members/Caseman/FieldedTextIndex/folder_contents.
+https://old.zope.dev/Members/Caseman/FieldedTextIndex/folder_contents.
 Full documentation on how to create this type of index, and further
 information on how to search it, including how to search it from
 web forms, is available in the README file that comes with this
