@@ -135,7 +135,7 @@ a "sender" object calls a method of a "receiver" object.
 When you access a URL that "points to" a Zope object, you are almost always
 sending that Zope object a message.  When you request a response from Zope
 by way of invoking a Zope URL with a web browser, the Zope `object
-publisher <http://www.zope.org/Documentation/Books/ZDG/current/ObjectPublishing.stx>`_
+publisher <https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
 receives the request from your browser.  It then sends a Zope object a
 message on your browser's behalf by "calling a method" on the Zope object
 specified in the URL.  The Zope object responds to the object publisher
@@ -272,9 +272,4 @@ on a "for-production" Zope development project.
 
 For a more comprehensive treatment on the subject of object orientation,
 buy and read `The Object
-Primer <http://www.ambysoft.com/theObjectPrimer.html>`_ by Scott Ambler.
-There are also excellent object orientation tutorials available on the
-Internet.  See `The Essence of Objects
-chapter <http://www.objectcentral.com/oobook/Chapter2.html>`_ of the book 
-"The Essence of Object Oriented Programming with Java and UML," or the extensive
-`Object FAQ <http://www.objectfaq.com/oofaq2/>`_.
+Primer <https://www.amazon.com/Object-Primer-Agile-Model-Driven-Development/dp/0521540186/>`_ by Scott Ambler.

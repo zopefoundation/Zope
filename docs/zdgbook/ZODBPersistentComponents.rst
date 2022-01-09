@@ -55,9 +55,8 @@ remote storage server.
 To set up a ZODB, you must first install it.  ZODB comes with Zope,
 so the easiest way to install ZODB is to install Zope and use the
 ZODB that comes with your Zope installation.  For those of you who
-don't want all of Zope, but just ZODB, see the instructions for
-downloading ZODB from the `ZODB web page
-<http://wiki.zope.org/ZODB>`_.
+don't want all of Zope, but just ZODB, see its page on PyPI at
+https://pypi.org/project/ZODB/.
 
 After installing ZODB, you can start to experiment with it right from
 the Python command line interpreter.  If you've installed Zope,
@@ -571,20 +570,11 @@ This chapter has only covered the most important features of ZODB
 from a Zope developer's perspective. Check out some of these sources
 for more in depth information:
 
-- Andrew Kuchling's `ZODB pages <http://www.kuchling.com/zodb/>`_
-  include lots of information included a programmer's guide and links
-  to ZODB mailing lists.
-
-- `ZODB Wiki <http://wiki.zope.org/ZODB>`_ has information about
-  current ZODB projects.
+- The main ZODB documentation site at https://zodb.org/.
 
 - `ZODB UML
-  Model <http://www.zope.org/Documentation/Developer/Models/ZODB>`_ has
+  Model <https://old.zope.dev/Documentation/Developer/Models/ZODB/>`_ has
   the nitty gritty details on ZODB.
-
-- Paper `Introduction to the Zope Object Database
-  <http://www.python.org/workshops/2000-01/proceedings/papers/fulton/zodb3.html>`_
-  by Jim Fulton, presented at the 8th Python Conference.
 
 Summary
 =======
@@ -595,4 +585,3 @@ yourself with thread safety, transactions, conflicts, memory
 management, and database replication. ZODB takes care of these things
 for you. By following a few simple rules you can create persistent
 objects that just work.
-

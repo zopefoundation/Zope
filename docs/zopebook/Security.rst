@@ -284,7 +284,8 @@ Zope User accounts defined in the "stock" user folder
 implementation do not support additional properties like
 email addresses and phone numbers.  For support of properties
 like these, you will have to use external User products like the
-CMF Membership Component (in the `CMF <http://cmf.zope.org>`_).
+`Pluggable Auth Service
+<https://pypi.org/project/Products.PluggableAuthService/>`_
 
 Users can not be copied and pasted between User Folders.  The
 facility does not exist to perform this.
@@ -418,7 +419,7 @@ information repositories. The most popular user folder implementation is called
 `PluggableAuthService`_ which allows you to mix-in and combine a vast number of
 different authentication schemes and backends, like LDAP or MySQL.
 
-.. _PluggableAuthService: http://pypi.python.org/pypi/Products.PluggableAuthService
+.. _PluggableAuthService: https://pypi.org/project/Products.PluggableAuthService/
 
 Some user folders provide alternate login and logout controls in
 the form of web pages, rather than relying on Basic HTTP
@@ -786,7 +787,7 @@ You can find out what permissions are available on a given object
 by going to the *Security* management tab.
 
 The default Zope permissions are described in `appendix A
-<http://www.zope.org/Documentation/Books/ZDG/current/AppendixA.stx>`_
+<https://zope.readthedocs.io/en/latest/zdgbook/AppendixA.html>`_
 of the Zope Developer's Guide.
 
 .. figure:: Figures/6-3.png     

@@ -10,65 +10,56 @@ important links which you can use to find out more about Zope.
 Zope Web Sites
 ==============
 
-`Zope.org <http://www.zope.org>`_ is the official Zope website. It has
+`zope.dev <https://www.zope.dev>`_ is the official Zope website. It has
 downloads, documentation, news, and lots of community resources.
-
-`DZUG <http://dzug.org/>`_ was started as the main community site for the
-German Zope community and combines documentation translated to German,
-downloads, a portal for the various regional German Zope User Groups as well as
-information about Zope-related events in Europe.
-
-`Zope Italia <http://www.zope.it/>`_ forms the focal point for the Italian Zope
-community with news, events information and local Zope group contacts.
 
 Zope Documentation
 ==================
 
-`ZopeWiki - A wiki for the Zope community <http://zopewiki.org/>`_ is a
-community-run Zope documentation website set up by Simon Michael, author of the
-famus ZWiki wiki product for Zope.
-
-`Zope Developer's Guide <http://www.zope.org/DocProjects/DevGuide>`_ teaches
-you how to write Zope products. It is somewhat outdated but cotains some
-nuggets you don't find elsewhere.
+The main Zope documentation site is at https://zope.readthedocs.io/. It
+contains technical documentation as well as the `Zope Book
+<https://zope.readthedocs.io/en/latest/zopebook/index.html>`_ and the `Zope
+Developer's Guide <https://zope.readthedocs.io/en/latest/zdgbook/index.html>`_.
 
 (Other) Zope Books
 ==================
 
+All of these books have been written for Zope version 2. Many concepts and
+examples still apply to Zope versions 4 and up.
+
 `The Zope Bible
-<http://www.amazon.com/exec/obidos/ASIN/0764548573/qid=1030511472/sr=2-1/ref=sr_2_1/002-3988880-4512056>`_
-by Scott Robertson and Michael Bernstein.
+<https://www.amazon.com/Zope-Bible-Michael-Bernstein/dp/0764548573/>`_
+by Scott Robertson and Michael Bernstein, published April 2002.
 
 `The Book of Zope
-<http://www.amazon.com/exec/obidos/ASIN/1886411573/qid=1030511472/sr=2-2/ref=sr_2_2/002-3988880-4512056>`_
-by Beehive.
+<https://www.amazon.com/Book-Zope-Beehive/dp/1886411573/>`_
+by Beehive, published November 2001.
 
 `The Zope Web Application Construction Kit
-<http://www.amazon.com/exec/obidos/tg/detail/-/0672321335/qid=1030511472/sr=1-5/ref=sr_1_5/002-3988880-4512056?v=glance&amp;s=books>`_
-edited by Martina Brockman, et. al.
+<https://www.amazon.com/Zope-Web-Application-Construction-Kit/dp/0672321335/>`_
+edited by Martina Brockman, et. al., published October 2001.
 
 `Zope: Web Application Development and Content Management
-<http://www.amazon.com/exec/obidos/tg/detail/-/0735711100/qid=1030511472/sr=1-2/ref=sr_1_2/002-3988880-4512056?v=glance&amp;s=books>`_
-edited by Steve Spicklemire et al.
+<https://www.amazon.com/Zope-Application-Development-Management-Landmark/dp/0735711100/>`_
+edited by Steve Spicklemire et al., published December 2001.
 
 `Zope: Timely, Practical, Reliable
-<http://www.amazon.com/exec/obidos/tg/detail/-/0470844515/ref=ase_zopezone-20/102-5632760-7919306?v=glance&s=books>`_
+<https://www.amazon.com/Zope/dp/0470844515/>`_
 written by Pierre Julien Grizel.
 
 `The Zope Book
-<http://www.amazon.com/exec/obidos/ASIN/0735711372/zopezone-20/102-5632760-7919306>`_
-is the hardcover version of the original edition Zope Book on which this text
-is based.
+<https://www.amazon.com/Zope-Book-Amos-Latteier/dp/0735711372/>`_
+is the hardcover version of the original edition Zope Book on which the
+first version of this text is based. The first edition was published in July
+2001.
 
 Mailing Lists
 =============
 
-`mail.zope.org <http://www.zope.org/Resources/MailingLists>`_ maintains a collection
-of the many Zope mailing lists.
+Zope mailing lists are managed at `mail.zope.dev <https://mail.zope.dev/>`_ .
 
 Python Information
 ==================
 
-`Python.org <http://www.python.org>`_ has lots of information about Python
+`Python.org <https://www.python.org>`_ has lots of information about Python
 including a tutorial and reference documentation.
-

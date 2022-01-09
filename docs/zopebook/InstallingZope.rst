@@ -14,10 +14,8 @@ There are typically two types of Zope releases: a "stable" release
 and a "development" release.  If you are new to Zope, you almost
 certainly want to use the "stable" Zope release.
 
-You may download Zope from the `Zope.org <http://www.zope.org/>`_ web
-site, from which the most recent stable and development versions are always
-available in the `Download <http://www.zope.org/Products/>`_
-area.
+Zope is published on the official Python package repository at
+https://pypi.org/project/Zope/.
 
 Zope comes as a "binary" release for the Windows platform, and in source
 format for UNIX-like operating systems. Zope may be compiled on almost any
@@ -25,7 +23,7 @@ UNIX-like operating system.  Zope has reportedly been successfully compiled
 on Linux, FreeBSD, NetBSD, OpenBSD, Mac OS X, HPUX, IRIX, DEC OFS/1, and
 even Cygwin (the UNIX emulation platform for Windows).
 
-As a general rule of thumb: if `Python <http://www.python.org/>`_ is
+As a general rule of thumb: if `Python <https://www.python.org/>`_ is
 available for your operating system, and if you have a C compiler and
 associated development utilities, then it is highly likely that you will be
 able to compile Zope.  A notable exception is Mac OS between versions 7
@@ -45,7 +43,7 @@ The "Win32" version of Zope works under Windows 95, Windows 98, Windows ME,
 Windows NT, Windows 2000, Windows XP, and Windows Server 2003.  Zope for
 Windows comes as a self-installing *.exe* file.  To install Zope, first,
 download the Win32 executable installer from the
-`Download`_ area on Zope.org.  It is
+Download area on Zope.org.  It is
 typically named something like "Zope-2.X.X-win32-x86.exe" where the "X"'s
 refer to the current Zope version number.
 
@@ -136,7 +134,7 @@ you first must:
 - ensure that you have a recent "make" on your system (*GNU make* is
   preferred);
 
-- install the `Python <http://www.python.org/>`_ language on your
+- install the `Python <https://www.python.org/>`_ language on your
   system from source, or install a binary Python package, including
   development headers.
 
@@ -151,7 +149,7 @@ most recent information on which version of Python is required for
 compiling Zope, see the release notes on the release Web page.
 
 You can obtain detailed instructions for downloading, compiling, and
-installing Python from source at the `Python.org <http://www.python.org/>`_
+installing Python from source at the `Python.org <https://www.python.org/>`_
 website.  Most Linux distributions ship with a pre-installed Python 2.5,
 but care is required when attempting to use a vendor-installed Python to
 compile Zope: some of these vendor-supplied Python distributions do not
@@ -165,7 +163,7 @@ source.
 
 After downloading, compiling, and installing Python from source, download
 the current Zope source distribution.  See the Zope.org `Downloads
-<http://www.zope.org/Products>`_ area for the latest Zope source release.
+<https://old.zope.dev/Products/>`_ area for the latest Zope source release.
 
 Download the source to your home, or some other directory, 'cd' to that
 directory, and unpack it with something similar to::
@@ -582,12 +580,16 @@ your problem resolved quickly.
 The most reliable way to get installation help is to send a message to the
 general Zope mailing list detailing your installation problem.  For more
 information on the available Zope mailing lists, see the
-`Resources <http://www.zope.org/Resources>`_ section of Zope.org.  Typically,
-someone on the "zope@zope.org" list will be willing and able to help you
+`Resources <https://old.zope.dev/Resources/>`_ section of Zope.org.  Typically,
+someone on the "zope@zope.dev" list will be willing and able to help you
 solve the problem.
+
+Another resource is the Zope section on the Plone community discussion server
+at https://community.plone.org/c/zope because Plone is running on top of Zope,
+so you will find many knowledgeable people there.
 
 For even more immediate help, you may choose to visit the 
 `#zope <irc://irc.freenode.net/#zope>`_ channel on
 the  IRC (Internet Relay Chat) network.  See the `Freenode
-website <http://freenode.net>`_ for more information on how to connect
+website <https://freenode.net>`_ for more information on how to connect
 to the FreeNode IRC network.

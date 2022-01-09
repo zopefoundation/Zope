@@ -69,7 +69,7 @@ familiar with other popular command line debuggers (like gdb) will
 feel right at home in pdb.
 
 For an introduction to pdb see the standard `pdb documentation
-<http://www.python.org/doc/current/lib/module-pdb.html>`_ .
+<https://docs.python.org/library/pdb.html>`_ .
 
 There are a number of ways to debug a Zope process:
 
@@ -139,7 +139,7 @@ debugger::
 
   >>> ZPublisher.Zope('')
   Status: 200 OK
-  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
+  X-Powered-By: Zope (www.zope.dev), Python (www.python.org)
   Content-Length: 1238
   Content-Type: text/html
 
@@ -225,7 +225,7 @@ message, it's useful to know how you have set Zope up to be debugged.
 When Zope fires up in debugger mode, there are three breakpoints set
 for you automatically (if you don't know what a breakpoint is, you
 need to read the python `debugger documentation
-<http://www.python.org/doc/current/lib/module-pdb.html>`_).
+<https://docs.python.org/library/pdb.html>`_).
 
 The first breakpoint stops the program at the point that ZPublisher
 (the Zope ORB) tries to publish the application module (in this case,
@@ -425,11 +425,8 @@ Unit Testing
 Unit testing allows you to automatically test your classes to make
 sure they are working correctly. By using unit tests you can make
 sure as you develop and change your classes that you are not breaking
-them. Zope comes with Pyunit. You can find out more information on
-Pyunit at `the Pyunit home page <http://pyunit.sourceforge.net/>`_
-. Pyunit is also part of the Python `standard library
-<http://www.python.org/doc/lib/module-unittest.html>`_ as of Python
-2.1.
+them. Zope's own unit tests are written using the built-in Python
+`unittest module <https://docs.python.org/library/unittest.html>`_.
 
 
 What Are Unit Tests
@@ -450,7 +447,7 @@ successful.
 
 It's a good idea to have a sense of the limits of unit testing.  From
 the `Extreme Programming Enthusiast website
-<http://c2.com/cgi/wiki?UnitTestsDefined>`_ here is a list of things
+<http://wiki.c2.com/?UnitTestsDefined>`_ here is a list of things
 that unit tests are *not*:
 
 - Manually operated.
@@ -531,8 +528,8 @@ your product's 'tests' directory.  You can run test your product by
 running the test scripts.
 
 We cannot cover all there is to say about unit testing here. Take a
-look at the Pyunit `documentation
-<http://pyunit.sourceforge.net/pyunit.html>`_ for more background on
+look at the `unittest module documentation
+<https://docs.python.org/library/unittest.html>`_ for more background on
 unit testing.
 
 Zope Test Fixtures

@@ -47,7 +47,7 @@ which are explored further in the chapter entitled `Zope Services
 <ZopeServices.html>`_. You may also install "third party" Zope objects ,
 defined in Python packages, to expand Zope's capabilities. You can browse a
 list of packages specifically aimed at Zope at the
-`Python Package Index <http://pypi.python.org/pypi?:action=browse&c=514>`_.
+`Python Package Index <https://pypi.org/search/?q=&o=&c=Framework+%3A%3A+Zope>`_.
 
 
 Content Objects: Folders, Files, and Images
@@ -351,7 +351,7 @@ There are two kinds of logic objects supported by stock Zope: *Script
 (Python)* objects and *External Methods*.  These stock logic objects are
 written in the syntax of the *Python* scripting language. Python is a
 general-purpose programming language. You are encouraged
-to read the `Python Tutorial <http://docs.python.org/tutorial/>`_
+to read the `Python Tutorial <https://docs.python.org/tutorial/>`_
 in order to understand the syntax and semantics of the example Script (Python)
 objects shown throughout this chapter and throughout this book. And don't
 panic: Python is very easy to learn and understand.
@@ -785,10 +785,10 @@ you've just built your first Zope application successfully!  If you are
 having trouble, try to troubleshoot the application by using the tips in
 the section "Dealing With Errors."  If you're stuck entirely, it's
 advisable that you send a message to the `Zope mailing list
-<mailto:zope@zope.org>`_ detailing the problem that you're having as
+<mailto:zope@zope.dev>`_ detailing the problem that you're having as
 concisely and clearly as possible.  It is likely that someone there will be
 able to help you, and it is polite to subscribe to the Zope mailing list
-itself if you want to receive replies.  See the `Mailing list
-section <http://www.zope.org/Resources/MailingLists>`_ of Zope.org for
-information about how to subscribe to the Zope (zope@zope.org) mailing
+itself if you want to receive replies.  See
+https://mail.zope.dev/mailman/listinfo/zope for
+information about how to subscribe to the Zope (zope@zope.dev) mailing
 list.

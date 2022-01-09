@@ -20,7 +20,7 @@ integrity, and access control, allowing one to focus instead on the
 problem at hand.  It allows you to utilize the services it
 provides to build web applications more quickly than other
 languages or frameworks, and to write web
-application logic in the `Python <http://www.python.org/>`_
+application logic in the `Python <https://www.python.org/>`_
 language.  Zope also comes with one solution that allow you 
 to "template" text, XML, and HTML: *Zope Page Templates* (ZPT).
 
@@ -62,10 +62,10 @@ way it does this is conceptually straightforward:
 1. Your web browser sends a request to the Zope server.  The
    request specifies a URL in the form
    'protocol://host:port/path?querystring"',
-   e.g., 'http://www.zope.org:8080/Resources?batch_start=100'.
+   e.g., 'http://www.example.org:8080/Resources?batch_start=100'.
 
 2. Zope separates the URL into its component "host", "port" "path"
-   and "query string" portions ('http://www.zope.org', '8080',
+   and "query string" portions ('http://www.example.org', '8080',
    '/Resources' and '?batch_start=100', respectively).
 
 3. Zope locates the object in its object database corresponding
@@ -112,7 +112,7 @@ evaluation to be returned to your web browser.
 
 For a more detailed explanation of how Zope performs object
 publishing, see the `Object Publishing chapter
-<http://www.zope.org/Documentation/Books/ZDG/current/ObjectPublishing.stx>`_
+<https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
 of the *Zope Developer's Guide*.
 
 Through-The-Web Management
