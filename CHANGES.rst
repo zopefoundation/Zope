@@ -6,6 +6,11 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
+4.7.1 (unreleased)
+------------------
+
+- Update dependencies to the latest releases that still support Python 2.
+
 
 4.7 (2022-01-09)
 ----------------
