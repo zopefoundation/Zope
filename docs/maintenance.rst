@@ -49,7 +49,7 @@ Steps for creating a new Zope release
 
 - Run all tests::
 
-  $ bin/tox
+  $ bin/tox -pall
 
 - Upload the tagged release to PyPI::
 
