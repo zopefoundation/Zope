@@ -528,6 +528,8 @@ class HTTPBaseResponse(BaseResponse):
             body = self._encode_unicode(body)
         elif isinstance(body, bytes):
             pass
+        elif not hasattr(body, '__bytes__') and hasattr(body, '__str__'):
+            body = self._encode_unicode(str(body))
         else:
             try:
                 body = bytes(body)

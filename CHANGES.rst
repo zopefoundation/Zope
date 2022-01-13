@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Use string representation of response data that has no ``__bytes__``
+  (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
+
 
 5.4 (2022-01-09)
 ----------------
