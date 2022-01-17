@@ -650,7 +650,7 @@ class HTTPResponseTests(unittest.TestCase):
         regardless of if the values are in byte range."""
         response = self._makeOne()
         for body in ([1, 2, 3], [1, 2, 500]):
-            result = response.setBody(body)
+            response.setBody(body)
             self.assertEqual(response.body, str(body).encode('utf-8'))
 
     def test_setBody_w_bogus_pseudo_HTML(self):
