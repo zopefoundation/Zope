@@ -498,11 +498,13 @@ class HTTPBaseResponse(BaseResponse):
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
 
-        If body is unicode, encode it.
+        If body has an 'asHTML' method, replace it by the result of that
+        method.
 
-        If body is not a string or unicode, but has an 'asHTML' method, use
-        the result of that method as the body;  otherwise, use the 'str'
-        of body.
+        If body is unicode, encode it. If it is more complex (no str or bytes
+        and no '__bytes__' method), use its 'str' representation and encode the
+        result. Else, convert it to bytes, falling back to the encoded 'str'
+        representation if this yields an error.
 
         If is_error is true, format the HTML as a Zope error message instead
         of a generic HTML page.

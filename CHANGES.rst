@@ -13,7 +13,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
-- Use string representation of response data that has no ``__bytes__``
+- Use intermediate ``str`` representation for complex response data (i.e. not
+  ``str`` or ``bytes`` like)
   (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
 
 
