@@ -645,6 +645,14 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(ENCODED)))
 
+    def test_setBody_list(self):
+        """Test that setBody casts lists of ints into their str representation,
+        regardless of if the values are in byte range."""
+        response = self._makeOne()
+        for body in ([1, 2, 3], [1, 2, 500]):
+            result = response.setBody(body)
+            self.assertEqual(response.body, str(body).encode('utf-8'))
+
     def test_setBody_w_bogus_pseudo_HTML(self):
         # The 2001 checkin message which added the path-under-test says:
         # (r19315): "merged content type on error fixes from 2.3
