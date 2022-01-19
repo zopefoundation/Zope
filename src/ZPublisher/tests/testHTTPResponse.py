@@ -645,6 +645,44 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(ENCODED)))
 
+    def test_setBody_list(self):
+        """Test that setBody casts lists of ints into their str representation,
+        regardless of if the values are in byte range."""
+        resp = self._makeOne()
+        for body in ([1, 2, 3], [1, 2, 500]):
+            resp.setBody(body)
+            self.assertEqual(resp.body, str(body).encode('ascii'))
+
+    def test_setBody_io(self):
+        """
+        Test that BytesIO.getbuffer() can be used to write a binary response.
+        """
+        from io import BytesIO
+        resp = self._makeOne()
+        value = b'\x00\x01'
+        bio = BytesIO(value)
+        resp.setBody(bio.getbuffer())
+        self.assertEqual(resp.body, value)
+
+    def test_setBody_by_content_type(self):
+        """
+        Check that a list as response is treated differently depending on the
+        content type.
+        """
+        resp = self._makeOne()
+        body = [1, 2, 3]
+
+        resp.setBody(body)
+        self.assertEqual(resp.body, str(body).encode('ascii'))
+
+        resp.setHeader('Content-Type', 'application/x-octet-stream')
+        resp.setBody(body)
+        self.assertEqual(resp.body, bytes(body))
+
+        resp.setHeader('Content-Type', 'text/plain')
+        resp.setBody(body)
+        self.assertEqual(resp.body, str(body).encode('ascii'))
+
     def test_setBody_w_bogus_pseudo_HTML(self):
         # The 2001 checkin message which added the path-under-test says:
         # (r19315): "merged content type on error fixes from 2.3

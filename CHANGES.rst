@@ -13,6 +13,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Use intermediate ``str`` representation for non-bytelike response data unless
+  indicated differently by the content type.
+  (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
+
 
 5.4 (2022-01-09)
 ----------------
