@@ -501,10 +501,10 @@ class HTTPBaseResponse(BaseResponse):
         If body has an 'asHTML' method, replace it by the result of that
         method.
 
-        If body is unicode, encode it. If it is more complex (no str or bytes
-        and no '__bytes__' method), use its 'str' representation and encode the
-        result. Else, convert it to bytes, falling back to the encoded 'str'
-        representation if this yields an error.
+        If body is now bytes, bytearray or memoryview, convert it to bytes.
+        Else, either try to convert it to bytes or use an intermediate string
+        representation which is then converted to bytes, depending on the
+        content type.
 
         If is_error is true, format the HTML as a Zope error message instead
         of a generic HTML page.
@@ -526,17 +526,17 @@ class HTTPBaseResponse(BaseResponse):
         if hasattr(body, 'asHTML'):
             body = body.asHTML()
 
-        if isinstance(body, str):
-            body = self._encode_unicode(body)
-        elif isinstance(body, bytes):
-            pass
-        elif not hasattr(body, '__bytes__') and hasattr(body, '__str__'):
-            body = self._encode_unicode(str(body))
-        else:
+        content_type = self.headers.get('content-type')
+
+        if isinstance(body, (bytes, bytearray, memoryview)):
+            body = bytes(body)
+        elif content_type is not None and not content_type.startswith('text/'):
             try:
                 body = bytes(body)
             except (TypeError, UnicodeError):
-                body = self._encode_unicode(str(body))
+                pass
+        if not isinstance(body, bytes):
+            body = self._encode_unicode(str(body))
 
         # At this point body is always binary
         b_len = len(body)
@@ -556,8 +556,6 @@ class HTTPBaseResponse(BaseResponse):
                         title, body.decode(self.charset)).encode(self.charset)
             else:
                 self.body = body
-
-        content_type = self.headers.get('content-type')
 
         if content_type is None:
             if self.isHTML(body):
