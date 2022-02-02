@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.4.1 (unreleased)
 ------------------
 
+- Fix several exceptions when calling ``ZPublisher.utils.fix_properties``.
+
 - Update to newest compatible versions of dependencies.
 
 - Use intermediate ``str`` representation for non-bytelike response data unless
