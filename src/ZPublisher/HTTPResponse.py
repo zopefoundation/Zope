@@ -317,7 +317,7 @@ class HTTPBaseResponse(BaseResponse):
             k, v = convertCookieParameter(k, v)
             cookie[k] = v
         cookie['value'] = value
-        # RFC6265 makes quoting obsolet
+        # RFC6265 makes quoting obsolete
         # cookie['quoted'] = quoted
         getCookieParamPolicy().check_consistency(name, cookie)
 

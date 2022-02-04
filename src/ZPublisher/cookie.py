@@ -123,7 +123,7 @@ class CookieParameterRegistry(object):
         either ``None``, ``True``
         or an ASCII string without control characters and ``;``.
         ``None`` means "drop the parameter",
-        ``True`` menas "drop the parameter value",
+        ``True`` means "drop the parameter value",
         otherwise, the return value is used as value representation.
 
         Some aliases are automatically derived from *name*:
