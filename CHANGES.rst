@@ -9,6 +9,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.7.1 (unreleased)
 ------------------
 
+- Enhance cookie support. For details, see
+  `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
+
 - Update dependencies to the latest releases that still support Python 2.
 
 
