@@ -237,16 +237,13 @@ def domain_converter(value):
     the registration to get IDNA2008 if you observe domain
     related problems.
     """
-    if isinstance(value, bytes):
-        value = value.decode("utf-8")
-    if "xn--" in value:  # already encoded
-        # ATT: under Python 2, this returns unicode
-        # this may pose problems should other parameters
-        # provide encoded non-ASCII
+    # Python 2 requires unicode
+    u_value = value.decode("utf-8") if isinstance(value, bytes) else value
+    if "xn--" in u_value:  # already encoded
         return value
     from encodings.idna import ToASCII
     from encodings.idna import nameprep
-    return ".".join(to_str(ToASCII(nameprep(c))) for c in value.split("."))
+    return ".".join(to_str(ToASCII(nameprep(c))) for c in u_value.split("."))
 
 
 registerCookieParameter("Domain", domain_converter)
