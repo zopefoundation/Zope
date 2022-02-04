@@ -32,6 +32,7 @@ from time import time
 from six.moves.urllib.parse import quote
 from six.moves.urllib.parse import unquote
 
+from Acquisition import aq_base
 from DateTime import DateTime
 from zope.component import getGlobalSiteManager
 from zope.component import queryUtility
@@ -46,7 +47,7 @@ class DefaultCookieParamPolicy(object):
     """Default ``ICookieParamPolicy``.
 
     It adds ``Expires`` when it sees ``Max-Age`` (for compatibility
-    with HTTP/1.0) and urlquotes cookie values.
+    with HTTP/1.0).
     """
 
     @staticmethod
@@ -264,9 +265,9 @@ def path_converter(value):
     If the string contains ``%``, it is assumed that it is already
     quoted.
     """
-    ap = getattr(value, "absolute_url_path", None)
+    ap = getattr(aq_base(value), "absolute_url_path", None)
     if ap is not None:
-        return ap()
+        return value.absolute_url_path()
     if path_safe(value):
         return value
     if "%" in value:
