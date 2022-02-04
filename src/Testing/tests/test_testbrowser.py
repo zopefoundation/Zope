@@ -89,7 +89,7 @@ class TestTestbrowser(FunctionalTestCase):
 
         browser = Browser()
         browser.open('http://localhost/test_folder_1_/stub')
-        self.assertEqual(browser.cookies.get('evil'), '"cookie"')
+        self.assertEqual(browser.cookies.get('evil'), 'cookie')
 
     def test_handle_errors_true(self):
         self.folder._setObject('stub', ExceptionStub())

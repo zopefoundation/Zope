@@ -49,6 +49,10 @@ from ZPublisher.BaseResponse import BaseResponse
 from ZPublisher.Iterators import IStreamIterator
 from ZPublisher.Iterators import IUnboundStreamIterator
 
+from .cookie import convertCookieParameter
+from .cookie import getCookieParamPolicy
+from .cookie import getCookieValuePolicy
+
 
 try:
     from html import escape
@@ -310,9 +314,12 @@ class HTTPBaseResponse(BaseResponse):
         else:
             cookie = cookies[name] = {}
         for k, v in kw.items():
+            k, v = convertCookieParameter(k, v)
             cookie[k] = v
         cookie['value'] = value
-        cookie['quoted'] = quoted
+        # RFC6265 makes quoting obsolet
+        # cookie['quoted'] = quoted
+        getCookieParamPolicy().check_consistency(name, cookie)
 
     def appendCookie(self, name, value):
         """ Set an HTTP cookie.
@@ -676,44 +683,19 @@ class HTTPBaseResponse(BaseResponse):
 
     def _cookie_list(self):
         cookie_list = []
+        dump = getCookieValuePolicy().dump
+        parameters = getCookieParamPolicy().parameters
         for name, attrs in self.cookies.items():
-
-            # Note that as of May 98, IE4 ignores cookies with
-            # quoted cookie attr values, so only the value part
-            # of name=value pairs may be quoted.
-
-            if attrs.get('quoted', True):
-                cookie = '%s="%s"' % (name, quote(attrs['value']))
-            else:
-                cookie = '%s=%s' % (name, quote(attrs['value']))
-            for name, v in attrs.items():
-                name = name.lower()
-                if name == 'expires':
-                    cookie = '%s; Expires=%s' % (cookie, v)
-                elif name == 'domain':
-                    cookie = '%s; Domain=%s' % (cookie, v)
-                elif name == 'path':
-                    cookie = '%s; Path=%s' % (cookie, v)
-                elif name == 'max_age':
-                    cookie = '%s; Max-Age=%s' % (cookie, v)
-                elif name == 'comment':
-                    cookie = '%s; Comment=%s' % (cookie, v)
-                elif name == 'secure' and v:
-                    cookie = '%s; Secure' % cookie
-                # Some browsers recognize this cookie attribute
-                # and block read/write access via JavaScript
-                elif name == 'http_only' and v:
-                    cookie = '%s; HTTPOnly' % cookie
-                # Some browsers recognize the SameSite cookie attribute
-                # and do not send the cookie along with cross-site requests
-                # providing some protection against CSRF attacks
-                # https://tools.ietf.org/html/draft-west-first-party-cookies-07
-                elif name == 'same_site' and v:
-                    cookie = '%s; SameSite=%s' % (cookie, v)
+            params = []
+            for pn, pv in parameters(name, attrs):
+                if pv is None:
+                    continue
+                params.append(pn if pv is True else "%s=%s" % (pn, pv))
+            cookie = "%s=%s" % (name, dump(name, attrs["value"]))
+            if params:
+                cookie += "; " + "; ".join(params)
+            # Should really check size of cookies here!
             cookie_list.append(('Set-Cookie', cookie))
-
-        # Should really check size of cookies here!
-
         return cookie_list
 
     def listHeaders(self):

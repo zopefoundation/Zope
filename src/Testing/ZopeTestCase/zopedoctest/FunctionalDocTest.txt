@@ -145,7 +145,7 @@ Test setting cookies
   >>> response.status
   200
 
-  >>> b'Set-Cookie: foo="Bar"; Path=/' in response.getOutput()
+  >>> b'Set-Cookie: foo=Bar; Path=/' in response.getOutput()
   True
 
 Test reading cookies
