@@ -18,8 +18,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Enhance cookie support. For details, see
   `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
 
-- Update dependencies to the latest releases that still support Python 2.
-
 - Use intermediate ``str`` representation for non-bytelike response data unless
   indicated differently by the content type.
   (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
