@@ -182,29 +182,26 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), True)
 
     def test_setCookie_w_existing(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         response.setCookie('foo', 'baz')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'baz')
-        self.assertEqual(cookie.get('quoted'), True)
 
     def test_setCookie_no_attrs(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), True)
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_expires(self):
         EXPIRES = 'Wed, 31 Dec 1997 23:59:59 GMT'
@@ -213,127 +210,117 @@ class HTTPResponseTests(unittest.TestCase):
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('expires'), EXPIRES)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Expires'), EXPIRES)
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Expires=%s' % EXPIRES))
+                         ('Set-Cookie', 'foo=bar; Expires=%s' % EXPIRES))
 
     def test_setCookie_w_domain(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', domain='example.com')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('domain'), 'example.com')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Domain'), 'example.com')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Domain=example.com'))
+                         ('Set-Cookie', 'foo=bar; Domain=example.com'))
 
     def test_setCookie_w_path(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', path='/')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('path'), '/')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Path'), '/')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"; Path=/'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar; Path=/'))
 
     def test_setCookie_w_comment(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', comment='COMMENT')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('comment'), 'COMMENT')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Comment'), 'COMMENT')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Comment=COMMENT'))
+                         ('Set-Cookie', 'foo=bar; Comment=COMMENT'))
 
     def test_setCookie_w_secure_true_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', secure='SECURE')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('secure'), 'SECURE')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIs(cookie.get('Secure'), True)
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"; Secure'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar; Secure'))
 
     def test_setCookie_w_secure_false_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', secure='')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('secure'), '')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIsNone(cookie.get('Secure'))
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_httponly_true_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', http_only=True)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('http_only'), True)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('HttpOnly'), True)
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"; HTTPOnly'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar; HttpOnly'))
 
     def test_setCookie_w_httponly_false_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', http_only=False)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('http_only'), False)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIsNone(cookie.get('HttpOnly'))
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_same_site(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', same_site='Strict')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('same_site'), 'Strict')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('SameSite'), 'Strict')
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; SameSite=Strict'))
+                         ('Set-Cookie', 'foo=bar; SameSite=Strict'))
 
     def test_setCookie_unquoted(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', quoted=False)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), False)
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
@@ -343,23 +330,23 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setCookie('foo', b'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), b'bar')
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_handle_unicode_values(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
-        self.assertEqual(cookie.get('value'), 'bar')
+        self.assertEqual(len(cookie), 1)
+        self.assertEqual(cookie.get('value'), u'bar')
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
     def test_appendCookie_w_existing(self):
         response = self._makeOne()
@@ -368,7 +355,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar:baz')
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_appendCookie_no_existing(self):
         response = self._makeOne()
@@ -382,10 +369,10 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('foo', path='/')
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'),
+        self.assertEqual(cookie.get('Expires'),
                          'Wed, 31 Dec 1997 23:59:59 GMT')
-        self.assertEqual(cookie.get('max_age'), 0)
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Max-Age'), '0')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_expireCookie1160(self):
         # Verify that the cookie is expired even if an expires kw arg is passed
@@ -394,10 +381,10 @@ class HTTPResponseTests(unittest.TestCase):
                               expires='Mon, 22 Mar 2004 17:59 GMT', max_age=99)
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'),
+        self.assertEqual(cookie.get('Expires'),
                          'Wed, 31 Dec 1997 23:59:59 GMT')
-        self.assertEqual(cookie.get('max_age'), 0)
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Max-Age'), '0')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_getHeader_nonesuch(self):
         response = self._makeOne()
@@ -1150,7 +1137,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(headers,
                          [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
-                          ('Set-Cookie', 'foo="bar%3Abaz"; Path=/'),
+                          ('Set-Cookie', 'foo=bar%3Abaz; Path=/'),
                           ])
 
     def test_listHeaders_after_expireCookie(self):
@@ -1165,8 +1152,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(set(headers), expected)
         self.assertEqual(
             set(cookie_header.split('; ')),
-            {'qux="deleted"', 'Path=/', 'Max-Age=0',
-             'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
+            set(['qux=deleted', 'Path=/', 'Max-Age=0',
+                 'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1297,7 +1284,7 @@ class HTTPResponseTests(unittest.TestCase):
             b'Status: 200 OK',
             b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
-            b'Set-Cookie: foo="bar%3Abaz"; Path=/',
+            b'Set-Cookie: foo=bar%3Abaz; Path=/',
             b'',
         }
         self.assertEqual(set(lines), expected)
@@ -1320,8 +1307,8 @@ class HTTPResponseTests(unittest.TestCase):
         cookie_value = cookie_line.split(b': ', 1)[-1]
         self.assertEqual(
             set(cookie_value.split(b'; ')),
-            {b'qux="deleted"', b'Path=/', b'Max-Age=0',
-             b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
+            set([b'qux=deleted', b'Path=/', b'Max-Age=0',
+                 b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
         )
 
     def test___str__after_addHeader(self):
@@ -1499,7 +1486,8 @@ class TestHeaderEncodingRegistry(unittest.TestCase):
                          1)
 
     def test_encode_words(self):
-        self.assertEqual(encode_words("ä"), "=?utf-8?b?w6Q=?=")
+        self.assertIn(encode_words(u"ä"),
+                      ("=?utf-8?b?w6Q=?=", "=?utf-8?q?=C3=A4?="))
 
     def test_encode_params(self):
         self.assertEqual(encode_params('abc; p1=1; p2="2"; p3="€"; p4=€; '

@@ -44,6 +44,8 @@ from ZPublisher.Converters import get_converter
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
 
+from .cookie import getCookieValuePolicy
+
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -1742,7 +1744,7 @@ def parse_cookie(text,
                 return result
 
     if name not in result:
-        result[name] = unquote(value)
+        result[name] = getCookieValuePolicy().load(name, value)
 
     return parse_cookie(text[c_len:], result)
 
