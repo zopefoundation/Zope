@@ -98,3 +98,72 @@ class IXmlrpcChecker(Interface):
         which at this time is guaranteed (only) to contain the
         typical CGI information, such as `PATH_INFO` and `QUERY_STRING`.
         """
+
+
+###############################################################################
+# Cookie policies
+
+class ICookieParamPolicy(Interface):
+    """Utility interface to customize cookie parameter handling."""
+
+    def parameters(name, attrs):
+        """generate the parameters for the cookie with *name* and *attrs*.
+
+        Each parameter is described by a pair
+        *normalized_name*, *normalized_value*.
+        ``ZPublisher.cookie.convertCookieParameter`` can be used to achieve
+        the normalization.
+
+        *attrs* is a mapping describing the cookie's value
+        (key ``value``) and its parameters.
+        The  key and value for a parameter are its
+        "normalized name" and "normalized value".
+        The normalized name corresponds to the official
+        parameter name, usually defined by a standard such as RFC 6265.
+        You can use
+        ``ZPublisher.cookie.normalizeCookieParameterName`` to
+        normalize a parameter name.
+        The normalized value is either ``None`` (drop the parameter),
+        ``True`` (drop the parameter's value) or an ASCII string (use
+        as the parameter's value).
+
+        The policy can use ``parameters`` e.g. to add security parameters
+        such as ``HttpOnly``, ``Secure``, ``SameSite``.
+
+        Some security parameters may depend on request
+        details (e.g. whether ``https`` is used).
+        In those cases, you can use e.g. ``zope.globalrequest``
+        to access the request.
+        """
+
+    def check_consistency(name, attrs):
+        """raise ``ValueError`` if the cookie definition is inconsistent.
+
+        E.g. ``SameSite=None`` is allowed only together with ``Secure``.
+        """
+
+
+class ICookieValuePolicy(Interface):
+    """Utility interface to customize cookie value handling.
+
+    Note: cookies are processed very early during request processing.
+    At this time, only the global utility registry is available.
+    For this reason, a utility for this interface is looked up
+    only in the global component registry.
+    Local utility registrations are ignored.
+    """
+    def dump(name, value):
+        """Used to serialize *value* for cookie with name *name*.
+
+        RFC 6265 requires that the cookie value representation
+        in the response consists only of ASCII characters
+        excluding control characters, blank, double quote,
+        comma, semicolon, and backslash.
+        ``dump`` is used to ensure this.
+        """
+
+    def load(name, value):
+        """Used to deserialize *value* for cookie named *name*.
+
+        The inverse of ``dump``.
+        """

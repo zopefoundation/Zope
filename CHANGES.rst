@@ -15,6 +15,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Enhance cookie support. For details, see
+  `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
+
 - Use intermediate ``str`` representation for non-bytelike response data unless
   indicated differently by the content type.
   (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)

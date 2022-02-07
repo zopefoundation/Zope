@@ -90,7 +90,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         response = self.publish(self.folder_path + '/set_cookie')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getCookie('foo').get('value'), 'Bar')
-        self.assertEqual(response.getCookie('foo').get('path'), '/')
+        self.assertEqual(response.getCookie('foo').get('Path'), '/')
 
     def testChangeTitle(self):
         # Change the title of a document
