@@ -70,7 +70,7 @@ class DefaultPolicyTests(TestCase):
 
         check("abc")
         check("a/b/c")
-        check(u"äöü")
+        check("äöü")
         check("!\"§$&/()=?´´'#@+*~,;.-_")
         check(" 	\n")
 
@@ -136,14 +136,14 @@ class CookieParameterRegistryTests(TestCase):
         self.assertEqual(n, "Domain")
         self.assertEqual(v, "xn--dmin-moa0i.example")
         # perform encoding
-        _, v = convertCookieParameter("domain", u"dömäin.example")
+        _, v = convertCookieParameter("domain", "dömäin.example")
         self.assertEqual(v, "xn--dmin-moa0i.example")
         # check IDNA2003
-        _, v = convertCookieParameter("domain", u"Fußball.example")
+        _, v = convertCookieParameter("domain", "Fußball.example")
         self.assertEqual(v, "fussball.example")
         # check ``bytes`` handling
         _, v = convertCookieParameter("domain",
-                                      u"Fußball.example".encode("utf-8"))
+                                      "Fußball.example".encode("utf-8"))
         self.assertEqual(v, "fussball.example")
 
     def test_path(self):
@@ -191,7 +191,7 @@ class CookieParameterRegistryTests(TestCase):
             convertCookieParameter("samesite", "abc")
 
     def test_comment(self):
-        n, v = convertCookieParameter("comment", u"comment")
+        n, v = convertCookieParameter("comment", "comment")
         self.assertEqual(n, "Comment")
         self.assertEqual(v, "comment")
 

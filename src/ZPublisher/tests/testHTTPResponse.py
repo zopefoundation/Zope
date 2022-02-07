@@ -1486,7 +1486,7 @@ class TestHeaderEncodingRegistry(unittest.TestCase):
                          1)
 
     def test_encode_words(self):
-        self.assertIn(encode_words(u"ä"),
+        self.assertIn(encode_words("ä"),
                       ("=?utf-8?b?w6Q=?=", "=?utf-8?q?=C3=A4?="))
 
     def test_encode_params(self):
