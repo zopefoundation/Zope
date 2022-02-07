@@ -104,7 +104,8 @@ class CookieParameterRegistryTests(TestCase):
         _, v = convertCookieParameter("expires", 1643714434.9)
         self.assertEqual(v, "Tue, 01 Feb 2022 11:20:34 GMT")
         # check naive datetime
-        from datetime import datetime, timedelta
+        from datetime import datetime
+        from datetime import timedelta
         tt = 2022, 2, 1, 11, 20, 34, 1, 32, -1
         _, v = convertCookieParameter("expires", datetime(*tt[:6]))
         self.assertEqual(v, "Tue, 01 Feb 2022 11:20:34 GMT")
@@ -203,6 +204,7 @@ class CookieParameterRegistryTests(TestCase):
 class GetCookiePolicyTests(TestCase):
     def tearDown(self):
         from zope.testing.cleanup import cleanUp
+
         # clear the component registry
         cleanUp()
 

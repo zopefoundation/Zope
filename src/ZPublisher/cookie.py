@@ -28,9 +28,8 @@ import datetime
 from itertools import chain
 from re import compile
 from time import time
-
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
+from urllib.parse import quote
+from urllib.parse import unquote
 
 from Acquisition import aq_base
 from DateTime import DateTime
