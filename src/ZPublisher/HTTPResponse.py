@@ -498,11 +498,13 @@ class HTTPBaseResponse(BaseResponse):
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
 
-        If body is unicode, encode it.
+        If body has an 'asHTML' method, replace it by the result of that
+        method.
 
-        If body is not a string or unicode, but has an 'asHTML' method, use
-        the result of that method as the body;  otherwise, use the 'str'
-        of body.
+        If body is now bytes, bytearray or memoryview, convert it to bytes.
+        Else, either try to convert it to bytes or use an intermediate string
+        representation which is then converted to bytes, depending on the
+        content type.
 
         If is_error is true, format the HTML as a Zope error message instead
         of a generic HTML page.
@@ -524,15 +526,17 @@ class HTTPBaseResponse(BaseResponse):
         if hasattr(body, 'asHTML'):
             body = body.asHTML()
 
-        if isinstance(body, str):
-            body = self._encode_unicode(body)
-        elif isinstance(body, bytes):
-            pass
-        else:
+        content_type = self.headers.get('content-type')
+
+        if isinstance(body, (bytes, bytearray, memoryview)):
+            body = bytes(body)
+        elif content_type is not None and not content_type.startswith('text/'):
             try:
                 body = bytes(body)
             except (TypeError, UnicodeError):
-                body = self._encode_unicode(str(body))
+                pass
+        if not isinstance(body, bytes):
+            body = self._encode_unicode(str(body))
 
         # At this point body is always binary
         b_len = len(body)
@@ -552,8 +556,6 @@ class HTTPBaseResponse(BaseResponse):
                         title, body.decode(self.charset)).encode(self.charset)
             else:
                 self.body = body
-
-        content_type = self.headers.get('content-type')
 
         if content_type is None:
             if self.isHTML(body):
@@ -719,7 +721,7 @@ class HTTPBaseResponse(BaseResponse):
         """
 
         result = [
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)')
         ]
 
         encode = header_encoding_registry.encode

@@ -42,8 +42,7 @@ required.
 
 This chapter gives you a brief overview on installing ZEO, but there are many
 other options we don't cover. For more in-depth information, see the
-documentation that comes with the ZEO package, and also take a look at the
-`ZODB and ZEO discussion area <http://www.zope.org/Wikis/ZODB/FrontPage>`_.
+documentation that comes with the ZEO package.
 
 What is ZEO?
 ============
@@ -320,7 +319,7 @@ Using Round-robin DNS to Distribute Load
 ++++++++++++++++++++++++++++++++++++++++
 
 The *Domain Name System*, or DNS, is the Internet mechanism that translates
-computer names (like "www.zope.org") into numeric addresses. This mechanism can
+computer names (like "www.zope.dev") into numeric addresses. This mechanism can
 map one name to many addresses.
 
 The simplest method for load-balancing is to use round-robin DNS, as
@@ -354,7 +353,7 @@ refreshes.
 Configuring your DNS server to do round-robin name resolution is an advanced
 technique that is not covered in this book. A good reference on how to do this
 can be found in the `Apache Documentation
-<http://www.engelschall.com/pw/apache/rewriteguide/#ToC29>`_.
+<https://httpd.apache.org/docs/current/rewrite/>`_.
 
 Distributing the load with round-robin DNS is useful, and cheap, but not 100%
 effective. DNS servers can have strange caching policies, and you are relying
@@ -382,7 +381,7 @@ There are hardware and software Layer 4 switches. There are a number of
 software solutions, but one in general that stands out is the *Linux Virtual
 Server* (LVS). This is an extension to the free Linux operating system that
 lets you turn a Linux computer into a Layer 4 switch. More information on the
-LVS can be found on `its website <http://www.linuxvirtualserver.org>`_.
+LVS can be found on `its website <http://linuxvirtualserver.org>`_.
 
 There are also a number of hardware solutions that claim higher performance
 than software based solutions like LVS. Cisco Systems has a hardware router
@@ -394,13 +393,13 @@ Other software-based solutions
 
 If you are looking for a simple load balancer and proxy software to put in
 front of your ZEO clients you can take a look at the `Pound load balancer
-<http://www.apsis.ch/pound/>`_ which can be set up quickly and offers many
-convenient features.
+<https://www.apsis.ch/pound.html>`_ which can be set up quickly and offers
+many convenient features.
 
 Many administrators will want to cache content and load balance at the same
 time. The `Squid cache server <http://www.squid-cache.org/>`_ is an excellent
 choice. Toby Dickenson has written up a `HowTo
-<http://www.zope.org/Members/htrd/howto/squid>`_ describing a configuration in
+<https://old.zope.dev/Members/htrd/howto/squid>`_ describing a configuration in
 which Squid caches and balances the load among several ZEO clients.
 
 Dealing with the Storage Server as A Single Point of Failure
@@ -431,18 +430,17 @@ for the failed server right away.
 
 Like Layer 4 switching, there are a number of products, software and hardware,
 that may help you to create a backup storage server. One popular software
-solution for linux is called `fake <http://vergenet.net/linux/fake/>`_. Fake is
+solution for linux is called `fake <https://projects.horms.net/projects/fake/>`_. Fake is
 a Linux-based utility that can make a backup computer take over for a failed
 primary computer by "faking out" network addresses. When used in conjunction
-with monitoring utilities like `mon <http://www.kernel.org/software/mon/>`_ or
+with monitoring utilities like `mon <https://sourceforge.net/projects/mon/>`_ or
 `heartbeat <http://www.linux-ha.org/>`_, fake can guarantee almost 100% up-time
 of your ZEO server and Layer 4 switches. Using `fake` in this way is beyond the
 scope of this book.
 
-ZEO also has a commercial "multiple-server" configuration which provides for
-redundancy at the storage level. Zope Corporation sells a commercial product
-named `Zope Replication Services <http://www.zope.com/Products/ZRS.html>`_ that
-provides redundancy in storage server services. It allows a "secondary" storage
+ZEO also has a "multiple-server" configuration which provides for
+redundancy at the storage level, see https://pypi.org/project/zc.zrs/,
+that provides redundancy in storage server services. It allows a "secondary" storage
 server to take over for a "primary" server when the primary fails.
 
 ZEO Server Details

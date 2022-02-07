@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.4.dev0'
+version = '5.4.1.dev0'
 
 
 setup(
@@ -44,7 +44,7 @@ setup(
     license='ZPL 2.1',
     description='Zope application server / web framework',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     long_description="\n\n".join([README, CHANGES]),
     classifiers=[
         'Development Status :: 6 - Mature',

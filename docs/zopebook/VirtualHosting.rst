@@ -395,7 +395,7 @@ by loading the corresponding shared modules.
 If you are using the new Apache 2 series, you will also have
 to include the 'mod_proxy_http' module. See the "Apache
 mod_rewrite documentation",
-http://httpd.apache.org/docs/trunk/mod/mod_rewrite.html
+https://httpd.apache.org/docs/current/mod/mod_rewrite.html
 for details.
 
 You can check whether you have the required modules installed
@@ -470,7 +470,7 @@ rewritten (e.g. to
 Apache then calls the rewritten URL, and returns the result.
 
 See the "Apache Documentation",
-http://httpd.apache.org/docs/2.0/misc/rewriteguide.html
+https://httpd.apache.org/docs/current/mod/mod_rewrite.html
 for more information on the subject of rewrite rules.
 
 Virtual Hosting Considerations for Content classes

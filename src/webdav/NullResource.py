@@ -100,16 +100,22 @@ class NullResource(Persistent, Implicit, Resource):
     def _default_PUT_factory(self, name, typ, body):
         # See if the name contains a file extension
         shortname, ext = os.path.splitext(name)
+        ext = ext.lower()
 
         # Make sure the body is bytes
         if not isinstance(body, bytes):
             body = body.encode('UTF-8')
 
+        # Guess the type of file if the passed content-type is
+        # just the generic application/octet-stream
+        if not typ or typ == 'application/octet-stream':
+            typ, encoding = guess_content_type(name, body)
+
         if ext == '.dtml':
             ob = DTMLDocument('', __name__=name)
         elif typ in ('text/html', 'text/xml'):
             ob = ZopePageTemplate(name, body, content_type=typ)
-        elif typ[:6] == 'image/':
+        elif typ.startswith('image/'):
             ob = Image(name, '', body, content_type=typ)
         else:
             ob = File(name, '', body, content_type=typ)
@@ -183,6 +189,9 @@ class NullResource(Persistent, Implicit, Resource):
             sMsg = 'Unable to create object of class %s in %s: %s' % \
                    (ob.__class__, repr(parent), sys.exc_info()[1],)
             raise Unauthorized(sMsg)
+
+        # A PUT factory may have changed the object's ID
+        name = ob.getId() or name
 
         # Delegate actual PUT handling to the new object,
         # SDS: But just *after* it has been stored.

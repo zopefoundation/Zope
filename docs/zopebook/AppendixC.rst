@@ -1104,16 +1104,16 @@ example ``modules["string"].join``). Here are the default modules:
 
 string
   The standard `Python string module
-  <http://www.python.org/doc/current/lib/module-string.html>`_ Note: most of
+  <https://docs.python.org/library/string.html>`_ Note: most of
   the functions in the module are also available as methods on string objects.
 
 random
   The standard `Python random module
-  <http://www.python.org/doc/current/lib/module-random.html>`_
+  <https://docs.python.org/library/random.html>`_
 
 math
   The standard `Python math module
-  <http://www.python.org/doc/current/lib/module-math.html>`_ .
+  <https://docs.python.org/library/math.html>`_ .
 
 sequence
   A module with a powerful sorting function. See sequence for more information.

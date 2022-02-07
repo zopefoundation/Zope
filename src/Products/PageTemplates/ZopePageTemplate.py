@@ -351,7 +351,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         text = REQUEST.get('BODY', '')
-        content_type = guess_type('', text)
+        content_type = guess_type(self.getId(), text)
         self.pt_edit(text, content_type)
         RESPONSE.setStatus(204)
         return RESPONSE

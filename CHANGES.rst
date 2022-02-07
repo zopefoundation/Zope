@@ -8,8 +8,36 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.4 (unreleased)
+5.4.1 (unreleased)
+------------------
+
+- Fix several exceptions when calling ``ZPublisher.utils.fix_properties``.
+
+- Update to newest compatible versions of dependencies.
+
+- Use intermediate ``str`` representation for non-bytelike response data unless
+  indicated differently by the content type.
+  (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
+
+
+5.4 (2022-01-09)
 ----------------
+
+- Audit and fix all hyperlinks in code and documentation
+
+  - Change zope.org references to zope.dev due to ongoing domain ownership
+    issues. zope.dev is owned by the Plone Foundation and thus safe from
+    interference. XML/ZCML namespace URLs remain unchanged.
+  - Remove all links that are completely dead, such as the old zope.org
+    Collectors issue trackers.
+  - Update all other miscellaneous links to make them work again or remove if
+    the information is gone.
+
+- Improve type guessing for the default WebDAV PUT factory
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
+
+- Enable WebDAV PUT factories to change a newly created object's ID
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
 
 - Fix potential race condition in ``App.version_txt.getZopeVersion``
   (`#999 <https://github.com/zopefoundation/Zope/issues/999>`_)
@@ -23,9 +51,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Add function ``ZPublisher.utils.fix_properties``.
   You can call this to fix lines properties to only contain strings, not bytes.
-  It also replaces the deprecated property types ulines, utext, utoken, and ustring
-  with their non-unicode variants.
-  See `issue 987 <https://github.com/zopefoundation/Zope/issues/987>`_.
+  It also replaces the deprecated property types ulines, utext, utoken, and
+  ustring with their non-unicode variants.
+  (`#987 <https://github.com/zopefoundation/Zope/issues/987>`_)
 
 - Add support for Python 3.10.
 

@@ -44,8 +44,8 @@ Contact
 
 At this point the book is best discussed at:
 
-http://mail.zope.org/mailman/listinfo/zope-dev
+https://mail.zope.dev/mailman/listinfo/zope-dev
 
 
-.. _Sphinx: http://sphinx.pocoo.org/
-.. _virtualenv: http://pypi.python.org/pypi/virtualenv/
+.. _Sphinx: https://www.sphinx-doc.org/
+.. _virtualenv: https://pypi.org/project/virtualenv/

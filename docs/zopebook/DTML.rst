@@ -69,7 +69,7 @@ complex algorithms in DTML, it is often painful.
 
 For example, let's suppose you want to output some text which
 displays a representation of the famous `Fibonacci sequence
-<http://www.mathacademy.com/pr/prime/articles/fibonac/index.asp>`_.
+<https://www.mathsisfun.com/numbers/fibonacci-sequence.html>`_.
 You would not want to write the program that actually makes the
 calculation of the Fibonacci numbers by writing DTML.  It could be
 done in DTML, but the result would be difficult to understand and
@@ -77,7 +77,7 @@ maintain.  However, DTML is perfect for describing the output that
 the results of the Fibonnacci calculations are inserted into.  You
 can "call out" from DTML to Script (Python) objects as necessary
 and process the results of the call in DTML.  For example, it is
-`trivial in Python <http://docs.python.org/tutorial/introduction.html>`_
+`trivial in Python <https://docs.python.org/tutorial/introduction.html>`_
 (search for the word Fibonacci on this page) to implement a Fibonacci
 sequence generator, and trivial in DTML to create some dynamic 
 output which shows these numbers in a readable format.  If you find
@@ -730,7 +730,7 @@ DTML Method in the *Green* folder with an id of
 Notice that this is not a complete web page. For example, it does
 not have an ending '</html>' tag.  This is just a fragment of HTML
 that will be used as a header, meant to be included into other
-pages. This header uses `CSS <http://www.w3.org/Style/CSS>`_
+pages. This header uses `CSS <https://www.w3.org/Style/CSS>`_
 (Cascading Style Sheets) to make some changes to the look and feel
 of web pages.
 
@@ -793,7 +793,7 @@ DTML expressions.  Likewise, you cannot use the statement 'print
 "x"' in DTML.  It is not an expression.  Essentially, an
 expression must be a combination of values, variables, and Python
 *operators*.  To find out more about Python's expression syntax,
-see the `Python Tutorial <http://docs.python.org/tutorial/>`_
+see the `Python Tutorial <https://docs.python.org/tutorial/>`_
 at the Python.org website.
 
 An expression always results in a return value.  For example, the
@@ -989,7 +989,7 @@ html_quote
   "cross-site scripting" security holes, where a user could insert some clever
   JavaScript into a page in order to possibly make you divulge information to
   him which could be private. For more information, see the `CERT advisory
-  <http://www.cert.org/advisories/CA-2000-02.html>`_ on the topic.
+  <https://vuls.cert.org/confluence/display/historical/CERT+Advisory+CA-2000-02+Malicious+HTML+Tags+Embedded+in+Client+Web+Requests>`_ on the topic.
 
 missing
   The missing attribute allows you to specify a default value to use in
