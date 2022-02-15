@@ -6,8 +6,8 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
-4.7.1 (unreleased)
-------------------
+4.8 (unreleased)
+----------------
 
 - Enhance cookie support. For details, see
   `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
