@@ -1153,7 +1153,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(
             set(cookie_header.split('; ')),
             {'qux=deleted', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
+             'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1308,7 +1308,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(
             set(cookie_value.split(b'; ')),
             {b'qux=deleted', b'Path=/', b'Max-Age=0',
-                 b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
+             b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test___str__after_addHeader(self):
