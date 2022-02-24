@@ -42,7 +42,7 @@ from .interfaces import ICookieValuePolicy
 
 
 @implementer(ICookieParamPolicy)
-class DefaultCookieParamPolicy(object):
+class DefaultCookieParamPolicy:
     """Default ``ICookieParamPolicy``.
 
     It adds ``Expires`` when it sees ``Max-Age`` (for compatibility
@@ -70,7 +70,7 @@ defaultCookieParamPolicy = DefaultCookieParamPolicy()
 
 
 @implementer(ICookieValuePolicy)
-class DefaultCookieValuePolicy(object):
+class DefaultCookieValuePolicy:
     """Default ``ICookieValuePolicy``.
 
     It adds ``Expires`` when it sees ``Max-Age`` (for compatibility
@@ -103,7 +103,7 @@ def getCookieValuePolicy():
         ICookieValuePolicy, default=defaultCookieValuePolicy)
 
 
-class CookieParameterRegistry(object):
+class CookieParameterRegistry:
     """The cookie parameter registry maps parameter names.
 
     It maintains 2 maps: one to normalize parameter names
@@ -183,8 +183,8 @@ class UTC(datetime.tzinfo):
 utc = UTC()
 
 wdmap = dict(enumerate("Mon Tue Wed Thu Fri Sat Sun".split()))
-mmap = dict((i + 1, m) for (i, m) in enumerate(
-    "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()))
+mmap = {i + 1: m for (i, m) in enumerate(
+    "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split())}
 
 
 def rfc1123_converter(value):
@@ -284,7 +284,7 @@ registerCookieParameter("Secure", bool_converter)
 
 
 # selection paramters
-class SelectionConverter(object):
+class SelectionConverter:
     def __init__(self, *valid):
         self.valid = valid
         self.check = [v.lower() for v in valid]

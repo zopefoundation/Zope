@@ -685,8 +685,8 @@ class HTTPBaseResponse(BaseResponse):
             for pn, pv in parameters(name, attrs):
                 if pv is None:
                     continue
-                params.append(pn if pv is True else "%s=%s" % (pn, pv))
-            cookie = "%s=%s" % (name, dump(name, attrs["value"]))
+                params.append(pn if pv is True else f"{pn}={pv}")
+            cookie = "{}={}".format(name, dump(name, attrs["value"]))
             if params:
                 cookie += "; " + "; ".join(params)
             # Should really check size of cookies here!

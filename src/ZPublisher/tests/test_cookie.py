@@ -143,12 +143,12 @@ class CookieParameterRegistryTests(TestCase):
         self.assertEqual(v, "fussball.example")
         # check ``bytes`` handling
         _, v = convertCookieParameter("domain",
-                                      "Fußball.example".encode("utf-8"))
+                                      "Fußball.example".encode())
         self.assertEqual(v, "fussball.example")
 
     def test_path(self):
         # test object
-        class PathAware(object):
+        class PathAware:
             def absolute_url_path(self):
                 return "aup"
         obj = PathAware()
