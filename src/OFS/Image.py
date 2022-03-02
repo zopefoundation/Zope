@@ -16,6 +16,8 @@
 import struct
 from email.generator import _make_boundary
 from io import BytesIO
+from io import TextIOBase
+from tempfile import TemporaryFile
 from warnings import warn
 
 from six import PY2
@@ -677,7 +679,30 @@ class File(
         type = REQUEST.get_header('content-type', None)
         file = REQUEST['BODYFILE']
 
+        # Work around ``cgi`` bug
+        # ``cgi`` can turn the request body into a text file using
+        # the default encoding. ``File``, however, insists to work
+        # with bytes and binary files and forbids text.
+        # Convert back.
+        tfile = None
+        if isinstance(file, TextIOBase):  # ``cgi`` bug
+            if hasattr(file, "buffer"):
+                file = file.buffer  # underlying binary buffer
+            else:
+                from ZPublisher.HTTPRequest import default_encoding
+                tfile = TemporaryFile("wb+")
+                bufsize = 1 << 16
+                while True:
+                    data = file.read(bufsize)
+                    if not data: break
+                    tfile.write(data.encode(default_encoding))
+                file.seek(0, 0)
+                tfile.seek(0, 0)
+                file = tfile
+
         data, size = self._read_data(file)
+        if tfile is not None:
+            tfile.close()
         content_type = self._get_content_type(file, data, self.__name__,
                                               type or self.content_type)
         self.update_data(data, content_type, size)
