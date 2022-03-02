@@ -694,7 +694,8 @@ class File(
                 bufsize = 1 << 16
                 while True:
                     data = file.read(bufsize)
-                    if not data: break
+                    if not data:
+                        break
                     tfile.write(data.encode(default_encoding))
                 file.seek(0, 0)
                 tfile.seek(0, 0)
