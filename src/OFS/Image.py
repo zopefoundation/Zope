@@ -568,6 +568,16 @@ class File(
                 self, REQUEST, manage_tabs_message=msg)
 
     def _get_content_type(self, file, body, id, content_type=None):
+        """return content type or ``None``.
+
+        *file* usually is a ``FileUpload`` (like) instance; if this
+        specifies a content type, it is used. If *file*
+        is not ``FileUpload`` like, it is ignored and the
+        content type is guessed from the other parameters.
+
+        *body* is either a ``bytes`` or a ``Pdata`` instance
+        and assumed to be the *file* data.
+        """
         headers = getattr(file, 'headers', None)
         if headers and 'content-type' in headers:
             content_type = headers['content-type']
@@ -579,6 +589,13 @@ class File(
         return content_type
 
     def _read_data(self, file):
+        """return the data and size of *file* as tuple *data*, *size*.
+
+        *file* can be a ``bytes``, ``Pdata``, ``FileUpload`` or
+        (binary) file like instance.
+
+        For large files, *data* is a ``Pdata``, otherwise a ``bytes`` instance.
+        """
         import transaction
 
         n = 1 << 16
@@ -656,13 +673,11 @@ class File(
         """Handle HTTP PUT requests"""
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-        type = REQUEST.get_header('content-type', None)
 
+        type = REQUEST.get_header('content-type', None)
         file = REQUEST['BODYFILE']
 
         data, size = self._read_data(file)
-        if isinstance(data, str):
-            data = data.encode('UTF-8')
         content_type = self._get_content_type(file, data, self.__name__,
                                               type or self.content_type)
         self.update_data(data, content_type, size)
