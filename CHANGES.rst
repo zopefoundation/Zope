@@ -9,6 +9,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8 (unreleased)
 ----------------
 
+- Improve source documentation for methods ``_read_data`` and
+  ``get_content_type`` of ``OFS.Image.File`` and
+  fix its ``PUT``
+  (`#1015 <https://github.com/zopefoundation/Zope/issues/1015>`_).
+
 - Enhance cookie support. For details, see
   `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
 
