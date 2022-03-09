@@ -22,6 +22,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   indicated differently by the content type.
   (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
 
+- Use ``zc.buildout 3.0rc2`` to install Zope to run its tests.
+
 
 5.4 (2022-01-09)
 ----------------
