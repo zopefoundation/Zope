@@ -1,7 +1,7 @@
 AccessControl==5.3
 Acquisition==4.10
 AuthEncoding==4.3
-BTrees==4.9.2
+BTrees==4.10.0
 Chameleon==3.9.1
 DateTime==4.3
 DocumentTemplate==4.0
