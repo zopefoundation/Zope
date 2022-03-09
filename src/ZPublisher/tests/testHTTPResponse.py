@@ -342,7 +342,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
         self.assertEqual(len(cookie), 1)
-        self.assertEqual(cookie.get('value'), u'bar')
+        self.assertEqual(cookie.get('value'), 'bar')
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
@@ -1152,8 +1152,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(set(headers), expected)
         self.assertEqual(
             set(cookie_header.split('; ')),
-            set(['qux=deleted', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
+            {'qux=deleted', 'Path=/', 'Max-Age=0',
+             'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1307,8 +1307,8 @@ class HTTPResponseTests(unittest.TestCase):
         cookie_value = cookie_line.split(b': ', 1)[-1]
         self.assertEqual(
             set(cookie_value.split(b'; ')),
-            set([b'qux=deleted', b'Path=/', b'Max-Age=0',
-                 b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'])
+            {b'qux=deleted', b'Path=/', b'Max-Age=0',
+             b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test___str__after_addHeader(self):
