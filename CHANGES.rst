@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.5 (unreleased)
+5.5 (2022-03-10)
 ----------------
 
 - Fix several exceptions when calling ``ZPublisher.utils.fix_properties``.
