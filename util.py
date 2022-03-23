@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from configparser import RawConfigParser
 
 
@@ -20,9 +21,36 @@ def generate(in_, requirements_file, constraints_file):
 
     requirements = []
     constraints = []
-    versions = parser.items('versions')
     zope_requirement = (
         '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
+    zope_requirement = _generate(
+        parser.items('versions'), None, requirements, constraints,
+        zope_requirement)
+    zope_requirement = _generate(
+        parser.items('versions:python36'), '3.6', requirements, constraints,
+        zope_requirement)
+
+    with open(out_file_requirements, 'w') as fd:
+        fd.write(zope_requirement)
+        for req in sorted(requirements):
+            fd.write(req)
+    with open(out_file_constraints, 'w') as fcon:
+        for con in sorted(constraints):
+            fcon.write(con)
+
+
+def _generate(
+    versions: list[tuple[str, str]],
+    python_version: Optional[str],
+    requirements: list[str],
+    constraints: list[str],
+    zope_requirement: str
+) -> str:
+    """Generate requirements and constraints for a specific Python version.
+
+    If ``python_version`` is falsy, generate for all python versions.
+    Returns a probably changed ``zope_requirement``.
+    """
     for name, pin in versions:
         if name == 'Zope':
             if pin:
@@ -33,16 +61,11 @@ def generate(in_, requirements_file, constraints_file):
             continue
 
         spec = f'{name}=={pin}'
+        if python_version:
+            spec = f"{spec}; python_version == '{python_version}'"
         requirements.append(spec + '\n')
         constraints.append(spec + '\n')
-
-    with open(out_file_requirements, 'w') as fd:
-        fd.write(zope_requirement)
-        for req in sorted(requirements):
-            fd.write(req)
-    with open(out_file_constraints, 'w') as fcon:
-        for con in sorted(constraints):
-            fcon.write(con)
+    return zope_requirement
 
 
 def main():
