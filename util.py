@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Tuple, List
 from configparser import RawConfigParser
 
 
@@ -40,10 +40,10 @@ def generate(in_, requirements_file, constraints_file):
 
 
 def _generate(
-    versions: list[tuple[str, str]],
+    versions: List[Tuple[str, str]],
     python_version: Optional[str],
-    requirements: list[str],
-    constraints: list[str],
+    requirements: List[str],
+    constraints: List[str],
     zope_requirement: str
 ) -> str:
     """Generate requirements and constraints for a specific Python version.
