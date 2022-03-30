@@ -13,6 +13,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Update ``waitress`` to version 2.1.1 to mitigate a vulnerability in that
+  package. As that ``waitress`` no longer supports Python 3.6 it is not advised
+  to run Zope on Python 3.6 any longer even though it still supports Python
+  3.6.
+
 
 5.5 (2022-03-10)
 ----------------
