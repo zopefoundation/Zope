@@ -18,6 +18,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   to run Zope on Python 3.6 any longer even though it still supports Python
   3.6.
 
+- To run ``bin/buildout`` inside the Zope project now ``zc.buildout >= 2.13.7``
+  or ``zc.buildout >= 3.0.0b1`` is required.
 
 5.5 (2022-03-10)
 ----------------
