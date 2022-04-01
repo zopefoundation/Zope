@@ -153,6 +153,17 @@ up for you will be sufficient for most applications. See the `waitress
 documentation <https://docs.pylonsproject.org/projects/waitress/>`_ for
 additional information.
 
+.. warning::
+
+   The WSGI server Zope uses by default, waitress, was
+   affected by `an important security issue
+   <https://github.com/Pylons/waitress/security/advisories/GHSA-4f7p-27jc-3c36>`_.
+   The fixed version 2.1.1 is only compatible with Python 3.7 and higher. We
+   strongly advise you to either upgrade your Zope 4 installation to at least
+   Python 3.7, move to Zope 5 on Python 3.7 or higher, or `switch to a
+   different WSGI server
+   <https://zope.readthedocs.io/en/latest/operation.html#recommended-wsgi-servers>`_.
+
 Here's a very simple configuration using ``plone.recipe.zope2instance``:
 
 .. code-block:: ini

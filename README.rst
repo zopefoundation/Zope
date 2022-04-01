@@ -48,6 +48,15 @@ Please visit the installation documentation at
 https://zope.readthedocs.io/en/4.x/INSTALL.html for detailed installation
 guidance.
 
+**Security warning:** The WSGI server Zope uses by default, waitress, was
+affected by `an important security issue
+<https://github.com/Pylons/waitress/security/advisories/GHSA-4f7p-27jc-3c36>`_.
+The fixed version 2.1.1 is not compatible with Python versions less than 3.7.
+We strongly advise you to either upgrade your Zope 4 installation to Python
+3.7 or 3.8, move to Zope 5 on Python 3.7 or higher, or `switch to a different
+WSGI server
+<https://zope.readthedocs.io/en/latest/operation.html#recommended-wsgi-servers>`_.
+
 
 License
 =======
