@@ -11,6 +11,14 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases that still support Python 2.
 
+- Update ``waitress`` to version 2.1.1 to mitigate a vulnerability in that
+  package. As ``waitress`` no longer supports Python versions less than
+  3.7 it is not advised to run Zope 4 on Python 2.7, 3.5 or 3.6 any longer,
+  even though they are still supported by Zope 4 itself.
+
+- To run ``bin/buildout`` inside the Zope project now ``zc.buildout >= 2.13.7``
+  or ``zc.buildout >= 3.0.0b1`` is required.
+
 
 4.8 (2022-03-10)
 ----------------
