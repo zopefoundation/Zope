@@ -1,10 +1,10 @@
-AccessControl==5.3.1
+AccessControl==4.3
 Acquisition==4.10
 AuthEncoding==4.3
 BTrees==4.10.0
 Chameleon==3.9.1
 DateTime==4.4
-DocumentTemplate==4.0
+DocumentTemplate==3.4
 ExtensionClass==4.6
 Missing==4.1
 MultiMapping==4.1
@@ -12,35 +12,35 @@ Paste==3.5.0
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
-Products.ZCatalog==6.1
+Products.ZCatalog==5.2
 Record==3.5
 RestrictedPython==5.2
-SecretStorage==3.3.1
-WSGIProxy2==0.5.1
+WSGIProxy2==0.4.6
 WebOb==1.8.7
-WebTest==3.0.0
+WebTest==2.0.35
 ZConfig==3.6.0
-ZEO==5.3.0
-ZODB==5.7.0
+ZEO==5.2.3
+ZODB==5.6.0
+ZServer==4.0.2 ; python_version < '3.0'
 Zope2==4.0
-cryptography==36.0.2
+five.globalrequest==99.1
 five.localsitemanager==3.2.2
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
-jeepney==0.7.1; python_version == '3.6'
-jeepney==0.8.0
-mock==4.0.3
-multipart==0.2.4
+mock==3.0.5
+multipart==0.1.1
 pbr==5.8.1
 persistent==4.9.0
-pytz==2022.1
+pytz==2021.3
 roman==3.3
 shutilwhich==1.1.0
 six==1.16.0
 transaction==3.0.1
-waitress==2.0.0; python_version == '3.6'
 waitress==2.1.1
+waitress==1.4.4; python_version == '2.7'
+waitress==1.4.4; python_version == '3.5'
+waitress==2.0.0; python_version == '3.6'
 z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0
@@ -77,7 +77,7 @@ zope.pagetemplate==4.6.0
 zope.processlifetime==2.3.0
 zope.proxy==4.5.0
 zope.ptresource==4.3.0
-zope.publisher==6.1.0
+zope.publisher==6.0.2
 zope.ramcache==2.4
 zope.schema==6.2.0
 zope.security==5.2
@@ -85,11 +85,11 @@ zope.sendmail==5.2
 zope.sequencesort==4.2
 zope.site==4.5.0
 zope.size==4.3
-zope.structuredtext==4.4
+zope.structuredtext==4.3
 zope.tal==4.5
 zope.tales==5.1
 zope.testbrowser==5.6.1
-zope.testing==4.10
+zope.testing==4.7
 zope.testrunner==5.4.0
 zope.traversing==4.4.1
-zope.viewlet==4.3
+zope.viewlet==4.2.1
