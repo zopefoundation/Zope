@@ -26,8 +26,8 @@ Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
 
 - Create releases for the packages mentioned in `buildout.cfg` below
-  ``auto-checkout`` enter them into ``versions-prod.cfg`` and run
-  ``bin/buildout`` to update ``requirements-full.txt``.
+  ``auto-checkout`` and enter them into ``versions-prod.cfg`` and
+  ``requirements-full.txt``.
 
 - Garden the change log and check it for spelling issues.
 
@@ -41,9 +41,7 @@ Steps for creating a new Zope release
 
   $ bin/prerelease
 
-- Pin the Zope version in ``versions-prod.cfg``.
-
-- Run ``bin/buildout`` to update ``requirements-full.txt``.
+- Pin the Zope version in ``versions-prod.cfg`` and ``requirements-full.txt``
 
 - Commit the changes.
 
@@ -65,7 +63,7 @@ Steps for creating a new Zope release
 - Update version information::
 
   $ bin/postrelease
-  $ vi versions-prod.cfg (set version pin of Zope back to ``< 5``)
+  $ vi versions-prod.cfg requirements-full.txt (set version pin of Zope back to ``< 5``)
   $ bin/buildout
 
 - Commit and push the changes.
@@ -76,7 +74,7 @@ Steps for creating a new Zope release
 - Update https://zopefoundation.github.io/Zope/::
 
   $ git checkout gh-pages
-  $ python3.7 build_index.py
+  $ python3 build_index.py
 
 - Add the newly created files and commit and push the changes.
 
@@ -91,6 +89,10 @@ Steps for creating a new Zope release
   $ bin/checkversions --level=2 versions-prod.cfg
   $ bin/checkversions --level=2 versions.cfg
   $ bin/buildout
+
+  Make sure to transcribe all version changes to ``requirements-full.txt`` and
+  ``constraints.txt``, these files are no longer automatically maintained by
+  re-running ``bin/buildout``.
 
 .. note::
 

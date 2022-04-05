@@ -9,6 +9,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.1 (unreleased)
 ------------------
 
+- The pip requirements files ``requirements-full.txt`` and ``constraints.txt``
+  are now maintained manually
+
 - Update dependencies to the latest releases that still support Python 2.
 
 - Update ``waitress`` to version 2.1.1 to mitigate a vulnerability in that
