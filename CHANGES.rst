@@ -6,6 +6,12 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
+4.8.2 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 4.8.1 (2022-04-05)
 ------------------
 
