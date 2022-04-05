@@ -6,11 +6,11 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
-4.8.1 (unreleased)
+4.8.1 (2022-04-05)
 ------------------
 
 - The pip requirements files ``requirements-full.txt`` and ``constraints.txt``
-  are now maintained manually
+  are now maintained manually.
 
 - Update dependencies to the latest releases that still support Python 2.
 
