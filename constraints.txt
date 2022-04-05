@@ -20,8 +20,8 @@ WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
 ZConfig==3.6.0
-ZEO==5.2.3
-ZODB==5.6.0
+ZEO==5.3.0
+ZODB==5.7.0
 Zope2==4.0
 cryptography==36.0.1
 five.localsitemanager==3.2.2
