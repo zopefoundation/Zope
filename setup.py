@@ -75,7 +75,8 @@ setup(
         'BTrees',
         'Chameleon >= 3.7.0',
         'DateTime',
-        'DocumentTemplate >=3.0, <4.0',
+        'DocumentTemplate >=3.0, <4.0; python_version=="2.7"',
+        'DocumentTemplate',
         'ExtensionClass',
         'MultiMapping',
         'PasteDeploy',
@@ -130,7 +131,9 @@ setup(
     zip_safe=False,
     extras_require={
         'docs': [
-            'Sphinx < 4',
+            'Sphinx < 2; python_version=="2.7"',
+            'Sphinx < 4; python_version=="3.5"',
+            'Sphinx',
             'sphinx_rtd_theme',
             'tempstorage',
         ],

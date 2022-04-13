@@ -64,7 +64,8 @@ steps:
 
 - Create a virtual environment
 
-- Install ``zc.buildout`` into the virtual environment
+- Install ``zc.buildout`` into the virtual environment or update it to the
+  latest release before proceeding
 
 - Run the buildout
 
