@@ -25,6 +25,11 @@ The following persons have access to the ``Zope`` package on PyPI
 Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
 
+- Make sure you have the necessary tools around and install the manually if
+  needed::
+
+  $ bin/pip install -U wheel tox twine
+
 - Create releases for the packages mentioned in `buildout.cfg` below
   ``auto-checkout`` and enter them into ``versions-prod.cfg`` and
   ``requirements-full.txt``.
