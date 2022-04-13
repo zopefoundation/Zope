@@ -31,8 +31,10 @@ Steps for creating a new Zope release
   $ bin/pip install -U wheel tox twine
 
 - Create releases for the packages mentioned in `buildout.cfg` below
-  ``auto-checkout`` and enter them into ``versions-prod.cfg`` and
-  ``requirements-full.txt``.
+  ``auto-checkout`` and enter them into ``versions-prod.cfg``.
+
+- Run ``bin/python util.py`` to update ``requirements-full.txt``. **Note:** The
+  script will only run on Python 3.7 or higher!
 
 - Garden the change log and check it for spelling issues.
 
@@ -46,7 +48,10 @@ Steps for creating a new Zope release
 
   $ bin/prerelease
 
-- Pin the Zope version in ``versions-prod.cfg`` and ``requirements-full.txt``
+- Pin the Zope version in ``versions-prod.cfg``
+
+- Run ``bin/python util.py`` to update ``requirements-full.txt``. **Note:** The
+  script will only run on Python 3.7 or higher!
 
 - Commit the changes.
 
@@ -68,7 +73,8 @@ Steps for creating a new Zope release
 - Update version information::
 
   $ bin/postrelease
-  $ vi versions-prod.cfg requirements-full.txt (set version pin of Zope back to ``< 5``)
+  $ vi versions-prod.cfg (set version pin of Zope back to ``< 5``)
+  $ bin/python util.py
   $ bin/buildout
 
 - Commit and push the changes.
@@ -93,27 +99,23 @@ Steps for creating a new Zope release
 
   $ bin/checkversions --level=2 versions-prod.cfg
   $ bin/checkversions --level=2 versions.cfg
-  $ bin/buildout
+  $ bin/python util.py
 
-  Make sure to transcribe all version changes to ``requirements-full.txt`` and
-  ``constraints.txt``, these files are no longer automatically maintained by
-  re-running ``bin/buildout``.
-
-.. note::
-
-    This step is done after the release to have time to fix problems which
-    might get introduced by new versions of the dependencies.
-
-    There is no version pin for `zc.buildout` as it has to be installed
-    in the virtual environment but `checkversions` also prints its
-    version number.
-
-    There is no version pin for `zc.recipe.egg` in `versions-prod.cfg` as it is
-    only needed for buildout install and not for pip, so we do not want to
-    have it in `requirements.txt`.
-
-    The script is called two times so the rendered version updates can be
-    easily assigned to the correct file.
+  .. note::
+  
+      This step is done after the release to have time to fix problems which
+      might get introduced by new versions of the dependencies.
+  
+      There is no version pin for `zc.buildout` as it has to be installed
+      in the virtual environment but `checkversions` also prints its
+      version number.
+  
+      There is no version pin for `zc.recipe.egg` in `versions-prod.cfg` as it is
+      only needed for buildout install and not for pip, so we do not want to
+      have it in `requirements.txt`.
+  
+      The script is called two times so the rendered version updates can be
+      easily assigned to the correct file.
 
 - Run the tests: ``bin/tox -pall``
 - Build the documentation: ``bin/make-docs``
