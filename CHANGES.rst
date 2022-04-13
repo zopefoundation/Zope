@@ -11,6 +11,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.5.2 (unreleased)
 ------------------
 
+- Drop the convenience script generation from the buildout configuration
+  in order to get rid of a lot of dependency version pins.
+  These were only needed for maintainers who can install them manually.
+  (`#1019 <https://github.com/zopefoundation/Zope/issues/1019>`_)
+
 - Update to newest compatible versions of dependencies.
 
 
