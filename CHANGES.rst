@@ -8,8 +8,8 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.5.2 (unreleased)
-------------------
+5.6 (unreleased)
+----------------
 
 - Drop the convenience script generation from the buildout configuration
   in order to get rid of a lot of dependency version pins.
@@ -17,6 +17,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (`#1019 <https://github.com/zopefoundation/Zope/issues/1019>`_)
 
 - Update to newest compatible versions of dependencies.
+
+- Add preliminary support for Python 3.11 (as of 3.11.0a7).
 
 
 5.5.1 (2022-04-05)
