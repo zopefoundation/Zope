@@ -9,6 +9,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.2 (unreleased)
 ------------------
 
+- Quote all components of a redirect URL (not only the path component)
+  (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
+  
 - Drop the convenience script generation from the buildout configuration
   in order to get rid of a lot of dependency version pins.
   These were only needed for maintainers who can install them manually.
