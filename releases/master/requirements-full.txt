@@ -13,7 +13,7 @@ Paste==3.5.0
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
-Products.ZCatalog==6.1
+Products.ZCatalog==6.2
 Record==3.5
 RestrictedPython==5.2
 SecretStorage==3.3.1
@@ -25,7 +25,7 @@ ZEO==5.3.0
 ZODB==5.7.0
 Zope2==4.0
 cryptography==36.0.2
-five.localsitemanager==3.2.2
+five.localsitemanager==3.3
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
@@ -48,14 +48,14 @@ zc.lockfile==2.0
 zdaemon==4.3
 zodbpickle==2.2.0
 zope.annotation==4.7.0
-zope.browser==2.3
+zope.browser==2.4
 zope.browsermenu==4.4
 zope.browserpage==4.4.0
 zope.browserresource==4.4
 zope.cachedescriptors==4.3.1
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
-zope.configuration==4.4.0
+zope.configuration==4.4.1
 zope.container==4.5.0
 zope.contentprovider==4.2.1
 zope.contenttype==4.5.0
