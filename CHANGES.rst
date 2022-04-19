@@ -9,6 +9,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.2 (unreleased)
 ------------------
 
+- Add more notices to the documentation urging users to migrate to Zope 5.
+
 - Quote all components of a redirect URL (not only the path component)
   (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
   

@@ -41,21 +41,31 @@ https://zope.readthedocs.io.
     :depth: 1
 
 
+Zope 4 - the bridge between Zope 2 and Zope 5
+=============================================
+
+Zope 4 supports Python 2 and Python 3. It is meant to act as a bridge for those
+upgrading applications from Zope 2. Once you are on Zope 4 and Python 3 the
+next step to Zope 5 is painless and we recommend upgrading to Zope 5 for a
+future-proof deployment.
+
+
 Installation
 ============
-
-Please visit the installation documentation at
-https://zope.readthedocs.io/en/4.x/INSTALL.html for detailed installation
-guidance.
 
 **Security warning:** The WSGI server Zope uses by default, waitress, was
 affected by `an important security issue
 <https://github.com/Pylons/waitress/security/advisories/GHSA-4f7p-27jc-3c36>`_.
-The fixed version 2.1.1 is not compatible with Python versions less than 3.7.
-We strongly advise you to either upgrade your Zope 4 installation to Python
-3.7 or 3.8, move to Zope 5 on Python 3.7 or higher, or `switch to a different
+Fixes were only released for Python 3.7 and higher. Therefore we strongly urge
+you to either upgrade your Zope 4 installation to Python
+3.7 or 3.8 or `switch to a different
 WSGI server
 <https://zope.readthedocs.io/en/latest/operation.html#recommended-wsgi-servers>`_.
+**If you are running Zope 4 on Python 3 we recommend you upgrade to Zope 5.**
+
+Please visit the installation documentation at
+https://zope.readthedocs.io/en/4.x/INSTALL.html for detailed installation
+guidance.
 
 
 License
