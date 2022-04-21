@@ -6,7 +6,7 @@ BTrees==4.10.0
 Chameleon==3.9.1
 DateTime==4.4
 DocumentTemplate==3.4; python_version == '2.7'
-DocumentTemplate==4
+DocumentTemplate==4; python_version > '2.7'
 ExtensionClass==4.6
 Missing==4.1
 MultiMapping==4.1
@@ -14,17 +14,17 @@ Paste==3.5.0
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
-Products.ZCatalog==5.2
+Products.ZCatalog==5.4
 Record==3.5
 RestrictedPython==5.2
 WSGIProxy2==0.4.6; python_version == '2.7'
 WSGIProxy2==0.4.6; python_version == '3.5'
 WSGIProxy2==0.4.6; python_version == '3.6'
-WSGIProxy2==0.5.1
+WSGIProxy2==0.5.1; python_version > '3.6'
 WebOb==1.8.7
 WebTest==2.0.35; python_version == '2.7'
 WebTest==2.0.35; python_version == '3.5'
-WebTest==3.0.0
+WebTest==3.0.0; python_version > '3.5'
 ZConfig==3.6.0
 ZEO==5.3.0
 ZODB==5.7.0
@@ -37,9 +37,9 @@ future==0.18.2
 ipaddress==1.0.23
 mock==3.0.5; python_version == '2.7'
 mock==3.0.5; python_version == '3.5'
-mock==4.0.3
+mock==4.0.3; python_version > '3.5'
 multipart==0.1.1; python_version == '2.7'
-multipart==0.2.4
+multipart==0.2.4; python_version > '2.7'
 pbr==5.8.1
 persistent==4.9.0
 pytz==2022.1
@@ -50,7 +50,7 @@ transaction==3.0.1
 waitress==1.4.4; python_version == '2.7'
 waitress==1.4.4; python_version == '3.5'
 waitress==2.0.0; python_version == '3.6'
-waitress==2.1.1
+waitress==2.1.1; python_version > '3.6'
 z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0
