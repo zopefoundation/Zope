@@ -11,6 +11,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.5.2 (unreleased)
 ------------------
 
+- Fix version pin specifications for Python 3.6 compatibility.
+  (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
+
 - Quote all components of a redirect URL (not only the path component)
   (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
   
