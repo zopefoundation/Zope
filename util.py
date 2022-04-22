@@ -4,6 +4,7 @@ from configparser import RawConfigParser
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+PYTHON_VERSIONED = {}
 
 
 class CaseSensitiveParser(RawConfigParser):
@@ -24,10 +25,12 @@ def generate(in_, requirements_file, constraints_file):
     zope_requirement = (
         '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
     zope_requirement = _generate(
-        parser.items('versions'), None, requirements, constraints,
-        zope_requirement)
-    zope_requirement = _generate(
         parser.items('versions:python36'), '3.6', requirements, constraints,
+        zope_requirement)
+    # "Unversioned" pins must come last, how they are handled depends on
+    # Python version qualifiers for dependencies of the same name.
+    zope_requirement = _generate(
+        parser.items('versions'), None, requirements, constraints,
         zope_requirement)
 
     with open(out_file_requirements, 'w') as fd:
@@ -51,6 +54,8 @@ def _generate(
     If ``python_version`` is falsy, generate for all python versions.
     Returns a probably changed ``zope_requirement``.
     """
+    global PYTHON_VERSIONED
+
     for name, pin in versions:
         if name == 'Zope':
             if pin:
@@ -63,6 +68,15 @@ def _generate(
         spec = f'{name}=={pin}'
         if python_version:
             spec = f"{spec}; python_version == '{python_version}'"
+
+            versions = PYTHON_VERSIONED.get(name, set())
+            versions.add(python_version)
+            PYTHON_VERSIONED[name] = versions
+        else:
+            if name in PYTHON_VERSIONED:
+                versions = sorted(PYTHON_VERSIONED.get(name))
+                spec = f"{spec}; python_version > '{versions[-1]}'"
+
         requirements.append(spec + '\n')
         constraints.append(spec + '\n')
     return zope_requirement

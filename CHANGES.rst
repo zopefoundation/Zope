@@ -11,6 +11,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.6 (unreleased)
 ----------------
 
+- Fix version pin specifications for Python 3.6 compatibility.
+  (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
+
+- Quote all components of a redirect URL (not only the path component)
+  (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
+  
 - Drop the convenience script generation from the buildout configuration
   in order to get rid of a lot of dependency version pins.
   These were only needed for maintainers who can install them manually.
@@ -27,9 +33,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Update to newest compatible versions of dependencies.
 
 - Update ``waitress`` to version 2.1.1 to mitigate a vulnerability in that
-  package. As that ``waitress`` no longer supports Python 3.6 it is not advised
+  package. As ``waitress`` no longer supports Python 3.6 it is not advised
   to run Zope on Python 3.6 any longer even though it still supports Python
-  3.6.
+  3.6. **Due to this security issue support for Python 3.6 is now officially
+  deprecated. It will be removed with Zope version 5.7.**
 
 - To run ``bin/buildout`` inside the Zope project now ``zc.buildout >= 2.13.7``
   or ``zc.buildout >= 3.0.0b1`` is required.
