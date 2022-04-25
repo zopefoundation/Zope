@@ -12,6 +12,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Fix version pin specifications for Python 3.6 compatibility.
   (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
 
+- Fix version pin specifications for Python 3.5 compatibility.
+
 - Add more notices to the documentation urging users to migrate to Zope 5.
 
 - Quote all components of a redirect URL (not only the path component)

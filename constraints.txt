@@ -5,7 +5,8 @@ BTrees==4.10.0
 Chameleon==3.9.1
 DateTime==4.4
 DocumentTemplate==3.4; python_version == '2.7'
-DocumentTemplate==4; python_version > '2.7'
+DocumentTemplate==3.4; python_version == '3.5'
+DocumentTemplate==4; python_version > '3.5'
 ExtensionClass==4.6
 Missing==4.1
 MultiMapping==4.1
