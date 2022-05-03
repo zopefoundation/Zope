@@ -7,7 +7,7 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 
 
 @implementer(IPublishTraverse)
-class DummyTraverser(object):
+class DummyTraverser:
 
     def publishTraverse(self, request, name):
         if name == 'dummy':
@@ -15,7 +15,7 @@ class DummyTraverser(object):
         raise ztkNotFound(self, name)
 
 
-class BaseRequest_factory(object):
+class BaseRequest_factory:
 
     def _makeOne(self, root):
         from Acquisition import Implicit
@@ -127,7 +127,7 @@ class BaseRequest_factory(object):
     def _makeObjectWithBBT(self):
         from ZPublisher.interfaces import UseTraversalDefault
 
-        class _DummyResult(object):
+        class _DummyResult:
             ''' '''
             def __init__(self, tag):
                 self.tag = tag
@@ -414,7 +414,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
 
     def test_traverse_simple_set(self):
         root, folder = self._makeRootAndFolder()
-        folder.simpleSet = set([])
+        folder.simpleSet = set()
         r = self._makeOne(root)
         self.assertRaises(NotFound, r.traverse, 'folder/simpleSet')
 
@@ -478,20 +478,20 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
     def _makeOne(self, root):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
-        request = super(TestRequestViewsBase, self)._makeOne(root)
+        request = super()._makeOne(root)
         # The request needs to implement the proper interface
         directlyProvides(request, IDefaultBrowserLayer)
         return request
 
     def _makeDummyAclUsers(self):
-        from Acquisition import Implicit
         from AccessControl.ZopeSecurityPolicy import _noroles
+        from Acquisition import Implicit
 
         class AclUsers(Implicit):
             def validate(self, request, auth='', roles=_noroles):
                 # always validate access as anonymous, good for checking
                 # if things are publishable regardless of authorization
-                from AccessControl.SpecialUsers import nobody
+                from AccessControl.users import nobody
                 return nobody.__of__(self)
         acl_users = AclUsers()
         return acl_users
@@ -625,8 +625,8 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
 
     def _setDefaultViewName(self, name):
         from zope.component import getGlobalSiteManager
-        from zope.publisher.interfaces import IDefaultViewName
         from zope.publisher.browser import IBrowserRequest
+        from zope.publisher.interfaces import IDefaultViewName
         gsm = getGlobalSiteManager()
         gsm.registerAdapter(name, (self._dummyInterface(), IBrowserRequest),
                             IDefaultViewName, '')
@@ -639,6 +639,21 @@ class TestBaseRequestViews(TestRequestViewsBase):
         root, folder = self._makeRootAndFolder()
         folder._setObject('obj', self._makeDummyObject('obj'))
         r = self._makeOne(root)
+        ob = r.traverse('folder/obj/meth')
+        self.assertEqual(ob(), 'view on obj')
+        ob = r.traverse('folder/obj/@@meth')
+        self.assertEqual(ob(), 'view on obj')
+        # using default view
+        self._setDefaultViewName('meth')
+        ob = r.traverse('folder/obj')
+        self.assertEqual(ob(), 'view on obj')
+
+    def test_traverse_view_HEAD(self):
+        # Make sure traversal to views works for HEAD requests
+        root, folder = self._makeRootAndFolder()
+        folder._setObject('obj', self._makeDummyObject('obj'))
+        r = self._makeOne(root)
+        r['REQUEST_METHOD'] = 'HEAD'
         ob = r.traverse('folder/obj/meth')
         self.assertEqual(ob(), 'view on obj')
         ob = r.traverse('folder/obj/@@meth')
@@ -759,3 +774,8 @@ class TestBaseRequestViews(TestRequestViewsBase):
         self.assertEqual(ob(), 'Test page')
         # make sure we can acquire
         self.assertEqual(ob.ob2, ob2)
+
+    def test__str__returns_native_string(self):
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        self.assertIsInstance(str(r), str)

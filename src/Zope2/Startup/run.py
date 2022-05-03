@@ -12,16 +12,6 @@
 #
 ##############################################################################
 
-from zope.deferredimport import deprecated
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.Zope2.Startup.run',
-    _setconfig='ZServer.Zope2.Startup.run:_setconfig',
-    configure='ZServer.Zope2.Startup.run:configure',
-    run='ZServer.Zope2.Startup.run:run',
-)
-
 
 def configure_wsgi(configfile):
     """ Provide an API which allows scripts to configure Zope
@@ -42,7 +32,8 @@ def _set_wsgi_config(configfile=None):
     """ Configure a Zope instance based on ZopeWSGIOptions.
     Optionally accept a configfile argument (string path) in order
     to specify where the configuration file exists. """
-    from Zope2.Startup import options, handlers
+    from Zope2.Startup import handlers
+    from Zope2.Startup import options
     opts = options.ZopeWSGIOptions(configfile=configfile)()
     handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
     import App.config
@@ -61,6 +52,9 @@ def make_wsgi_app(global_config, zope_conf):
     if 'debug_mode' in global_config:
         if global_config['debug_mode'] in ('true', 'on', '1'):
             opts.configroot.debug_mode = True
+    if 'debug_exceptions' in global_config:
+        if global_config['debug_exceptions'] in ('true', 'on', '1'):
+            opts.configroot.debug_exceptions = True
     handleWSGIConfig(opts.configroot, opts.confighandlers)
     setConfiguration(opts.configroot)
     starter.setConfiguration(opts.configroot)

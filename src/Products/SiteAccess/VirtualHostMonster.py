@@ -3,18 +3,19 @@
 Defines the VirtualHostMonster class
 """
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view as View  # NOQA
+from AccessControl.Permissions import view as View
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Persistent
+from zExceptions import BadRequest
+from zope.publisher.http import splitport
+from ZPublisher.BaseRequest import quote
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
-from ZPublisher.BaseRequest import quote
-from zExceptions import BadRequest
 
 
 class VirtualHostMonster(Persistent, Item, Implicit):
@@ -22,6 +23,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     """
 
     meta_type = 'Virtual Host Monster'
+    zmi_icon = 'fa fa-code-branch'
+    zmi_show_add_dialog = False
     priority = 25
 
     id = 'virtual_hosting'
@@ -36,14 +39,14 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         {'label': 'Mappings', 'action': 'manage_edit'},
     )
 
-    security.declareProtected(View, 'manage_main')
+    security.declareProtected(View, 'manage_main')  # NOQA: D001
     manage_main = DTMLFile('www/VirtualHostMonster', globals(),
                            __name__='manage_main')
 
-    security.declareProtected('Add Site Roots', 'manage_edit')
+    security.declareProtected('Add Site Roots', 'manage_edit')  # NOQA: D001
     manage_edit = DTMLFile('www/manage_edit', globals())
 
-    security.declareProtected('Add Site Roots', 'set_map')
+    @security.protected('Add Site Roots')
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."
         lines = map_text.split('\n')
@@ -59,10 +62,10 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 line = line.split('://')[-1]
                 try:
                     host, path = [x.strip() for x in line.split('/', 1)]
-                except:
+                except Exception:
                     raise ValueError(
                         'Line needs a slash between host and path: %s' % line)
-                pp = filter(None, path.split('/'))
+                pp = list(filter(None, path.split('/')))
                 if pp:
                     obpath = pp[:]
                     if obpath[0] == 'VirtualHostBase':
@@ -76,7 +79,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     if obpath:
                         try:
                             ob = self.unrestrictedTraverse(obpath)
-                        except:
+                        except Exception:
                             raise ValueError(
                                 'Path not found: %s' % obpath)
                         if not getattr(ob.aq_base, 'isAnObjectManager', 0):
@@ -101,8 +104,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 if hostname not in host_map:
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
-            except 'LineError' as msg:
-                line = '%s #! %s' % (line, msg)
+            except ValueError as msg:
+                line = f'{line} #! {msg}'
             new_lines.append(line)
         self.lines = tuple(new_lines)
         self.have_map = bool(fixed_map or sub_map)  # booleanize
@@ -146,11 +149,9 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 stack.pop()
                 protocol = stack.pop()
                 host = stack.pop()
-                if ':' in host:
-                    host, port = host.split(':')
-                    request.setServerURL(protocol, host, port)
-                else:
-                    request.setServerURL(protocol, host)
+                hostname, port = splitport(host)
+                port = int(port) if port else None
+                request.setServerURL(protocol, hostname, port)
                 path = list(stack)
 
             # Find and convert VirtualHostRoot directive
@@ -175,6 +176,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         stack[ii] = self.id
                         stack.insert(ii, '/')
                         ii += 1
+                    if '*' in stack:
+                        stack[stack.index('*')] = host.split('.')[0]
                     path = stack[:ii]
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
@@ -201,8 +204,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     request['VIRTUAL_URL'] = '/'.join(vup)
 
                     # new ACTUAL_URL
-                    add = (path and
-                           request['ACTUAL_URL'].endswith('/')) and '/' or ''
+                    add = path and \
+                        request['ACTUAL_URL'].endswith('/') and '/' or ''
                     request['ACTUAL_URL'] = request['VIRTUAL_URL'] + add
 
                 return
@@ -247,6 +250,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
             request.setVirtualRoot([])
         return parents.pop()  # He'll get put back on
 
+
 InitializeClass(VirtualHostMonster)
 
 
@@ -259,7 +263,8 @@ def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
     if REQUEST is not None:
         goto = '%s/manage_main' % self.absolute_url()
         qs = 'manage_tabs_message=Virtual+Host+Monster+added.'
-        REQUEST['RESPONSE'].redirect('%s?%s' % (goto, qs))
+        REQUEST['RESPONSE'].redirect(f'{goto}?{qs}')
+
 
 constructors = (
     ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),

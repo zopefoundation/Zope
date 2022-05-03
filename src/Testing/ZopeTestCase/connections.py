@@ -14,7 +14,7 @@
 """
 
 
-class ConnectionRegistry(object):
+class ConnectionRegistry:
     '''ZODB connection registry
 
     This registry can hold either ZODB.Connection objects or OFS.Application

@@ -15,13 +15,15 @@
 
 import sys
 
-from Acquisition import aq_base, aq_inner, aq_parent
 import ExtensionClass
 import zope.pagetemplate.pagetemplate
-from zope.pagetemplate.pagetemplate import PTRuntimeError
-from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
-from zope.tales.expressions import SimpleModuleImporter
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from Products.PageTemplates.Expressions import getEngine
+from zope.pagetemplate.pagetemplate import PageTemplateTracebackSupplement
+from zope.pagetemplate.pagetemplate import PTRuntimeError
+from zope.tales.expressions import SimpleModuleImporter
 
 
 class PageTemplate(ExtensionClass.Base,
@@ -59,9 +61,7 @@ class PageTemplate(ExtensionClass.Base,
             __traceback_supplement__ = (
                 PageTemplateTracebackSupplement, self, {})
             raise PTRuntimeError(
-                'Page Template %s has errors: %s' % (
-                    self.id, self._v_errors
-                ))
+                f'Page Template {self.id} has errors: {self._v_errors}')
         return self._v_macros
 
     # these methods are reimplemented or duplicated here because of
@@ -78,7 +78,7 @@ class PageTemplate(ExtensionClass.Base,
             showtal = sourceAnnotations = False
         if source:
             showtal = True
-        return super(PageTemplate, self).pt_render(
+        return super().pt_render(
             c, source=source, sourceAnnotations=sourceAnnotations,
             showtal=showtal)
 
@@ -112,9 +112,9 @@ class PageTemplate(ExtensionClass.Base,
                         (self._error_start, "%s: %s" % sys.exc_info()[:2],
                          self._text))
 
-        return ('%s\n %s\n-->\n%s' % (self._error_start,
-                                      '\n '.join(self._v_errors),
-                                      self._text))
+        return ('{}\n {}\n-->\n{}'.format(self._error_start,
+                                          '\n '.join(self._v_errors),
+                                          self._text))
 
     # convenience method for the ZMI which allows to explicitly
     # specify the HTMLness of a template. The old Zope 2

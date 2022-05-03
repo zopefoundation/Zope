@@ -13,64 +13,56 @@
 """Object Manager
 """
 
-from io import BytesIO
-from logging import getLogger
-import copy
-import fnmatch
-import marshal
+import html
 import os
 import re
-import sys
-import time
+from io import BytesIO
+from logging import getLogger
+from operator import itemgetter
+from urllib.parse import quote
 
+import zope.sequencesort
 from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissions
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import delete_objects
 from AccessControl.Permissions import ftp_access
 from AccessControl.Permissions import import_export_objects
-from AccessControl import getSecurityManager
-from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_acquire, aq_parent
+from AccessControl.Permissions import view_management_screens
 from Acquisition import Implicit
+from Acquisition import aq_acquire
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from App.config import getConfiguration
+from App.FactoryDispatcher import ProductDispatcher
+from App.Management import Navigation
+from App.Management import Tabs
+from App.special_dtml import DTMLFile
 from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
+from OFS.CopySupport import CopyContainer
+from OFS.event import ObjectWillBeAddedEvent
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.interfaces import IObjectManager
+from OFS.Lockable import LockableItem
+from OFS.subscribers import compatibilityCall
+from OFS.Traversable import Traversable
 from Persistence import Persistent
-from six import string_types
-from six import text_type
-from zExceptions import BadRequest, ResourceLockedError
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from webdav.Collection import Collection
+from webdav.NullResource import NullResource
+from zExceptions import BadRequest
+from zExceptions import ResourceLockedError
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from ZPublisher.HTTPResponse import make_content_disposition
 
-from App.Common import is_acquired
-from App.config import getConfiguration
-from App.FactoryDispatcher import ProductDispatcher
-from App.Management import Navigation
-from App.Management import Tabs
-from App.special_dtml import DTMLFile
-from OFS import bbb
-from OFS.CopySupport import CopyContainer
-from OFS.interfaces import IObjectManager
-from OFS.Traversable import Traversable
-from OFS.event import ObjectWillBeAddedEvent
-from OFS.event import ObjectWillBeRemovedEvent
-from OFS.Lockable import LockableItem
-from OFS.subscribers import compatibilityCall
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
-
-if bbb.HAS_ZSERVER:
-    from webdav.Collection import Collection
-else:
-    Collection = bbb.Collection
 
 # Constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -78,11 +70,15 @@ REPLACEABLE = 1
 UNIQUE = 2
 
 LOG = getLogger('ObjectManager')
+CONFIG = getConfiguration()
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
 
-bad_id = re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# @]').search
+# We want a regex to define the lower ascii control bytes and DEL as bad.
+# Additionally we want to exclude angle brackets and ampersand as they mess
+# with the url-quoting.
+bad_id = re.compile(r'[\x00-\x1F\x7F<>&]').search
 
 
 def checkValidId(self, id, allow_dup=0):
@@ -92,13 +88,13 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
     if not id or not isinstance(id, str):
-        if isinstance(id, text_type):
-            id = escape(id, True)
+        if isinstance(id, str):
+            id = html.escape(id, True)
         raise BadRequest('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequest(
-            ('The id "%s" contains characters '
-             'illegal in URLs.' % escape(id, True)))
+            'The id "%s" contains characters '
+            'illegal in URLs.' % html.escape(id, True))
     if id in ('.', '..'):
         raise BadRequest(
             'The id "%s" is invalid because it is not traversable.' % id)
@@ -113,6 +109,10 @@ def checkValidId(self, id, allow_dup=0):
         raise BadRequest(
             'The id "%s" is invalid because it '
             'ends with two underscores.' % id)
+    if id.startswith('@@') or id.startswith('++'):
+        raise BadRequest(
+            'The id "%s" is invalid because it starts with characters '
+            'reserved for Zope views lookup.' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
         if obj is not None:
@@ -147,15 +147,16 @@ _marker = []
 
 
 @implementer(IObjectManager)
-class ObjectManager(CopyContainer,
-                    Navigation,
-                    Tabs,
-                    Implicit,
-                    Persistent,
-                    Collection,
-                    LockableItem,
-                    Traversable):
-
+class ObjectManager(
+    CopyContainer,
+    Navigation,
+    Tabs,
+    Implicit,
+    Persistent,
+    Collection,
+    LockableItem,
+    Traversable
+):
     """Generic object manager
 
     This class provides core behavior for collections of heterogeneous objects.
@@ -172,13 +173,16 @@ class ObjectManager(CopyContainer,
 
     _objects = ()
 
-    security.declareProtected(view_management_screens, 'manage_main')
-    manage_main = DTMLFile('dtml/main', globals())
+    security.declareProtected(view_management_screens, 'manage_main')  # NOQA: D001,E501
+    manage_main = PageTemplateFile('zpt/main', globals())
 
     manage_index_main = DTMLFile('dtml/index_main', globals())
 
     manage_options = (
-        {'label': 'Contents', 'action': 'manage_main'},
+        {
+            'label': 'Contents',
+            'action': 'manage_main',
+        },
     )
 
     isAnObjectManager = 1
@@ -188,13 +192,13 @@ class ObjectManager(CopyContainer,
     # IPossibleSite API
     _components = None
 
-    security.declarePublic('getSiteManager')
+    @security.public
     def getSiteManager(self):
         if self._components is None:
             raise ComponentLookupError('No component registry defined.')
         return self._components
 
-    security.declareProtected('Manage Site', 'setSiteManager')
+    @security.protected('Manage Site')
     def setSiteManager(self, components):
         self._components = components
 
@@ -210,8 +214,7 @@ class ObjectManager(CopyContainer,
                         mt.append(t)
             except Exception:
                 pass
-        mt.sort()
-        self.meta_types = tuple(mt)
+        self.meta_types = tuple(sorted(mt, key=itemgetter('name')))
 
         InitializeClass(self)
 
@@ -222,8 +225,8 @@ class ObjectManager(CopyContainer,
 
         # Look at all globally visible meta types.
         for entry in getattr(Products, 'meta_types', ()):
-            if ((interfaces is not None) or
-                    (entry.get("visibility", None) == "Global")):
+            if interfaces is not None or \
+               entry.get("visibility", None) == "Global":
                 external_candidates.append(entry)
 
         # Filter the list of external candidates based on the
@@ -258,6 +261,13 @@ class ObjectManager(CopyContainer,
             else:
                 if container_filter(self):
                     meta_types.append(entry)
+
+        # Synthesize a new key into each item that decides whether to show
+        # the modal add dialog in the Zope 4 ZMI
+        for mt in meta_types:
+            want_modal = getattr(mt.get('instance', None),
+                                 'zmi_show_add_dialog', True)
+            mt['zmi_show_add_dialog'] = 'modal' if want_modal else ''
 
         return meta_types
 
@@ -300,17 +310,17 @@ class ObjectManager(CopyContainer,
             raise AttributeError(id)
         return default
 
-    security.declareProtected(access_contents_information, 'hasObject')
+    @security.protected(access_contents_information)
     def hasObject(self, id):
         # Indicate whether the folder has an item by ID.
         #
         # This doesn't try to be more intelligent than _getOb, and doesn't
         # consult _objects (for performance reasons). The common use case
         # is to check that an object does *not* exist.
-        if (id in ('.', '..') or
-                id.startswith('_') or
-                id.startswith('aq_') or
-                id.endswith('__')):
+        if id in ('.', '..') or \
+           id.startswith('_') or \
+           id.startswith('aq_') or \
+           id.endswith('__'):
             return False
         return getattr(aq_base(self), id, None) is not None
 
@@ -406,7 +416,7 @@ class ObjectManager(CopyContainer,
             notify(ObjectRemovedEvent(ob, self, id))
             notifyContainerModified(self)
 
-    security.declareProtected(access_contents_information, 'objectIds')
+    @security.protected(access_contents_information)
     def objectIds(self, spec=None):
         # Returns a list of subobject ids of the current object.
         # If 'spec' is specified, returns objects whose meta_type
@@ -421,14 +431,14 @@ class ObjectManager(CopyContainer,
             return set
         return [o['id'] for o in self._objects]
 
-    security.declareProtected(access_contents_information, 'objectValues')
+    @security.protected(access_contents_information)
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
         return [self._getOb(id) for id in self.objectIds(spec)]
 
-    security.declareProtected(access_contents_information, 'objectItems')
+    @security.protected(access_contents_information)
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
         # If 'spec' is specified, returns only objects whose meta_type match
@@ -439,7 +449,7 @@ class ObjectManager(CopyContainer,
         # Return a tuple of mappings containing subobject meta-data
         return tuple(d.copy() for d in self._objects)
 
-    security.declareProtected(access_contents_information, 'objectIds_d')
+    @security.protected(access_contents_information)
     def objectIds_d(self, t=None):
         if hasattr(self, '_reserved_names'):
             n = self._reserved_names
@@ -453,18 +463,18 @@ class ObjectManager(CopyContainer,
                 r.append(id)
         return r
 
-    security.declareProtected(access_contents_information, 'objectValues_d')
+    @security.protected(access_contents_information)
     def objectValues_d(self, t=None):
         return list(map(self._getOb, self.objectIds_d(t)))
 
-    security.declareProtected(access_contents_information, 'objectItems_d')
+    @security.protected(access_contents_information)
     def objectItems_d(self, t=None):
         r = []
         for id in self.objectIds_d(t):
             r.append((id, self._getOb(id)))
         return r
 
-    security.declareProtected(access_contents_information, 'objectMap_d')
+    @security.protected(access_contents_information)
     def objectMap_d(self, t=None):
         if hasattr(self, '_reserved_names'):
             n = self._reserved_names
@@ -478,7 +488,7 @@ class ObjectManager(CopyContainer,
                 r.append(d.copy())
         return r
 
-    security.declareProtected(access_contents_information, 'superValues')
+    @security.protected(access_contents_information)
     def superValues(self, t):
         # Return all of the objects of a given type located in
         # this object and containing objects.
@@ -498,8 +508,7 @@ class ObjectManager(CopyContainer,
                     try:
                         id = i['id']
                         physicalPath = relativePhysicalPath + (id,)
-                        if ((physicalPath not in seen) and
-                                (i['meta_type'] in t)):
+                        if physicalPath not in seen and i['meta_type'] in t:
                             vals.append(get(id))
                             seen[physicalPath] = 1
                     except Exception:
@@ -515,13 +524,13 @@ class ObjectManager(CopyContainer,
 
     manage_addProduct = ProductDispatcher()
 
-    security.declareProtected(delete_objects, 'manage_delObjects')
+    @security.protected(delete_objects)
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
 
         The objects specified in 'ids' get deleted.
         """
-        if isinstance(ids, string_types):
+        if isinstance(ids, str):
             ids = [ids]
         if not ids:
             raise BadRequest('No items specified')
@@ -536,18 +545,22 @@ class ObjectManager(CopyContainer,
             id = ids[-1]
             v = self._getOb(id, self)
 
-            if v.wl_isLocked():
-                raise ResourceLockedError(
-                    'Object "%s" is locked.' % v.getId())
+            try:
+                if v.wl_isLocked():
+                    raise ResourceLockedError(
+                        'Object "%s" is locked.' % v.getId())
+            except AttributeError:
+                pass
 
             if v is self:
-                raise BadRequest('%s does not exist' % escape(ids[-1], True))
+                raise BadRequest('%s does not exist' %
+                                 html.escape(ids[-1], True))
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declareProtected(access_contents_information, 'tpValues')
+    @security.protected(access_contents_information)
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
         r = []
@@ -572,9 +585,14 @@ class ObjectManager(CopyContainer,
                     r.append(o)
         return r
 
-    security.declareProtected(import_export_objects, 'manage_exportObject')
-    def manage_exportObject(self, id='', download=None,
-                            RESPONSE=None,REQUEST=None):
+    @security.protected(import_export_objects)
+    def manage_exportObject(
+        self,
+        id='',
+        download=None,
+        RESPONSE=None,
+        REQUEST=None
+    ):
         """Exports an object to a file and returns that file."""
         if not id:
             # can't use getId() here (breaks on "old" exported objects)
@@ -594,53 +612,63 @@ class ObjectManager(CopyContainer,
 
             if RESPONSE is not None:
                 RESPONSE.setHeader('Content-type', 'application/data')
-                RESPONSE.setHeader('Content-Disposition',
-                                   'inline;filename=%s.%s' % (id, suffix))
+                RESPONSE.setHeader(
+                    'Content-Disposition',
+                    make_content_disposition('inline', f'{id}.{suffix}')
+                )
             return result
 
-        cfg = getConfiguration()
-        f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
+        f = os.path.join(CONFIG.clienthome, f'{id}.{suffix}')
         with open(f, 'w+b') as fd:
             ob._p_jar.exportFile(ob._p_oid, fd)
 
         if REQUEST is not None:
             return self.manage_main(
                 self, REQUEST,
-                manage_tabs_message='"%s" successfully exported to "%s"' % (
-                    id, f),
-                title='Object exported')
+                manage_tabs_message=f'"{id}" successfully exported to "{f}"',
+                title='Object exported'
+            )
 
-    security.declareProtected(import_export_objects, 'manage_importExportForm')
+    security.declareProtected(import_export_objects, 'manage_importExportForm')  # NOQA: D001,E501
     manage_importExportForm = DTMLFile('dtml/importExport', globals())
 
-    security.declareProtected(import_export_objects, 'manage_importObject')
-    def manage_importObject(self, file, REQUEST=None, set_owner=1):
+    @security.protected(import_export_objects)
+    def manage_importObject(self, file, REQUEST=None, set_owner=1,
+                            suppress_events=False):
         """Import an object from a file"""
         dirname, file = os.path.split(file)
         if dirname:
-            raise BadRequest('Invalid file name %s' % escape(file, True))
+            raise BadRequest('Invalid file name %s' % html.escape(file, True))
 
         for impath in self._getImportPaths():
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
         else:
-            raise BadRequest('File does not exist: %s' % escape(file, True))
+            raise BadRequest(
+                'File does not exist: %s' %
+                html.escape(
+                    file, True))
 
         imported = self._importObjectFromFile(
-            filepath, verify=bool(REQUEST), set_owner=set_owner)
-        id = imported.id
+            filepath, verify=bool(REQUEST), set_owner=set_owner,
+            suppress_events=suppress_events)
+        getId = getattr(aq_base(imported), "getId", None)  # aq wrapped
+        id = imported.getId() if getId is not None else imported.id
         if getattr(id, '__func__', None) is not None:
             id = id()
 
         if REQUEST is not None:
             return self.manage_main(
-                self, REQUEST,
+                self,
+                REQUEST,
                 manage_tabs_message='"%s" successfully imported' % id,
                 title='Object imported',
-                update_menu=1)
+                update_menu=1
+            )
 
-    def _importObjectFromFile(self, filepath, verify=1, set_owner=1):
+    def _importObjectFromFile(self, filepath, verify=1, set_owner=1,
+                              suppress_events=False):
         # locate a valid connection
         connection = self._p_jar
         obj = self
@@ -651,10 +679,12 @@ class ObjectManager(CopyContainer,
         ob = connection.importFile(filepath)
         if verify:
             self._verifyObjectPaste(ob, validate_src=0)
-        id = ob.id
+        getId = getattr(ob, "getId", None)  # not acquisition wrapped
+        id = getId() if getId is not None else ob.id
         if getattr(id, '__func__', None) is not None:
             id = id()
-        self._setObject(id, ob, set_owner=set_owner)
+        self._setObject(id, ob, set_owner=set_owner,
+                        suppress_events=suppress_events)
 
         # try to make ownership implicit if possible in the context
         # that the object was imported into.
@@ -663,12 +693,11 @@ class ObjectManager(CopyContainer,
         return ob
 
     def _getImportPaths(self):
-        cfg = getConfiguration()
         paths = []
-        if cfg.instancehome not in paths:
-            paths.append(cfg.instancehome)
-        if cfg.clienthome not in paths:
-            paths.append(cfg.clienthome)
+        if CONFIG.instancehome not in paths:
+            paths.append(CONFIG.instancehome)
+        if CONFIG.clienthome not in paths:
+            paths.append(CONFIG.clienthome)
         return paths
 
     def list_imports(self):
@@ -682,101 +711,19 @@ class ObjectManager(CopyContainer,
         listing.sort()
         return listing
 
-    security.declareProtected(ftp_access, 'manage_hasId')
+    @security.protected(ftp_access)
     def manage_hasId(self, REQUEST):
-        """ check if the folder has an object with REQUEST['id'] """
-
+        """Check if the folder has an object with REQUEST['id']."""
+        # When this method will be removed, please also remove
+        # `ftp_access` both from `AppendixA`from the Zope Developers
+        # Book and from `AccessControl.Permissions`
+        import warnings
+        warnings.warn(
+            "`ObjectManager.manage_hasId` is deprecated "
+            "and will be removed in future.",
+            DeprecationWarning)
         if not REQUEST['id'] in self.objectIds():
             raise KeyError(REQUEST['id'])
-
-    if bbb.HAS_ZSERVER:
-        # FTP support methods
-        security.declareProtected(ftp_access, 'manage_FTPlist')
-        def manage_FTPlist(self, REQUEST):
-            """Directory listing for FTP.
-            """
-            out = ()
-
-            # check to see if we are being acquiring or not
-            ob = self
-            while 1:
-                if is_acquired(ob):
-                    raise ValueError(
-                        'FTP List not supported on acquired objects')
-                if not hasattr(ob, '__parent__'):
-                    break
-                ob = aq_parent(ob)
-
-            files = list(self.objectItems())
-
-            # recursive ride through all subfolders (ls -R) (ajung)
-
-            if REQUEST.environ.get('FTP_RECURSIVE', 0) == 1:
-                all_files = copy.copy(files)
-                for f in files:
-                    if (hasattr(aq_base(f[1]), 'isPrincipiaFolderish') and
-                            f[1].isPrincipiaFolderish):
-                        all_files.extend(findChildren(f[1]))
-                files = all_files
-
-            # Perform globbing on list of files (ajung)
-
-            globbing = REQUEST.environ.get('GLOBBING', '')
-            if globbing:
-                files = [x for x in files if fnmatch.fnmatch(x[0], globbing)]
-
-            files.sort()
-
-            if not (hasattr(self, 'isTopLevelPrincipiaApplicationObject') and
-                    self.isTopLevelPrincipiaApplicationObject):
-                files.insert(0, ('..', aq_parent(self)))
-            files.insert(0, ('.', self))
-            for k, v in files:
-                # Note that we have to tolerate failure here, because
-                # Broken objects won't stat correctly. If an object fails
-                # to be able to stat itself, we will ignore it, but log
-                # the error.
-                try:
-                    stat = marshal.loads(v.manage_FTPstat(REQUEST))
-                except Exception:
-                    LOG.error("Failed to stat file '%s'" % k,
-                              exc_info=sys.exc_info())
-                    stat = None
-                if stat is not None:
-                    out = out + ((k, stat),)
-            return marshal.dumps(out)
-
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        def manage_FTPstat(self, REQUEST):
-            """Psuedo stat, used by FTP for directory listings.
-            """
-            mode = 0o0040000
-            from AccessControl.User import nobody
-            # check to see if we are acquiring our objectValues or not
-            if not (len(REQUEST.PARENTS) > 1 and
-                    self.objectValues() == REQUEST.PARENTS[1].objectValues()):
-                try:
-                    if getSecurityManager().validate(
-                            None, self, 'manage_FTPlist', self.manage_FTPlist):
-                        mode = mode | 0o0770
-                except Exception:
-                    pass
-
-                if nobody.allowed(self, getRoles(
-                        self, 'manage_FTPlist', self.manage_FTPlist, ())):
-                    mode = mode | 0o0007
-            if hasattr(aq_base(self), '_p_mtime'):
-                mtime = DateTime(self._p_mtime).timeTime()
-            else:
-                mtime = time.time()
-            # get owner and group
-            owner = group = 'Zope'
-            for user, roles in self.get_local_roles():
-                if 'Owner' in roles:
-                    owner = user
-                    break
-            return marshal.dumps(
-                (mode, 0, 0, 1, owner, group, 0, mtime, mtime, mtime))
 
     def __delitem__(self, name):
         return self.manage_delObjects(ids=[name])
@@ -784,14 +731,13 @@ class ObjectManager(CopyContainer,
     def __getitem__(self, key):
         if key in self:
             return self._getOb(key, None)
+
         request = getattr(self, 'REQUEST', None)
         if not (isinstance(request, str) or request is None):
             method = request.get('REQUEST_METHOD', 'GET')
-            if (request.maybe_webdav_client and
-                    method not in ('GET', 'POST')):
-                if bbb.HAS_ZSERVER:
-                    from webdav.NullResource import NullResource
-                    return NullResource(self, key, request).__of__(self)
+            if request.maybe_webdav_client and method not in ('GET', 'POST'):
+                return NullResource(self, key, request).__of__(self)
+
         raise KeyError(key)
 
     def __setitem__(self, key, value):
@@ -810,30 +756,100 @@ class ObjectManager(CopyContainer,
     def __len__(self):
         return len(self.objectIds())
 
-    def __nonzero__(self):
-        # Py2
-        return self.__bool__()
-
     def __bool__(self):
         return True
 
-    security.declareProtected(access_contents_information, 'get')
+    @security.protected(access_contents_information)
     def get(self, key, default=None):
         if key in self:
             return self._getOb(key, default)
         return default
 
-    security.declareProtected(access_contents_information, 'keys')
+    @security.protected(access_contents_information)
     def keys(self):
         return self.objectIds()
 
-    security.declareProtected(access_contents_information, 'get')
+    @security.protected(access_contents_information)
     def items(self):
         return self.objectItems()
 
-    security.declareProtected(access_contents_information, 'values')
+    @security.protected(access_contents_information)
     def values(self):
         return self.objectValues()
+
+    @security.protected(access_contents_information)
+    def compute_size(self, ob):
+        if hasattr(aq_base(ob), 'get_size'):
+            ob_size = ob.get_size()
+            if ob_size < 1024:
+                return '1 KiB'
+            elif ob_size > 1048576:
+                return "{:0.02f} MiB".format(ob_size / 1048576.0)
+            else:
+                return "{:0.0f} KiB".format(ob_size / 1024.0)
+
+    @security.protected(access_contents_information)
+    def last_modified(self, ob):
+        try:
+            return DateTime(ob._p_mtime).strftime("%Y-%m-%d %H:%M")
+        except (DateTimeError, AttributeError):
+            return ''
+
+    @security.protected(view_management_screens)
+    def manage_get_sortedObjects(self, sortkey, revkey):
+        '''
+        Return dictionaries used for the management page, sorted by sortkey
+        (which is 'id' or an attribute of the objects). The direction is
+        determined by rkey, which can be 'asc' for ascending or 'desc' for
+        descending.
+        It returns a list of dictionaries, with keys 'id' and 'obj', where 'id'
+        is the ID of the object as known by the parent and 'obj' is the child
+        object.
+        '''
+        if sortkey not in ['position', 'title', 'meta_type', 'get_size',
+                           '_p_mtime']:
+            sortkey = 'id'
+
+        items = []
+        for id, obj in self.objectItems():
+            item = {'id': id, 'quoted_id': quote(id), 'obj': obj}
+            if sortkey not in ['id', 'position'] and hasattr(obj, sortkey):
+                # add the attribute by which we need to sort
+                item[sortkey] = getattr(obj, sortkey)
+            items.append(item)
+
+        if sortkey == 'position':
+            # native ordering of Ordered Folders
+            if revkey == 'desc':
+                return list(reversed(items))
+            else:
+                return items
+
+        if sortkey in ['id', 'title', 'meta_type']:
+            sort_func = 'strcoll'
+        else:
+            sort_func = 'cmp'
+
+        sorted_items = zope.sequencesort.sort(
+            items,
+            ((sortkey, sort_func, revkey), ),
+            mapping=1
+        )
+
+        # remove the additional attribute
+        return [
+            {
+                'id': item['id'],
+                'quoted_id': item['quoted_id'],
+                'obj': item['obj'],
+            }
+            for item in sorted_items
+        ]
+
+    @security.protected(view_management_screens)
+    def getBookmarkableURLs(self):
+        """ Helper method to expose a configuration flag """
+        return getattr(CONFIG, 'zmi_bookmarkable_urls', True)
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)
@@ -846,16 +862,16 @@ def findChildren(obj, dirname=''):
 
     lst = []
     for name, child in obj.objectItems():
-        if (hasattr(aq_base(child), 'isPrincipiaFolderish') and
-                child.isPrincipiaFolderish):
-            lst.extend(findChildren(child, dirname + obj.id + '/'))
+        if hasattr(aq_base(child), 'isPrincipiaFolderish') and \
+           child.isPrincipiaFolderish:
+            lst.extend(findChildren(child, dirname + obj.getId() + '/'))
         else:
-            lst.append((dirname + obj.id + "/" + name, child))
+            lst.append((dirname + obj.getId() + "/" + name, child))
 
     return lst
 
 
-class IFAwareObjectManager(object):
+class IFAwareObjectManager:
 
     def all_meta_types(self, interfaces=None):
 

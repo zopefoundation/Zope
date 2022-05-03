@@ -1,21 +1,51 @@
-include *.txt
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+include *.md
 include *.rst
-include *.cfg
-exclude .*.cfg
-
-recursive-include docs *
-recursive-include src *
-
-prune docs/.build
-prune docs/_build
-
-global-exclude *.dll
-global-exclude *.pyc
-global-exclude *.pyo
-global-exclude *.so
-
-include *.py
+include *.txt
 include buildout.cfg
+include tox.ini
+
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs *.txt
+recursive-include docs Makefile
+
+recursive-include src *.py
+include *.py
+include *.yaml
 include sources.cfg
 include versions-prod.cfg
 include versions.cfg
+include zope-ecosystem.cfg
+recursive-include docs *.bat
+recursive-include docs *.css
+recursive-include docs *.jpg
+recursive-include docs *.png
+recursive-include docs *.tgz
+recursive-include src *.css
+recursive-include src *.dtml
+recursive-include src *.eot
+recursive-include src *.gif
+recursive-include src *.htm
+recursive-include src *.html
+recursive-include src *.ico
+recursive-include src *.in
+recursive-include src *.js
+recursive-include src *.map
+recursive-include src *.md
+recursive-include src *.pdf
+recursive-include src *.png
+recursive-include src *.po
+recursive-include src *.pot
+recursive-include src *.pt
+recursive-include src *.rst
+recursive-include src *.svg
+recursive-include src *.ttf
+recursive-include src *.txt
+recursive-include src *.webmanifest
+recursive-include src *.woff
+recursive-include src *.woff2
+recursive-include src *.xml
+recursive-include src *.zcml
+recursive-include src *.zpt

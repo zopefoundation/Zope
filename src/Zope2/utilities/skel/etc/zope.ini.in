@@ -1,29 +1,58 @@
 [app:zope]
 use = egg:Zope#main
-zope_conf = %(here)s/wsgi.conf
-
-[pipeline:main]
-pipeline =
-    egg:Zope#httpexceptions
-    zope
+zope_conf = %(here)s/zope.conf
 
 [server:main]
 use = egg:waitress#main
 host = 127.0.0.1
 port = 8080
 
+[filter:translogger]
+use = egg:Paste#translogger
+setup_console_handler = False
+
+[pipeline:main]
+pipeline =
+    egg:Zope#httpexceptions
+    translogger
+    zope
+
 [loggers]
-keys = root
+keys = root, waitress.queue, waitress, wsgi
 
 [handlers]
-keys = console
+keys = console, accesslog, eventlog
 
 [formatters]
-keys = generic
+keys = generic, message
+
+[formatter_generic]
+format = %(asctime)s %(levelname)s [%(name)s:%(lineno)s][%(threadName)s] %(message)s
+datefmt = %Y-%m-%d %H:%M:%S
+
+[formatter_message]
+format = %(message)s
 
 [logger_root]
+level = INFO
+handlers = console, eventlog
+
+[logger_waitress.queue]
+level = INFO
+handlers = eventlog
+qualname = waitress.queue
+propagate = 0
+
+[logger_waitress]
+level = INFO
+handlers = eventlog
+qualname = waitress
+
+[logger_wsgi]
 level = WARN
-handlers = console
+handlers = accesslog
+qualname = wsgi
+propagate = 0
 
 [handler_console]
 class = StreamHandler
@@ -31,6 +60,14 @@ args = (sys.stderr,)
 level = NOTSET
 formatter = generic
 
-[formatter_generic]
-format = %(asctime)s - %(levelname)-5.5s [%(name)s] %(message)s
-datefmt = %Y-%m-%d %H:%M:%S
+[handler_accesslog]
+class = FileHandler
+args = ('<<INSTANCE_HOME>>/var/log/Z4.log','a')
+level = INFO
+formatter = message
+
+[handler_eventlog]
+class = FileHandler
+args = ('<<INSTANCE_HOME>>/var/log/event.log', 'a')
+level = INFO
+formatter = generic

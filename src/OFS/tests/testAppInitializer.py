@@ -17,9 +17,12 @@ import shutil
 import tempfile
 import unittest
 
-from App.config import getConfiguration, setConfiguration
-from OFS.Application import Application, AppInitializer
+from App.config import getConfiguration
+from App.config import setConfiguration
+from OFS.Application import AppInitializer
+from OFS.Application import Application
 from Zope2.Startup.options import ZopeWSGIOptions
+
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -68,7 +71,7 @@ class TestInitialization(unittest.TestCase):
         # platform-independent way.
         config_path = os.path.join(TEMPNAME, 'zope.conf')
         with open(config_path, 'w') as fd:
-            fd.write(text.replace(u"<<INSTANCE_HOME>>", TEMPNAME))
+            fd.write(text.replace("<<INSTANCE_HOME>>", TEMPNAME))
 
         options = ZopeWSGIOptions(config_path)()
         config = options.configroot
@@ -124,3 +127,24 @@ class TestInitialization(unittest.TestCase):
         app = i.getApp()
         self.assertTrue('index_html' in app)
         self.assertEqual(app.index_html.meta_type, 'Page Template')
+
+    def test_install_products_which_need_the_application(self):
+        self.configure(good_cfg)
+        from Zope2.App import zcml
+        configure_zcml = '''
+        <configure
+         xmlns="http://namespaces.zope.org/zope"
+         xmlns:five="http://namespaces.zope.org/five"
+         i18n_domain="foo">
+        <include package="Products.Five" file="meta.zcml" />
+        <five:registerPackage
+           package="OFS.tests.applicationproduct"
+           initialize="OFS.tests.applicationproduct.initialize"
+           />
+        </configure>'''
+        zcml.load_string(configure_zcml)
+
+        i = self.getOne()
+        i.install_products()
+        app = i.getApp()
+        self.assertEqual(app.some_folder.meta_type, 'Folder')

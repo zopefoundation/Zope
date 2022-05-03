@@ -1,8 +1,12 @@
 from io import BytesIO
-from sys import modules, exc_info
+from sys import exc_info
+from sys import modules
 from unittest import TestCase
 
 import zExceptions
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
 from ZODB.POSException import ConflictError
 from zope.component import adapter
 from zope.component import getSiteManager
@@ -12,23 +16,24 @@ from zope.interface import Interface
 from zope.interface.verify import verifyObject
 from zope.publisher.interfaces import INotFound
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-
-from Testing.ZopeTestCase import FunctionalTestCase
-from Testing.ZopeTestCase import user_name
-from Testing.ZopeTestCase import user_password
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
-from ZPublisher.interfaces import (
-    IPubEvent, IPubStart, IPubEnd, IPubSuccess, IPubFailure,
-    IPubAfterTraversal, IPubBeforeCommit,
-    IPubBeforeStreaming,
-)
-from ZPublisher.pubevents import (
-    PubStart, PubSuccess, PubFailure,
-    PubAfterTraversal, PubBeforeCommit, PubBeforeAbort,
-    PubBeforeStreaming,
-)
+from ZPublisher.interfaces import IPubAfterTraversal
+from ZPublisher.interfaces import IPubBeforeCommit
+from ZPublisher.interfaces import IPubBeforeStreaming
+from ZPublisher.interfaces import IPubEnd
+from ZPublisher.interfaces import IPubEvent
+from ZPublisher.interfaces import IPubFailure
+from ZPublisher.interfaces import IPubStart
+from ZPublisher.interfaces import IPubSuccess
+from ZPublisher.pubevents import PubAfterTraversal
+from ZPublisher.pubevents import PubBeforeAbort
+from ZPublisher.pubevents import PubBeforeCommit
+from ZPublisher.pubevents import PubBeforeStreaming
+from ZPublisher.pubevents import PubFailure
+from ZPublisher.pubevents import PubStart
+from ZPublisher.pubevents import PubSuccess
 from ZPublisher.WSGIPublisher import publish_module
 
 
@@ -166,18 +171,19 @@ class TestPubEvents(TestCase):
         self.assertTrue(b'datachunk1datachunk2' in out.getvalue())
 
 
-class ExceptionView(object):
+class ExceptionView:
 
     def __init__(self, context, request):
-        self.context = context # exception instance
+        self.context = context  # exception instance
         self.__parent__ = None
         self.request = request
 
     def __call__(self):
         global_request = getRequest()
         self.request.response.events.append('exc_view')
-        return ('Exception: %s\nRequest: %r' % (
-            self.context.__class__, global_request))
+        return (
+            f'Exception: {self.context.__class__}\n'
+            f'Request: {global_request!r}')
 
 
 class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
@@ -200,7 +206,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
                 ExceptionView,
                 required=(self.exc_view_for, IDefaultBrowserLayer),
                 provided=Interface,
-                name=u'index.html',
+                name='index.html',
             )
 
     def _registerExceptionView(self, for_):
@@ -210,7 +216,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             ExceptionView,
             required=(for_, IDefaultBrowserLayer),
             provided=Interface,
-            name=u'index.html',
+            name='index.html',
         )
 
     @adapter(IPubEvent)
@@ -230,13 +236,13 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
             exception_type, exception_instance, traceback = event.exc_info
             self.assertIsInstance(exception_instance, exception_type)
             self.assertIsInstance(exception_instance,
-                 self.expected_exception_type)
+                                  self.expected_exception_type)
 
     def test_all_pub_events_have_access_to_valid_global_request(self):
         self.folder.addDTMLDocument('index_html', file='index')
         response = self.publish(
             self.folder.absolute_url_path(),
-            basic='%s:%s' % (user_name, user_password))
+            basic=f'{user_name}:{user_password}')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubAfterTraversal',
@@ -249,7 +255,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response._response.events,
                          ['PubStart', 'PubBeforeAbort', 'PubFailure'])
 
-    def test_BeforeAbort_and_Failure_events_can_access_zope_globalRequest(self):
+    def test_BeforeAbort_and_Failure_events_can_access_zope_globalReq(self):
         self.expected_exception_type = zExceptions.NotFound
         response = self.publish('/notexisting')
         self.assertEqual(response.getStatus(), 404)
@@ -267,7 +273,8 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 404)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.NotFound'>\nRequest: <WSGIRequest, URL=http://nohost/notexisting>")
+            (b"Exception: <class 'zExceptions.NotFound'>\n"
+             b"Request: <WSGIRequest, URL=http://nohost/notexisting>"))
 
     def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
         self.expected_exception_type = zExceptions.HTTPVersionNotSupported
@@ -278,8 +285,10 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
                 pass
             raise HTTPVersionNotSupported()
         self.folder.__class__.index_html = raiser
+
         def cleanup():
             del self.folder.__class__.index_html
+
         self.addCleanup(cleanup)
 
         from zope.publisher.interfaces.http import IHTTPException
@@ -291,7 +300,9 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 505)
         self.assertEqual(
             response.getBody(),
-            b"Exception: <class 'zExceptions.HTTPVersionNotSupported'>\nRequest: <WSGIRequest, URL=http://nohost/test_folder_1_/index_html>")
+            (b"Exception: <class 'zExceptions.HTTPVersionNotSupported'>\n"
+             b"Request: <WSGIRequest, "
+             b"URL=http://nohost/test_folder_1_/index_html>"))
 
 
 def _succeed():
@@ -300,7 +311,7 @@ def _succeed():
 
 
 # Poor man's mock.
-class _Application(object):
+class _Application:
     def __getattr__(self, name):
         return self
 
@@ -308,7 +319,7 @@ class _Application(object):
         return self
 
 
-class _Reporter(object):
+class _Reporter:
     def __init__(self):
         self.events = []
 
@@ -316,7 +327,7 @@ class _Reporter(object):
         self.events.append(event)
 
 
-class _Response(object):
+class _Response:
     def setBody(*unused):
         pass
 
@@ -346,6 +357,7 @@ class _Request(BaseRequest):
     def close(self):
         # override to get rid of the 'EndRequestEvent' notification
         pass
+
 
 # define things necessary for publication
 bobo_application = _Application()

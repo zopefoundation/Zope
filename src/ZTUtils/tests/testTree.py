@@ -3,7 +3,7 @@ import unittest
 from ZTUtils import Tree
 
 
-class Item(object):
+class Item:
     children = ()
     id = ''
 
@@ -67,9 +67,10 @@ class Test_TreeNode(unittest.TestCase):
     def test_walk_empty(self):
         node = self._makeOne()
         _called_with = []
-        datum = object()
+
         def _func(a_node, data=None):
             _called_with.append((a_node, data))
+
         node.walk(_func)
         self.assertEqual(_called_with, [(node, None)])
 
@@ -81,8 +82,10 @@ class Test_TreeNode(unittest.TestCase):
         child._add_child(grand)
         _called_with = []
         datum = object()
+
         def _func(a_node, data):
             _called_with.append((a_node, data))
+
         node.walk(_func, datum)
         self.assertEqual(
             _called_with,
@@ -187,7 +190,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has_simple_attr(self):
 
-        class Obj(object):
+        class Obj:
             tpId = 'foo'
 
         maker = self._makeOne()
@@ -195,7 +198,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has_method(self):
 
-        class Obj(object):
+        class Obj:
 
             def tpId(self):
                 return 'foo'
@@ -205,7 +208,7 @@ class Test_TreeMaker(unittest.TestCase):
 
     def test_getId_obj_has__p_oid(self):
 
-        class Obj(object):
+        class Obj:
             _p_oid = 123
 
         maker = self._makeOne()
@@ -445,6 +448,7 @@ class TreeTests(unittest.TestCase):
 
     def testDecodeDecompressedSizeLimit(self):
         import zlib
+
         from ZTUtils.Tree import b2a
         big = b2a(zlib.compress(b'x' * (1024 * 1100)))
         self.assertTrue(len(big) < 8192)  # Must be under the input size limit

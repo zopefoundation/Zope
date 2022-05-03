@@ -5,7 +5,7 @@ Introduction
 Overview
 ========
 
-Zope 2 is a free and open-source, object-oriented web application
+Zope is a free and open-source, object-oriented web application
 server written in the Python programming language.  The term ZOPE is
 an acronym for "Z Object Publishing Environment" (the Z doesn't
 really mean anything in particular).  However, nowadays ZOPE is
@@ -15,9 +15,7 @@ simply written as Zope.  It has three distinct audiences.
   Individuals who use of Zope's "out of the box" features to build
   websites.  This audience is interested in making use of Zope's
   existing array of features to create content management solutions.
-  They will likely make heavy use of "through the web" scripting
-  using DTML, Page Templates, and Python Scripts as well as (of
-  course) HTML and XML.  They are generally less concerned about code
+  They are generally less concerned about code
   reuse than the speed with which they can create a custom
   application or website.
 
@@ -25,8 +23,7 @@ simply written as Zope.  It has three distinct audiences.
   Individuals who wish to extend Zope to create highly customized
   solutions.  This audience is likely interested in creating highly
   reusable custom code that makes Zope do something new and
-  interesting.  They will likely make heavy use of "through the
-  file-system" style development.
+  interesting.
 
 *Administrators*
   Individuals responsible for keeping a Zope site running and
@@ -35,13 +32,13 @@ simply written as Zope.  It has three distinct audiences.
 This guide is intended to document Zope for the second audience,
 Developers, as defined above.  If you fit more into the "user"
 audience defined above, you'll probably want to start by reading `The
-Zope Book <http://docs.zope.org/zope2/zope2book>`_ .
+Zope Book <https://zope.readthedocs.io/en/latest/zopebook/>`_ .
 
 Throughout this guide, it is assumed that you know how to program in
 the Python programming language.  Most of the examples in this guide
 will be in Python.  There are a number of great resources and books
 for learning Python; the best online resource is the `python.org web
-site <http://www.python.org/>`_ and many books can be found on the
+site <https://www.python.org/>`_ and many books can be found on the
 shelves of your local bookstore.
 
 Organization of the book
@@ -58,7 +55,7 @@ covers the following topics:
   started with application development.
 
 *Components and Interfaces*
-  Zope use a component-centric development model.  This chapter
+  Zope uses a component-centric development model.  This chapter
   describes the component model in Zope and how Zope components are
   described through interfaces.
 

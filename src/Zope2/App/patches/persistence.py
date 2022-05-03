@@ -8,6 +8,6 @@ def apply_patches():
         return
     _patched = True
 
-    from Persistence import Persistent
     from AccessControl.class_init import InitializeClass
+    from Persistence import Persistent
     Persistent.__class_init__ = InitializeClass

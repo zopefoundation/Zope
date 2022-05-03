@@ -14,8 +14,9 @@
 """Test fixtures
 """
 
-from zope.interface import Interface, implementer
 from Products.Five import BrowserView
+from zope.interface import Interface
+from zope.interface import implementer
 
 
 class IOne(Interface):
@@ -24,7 +25,7 @@ class IOne(Interface):
 
 
 @implementer(IOne)
-class One(object):
+class One:
     'A class'
 
 
@@ -32,4 +33,4 @@ class ViewOne(BrowserView):
     'Yet another class'
 
     def my_method(self, arg1, arg2, kw1=None, kw2='D'):
-        print('CALLED %s %s %s %s' % (arg1, arg2, kw1, kw2))
+        print(f'CALLED {arg1} {arg2} {kw1} {kw2}')

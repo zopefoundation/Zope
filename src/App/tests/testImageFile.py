@@ -1,7 +1,7 @@
 import io
 import os.path
-from io import BytesIO
 import unittest
+from io import BytesIO
 
 import App
 from Testing.ZopeTestCase.warnhook import WarningsHook
@@ -67,3 +67,30 @@ class TestImageFileFunctional(unittest.TestCase):
         self.assertIsInstance(result, io.FileIO)
         self.assertTrue(b''.join(result).startswith(b'\x89PNG\r\n'))
         self.assertEqual(len(result), image.size)
+        self.assertEqual(response.getHeader('Content-Length'), str(image.size))
+        result.close()
+
+    def test_304(self):
+        env = {
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
+            'REQUEST_METHOD': 'GET',
+            'IF_MODIFIED_SINCE': '2050/12/31',
+        }
+        stdout = BytesIO()
+        response = WSGIResponse(stdout)
+        request = WSGIRequest(BytesIO(), env, response)
+        path = os.path.join(os.path.dirname(App.__file__),
+                            'www', 'zopelogo.png')
+        image = App.ImageFile.ImageFile(path)
+        result = image.index_html(request, response)
+        self.assertEqual(stdout.getvalue(), b'')
+        self.assertEqual(len(result), 0)
+        self.assertEqual(response.getHeader('Content-Length'), '0')
+
+    def test__str__returns_native_string(self):
+        path = os.path.join(os.path.dirname(App.__file__),
+                            'www', 'zopelogo.png')
+        image = App.ImageFile.ImageFile(path)
+        self.assertIsInstance(str(image), str)

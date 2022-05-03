@@ -13,14 +13,12 @@
 ##############################################################################
 """Size adapters for testing
 """
-from __future__ import absolute_import
-
 from zope.interface import implementer
 from zope.size.interfaces import ISized
 
 
 @implementer(ISized)
-class SimpleContentSize(object):
+class SimpleContentSize:
     """Size for ``SimpleContent`` objects."""
 
     def __init__(self, context):
@@ -34,7 +32,7 @@ class SimpleContentSize(object):
 
 
 @implementer(ISized)
-class FancyContentSize(object):
+class FancyContentSize:
     """Size for ``SimpleContent`` objects."""
 
     def __init__(self, context):
@@ -79,6 +77,7 @@ def test_size():
       >>> from Zope2.App import zcml
       >>> zcml.load_config('meta.zcml', Products.Five)
       >>> zcml.load_string(configure_zcml)
+      >>> folder = self.folder  # NOQA: F821
 
       >>> from Products.Five.tests.testing.simplecontent import (
       ... manage_addSimpleContent)
@@ -87,14 +86,14 @@ def test_size():
 
     We have registered an ``ISized`` adapter for SimpleContent:
 
-      >>> n = manage_addSimpleContent(self.folder, 'simple', 'Simple')
-      >>> self.folder.simple.get_size()
+      >>> n = manage_addSimpleContent(folder, 'simple', 'Simple')
+      >>> folder.simple.get_size()
       42
 
     Fancy content already has a ``get_size`` method
 
-      >>> n = manage_addFancyContent(self.folder, 'fancy', 'Fancy')
-      >>> self.folder.fancy.get_size()
+      >>> n = manage_addFancyContent(folder, 'fancy', 'Fancy')
+      >>> folder.fancy.get_size()
       43
 
     Clean up:

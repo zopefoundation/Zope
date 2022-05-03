@@ -33,6 +33,7 @@
 
 from App.special_dtml import HTML
 
+
 MessageDialog = HTML("""
 <HTML>
 <HEAD>

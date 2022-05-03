@@ -78,15 +78,15 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         self.assertEqual(index._called_with, (('abc',), {'foo': 'bar'}))
 
 
-class DummyContext(object):
+class DummyContext:
     pass
 
 
-class DummyRequest(object):
+class DummyRequest:
     pass
 
 
-class DummyTemplate(object):
+class DummyTemplate:
     def __call__(self, *args, **kw):
         self._called_with = (args, kw)
         return self

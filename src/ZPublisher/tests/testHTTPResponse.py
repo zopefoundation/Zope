@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
-
-from io import BytesIO
-import sys
 import traceback
 import unittest
+from io import BytesIO
 
-from six import PY3
-from zExceptions import (
-    BadRequest,
-    Forbidden,
-    InternalError,
-    NotFound,
-    ResourceLockedError,
-    Unauthorized,
-)
+from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zExceptions import InternalError
+from zExceptions import NotFound
+from zExceptions import ResourceLockedError
+from zExceptions import Unauthorized
+
+from ..HTTPResponse import encode_params
+from ..HTTPResponse import encode_words
+from ..HTTPResponse import header_encoding_registry
+from ..HTTPResponse import make_content_disposition
 
 
 class HTTPResponseTests(unittest.TestCase):
@@ -89,7 +88,7 @@ class HTTPResponseTests(unittest.TestCase):
                          'application/foo; charset: something')
 
     def test_ctor_charset_unicode_body_application_header(self):
-        BODY = u'\xe4rger'
+        BODY = '\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type': 'application/foo'})
         self.assertEqual(response.headers.get('content-type'),
@@ -97,7 +96,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_charset_unicode_body_application_header_diff_encoding(self):
-        BODY = u'\xe4rger'
+        BODY = '\xe4rger'
         response = self._makeOne(body=BODY,
                                  headers={'content-type':
                                           'application/foo; charset=utf-8'})
@@ -107,8 +106,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.body, BODY.encode('utf-8'))
 
     def test_ctor_body_recodes_to_match_content_type_charset(self):
-        xml = (u'<?xml version="1.0" encoding="iso-8859-15" ?>\n'
-               u'<foo><bar/></foo>')
+        xml = ('<?xml version="1.0" encoding="iso-8859-15" ?>\n'
+               '<foo><bar/></foo>')
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=utf-8'})
@@ -116,8 +115,8 @@ class HTTPResponseTests(unittest.TestCase):
                          xml.replace('iso-8859-15', 'utf-8').encode('utf-8'))
 
     def test_ctor_body_already_matches_charset_unchanged(self):
-        xml = (u'<?xml version="1.0" encoding="iso-8859-15" ?>\n'
-               u'<foo><bar/></foo>')
+        xml = ('<?xml version="1.0" encoding="iso-8859-15" ?>\n'
+               '<foo><bar/></foo>')
         response = self._makeOne(
             body=xml, headers={
                 'content-type': 'text/xml; charset=iso-8859-15'})
@@ -183,158 +182,167 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), True)
 
     def test_setCookie_w_existing(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         response.setCookie('foo', 'baz')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'baz')
-        self.assertEqual(cookie.get('quoted'), True)
 
     def test_setCookie_no_attrs(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), True)
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_expires(self):
-        EXPIRES = 'Wed, 31-Dec-97 23:59:59 GMT'
+        EXPIRES = 'Wed, 31 Dec 1997 23:59:59 GMT'
         response = self._makeOne()
         response.setCookie('foo', 'bar', expires=EXPIRES)
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('expires'), EXPIRES)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Expires'), EXPIRES)
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Expires=%s' % EXPIRES))
+                         ('Set-Cookie', 'foo=bar; Expires=%s' % EXPIRES))
 
     def test_setCookie_w_domain(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', domain='example.com')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('domain'), 'example.com')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Domain'), 'example.com')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Domain=example.com'))
+                         ('Set-Cookie', 'foo=bar; Domain=example.com'))
 
     def test_setCookie_w_path(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', path='/')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('path'), '/')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Path'), '/')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"; Path=/'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar; Path=/'))
 
     def test_setCookie_w_comment(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', comment='COMMENT')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('comment'), 'COMMENT')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('Comment'), 'COMMENT')
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; Comment=COMMENT'))
+                         ('Set-Cookie', 'foo=bar; Comment=COMMENT'))
 
     def test_setCookie_w_secure_true_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', secure='SECURE')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('secure'), 'SECURE')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIs(cookie.get('Secure'), True)
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"; Secure'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar; Secure'))
 
     def test_setCookie_w_secure_false_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', secure='')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('secure'), '')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIsNone(cookie.get('Secure'))
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
-        self.assertEqual(cookies[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookies[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_httponly_true_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', http_only=True)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('http_only'), True)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('HttpOnly'), True)
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"; HTTPOnly'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar; HttpOnly'))
 
     def test_setCookie_w_httponly_false_value(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', http_only=False)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('http_only'), False)
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertIsNone(cookie.get('HttpOnly'))
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
-        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo="bar"'))
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
 
     def test_setCookie_w_same_site(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', same_site='Strict')
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 3)
+        self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('same_site'), 'Strict')
-        self.assertEqual(cookie.get('quoted'), True)
+        self.assertEqual(cookie.get('SameSite'), 'Strict')
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
         self.assertEqual(cookies[0],
-                         ('Set-Cookie', 'foo="bar"; SameSite=Strict'))
+                         ('Set-Cookie', 'foo=bar; SameSite=Strict'))
 
     def test_setCookie_unquoted(self):
         response = self._makeOne()
         response.setCookie('foo', 'bar', quoted=False)
         cookie = response.cookies.get('foo', None)
-        self.assertEqual(len(cookie), 2)
+        self.assertEqual(len(cookie), 1)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertEqual(cookie.get('quoted'), False)
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
+
+    def test_setCookie_handle_byte_values(self):
+        response = self._makeOne()
+        response.setCookie('foo', b'bar')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 1)
+        self.assertEqual(cookie.get('value'), b'bar')
+
+        cookie_list = response._cookie_list()
+        self.assertEqual(len(cookie_list), 1)
+        self.assertEqual(cookie_list[0], ('Set-Cookie', 'foo=bar'))
+
+    def test_setCookie_handle_unicode_values(self):
+        response = self._makeOne()
+        response.setCookie('foo', 'bar')
+        cookie = response.cookies.get('foo', None)
+        self.assertEqual(len(cookie), 1)
+        self.assertEqual(cookie.get('value'), 'bar')
 
         cookie_list = response._cookie_list()
         self.assertEqual(len(cookie_list), 1)
@@ -347,7 +355,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
         self.assertEqual(cookie.get('value'), 'bar:baz')
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_appendCookie_no_existing(self):
         response = self._makeOne()
@@ -361,21 +369,22 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('foo', path='/')
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
-        self.assertEqual(cookie.get('max_age'), 0)
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Expires'),
+                         'Wed, 31 Dec 1997 23:59:59 GMT')
+        self.assertEqual(cookie.get('Max-Age'), '0')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_expireCookie1160(self):
         # Verify that the cookie is expired even if an expires kw arg is passed
-        # http://zope.org/Collectors/Zope/1160
         response = self._makeOne()
         response.expireCookie('foo', path='/',
-                              expires='Mon, 22-Mar-2004 17:59 GMT', max_age=99)
+                              expires='Mon, 22 Mar 2004 17:59 GMT', max_age=99)
         cookie = response.cookies.get('foo', None)
         self.assertTrue(cookie)
-        self.assertEqual(cookie.get('expires'), 'Wed, 31-Dec-97 23:59:59 GMT')
-        self.assertEqual(cookie.get('max_age'), 0)
-        self.assertEqual(cookie.get('path'), '/')
+        self.assertEqual(cookie.get('Expires'),
+                         'Wed, 31 Dec 1997 23:59:59 GMT')
+        self.assertEqual(cookie.get('Max-Age'), '0')
+        self.assertEqual(cookie.get('Path'), '/')
 
     def test_getHeader_nonesuch(self):
         response = self._makeOne()
@@ -599,7 +608,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test_setBody_object_with_asHTML(self):
         HTML = '<html><head></head><body></body></html>'
 
-        class Dummy(object):
+        class Dummy:
             def asHTML(self):
                 return HTML
         response = self._makeOne()
@@ -611,8 +620,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_unicode(self):
-        HTML = (u'<html><head></head><body>'
-                u'<h1>Tr\u0039s Bien</h1></body></html>')
+        HTML = ('<html><head></head><body>'
+                '<h1>Tr\u0039s Bien</h1></body></html>')
         ENCODED = HTML.encode('utf-8')
         response = self._makeOne()
         result = response.setBody(HTML)
@@ -623,14 +632,57 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(ENCODED)))
 
+    def test_setBody_list(self):
+        """Test that setBody casts lists of ints into their str representation,
+        regardless of if the values are in byte range."""
+        resp = self._makeOne()
+        for body in ([1, 2, 3], [1, 2, 500]):
+            resp.setBody(body)
+            self.assertEqual(resp.body, str(body).encode('ascii'))
+
+    def test_setBody_io(self):
+        """
+        Test that BytesIO.getbuffer() can be used to write a binary response.
+        """
+        from io import BytesIO
+        resp = self._makeOne()
+        value = b'\x00\x01'
+        bio = BytesIO(value)
+        resp.setBody(bio.getbuffer())
+        self.assertEqual(resp.body, value)
+
+    def test_setBody_by_content_type(self):
+        """
+        Check that a list as response is treated differently depending on the
+        content type.
+        """
+        resp = self._makeOne()
+        body = [1, 2, 3]
+
+        resp.setBody(body)
+        self.assertEqual(resp.body, str(body).encode('ascii'))
+
+        resp.setHeader('Content-Type', 'application/x-octet-stream')
+        resp.setBody(body)
+        self.assertEqual(resp.body, bytes(body))
+
+        resp.setHeader('Content-Type', 'text/plain')
+        resp.setBody(body)
+        self.assertEqual(resp.body, str(body).encode('ascii'))
+
     def test_setBody_w_bogus_pseudo_HTML(self):
         # The 2001 checkin message which added the path-under-test says:
         # (r19315): "merged content type on error fixes from 2.3
         # If the str of the object returs a Python "pointer" looking mess,
         # don't let it get treated as HTML.
-        BOGUS = b'<Bogus a39d53d>'
+        BOGUS = b'<Bogus 0xa39d53d>'
         response = self._makeOne()
         self.assertRaises(NotFound, response.setBody, BOGUS)
+
+    def test_setBody_tuple(self):
+        response = self._makeOne()
+        response.setBody(('a',))
+        self.assertEqual(b"('a',)", response.body)
 
     def test_setBody_calls_insertBase(self):
         response = self._makeOne()
@@ -700,39 +752,82 @@ class HTTPResponseTests(unittest.TestCase):
         response.setBody(b'foo' * 100)  # body must get smaller on compression
         self.assertEqual(response.getHeader('Vary'), None)
 
-    def test_redirect_defaults(self):
-        URL = 'http://example.com'
+    def _redirectURLCheck(self, url, expected=None, lock=False, status=302):
+        if not expected:
+            expected = url
         response = self._makeOne()
-        result = response.redirect(URL)
-        self.assertEqual(result, URL)
+        result = response.redirect(url, lock=lock, status=status)
+        self.assertEqual(result, expected)
+        self.assertEqual(response.getHeader('Location'), expected)
+        return response
+
+    def test_redirect_defaults(self):
+        URL = 'http://example.com/@@login'
+        response = self._redirectURLCheck(URL)
         self.assertEqual(response.status, 302)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertFalse(response._locked_status)
 
     def test_redirect_explicit_status(self):
         URL = 'http://example.com'
-        response = self._makeOne()
-        response.redirect(URL, status=307)
+        response = self._redirectURLCheck(URL, status=307)
         self.assertEqual(response.status, 307)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertFalse(response._locked_status)
 
     def test_redirect_w_lock(self):
         URL = 'http://example.com'
-        response = self._makeOne()
-        response.redirect(URL, lock=True)
+        response = self._redirectURLCheck(URL, lock=True)
         self.assertEqual(response.status, 302)
-        self.assertEqual(response.getHeader('Location'), URL)
         self.assertTrue(response._locked_status)
 
+    def test_redirect_nonascii(self):
+        URL = 'http://example.com/\xe4'
+        BYTES_URL = URL.encode('UTF-8')
+        ENC_URL = 'http://example.com/%C3%A4'
+
+        # Pass in an unencoded string as URL
+        self._redirectURLCheck(URL, expected=ENC_URL)
+
+        # Pass in an encoded string as URL
+        self._redirectURLCheck(BYTES_URL, expected=ENC_URL)
+
+        # Pass in a HTTPException with an unencoded string as URL
+        from zExceptions import HTTPMovedPermanently
+        exc = HTTPMovedPermanently(URL)
+        self._redirectURLCheck(exc, expected=ENC_URL)
+
+        # Pass in a HTTPException with an encoded string as URL
+        from zExceptions import HTTPMovedPermanently
+        exc = HTTPMovedPermanently(BYTES_URL)
+        self._redirectURLCheck(exc, expected=ENC_URL)
+
+    def test_redirect_nonascii_everywhere(self):
+        URL = u"http://uä:pä@sä:80/pä?qä#fä"
+        ENC_URL = "http://u%C3%A4:p%C3%A4@s%C3%A4:80/p%C3%A4?q%C3%A4#f%C3%A4"
+        self._redirectURLCheck(URL, ENC_URL)
+
+    def test_redirect_alreadyquoted(self):
+        # If a URL is already quoted, don't double up on the quoting
+        ENC_URL = 'http://example.com/M%C3%A4H'
+        self._redirectURLCheck(ENC_URL)
+
+    def test_redirect_unreserved_chars(self):
+        # RFC 2396 section 2.3, characters that should not be encoded
+        url = "http://example.com/-_.!~*'()"
+        self._redirectURLCheck(url)
+
+    def test_redirect_reserved_chars(self):
+        # RFC 2396 section 3.3, characters with reserved meaning in a path
+        url = 'http://example.com/+/$/;/,/=/?/&/@@index.html'
+        self._redirectURLCheck(url)
+
     def test__encode_unicode_no_content_type_uses_default_encoding(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         self.assertEqual(response._encode_unicode(UNICODE),
                          UNICODE.encode('UTF8'))
 
     def test__encode_unicode_w_content_type_no_charset_updates_charset(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html')
         self.assertEqual(response._encode_unicode(UNICODE),
@@ -740,7 +835,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.getHeader('Content-Type', 'text/html; charset=UTF8')
 
     def test__encode_unicode_w_content_type_w_charset(self):
-        UNICODE = u'<h1>Tr\u0039s Bien</h1>'
+        UNICODE = '<h1>Tr\u0039s Bien</h1>'
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
@@ -748,14 +843,14 @@ class HTTPResponseTests(unittest.TestCase):
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test__encode_unicode_w_content_type_w_charset_xml_preamble(self):
-        PREAMBLE = u'<?xml version="1.0" ?>'
-        ELEMENT = u'<element>Tr\u0039s Bien</element>'
-        UNICODE = u'\n'.join([PREAMBLE, ELEMENT])
+        PREAMBLE = '<?xml version="1.0" ?>'
+        ELEMENT = '<element>Tr\u0039s Bien</element>'
+        UNICODE = '\n'.join([PREAMBLE, ELEMENT])
         response = self._makeOne()
         response.setHeader('Content-Type', 'text/html; charset=latin1')
         self.assertEqual(response._encode_unicode(UNICODE),
-                         b'<?xml version="1.0" encoding="latin1" ?>\n' +
-                         ELEMENT.encode('latin-1'))
+                         b'<?xml version="1.0" encoding="latin1" ?>\n'
+                         + ELEMENT.encode('latin-1'))
         response.getHeader('Content-Type', 'text/html; charset=latin1')
 
     def test_quoteHTML(self):
@@ -811,8 +906,30 @@ class HTTPResponseTests(unittest.TestCase):
             response.debugError('testing')
         except NotFound as raised:
             self.assertEqual(response.status, 200)
-            self.assertTrue("Zope has encountered a problem publishing "
-                            "your object.<p>\ntesting</p>" in str(raised))
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>'testing'</p>",  # noqa: E501
+                str(raised),
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("testing",))
+        except NotFound as raised:
+            self.assertEqual(response.status, 200)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'testing\',)</p>",  # noqa: E501
+                str(raised),
+            )
+        else:
+            self.fail("Didn't raise NotFound")
+        try:
+            response.debugError(("foo", "bar"))
+        except NotFound as raised:
+            self.assertEqual(response.status, 200)
+            self.assertIn(
+                "Zope has encountered a problem publishing your object. <p>(\'foo\', \'bar\')</p>",  # noqa: E501
+                str(raised),
+            )
         else:
             self.fail("Didn't raise NotFound")
 
@@ -898,7 +1015,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '0'),
                           ])
@@ -909,7 +1026,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '4'),
                           ])
@@ -920,7 +1037,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '42'),
                           ])
@@ -931,7 +1048,7 @@ class HTTPResponseTests(unittest.TestCase):
         status, headers = response.finalize()
         self.assertEqual(status, '200 OK')
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Transfer-Encoding', 'slurry'),
                           ])
@@ -941,18 +1058,18 @@ class HTTPResponseTests(unittest.TestCase):
         response.redirect('http://example.com/')
         status, headers = response.finalize()
         self.assertEqual(status, '302 Found')
-        expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+        expected = {
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
             ('Content-Length', '0'),
             ('Location', 'http://example.com/'),
-        ])
+        }
         self.assertEqual(set(headers), expected)
 
     def test_listHeaders_empty(self):
         response = self._makeOne()
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ])
 
@@ -962,7 +1079,7 @@ class HTTPResponseTests(unittest.TestCase):
         response._wrote = True
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ])
 
@@ -971,7 +1088,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Content-Length', 42)
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Content-Length', '42'),
                           ])
@@ -982,7 +1099,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Transfer-Encoding', 'slurry')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Transfer-Encoding', 'slurry'),
                           ])
@@ -992,7 +1109,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('x-consistency', 'Foolish')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-Consistency', 'Foolish'),
                           ])
@@ -1002,7 +1119,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('X-consistency', 'Foolish', literal=True)
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-consistency', 'Foolish'),
                           ])
@@ -1012,7 +1129,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.redirect('http://example.com/')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('Location', 'http://example.com/'),
                           ])
@@ -1023,9 +1140,9 @@ class HTTPResponseTests(unittest.TestCase):
         response.appendCookie('foo', 'baz')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
-                          ('Set-Cookie', 'foo="bar%3Abaz"; Path=/'),
+                          ('Set-Cookie', 'foo=bar%3Abaz; Path=/'),
                           ])
 
     def test_listHeaders_after_expireCookie(self):
@@ -1034,14 +1151,14 @@ class HTTPResponseTests(unittest.TestCase):
         headers = dict(response.listHeaders())
         cookie_header = headers.pop('Set-Cookie')
         headers = list(headers.items())
-        expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
-        ])
+        expected = {
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
+        }
         self.assertEqual(set(headers), expected)
         self.assertEqual(
             set(cookie_header.split('; ')),
-            set(['qux="deleted"', 'Path=/', 'Max-Age=0',
-                 'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+            {'qux=deleted', 'Path=/', 'Max-Age=0',
+             'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test_listHeaders_after_addHeader(self):
@@ -1050,7 +1167,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.addHeader('X-Consistency', 'Oatmeal')
         headers = response.listHeaders()
         self.assertEqual(headers,
-                         [('X-Powered-By', 'Zope (www.zope.org), '
+                         [('X-Powered-By', 'Zope (www.zope.dev), '
                                            'Python (www.python.org)'),
                           ('X-Consistency', 'Foolish'),
                           ('X-Consistency', 'Oatmeal'),
@@ -1060,11 +1177,11 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setBody(b'BLAH')
         headers = response.listHeaders()
-        expected = set([
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)'),
+        expected = {
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)'),
             ('Content-Length', '4'),
             ('Content-Type', 'text/plain; charset=utf-8'),
-        ])
+        }
         self.assertEqual(set(headers), expected)
 
     def test___str__already_wrote(self):
@@ -1077,12 +1194,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__existing_content_length(self):
@@ -1093,12 +1210,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 42',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__existing_transfer_encoding(self):
@@ -1108,12 +1225,12 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Transfer-Encoding: slurry',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader(self):
@@ -1122,13 +1239,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setHeader_literal(self):
@@ -1137,13 +1254,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-consistency: Foolish',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_redirect(self):
@@ -1152,13 +1269,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 302 Found',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'Location: http://example.com/',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_setCookie_appendCookie(self):
@@ -1168,13 +1285,13 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
-            b'Set-Cookie: foo="bar%3Abaz"; Path=/',
+            b'Set-Cookie: foo=bar%3Abaz; Path=/',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__after_expireCookie(self):
@@ -1182,21 +1299,21 @@ class HTTPResponseTests(unittest.TestCase):
         response.expireCookie('qux', path='/')
         result = bytes(response)
         lines = result.split(b'\r\n')
-        cookie_line = [l for l in lines if b'Set-Cookie' in l][0]
-        other_lines = [l for l in lines if b'Set-Cookie' not in l]
+        cookie_line = [line for line in lines if b'Set-Cookie' in line][0]
+        other_lines = [line for line in lines if b'Set-Cookie' not in line]
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'',
-        ])
+        }
         self.assertEqual(set(other_lines), expected)
         cookie_value = cookie_line.split(b': ', 1)[-1]
         self.assertEqual(
             set(cookie_value.split(b'; ')),
-            set([b'qux="deleted"', b'Path=/', b'Max-Age=0',
-                 b'Expires=Wed, 31-Dec-97 23:59:59 GMT'])
+            {b'qux=deleted', b'Path=/', b'Max-Age=0',
+             b'Expires=Wed, 31 Dec 1997 23:59:59 GMT'}
         )
 
     def test___str__after_addHeader(self):
@@ -1206,14 +1323,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 7)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'X-Consistency: Foolish',
             b'X-Consistency: Oatmeal',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
 
     def test___str__w_body(self):
@@ -1222,14 +1339,14 @@ class HTTPResponseTests(unittest.TestCase):
         result = bytes(response)
         lines = result.split(b'\r\n')
         self.assertEqual(len(lines), 6)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 4',
             b'Content-Type: text/plain; charset=utf-8',
             b'BLAH',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
         self.assertEqual(lines[4], b'')
@@ -1242,13 +1359,13 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(response._wrote)
         lines = stdout.getvalue().split(b'\r\n')
         self.assertEqual(len(lines), 5)
-        expected = set([
+        expected = {
             b'Status: 200 OK',
-            b'X-Powered-By: Zope (www.zope.org), Python (www.python.org)',
+            b'X-Powered-By: Zope (www.zope.dev), Python (www.python.org)',
             b'Content-Length: 0',
             b'Kilroy was here!',
             b'',
-        ])
+        }
         self.assertEqual(set(lines), expected)
         # Body is separated by a newline
         self.assertEqual(lines[3], b'')
@@ -1263,23 +1380,6 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0], b'Kilroy was here!')
 
-    def test__setBCIHeaders(self):
-        response = self._makeOne()
-        try:
-            raise AttributeError('ERROR VALUE')
-        except AttributeError:
-            t, v, tb = sys.exc_info()
-            response._setBCIHeaders(t, tb)
-            # required by Bobo Call Interface (BCI)
-            self.assertIn('AttributeError',
-                          response.headers['bobo-exception-type'])
-            self.assertEqual(response.headers['bobo-exception-value'],
-                             'See the server error log for details')
-            self.assertTrue('bobo-exception-file' in response.headers)
-            self.assertTrue('bobo-exception-line' in response.headers)
-        finally:
-            del tb
-
     def test_exception_Internal_Server_Error(self):
         response = self._makeOne()
         try:
@@ -1289,19 +1389,10 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertTrue(b'ERROR VALUE' in bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
-            # required by Bobo Call Interface (BCI)
-            self.assertIn('AttributeError',
-                          response.headers['bobo-exception-type'])
-            self.assertEqual(response.headers['bobo-exception-value'],
-                             'See the server error log for details')
-            self.assertTrue('bobo-exception-file' in response.headers)
-            self.assertTrue('bobo-exception-line' in response.headers)
 
     def test_exception_500_text(self):
-        message = u'ERROR \xe4 VALUE'
+        message = 'ERROR \xe4 VALUE'
         exc = AttributeError(message)
-        # This gets called deep down in the zExceptions.ExceptionFormatter
-        # and produces different results in Python 2/3.
         expected = traceback.format_exception_only(
             exc.__class__, exc)[0].encode('utf-8')
         response = self._makeOne()
@@ -1312,10 +1403,108 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertTrue(expected in bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
-            # required by Bobo Call Interface (BCI)
-            self.assertIn('AttributeError',
-                          response.headers['bobo-exception-type'])
-            self.assertEqual(response.headers['bobo-exception-value'],
-                             'See the server error log for details')
-            self.assertTrue('bobo-exception-file' in response.headers)
-            self.assertTrue('bobo-exception-line' in response.headers)
+
+    def test_isHTML_not_decodable_bytes(self):
+        response = self._makeOne()
+        self.assertFalse(response.isHTML('bïñårÿ'.encode('latin1')))
+
+    def test_header_encoding(self):
+        r = self._makeOne()
+        r.setHeader("unencoded1", "€")
+        r.setHeader("content-disposition", "a; p=€")
+        r.addHeader("unencoded2", "€")
+        r.addHeader("content-disposition", "a2; p2=€")
+        r.addHeader("bytes", b"abc")
+        hdrs = r.listHeaders()[1:]  # drop `X-Powered...`
+        shdrs, ahdrs = dict(hdrs[:2]), dict(hdrs[2:])
+        # for some reasons, `set` headers change their name
+        #   while `add` headers do not
+        self.assertEqual(shdrs["Unencoded1"], "€")
+        self.assertEqual(ahdrs["unencoded2"], "€")
+        self.assertEqual(shdrs["Content-Disposition"],
+                         "a; p=?; p*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["content-disposition"],
+                         "a2; p2=?; p2*=utf-8''%E2%82%AC")
+        self.assertEqual(ahdrs["bytes"], "abc")
+
+
+class MakeDispositionHeaderTests(unittest.TestCase):
+
+    def test_ascii(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'iq.png'),
+            'inline; filename="iq.png"')
+
+    def test_latin_one(self):
+        self.assertEqual(
+            make_content_disposition('inline', 'Dänemark.png'),
+            'inline; filename="b\'Dnemark.png\'"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
+        )
+
+    def test_unicode(self):
+        """HTTP headers need to be latin-1 compatible
+
+        In order to offer file downloads which contain unicode file names,
+        the file name has to be treated in a special way, see
+        https://stackoverflow.com/questions/1361604 .
+        """
+        self.assertEqual(
+            make_content_disposition('inline', 'ıq.png'),
+            'inline; filename="b\'q.png\'"; filename*=UTF-8\'\'%C4%B1q.png'
+        )
+
+
+class TestHeaderEncodingRegistry(unittest.TestCase):
+    def setUp(self):
+        self._copy = header_encoding_registry.copy()
+
+    def tearDown(self):
+        header_encoding_registry.clear()
+        header_encoding_registry.update(self._copy)
+
+    def test_default_registrations(self):
+        self.assertIn('content-type', header_encoding_registry)
+        self.assertEqual(header_encoding_registry["content-disposition"],
+                         (encode_params, {}))
+
+    def test_encode(self):
+        def encode(value, param):
+            return param
+        header_encoding_registry.register("my-header", encode, param=1)
+        # non-ISO-8859-1 encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", "€"),
+                         1)
+        # ISO-8859-1 not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header", "ä"),
+                         "ä")
+        # unregistered not encoded
+        self.assertEqual(header_encoding_registry.encode("my-header2", "€"),
+                         "€")
+        # test header name not case sensitive
+        self.assertEqual(header_encoding_registry.encode("My-Header", "€"),
+                         1)
+        # default
+        header_encoding_registry.register(None, encode, param=2)
+        self.assertEqual(header_encoding_registry.encode("my-header2", "€"),
+                         2)
+        self.assertEqual(header_encoding_registry.encode("my-header", "€"),
+                         1)
+
+    def test_encode_words(self):
+        self.assertIn(encode_words("ä"),
+                      ("=?utf-8?b?w6Q=?=", "=?utf-8?q?=C3=A4?="))
+
+    def test_encode_params(self):
+        self.assertEqual(encode_params('abc; p1=1; p2="2"; p3="€"; p4=€; '
+                                       'p5="€"; p5*=5'),
+                         'abc; p1=1; p2="2"; p3="?"; p4=?; p5="?"; p5*=5; '
+                         'p3*=utf-8\'\'%E2%82%AC; p4*=utf-8\'\'%E2%82%AC')
+
+    def test_case_insensitivity(self):
+        header_encoding_registry.register("HdR", lambda value: 0)
+        # Note: case insensitivity not implemented for `dict` methods
+        self.assertIn("hdr", header_encoding_registry)
+        self.assertEqual(header_encoding_registry.encode("HDR", "€"), 0)
+        header_encoding_registry.unregister("hDr")
+        header_encoding_registry.unregister("hDr")  # no exception
+        self.assertNotIn("hdr", header_encoding_registry)

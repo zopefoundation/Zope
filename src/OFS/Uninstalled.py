@@ -13,6 +13,8 @@
 """
 Objects for packages that have been uninstalled.
 """
+import html
+from _thread import allocate_lock
 from logging import getLogger
 
 from Acquisition import Acquired
@@ -20,15 +22,9 @@ from Acquisition import Explicit
 from App.special_dtml import DTMLFile
 from OFS.SimpleItem import Item
 from Persistence import Overridable
-from six import exec_
-from six.moves._thread import allocate_lock
 from ZODB.broken import Broken as ZODB_Broken
 from ZODB.broken import persistentBroken
 
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 broken_klasses = {}
 broken_klasses_lock = allocate_lock()
@@ -48,7 +44,7 @@ class BrokenClass(ZODB_Broken, Explicit, Item, Overridable):
     def __getattr__(self, name):
         if name[:3] == '_p_':
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
-        raise AttributeError(escape(name, True))
+        raise AttributeError(html.escape(name, True))
 
     manage = DTMLFile('dtml/brokenEdit', globals())
     manage_main = DTMLFile('dtml/brokenEdit', globals())
@@ -63,8 +59,8 @@ def Broken(self, oid, pair):
         else:
             module, klassname = pair
             d = {'BrokenClass': BrokenClass}
-            exec_("class %s(BrokenClass): ' '; __module__=%r" %
-                  (klassname, module), d)
+            exec("class %s(BrokenClass): ' '; __module__=%r" %
+                 (klassname, module), d)
             klass = broken_klasses[pair] = d[klassname]
             module = module.split('.')
             if len(module) > 2 and module[0] == 'Products':

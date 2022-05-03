@@ -1,0 +1,76 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+
+<metal:slot metal:fill-slot="body">
+
+  <metal:macro metal:define-macro="heading">
+    <h1 i18n:translate="heading_edit_marker">Assign Marker Interfaces</h1>
+  </metal:macro>
+  
+  <metal:macro metal:define-macro="main">
+    <p class="form-help formHelp" i18n:translate="">
+      Change the behavior of this object by adding or removing marker
+      interfaces. You can choose one or more interfaces to be added to the
+      list of provided interfaces for this object.
+      <br />
+      A marker interface is used to identify an instance of a piece of
+      content. This allows you to enable and disable views based on marker
+      interfaces for example.
+    </p>
+    
+    <form action="." method="post"
+          tal:attributes="action request/ACTUAL_URL">
+
+      <h3 i18n:translate="legend_provided">Provided interfaces</h3>
+
+      <table class="table table-striped table-hover table-sm">
+        <tr tal:repeat="interface view/getInterfaceNames">
+          <td class="zmi-object-check text-right">&nbsp;</td>
+          <td class="zmi-object-id"
+              tal:content="interface/name">Interface Name</td>
+        </tr>
+
+        <tr tal:repeat="interface view/getDirectlyProvidedNames">
+          <td class="zmi-object-check text-right">
+            <input type="checkbox" id="INTERFACE" name="remove:list"
+                   tal:attributes="id interface/name;
+                                   value interface/name"/>
+          </td>
+          <td class="zmi-object-id"
+              tal:content="interface/name">Interface Name</td>
+        </tr>
+
+        <tr tal:condition="view/getDirectlyProvidedNames">
+          <td class="zmi-object-check text-right">&nbsp;</td>
+          <td class="zmi-controls">
+            <input class="btn btn-primary" type="submit" name="SAVE"
+                   value="Remove" i18n:attributes="value"/>
+          </td>
+        </tr>
+      </table>
+
+      <h3 i18n:translate="legend_available_marker">
+        Available Marker Interfaces
+      </h3>
+
+      <table class="table table-striped table-hover table-sm">
+        <tr tal:repeat="interface view/getAvailableInterfaceNames">
+          <td class="zmi-object-check text-right">
+            <input type="checkbox" id="INTERFACE" name="add:list"
+                   tal:attributes="id interface/name;
+                                   value interface/name"/>
+          </td>
+          <td class="zmi-object-id"
+              tal:content="interface/name">Interface Name</td>
+        </tr>
+      </table>
+      <div class="zmi-controls form-group form-inline" tal:condition="view/getAvailableInterfaceNames">
+            <input class="btn btn-primary" type="submit" name="SAVE"
+                   value="Add" i18n:attributes="value"/>
+      </div>
+    </form>
+  </metal:macro>
+</metal:slot>
+
+</body>
+</html>

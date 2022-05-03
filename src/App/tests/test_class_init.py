@@ -16,8 +16,8 @@
 
 import unittest
 
-from AccessControl.class_init import InitializeClass
 import ExtensionClass
+from AccessControl.class_init import InitializeClass
 
 
 class TestInitializeClass(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestInitializeClass(unittest.TestCase):
         class AnotherClass(ExtensionClass.Base):
             _need__name__ = 1
 
-        class C(object):
+        class C:
             foo = AnotherClass
 
         InitializeClass(C)

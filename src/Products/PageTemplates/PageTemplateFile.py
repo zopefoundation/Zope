@@ -17,7 +17,9 @@ from logging import getLogger
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from Acquisition import aq_parent, aq_inner, aq_get
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.Common import package_home
 from App.config import getConfiguration
 from ComputedAttribute import ComputedAttribute
@@ -25,15 +27,15 @@ from OFS.SimpleItem import SimpleItem
 from OFS.Traversable import Traversable
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplate import PageTemplate
+from Products.PageTemplates.utils import encodingFromXMLPreamble
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zope.contenttype import guess_content_type
-from zope.pagetemplate.pagetemplatefile import (
-    sniff_type,
-    XML_PREFIX_MAX_LENGTH,
-    DEFAULT_ENCODING,
-    meta_pattern,
-)
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+from zope.pagetemplate.pagetemplatefile import XML_PREFIX_MAX_LENGTH
+from zope.pagetemplate.pagetemplatefile import meta_pattern
+from zope.pagetemplate.pagetemplatefile import sniff_type
+
 
 LOG = getLogger('PageTemplateFile')
 
@@ -43,7 +45,7 @@ def guess_type(filename, body):
     # detect text/xml  if 'filename' won't end with .xml
     # XXX: fix this in zope.contenttype
 
-    if body.startswith(b'<?xml'):
+    if body.startswith(b'<?xml') or filename.lower().endswith('.xml'):
         return 'text/xml'
 
     content_type, ignored_encoding = guess_content_type(filename, body)
@@ -52,9 +54,11 @@ def guess_type(filename, body):
     return sniff_type(body) or 'text/html'
 
 
-# REFACT: Make this a subclass of zope.pagetemplate.pagetemplatefile.PageTemplateFile
-# That class has been forked off of this code and now we have duplication. They already
-# share a common superclass (zope.pagetemplate.pagetemplate.PageTemplate).
+# REFACT: Make this a subclass of
+# zope.pagetemplate.pagetemplatefile.PageTemplateFile
+# That class has been forked off of this code and now we have duplication.
+# They already share a common superclass
+# zope.pagetemplate.pagetemplate.PageTemplate
 class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     """Zope 2 implementation of a PageTemplate loaded from a file."""
 
@@ -70,12 +74,14 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
     security = ClassSecurityInfo()
-    security.declareProtected(
+    security.declareProtected(  # NOQA: D001
         'View management screens', 'read', 'document_src')
 
-    def __init__(self, filename, _prefix=None, **kw):
+    def __init__(
+        self, filename, _prefix=None, encoding=DEFAULT_ENCODING, **kw
+    ):
         name = kw.pop('__name__', None)
-
+        self.encoding = encoding
         basepath, ext = os.path.splitext(filename)
 
         if name:
@@ -98,7 +104,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def pt_getContext(self):
         root = None
         meth = aq_get(self, 'getPhysicalRoot', None)
-        if meth is not None:
+        if callable(meth):
             root = meth()
         context = self._getContext()
         c = {'template': self,
@@ -157,7 +163,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         if self._v_program is not None and mtime == self._v_last_read:
             return
         text, type_ = self._read_file()
-        # FIXME: text is a binary_type when it's XML.
         self.pt_edit(text, type_)
         self._cook()
         if self._v_errors:
@@ -168,31 +173,34 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def _prepare_html(self, text):
         match = meta_pattern.search(text)
         if match is not None:
-            type_, encoding = (x.decode('utf-8') for x in match.groups())
+            type_, encoding = (x.decode(self.encoding) for x in match.groups())
             # TODO: Shouldn't <meta>/<?xml?> stripping
             # be in PageTemplate.__call__()?
             text = meta_pattern.sub(b"", text)
         else:
             type_ = None
-            encoding = DEFAULT_ENCODING
+            encoding = self.encoding
         text = text.decode(encoding)
         return text, type_
 
+    def _prepare_xml(self, text):
+        if not isinstance(text, str):
+            encoding = encodingFromXMLPreamble(text, default=self.encoding)
+            text = text.decode(encoding)
+        return text, 'text/xml'
+
     def _read_file(self):
         __traceback_info__ = self.filename
-        f = open(self.filename, "rb")
-        try:
+        with open(self.filename, "rb") as f:
             text = f.read(XML_PREFIX_MAX_LENGTH)
-        except:
-            f.close()
-            raise
-        type_ = sniff_type(text)
-        text += f.read()
+            type_ = sniff_type(text)
+            text += f.read()
         if type_ != "text/xml":
             text, type_ = self._prepare_html(text)
+        else:
+            text, type_ = self._prepare_xml(text)
         f.close()
         return text, type_
-
 
     def document_src(self, REQUEST=None, RESPONSE=None):
         """Return expanded document source."""
@@ -227,5 +235,6 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         from ZODB.POSException import StorageError
         raise StorageError("Instance of AntiPersistent class %s "
                            "cannot be stored." % self.__class__.__name__)
+
 
 InitializeClass(PageTemplateFile)

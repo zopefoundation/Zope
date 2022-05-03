@@ -1,24 +1,28 @@
-from logging import getLogger
+import os
 import unittest
+from logging import getLogger
+from urllib.parse import quote
 
 from AccessControl.owner import EmergencyUserCannotOwn
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManager import setSecurityPolicy
-from AccessControl.SpecialUsers import emergency_user, nobody, system
-from AccessControl.User import User  # before SpecialUsers
-from Acquisition import aq_self, Implicit
-from six import PY2
-from zExceptions import BadRequest
-from zope.component.testing import PlacelessSetup
-from zope.interface import implementer
-
+from AccessControl.users import User
+from AccessControl.users import emergency_user
+from AccessControl.users import nobody
+from AccessControl.users import system
+from Acquisition import Implicit
+from Acquisition import aq_self
 from App.config import getConfiguration
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
 from OFS.SimpleItem import SimpleItem
+from zExceptions import BadRequest
 from Zope2.App import zcml
+from zope.component.testing import PlacelessSetup
+from zope.interface import implementer
+
 
 logger = getLogger('OFS.subscribers')
 
@@ -77,7 +81,7 @@ class ObjectManagerWithIItem(ObjectManager):
 class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(ObjectManagerTests, self).setUp()
+        super().setUp()
         self.saved_cfg_debug_mode = getConfiguration().debug_mode
         import Zope2.App
         zcml.load_config('meta.zcml', Zope2.App)
@@ -88,7 +92,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def tearDown(self):
         noSecurityManager()
         getConfiguration().debug_mode = self.saved_cfg_debug_mode
-        super(ObjectManagerTests, self).tearDown()
+        super().tearDown()
 
     def setDebugMode(self, mode):
         getConfiguration().debug_mode = mode
@@ -110,7 +114,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
     def test_filtered_meta_types(self):
 
-        class _DummySecurityPolicy(object):
+        class _DummySecurityPolicy:
 
             def checkPermission(self, permission, object, context):
                 return permission == 'addFoo'
@@ -127,6 +131,17 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         finally:
             noSecurityManager()
             setSecurityPolicy(oldPolicy)
+
+    def test_all_meta_types_adds_zmi_modal(self):
+        om = self._makeOne()
+        om.meta_types = ({'name': 'Foo'}, {'name': 'Bar'}, {'name': 'Baz'})
+        amt = om.all_meta_types()
+        for mt in [x for x in amt if x['name'] in ('foo', 'bar', 'baz')]:
+            self.assertEqual(mt['zmi_show_add_dialog'], 'modal')
+
+        # Pick an example that will be different
+        for mt in [x for x in amt if x['name'] == 'Virtual Host Monster']:
+            self.assertEqual(mt['zmi_show_add_dialog'], '')
 
     def test_setObject_set_owner_with_no_user(self):
         om = self._makeOne()
@@ -320,7 +335,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertFalse('stuff' in om)
 
         om._setObject('stuff', ob)
-        om.manage_delObjects(u'stuff')
+        om.manage_delObjects('stuff')
         self.assertFalse('stuff' in om)
 
     def test_hasObject(self):
@@ -362,9 +377,6 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si = SimpleItem('2')
         self.assertRaises(BadRequest, om._setObject, 123, si)
         self.assertRaises(BadRequest, om._setObject, 'a\x01b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a\\b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a:b', si)
-        self.assertRaises(BadRequest, om._setObject, 'a;b', si)
         self.assertRaises(BadRequest, om._setObject, '.', si)
         self.assertRaises(BadRequest, om._setObject, '..', si)
         self.assertRaises(BadRequest, om._setObject, '_foo', si)
@@ -377,6 +389,12 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertRaises(BadRequest, om._setObject, 'items', si)
         self.assertRaises(BadRequest, om._setObject, 'keys', si)
         self.assertRaises(BadRequest, om._setObject, 'values', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo&bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo>bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo<bar', si)
+        self.assertRaises(BadRequest, om._setObject, 'foo/bar', si)
+        self.assertRaises(BadRequest, om._setObject, '@@ohno', si)
+        self.assertRaises(BadRequest, om._setObject, '++ohno', si)
 
     def test_getsetitem(self):
         om = self._makeOne()
@@ -415,10 +433,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         om['2'] = si2
         iterator = iter(om)
         self.assertTrue(hasattr(iterator, '__iter__'))
-        if PY2:
-            self.assertTrue(hasattr(iterator, 'next'))
-        else:
-            self.assertTrue(hasattr(iterator, '__next__'))
+        self.assertTrue(hasattr(iterator, '__next__'))
         result = [i for i in iterator]
         self.assertTrue('1' in result)
         self.assertTrue('2' in result)
@@ -497,8 +512,115 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # in skel/import. Tolerate both cases.
         self.assertIsInstance(om.list_imports(), list)
         for filename in om.list_imports():
-            self.assertTrue(filename.endswith('.zexp') or
-                            filename.endswith('.xml'))
+            self.assertTrue(os.path.splitext(filename)[1] in ('.zexp', '.xml'))
+
+    def test_manage_get_sortedObjects_quote_id(self):
+        # manage_get_sortedObjects now returns a urlquoted version
+        # of the object ID to create correct links in the ZMI
+        om = self._makeOne()
+        hash_id = '#999'
+        om._setObject(hash_id, SimpleItem(hash_id))
+
+        result = om.manage_get_sortedObjects('id', 'asc')
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], hash_id)
+        self.assertEqual(result[0]['quoted_id'], quote(hash_id))
+
+    def test_getBookmarkableURLs(self):
+        saved_state = getattr(getConfiguration(),
+                              'zmi_bookmarkable_urls',
+                              True)
+        om = self._makeOne()
+
+        # Configuration flag OFF
+        getConfiguration().zmi_bookmarkable_urls = False
+        self.assertFalse(om.getBookmarkableURLs())
+
+        # Configuration flag ON
+        getConfiguration().zmi_bookmarkable_urls = True
+        self.assertTrue(om.getBookmarkableURLs())
+
+        # Cleanup
+        getConfiguration().zmi_bookmarkable_urls = saved_state
+
+    def test_findChildren(self):
+        from OFS.Folder import Folder
+        from OFS.Image import File
+        from OFS.ObjectManager import findChildren
+        top = Folder("top")
+        f1 = File("f1", "", b"")
+        top._setObject(f1.getId(), f1)
+        fo = Folder("fo")
+        top._setObject(fo.getId(), fo)
+        f2 = File("f2", "", b"")
+        fo._setObject(f2.getId(), f2)
+        self.assertEqual(
+            [ci[0] for ci in findChildren(top)],
+            ["top/f1",
+             # surprisingly, `findChildren` ignores folderish children
+             # "top/fo",
+             "top/fo/f2"])
+
+    def test_export_import(self):
+        import tempfile
+        from os import mkdir
+        from os import rmdir
+        from os import unlink
+        from os.path import join
+        from os.path import split
+
+        from OFS.Folder import Folder
+        from OFS.Image import File
+        from transaction import commit
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
+        try:
+            tf = None  # temporary file required for export/import
+            # export/import needs the object manager in ZODB
+            s = DemoStorage()
+            db = DB(s)
+            c = db.open()
+            root = c.root()
+            top = Folder("top")
+            f = File("f", "", b"")
+            top._setObject(f.getId(), f)
+            root["top"] = top
+            tmp = Folder("tmp")
+            top._setObject(tmp.getId(), tmp)
+            commit()
+            exported = top.manage_exportObject("f", True)
+            tdir = tempfile.mkdtemp()
+            idir = join(tdir, "import")
+            mkdir(idir)
+            tf = tempfile.NamedTemporaryFile(
+                dir=idir, delete=False)
+            tf.write(exported)
+            tf.close()
+            unused, tname = split(tf.name)
+            tmp._getImportPaths = _CallResult((tdir,))
+            tmp.manage_importObject(tname, set_owner=False,
+                                    suppress_events=True)
+            imp_f = tmp["f"]  # exception if import unsuccessful
+            self.assertIsInstance(imp_f, File)
+            commit()
+        finally:
+            if tf is not None:  # pragma: no cover
+                unlink(tf.name)
+                rmdir(idir)
+                rmdir(tdir)
+            c.close()
+            db.close()
+            s.close()
+
+
+class _CallResult:
+    """Auxiliary class to provide defined call results."""
+    def __init__(self, result):
+        self.result = result
+
+    def __call__(self):
+        return self.result
+
 
 _marker = object()
 
@@ -531,26 +653,29 @@ class TestCheckValidId(unittest.TestCase):
                          "('Empty or invalid id specified', '')")
 
     def test_unicode(self):
-        if PY2:
-            e = self.assertBadRequest(u'abc')
-            self.assertEqual(str(e),
-                             "('Empty or invalid id specified', u'abc')")
-        else:
-            # Does not raise
-            self._callFUT(self._makeContainer(), u'abc')
+        self._callFUT(self._makeContainer(), 'abc☃')
 
-    def test_unicode_escaped(self):
-        e = self.assertBadRequest(u'<abc>&def')
-        if PY2:
-            self.assertEqual(str(e),
-                             "('Empty or invalid id specified', "
-                             "u'&lt;abc&gt;&amp;def')")
-        else:
-            self.assertEqual(str(e),
-                             'The id "&lt;abc&gt;&amp;def" contains '
-                             'characters illegal in URLs.')
+    def test_encoded_unicode(self):
+        e = self.assertBadRequest('abcö'.encode())
+        self.assertEqual(str(e),
+                         "('Empty or invalid id specified', "
+                         "b'abc\\xc3\\xb6')")
 
-    def test_badid_XSS(self):
+    def test_unprintable_characters(self):
+        # We do not allow the first 31 ASCII characters. \x00-\x19
+        # We do not allow the DEL character. \x7f
+        e = self.assertBadRequest('abc\x10')
+        self.assertEqual(str(e),
+                         'The id "abc\x10" contains characters illegal'
+                         ' in URLs.')
+        e = self.assertBadRequest('abc\x7f')
+        self.assertEqual(str(e),
+                         'The id "abc\x7f" contains characters illegal'
+                         ' in URLs.')
+
+    def test_fail_on_brackets_and_ampersand(self):
+        # We do not allow this characters as they result in TaintedString (for
+        # < and >) which are not allowed in hasattr.
         e = self.assertBadRequest('<abc>&def')
         self.assertEqual(str(e),
                          'The id "&lt;abc&gt;&amp;def" contains characters '

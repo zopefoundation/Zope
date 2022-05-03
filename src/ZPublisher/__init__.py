@@ -11,19 +11,6 @@
 #
 ##############################################################################
 
-from six import reraise
-from zope.deferredimport import deprecated
-
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from zExceptions.',
-    NotFound='zExceptions:NotFound',
-    BadRequest='zExceptions:BadRequest',
-    InternalError='zExceptions:InternalError',
-    Forbidden='zExceptions:Forbidden',
-)
-
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -39,6 +26,6 @@ class Retry(Exception):
         if tb is None:
             raise t(v)
         try:
-            reraise(t, v, tb)
+            raise v.with_traceback(tb)
         finally:
             tb = None

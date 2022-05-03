@@ -78,14 +78,14 @@ Make sure new-style classes work fine as view classes:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class')
   <Products.Five.browser.metaconfigure.NewStyleClass ...>
-  
+
 At one point browser classes with no attribute and no template
 values specified wasn't getting BrowserView mixed in.  Lets make
 sure it is now:
 
   >>> self.folder.unrestrictedTraverse('testoid/@@new_style_class2')
   <Products.Five.browser.metaconfigure.NewStyleClass ...>
-  
+
 Both browser:view and browser:page are ILocation providers, so make sure they
 have a __name__ attribute with a str instance:
 
@@ -110,9 +110,8 @@ Test access to ``context`` from ZPTs:
 Test macro access from ZPT pages:
 
   >>> view = self.folder.unrestrictedTraverse('testoid/seagull.html')
-  >>> view() == ('<html><head><title>bird macro</title></head>'
-  ...            '<body>Color: gray</body></html>\n')
-  True
+  >>> print(view())
+  <html><head><title>bird macro</title></head><body>Color: gray</body></html>
 
 test_zpt_things:
 
@@ -259,15 +258,15 @@ The parent of the view is the view's context:
   >>> aq_parent(view) == view.context
   True
 
-The direct parent of the context is 
+The direct parent of the context is
 
   >>> aq_inner(context).__parent__
-  <Folder at /test_folder_1_> 
+  <Folder at /test_folder_1_>
 
 C methods work the same
 
   >>> aq_parent(aq_inner(context))
-  <Folder at /test_folder_1_> 
+  <Folder at /test_folder_1_>
 
 The same applies to a view registered with <browser:view /> instead of
 <browser:page />
@@ -287,9 +286,9 @@ The same applies to a view registered with <browser:view /> instead of
   >>> aq_parent(view) == view.context
   True
   >>> aq_inner(context).__parent__
-  <Folder at /test_folder_1_> 
+  <Folder at /test_folder_1_>
   >>> aq_parent(aq_inner(context))
-  <Folder at /test_folder_1_> 
+  <Folder at /test_folder_1_>
 
 Make sure that methods which are not included in the allowed interface or
 attributes, but which already had security declarations from a base class,

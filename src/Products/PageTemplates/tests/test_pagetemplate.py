@@ -1,25 +1,25 @@
 import os
 import unittest
 
-from six import PY3
-
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
+
+from .util import useChameleonEngine
+
 
 path = os.path.dirname(__file__)
 
 
 class TestPageTemplateFile(ZopeTestCase):
+
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
 
     def _makeOne(self, name):
         return PageTemplateFile(os.path.join(path, name)).__of__(self.app)
 
     def test_rr(self):
-        class Prioritzed(object):
+        class Prioritized:
             __allow_access_to_unprotected_subobjects__ = 1
 
             def __init__(self, order):
@@ -29,7 +29,7 @@ class TestPageTemplateFile(ZopeTestCase):
                 return 'P%d' % self.order
 
         template = self._makeOne('rr.pt')
-        result = template(refs=[Prioritzed(1), Prioritzed(2)])
+        result = template(refs=[Prioritized(1), Prioritized(2)])
         self.assertTrue('P1' in result)
         self.assertTrue(result.index('P1') < result.index('P2'))
 
@@ -77,10 +77,7 @@ class TestPageTemplateFile(ZopeTestCase):
             self.fail("Expected unauthorized.")
 
         from AccessControl.SecurityInfo import allow_module
-        if PY3:
-            allow_module('html')
-        else:
-            allow_module('cgi')
+        allow_module('html')
         result = template(soup=soup)
         self.assertTrue('&lt;foo&gt;&lt;/bar&gt;' in result)
 

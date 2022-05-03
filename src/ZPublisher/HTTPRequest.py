@@ -14,60 +14,38 @@
 """ HTTP request management.
 """
 
-from cgi import FieldStorage
 import codecs
-from copy import deepcopy
+import html
 import os
 import random
 import re
 import time
+from cgi import FieldStorage
+from copy import deepcopy
+from urllib.parse import unquote
+from urllib.parse import urlparse
 
-from AccessControl.tainted import TaintedString
-import pkg_resources
-from six import binary_type
-from six import PY2
-from six import PY3
-from six import string_types
-from six import text_type
-from six.moves.urllib.parse import unquote
+from AccessControl.tainted import should_be_tainted
+from AccessControl.tainted import taint_string
+from zope.component import queryUtility
 from zope.i18n.interfaces import IUserPreferredLanguages
-from zope.i18n.locales import locales, LoadLocaleError
+from zope.i18n.locales import LoadLocaleError
+from zope.i18n.locales import locales
 from zope.interface import directlyProvidedBy
 from zope.interface import directlyProvides
 from zope.interface import implementer
 from zope.publisher.base import DebugFlags
+from zope.publisher.http import splitport
 from zope.publisher.interfaces.browser import IBrowserRequest
-
+from ZPublisher import xmlrpc
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
+from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
 
-if PY3:
-    from html import escape
-    from urllib.parse import splitport
-    from urllib.parse import splittype
-else:
-    from cgi import escape
-    from urllib import splitport
-    from urllib import splittype
+from .cookie import getCookieValuePolicy
 
-xmlrpc = None
-try:
-    dist = pkg_resources.get_distribution('ZServer')
-except pkg_resources.DistributionNotFound:
-    pass
-else:
-    from ZServer.ZPublisher import xmlrpc
-
-# Flags
-SEQUENCE = 1
-DEFAULT = 2
-RECORD = 4
-RECORDS = 8
-REC = RECORD | RECORDS
-EMPTY = 16
-CONVERTED = 32
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -97,12 +75,12 @@ isCGI_NAME = isCGI_NAMEs.__contains__
 
 hide_key = {'HTTP_AUTHORIZATION': 1, 'HTTP_CGI_AUTHORIZATION': 1}
 
-default_port = {'http': '80', 'https': '443'}
+default_port = {'http': 80, 'https': 443}
 
 tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
 TAINTING_ENABLED = tainting_env not in ('disabled', '0', 'no')
 
-search_type = re.compile(r'(:[a-zA-Z][-a-zA-Z0-9_]+|\\.[xy])$').search
+search_type = re.compile(r'(:[a-zA-Z][-a-zA-Z0-9_]+|\.[xy])$').search
 
 _marker = []
 
@@ -139,10 +117,8 @@ class HTTPRequest(BaseRequest):
       - Environment variables
 
         These variables include input headers, server data, and other
-        request-related data.  The variable names are as <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        in the <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
+        request-related data.  The variable names are as specified
+        in the <a href="https://tools.ietf.org/html/rfc3875">CGI
         specification</a>
 
       - Form data
@@ -184,9 +160,11 @@ class HTTPRequest(BaseRequest):
     retry_max_count = 0
 
     def supports_retry(self):
-        if self.retry_count < self.retry_max_count:
-            time.sleep(random.uniform(0, 2 ** (self.retry_count)))
-            return 1
+        return self.retry_count < self.retry_max_count
+
+    def delay_retry(self):
+        # Insert a delay before retrying. Moved here from supports_retry.
+        time.sleep(random.uniform(0, 2 ** (self.retry_count)))
 
     def retry(self):
         self.retry_count = self.retry_count + 1
@@ -215,27 +193,26 @@ class HTTPRequest(BaseRequest):
         server_url = other.get('SERVER_URL', '')
         if protocol is None and hostname is None and port is None:
             return server_url
-        oldprotocol, oldhost = splittype(server_url)
-        oldhostname, oldport = splitport(oldhost[2:])
+        old_url = urlparse(server_url)
         if protocol is None:
-            protocol = oldprotocol
+            protocol = old_url.scheme
         if hostname is None:
-            hostname = oldhostname
+            hostname = old_url.hostname
         if port is None:
-            port = oldport
+            port = old_url.port
 
         if (port is None or default_port[protocol] == port):
             host = hostname
         else:
-            host = hostname + ':' + port
-        server_url = other['SERVER_URL'] = '%s://%s' % (protocol, host)
+            host = f'{hostname}:{port}'
+        server_url = other['SERVER_URL'] = f'{protocol}://{host}'
         self._resetURLS()
         return server_url
 
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if isinstance(path, string_types):
+        if isinstance(path, str):
             path = path.split('/')
         self._script[:] = list(map(quote, [_p for _p in path if _p]))
         del self._steps[:]
@@ -254,7 +231,7 @@ class HTTPRequest(BaseRequest):
 
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
-        if isinstance(path, string_types):
+        if isinstance(path, str):
             path = path.split('/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
         i = 0
@@ -359,8 +336,8 @@ class HTTPRequest(BaseRequest):
 
         if 'REMOTE_ADDR' in environ:
             self._client_addr = environ['REMOTE_ADDR']
-            if ('HTTP_X_FORWARDED_FOR' in environ and
-                    self._client_addr in trusted_proxies):
+            if 'HTTP_X_FORWARDED_FOR' in environ and \
+               self._client_addr in trusted_proxies:
                 # REMOTE_ADDR is one of our trusted local proxies.
                 # Not really very remote at all.  The proxy can tell us the
                 # IP of the real remote client in the forwarded-for header
@@ -401,8 +378,11 @@ class HTTPRequest(BaseRequest):
             https_environ = environ.get('HTTPS', False)
             if https_environ and https_environ in ('on', 'ON', '1'):
                 protocol = 'https'
-            elif ('SERVER_PORT_SECURE' in environ and
-                  environ['SERVER_PORT_SECURE'] == "1"):
+            elif environ.get('SERVER_PORT_SECURE', None) == 1:
+                protocol = 'https'
+            elif (environ.get('REQUEST_SCHEME', '') or '').lower() == 'https':
+                protocol = 'https'
+            elif environ.get('wsgi.url_scheme') == 'https':
                 protocol = 'https'
             else:
                 protocol = 'http'
@@ -424,7 +404,7 @@ class HTTPRequest(BaseRequest):
 
             else:
                 hostname = environ['SERVER_NAME'].strip()
-                port = environ['SERVER_PORT']
+                port = int(environ['SERVER_PORT'])
             self.setServerURL(protocol=protocol, hostname=hostname, port=port)
             server_url = other['SERVER_URL']
 
@@ -432,17 +412,22 @@ class HTTPRequest(BaseRequest):
             server_url = server_url[:-1]
 
         if b:
-            self.base = "%s/%s" % (server_url, b)
+            self.base = f"{server_url}/{b}"
         else:
             self.base = server_url
         while script[:1] == '/':
             script = script[1:]
         if script:
-            script = "%s/%s" % (server_url, script)
+            script = f"{server_url}/{script}"
         else:
             script = server_url
         other['URL'] = self.script = script
         other['method'] = environ.get('REQUEST_METHOD', 'GET').upper()
+
+        # Make WEBDAV_SOURCE_PORT reachable with a simple REQUEST.get
+        # to stay backwards-compatible
+        if environ.get('WEBDAV_SOURCE_PORT'):
+            other['WEBDAV_SOURCE_PORT'] = environ.get('WEBDAV_SOURCE_PORT')
 
         ################################################################
         # Cookie values should *not* be appended to existing form
@@ -455,11 +440,11 @@ class HTTPRequest(BaseRequest):
             parse_cookie(k, cookies)
             for k, v in cookies.items():
                 istainted = 0
-                if '<' in k:
-                    k = TaintedString(k)
+                if should_be_tainted(k):
+                    k = taint_string(k)
                     istainted = 1
-                if '<' in v:
-                    v = TaintedString(v)
+                if should_be_tainted(v):
+                    v = taint_string(v)
                     istainted = 1
                 if istainted:
                     taintedcookies[k] = v
@@ -480,6 +465,11 @@ class HTTPRequest(BaseRequest):
             getattr=getattr,
             setattr=setattr):
         """Process request inputs
+
+        See the `Zope Developer Guide Object Publishing chapter
+        <https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
+        for a detailed explanation in the section `Marshalling Arguments from
+        the Request`.
 
         We need to delay input parsing so that it is done under
         publisher control for error handling purposes.
@@ -504,7 +494,11 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs = FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        fs_kw = {}
+        fs_kw['encoding'] = self.charset
+
+        fs = ZopeFieldStorage(
+            fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
@@ -514,9 +508,9 @@ class HTTPRequest(BaseRequest):
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
-            elif (xmlrpc is not None and method == 'POST' and
-                  ('content-type' in fs.headers and
-                   'text/xml' in fs.headers['content-type'])):
+            elif (method == 'POST'
+                  and 'text/xml' in fs.headers.get('content-type', '')
+                  and use_builtin_xmlrpc(self)):
                 # Ye haaa, XML-RPC!
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response = xmlrpc.response(response)
@@ -538,13 +532,10 @@ class HTTPRequest(BaseRequest):
                 if key is None:
                     continue
 
-                if (hasattr(item, 'file') and hasattr(item, 'filename') and
-                        hasattr(item, 'headers')):
-                    if (item.file and
-                        (item.filename is not None
-                         # RFC 1867 says that all fields get a content-type.
-                         # or 'content-type' in map(lower, item.headers.keys())
-                         )):
+                if hasattr(item, 'file') and \
+                   hasattr(item, 'filename') and \
+                   hasattr(item, 'headers'):
+                    if item.file and item.filename is not None:
                         item = FileUpload(item)
                         isFileUpload = 1
                     else:
@@ -564,17 +555,17 @@ class HTTPRequest(BaseRequest):
                 # do a string search, and then we'll check it with
                 # a re search.
 
-                l = key.rfind(':')
-                if l >= 0:
-                    mo = search_type(key, l)
+                delim = key.rfind(':')
+                if delim >= 0:
+                    mo = search_type(key, delim)
                     if mo:
-                        l = mo.start(0)
+                        delim = mo.start(0)
                     else:
-                        l = -1
+                        delim = -1
 
-                    while l >= 0:
-                        type_name = key[l + 1:]
-                        key = key[:l]
+                    while delim >= 0:
+                        type_name = key[delim + 1:]
+                        key = key[:delim]
                         c = get_converter(type_name, None)
 
                         if c is not None:
@@ -586,15 +577,15 @@ class HTTPRequest(BaseRequest):
                         elif type_name == 'tuple':
                             tuple_items[key] = 1
                             flags = flags | SEQUENCE
-                        elif (type_name == 'method' or type_name == 'action'):
-                            if l:
+                        elif type_name == 'method' or type_name == 'action':
+                            if delim:
                                 meth = key
                             else:
                                 meth = item
-                        elif (type_name == 'default_method' or
-                              type_name == 'default_action'):
+                        elif (type_name == 'default_method'
+                              or type_name == 'default_action'):
                             if not meth:
-                                if l:
+                                if delim:
                                     meth = key
                                 else:
                                     meth = item
@@ -610,14 +601,14 @@ class HTTPRequest(BaseRequest):
                         elif has_codec(type_name):
                             character_encoding = type_name
 
-                        l = key.rfind(':')
-                        if l < 0:
+                        delim = key.rfind(':')
+                        if delim < 0:
                             break
-                        mo = search_type(key, l)
+                        mo = search_type(key, delim)
                         if mo:
-                            l = mo.start(0)
+                            delim = mo.start(0)
                         else:
-                            l = -1
+                            delim = -1
 
                 # Filter out special names from form:
                 if key in isCGI_NAMEs or key.startswith('HTTP_'):
@@ -625,8 +616,8 @@ class HTTPRequest(BaseRequest):
 
                 # If the key is tainted, mark it so as well.
                 tainted_key = key
-                if '<' in key:
-                    tainted_key = TaintedString(key)
+                if should_be_tainted(key):
+                    tainted_key = taint_string(key)
 
                 if flags:
 
@@ -641,14 +632,14 @@ class HTTPRequest(BaseRequest):
 
                         # Update the tainted_key if necessary
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
 
                         # Attributes cannot hold a <.
-                        if '<' in attr:
+                        if should_be_tainted(attr):
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
-                                escape(attr, True))
+                                html.escape(attr, True))
 
                     # defer conversion
                     if flags & CONVERTED:
@@ -658,8 +649,8 @@ class HTTPRequest(BaseRequest):
                                 # encoding.  This gets passed to the converter
                                 # either as unicode, if it can handle it, or
                                 # crunched back down to utf-8 if it can not.
-                                if isinstance(item, binary_type):
-                                    item = text_type(item, character_encoding)
+                                if isinstance(item, bytes):
+                                    item = str(item, character_encoding)
                                 if hasattr(converter, 'convert_unicode'):
                                     item = converter.convert_unicode(item)
                                 else:
@@ -671,22 +662,24 @@ class HTTPRequest(BaseRequest):
                             # Flag potentially unsafe values
                             if converter_type in ('string', 'required', 'text',
                                                   'ustring', 'utext'):
-                                if not isFileUpload and '<' in item:
-                                    tainted = TaintedString(item)
+                                if not isFileUpload and \
+                                   should_be_tainted(item):
+                                    tainted = taint_string(item)
                             elif converter_type in ('tokens', 'lines',
                                                     'utokens', 'ulines'):
                                 is_tainted = 0
                                 tainted = item[:]
                                 for i in range(len(tainted)):
-                                    if '<' in tainted[i]:
+                                    if should_be_tainted(tainted[i]):
                                         is_tainted = 1
-                                        tainted[i] = TaintedString(tainted[i])
+                                        tainted[i] = taint_string(tainted[i])
                                 if not is_tainted:
                                     tainted = None
 
                         except Exception:
-                            if (not item and not (flags & DEFAULT) and
-                                    key in defaults):
+                            if not item and \
+                               not (flags & DEFAULT) and \
+                               key in defaults:
                                 item = defaults[key]
                                 if flags & RECORD:
                                     item = getattr(item, attr)
@@ -701,13 +694,13 @@ class HTTPRequest(BaseRequest):
                             else:
                                 raise
 
-                    elif not isFileUpload and '<' in item:
+                    elif not isFileUpload and should_be_tainted(item):
                         # Flag potentially unsafe values
-                        tainted = TaintedString(item)
+                        tainted = taint_string(item)
 
                     # If the key is tainted, we need to store stuff in the
                     # tainted dict as well, even if the value is safe.
-                    if '<' in tainted_key and tainted is None:
+                    if should_be_tainted(tainted_key) and tainted is None:
                         tainted = item
 
                     # Determine which dictionary to use
@@ -770,7 +763,7 @@ class HTTPRequest(BaseRequest):
 
                             if not hasattr(x, attr):
                                 # If the attribute does not
-                                # exist, setit
+                                # exist, set it
                                 if flags & SEQUENCE:
                                     item = [item]
                                 setattr(x, attr, item)
@@ -909,9 +902,9 @@ class HTTPRequest(BaseRequest):
                     # This branch is for case when no type was specified.
                     mapping_object = form
 
-                    if not isFileUpload and '<' in item:
-                        tainted = TaintedString(item)
-                    elif '<' in key:
+                    if not isFileUpload and should_be_tainted(item):
+                        tainted = taint_string(item)
+                    elif should_be_tainted(key):
                         tainted = item
 
                     # Insert in dictionary
@@ -957,8 +950,8 @@ class HTTPRequest(BaseRequest):
             if defaults:
                 for key, value in defaults.items():
                     tainted_key = key
-                    if '<' in key:
-                        tainted_key = TaintedString(key)
+                    if should_be_tainted(key):
+                        tainted_key = taint_string(key)
 
                     if key not in form:
                         # if the form does not have the key,
@@ -1009,9 +1002,9 @@ class HTTPRequest(BaseRequest):
 
                         elif isinstance(value, list):
                             # the default value is a list
-                            l = form[key]
-                            if not isinstance(l, list):
-                                l = [l]
+                            val = form[key]
+                            if not isinstance(val, list):
+                                val = [val]
 
                             # First deal with tainted copies
                             if tainted_key in taintedform:
@@ -1036,7 +1029,7 @@ class HTTPRequest(BaseRequest):
                                         try:
                                             for k, v in \
                                                     defitem.__dict__.items():
-                                                for origitem in l:
+                                                for origitem in val:
                                                     if not hasattr(
                                                             origitem, k):
                                                         missesdefault = 1
@@ -1044,11 +1037,11 @@ class HTTPRequest(BaseRequest):
                                         except NestedLoopExit:
                                             break
                                     else:
-                                        if defitem not in l:
+                                        if defitem not in val:
                                             missesdefault = 1
                                             break
                                 if missesdefault:
-                                    tainted = deepcopy(l)
+                                    tainted = deepcopy(val)
                                     for defitem in tdefault:
                                         if isinstance(defitem, record):
                                             for k, v in (
@@ -1072,7 +1065,7 @@ class HTTPRequest(BaseRequest):
                                         # attribute and value in
                                         # the record
 
-                                        for y in l:
+                                        for y in val:
 
                                             # loop through each
                                             # record in the form
@@ -1085,9 +1078,9 @@ class HTTPRequest(BaseRequest):
                                                 setattr(y, k, v)
                                 else:
                                     # x is not a record
-                                    if x not in l:
-                                        l.append(x)
-                            form[key] = l
+                                    if x not in val:
+                                        val.append(x)
+                            form[key] = val
                         else:
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
@@ -1109,8 +1102,8 @@ class HTTPRequest(BaseRequest):
                     if k in form:
                         # If the form has the split key get its value
                         tainted_split_key = k
-                        if '<' in k:
-                            tainted_split_key = TaintedString(k)
+                        if should_be_tainted(k):
+                            tainted_split_key = taint_string(k)
                         item = form[k]
                         if isinstance(item, record):
                             # if the value is mapped to a record, check if it
@@ -1144,8 +1137,8 @@ class HTTPRequest(BaseRequest):
                     else:
                         # the form does not have the split key
                         tainted_key = key
-                        if '<' in key:
-                            tainted_key = TaintedString(key)
+                        if should_be_tainted(key):
+                            tainted_key = taint_string(key)
                         if key in form:
                             # if it has the original key, get the item
                             # convert it to a tuple
@@ -1164,14 +1157,8 @@ class HTTPRequest(BaseRequest):
                     path = path[:-1]
             else:
                 path = ''
-            other['PATH_INFO'] = path = "%s/%s" % (path, meth)
+            other['PATH_INFO'] = f"{path}/{meth}"
             self._hacked_path = 1
-
-    def postProcessInputs(self):
-        """Process the values in request.form to decode strings to unicode.
-        """
-        for name, value in self.form.items():
-            self.form[name] = _decode(value, default_encoding)
 
     def resolve_url(self, url):
         # Attempt to resolve a url into an object in the Zope
@@ -1180,7 +1167,7 @@ class HTTPRequest(BaseRequest):
         # or raise the same HTTP error that would be raised in
         # the case of a real web request. If the passed in url
         # does not appear to describe an object in the system
-        # namespace (e.g. the host, port or script name dont
+        # namespace (e.g. the host, port or script name don't
         # match that of the current request), a ValueError will
         # be raised.
         if url.find(self.script) != 0:
@@ -1268,15 +1255,29 @@ class HTTPRequest(BaseRequest):
             ):
         """Get a variable value
 
-        Return a value for the required variable name.
-        The value will be looked up from one of the request data
-        categories. The search order is environment variables,
-        other variables, form data, and then cookies.
+        Return a value for the variable key, or default if not found.
+
+        If key is "REQUEST", return the request.
+        Otherwise, the value will be looked up from one of the request data
+        categories. The search order is:
+        other (the target for explicitly set variables),
+        the special URL and BASE variables,
+        environment variables,
+        common variables (defined by the request class),
+        lazy variables (set with set_lazy),
+        form data and cookies.
+
+        If returnTaints has a true value, then the access to
+        form and cookie variables returns values with special
+        protection against embedded HTML fragments to counter
+        some cross site scripting attacks.
         """
+
+        if key == 'REQUEST':
+            return self
+
         other = self.other
         if key in other:
-            if key == 'REQUEST':
-                return self
             return other[key]
 
         if key[:1] == 'U':
@@ -1303,9 +1304,6 @@ class HTTPRequest(BaseRequest):
             if key in environ and (key not in hide_key):
                 return environ[key]
             return ''
-
-        if key == 'REQUEST':
-            return self
 
         if key[:1] == 'B':
             match = BASEmatch(key)
@@ -1362,26 +1360,22 @@ class HTTPRequest(BaseRequest):
         if returnTaints:
             v = self.taintedform.get(key, _marker)
             if v is not _marker:
-                other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.form.get(key, _marker)
         if v is not _marker:
-            other[key] = v
             return v
 
         # Return tainted data first (marked as suspect)
         if returnTaints:
             v = self.taintedcookies.get(key, _marker)
             if v is not _marker:
-                other[key] = v
                 return v
 
         # Untrusted data *after* trusted data
         v = self.cookies.get(key, _marker)
         if v is not _marker:
-            other[key] = v
             return v
 
         return default
@@ -1430,8 +1424,8 @@ class HTTPRequest(BaseRequest):
         keys.update(self._lazies)
 
         for key in self.environ.keys():
-            if ((key in isCGI_NAMEs or key[:5] == 'HTTP_') and
-                    (key not in hide_key)):
+            if (key in isCGI_NAMEs or key[:5] == 'HTTP_') and \
+               (key not in hide_key):
                 keys[key] = 1
 
         # Cache URLN and BASEN in self.other.
@@ -1467,29 +1461,33 @@ class HTTPRequest(BaseRequest):
         result = "<h3>form</h3><table>"
         row = '<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k, v in _filterPasswordFields(self.form.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>cookies</h3><table>"
         for k, v in _filterPasswordFields(self.cookies.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>lazy items</h3><table>"
         for k, v in _filterPasswordFields(self._lazies.items()):
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
         result = result + "</table><h3>other</h3><table>"
         for k, v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS', 'RESPONSE'):
                 continue
-            result = result + row % (escape(k, False), escape(repr(v), False))
+            result = result + row % (
+                html.escape(k, False), html.escape(repr(v), False))
 
         for n in "0123456789":
             key = "URL%s" % n
             try:
-                result = result + row % (key, escape(self[key], False))
+                result = result + row % (key, html.escape(self[key], False))
             except KeyError:
                 pass
         for n in "0123456789":
             key = "BASE%s" % n
             try:
-                result = result + row % (key, escape(self[key], False))
+                result = result + row % (key, html.escape(self[key], False))
             except KeyError:
                 pass
 
@@ -1497,25 +1495,25 @@ class HTTPRequest(BaseRequest):
         for k, v in self.environ.items():
             if k not in hide_key:
                 result = result + row % (
-                    escape(k, False), escape(repr(v), False))
+                    html.escape(k, False), html.escape(repr(v), False))
         return result + "</table>"
 
     def __repr__(self):
-        return "<%s, URL=%s>" % (self.__class__.__name__, self.get('URL'))
+        return f"<{self.__class__.__name__}, URL={self.get('URL')}>"
 
     def text(self):
         result = "FORM\n\n"
         row = '%-20s %s\n'
-        for k, v in self.form.items():
+        for k, v in _filterPasswordFields(self.form.items()):
             result = result + row % (k, repr(v))
         result = result + "\nCOOKIES\n\n"
-        for k, v in self.cookies.items():
+        for k, v in _filterPasswordFields(self.cookies.items()):
             result = result + row % (k, repr(v))
         result = result + "\nLAZY ITEMS\n\n"
-        for k, v in self._lazies.items():
+        for k, v in _filterPasswordFields(self._lazies.items()):
             result = result + row % (k, repr(v))
         result = result + "\nOTHER\n\n"
-        for k, v in self.other.items():
+        for k, v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS', 'RESPONSE'):
                 continue
             result = result + row % (k, repr(v))
@@ -1566,7 +1564,7 @@ class WSGIRequest(HTTPRequest):
     pass
 
 
-class TaintRequestWrapper(object):
+class TaintRequestWrapper:
 
     def __init__(self, req):
         self._req = req
@@ -1597,7 +1595,7 @@ class TaintRequestWrapper(object):
         return TaintMethodWrapper(self._req.keys)(*args, **kw)
 
 
-class TaintMethodWrapper(object):
+class TaintMethodWrapper:
 
     def __init__(self, method):
         self._method = method
@@ -1634,11 +1632,19 @@ def sane_environment(env):
     return dict
 
 
-ZopeFieldStorage = FieldStorage  # BBB
+class ZopeFieldStorage(FieldStorage):
+    """This subclass exists to work around a Python bug
+    (see https://bugs.python.org/issue27777) to make sure
+    we can read binary data from a request body.
+    """
+
+    def read_binary(self):
+        self._binary_file = True
+        return FieldStorage.read_binary(self)
 
 
 # Original version: zope.publisher.browser.FileUpload
-class FileUpload(object):
+class FileUpload:
     '''File upload objects
 
     File upload objects are used to represent file-uploaded data.
@@ -1692,16 +1698,6 @@ class FileUpload(object):
     def __next__(self):
         return self.file.__next__()
 
-    if PY2:
-        def __nonzero__(self):
-            return self.__bool__()
-
-        def next(self):
-            return self.file.next()
-
-        def xreadlines(self):
-            return self
-
 
 QPARMRE = re.compile(
     '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)')
@@ -1725,7 +1721,7 @@ def parse_cookie(text,
 
     if mo_q:
         # Match quoted correct cookies
-        l = len(mo_q.group(1))
+        c_len = len(mo_q.group(1))
         name = mo_q.group(2)
         value = mo_q.group(3)
 
@@ -1734,26 +1730,26 @@ def parse_cookie(text,
         mo_p = parmre.match(text)
 
         if mo_p:
-            l = len(mo_p.group(1))
+            c_len = len(mo_p.group(1))
             name = mo_p.group(2)
             value = mo_p.group(3)
         else:
             # Broken Cookie without = nor value.
             broken_p = paramlessre.match(text)
             if broken_p:
-                l = len(broken_p.group(1))
+                c_len = len(broken_p.group(1))
                 name = broken_p.group(2)
                 value = ''
             else:
                 return result
 
     if name not in result:
-        result[name] = unquote(value)
+        result[name] = getCookieValuePolicy().load(name, value)
 
-    return parse_cookie(text[l:], result)
+    return parse_cookie(text[c_len:], result)
 
 
-class record(object):
+class record:
 
     # Allow access to record methods and values from DTML
     __allow_access_to_unprotected_subobjects__ = 1
@@ -1787,8 +1783,8 @@ class record(object):
     def __repr__(self):
         # return repr( self.__dict__ )
         return '{%s}' % ', '.join(
-            "'%s': %s" % (item[0], repr(item[1])) for item in
-            sorted(self.__dict__.items()))
+            f"'{key}': {value!r}"
+            for key, value in sorted(self.__dict__.items()))
 
     def __eq__(self, other):
         if not isinstance(other, record):
@@ -1811,15 +1807,6 @@ def _filterPasswordFields(items):
     return result
 
 
-def _decode(value, charset):
-    """Recursively look for string values and decode.
-    """
-    if isinstance(value, list):
-        return [_decode(v, charset) for v in value]
-    elif isinstance(value, tuple):
-        return tuple(_decode(v, charset) for v in value)
-    elif isinstance(value, dict):
-        return dict((k, _decode(v, charset)) for k, v in value.items())
-    elif isinstance(value, binary_type):
-        return text_type(value, charset, 'replace')
-    return value
+def use_builtin_xmlrpc(request):
+    checker = queryUtility(IXmlrpcChecker)
+    return checker is None or checker(request)

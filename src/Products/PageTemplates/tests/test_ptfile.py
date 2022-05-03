@@ -4,12 +4,13 @@ import os
 import os.path
 import tempfile
 import unittest
-import Zope2
-import transaction
 
+import transaction
+import Zope2
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.makerequest import makerequest
 
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from .util import useChameleonEngine
 
 
 class TypeSniffingTestCase(unittest.TestCase):
@@ -17,11 +18,14 @@ class TypeSniffingTestCase(unittest.TestCase):
     TEMPFILENAME = tempfile.mktemp(".zpt")
 
     def setUp(self):
-        from zope.component import provideUtility
         from Products.PageTemplates.interfaces import \
             IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver import \
             DefaultUnicodeEncodingConflictResolver
+        from zope.component import provideUtility
+
+        # Make sure we use the new default chameleon engine
+        useChameleonEngine()
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
 
@@ -29,11 +33,13 @@ class TypeSniffingTestCase(unittest.TestCase):
         if os.path.exists(self.TEMPFILENAME):
             os.unlink(self.TEMPFILENAME)
 
-    def check_content_type(self, text, expected_type):
-        f = open(self.TEMPFILENAME, "wb")
-        f.write(text)
-        f.close()
-        pt = PageTemplateFile(self.TEMPFILENAME)
+    def check_content_type(self, bytes, expected_type, encoding=None):
+        with open(self.TEMPFILENAME, "wb") as f:
+            f.write(bytes)
+        if encoding:
+            pt = PageTemplateFile(self.TEMPFILENAME, encoding=encoding)
+        else:
+            pt = PageTemplateFile(self.TEMPFILENAME)
         pt.read()
         self.assertEqual(pt.content_type, expected_type)
 
@@ -55,70 +61,52 @@ class TypeSniffingTestCase(unittest.TestCase):
             "text/xml")
         # with byte order mark
         self.check_content_type(
-            b"\xef\xbb\xbf<?xml version='1.0' encoding='utf-8'?><doc/>",
+            b"<?xml version='1.0' encoding='utf-8'?><doc/>",
             "text/xml")
         self.check_content_type(
-            b"\xef\xbb\xbf<?xml\tversion='1.0' encoding='utf-8'?><doc/>",
+            b"<?xml\tversion='1.0' encoding='utf-8'?><doc/>",
             "text/xml")
 
     def test_sniffer_xml_utf16_be(self):
+        u_example1 = '<?xml version=".0" encoding="utf-16-be"?><doc/>'
+        u_example2 = '<?xml   version=".0" encoding="utf-16-be"?><doc/>'
+        b_example1 = u_example1.encode('utf-16-be')
+        b_example2 = u_example2.encode('utf-16-be')
         # w/out byte order mark
-        self.check_content_type(
-            b"\0<\0?\0x\0m\0l\0 \0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'"
-            b"\0 \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>"
-            b"\0<\0d\0o\0c\0/\0>",
-            "text/xml")
-        self.check_content_type(
-            b"\0<\0?\0x\0m\0l\0\t\0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'"
-            b"\0 \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>"
-            b"\0<\0d\0o\0c\0/\0>",
-            "text/xml")
+        self.check_content_type(b_example1, "text/xml", encoding='utf-16-be')
+        self.check_content_type(b_example2, "text/xml", encoding='utf-16-be')
         # with byte order mark
         self.check_content_type(
-            b"\xfe\xff"
-            b"\0<\0?\0x\0m\0l\0 \0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'"
-            b"\0 \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>"
-            b"\0<\0d\0o\0c\0/\0>",
-            "text/xml")
+            b"\xfe\xff" + b_example1, "text/xml", encoding='utf-16-be'
+        )
         self.check_content_type(
-            b"\xfe\xff"
-            b"\0<\0?\0x\0m\0l\0\t\0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'"
-            b"\0 \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>"
-            b"\0<\0d\0o\0c\0/\0>",
-            "text/xml")
+            b"\xfe\xff" + b_example2, "text/xml", encoding='utf-16-be'
+        )
 
     def test_sniffer_xml_utf16_le(self):
+        u_example1 = '<?xml version=".0" encoding="utf-16-le"?><doc/>'
+        u_example2 = '<?xml   version=".0" encoding="utf-16-le"?><doc/>'
+        b_example1 = u_example1.encode('utf-16-le')
+        b_example2 = u_example2.encode('utf-16-le')
         # w/out byte order mark
-        self.check_content_type(
-            b"<\0?\0x\0m\0l\0 \0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'\0"
-            b" \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>\0"
-            b"<\0d\0o\0c\0/\0>\n",
-            "text/xml")
-        self.check_content_type(
-            b"<\0?\0x\0m\0l\0\t\0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'\0"
-            b" \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>\0"
-            b"<\0d\0o\0c\0/\0>\0",
-            "text/xml")
+        self.check_content_type(b_example1, "text/xml", encoding='utf-16-le')
+        self.check_content_type(b_example2, "text/xml", encoding='utf-16-le')
         # with byte order mark
         self.check_content_type(
-            b"\xff\xfe"
-            b"<\0?\0x\0m\0l\0 \0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'\0"
-            b" \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>\0"
-            b"<\0d\0o\0c\0/\0>\0",
-            "text/xml")
+            b"\xff\xfe" + b_example1, "text/xml", encoding='utf-16-le'
+        )
         self.check_content_type(
-            b"\xff\xfe"
-            b"<\0?\0x\0m\0l\0\t\0v\0e\0r\0s\0i\0o\0n\0=\0'\01\0.\0000\0'\0"
-            b" \0e\0n\0c\0o\0d\0i\0n\0g\0=\0'\0u\0t\0f\0-\08\0'\0?\0>\0"
-            b"<\0d\0o\0c\0/\0>\0",
-            "text/xml")
+            b"\xff\xfe" + b_example2, "text/xml", encoding='utf-16-le'
+        )
 
     HTML_PUBLIC_ID = b"-//W3C//DTD HTML 4.01 Transitional//EN"
     HTML_SYSTEM_ID = b"http://www.w3.org/TR/html4/loose.dtd"
 
     def test_sniffer_html_ascii(self):
         self.check_content_type(
-            b"<!DOCTYPE html [ SYSTEM '" + self.HTML_SYSTEM_ID + b"' ]><html></html>",
+            (b"<!DOCTYPE html [ SYSTEM '"
+             + self.HTML_SYSTEM_ID
+             + b"' ]><html></html>"),
             "text/html")
         self.check_content_type(
             b"<html><head><title>sample document</title></head></html>",
@@ -140,7 +128,7 @@ class TypeSniffingTestCase(unittest.TestCase):
         pt_id = pt.getId()
         self.assertEqual(
             pt_id, desired_id,
-            'getId() returned %r. Expecting %r' % (pt_id, desired_id)
+            f'getId() returned {pt_id!r}. Expecting {desired_id!r}'
         )
 
     def test_getPhysicalPath(self):
@@ -153,9 +141,8 @@ class TypeSniffingTestCase(unittest.TestCase):
         pt_path = pt.getPhysicalPath()
         self.assertEqual(
             pt_path, desired_path,
-            'getPhysicalPath() returned %r. Expecting %r' % (
-                desired_path, pt_path,
-            )
+            f'getPhysicalPath() returned {desired_path!r}.'
+            f' Expecting {pt_path!r}'
         )
 
 
@@ -210,3 +197,16 @@ class LazyLoadingTestCase(unittest.TestCase):
         f.close()
         pt = PageTemplateFile(self.TEMPFILENAME)
         self.assertTrue(not pt._text and not pt._v_program)
+
+
+class RenderTestCase(unittest.TestCase):
+
+    def testXMLPageTemplateFile(self):
+        dirname = os.path.dirname(__file__)
+
+        filename = os.path.join(dirname, 'utf8.xml')
+        with open(filename, 'rb') as f:
+            self.assertEqual(
+                PageTemplateFile(filename).pt_render(),
+                f.read().decode('utf8'),
+            )

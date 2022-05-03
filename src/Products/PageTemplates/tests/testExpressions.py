@@ -1,9 +1,10 @@
-# *-* coding: iso-8859-1 -*-
-
 import unittest
-from six import text_type
+import warnings
 
+from AccessControl import safe_builtins
+from zExceptions import NotFound
 from zope.component.testing import PlacelessSetup
+from zope.location.interfaces import LocationError
 
 
 class EngineTestsBase(PlacelessSetup):
@@ -23,14 +24,13 @@ class EngineTestsBase(PlacelessSetup):
 
     def _makeContext(self, bindings=None):
 
-        class Dummy(object):
+        class Dummy:
             __allow_access_to_unprotected_subobjects__ = 1
-            management_page_charset = 'utf-8'
 
             def __call__(self):
                 return 'dummy'
 
-        class DummyDocumentTemplate(object):
+        class DummyDocumentTemplate:
             __allow_access_to_unprotected_subobjects__ = 1
             isDocTemp = True
 
@@ -51,8 +51,7 @@ class EngineTestsBase(PlacelessSetup):
             dummy2=DummyDocumentTemplate(),
             eightbit=b'\xe4\xfc\xf6',
             # ZopeContext needs 'context' and 'template' keys for unicode
-            # conflict resolution, and 'context' needs a
-            # 'management_page_charset'
+            # conflict resolution
             context=Dummy(),
             template=DummyDocumentTemplate(),
         )
@@ -90,7 +89,7 @@ class EngineTestsBase(PlacelessSetup):
         self.assertEqual(ec.evaluate('dummy'), 'dummy')
 
     def test_evaluate_with_unimplemented_call(self):
-        class Dummy(object):
+        class Dummy:
             def __call__(self):
                 raise NotImplementedError()
 
@@ -99,7 +98,6 @@ class EngineTestsBase(PlacelessSetup):
         self.assertIs(ec.evaluate('dummy'), dummy)
 
     def test_evaluate_with_render_DTML_template(self):
-        # http://www.zope.org/Collectors/Zope/2232
         # DTML templates could not be called from a Page Template
         # due to an ImportError
         ec = self._makeContext()
@@ -110,8 +108,12 @@ class EngineTestsBase(PlacelessSetup):
         self.assertTrue(ec.evaluate('x | nothing') is None)
 
     def test_evaluate_dict_key_as_underscore(self):
+        # Traversing to the name `_` will raise a DeprecationWarning
+        # because it will go away in Zope 6.
         ec = self._makeContext()
-        self.assertEqual(ec.evaluate('d/_'), 'under')
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            self.assertEqual(ec.evaluate('d/_'), 'under')
 
     def test_evaluate_dict_with_key_from_expansion(self):
         ec = self._makeContext()
@@ -178,27 +180,33 @@ class EngineTestsBase(PlacelessSetup):
         ec = self._makeContext()
         # XXX: can't do ec.evaluate(u'string:x') directly because ZopeContext
         # only bothers compiling true strings, not unicode strings
-        result = ec.evaluate(eng.compile(u'string:x'))
-        self.assertEqual(result, u'x')
-        self.assertIsInstance(result, text_type)
+        result = ec.evaluate(eng.compile('string:x'))
+        self.assertEqual(result, 'x')
+        self.assertIsInstance(result, str)
 
     def test_mixed(self):
         # 8-bit strings in unicode string expressions cause UnicodeDecodeErrors
         eng = self._makeEngine()
         ec = self._makeContext()
-        expr = eng.compile(u'string:$eightbit')
+        expr = eng.compile('string:$eightbit')
         self.assertRaises(UnicodeDecodeError,
                           ec.evaluate, expr)
         # But registering an appropriate IUnicodeEncodingConflictResolver
         # should fix it
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         from zope.component import provideUtility
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
-        self.assertEqual(ec.evaluate(expr), u'äüö')
+        self.assertEqual(ec.evaluate(expr), 'Ã¤Ã¼Ã¶')
+
+    def test_builtin_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('True'), True)
+        self.assertIs(ec.evaluate('False'), False)
+        self.assertIs(ec.evaluate('nocall: test'), safe_builtins["test"])
 
 
 class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
@@ -209,6 +217,28 @@ class UntrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
     # XXX:  add tests that show security checks being enforced
 
+    def test_open_in_path_expr(self):
+        ec = self._makeContext()
+        with self.assertRaises(KeyError):
+            ec.evaluate("nocall:open")
+
+    def test_list_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('nocall: list'), safe_builtins["list"])
+
+    def test_underscore_traversal(self):
+        # Prevent traversal to names starting with an underscore (_)
+        ec = self._makeContext()
+
+        with self.assertRaises(NotFound):
+            ec.evaluate("context/__class__")
+
+        with self.assertRaises((NotFound, LocationError)):
+            ec.evaluate("nocall: random/_itertools/repeat")
+
+        with self.assertRaises((NotFound, LocationError)):
+            ec.evaluate("random/_itertools/repeat/foobar")
+
 
 class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
@@ -218,16 +248,24 @@ class TrustedEngineTests(EngineTestsBase, unittest.TestCase):
 
     # XXX:  add tests that show security checks *not* being enforced
 
+    def test_open_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate("nocall:open"), open)
+
+    def test_list_in_path_expr(self):
+        ec = self._makeContext()
+        self.assertIs(ec.evaluate('nocall: list'), list)
+
 
 class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
 
     def testDefaultResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            DefaultUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import DefaultUnicodeEncodingConflictResolver
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
@@ -235,42 +273,42 @@ class UnicodeEncodingConflictResolverTests(PlacelessSetup, unittest.TestCase):
                           resolver.resolve, None, b'\xe4\xfc\xf6', None)
 
     def testStrictResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            StrictUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import StrictUnicodeEncodingConflictResolver
         provideUtility(StrictUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
-        text = u'\xe4\xfc\xe4'
+        text = '\xe4\xfc\xe4'
         self.assertEqual(resolver.resolve(None, text, None), text)
 
     def testIgnoringResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            IgnoringUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import IgnoringUnicodeEncodingConflictResolver
         provideUtility(IgnoringUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None), '')
 
     def testReplacingResolver(self):
+        from Products.PageTemplates.interfaces import \
+            IUnicodeEncodingConflictResolver
+        from Products.PageTemplates.unicodeconflictresolver import \
+            ReplacingUnicodeEncodingConflictResolver
         from zope.component import getUtility
         from zope.component import provideUtility
-        from Products.PageTemplates.interfaces \
-            import IUnicodeEncodingConflictResolver
-        from Products.PageTemplates.unicodeconflictresolver \
-            import ReplacingUnicodeEncodingConflictResolver
         provideUtility(ReplacingUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
         resolver = getUtility(IUnicodeEncodingConflictResolver)
         self.assertEqual(resolver.resolve(None, b'\xe4\xfc\xf6', None),
-                         u'\ufffd\ufffd\ufffd')
+                         '\ufffd\ufffd\ufffd')
 
 
 class ZopeContextTests(unittest.TestCase):
@@ -287,7 +325,7 @@ class ZopeContextTests(unittest.TestCase):
         return self._getTargetClass()(engine, contexts)
 
     def _makeEngine(self):
-        class DummyEngine(object):
+        class DummyEngine:
             pass
         return DummyEngine()
 

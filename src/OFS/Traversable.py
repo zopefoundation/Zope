@@ -13,6 +13,8 @@
 """This module implements a mix-in for traversable objects.
 """
 
+from urllib.parse import quote
+
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
@@ -24,29 +26,28 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from OFS import bbb
-from OFS.interfaces import ITraversable, IApplication
-from six.moves.urllib.parse import quote
+from OFS.interfaces import IApplication
+from OFS.interfaces import ITraversable
 from zExceptions import NotFound
-from ZPublisher.interfaces import UseTraversalDefault
 from ZODB.POSException import ConflictError
-
-from zope.interface import implementer
-from zope.interface import Interface
 from zope.component import queryMultiAdapter
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
+from ZPublisher.interfaces import UseTraversalDefault
+
 
 _marker = object()
 
 
 @implementer(ITraversable)
-class Traversable(object):
+class Traversable:
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('absolute_url')
+    @security.public
     def absolute_url(self, relative=0):
         """Return the absolute URL of the object.
 
@@ -74,7 +75,7 @@ class Traversable(object):
             return path2url(spp[1:])
         return toUrl(spp)
 
-    security.declarePublic('absolute_url_path')
+    @security.public
     def absolute_url_path(self):
         """Return the path portion of the absolute URL of the object.
 
@@ -88,7 +89,7 @@ class Traversable(object):
             return path2url(spp) or '/'
         return toUrl(spp, relative=1) or '/'
 
-    security.declarePublic('virtual_url_path')
+    @security.public
     def virtual_url_path(self):
         """Return a URL for the object, relative to the site root.
 
@@ -103,10 +104,11 @@ class Traversable(object):
             return path2url(spp[1:])
         return path2url(toVirt(spp))
 
-    security.declarePrivate('getPhysicalRoot')
+    # decorators did not work on variables
+    security.declarePrivate('getPhysicalRoot')  # NOQA: D001
     getPhysicalRoot = Acquired
 
-    security.declarePublic('getPhysicalPath')
+    @security.public
     def getPhysicalPath(self):
         # Get the physical path of the object.
         #
@@ -146,7 +148,7 @@ class Traversable(object):
 
         return path
 
-    security.declarePrivate('unrestrictedTraverse')
+    @security.private
     def unrestrictedTraverse(self, path, default=_marker, restricted=False):
         """Lookup an object by path.
 
@@ -170,10 +172,14 @@ class Traversable(object):
             return self
 
         if isinstance(path, str):
-            # Unicode paths are not allowed
             path = path.split('/')
         else:
             path = list(path)
+            for part in path:
+                if not isinstance(part, str):
+                    raise TypeError(
+                        "path should be a string or an iterable of strings"
+                    )
 
         REQUEST = {'TraversalRequestNameStack': path}
         path.reverse()
@@ -196,12 +202,9 @@ class Traversable(object):
             obj = self
 
         # import time ordering problem
-        if bbb.HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = bbb.NullResource
-
+        from webdav.NullResource import NullResource
         resource = _marker
+
         try:
             while path:
                 name = path_pop()
@@ -221,8 +224,12 @@ class Traversable(object):
 
                 bobo_traverse = getattr(obj, '__bobo_traverse__', None)
                 try:
-                    if (name and name[:1] in '@+' and name != '+' and
-                            nsParse(name)[1]):
+                    if (
+                        name
+                        and name[:1] in '@+'
+                        and name != '+'
+                        and nsParse(name)[1]
+                    ):
                         # Process URI segment parameters.
                         ns, nm = nsParse(name)
                         try:
@@ -272,9 +279,10 @@ class Traversable(object):
                                     except Unauthorized:
                                         ok = False
                                     if not ok:
-                                        if (container is not None or
-                                            guarded_getattr(obj, name, _marker)
-                                                is not next):
+                                        if (
+                                            container is not None
+                                            or guarded_getattr(obj, name, _marker) is not next  # NOQA: E501
+                                        ):
                                             raise Unauthorized(name)
                         except UseTraversalDefault:
                             # behave as if there had been no
@@ -295,8 +303,7 @@ class Traversable(object):
                                     # NullResource, if this is the case we
                                     # save it and return it if all other
                                     # lookups fail.
-                                    if (NullResource is not None and
-                                            isinstance(next, NullResource)):
+                                    if isinstance(next, NullResource):
                                         resource = next
                                         raise KeyError(name)
                                 except (AttributeError, TypeError):
@@ -351,10 +358,11 @@ class Traversable(object):
             else:
                 raise
 
-    security.declarePublic('restrictedTraverse')
+    @security.public
     def restrictedTraverse(self, path, default=_marker):
         # Trusted code traversal code, always enforces securitys
         return self.unrestrictedTraverse(path, default, restricted=True)
+
 
 InitializeClass(Traversable)
 

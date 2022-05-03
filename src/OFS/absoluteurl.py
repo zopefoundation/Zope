@@ -12,14 +12,16 @@
 #
 ##############################################################################
 
+from urllib.parse import quote
+
 from Acquisition import aq_parent
 from OFS.interfaces import ITraversable
-from six.moves.urllib.parse import quote, unquote
 from zope.component import getMultiAdapter
 from zope.interface import implementer
-from zope.traversing.browser.interfaces import IAbsoluteURL
-from zope.traversing.browser.absoluteurl import _insufficientContext, _safe
 from zope.publisher.browser import BrowserView
+from zope.traversing.browser.absoluteurl import _insufficientContext
+from zope.traversing.browser.absoluteurl import _safe
+from zope.traversing.browser.interfaces import IAbsoluteURL
 
 
 @implementer(IAbsoluteURL)
@@ -31,9 +33,6 @@ class AbsoluteURL(BrowserView):
     zope.traversing.browser, but the Zope 2 request doesn't support
     all the methods that it uses yet.
     """
-
-    def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         context = self.context
@@ -77,11 +76,11 @@ class AbsoluteURL(BrowserView):
             raise TypeError(_insufficientContext)
 
         if name:
+            url = "{}/{}".format(
+                base[-1]['url'],
+                quote(name.encode('utf-8'), _safe))
             base += ({'name': name,
-                      'url': ("%s/%s" % (base[-1]['url'],
-                                         quote(name.encode('utf-8'), _safe)))
-                      }, )
-
+                      'url': url}, )
         return base
 
 
@@ -89,9 +88,6 @@ class AbsoluteURL(BrowserView):
 class OFSTraversableAbsoluteURL(BrowserView):
     """An absolute_url adapter for OFS.Traversable subclasses
     """
-
-    def __unicode__(self):
-        return unquote(self.__str__()).decode('utf-8')
 
     def __str__(self):
         return self.context.absolute_url()
@@ -105,15 +101,15 @@ class OFSTraversableAbsoluteURL(BrowserView):
 
         name = context.getId()
 
-        if (container is None or
-                self._isVirtualHostRoot() or
-                not ITraversable.providedBy(container)):
+        if container is None or \
+           self._isVirtualHostRoot() or \
+           not ITraversable.providedBy(container):
             return ({'name': name, 'url': context.absolute_url()},)
 
         view = getMultiAdapter((container, request), IAbsoluteURL)
         base = tuple(view.breadcrumbs())
-        base += (
-            {'name': name, 'url': ("%s/%s" % (base[-1]['url'], name))},)
+        base += ({'name': name,
+                  'url': "{}/{}".format(base[-1]['url'], name)},)
 
         return base
 

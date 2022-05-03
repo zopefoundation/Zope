@@ -2,10 +2,20 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 
+import Testing.testbrowser
+import Testing.ZopeTestCase
 
-class DummyConnection(object):
+
+class DummyForm:
+
+    def __call__(self, *args, **kw):
+        return kw
+
+
+class DummyConnection:
 
     def __init__(self, db):
         self.__db = db
@@ -14,7 +24,7 @@ class DummyConnection(object):
         return self.__db
 
 
-class DummyDBTab(object):
+class DummyDBTab:
     def __init__(self, databases=None):
         self._databases = databases or {}
 
@@ -28,7 +38,7 @@ class DummyDBTab(object):
         return self._databases[name]
 
 
-class DummyDB(object):
+class DummyDB:
 
     _packed = None
 
@@ -49,22 +59,60 @@ class DummyDB(object):
     def pack(self, when):
         self._packed = when
 
+    def undoInfo(self, first_transaction, last_transaction):
+        return [{'time': 1,
+                 'description': 'Transaction 1',
+                 'id': b'id1'}]
 
-class ConfigTestBase(object):
+    def undoMultiple(self, tids):
+        pass
+
+
+class DummyTransaction:
+
+    def __init__(self, raises=False):
+        self.raises = raises
+        self.aborted = False
+
+    def note(self, note):
+        self._note = note
+
+    def commit(self):
+        if self.raises:
+            raise RuntimeError('This did not work')
+
+    def abort(self):
+        self.aborted = True
+
+
+class DummyTransactionModule:
+
+    def __init__(self, raises=False):
+        self.ts = DummyTransaction(raises=raises)
+
+    def get(self):
+        return self.ts
+
+
+class ConfigTestBase:
 
     def setUp(self):
+        super().setUp()
         import App.config
         self._old_config = App.config._config
 
     def tearDown(self):
         import App.config
         App.config._config = self._old_config
+        super().tearDown()
 
     def _makeConfig(self, **kw):
         import App.config
 
-        class DummyConfig(object):
-            pass
+        class DummyConfig:
+            def __init__(self):
+                self.debug_mode = False
+
         App.config._config = config = DummyConfig()
         config.dbtab = DummyDBTab(kw)
         return config
@@ -84,6 +132,35 @@ class FakeConnectionTests(unittest.TestCase):
         parent_jar = object()
         fc = self._makeOne(db, parent_jar)
         self.assertTrue(fc.db() is db)
+
+
+class ConfigurationViewerTests(ConfigTestBase, unittest.TestCase):
+
+    def _getTargetClass(self):
+        from App.ApplicationManager import ConfigurationViewer
+        return ConfigurationViewer
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_defaults(self):
+        cv = self._makeOne()
+        self.assertEqual(cv.id, 'Configuration')
+        self.assertEqual(cv.meta_type, 'Configuration Viewer')
+        self.assertEqual(cv.title, 'Configuration Viewer')
+
+    def test_manage_getSysPath(self):
+        cv = self._makeOne()
+        self.assertEqual(cv.manage_getSysPath(), sorted(sys.path))
+
+    def test_manage_getConfiguration(self):
+        from App.config import getConfiguration
+        cv = self._makeOne()
+        cfg = getConfiguration()
+
+        for info_dict in cv.manage_getConfiguration():
+            self.assertEqual(info_dict['value'],
+                             str(getattr(cfg, info_dict['name'])))
 
 
 class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
@@ -224,6 +301,21 @@ class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
         cldir = config.clienthome = self._makeTempdir()
         self.assertEqual(am.getCLIENT_HOME(), cldir)
 
+    def test_process_time(self):
+        am = self._makeOne()
+        now = time.time()
+
+        measure, unit = am.process_time(_when=now).strip().split()
+        self.assertEqual(unit, 'sec')
+
+        ret_str = am.process_time(_when=now + 90061).strip()
+        secs = 1 + int(measure)
+        self.assertEqual(ret_str, '1 day 1 hour 1 min %i sec' % secs)
+
+        ret_str = am.process_time(_when=now + 180122).strip()
+        secs = 2 + int(measure)
+        self.assertEqual(ret_str, '2 days 2 hours 2 min %i sec' % secs)
+
 
 class AltDatabaseManagerTests(unittest.TestCase):
 
@@ -235,7 +327,7 @@ class AltDatabaseManagerTests(unittest.TestCase):
         return self._getTargetClass()()
 
     def _makeJar(self, dbname, dbsize):
-        class Jar(object):
+        class Jar:
             def db(self):
                 return self._db
         jar = Jar()
@@ -279,3 +371,224 @@ class AltDatabaseManagerTests(unittest.TestCase):
         am = self._makeOne()
         am._p_jar = self._makeJar('foo', (2048 * 1024) + 123240)
         self.assertEqual(am.db_size(), '2.1M')
+
+    def test_manage_pack(self):
+        am = self._makeOne()
+        am._p_jar = self._makeJar('foo', '')
+
+        # The default value for days is 0, meaning pack to now
+        pack_to = time.time()
+        am.manage_pack()
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+
+        # Try a float value
+        pack_to = time.time() - 10800  # 3 hrs, 0.125 days
+        packed_to = am.manage_pack(days=.125)
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Try an integer
+        pack_to = time.time() - 86400  # 1 day
+        packed_to = am.manage_pack(days=1)
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Pass a string
+        pack_to = time.time() - 97200  # 27 hrs, 1.125 days
+        packed_to = am.manage_pack(days='1.125')
+        self.assertAlmostEqual(am._getDB()._packed, pack_to, delta=1)
+        self.assertAlmostEqual(packed_to, pack_to, delta=1)
+
+        # Set the dummy storage pack indicator manually
+        am._getDB()._packed = None
+        # Pass an invalid value
+        self.assertIsNone(am.manage_pack(days='foo'))
+        # The dummy storage value should not change because pack was not called
+        self.assertIsNone(am._getDB()._packed)
+
+    def test_manage_undoTransactions_raises(self):
+        # Patch in fake transaction module that will raise RuntimeError
+        # on transaction commit
+        try:
+            import App.Undo
+            trs_module = App.Undo.transaction
+            App.Undo.transaction = DummyTransactionModule(raises=True)
+
+            am = self._makeOne()
+            am._p_jar = self._makeJar('foo', '')
+            am.manage_UndoForm = DummyForm()
+            undoable_tids = [x['id'] for x in am.undoable_transactions()]
+            current_transaction = App.Undo.transaction.get()
+
+            # If no REQUEST is passed in, the exception is re-raised unchanged
+            # and the current transaction is left unchanged.
+            self.assertRaises(RuntimeError,
+                              am.manage_undo_transactions,
+                              transaction_info=undoable_tids)
+            self.assertFalse(current_transaction.aborted)
+
+            # If a REQUEST is passed in, the transaction will be aborted and
+            # the exception is caught. The DummyForm instance shows the
+            # call arguments so the exception data is visible.
+            res = am.manage_undo_transactions(transaction_info=undoable_tids,
+                                              REQUEST={})
+            expected = {
+                'manage_tabs_message': 'RuntimeError: This did not work',
+                'manage_tabs_type': 'danger'}
+            self.assertDictEqual(res, expected)
+            self.assertTrue(current_transaction.aborted)
+
+        finally:
+            # Cleanup
+            App.Undo.transaction = trs_module
+
+
+class DebugManagerTests(unittest.TestCase):
+
+    def setUp(self):
+        import sys
+        self._sys = sys
+        self._old_sys_modules = sys.modules.copy()
+
+    def tearDown(self):
+        self._sys.modules.clear()
+        self._sys.modules.update(self._old_sys_modules)
+
+    def _getTargetClass(self):
+        from App.ApplicationManager import DebugManager
+        return DebugManager
+
+    def _makeOne(self, id):
+        return self._getTargetClass()(id)
+
+    def _makeModuleClasses(self):
+        import sys
+        import types
+
+        from ExtensionClass import Base
+
+        class Foo(Base):
+            pass
+
+        class Bar(Base):
+            pass
+
+        class Baz(Base):
+            pass
+
+        foo = sys.modules['foo'] = types.ModuleType('foo')
+        foo.Foo = Foo
+        Foo.__module__ = 'foo'
+        foo.Bar = Bar
+        Bar.__module__ = 'foo'
+        qux = sys.modules['qux'] = types.ModuleType('qux')
+        qux.Baz = Baz
+        Baz.__module__ = 'qux'
+        return Foo, Bar, Baz
+
+    def test_refcount_no_limit(self):
+        import sys
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        pairs = dm.refcount()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        foo_count = sys.getrefcount(Foo)
+        self.assertTrue((foo_count + 1, 'foo.Foo') in pairs)
+        bar_count = sys.getrefcount(Bar)
+        self.assertTrue((bar_count + 1, 'foo.Bar') in pairs)
+        baz_count = sys.getrefcount(Baz)
+        self.assertTrue((baz_count + 1, 'qux.Baz') in pairs)
+
+    def test_refdict(self):
+        import sys
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        mapping = dm.refdict()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        foo_count = sys.getrefcount(Foo)
+        self.assertEqual(mapping['foo.Foo'], foo_count + 1)
+        bar_count = sys.getrefcount(Bar)
+        self.assertEqual(mapping['foo.Bar'], bar_count + 1)
+        baz_count = sys.getrefcount(Baz)
+        self.assertEqual(mapping['qux.Baz'], baz_count + 1)
+
+    def test_rcsnapshot(self):
+        import sys
+
+        import App.ApplicationManager
+        from DateTime.DateTime import DateTime
+        dm = self._makeOne('test')
+        Foo, Bar, Baz = self._makeModuleClasses()
+        before = DateTime()
+        dm.rcsnapshot()
+        after = DateTime()
+        # XXX : Ugly empiricism here:  I don't know why the count is up 1.
+        self.assertTrue(before <= App.ApplicationManager._v_rst <= after)
+        mapping = App.ApplicationManager._v_rcs
+        foo_count = sys.getrefcount(Foo)
+        self.assertEqual(mapping['foo.Foo'], foo_count + 1)
+        bar_count = sys.getrefcount(Bar)
+        self.assertEqual(mapping['foo.Bar'], bar_count + 1)
+        baz_count = sys.getrefcount(Baz)
+        self.assertEqual(mapping['qux.Baz'], baz_count + 1)
+
+    def test_rcdate(self):
+        import App.ApplicationManager
+        dummy = object()
+        App.ApplicationManager._v_rst = dummy
+        dm = self._makeOne('test')
+        found = dm.rcdate()
+        App.ApplicationManager._v_rst = None
+        self.assertTrue(found is dummy)
+
+    def test_rcdeltas(self):
+        dm = self._makeOne('test')
+        dm.rcsnapshot()
+        Foo, Bar, Baz = self._makeModuleClasses()
+        mappings = dm.rcdeltas()
+        self.assertTrue(len(mappings))
+        mapping = mappings[0]
+        self.assertTrue('rc' in mapping)
+        self.assertTrue('pc' in mapping)
+        self.assertEqual(mapping['delta'], mapping['rc'] - mapping['pc'])
+
+    # def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
+
+    def test_manage_getSysPath(self):
+        import sys
+        dm = self._makeOne('test')
+        self.assertEqual(dm.manage_getSysPath(), list(sys.path))
+
+
+class MenuDtmlTests(ConfigTestBase, Testing.ZopeTestCase.FunctionalTestCase):
+    """Browser testing ..dtml.menu.dtml."""
+
+    def setUp(self):
+        super().setUp()
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        self.browser = Testing.testbrowser.Browser()
+        self.browser.login('manager', 'manager_pass')
+
+    def test_menu_dtml__1(self):
+        """It contains the databases in navigation."""
+        self._makeConfig(foo=object(), bar=object(), qux=object())
+        self.browser.open('http://localhost/manage_menu')
+        links = [
+            self.browser.getLink('ZODB foo'),
+            self.browser.getLink('ZODB bar'),
+            self.browser.getLink('ZODB qux'),
+        ]
+        for link in links:
+            self.assertEqual(
+                link.attrs['title'], 'Zope Object Database Manager')
+
+    def test_menu_dtml__2(self):
+        """It still shows the navigation in case no database is configured."""
+        # This effect can happen in tests, e.g. with `plone.testing`. There a
+        # `Control_Panel` is not configured in the standard setup, so we will
+        # get a `NameError` while trying to get the databases.
+        self.browser.open('http://localhost/manage_menu')
+        self.assertTrue(self.browser.isHtml)
+        self.assertIn('Control Panel', self.browser.contents)
+        self.assertNotIn('ZODB', self.browser.contents)

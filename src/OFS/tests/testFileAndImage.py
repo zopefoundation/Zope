@@ -1,31 +1,28 @@
-import unittest
-
-import Zope2
-
 import os
 import sys
 import time
+import unittest
 from io import BytesIO
 
+import OFS.Image
+import Testing.testbrowser
+import Testing.ZopeTestCase
+import transaction
+import Zope2
 from Acquisition import aq_base
-from six import PY3
-
 from OFS.Application import Application
-from OFS.SimpleItem import SimpleItem
 from OFS.Cache import ZCM_MANAGERS
 from OFS.Image import Pdata
-from ZPublisher.HTTPRequest import HTTPRequest
-from ZPublisher.HTTPResponse import HTTPResponse
-from App.Common import rfc1123_date
+from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
-import transaction
-
-import OFS.Image
-
 from zope.component import adapter
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.datetime import rfc1123_date
 from zope.lifecycleevent.interfaces import IObjectCreatedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from ZPublisher.HTTPRequest import HTTPRequest
+from ZPublisher.HTTPResponse import HTTPResponse
+
 
 here = os.path.dirname(os.path.abspath(__file__))
 filedata = os.path.join(here, 'test.gif')
@@ -52,7 +49,7 @@ def aputrequest(file, content_type):
     return req
 
 
-class DummyCache(object):
+class DummyCache:
 
     def __init__(self):
         self.clear()
@@ -88,7 +85,7 @@ class DummyCacheManager(SimpleItem):
         return ADummyCache
 
 
-class EventCatcher(object):
+class EventCatcher:
 
     def __init__(self):
         self.created = []
@@ -228,6 +225,10 @@ class FileTests(unittest.TestCase):
         self.assertEqual(1, len(self.eventCatcher.modified))
         self.assertTrue(self.eventCatcher.modified[0].object is self.file)
 
+    def testManageUploadWithoutFileData(self):
+        self.file.manage_upload()
+        self.assertEqual(0, len(self.eventCatcher.modified))
+
     def testIfModSince(self):
         now = time.time()
         e = {'SERVER_NAME': 'foo',
@@ -254,6 +255,27 @@ class FileTests(unittest.TestCase):
         self.assertEqual(resp.getStatus(), 200)
         self.assertEqual(data, bytes(self.file.data))
 
+    def testPUT(self):
+        s = b'# some python\n'
+
+        # with content type
+        data = BytesIO(s)
+        req = aputrequest(data, 'text/x-python')
+        req.processInputs()
+        self.file.PUT(req, req.RESPONSE)
+
+        self.assertEqual(self.file.content_type, 'text/x-python')
+        self.assertEqual(self.file.data, s)
+
+        # without content type
+        data.seek(0)
+        req = aputrequest(data, '')
+        req.processInputs()
+        self.file.PUT(req, req.RESPONSE)
+
+        self.assertEqual(self.file.content_type, 'text/x-python')
+        self.assertEqual(self.file.data, s)
+
     def testIndexHtmlWithPdata(self):
         self.file.manage_upload(b'a' * (2 << 16))  # 128K
         self.file.index_html(self.app.REQUEST, self.app.REQUEST.RESPONSE)
@@ -266,8 +288,7 @@ class FileTests(unittest.TestCase):
 
     def testPrincipiaSearchSource_not_text(self):
         data = ''.join([chr(x) for x in range(256)])
-        if PY3:
-            data = data.encode('utf-8')
+        data = data.encode('utf-8')
         self.file.manage_edit('foobar', 'application/octet-stream',
                               filedata=data)
         self.assertEqual(self.file.PrincipiaSearchSource(), b'')
@@ -278,20 +299,39 @@ class FileTests(unittest.TestCase):
                                        b'come to the aid of the Party.')
         self.assertTrue(b'Party' in self.file.PrincipiaSearchSource())
 
+    def test_manage_DAVget_binary(self):
+        self.assertEqual(self.file.manage_DAVget(), self.data)
+
+    def test_manage_DAVget_text(self):
+        text = (b'Now is the time for all good men to '
+                b'come to the aid of the Party.')
+        self.file.manage_edit('foobar', 'text/plain', filedata=text)
+        self.assertEqual(self.file.manage_DAVget(), text)
+
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
         from OFS.Image import File
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
         verifyClass(HTTPRangeInterface, File)
         verifyClass(IWriteLock, File)
 
     def testUnicode(self):
-        val = u'some unicode string here'
+        val = 'some unicode string here'
 
-        self.assertRaises(TypeError, self.file.manage_edit,
-                          'foobar', 'text/plain', filedata=val)
+        self.assertRaises(TypeError, self.file.update_data,
+                          data=val, content_type='text/plain')
+
+    def test__str__returns_native_string(self):
+        small_data = b'small data'
+        self.file.manage_upload(file=small_data)
+        self.assertEqual(str(self.file), small_data.decode())
+
+        # Make sure Pdata contents are handled correctly
+        big_data = b'a' * (2 << 16)
+        self.file.manage_upload(file=big_data)
+        self.assertEqual(str(self.file), big_data.decode())
 
 
 class ImageTests(FileTests):
@@ -316,6 +356,18 @@ class ImageTests(FileTests):
         self.file.manage_changeProperties(alt='bar')
         self.assertEqual(self.file.tag(), (tag_fmt % ('bar', 'foo')))
 
+    testStr = testTag
+
+    def test__str__returns_native_string(self):
+        small_data = b'small data'
+        self.file.manage_upload(file=small_data)
+        self.assertIsInstance(str(self.file), str)
+
+        # Make sure Pdata contents are handled correctly
+        big_data = b'a' * (2 << 16)
+        self.file.manage_upload(file=big_data)
+        self.assertIsInstance(str(self.file), str)
+
     def testViewImageOrFile(self):
         request = self.app.REQUEST
         response = request.RESPONSE
@@ -323,8 +375,65 @@ class ImageTests(FileTests):
         self.assertEqual(result, self.data)
 
     def test_interfaces(self):
-        from zope.interface.verify import verifyClass
         from OFS.Image import Image
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
 
         verifyClass(IWriteLock, Image)
+
+    def test_text_representation_is_tag(self):
+        self.assertEqual(str(self.file),
+                         '<img src="http://nohost/file"'
+                         ' alt="" title="" height="16" width="16" />')
+
+
+class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
+    """Browser testing ..Image.File"""
+
+    def setUp(self):
+        super().setUp()
+        uf = self.app.acl_users
+        uf.userFolderAddUser('manager', 'manager_pass', ['Manager'], [])
+        self.app.manage_addFile('file')
+
+        transaction.commit()
+        self.browser = Testing.testbrowser.Browser()
+        self.browser.login('manager', 'manager_pass')
+
+    def test_Image__manage_main__1(self):
+        """It shows the content of text files as text."""
+        self.app.file.update_data('hällo'.encode())
+        self.browser.open('http://localhost/file/manage_main')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'hällo')
+
+    def test_Image__manage_main__3(self):
+        """It shows an error message if the file content cannot be decoded."""
+        self.app.file.update_data('hällo'.encode('latin-1'))
+        self.browser.open('http://localhost/file/manage_main')
+        self.assertIn(
+            "The file could not be decoded with 'utf-8'.",
+            self.browser.contents)
+
+    def test_Image__manage_upload__1(self):
+        """It uploads a file, replaces the content and sets content type."""
+        self.browser.open('http://localhost/file/manage_main')
+        self.browser.getControl(name='file').add_file(
+            b'test text file', 'text/plain', 'TestFile.txt')
+        self.browser.getControl('Upload File').click()
+        self.assertIn('Saved changes', self.browser.contents)
+        self.assertEqual(
+            self.browser.getControl('Content Type').value, 'text/plain')
+        text = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text, 'test text file')
+
+    def test_Image__manage_edit__1(self):
+        """It it possible to change the file's content via browser."""
+        self.browser.open('http://localhost/file/manage_main')
+        text_1 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_1, '')
+        self.browser.getControl(name='filedata:text').value = 'hällo'
+        self.browser.getControl('Save Changes').click()
+        self.assertIn('Saved changes', self.browser.contents)
+        text_2 = self.browser.getControl(name='filedata:text').value
+        self.assertEqual(text_2, 'hällo')

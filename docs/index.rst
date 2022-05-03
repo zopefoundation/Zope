@@ -1,18 +1,16 @@
 Zope documentation
 ==================
-
-Contents:
+This is the official home for all Zope documentation.
 
 .. toctree::
    :maxdepth: 2
 
-   WHATSNEW
-   INSTALL-buildout
-   INSTALL-virtualenv
+   news
+   INSTALL
    operation
-   USERS
-   SECURITY
+   migrations/index
    maintenance
+   Zope development roadmap <https://www.zope.dev/developer/roadmap.html>
    changes
-   zope2book/index
+   zopebook/index
    zdgbook/index

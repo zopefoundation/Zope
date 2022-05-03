@@ -16,7 +16,7 @@
 import unittest
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -29,7 +29,7 @@ class UnitTestSecurityPolicy(object):
         return 1
 
 
-class CruelSecurityPolicy(object):
+class CruelSecurityPolicy:
     """Denies everything
     """
     #   Standard SecurityPolicy interface
@@ -41,12 +41,12 @@ class CruelSecurityPolicy(object):
         return 0
 
 
-class ProtectedMethodSecurityPolicy(object):
+class ProtectedMethodSecurityPolicy:
     """Check security strictly on bound methods.
     """
     def validate(self, accessed, container, name, value, *args):
-        from Acquisition import aq_base
         from AccessControl import Unauthorized
+        from Acquisition import aq_base
         if getattr(aq_base(value), '__self__', None) is None:
             return 1
 
@@ -65,6 +65,7 @@ class TestTraverse(unittest.TestCase):
 
     def setUp(self):
         import io
+
         import transaction
         from AccessControl import SecurityManager
         from AccessControl.SecurityManagement import newSecurityManager
@@ -188,14 +189,14 @@ class TestTraverse(unittest.TestCase):
         from OFS.SimpleItem import SimpleItem
 
         class Restricted(SimpleItem):
-            """Instance we'll check with ProtectedMethodSecurityPolicy
-            """
+            """Instance we'll check with ProtectedMethodSecurityPolicy."""
+
             getId__roles__ = None  # ACCESS_PUBLIC
-            def getId(self):
+            def getId(self):  # NOQA: E306  # pseudo decorator
                 return self.id
 
             private__roles__ = ()  # ACCESS_PRIVATE
-            def private(self):
+            def private(self):  # NOQA: E306  # pseudo decorator
                 return 'private!'
 
             # not protected
@@ -285,7 +286,7 @@ class TestTraverse(unittest.TestCase):
         self._setupSecurity(UnitTestSecurityPolicy())
         bb = self._makeBoboTraversable()
         self.assertTrue(
-            bb.restrictedTraverse('manufactured') is 42)
+            bb.restrictedTraverse('manufactured') == 42)
 
     def testBoboTraverseToAcquiredObject(self):
         # Verify it's possible to use a __bobo_traverse__ which retrieves
@@ -393,9 +394,10 @@ class TestTraverse(unittest.TestCase):
             self.root.folder1.restrictedTraverse('stuff', 42), 42)
 
     def testNotFoundIsRaised(self):
+        from operator import getitem
+
         from OFS.SimpleItem import SimpleItem
         from zExceptions import NotFound
-        from operator import getitem
         self.folder1._setObject('foo', SimpleItem('foo'))
         self.assertRaises(AttributeError, getitem, self.folder1.foo,
                           'doesntexist')
@@ -423,10 +425,28 @@ class TestTraverse(unittest.TestCase):
     def testTraverseToNameStartingWithPlus(self):
         # Verify it's possible to traverse to a name such as +something
         self.assertTrue(
-            self.folder1.unrestrictedTraverse('+something') is 'plus')
+            self.folder1.unrestrictedTraverse('+something') == 'plus')
+
+    def testTraverseWrongType(self):
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(1)
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(b"foo")
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(["foo", b"bar"])
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse(("foo", None))
+        with self.assertRaises(TypeError):
+            self.folder1.unrestrictedTraverse({1, "foo"})
+
+    def testTraverseEmptyPath(self):
+        self.assertEqual(self.folder1.unrestrictedTraverse(None), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse(""), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse([]), self.folder1)
+        self.assertEqual(self.folder1.unrestrictedTraverse({}), self.folder1)
 
 
-class SimpleClass(object):
+class SimpleClass:
     """Class with no __bobo_traverse__."""
 
 
@@ -439,7 +459,8 @@ def test_traversable():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> from Testing.makerequest import makerequest
-      >>> self.app = makerequest(self.app)
+      >>> self.app = makerequest(self.app)  # NOQA: F821
+      >>> folder = self.folder  # NOQA: F821
 
     ``SimpleContent`` is a traversable class by default.  Its fallback
     traverser should raise NotFound when traversal fails.  (Note: If
@@ -448,11 +469,10 @@ def test_traversable():
     raises NotFoundError.)
 
       >>> from Products.Five.tests.testing import simplecontent
-      >>> simplecontent.manage_addSimpleContent(self.folder, 'testoid',
-      ...                                       'Testoid')
+      >>> simplecontent.manage_addSimpleContent(folder, 'testoid', 'Testoid')
       >>> from zExceptions import NotFound
       >>> try:
-      ...    self.folder.testoid.unrestrictedTraverse('doesntexist')
+      ...    folder.testoid.unrestrictedTraverse('doesntexist')
       ... except NotFound:
       ...    pass
 
@@ -502,12 +522,12 @@ def test_traversable():
       >>> zcml.load_string(configure_zcml)
 
       >>> from Products.Five.tests.testing import fancycontent
-      >>> info = fancycontent.manage_addFancyContent(self.folder, 'fancy', '')
+      >>> info = fancycontent.manage_addFancyContent(folder, 'fancy', '')
 
     In the following test we let the original __bobo_traverse__ method
     kick in:
 
-      >>> self.folder.fancy.unrestrictedTraverse('something-else'
+      >>> folder.fancy.unrestrictedTraverse('something-else'
       ...                                       ).index_html({})
       'something-else'
 
@@ -515,23 +535,23 @@ def test_traversable():
     takes over.  Therefore, unless it raises AttributeError or
     KeyError, it will be the only way traversal is done.
 
-      >>> self.folder.fancy.unrestrictedTraverse('fancyview').index_html({})
+      >>> folder.fancy.unrestrictedTraverse('fancyview').index_html({})
       'fancyview'
 
     Note that during publishing, if the original __bobo_traverse__ method
     *does* raise AttributeError or KeyError, we can get normal view look-up.
     In unrestrictedTraverse, we don't. Maybe we should? Needs discussing.
 
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.unrestrictedTraverse(
       ...     'raise-attributeerror')() == 'Fancy, fancy'
       True
 
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.unrestrictedTraverse(
       ...     'raise-keyerror')() == 'Fancy, fancy'
       True
 
       >>> try:
-      ...     self.folder.fancy.unrestrictedTraverse('raise-valueerror')
+      ...     folder.fancy.unrestrictedTraverse('raise-valueerror')
       ... except ValueError:
       ...     pass
 
@@ -542,9 +562,9 @@ def test_traversable():
 
       >>> from Products.Five.tests.testing import fancycontent
       >>> info = fancycontent.manage_addNonTraversableFancyContent(
-      ...                                      self.folder, 'fancy_zope2', '')
-      >>> self.folder.fancy_zope2.an_attribute = 'This is an attribute'
-      >>> self.folder.fancy_zope2.unrestrictedTraverse(
+      ...                                      folder, 'fancy_zope2', '')
+      >>> folder.fancy_zope2.an_attribute = 'This is an attribute'
+      >>> folder.fancy_zope2.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
       'an_attribute'
 
@@ -552,8 +572,8 @@ def test_traversable():
     value 'This is an attribute'.  Let's make sure the same thing happens for
     an object that has been marked traversable:
 
-      >>> self.folder.fancy.an_attribute = 'This is an attribute'
-      >>> self.folder.fancy.unrestrictedTraverse(
+      >>> folder.fancy.an_attribute = 'This is an attribute'
+      >>> folder.fancy.unrestrictedTraverse(
       ...                             'an_attribute').index_html({})
       'an_attribute'
 
@@ -561,7 +581,7 @@ def test_traversable():
     IAcquirer, it should get acquisition-wrapped so we can acquire
     attributes implicitly:
 
-      >>> acquirer = self.folder.unrestrictedTraverse('acquirer')
+      >>> acquirer = folder.unrestrictedTraverse('acquirer')
       >>> acquirer.fancy
       <FancyContent ...>
 
@@ -621,27 +641,28 @@ def test_view_doesnt_shadow_attribute():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_string(configure_zcml)
+      >>> folder = self.folder  # NOQA: F821
 
     Then we create a traversable folder...
 
       >>> from Products.Five.tests.testing import folder as ftf
-      >>> ftf.manage_addFiveTraversableFolder(self.folder, 'ftf')
+      >>> ftf.manage_addFiveTraversableFolder(folder, 'ftf')
 
     and add an object called ``eagle`` to it:
 
       >>> from Products.Five.tests.testing import simplecontent
-      >>> simplecontent.manage_addIndexSimpleContent(self.folder.ftf,
+      >>> simplecontent.manage_addIndexSimpleContent(folder.ftf,
       ...                                            'eagle', 'Eagle')
 
     When we publish the ``ftf/eagle`` now, we expect the attribute to
     take precedence over the view during traversal:
 
-      >>> self.folder.ftf.unrestrictedTraverse('eagle').index_html({})
+      >>> folder.ftf.unrestrictedTraverse('eagle').index_html({})
       'Default index_html called'
 
     Of course, unless we explicitly want to lookup the view using @@:
 
-      >>> self.folder.ftf.unrestrictedTraverse(
+      >>> folder.ftf.unrestrictedTraverse(
       ...     '@@eagle')() == 'The eagle has landed'
       True
 
@@ -649,16 +670,16 @@ def test_view_doesnt_shadow_attribute():
     found in OFS.Application, raise NotFound.  Five still knows how to
     deal with this, hence views work there too:
 
-      >>> self.app.unrestrictedTraverse(
-      ...     '@@eagle')() == 'The eagle has landed'
+      >>> res = self.app.unrestrictedTraverse('@@eagle')()  # NOQA: F821
+      >>> res == 'The eagle has landed'
       True
 
     However, acquired attributes *should* be shadowed. See discussion on
     http://codespeak.net/pipermail/z3-five/2006q2/001474.html
 
-      >>> simplecontent.manage_addIndexSimpleContent(self.folder,
+      >>> simplecontent.manage_addIndexSimpleContent(folder,
       ...                                            'mouse', 'Mouse')
-      >>> self.folder.ftf.unrestrictedTraverse(
+      >>> folder.ftf.unrestrictedTraverse(
       ...     'mouse')() == 'The mouse has been eaten by the eagle'
       True
 

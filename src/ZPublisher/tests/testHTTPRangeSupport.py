@@ -12,9 +12,10 @@
 ##############################################################################
 
 import sys
-from ZPublisher.HTTPRangeSupport import parseRange, expandRanges
-
 import unittest
+
+from ZPublisher.HTTPRangeSupport import expandRanges
+from ZPublisher.HTTPRangeSupport import parseRange
 
 
 class TestRangeHeaderParse(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestRangeHeaderParse(unittest.TestCase):
         result = parseRange(header)
         self.assertTrue(
             result == sets,
-            'Expected %r, got %r' % (sets, result))
+            f'Expected {sets!r}, got {result!r}')
 
     # Syntactically incorrect headers
     def testGarbage(self):
@@ -86,7 +87,7 @@ class TestExpandRanges(unittest.TestCase):
         result = expandRanges(sets, size)
         self.assertTrue(
             result == expect,
-            'Expected %r, got %r' % (expect, result))
+            f'Expected {expect!r}, got {result!r}')
 
     def testExpandOpenEnd(self):
         self.expectSets([(1, 2), (5, None)], 50, [(1, 2), (5, 50)])

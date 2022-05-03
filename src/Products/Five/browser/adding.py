@@ -21,7 +21,9 @@ factory screen.
 
 import operator
 
-from six import PY2
+from OFS.SimpleItem import SimpleItem
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import BadRequest
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getMenu
@@ -32,7 +34,7 @@ from zope.component import queryUtility
 from zope.component.interfaces import IFactory
 from zope.container.constraints import checkFactory
 from zope.container.constraints import checkObject
-from zope.container.i18n import ZopeMessageFactory as _  # NOQA
+from zope.container.i18n import ZopeMessageFactory as _
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
 from zope.event import notify
@@ -41,10 +43,6 @@ from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.browser.absoluteurl import absoluteURL
-
-from OFS.SimpleItem import SimpleItem
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 @implementer(IAdding, IPublishTraverse)
@@ -116,13 +114,13 @@ class Adding(BrowserView):
 
         factory = queryUtility(IFactory, name)
         if factory is None:
-            return super(Adding, self).publishTraverse(request, name)
+            return super().publishTraverse(request, name)
 
         return factory
 
     def action(self, type_name='', id=''):
         if not type_name:
-            raise UserError(_(u"You must select the type of object to add."))
+            raise UserError(_("You must select the type of object to add."))
 
         if type_name.startswith('@@'):
             type_name = type_name[2:]
@@ -134,8 +132,7 @@ class Adding(BrowserView):
 
         if queryMultiAdapter((self, self.request),
                              name=view_name) is not None:
-            url = "%s/%s=%s" % (
-                absoluteURL(self, self.request), type_name, id)
+            url = f"{absoluteURL(self, self.request)}/{type_name}={id}"
             self.request.response.redirect(url)
             return
 
@@ -201,7 +198,7 @@ class ContentAdding(Adding, SimpleItem):
 
 
 @implementer(INameChooser)
-class ObjectManagerNameChooser(object):
+class ObjectManagerNameChooser:
     """A name chooser for a Zope object manager.
     """
 
@@ -209,14 +206,6 @@ class ObjectManagerNameChooser(object):
         self.context = context
 
     def checkName(self, name, object):
-        if PY2:
-            # ObjectManager can only deal with ASCII names. Specially
-            # ObjectManager._checkId can only deal with strings.
-            try:
-                name = name.encode('ascii')
-            except UnicodeDecodeError:
-                raise UserError("Id must contain only ASCII characters.")
-
         try:
             self.context._checkId(name, allow_dup=False)
         except BadRequest as e:
@@ -226,12 +215,6 @@ class ObjectManagerNameChooser(object):
     def chooseName(self, name, object):
         if not name:
             name = object.__class__.__name__
-        else:
-            if PY2:
-                try:
-                    name = name.encode('ascii')
-                except UnicodeDecodeError:
-                    raise UserError("Id must contain only ASCII characters.")
 
         dot = name.rfind('.')
         if dot >= 0:

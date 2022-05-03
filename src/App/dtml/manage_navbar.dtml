@@ -1,0 +1,97 @@
+<dtml-unless "'manage_menu' in REQUEST['URL']">
+
+<header class="navbar navbar-nav navbar-expand navbar-dark flex-row bd-navbar">
+  <div id="toggle_tabs" class="collapsed"
+       role="button"
+       data-toggle="collapse"
+       data-target="#tabs_items"
+       aria-controls="tabs_items" aria-expanded="false"
+       aria-label="Toggle Tab-Navigation">
+    <i class="fa fa-bars"></i>
+  </div>
+  <a class="navbar-brand" title="To Zope Root"
+     href="<dtml-var "REQUEST.getVirtualRoot()">/manage" target="_parent">
+    <span class="product">ZOPE <dtml-var "ZopeVersion(major=1)"></span>
+  </a>
+  <ul class="navbar-nav flex-row ml-sm-auto d-flex">
+
+    <dtml-let authuser="REQUEST.get('AUTHENTICATED_USER', 'not logged-in')">
+    <li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user"
+        title="Logged in as: <dtml-var "str(authuser)">">
+      <span class="zmi-label"><dtml-var "str(authuser)"></span>
+    </li>
+    </dtml-let>
+
+    <li id="toggle_menu" class="form-inline desktop hidden-xs"
+        title="Show/Hide Tree Menu of the Navigation Context"
+        data-title_inactive="STATUS INACTIVE: Tree Menu Button is only active on List Views. Navigate up a level to show the tree view again."
+        data-is_folderish="<dtml-var "(manage_main != manage) and 1 or 0">">
+      <a href="<dtml-var "(manage_main != manage) and './' or '../'">manage?came_from=&dtml-URL;"
+          target="_parent" onclick="javascript:if ( manage_menu ) {window.parent.frames[0].menu_toggle();return false;} else { return true; }">
+         <i class="fa fa-sitemap"></i>
+      </a>
+    </li>
+
+    <li class="form-inline zmi-cp">
+      <a title="Control Panel"
+         href="<dtml-var "REQUEST.getVirtualRoot()">/Control_Panel/manage_main" target="_self">
+        <i class="fa fa-cog"></i>
+        <span class="zmi-label">Control&nbsp;Panel</span>
+      </a>
+    </li>
+
+    <li class="form-inline zmi-addItemSelect">
+      <form method="get" class="form-group">
+        <label for="addItemSelect" class="ml-2 sr-only">Select type to add</label>
+        <select id="addItemSelect" name=":action"
+          <dtml-if "aq_explicit"><dtml-if "hasattr(aq_explicit, 'filtered_meta_types')"
+              >class="form-control-sm" title="Select type to add"
+              onchange="addItem( elm=this, base_url='<dtml-var "REQUEST.get('URL1','')">'); this.selectedIndex = 0;"
+            <dtml-else
+              >class="form-control-sm disabled" title="No type to add" disabled="disabled"
+            </dtml-if>
+          </dtml-if>
+          ><option value="" selected="selected">Select type to add</option>
+
+          <dtml-if "hasattr(aq_explicit, 'filtered_meta_types')">
+            <dtml-in filtered_meta_types mapping sort=name>
+              <dtml-if action>
+                <option  data-dialog="&dtml-zmi_show_add_dialog;"
+                         value="&dtml.html_quote-action;">&dtml-name;</option>
+              </dtml-if>
+            </dtml-in>
+          </dtml-if>
+
+        </select>
+      </form>
+    </li>
+  </ul>
+
+  <a href="manage_zmi_logout" title="Logout" class="ml-4">
+    <i class="fas fa-sign-out-alt"></i>
+  </a>
+
+</header>
+
+<!-- ZMI-MODAL DIALOG -->
+<div class="modal fade" id="zmi-modal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" 
+                aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ... Loading Form ...
+      </div>
+      <div class="modal-footer">
+          &nbsp;
+      </div>
+    </div>
+  </div>
+</div>
+
+</dtml-unless>

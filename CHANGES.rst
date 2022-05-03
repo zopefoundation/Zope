@@ -1,367 +1,479 @@
-Changelog
-=========
+Change log
+==========
 
-This file contains change information for the current Zope release.
-Change information for previous versions of Zope can be found at
-https://zope.readthedocs.io/en/2.13/CHANGES.html
+These are all the changes for Zope 5, starting with the alpha releases,
+since the branch point at Zope 4.1.2.
 
-For the change log of the alpha versions see
-https://github.com/zopefoundation/Zope/blob/4.0a6/CHANGES.rst
+The change log for the previous version, Zope 4, is at
+https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-4.0b3 (unreleased)
+
+5.5.2 (unreleased)
 ------------------
 
-Bugfixes
-++++++++
+- Fix version pin specifications for Python 3.6 compatibility.
+  (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
 
-- Made Redirect unavailable as url.  Part of PloneHotfix20171128.
+- Quote all components of a redirect URL (not only the path component)
+  (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
+  
+- Drop the convenience script generation from the buildout configuration
+  in order to get rid of a lot of dependency version pins.
+  These were only needed for maintainers who can install them manually.
+  (`#1019 <https://github.com/zopefoundation/Zope/issues/1019>`_)
 
-- Fixed DocumentTemplate version 3.0b2 fixes #179 (ZMI navtree error).
+- Update to newest compatible versions of dependencies.
 
-- Re-add a link to refresh the ZMI menu tree on the left.
 
-- Install a default page for the root view in new installations again.
-
-- Re-raise app exceptions if x-wsgiorg.throw_errors is True in the request environ.
-
-- Fix path expressions trying to call views that do not implement `__call__`.
-
-- Move _html to HTTPBaseResponse since it is shared by HTTPResponse and WSGIResponse.
-
-- Fix unpickling of instances created before 4.0b2 those classes changed from
-  old-style classes to new-style classes.
-
-- Prevent UnicodeDecodeError when publishing image (bytes) responses without content-type
-
-Changes
-+++++++
-
-- Move `Products.SiteAccess` back here from ZServer distribution.
-
-4.0b2 (2017-10-13)
+5.5.1 (2022-04-05)
 ------------------
 
-New features
-++++++++++++
+- Update to newest compatible versions of dependencies.
 
-- Add support for IPv6 addresses for the trusted-proxy zope.conf setting.
+- Update ``waitress`` to version 2.1.1 to mitigate a vulnerability in that
+  package. As ``waitress`` no longer supports Python 3.6 it is not advised
+  to run Zope on Python 3.6 any longer even though it still supports Python
+  3.6. **Due to this security issue support for Python 3.6 is now officially
+  deprecated. It will be removed with Zope version 5.7.**
 
-Bugfixes
+- To run ``bin/buildout`` inside the Zope project now ``zc.buildout >= 2.13.7``
+  or ``zc.buildout >= 3.0.0b1`` is required.
+
+
+5.5 (2022-03-10)
+----------------
+
+- Fix several exceptions when calling ``ZPublisher.utils.fix_properties``.
+
+- Update to newest compatible versions of dependencies.
+
+- Enhance cookie support. For details, see
+  `#1010 <https://github.com/zopefoundation/Zope/issues/1010>`_
+
+- Use intermediate ``str`` representation for non-bytelike response data unless
+  indicated differently by the content type.
+  (`#1006 <https://github.com/zopefoundation/Zope/issues/1006>`_)
+
+- Use ``zc.buildout 3.0rc2`` to install Zope to run its tests.
+
+
+5.4 (2022-01-09)
+----------------
+
+- Audit and fix all hyperlinks in code and documentation
+
+  - Change zope.org references to zope.dev due to ongoing domain ownership
+    issues. zope.dev is owned by the Plone Foundation and thus safe from
+    interference. XML/ZCML namespace URLs remain unchanged.
+  - Remove all links that are completely dead, such as the old zope.org
+    Collectors issue trackers.
+  - Update all other miscellaneous links to make them work again or remove if
+    the information is gone.
+
+- Improve type guessing for the default WebDAV PUT factory
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
+
+- Enable WebDAV PUT factories to change a newly created object's ID
+  (`#997 <https://github.com/zopefoundation/Zope/issues/997>`_)
+
+- Fix potential race condition in ``App.version_txt.getZopeVersion``
+  (`#999 <https://github.com/zopefoundation/Zope/issues/999>`_)
+
+- Don't coerce file upload fields for adding DTML Documents/Methods to string.
+  This makes the Add forms work again with the ZPublisher converter code
+  changes.
+
+- Remove deprecated ulines, utext, utokens, ustring from more code.
+  In the properties form, show a deprecation warning.
+
+- Add function ``ZPublisher.utils.fix_properties``.
+  You can call this to fix lines properties to only contain strings, not bytes.
+  It also replaces the deprecated property types ulines, utext, utoken, and
+  ustring with their non-unicode variants.
+  (`#987 <https://github.com/zopefoundation/Zope/issues/987>`_)
+
+- Add support for Python 3.10.
+
+- Update to newest compatible versions of dependencies.
+
+
+5.3 (2021-07-31)
+----------------
+
+- Reinstate simple sessioning with ``Products.TemporaryFolder``
+  because the underlying issues with ``tempstorage`` have been fixed.
+  (`#985 <https://github.com/zopefoundation/Zope/issues/985>`_)
+
+- Update the ``AccessControl`` version pin to fix a remote code execution issue
+  (see `AccessControl security advisory GHSA-qcx9-j53g-ccgf
+  <https://github.com/zopefoundation/AccessControl/security/advisories/GHSA-qcx9-j53g-ccgf>`_)
+
+- Prevent ``DeprecationWarnings`` from moved imports in ``AccessControl``
+
+- make sure "Manager" users can always modify proxy roles
+  (`see Products.PythonScripts#50
+  <https://github.com/zopefoundation/Products.PythonScripts/issues/50>`_)
+
+- Deprecate usage of "unicode" converters. Also, the behavior of
+  ``field2lines`` is now aligned to the other converters and returns a list of
+  strings instead of a list of bytes.
+  (`#962 <https://github.com/zopefoundation/Zope/issues/962>`_)
+
+- Update to newest compatible versions of dependencies.
+
+
+5.2.1 (2021-06-08)
+------------------
+
+- Prevent unauthorized traversal through authorized Python modules in
+  TAL expressions
+
+- Facelift the Zope logo.
+  (`#973 <https://github.com/zopefoundation/Zope/issues/973>`_)
+
+- Update to newest compatible versions of dependencies.
+
+
+5.2 (2021-05-21)
+----------------
+
+- Prevent traversal to names starting with ``_`` in TAL expressions
+  and fix path expressions for the ``chameleon.tales`` expression engine.
+
+- Provide friendlier ZMI error message for the Transaction Undo form
+  (`#964 <https://github.com/zopefoundation/Zope/issues/964>`_)
+
+- Updated/fixed the poll application tutorial in the Zope Developers Guide
+  (`#958 <https://github.com/zopefoundation/Zope/issues/958>`_)
+
+- Update to newest versions of dependencies.
+
+- Depend on ``zope.datetime`` for the functions ``iso8601_date``,
+  ``rfc850_date``, and ``rfc1123_date`` which used to be in ``App.Common``
+  keeping backwards-compatibility imports in place.
+
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- With the exception of ``field2bytes``, field converters do no longer try to
+  read file like objects
+  (`#558 <https://github.com/zopefoundation/Zope/issues/558>`_)
+
+
+5.1.2 (2021-03-02)
+------------------
+
+- Enforce Zope permissions during recursive XML-RPC data dumps
+  (`#954 <https://github.com/zopefoundation/Zope/issues/954>`_)
+
+- The ``compute_size`` method properly returns None if the content does not
+  have a ``get_size`` method but the parent has.
+  (`#948 <https://github.com/zopefoundation/Zope/issues/948>`_)
+
+- Fix control panel tab links on all control panel pages
+
+- Update to newest versions of dependencies.
+
+
+5.1.1 (2021-02-10)
+------------------
+
+- Replace (in ``OFS``) the deprecated direct ``id`` access by
+  ``getId`` calls.
+  (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_)
+
+- Update ZMI dependencies for Font Awesome, jQuery and bootstrap.
+
+- Revise debug info GUI
+  (`#937 <https://github.com/zopefoundation/Zope/pull/937>`_)
+
+- Convert ``bytes`` ``HTTPResponse`` header value to ``str``
+  via ``ISO-8859-1`` (the default encoding of ``HTTP/1.1``).
+
+- Fix rendering of not found resources.
+  (`#933 <https://github.com/zopefoundation/Zope/pull/933>`_)
+
+- Update to newest versions of dependencies.
+
+
+5.1 (2020-11-12)
+----------------
+
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- Exclude characters special for ``chameleon``'s interpolation syntax
+  (i.e. ``${}``) from use in TALES path expressions to reduce the failure risk
+  for the ``chameleon`` interpolation heuristics
+  (`#925 <https://github.com/zopefoundation/Zope/issues/925>`_)
+
+Features
 ++++++++
 
-- Fix special double under methods on `HTTPRequest.record` class.
+- Restore the ZMI `Debug Information` control panel page
+  (`#898 <https://github.com/zopefoundation/Zope/issues/898>`_)
 
-- Add missing version pin for `Zope2` in `versions-prod.cfg`.
+Fixes
++++++
 
-- Fix ``HTTPExceptionHandler`` to be usable as part of the WSGI pipeline in
-  testbrowser tests.
+- Fix ZMI visibility of pre elements in error log
+  (`Products.SiteErrorLog#26
+  <https://github.com/zopefoundation/Products.SiteErrorLog/issues/26>`_)
+
+- Fix ``length`` for page template repeat variables
+  (`#913 <https://github.com/zopefoundation/Zope/issues/913>`_)
+
+- Update `isort` to version 5.
+  (`#892 <https://github.com/zopefoundation/Zope/pull/892>`_)
+
+- Update to newest versions of dependencies.
+
+
+5.0 (2020-10-08)
+----------------
+
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- Drop support for Python 3.5 as it will run out of support soon.
+  (`#841 <https://github.com/zopefoundation/Zope/issues/841>`_)
+
+
+Features
+++++++++
+
+- HTTP header encoding support
+  (`#905 <https://github.com/zopefoundation/Zope/pull/905>`_)
+
+- Add support for Python 3.9.
+
+- New interface ``Products.PageTemplates.interfaces.IZopeAwareEngine``.
+  It can be used as the "provides" of an adapter registration
+  to adapt a non ``Zope`` tales engine to an engine to be used
+  by ``Zope`` page templates
+  (`#864 <https://github.com/zopefoundation/Zope/issues/864>`_).
+  Currently, the adaptation is used only when the
+  template is rendered with ``chameleon``;
+  with ``zope.pagetemplate``, the engine is used
+  as is - this may change in the future.
+
+- Allow (some) builtins as first element of a (TALES) path expression:
+  in an untrusted context, the builtins from
+  ``AccessControl.safe_builtins`` are allowed;
+  in a trusted context, all Python builtins are allowed in addition
+  (and take precedence)
+  (`zope.tales#23 <https://github.com/zopefoundation/zope.tales/issues/23>`_).
+
+- Support the ``attrs`` predefined template variable again (as
+  far as ``chameleon`` allows it)
+  (`#860 <https://github.com/zopefoundation/Zope/issues/860>`_).
+
+- Use ``Chameleon`` (>= 3.7.2) configuration to get better
+  information for errors detected during template execution
+  (`#837 <https://github.com/zopefoundation/Zope/issues/837>`_).
+
+Fixes
++++++
+
+- Provide a more senseful ``OFS.SimpleItem.Item_w__name__.id``
+  to avoid bugs by use of deprecated direct ``id`` access
+  (as e.g. (`#903 <https://github.com/zopefoundation/Zope/issues/903>`_).
+
+- Update to ``zope.interface > 5.1.0`` to fix a memory leak.
+
+- Fix export of files with non-latin-1 compatible names
+  (`#890 <https://github.com/zopefoundation/Zope/issues/890>`_)
+
+- Avoid unsolicited translations
+  (`#876 <https://github.com/zopefoundation/Zope/issues/876>`_)
+
+- Make "chameleon-zope context wrapping" more faithful.
+  (`#873 <https://github.com/zopefoundation/Zope/pull/873/files>`_)
+
+- Let "unicode conflict resolution" work for all templates (not just
+  ``ZopePageTemplate``).
+  (`#872 <https://github.com/zopefoundation/Zope/pull/872/files>`_)
+
+- Make "Unicode Conflict Resolution" available for templates
+  rendered with ``chameleon``
+  (`Products.CMFPlone#3145
+  <https://github.com/plone/Products.CMFPlone/issues/3145>`_).
+
+- Improve documentation of ``CONTEXTS`` in the "Zope Book".
+
+- Decrease cookie size for copy/paste clipboard cookie
+  (`#854 <https://github.com/zopefoundation/Zope/issues/854>`_)
+
+- Fix ``default`` keyword handling in page templates
+  (`#846 <https://github.com/zopefoundation/Zope/issues/846>`_)
+
+- Fix parsing of package version and show correct major version in the ZMI
+
+- Improve solidity of the ``debugError`` method.
+  (`#829 <https://github.com/zopefoundation/Zope/issues/829>`_)
+
+- Fix that ``ZTUtils.LazyFilter`` could not be imported inside a restricted
+  Python script.
+  (`#901 <https://github.com/zopefoundation/Zope/pull/901>`_)
 
 Other changes
 +++++++++++++
 
-- Explicitly make all classes new-style classes.
+- Add ``pyupgrade`` via ``pre-commit``
+  (`#859 <https://github.com/zopefoundation/Zope/issues/859>`_)
+
+- Add ``tal:switch`` test
 
 
-4.0b1 (2017-09-15)
+5.0a2 (2020-04-24)
 ------------------
 
-With this release the egg of the project is named `Zope` instead of `Zope2`.
-There is a meta package named `Zope2` which depends on `Zope`.
-
-See https://zope.readthedocs.io/en/latest/WHATSNEW.html for a higher level
-description of the changes.
-
-Supported versions
-++++++++++++++++++
-
-- Add support for Python 3.4, 3.5 and 3.6.
-
-- Drop support for Python 2.6.
-
-Breaking changes
-++++++++++++++++
-
-- Removed the old help system, in favor of the current Sphinx documentation
-  hosted at https://zope.readthedocs.io/. For backwards compatibility the
-  `registerHelp` and `registerHelpTitle` methods are still available on the
-  ProductContext used during the `initialize` function.
-
-- Remove ZMI re-ordering features.
-
-- Retired icons from the `Zope Management Interface` and various smaller
-  cleanups of ZMI screens.
-
-- Remove xml-export.
-
-- Remove `Globals` package, opened database are now found in
-  `Zope2.opened` next to `Zope2.DB`.
-
-- Remove proxy role support from DTML documents and methods.
-
-- Remove `Products.ZReST` and the `reStructuredText` wrapper, you can use
-  `docutils` directly to gain `reST` support.
-
-- Stop setting ``CLIENT_HOME`` as a builtin, get it via
-  ``App.config.getConfiguration().clienthome`` instead.
-
-- Drop `OFS.History` functionality.
-
-- Removed `OFS.DefaultObservable` - an early predecessor of `zope.event`.
-
-- Removed `OFS.ZDOM`. `OFS.SimpleItem.Item` now implements `getParentNode()`.
-
-- Removed special code to create user folders and page templates while creating
-  new `OFS.Folder` instances.
-
-- Removed the `App.version_txt.getZopeVersion` API, you can use
-  ``pkg_resources.get_distribution('Zope').version`` instead.
-
-- On the application object, removed `PrincipiaTime` in favor of `ZopeTime` and
-  `PrincipiaRedirect` in favor of `Redirect` or `ZopeRedirect`.
-
-- Removed `bobobase_modification_time` from `Persistence.Persistent`, you can
-  use `DateTime(object._p_mtime)` instead.
-
-- Removed the special handling of `Set-Cookie` headers in
-  `HTTPResponse.setHeader`. Use the `setCookie`/`appendCookie`/`expireCookie`
-  methods instead, or if low-level control is needed, use `addHeader` instead
-  to get the exact same effect.
-
-- Raise ``BadRequest`` instead of returning MessageDialog.
-
-- Update available HTTP response code, 302 is now called ``Found``.
-
-- Refactor ``browser:view`` and ``browser:page`` directives.
-  This makes their implementation more similar to that in ``zope.browserpage``
-  and adds allowed_interface support for the ``browser:view`` directive.
-  By default the `aq_*` attributes are no longer available on those
-  views/pages.
-
-- Removed the last remaining code to support `SOFTWARE_HOME` and `ZOPE_HOME`.
-
-- Simplified instance skeleton, removing old `Extensions`, `import`,
-  `lib/python` and `Products` from the default. You can continue to manually
-  add these back. (`Products` requires `ZServer` to be usable.)
-
-- Remove the `zopectl` script.
-
-WSGI
-++++
-
-- Document running Zope as a WSGI application.
-
-- Remove `Connection` and `Transfer-Encoding` headers from WSGI responses.
-  According to PEP 333 WSGI applications must not emit hop-by-hop headers.
-
-- Ensure that the ``WSGIPublisher`` begins and ends an *interaction*
-  at the request/response barrier. This is required for instance for
-  the ``checkPermission`` call to function without an explicit
-  ``interaction`` parameter.
-
-- Make the WSGIPublisher normalize HTTP exception classes based on name
-  (for example, any exception named NotFound will be converted
-  into `zExceptions.NotFound`). This restores compatibility with
-  similar behavior of the old publisher.
-
-- Change the WSGIResponse exception methods to raise exceptions instead
-  of returning responses. This includes ``notFoundError``, ``forbiddenError``,
-  ``debugError``, ``badRequestError`` and ``unauthorized``.
-
-- Add support for exception views to WSGIPublisher.
-
-- Add support for ``ConflictError`` and ``TransientError`` retry logic directly
-  into WSGIPublisher, thus `repoze.tm2` and `repoze.retry` are no longer
-  needed and no longer supported.
-
-- Change Testing to use the WSGI publisher for functional and testbrowser
-  based tests incl. functional doctests. Alternatives are available
-  in ``ZServer.Testing``.
-
-- Split a WSGI part out of `Zope2.Startup.ZopeStarter`.
-
-- Include ``waitress`` as a default WSGI app server.
-
-- Add `egg:Zope#httpexceptions` WSGI middleware.
-
-- Add a new `runwsgi` script to serve PasteDeploy files.
-
-
-ZODB
-++++
-
-- Support ZODB 5.
-
-- Removed persistent default content like `standard_error_message`,
-  `error_log`, `temp_folder` and `index_html`.
-
-
-Control panel
-+++++++++++++
-
-- Removed ZMI controls for restarting the process, these no longer apply when
-  managed as a WSGI application.
-
-- Remove `DebugInfo` and `DavLocks` from control panel.
-
-- Move undo management to the control panel.
-
-- Simplify ZMI control panel and globally available management screens.
-
-- Remove `control panel` object from the ZODB, it is no longer persistent.
-
-
-ZServer
-+++++++
-
-- Split out ``Lifetime``, ``webdav`` and ``ZServer`` packages into a `ZServer`
-  project.
-
-- Move ``EtagSupport``, ``Lockable`` and ``LockItem`` from ``webdav`` into
-  `OFS`.
-
-- Move ``ZPublisher.Publish`` module into `ZServer` distribution.
-
-- Move ``Products.SiteAccess`` into `ZServer` distribution.
-
-- Move ZServer related testing support into ``ZServer.Testing``.
-
-zope.conf
+Bug fixes
 +++++++++
 
-- Always configure a `blob-dir` in the default skeleton.
+- Pin ``AccessControl`` 4.2 for the `Manage WebDAV Locks` permission
 
-- Removed `mime-types` option from `zope.conf`. You can use the `add_files`
-  API from `zope.contenttype` instead.
+- Fix ``HEAD`` requests on registered views
+  (`#816 <https://github.com/zopefoundation/Zope/issues/816>`_)
 
-- Removed various persistent product related code and options.
+- Improve ``chameleon`` --> ``zope.tales`` context wrapper
+  (support for template variable injection)
+  (`#812 <https://github.com/zopefoundation/Zope/pull/812>`_).
 
-- Split a WSGI part out of `zopeschema.xml`. This reduces the supported
-  `zope.conf` directives when run under WSGI. If a directive is now unkown
-  it might have been moved to the `ZServer` package.
-  See https://github.com/zopefoundation/ZServer/blob/master/src/ZServer/Zope2/Startup/zopeschema.xml
-  for the directives which are supported via `ZServer`.
+- Require ``zope.tales>=5.0.2``
 
-- Remove profiling support via `publisher-profile-file` directive.
+- Fix issue 717 by fully honoring the engine returned by
+  ``PageTemplate.pt_getEngine``
+  (`#717 <https://github.com/zopefoundation/Zope/issues/717>`_).
+  The engine also decides about the use of ``zope.tales``
+  (engine is an instance of ``zope.pagetemplate.engine.ZopeBaseEngine``)
+  or ``chameleon.tales`` (otherwise) TALES expressions.
 
-- Changed the value for ``default-zpublisher-encoding`` to ``utf-8``.
-  If you set a different value for ``management_page_charset`` consider
-  changing ``default-zpublisher-encoding`` now.
+- Fixed encoding issue of `displayname` WebDAV property
+  (`#797 <https://github.com/zopefoundation/Zope/issues/797>`_)
 
-- Removed the ``enable-ms-author-via`` directive which was only required for
-  very old web folder implementations from before 2007.
+- Fixed fallback implementation of ``manage_DAVget``
+  (`#799 <https://github.com/zopefoundation/Zope/issues/799>`_)
 
-- Changed `zope.conf` default settings for ``python-check-interval`` to ``1000``.
+Other changes
++++++++++++++
 
-Dependencies
-++++++++++++
+- Update to newest versions of dependencies.
 
-- Integrate code from and drop dependency on `five.globalrequest`.
 
-- Integrate `five.pt` code directly into `Products.PageTemplates`.
+5.0a1 (2020-02-28)
+------------------
 
-- Drop `ZopeUndo` dependency.
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
 
-- Remove `Products.StandardCacheManagers` dependency.
+- Drop support for Python 2.7 aka Zope 5 cannot be run on Python 2 any more.
+  If you are still running on Python 2.7 upgrade to the latest Zope 4 version
+  first, migrate to Python 3 and than switch to Zope 5.
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
-- Remove dependency on `initgroups`. Use the standard libraries
-  ``os.initgroups`` instead.
+- Remove all backwards-compatibility code marked to go away in Zope 5
+  (`#478 <https://github.com/zopefoundation/Zope/issues/478>`_)
 
-- Merge `Products.OFSP` project back in.
+- Drop support for running Zope with ZServer as it is Python 2 only.
+  (`#592 <https://github.com/zopefoundation/Zope/issues/592>`_)
 
-- `Products.SiteErrorLog` is now a separated package and Zope no longer depends
-  on it.
+- Remove deprecated ``postProcessInputs`` request method.
+  (`#782 <https://github.com/zopefoundation/Zope/issues/782>`_)
 
-- Split `Products.TemporaryFolder` and `Products.ZODBMountPoint` into
-  one new project called `Products.TemporaryFolder`.
+- Remove deprecated module ``ZPublisher.maybe_lock``.
+  (`#758 <https://github.com/zopefoundation/Zope/issues/758>`_)
 
-- Create new `Products.Sessions` distribution including ``Products.Sessions``
-  and ``Products.Transience`` code.
+- Remove Help System methods from the product context.
+  (`#756 <https://github.com/zopefoundation/Zope/issues/756>`_)
 
-- Dropped the direct dependencies on packages that have been factored out of
-  the main Zope 2 tree. Make sure you declare a dependency in your own
-  distribution if you still use one of these:
+- Remove more deprecated code.
+  (`#757 <https://github.com/zopefoundation/Zope/issues/757>`_)
 
-    - `Products.BTreeFolder2`
-    - `Products.ExternalMethod`
-    - `Products.MailHost`
-    - `Products.MIMETools`
-    - `Products.PythonScripts`
-    - `Products.SiteErrorLog`
-    - `Products.StandardCacheManagers`
-    - `Products.ZCatalog`
-    - `Record`
-
-Deprecations
-++++++++++++
-
-- Five.browser: Marked `processInputs` and `setPageEncoding` as deprecated.
-  `processInputs` was replaced by the `postProcessInputs` request method and
-  the charset negotiation done by `setPageEncoding` was never fully supported.
+- Updated Zope documentation sources for Zope 5.
+  (`#659 <https://github.com/zopefoundation/Zope/issues/659>`_)
 
 New features
 ++++++++++++
 
-- Add support to SameSite cookie in ``ZPublisher.HTTPBaseResponse``:
-  https://tools.ietf.org/html/draft-west-first-party-cookies-07
+- Restore WebDAV support in Zope.
+  (`#744 <https://github.com/zopefoundation/Zope/issues/744>`_)
 
-- Optimized the `OFS.ObjectManager.__contains__` method to do the
-  least amount of work necessary.
+- Enable WebDAV support independent of ``ZServer``.
+  (`#787 <https://github.com/zopefoundation/Zope/pull/787>`_)
 
-- Optimized the `OFS.Traversable.getPhysicalPath` method to avoid excessive
-  amounts of method calls.
+- Clean up and sanitize permissions used for WebDAV-related methods.
 
-- During startup open a connection to every configured database, to ensure all
-  of them can indeed be accessed. This avoids surprises during runtime when
-  traversal to some database mountpoint could fail as the underlying storage
-  cannot be opened at all.
+- Add ``wsgi.file_wrapper`` implementation
+  https://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling
+  (`#719 <https://github.com/zopefoundation/Zope/pull/719>`_)
 
-- Explicitly close all databases on shutdown, which ensures `Data.fs.index`
-  gets written to the file system.
+Bug fixes
++++++++++
 
-- ZPublisher: If `IBrowserPage` is provided by a view, form input is decoded.
-  This makes it easier to use ``zope.formlib`` and ``z3c.form`` in Zope 2.
+- Only use ``wsgi.file_wrapper`` for response bodies with a ``read`` method.
+  (`#763 <https://github.com/zopefoundation/Zope/issues/763>`_)
 
-Security fixes
-++++++++++++++
+- Improve detection of HTTPS requests.
+  (`#680 <https://github.com/zopefoundation/Zope/issues/680>`_)
 
-- Fix reflective XSS in findResult.
+- Fix several ZMI links so they respect virtual hosting.
+  (`#788 <https://github.com/zopefoundation/Zope/issues/788>`_)
 
-- Patch zope.interface to remove docstrings and avoid publishing.
+- Fix sort link URLs on ``manage_main``
+  (`#748 <https://github.com/zopefoundation/Zope/issues/748>`_)
 
-- Don't copy items the user is not allowed to view.
+- More tests to make sure all ``__str__`` implementations return native
+  strings.
+  (`#692 <https://github.com/zopefoundation/Zope/issues/692>`_)
 
-- Quote variable in manage_tabs to avoid XSS.
+- Fix longstanding test bug by forcing the page template engine.
+  Many tests in ``Products.PageTemplates`` used the old Zope page template
+  engine because the correct one was not registered during setup.
 
-- Removed docstrings from some methods to avoid publishing them.
+- Close opened db during shutdown (as ZServer is already doing).
+  (`#740 <https://github.com/zopefoundation/Zope/issues/740>`_)
 
-- LP #789863:  Ensure that Request objects cannot be published / traversed
-  directly via a URL.
+- The method ``unrestrictedTraverse`` raises an error when
+  the argument ``path`` is not something it can work with.
+  (`#674 <https://github.com/zopefoundation/Zope/issues/674>`_)
 
-- Port tests for ``str.format`` security fix from Zope 2.13.
+- Improve ZMI Security Tab usability for high numbers of roles.
+  (`#730 <https://github.com/zopefoundation/Zope/issues/730>`_)
 
-Bugfixes
-++++++++
+- Some small ZMI rendering fixes.
+  (`#729 <https://github.com/zopefoundation/Zope/issues/729>`_)
 
-- PropertyManagers and PropertySheets now correctly accept all forms of
-  strings as property values.
+- Fix error when using database minimize in the ZMI.
+  (`#726 <https://github.com/zopefoundation/Zope/issues/726>`_)
 
-- Allow handling of multipart requests in functional doctests using ``http``.
+- Fix ``__getattr__`` signature in ``UnauthorizedBinding``.
+  (`#703 <https://github.com/zopefoundation/Zope/issues/703>`_)
 
-- Fix Content-Length header for non-ascii responses incl. a base tag.
+- Fix VirtualHostMonster not being able to set mappings under Python 3.
+  (`#708 <https://github.com/zopefoundation/Zope/issues/708>`_)
 
-- bobo_traverse of ProductDispatcher did not correctly invalidate cache
-  when a product was not initializes after first access of the cache. Types
-  that were added in test-profiles were not useable.
+- Reduce the danger of acquiring built-in names on the ZMI Find tab.
+  (`#712 <https://github.com/zopefoundation/Zope/issues/712>`_)
 
-- Issue #16: prevent leaked connections when broken ``EndRequestEvent``
-  subscribers raise exceptions.
+- Restore the mistakenly removed Properties ZMI tab on Image objects
+  (`#706 <https://github.com/zopefoundation/Zope/issues/706>`_)
 
-- Made sure ``getConfiguration().default_zpublisher_encoding`` is set correctly.
+- Fix ``OFS.Image.File.__str__`` for ``Pdata`` contents
+  (`#711 <https://github.com/zopefoundation/Zope/issues/711>`_)
 
-- Issue #28: Fix publishing of ``IStreamIterator``. This interface does
-  not have seek or tell.  Introduce ``IUnboundStreamIterator`` to support
-  publishing iterators of unknown length.
+- Set ``REMOTE_USER`` in wsgi environ using Zope user authentication
+  (`#713 <https://github.com/zopefoundation/Zope/pull/713>`_)
 
-- Removed the (very obsolete) thread lock around the cookie parsing code
-  in HTTPRequest.py; the python `re` module is thread-safe, unlike the
-  ancient `regex` module that was once used here.
+- Add ``Paste`` as ``extras_require`` dependency to pull in ``Paste`` when
+  installing with `pip` and `constraints.txt` to prevent startup errors.
+  This requires adding the ``[wsgi]`` extra in the egg specification.
+  (`#734 <https://github.com/zopefoundation/Zope/issues/734>`_)
+
+Other changes
++++++++++++++
+
+- Move retried request delay handling out of ``supports_retry``
+  (`#474 <https://github.com/zopefoundation/Zope/issues/474>`_)
+
+- Improve documentation for Zope's error logging services.

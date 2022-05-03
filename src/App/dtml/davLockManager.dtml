@@ -1,0 +1,107 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='DAV Locks')">
+  <dtml-var manage_tabs>
+</dtml-with>
+
+<main class="container-fluid">
+
+<dtml-let from_path="REQUEST.form.get('frompath',None)"
+          lockedobjs="from_path and findLockedObjects(frompath=from_path) or []">
+
+  <p class="form-help">
+    Use the search form to locate locked items starting from the
+    provided path.
+  </p>
+
+  <form action="&dtml-URL0;" name="finderform" class="form-inline">
+    <label for="frompath" class="form-label mr-3">Search path</label>
+        <input type="text" name="frompath" id="frompath" 
+              value="&dtml.missing-frompath;" 
+              class="form-control mr-3" />
+        <input class="btn btn-primary" type="submit" value="Go" />
+  </form>
+
+  <form action="manage_unlockObjects" name="objectItems" method="post">
+    <input type="hidden" name="frompath" value="&dtml.missing-frompath;" />
+  
+    <dtml-if lockedobjs>
+    
+      <table class="table table-striped table-hover table-sm objectItems my-5">
+      
+        <thead class="thead-light">
+          <th scope="col" class="zmi-object-check text-right">
+            <input type="checkbox" id="checkAll" onclick="checkbox_all();" />
+          </th>
+          <th scope="col">Path</th>
+          <th scope="col">Locked by</th>
+          <th scope="col">Lock token</th>
+        </thead>
+      
+        <tbody>
+          <dtml-in lockedobjs>
+            <tr>
+      		<td class="zmi-object-check text-right"
+                  onclick="$(this).children('input').trigger('click');">
+                <input type="checkbox" name="paths:list"
+                       value="&dtml-sequence-key;"
+                       class="checkbox-list-item"
+                       id="cb_&dtml-sequence-index;" 
+                       onclick="event.stopPropagation();select_objectitem($(this));"/>
+              </td>
+              <td class="zmi-object-id">
+               <label for="cb_&dtml-sequence-index;">
+                 <a href="/&dtml-sequence-key;/manage_workspace">
+                   /&dtml-sequence-key;
+                 </a>
+               </label>
+              </td>
+              <dtml-in sequence-item mapping>
+                <td class="zmi-object-id">&dtml-owner;</td>
+                <td class="zmi-object-id">&dtml-token;</td>
+               </dtml-in>
+              </td>
+            </tr>
+          </dtml-in lockedobjs>
+        </tbody>
+      
+      </table>
+  
+      <div class="form-group form-inline zmi-controls">
+        <div class="input-group">
+          <input class="btn btn-primary" type="submit"
+                 value="Unlock objects" />
+        </div>
+      </div>
+    <dtml-else>
+      <dtml-if frompath>
+        <div class="alert alert-info my-5">
+          Found no locked items under path <em>&dtml-frompath;</em>.
+        </div>
+      </dtml-if>
+    </dtml-if>
+  </form>
+
+</dtml-let>
+
+</main>
+
+<script>
+  // +++++++++++++++++++++++++++
+  // Item  Selection
+  // +++++++++++++++++++++++++++
+  function checkbox_all() {
+    var checkboxes = document.getElementsByClassName('checkbox-list-item');
+    // Toggle Highlighting CSS-Class
+    if (document.getElementById('checkAll').checked) {
+      $('table.objectItems tbody tr').addClass('checked');
+    } else {
+      $('table.objectItems tbody tr').removeClass('checked');
+    };
+    // Set Checkbox like checkAll-Box
+    for (i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = document.getElementById('checkAll').checked;
+    }
+  };
+</script>
+
+<dtml-var manage_page_footer>

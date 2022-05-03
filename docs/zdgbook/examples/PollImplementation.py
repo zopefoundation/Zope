@@ -1,6 +1,7 @@
 from Poll import Poll
 
-class PollImplementation(object):
+
+class PollImplementation:
     """
     A multiple choice poll, implements the Poll interface.
 
@@ -9,7 +10,7 @@ class PollImplementation(object):
     number of votes.
     """
 
-    __implements__=Poll
+    __implements__ = Poll
 
     def __init__(self, question, responses):
         self._question = question

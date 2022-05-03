@@ -15,15 +15,14 @@
 
 import binascii
 
-from Acquisition import Implicit
+import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import undo_changes
-from DateTime.DateTime import DateTime
-import transaction
-
+from Acquisition import Implicit
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
+from DateTime.DateTime import DateTime
 
 
 class UndoSupport(Tabs, Implicit):
@@ -34,7 +33,7 @@ class UndoSupport(Tabs, Implicit):
         {'label': 'Undo', 'action': 'manage_UndoForm'},
     )
 
-    security.declareProtected(undo_changes, 'manage_UndoForm')
+    security.declareProtected(undo_changes, 'manage_UndoForm')  # NOQA: D001
     manage_UndoForm = DTMLFile(
         'dtml/undo',
         globals(),
@@ -61,7 +60,7 @@ class UndoSupport(Tabs, Implicit):
                 v = default
             return v
 
-    security.declareProtected(undo_changes, 'undoable_transactions')
+    @security.protected(undo_changes)
     def undoable_transactions(self, first_transaction=None,
                               last_transaction=None,
                               PrincipiaUndoBatchSize=None):
@@ -91,14 +90,14 @@ class UndoSupport(Tabs, Implicit):
                 desc = ' '.join(desc[1:])
                 if len(desc) > 60:
                     desc = desc[:56] + ' ...'
-                tid = "%s %s %s %s" % (encode64(tid), t, d1, desc)
+                tid = f"{encode64(tid)} {t} {d1} {desc}"
             else:
-                tid = "%s %s" % (encode64(tid), t)
+                tid = f"{encode64(tid)} {t}"
             d['id'] = tid
 
         return r
 
-    security.declareProtected(undo_changes, 'manage_undo_transactions')
+    @security.protected(undo_changes)
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
@@ -111,8 +110,20 @@ class UndoSupport(Tabs, Implicit):
                 descriptions.append(tid[-1])
 
         if tids:
-            transaction.get().note(u"Undo %s" % ' '.join(descriptions))
+            ts = transaction.get()
+            ts.note("Undo %s" % ' '.join(descriptions))
             self._p_jar.db().undoMultiple(tids)
+            try:
+                ts.commit()
+            except Exception as exc:
+                if REQUEST is None:
+                    raise
+
+                ts.abort()
+                error = '{}: {}'.format(exc.__class__.__name__, str(exc))
+                return self.manage_UndoForm(self, REQUEST,
+                                            manage_tabs_message=error,
+                                            manage_tabs_type='danger')
 
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect("%s/manage_UndoForm" % REQUEST['URL1'])

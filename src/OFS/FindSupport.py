@@ -16,59 +16,60 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
 from AccessControl.Permissions import view_management_screens
-from Acquisition import aq_base, aq_parent
+from AccessControl.tainted import TaintedString
+from Acquisition import aq_base
+from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
+from DocumentTemplate._DocumentTemplate import InstanceDict
+from DocumentTemplate._DocumentTemplate import TemplateDict
 from DocumentTemplate.DT_Util import Eval
-from DocumentTemplate.DT_Util import InstanceDict
-from DocumentTemplate.DT_Util import TemplateDict
 from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
-from zope.interface import implementer
-
 from OFS.interfaces import IFindSupport
+from zope.interface import implementer
+from ZPublisher.HTTPRequest import default_encoding
 
 
 @implementer(IFindSupport)
 class FindSupport(Base):
-    """Find support for Zope Folders"""
+    """Find support for Zope Folders."""
 
     manage_options = ()
     security = ClassSecurityInfo()
 
-    security.declareProtected(view_management_screens, 'manage_findForm')
-    manage_findForm = DTMLFile('dtml/findForm', globals(),
-                               management_view='Find')
-
-    security.declareProtected(view_management_screens, 'manage_findAdv')
-    manage_findAdv = DTMLFile('dtml/findAdv', globals(),
-                              management_view='Find')
-
-    security.declareProtected(view_management_screens, 'manage_findResult')
-    manage_findResult = DTMLFile('dtml/findResult', globals(),
-                                 management_view='Find')
-
-    manage_options = (
-        {'label': 'Find', 'action': 'manage_findForm'},
+    security.declareProtected(view_management_screens, 'manage_findForm')  # NOQA: D001,E501
+    manage_findForm = DTMLFile(
+        'dtml/findForm',
+        globals(),
+        management_view='Find',
     )
 
-    security.declareProtected(view_management_screens, 'ZopeFind')
+    manage_options = (
+        {
+            'label': 'Find',
+            'action': 'manage_findForm',
+        },
+    )
+
+    @security.protected(view_management_screens)
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
                  obj_permission=None, obj_roles=None,
                  search_sub=0,
                  REQUEST=None, result=None, pre=''):
-        """Zope Find interface"""
+        """Zope Find interface."""
         return self.ZopeFindAndApply(
             obj, obj_ids=obj_ids,
             obj_metatypes=obj_metatypes, obj_searchterm=obj_searchterm,
             obj_expr=obj_expr, obj_mtime=obj_mtime, obj_mspec=obj_mspec,
             obj_permission=obj_permission, obj_roles=obj_roles,
             search_sub=search_sub, REQUEST=REQUEST, result=result,
-            pre=pre, apply_func=None, apply_path='')
+            pre=pre, apply_func=None, apply_path=''
+        )
 
-    security.declareProtected(view_management_screens, 'ZopeFindAndApply')
+    @security.protected(view_management_screens)
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
                          obj_mtime=None, obj_mspec=None,
@@ -76,7 +77,7 @@ class FindSupport(Base):
                          search_sub=0,
                          REQUEST=None, result=None, pre='',
                          apply_func=None, apply_path=''):
-        """Zope Find interface and apply"""
+        """Zope Find interface and apply."""
 
         if result is None:
             result = []
@@ -114,7 +115,7 @@ class FindSupport(Base):
 
         for id, ob in items:
             if pre:
-                p = "%s/%s" % (pre, id)
+                p = f"{pre}/{id}"
             else:
                 p = id
 
@@ -123,19 +124,42 @@ class FindSupport(Base):
                 dflag = 1
 
             bs = aq_base(ob)
-            if ((not obj_ids or absattr(bs.getId()) in obj_ids) and
-                (not obj_metatypes or (hasattr(bs, 'meta_type') and
-                 bs.meta_type in obj_metatypes)) and
-                (not obj_searchterm or
-                 (hasattr(ob, 'PrincipiaSearchSource') and
-                  obj_searchterm in ob.PrincipiaSearchSource()) or
-                 (hasattr(ob, 'SearchableText') and
-                  obj_searchterm in ob.SearchableText())
-                 ) and
-                (not obj_expr or expr_match(ob, obj_expr)) and
-                (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec)) and
-                ((not obj_permission or not obj_roles) or
-                 role_match(ob, obj_permission, obj_roles))):
+            if obj_searchterm:
+                if isinstance(obj_searchterm, TaintedString):
+                    obj_searchterm = str(obj_searchterm)
+                    if not isinstance(obj_searchterm, str):
+                        obj_searchterm = obj_searchterm.decode(
+                            default_encoding)
+                if hasattr(ob, 'PrincipiaSearchSource'):
+                    pss = ob.PrincipiaSearchSource()
+                    if not isinstance(pss, str):
+                        try:
+                            pss = pss.decode(default_encoding)
+                        except UnicodeDecodeError:
+                            pss = ''
+                if hasattr(ob, 'SearchableText'):
+                    st = ob.SearchableText()
+                    if not isinstance(st, str):
+                        try:
+                            st = st.decode(default_encoding)
+                        except UnicodeDecodeError:
+                            st = ''
+            else:
+                pss = st = ''
+
+            if ((not obj_ids or absattr(bs.getId()) in obj_ids)
+                and (not obj_metatypes
+                     or (hasattr(bs, 'meta_type')
+                         and bs.meta_type in obj_metatypes))
+                and (not obj_searchterm
+                     or (hasattr(ob, 'PrincipiaSearchSource')
+                         and obj_searchterm in pss)
+                     or (hasattr(ob, 'SearchableText')
+                         and obj_searchterm in st))
+                and (not obj_expr or expr_match(ob, obj_expr))
+                and (not obj_mtime or mtime_match(ob, obj_mtime, obj_mspec))
+                and ((not obj_permission or not obj_roles)
+                     or role_match(ob, obj_permission, obj_roles))):
 
                 if apply_func:
                     apply_func(ob, (apply_path + '/' + p))
@@ -155,6 +179,7 @@ class FindSupport(Base):
                 ob._p_deactivate()
 
         return result
+
 
 InitializeClass(FindSupport)
 

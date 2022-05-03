@@ -4,6 +4,8 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
 
+from .util import useChameleonEngine
+
 
 class SimpleView(BrowserView):
     index = ViewPageTemplateFile('simple.pt')
@@ -38,10 +40,9 @@ class MissingView(BrowserView):
 
 
 class TestPageTemplateFile(ZopeTestCase):
+
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
 
     def test_simple(self):
         view = SimpleView(self.folder, self.folder.REQUEST)
@@ -66,7 +67,8 @@ class TestPageTemplateFile(ZopeTestCase):
         self.assertTrue('here==container:True' in result)
         self.assertTrue("root:(\'\',)" in result)
         self.assertTrue("nothing:" in result)
-        self.assertTrue("parse" in result) # this tests for the existence of the cgi.parse function
+        # test for the existence of the cgi.parse function
+        self.assertTrue("parse" in result)
 
     def test_options(self):
         view = OptionsView(self.folder, self.folder.REQUEST)

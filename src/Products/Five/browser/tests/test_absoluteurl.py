@@ -24,14 +24,15 @@ def test_absoluteurl():
       >>> import Products.Five
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
+      >>> folder = self.folder  # NOQA: F821
 
       >>> from Products.Five.tests.testing import (
       ... manage_addFiveTraversableFolder)
-      >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+      >>> manage_addFiveTraversableFolder(folder, 'testoid', 'Testoid')
 
     A simple traversal will yield us the @@absolute_url view:
 
-      >>> view = self.folder.unrestrictedTraverse('testoid/@@absolute_url')
+      >>> view = folder.unrestrictedTraverse('testoid/@@absolute_url')
       >>> view()
       'http://nohost/test_folder_1_/testoid'
 
@@ -52,7 +53,7 @@ def test_absoluteurl():
 
       >>> from zope.interface import alsoProvides, noLongerProvides
       >>> from OFS.interfaces import IApplication
-      >>> alsoProvides(self.folder, IApplication)
+      >>> alsoProvides(folder, IApplication)
 
       >>> for crumb in view.breadcrumbs():
       ...     info = list(crumb.items())
@@ -61,14 +62,14 @@ def test_absoluteurl():
       [('name', 'test_folder_1_'), ('url', 'http://nohost/test_folder_1_')]
       [('name', 'testoid'), ('url', 'http://nohost/test_folder_1_/testoid')]
 
-      >>> noLongerProvides(self.folder, IApplication)
+      >>> noLongerProvides(folder, IApplication)
 
     The absolute url view is obviously not affected by virtual hosting:
 
-      >>> request = self.app.REQUEST
-      >>> request['PARENTS'] = [self.folder.test_folder_1_]
+      >>> request = self.app.REQUEST  # NOQA: F821
+      >>> request['PARENTS'] = [folder.test_folder_1_]
       >>> url = request.setServerURL(
-      ...     protocol='http', hostname='foo.bar.com', port='80')
+      ...     protocol='http', hostname='foo.bar.com', port=80)
       >>> request.setVirtualRoot('')
 
       >>> for crumb in view.breadcrumbs():

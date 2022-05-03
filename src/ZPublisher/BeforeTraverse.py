@@ -12,8 +12,10 @@
 ##############################################################################
 """BeforeTraverse interface and helper classes"""
 
-from Acquisition import aq_base
 from logging import getLogger
+
+from Acquisition import aq_base
+
 
 LOG = getLogger('ZPublisher')
 
@@ -80,7 +82,7 @@ def rewriteBeforeTraverse(container, btr):
         bpth.add(btr[key])
 
 
-class MultiHook(object):
+class MultiHook:
     """Class used to multiplex hook.
 
     MultiHook calls the named hook from the class of the container, then
@@ -108,21 +110,22 @@ class MultiHook(object):
             try:
                 cob(container, request)
             except TypeError:
-                LOG.error('%r call %r failed.' % (
-                    self._hookname, cob), exc_info=True)
+                LOG.error(f'{self._hookname!r} call {cob!r} failed.',
+                          exc_info=True)
 
     def add(self, cob):
         self._list.append(cob)
 
 
-class NameCaller(object):
+class NameCaller:
     """Class used to proxy sibling objects by name.
 
     When called with a container and request object, it gets the named
     attribute from the container and calls it.  If the name is not
     found, it fails silently.
 
-    >>> registerBeforeTraverse(folder, NameCaller('preop'), 'XApp')
+    >>> registerBeforeTraverse(self.folder,  # NOQA: F821
+    ...                        NameCaller('preop'), 'XApp')
     """
 
     def __init__(self, name='<undefined name>'):
@@ -148,10 +151,9 @@ class NameCaller(object):
 
         try:
             meth(*(container, request, None)[:args])
-        except (ArithmeticError, AttributeError, FloatingPointError,
-                IOError, ImportError, IndexError, KeyError,
-                OSError, OverflowError, TypeError, ValueError,
-                ZeroDivisionError):
+        except (ArithmeticError, AttributeError, FloatingPointError, OSError,
+                ImportError, IndexError, KeyError, OverflowError, TypeError,
+                ValueError, ZeroDivisionError):
             # Only catch exceptions that are likely to be logic errors.
             # We shouldn't catch Redirects, Unauthorizeds, etc. since
             # the programmer may want to raise them deliberately.

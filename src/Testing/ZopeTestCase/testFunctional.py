@@ -17,15 +17,16 @@ requests against the ZPublisher and how to examine the response.
 """
 
 from io import BytesIO
+from urllib.parse import urlencode
 
 from AccessControl import getSecurityManager
-from AccessControl.Permissions import view
 from AccessControl.Permissions import manage_properties
-from six.moves.urllib.parse import urlencode
-
+from AccessControl.Permissions import view
+from DocumentTemplate.permissions import change_dtml_documents
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
+
 
 SET_COOKIE_DTML = '''\
 <dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
@@ -38,20 +39,20 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
     def afterSetUp(self):
         self.folder_path = '/' + self.folder.absolute_url(1)
-        self.basic_auth = '%s:%s' % (user_name, user_password)
+        self.basic_auth = f'{user_name}:{user_password}'
 
         # A simple document
-        self.folder.addDTMLDocument('index_html', file='index')
+        self.folder.addDTMLDocument('index_html', file=b'index')
 
         # A document accessible only to its owner
-        self.folder.addDTMLDocument('secret_html', file='secret')
+        self.folder.addDTMLDocument('secret_html', file=b'secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
 
         # A method redirecting to the Zope root
-        url = self.app.absolute_url()
+        url = self.app.absolute_url().encode('ascii')
         self.folder.addDTMLMethod(
             'redirect',
-            file='<dtml-call "RESPONSE.redirect(\'' + url + '\')">')
+            file=b'<dtml-call "RESPONSE.redirect(\'%s\')">' % url)
 
         # A method setting a cookie
         self.folder.addDTMLMethod('set_cookie', file=SET_COOKIE_DTML)
@@ -89,7 +90,7 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         response = self.publish(self.folder_path + '/set_cookie')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getCookie('foo').get('value'), 'Bar')
-        self.assertEqual(response.getCookie('foo').get('path'), '/')
+        self.assertEqual(response.getCookie('foo').get('Path'), '/')
 
     def testChangeTitle(self):
         # Change the title of a document
@@ -116,6 +117,18 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
 
+    def testPUTExisting(self):
+        # PUT new data into an existing object
+        self.setPermissions([change_dtml_documents])
+
+        put_data = BytesIO(b'foo')
+        response = self.publish(self.folder_path + '/index_html',
+                                request_method='PUT', stdin=put_data,
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 204)
+        self.assertEqual(self.folder.index_html(), 'foo')
+
     def testHEAD(self):
         # HEAD should work without passing stdin
         response = self.publish(self.folder_path + '/index_html',
@@ -134,7 +147,8 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestFunctional))
     return suite

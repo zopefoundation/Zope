@@ -16,8 +16,6 @@ import unittest
 
 import Acquisition
 import ExtensionClass
-from six import PY2
-
 from ZPublisher.mapply import mapply
 
 
@@ -38,7 +36,7 @@ class MapplyTests(unittest.TestCase):
     def testClass(self):
         values = {'a': 2, 'b': 3, 'c': 5}
 
-        class c(object):
+        class c:
             a = 3
 
             def __call__(self, b, c=4):
@@ -54,40 +52,17 @@ class MapplyTests(unittest.TestCase):
         v = mapply(cc.compute, (), values)
         self.assertEqual(v, '334')
 
-    @unittest.skipUnless(PY2, 'Testing old-style class.')
-    def testOldStyleClass(self):
-        # Testing old-style class behavior.
-        values = {'a': 2, 'b': 3, 'c': 5}
-
-        class c(object):
-            a = 3
-
-            def __call__(self, b, c=4):
-                return '%d%d%d' % (self.a, b, c)
-
-            compute = __call__
-
-        cc = c()
-
-        class c2:
-            """Must be a classic class."""
-
-        c2inst = c2()
-        c2inst.__call__ = cc
-        v = mapply(c2inst, (), values)
-        self.assertEqual(v, '335')
-
     def testObjectWithCall(self):
         # Make sure that the __call__ of an object can also be another
         # callable object.  mapply will do the right thing and
         # recursive look for __call__ attributes until it finds an
         # actual method:
 
-        class CallableObject(object):
+        class CallableObject:
             def __call__(self, a, b):
-                return '%s%s' % (a, b)
+                return f'{a}{b}'
 
-        class Container(object):
+        class Container:
             __call__ = CallableObject()
 
         v = mapply(Container(), (8, 3), {})

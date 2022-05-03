@@ -60,10 +60,10 @@ the target directory, its ownership information and mode bit settings are left
 unchanged.
 """
 
+import getopt
 import os
 import shutil
 import sys
-import getopt
 
 
 def main():
@@ -182,7 +182,7 @@ def copyskel(sourcedir, targetdir, uid, gid, **replacements):
                 copydir(root, dirs, files, targetdir, replacements, uid, gid)
         finally:
             os.chdir(pwd)
-    except (IOError, OSError) as msg:
+    except OSError as msg:
         sys.stderr.write(msg)
         sys.exit(1)
 

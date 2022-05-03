@@ -2,8 +2,6 @@
 
 These tests mainly verify that OFS.Traversable.absolute_url()
 works correctly in a VHM environment.
-
-Also see http://zope.org/Collectors/Zope/809
 """
 import unittest
 
@@ -19,8 +17,8 @@ class VHMRegressions(unittest.TestCase):
         if 'virtual_hosting' not in self.app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
-            from Products.SiteAccess.VirtualHostMonster \
-                import manage_addVirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                manage_addVirtualHostMonster
             manage_addVirtualHostMonster(self.app, 'virtual_hosting')
         self.app.manage_addFolder('folder')
         self.app.folder.manage_addDTMLMethod('doc', '')
@@ -98,6 +96,27 @@ class VHMRegressions(unittest.TestCase):
         self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
                          'http://www.mysite.com/')
 
+    def testWildcardRewrite(self):
+        ob = self.traverse('/VirtualHostBase/http/doc.example.com:80'
+                           '/folder/*/VirtualHostRoot')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://doc.example.com/')
+        self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
+
+    def test_vhm_set_map(self):
+        vhm = self.app.virtual_hosting
+        mapping = """
+somedomain1/folder
+
+
+somedomain2/folder
+        """  # map with empty lines.
+        vhm.set_map(mapping)
+
+        self.assertEqual(len(vhm.lines), 2)
+        self.assertEqual(vhm.lines[0], 'somedomain1/folder')
+        self.assertEqual(vhm.lines[1], 'somedomain2/folder')
+
 
 def gen_cases():
     for vbase, ubase in (
@@ -119,7 +138,7 @@ def gen_cases():
 
 for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
     def test(self, vaddr=vaddr, vr=vr, _vh=_vh, p=p, ubase=ubase):
-        ob = self.traverse('%s/%s/' % (vaddr, p))
+        ob = self.traverse(f'{vaddr}/{p}/')
         sl_vh = (_vh and ('/' + _vh))
         aup = sl_vh + (p and ('/' + p))
         self.assertEqual(ob.absolute_url_path(), aup)
@@ -140,11 +159,81 @@ for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
     setattr(VHMRegressions, 'testTraverse%s' % i, test)
 
 
+class VHMPort(unittest.TestCase):
+
+    def setUp(self):
+        import transaction
+        from Testing.makerequest import makerequest
+        from Testing.ZopeTestCase.ZopeLite import app
+        transaction.begin()
+        self.app = makerequest(app())
+        if 'virtual_hosting' not in self.app.objectIds():
+            # If ZopeLite was imported, we have no default virtual
+            # host monster
+            from Products.SiteAccess.VirtualHostMonster import \
+                manage_addVirtualHostMonster
+            manage_addVirtualHostMonster(self.app, 'virtual_hosting')
+        self.app.manage_addFolder('folder')
+        self.app.folder.manage_addDTMLMethod('doc', '')
+        self.app.REQUEST.set('PARENTS', [self.app])
+        self.traverse = self.app.REQUEST.traverse
+
+    def tearDown(self):
+        import transaction
+        transaction.abort()
+        self.app._p_jar.close()
+
+    def testHostname(self):
+        self.traverse('/VirtualHostBase/http/www.mysite.com:80/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://www.mysite.com/folder/')
+
+    def testHostnameNoport(self):
+        self.traverse('/VirtualHostBase/http/www.mysite.com/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://www.mysite.com/folder/')
+
+    def testPassedPortHostname(self):
+        self.traverse('/VirtualHostBase/http/www.mysite.com:81/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://www.mysite.com:81/folder/')
+
+    def testIPv4(self):
+        self.traverse('/VirtualHostBase/http/127.0.0.1:80/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://127.0.0.1/folder/')
+
+    def testIPv4Noport(self):
+        self.traverse('/VirtualHostBase/http/127.0.0.1/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://127.0.0.1/folder/')
+
+    def testPassedPortIPv4(self):
+        self.traverse('/VirtualHostBase/http/127.0.0.1:81/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://127.0.0.1:81/folder/')
+
+    def testIPv6(self):
+        self.traverse('/VirtualHostBase/http/[::1]:80/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://[::1]/folder/')
+
+    def testIPv6NoPort(self):
+        self.traverse('/VirtualHostBase/http/[::1]/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://[::1]/folder/')
+
+    def testIPv6PassedPort(self):
+        self.traverse('/VirtualHostBase/http/[::1]:81/folder/')
+        self.assertEqual(self.app.REQUEST['ACTUAL_URL'],
+                         'http://[::1]:81/folder/')
+
+
 class VHMAddingTests(unittest.TestCase):
 
     def setUp(self):
         from OFS.Folder import Folder
-        super(VHMAddingTests, self).setUp()
+        super().setUp()
         self.root = Folder('root')
 
     def _makeOne(self):
@@ -182,9 +271,9 @@ class VHMAddingTests(unittest.TestCase):
         self.assertTrue(queryBeforeTraverse(self.root, vhm1.meta_type))
 
     def test_add_manage_addVirtualHostMonster(self):
+        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
         from Products.SiteAccess.VirtualHostMonster import \
             manage_addVirtualHostMonster
-        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
         from ZPublisher.BeforeTraverse import queryBeforeTraverse
         manage_addVirtualHostMonster(self.root)
 

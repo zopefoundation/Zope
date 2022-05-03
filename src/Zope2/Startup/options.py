@@ -15,16 +15,9 @@
 import os
 import xml.sax
 
-from ZConfig.loader import ConfigLoader, SchemaLoader
+from ZConfig.loader import ConfigLoader
+from ZConfig.loader import SchemaLoader
 from ZConfig.schema import SchemaParser
-from zope.deferredimport import deprecated
-
-# BBB Zope 5.0
-_prefix = 'ZServer.Zope2.Startup.options:'
-deprecated(
-    'Please import from ZServer.Zope2.Startup.options.',
-    ZopeOptions=_prefix + 'ZopeOptions',
-)
 
 
 class ConditionalSchemaParser(SchemaParser):
@@ -47,7 +40,7 @@ class ConditionalSchemaParser(SchemaParser):
             SchemaParser.start_import(self, attrs)
 
 
-class ZopeWSGIOptions(object):
+class ZopeWSGIOptions:
     """ZopeWSGIOptions parses a ZConfig schema and config file.
     """
     configfile = None

@@ -15,35 +15,32 @@
 
 import doctest
 import email.parser
-from functools import partial
-from io import BytesIO
 import re
 import sys
 import warnings
+from doctest import ELLIPSIS
+from doctest import NORMALIZE_WHITESPACE
+from doctest import REPORT_NDIFF
+from functools import partial
+from io import BytesIO
 
-from six import text_type
 import transaction
-
-from Testing.ZopeTestCase import ZopeTestCase
-from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import Functional
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import folder_name
+from Testing.ZopeTestCase import standard_permissions
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from Testing.ZopeTestCase import user_role
-from Testing.ZopeTestCase import standard_permissions
-from Testing.ZopeTestCase.sandbox import AppZapper
 from Testing.ZopeTestCase.functional import ResponseWrapper
 from Testing.ZopeTestCase.functional import savestate
+from Testing.ZopeTestCase.sandbox import AppZapper
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 
 
-if sys.version_info >= (3, ):
-    basestring = str
-
-
-class HTTPHeaderOutput(object):
+class HTTPHeaderOutput:
 
     status = '200'
     reason = 'OK'
@@ -58,14 +55,14 @@ class HTTPHeaderOutput(object):
         self.status, self.reason = status, reason
 
     def setResponseHeaders(self, mapping):
-        self.headers.update(dict(
-            [('-'.join([s.capitalize() for s in name.split('-')]), v)
-             for name, v in mapping.items()
-             if name.lower() not in self.omit]
-        ))
+        self.headers.update({
+            '-'.join([s.capitalize() for s in name.split('-')]): v
+            for name, v in mapping.items()
+            if name.lower() not in self.omit
+        })
 
     def appendResponseHeaders(self, lst):
-        if lst and isinstance(lst[0], basestring):
+        if lst and isinstance(lst[0], str):
             headers = [split_header(header) for header in lst]
         else:
             headers = lst
@@ -79,7 +76,7 @@ class HTTPHeaderOutput(object):
         out = ["%s: %s" % header for header in self.headers.items()]
         out.extend(["%s: %s" % header for header in self.headersl])
         out.sort()
-        out.insert(0, "%s %s %s" % (self.protocol, self.status, self.reason))
+        out.insert(0, f"{self.protocol} {self.status} {self.reason}")
         return '\n'.join(out)
 
 
@@ -92,6 +89,12 @@ class DocResponseWrapper(ResponseWrapper):
         ResponseWrapper.__init__(self, response, outstream, path,
                                  wsgi_result, wsgi_headers)
         self.header_output = header_output
+
+    def __str__(self):
+        body = self._decode(self.getBody())
+        if body:
+            return f"{self.header_output}\n\n{body}"
+        return "%s\n" % (self.header_output)
 
 
 basicre = re.compile(r'Basic (.+)?:(.+)?$')
@@ -128,7 +131,8 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    from six.moves.urllib.parse import unquote
+    from urllib.parse import unquote
+
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
     from ZPublisher.WSGIPublisher import publish_module
@@ -140,9 +144,9 @@ def http(request_string, handle_errors=True):
     request_string = request_string.lstrip()
 
     # Split off and parse the command line
-    l = request_string.find('\n')
-    command_line = request_string[:l].rstrip()
-    request_string = request_string[l + 1:]
+    newline = request_string.find('\n')
+    command_line = request_string[:newline].rstrip()
+    request_string = request_string[newline + 1:]
     method, path, protocol = command_line.split()
     path = unquote(path)
 
@@ -162,9 +166,7 @@ def http(request_string, handle_errors=True):
         raise TypeError('')
 
     header_output = HTTPHeaderOutput(
-        protocol, ('x-content-type-warning', 'x-powered-by',
-                   'bobo-exception-type', 'bobo-exception-file',
-                   'bobo-exception-value', 'bobo-exception-line'))
+        protocol, ('x-content-type-warning', 'x-powered-by'))
 
     # With a HeaderParser the payload is always a string, Parser would create a
     # list of messages for multipart messages.
@@ -173,7 +175,7 @@ def http(request_string, handle_errors=True):
     headers = msg.items()
     body = msg.get_payload()
 
-    if isinstance(body, text_type):
+    if isinstance(body, str):
         body = body.encode('utf-8')
 
     # Store request body without headers
@@ -224,7 +226,7 @@ def http(request_string, handle_errors=True):
         response, outstream, path, header_output, wsgi_result, wsgi_headers)
 
 
-class ZopeSuiteFactory(object):
+class ZopeSuiteFactory:
 
     def __init__(self, *args, **kw):
         self._args = args
@@ -260,7 +262,6 @@ class ZopeSuiteFactory(object):
         if 'test_class' in self._kw:
             del self._kw['test_class']
 
-        # Fix for http://zope.org/Collectors/Zope/2178
         if hasattr(test_class, 'layer'):
             self._layer = test_class.layer
 
@@ -305,8 +306,7 @@ class ZopeSuiteFactory(object):
 
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
-            self._kw['optionflags'] = (
-                doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+            self._kw['optionflags'] = (ELLIPSIS | NORMALIZE_WHITESPACE)
 
 
 class FunctionalSuiteFactory(ZopeSuiteFactory):
@@ -339,8 +339,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
     def setup_optionflags(self):
         if 'optionflags' not in self._kw:
             self._kw['optionflags'] = (
-                doctest.ELLIPSIS | doctest.REPORT_NDIFF |
-                doctest.NORMALIZE_WHITESPACE)
+                ELLIPSIS | REPORT_NDIFF | NORMALIZE_WHITESPACE)
 
 
 def ZopeDocTestSuite(module=None, **kw):

@@ -14,23 +14,26 @@
 import unittest
 
 import zope.component.testing
-from zope.component import provideUtility
-from zope.traversing.adapters import DefaultTraversable
-from Products.PageTemplates.tests import util
-from Products.PageTemplates.PageTemplate import PageTemplate
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from Products.PageTemplates.unicodeconflictresolver import \
-    DefaultUnicodeEncodingConflictResolver
-from Acquisition import Implicit
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from Acquisition import Implicit
+from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from Products.PageTemplates.PageTemplate import PageTemplate
+from Products.PageTemplates.tests import util
+from Products.PageTemplates.unicodeconflictresolver import \
+    DefaultUnicodeEncodingConflictResolver
+from zope.component import provideUtility
+from zope.traversing.adapters import DefaultTraversable
+
+from .util import useChameleonEngine
+from .util import useOldZopeEngine
 
 
 class AqPageTemplate(Implicit, PageTemplate):
     pass
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """
         Stub out the existing security policy for unit testing purposes.
     """
@@ -54,7 +57,8 @@ class UnitTestSecurityPolicy(object):
 class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        super(DTMLTests, self).setUp()
+        super().setUp()
+        useChameleonEngine()
         zope.component.provideAdapter(DefaultTraversable, (None,))
         provideUtility(DefaultUnicodeEncodingConflictResolver,
                        IUnicodeEncodingConflictResolver)
@@ -65,7 +69,7 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         noSecurityManager()  # Use the new policy.
 
     def tearDown(self):
-        super(DTMLTests, self).tearDown()
+        super().tearDown()
         SecurityManager.setSecurityPolicy(self.oldPolicy)
         noSecurityManager()  # Reset to old policy.
 
@@ -153,6 +157,8 @@ class DTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
     def test_on_error_in_slot_filler(self):
         # The `here` isn't defined, so the macro definition is
         # expected to catch the error that gets raised.
+        # BBB This only works with the old Zope page template engine
+        useOldZopeEngine()
         text = '''\
             <div metal:define-macro="foo">
                <div tal:on-error="string:eek">

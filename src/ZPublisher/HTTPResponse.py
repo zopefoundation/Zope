@@ -12,43 +12,40 @@
 ##############################################################################
 """ CGI Response Output formatter
 """
-from io import BytesIO
+import html
 import os
 import re
 import struct
 import sys
 import time
 import zlib
+from email.header import Header
+from email.message import _parseparam
+from email.utils import encode_rfc2231
+from io import BytesIO
+from io import IOBase
+from urllib.parse import quote
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
-from six import class_types
-from six import PY2
-from six import reraise
-from six import text_type
-from six.moves.urllib.parse import quote
-from zope.event import notify
-from zExceptions import (
-    BadRequest,
-    HTTPRedirection,
-    InternalError,
-    NotFound,
-    Redirect,
-    status_reasons,
-    Unauthorized,
-)
+from zExceptions import BadRequest
+from zExceptions import HTTPRedirection
+from zExceptions import InternalError
+from zExceptions import NotFound
+from zExceptions import Redirect
+from zExceptions import Unauthorized
+from zExceptions import status_reasons
 from zExceptions.ExceptionFormatter import format_exception
-from ZPublisher.BaseResponse import BaseResponse
-from ZPublisher.Iterators import IUnboundStreamIterator, IStreamIterator
+from zope.event import notify
 from ZPublisher import pubevents
+from ZPublisher.BaseResponse import BaseResponse
+from ZPublisher.Iterators import IStreamIterator
+from ZPublisher.Iterators import IUnboundStreamIterator
 
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
+from .cookie import convertCookieParameter
+from .cookie import getCookieParamPolicy
+from .cookie import getCookieValuePolicy
 
-if sys.version_info >= (3, ):
-    from io import IOBase
-else:
-    IOBase = file  # NOQA
 
 # This may get overwritten during configuration
 default_encoding = 'utf-8'
@@ -76,15 +73,10 @@ status_codes['resourcelockederror'] = 423
 
 start_of_header_search = re.compile('(<head[^>]*>)', re.IGNORECASE).search
 base_re_search = re.compile('(<base.*?>)', re.I).search
-bogus_str_search = re.compile(b" [a-fA-F0-9]+>$").search
-latin1_alias_match = re.compile(
-    r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
-    r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
-    r'(iso[-_]8859[-_]1(:1987)?)))?$', re.I).match
-charset_re_match = re.compile(
-    r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
-    r'charset=([-_0-9a-z]+' +
-    r')(?:(?:\s*;)|\Z)', re.IGNORECASE).match
+bogus_str_search = re.compile(b" 0x[a-fA-F0-9]+>$").search
+charset_re_str = (r'(?:application|text)/[-+0-9a-z]+\s*;\s*'
+                  r'charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)')
+charset_re_match = re.compile(charset_re_str, re.IGNORECASE).match
 absuri_match = re.compile(r'\w+://[\w\.]+').match
 tag_search = re.compile('[a-zA-Z]>').search
 
@@ -99,7 +91,7 @@ _gzip_header = (b"\037\213"  # magic
 uncompressableMimeMajorTypes = ('image',)
 
 # The environment variable DONT_GZIP_MAJOR_MIME_TYPES can be set to a list
-# of comma seperated mime major types which should also not be compressed
+# of comma separated mime major types which should also not be compressed
 
 otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES', '').lower()
 if otherTypes:
@@ -109,7 +101,13 @@ _CRLF = re.compile(r'[\r\n]')
 
 
 def _scrubHeader(name, value):
-    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(str(value)))
+    if isinstance(value, bytes):
+        # handle ``bytes`` values correctly
+        # we assume that the provider knows that HTTP 1.1 stipulates ISO-8859-1
+        value = value.decode('ISO-8859-1')
+    elif not isinstance(value, str):
+        value = str(value)
+    return ''.join(_CRLF.split(str(name))), ''.join(_CRLF.split(value))
 
 
 _NOW = None  # overwrite for testing
@@ -130,12 +128,36 @@ def build_http_date(when):
         WEEKDAYNAME[wd], day, MONTHNAME[month], year, hh, mm, ss)
 
 
+def make_content_disposition(disposition, file_name):
+    """Create HTTP header for downloading a file with a UTF-8 filename.
+
+    See this and related answers: https://stackoverflow.com/a/8996249/2173868.
+    """
+    header = f'{disposition}'
+    try:
+        file_name.encode('us-ascii')
+    except UnicodeEncodeError:
+        # the file cannot be encoded using the `us-ascii` encoding
+        # which is advocated by RFC 7230 - 7237
+        #
+        # a special header has to be crafted
+        # also see https://tools.ietf.org/html/rfc6266#appendix-D
+        encoded_file_name = file_name.encode('us-ascii', errors='ignore')
+        header += f'; filename="{encoded_file_name}"'
+        quoted_file_name = quote(file_name)
+        header += f'; filename*=UTF-8\'\'{quoted_file_name}'
+        return header
+    else:
+        header += f'; filename="{file_name}"'
+        return header
+
+
 class HTTPBaseResponse(BaseResponse):
     """ An object representation of an HTTP response.
 
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
-    A published object may receive the response abject as an argument
+    A published object may receive the response object as an argument
     named 'RESPONSE'.  A published object may also create it's own
     response object.  Normally, published objects use response objects
     to:
@@ -205,7 +227,34 @@ class HTTPBaseResponse(BaseResponse):
         """Cause a redirection without raising an error"""
         if isinstance(location, HTTPRedirection):
             status = location.getStatus()
-        location = str(location)
+            location = location.headers['Location']
+
+        if isinstance(location, bytes):
+            location = location.decode(self.charset)
+
+        # To be entirely correct, we must make sure that all non-ASCII
+        # characters are quoted correctly.
+        parsed = list(urlparse(location))
+        rfc2396_unreserved = "-_.!~*'()"  # RFC 2396 section 2.3
+        for idx, idx_safe in (
+                # authority
+                (1, ";:@?/&=+$,"),  # RFC 2396 section 3.2, 3.2.1, 3.2.3
+                # path
+                (2, "/;:@&=+$,"),  # RFC 2396 section 3.3
+                # params - actually part of path; empty in Python 3
+                (3, "/;:@&=+$,"),  # RFC 2396 section 3.3
+                # query
+                (4, ";/?:@&=+,$"),  # RFC 2396 section 3.4
+                # fragment
+                (5, ";/?:@&=+$,"),  # RFC 2396 section 4
+        ):
+            # Make a hacky guess whether the component is already
+            # URL-encoded by checking for %. If it is, we don't touch it.
+            if '%' not in parsed[idx]:
+                parsed[idx] = quote(parsed[idx],
+                                    safe=rfc2396_unreserved + idx_safe)
+        location = urlunparse(parsed)
+
         self.setStatus(status, lock=lock)
         self.setHeader('Location', location)
         return location
@@ -230,8 +279,7 @@ class HTTPBaseResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if (isinstance(status, class_types) and
-                issubclass(status, Exception)):
+        if isinstance(status, type) and issubclass(status, Exception):
             status = status.__name__
 
         if isinstance(status, str):
@@ -264,19 +312,24 @@ class HTTPBaseResponse(BaseResponse):
 
         This value overwrites any previously set value for the
         cookie in the Response object.
-        """
-        name = str(name)
-        value = str(value)
 
+        `name` has to be text in Python 3.
+
+        `value` may be text or bytes. The default encoding of respective python
+        version is used.
+        """
         cookies = self.cookies
         if name in cookies:
             cookie = cookies[name]
         else:
             cookie = cookies[name] = {}
         for k, v in kw.items():
+            k, v = convertCookieParameter(k, v)
             cookie[k] = v
         cookie['value'] = value
-        cookie['quoted'] = quoted
+        # RFC6265 makes quoting obsolete
+        # cookie['quoted'] = quoted
+        getCookieParamPolicy().check_consistency(name, cookie)
 
     def appendCookie(self, name, value):
         """ Set an HTTP cookie.
@@ -285,17 +338,19 @@ class HTTPBaseResponse(BaseResponse):
         browsers with a key "name" and value "value". If a value for the
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon.
-        """
-        name = str(name)
-        value = str(value)
 
+        `name` has to be text in Python 3.
+
+        `value` may be text or bytes. The default encoding of respective python
+        version is used.
+        """
         cookies = self.cookies
         if name in cookies:
             cookie = cookies[name]
         else:
             cookie = cookies[name] = {}
         if 'value' in cookie:
-            cookie['value'] = '%s:%s' % (cookie['value'], value)
+            cookie['value'] = f'{cookie["value"]}:{value}'
         else:
             cookie['value'] = value
 
@@ -309,14 +364,14 @@ class HTTPBaseResponse(BaseResponse):
         to be specified - this path must exactly match the path given
         when creating the cookie. The path can be specified as a keyword
         argument.
-        """
-        name = str(name)
 
+        `name` has to be text in Python 3.
+        """
         d = kw.copy()
         if 'value' in d:
             d.pop('value')
         d['max_age'] = 0
-        d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
+        d['expires'] = 'Wed, 31 Dec 1997 23:59:59 GMT'
 
         self.setCookie(name, value='deleted', **d)
 
@@ -377,7 +432,7 @@ class HTTPBaseResponse(BaseResponse):
         headers = self.headers
         if name in headers:
             h = headers[name]
-            h = "%s%s%s" % (h, delimiter, value)
+            h = f"{h}{delimiter}{value}"
         else:
             h = value
         self.setHeader(name, h, scrubbed=True)
@@ -387,7 +442,7 @@ class HTTPBaseResponse(BaseResponse):
 
         Retain any previously set headers with the same name.
 
-        Note that this API appneds to the 'accumulated_headers' attribute;
+        Note that this API appends to the 'accumulated_headers' attribute;
         it does not update the 'headers' mapping.
         """
         name, value = _scrubHeader(name, value)
@@ -400,7 +455,7 @@ class HTTPBaseResponse(BaseResponse):
 
         If base is None, set to the empty string.
 
-        If base is not None, ensure that it has a trailing slach.
+        If base is not None, ensure that it has a trailing slash.
         """
         if base is None:
             base = ''
@@ -410,7 +465,7 @@ class HTTPBaseResponse(BaseResponse):
         self.base = str(base)
 
     def insertBase(self):
-        # Only insert a base tag if content appears to be html.
+        # Only insert a base tag if content appears to be HTML.
         content_type = self.headers.get('content-type', '').split(';')[0]
         if content_type and (content_type != 'text/html'):
             return
@@ -422,13 +477,9 @@ class HTTPBaseResponse(BaseResponse):
                 index = match.start(0) + len(match.group(0))
                 ibase = base_re_search(text)
                 if ibase is None:
-                    text = (
-                        text[:index] +
-                        '\n<base href="' +
-                        escape(self.base, True) +
-                        '" />\n' +
-                        text[index:]
-                    )
+                    text = (text[:index] + '\n<base href="'
+                            + html.escape(self.base, True) + '" />\n'
+                            + text[index:])
                     self.text = text
                     self.setHeader('content-length', len(self.body))
 
@@ -437,12 +488,12 @@ class HTTPBaseResponse(BaseResponse):
             try:
                 text = text.decode(self.charset)
             except UnicodeDecodeError:
-                pass
+                return False
         text = text.lstrip()
         # Note that the string can be big, so text.lower().startswith()
         # is more expensive than s[:n].lower().
-        if (text[:6].lower() == '<html>' or
-                text[:14].lower() == '<!doctype html'):
+        if text[:6].lower() == '<html>' or \
+           text[:14].lower() == '<!doctype html':
             return True
         if text.find('</') > 0:
             return True
@@ -463,11 +514,13 @@ class HTTPBaseResponse(BaseResponse):
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
 
-        If body is unicode, encode it.
+        If body has an 'asHTML' method, replace it by the result of that
+        method.
 
-        If body is not a string or unicode, but has an 'asHTML' method, use
-        the result of that method as the body;  otherwise, use the 'str'
-        of body.
+        If body is now bytes, bytearray or memoryview, convert it to bytes.
+        Else, either try to convert it to bytes or use an intermediate string
+        representation which is then converted to bytes, depending on the
+        content type.
 
         If is_error is true, format the HTML as a Zope error message instead
         of a generic HTML page.
@@ -489,24 +542,28 @@ class HTTPBaseResponse(BaseResponse):
         if hasattr(body, 'asHTML'):
             body = body.asHTML()
 
-        if isinstance(body, text_type):
-            body = self._encode_unicode(body)
-        elif isinstance(body, bytes):
-            pass
-        else:
+        content_type = self.headers.get('content-type')
+
+        if isinstance(body, (bytes, bytearray, memoryview)):
+            body = bytes(body)
+        elif content_type is not None and not content_type.startswith('text/'):
             try:
                 body = bytes(body)
-            except UnicodeError:
-                body = self._encode_unicode(text_type(body))
+            except (TypeError, UnicodeError):
+                pass
+        if not isinstance(body, bytes):
+            body = self._encode_unicode(str(body))
 
         # At this point body is always binary
-        l = len(body)
-        if ((l < 200) and body[:1] == b'<' and body.find(b'>') == l - 1 and
-                bogus_str_search(body) is not None):
+        b_len = len(body)
+        if b_len < 200 and \
+           body[:1] == b'<' and \
+           body.find(b'>') == b_len - 1 and \
+           bogus_str_search(body) is not None:
             self.notFoundError(body[1:-1].decode(self.charset))
         else:
             if title:
-                title = text_type(title)
+                title = str(title)
                 if not is_error:
                     self.body = body = self._html(
                         title, body.decode(self.charset)).encode(self.charset)
@@ -516,27 +573,24 @@ class HTTPBaseResponse(BaseResponse):
             else:
                 self.body = body
 
-        content_type = self.headers.get('content-type')
-
         if content_type is None:
             if self.isHTML(body):
-                content_type = 'text/html; charset=%s' % self.charset
+                content_type = f'text/html; charset={self.charset}'
             else:
-                content_type = 'text/plain; charset=%s' % self.charset
+                content_type = f'text/plain; charset={self.charset}'
             self.setHeader('content-type', content_type)
         else:
-            if (content_type.startswith('text/') and
-                    'charset=' not in content_type):
-                content_type = '%s; charset=%s' % (content_type,
-                                                   self.charset)
+            if content_type.startswith('text/') and \
+               'charset=' not in content_type:
+                content_type = f'{content_type}; charset={self.charset}'
                 self.setHeader('content-type', content_type)
 
         self.setHeader('content-length', len(self.body))
 
         self.insertBase()
 
-        if (self.use_HTTP_content_compression and
-                self.headers.get('content-encoding', 'gzip') == 'gzip'):
+        if self.use_HTTP_content_compression and \
+           self.headers.get('content-encoding', 'gzip') == 'gzip':
             # use HTTP content encoding to compress body contents unless
             # this response already has another type of content encoding
             if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
@@ -611,8 +665,7 @@ class HTTPBaseResponse(BaseResponse):
             # compression is off
             self.use_HTTP_content_compression = 0
 
-        elif (force or
-              (REQUEST.get('HTTP_ACCEPT_ENCODING', '').find('gzip') != -1)):
+        elif force or 'gzip' in REQUEST.get('HTTP_ACCEPT_ENCODING', ''):
             if force:
                 self.use_HTTP_content_compression = 2
             else:
@@ -625,10 +678,8 @@ class HTTPBaseResponse(BaseResponse):
         # to the charset specified in the content-type header.
         if text.startswith('<?xml'):
             pos_right = text.find('?>')  # right end of the XML preamble
-            text = ('<?xml version="1.0" encoding="' +
-                    self.charset +
-                    '" ?>' +
-                    text[pos_right + 2:])
+            text = ('<?xml version="1.0" encoding="' + self.charset
+                    + '" ?>' + text[pos_right + 2:])
 
         # Encode the text data using the response charset
         text = text.encode(self.charset, 'replace')
@@ -636,64 +687,43 @@ class HTTPBaseResponse(BaseResponse):
 
     def _cookie_list(self):
         cookie_list = []
+        dump = getCookieValuePolicy().dump
+        parameters = getCookieParamPolicy().parameters
         for name, attrs in self.cookies.items():
-
-            # Note that as of May 98, IE4 ignores cookies with
-            # quoted cookie attr values, so only the value part
-            # of name=value pairs may be quoted.
-
-            if attrs.get('quoted', True):
-                cookie = '%s="%s"' % (name, quote(attrs['value']))
-            else:
-                cookie = '%s=%s' % (name, quote(attrs['value']))
-            for name, v in attrs.items():
-                name = name.lower()
-                if name == 'expires':
-                    cookie = '%s; Expires=%s' % (cookie, v)
-                elif name == 'domain':
-                    cookie = '%s; Domain=%s' % (cookie, v)
-                elif name == 'path':
-                    cookie = '%s; Path=%s' % (cookie, v)
-                elif name == 'max_age':
-                    cookie = '%s; Max-Age=%s' % (cookie, v)
-                elif name == 'comment':
-                    cookie = '%s; Comment=%s' % (cookie, v)
-                elif name == 'secure' and v:
-                    cookie = '%s; Secure' % cookie
-                # Some browsers recognize this cookie attribute
-                # and block read/write access via JavaScript
-                elif name == 'http_only' and v:
-                    cookie = '%s; HTTPOnly' % cookie
-                # Some browsers recognize the SameSite cookie attribute
-                # and do not send the cookie along with cross-site requests
-                # providing some protection against CSRF attacks
-                # https://tools.ietf.org/html/draft-west-first-party-cookies-07
-                elif name == 'same_site' and v:
-                    cookie = '%s; SameSite=%s' % (cookie, v)
+            params = []
+            for pn, pv in parameters(name, attrs):
+                if pv is None:
+                    continue
+                params.append(pn if pv is True else f"{pn}={pv}")
+            cookie = "{}={}".format(name, dump(name, attrs["value"]))
+            if params:
+                cookie += "; " + "; ".join(params)
+            # Should really check size of cookies here!
             cookie_list.append(('Set-Cookie', cookie))
-
-        # Should really check size of cookies here!
-
         return cookie_list
 
     def listHeaders(self):
         """ Return a list of (key, value) pairs for our headers.
 
         o Do appropriate case normalization.
+
+        o Encode header values via `header_encoding_registry`
         """
 
         result = [
-            ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')
+            ('X-Powered-By', 'Zope (www.zope.dev), Python (www.python.org)')
         ]
 
+        encode = header_encoding_registry.encode
         for key, value in self.headers.items():
             if key.lower() == key:
                 # only change non-literal header names
                 key = '-'.join([x.capitalize() for x in key.split('-')])
-            result.append((key, value))
+            result.append((key, encode(key, value)))
 
         result.extend(self._cookie_list())
-        result.extend(self.accumulated_headers)
+        for key, value in self.accumulated_headers:
+            result.append((key, encode(key, value)))
         return result
 
     def _unauthorized(self):
@@ -701,7 +731,8 @@ class HTTPBaseResponse(BaseResponse):
         if realm:
             self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
-    def _html(self, title, body):
+    @staticmethod
+    def _html(title, body):
         return ("<html>\n"
                 "<head>\n<title>%s</title>\n</head>\n"
                 "<body>\n%s\n</body>\n"
@@ -731,27 +762,9 @@ class HTTPResponse(HTTPBaseResponse):
         chunks.append(body)
         return b'\r\n'.join(chunks)
 
-    if PY2:
-        __str__ = __bytes__
-
-    # The following two methods are part of a private protocol with
-    # ZServer for handling fatal import errors.
-    _shutdown_flag = None
-
-    def _requestShutdown(self, exitCode=0):
-        """ Request that the server shut down with exitCode after fulfilling
-           the current request.
-        """
-        self._shutdown_flag = exitCode
-
-    def _shutdownRequested(self):
-        """ Returns true if this request requested a server shutdown.
-        """
-        return self._shutdown_flag is not None
-
     # deprecated
     def quoteHTML(self, text):
-        return escape(text, 1)
+        return html.escape(text, 1)
 
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
@@ -786,12 +799,9 @@ class HTTPResponse(HTTPBaseResponse):
         self.setStatus(404)
         raise NotFound(self._error_html(
             "Resource not found",
-            "Sorry, the requested resource does not exist." +
-            "<p>Check the URL and try again.</p>" +
-            "<p><b>Resource:</b> " +
-            escape(entry) +
-            "</p>"
-        ))
+            ("Sorry, the requested resource does not exist."
+             "<p>Check the URL and try again.</p>"
+             "<p><b>Resource:</b> " + html.escape(entry) + "</p>")))
 
     # If a resource is forbidden, why reveal that it exists?
     forbiddenError = notFoundError
@@ -799,10 +809,11 @@ class HTTPResponse(HTTPBaseResponse):
     def debugError(self, entry):
         raise NotFound(self._error_html(
             "Debugging Notice",
-            "Zope has encountered a problem publishing your object.<p>"
-            "\n" +
-            entry +
-            "</p>"))
+            (
+                "Zope has encountered a problem publishing your object. "
+                "<p>%s</p>" % repr(entry)
+            )
+        ))
 
     def badRequestError(self, name):
         self.setStatus(400)
@@ -813,13 +824,10 @@ class HTTPResponse(HTTPBaseResponse):
 
         raise BadRequest(self._error_html(
             "Invalid request",
-            "The parameter, <em>" +
-            name +
-            "</em>, " +
-            "was omitted from the request.<p>" +
-            "Make sure to specify all required parameters, " +
-            "and try the request again.</p>"
-        ))
+            ("The parameter, <em>" + name + "</em>, "
+             "was omitted from the request.<p>"
+             "Make sure to specify all required parameters, "
+             "and try the request again.</p>")))
 
     def unauthorized(self):
         m = "You are not authorized to access this resource."
@@ -830,32 +838,6 @@ class HTTPResponse(HTTPBaseResponse):
                 m = m + '\nNo Authorization header found.'
         raise Unauthorized(m)
 
-    def _setBCIHeaders(self, t, tb):
-        try:
-            # Try to capture exception info for bci calls
-            et = str(t).replace('\n', ' ')
-            self.setHeader('bobo-exception-type', et)
-
-            ev = 'See the server error log for details'
-            self.setHeader('bobo-exception-value', ev)
-
-            # Get the tb tail, which is the interesting part:
-            while tb.tb_next is not None:
-                tb = tb.tb_next
-            el = str(tb.tb_lineno)
-            ef = str(tb.tb_frame.f_code.co_filename)
-
-            # Do not give out filesystem information.
-            ef = ef.split(os.sep)[-1]
-
-            self.setHeader('bobo-exception-file', ef)
-            self.setHeader('bobo-exception-line', el)
-        except Exception:
-            # Don't try so hard that we cause other problems ;)
-            pass
-
-        del tb
-
     def exception(self, fatal=0, info=None, abort=1):
         if isinstance(info, tuple) and len(info) == 3:
             t, v, tb = info
@@ -865,9 +847,8 @@ class HTTPResponse(HTTPBaseResponse):
         if issubclass(t, Unauthorized):
             self._unauthorized()
 
-        self._setBCIHeaders(t, tb)
         self.setStatus(t)
-        if self.status >= 300 and self.status < 400:
+        if 300 <= self.status < 400:
             if isinstance(v, str) and absuri_match(v) is not None:
                 if self.status == 300:
                     self.setStatus(302)
@@ -884,7 +865,7 @@ class HTTPResponse(HTTPBaseResponse):
             else:
                 try:
                     l, b = v
-                    if (isinstance(l, str) and absuri_match(l) is not None):
+                    if isinstance(l, str) and absuri_match(l) is not None:
                         if self.status == 300:
                             self.setStatus(302)
                         self.setHeader('location', l)
@@ -898,17 +879,17 @@ class HTTPResponse(HTTPBaseResponse):
         if isinstance(b, Exception):
             try:
                 try:
-                    b = text_type(b)
+                    b = str(b)
                 except UnicodeDecodeError:
-                    b = self._encode_unicode(text_type(b)).decode(self.charset)
+                    b = self._encode_unicode(str(b)).decode(self.charset)
             except Exception:
                 b = '<unprintable %s object>' % type(b).__name__
 
         if fatal and t is SystemExit and v.code == 0:
             body = self.setBody(
-                (text_type(t),
-                 'Zope has exited normally.<p>' +
-                 self._traceback(t, v, tb) + '</p>'),
+                (str(t),
+                 'Zope has exited normally.<p>'
+                 + self._traceback(t, v, tb) + '</p>'),
                 is_error=True)
         else:
             try:
@@ -918,9 +899,9 @@ class HTTPResponse(HTTPBaseResponse):
 
             if match is None:
                 body = self.setBody(
-                    (text_type(t),
-                     'Sorry, a site error occurred.<p>' +
-                     self._traceback(t, v, tb) + '</p>'),
+                    (str(t),
+                     'Sorry, a site error occurred.<p>'
+                     + self._traceback(t, v, tb) + '</p>'),
                     is_error=True)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
@@ -931,7 +912,7 @@ class HTTPResponse(HTTPBaseResponse):
                     body = self.setBody(b, is_error=True)
             else:
                 body = self.setBody(
-                    (text_type(t),
+                    (str(t),
                      b + self._traceback(t, '(see above)', tb, 0)),
                     is_error=True)
         del tb
@@ -941,8 +922,8 @@ class HTTPResponse(HTTPBaseResponse):
         """ Set headers required by various parts of protocol.
         """
         body = self.body
-        if ('content-length' not in self.headers and
-                'transfer-encoding' not in self.headers):
+        if 'content-length' not in self.headers and \
+           'transfer-encoding' not in self.headers:
             self.setHeader('content-length', len(body))
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
 
@@ -987,7 +968,7 @@ class WSGIResponse(HTTPBaseResponse):
         exc.detail = (
             'Sorry, the requested resource does not exist.'
             '<p>Check the URL and try again.</p>'
-            '<p><b>Resource:</b> %s</p>' % escape(entry, True))
+            '<p><b>Resource:</b> %s</p>' % html.escape(entry, True))
         raise exc
 
     # If a resource is forbidden, why reveal that it exists?
@@ -998,8 +979,9 @@ class WSGIResponse(HTTPBaseResponse):
         exc = NotFound(entry)
         exc.title = 'Debugging Notice'
         exc.detail = (
-            'Zope has encountered a problem publishing your object.<p>'
-            '\n%s</p>' % entry)
+            "Zope has encountered a problem publishing your object. "
+            "<p>%s</p>" % repr(entry)
+        )
         raise exc
 
     def badRequestError(self, name):
@@ -1040,14 +1022,15 @@ class WSGIResponse(HTTPBaseResponse):
         if issubclass(t, Unauthorized):
             self._unauthorized()
 
-        reraise(t, v, tb)
+        raise v.with_traceback(tb)
 
     def finalize(self):
         # Set 204 (no content) status if 200 and response is empty
         # and not streaming.
-        if ('content-type' not in self.headers and
-                'content-length' not in self.headers and
-                not self._streaming and self.status == 200):
+        if 'content-type' not in self.headers and \
+           'content-length' not in self.headers and \
+           not self._streaming and \
+           self.status == 200:
             self.setStatus('nocontent')
 
         # Add content length if not streaming.
@@ -1055,7 +1038,7 @@ class WSGIResponse(HTTPBaseResponse):
         if content_length is None and not self._streaming:
             self.setHeader('content-length', len(self.body))
 
-        return ('%s %s' % (self.status, self.errmsg), self.listHeaders())
+        return f'{self.status} {self.errmsg}', self.listHeaders()
 
     def listHeaders(self):
         result = []
@@ -1063,7 +1046,7 @@ class WSGIResponse(HTTPBaseResponse):
             result.append(('Server', self._server_version))
 
         result.append(('Date', build_http_date(_now())))
-        result.extend(super(WSGIResponse, self).listHeaders())
+        result.extend(super().listHeaders())
         return result
 
     def write(self, data):
@@ -1081,6 +1064,10 @@ class WSGIResponse(HTTPBaseResponse):
         self.stdout.write(data)
 
     def setBody(self, body, title='', is_error=False, lock=None):
+        # allow locking of the body in the same way as the status
+        if self._locked_body:
+            return
+
         if isinstance(body, IOBase):
             body.seek(0, 2)
             length = body.tell()
@@ -1089,16 +1076,144 @@ class WSGIResponse(HTTPBaseResponse):
             self.body = body
         elif IStreamIterator.providedBy(body):
             self.body = body
-            super(WSGIResponse, self).setBody(b'', title, is_error)
+            super().setBody(b'', title, is_error)
         elif IUnboundStreamIterator.providedBy(body):
             self.body = body
             self._streaming = 1
-            super(WSGIResponse, self).setBody(b'', title, is_error)
+            super().setBody(b'', title, is_error)
         else:
-            super(WSGIResponse, self).setBody(body, title, is_error)
+            super().setBody(body, title, is_error)
+
+        # Have to apply the lock at the end in case the super class setBody
+        # is called, which will observe the lock and do nothing
+        if lock:
+            self._locked_body = 1
 
     def __bytes__(self):
         raise NotImplementedError
 
     def __str__(self):
         raise NotImplementedError
+
+
+# HTTP header encoding
+class HeaderEncodingRegistry(dict):
+    """Encode HTTP headers.
+
+    HTTP/1.1 uses `ISO-8859-1` as charset for its headers
+    (the modern spec (RFC 7230-7235) has deprecated non ASCII characters
+    but for the sake of older browsers we still use `ISO-8859-1`).
+    Header values need encoding if they contain characters
+    not expressible in this charset.
+
+    HTTP/1.1 is based on MIME
+    ("Multimedia Internet Mail Extensions" RFC 2045-2049).
+    MIME knows about 2 header encodings:
+     - one for parameter values (RFC 2231)
+     - and one word words as part of text, phrase or comment (RFC 2047)
+    For use with HTTP/1.1 MIME's parameter value encoding (RFC 2231)
+    was specialized and simplified via RFC 5987 and RFC 8187.
+
+    For efficiency reasons and because HTTP is an extensible
+    protocol (an application can use headers not specified
+    by HTTP), we use an encoding registry to guide the header encoding.
+    An application can register an encoding for specific keys and/or
+    a default encoding to be used for keys without specific registration.
+    If there is neither a specific encoding nor a default encoding,
+    a header value remains unencoded.
+    Header values are encoded only if they contain non `ISO-8859-1` characters.
+    """
+
+    def register(self, header, encoder, **kw):
+        """register *encoder* as encoder for header *header*.
+
+        If *encoder* is `None`, this indicates that *header* should not
+        get encoded.
+
+        If *header* is `None`, this indicates that *encoder* is defined
+        as the default encoder.
+
+        When encoding is necessary, *encoder* is called with
+        the header value and the keywords specified by *kw*.
+        """
+        if header is not None:
+            header = header.lower()
+        self[header] = encoder, kw
+
+    def unregister(self, header):
+        """remove any registration for *header*.
+
+        *header* can be either a header name or `None`.
+        In the latter case, a default registration is removed.
+        """
+        if header is not None:
+            header = header.lower()
+        if header in self:
+            del self[header]
+
+    def encode(self, header, value):
+        """encode *value* as specified for *header*.
+
+        encoding takes only place if *value* contains non ISO-8859-1 chars.
+        """
+        if not isinstance(value, str):
+            return value
+        header = header.lower()
+        reg = self.get(header) or self.get(None)
+        if reg is None or reg[0] is None or non_latin_1(value) is None:
+            return value
+        return reg[0](value, **reg[1])
+
+
+non_latin_1 = re.compile(r"[^\x00-\xff]").search
+
+
+def encode_words(value):
+    """RFC 2047 word encoding.
+
+    Note: treats *value* as unstructured data
+    and therefore must not be applied for headers with
+    a structured value (unless the structure is garanteed
+    to only contain ISO-8859-1 chars).
+    """
+    return Header(value, 'utf-8', 1000000).encode()
+
+
+def encode_params(value):
+    """RFC 5987(8187) (specialized from RFC 2231) parameter encoding.
+
+    This encodes parameters as specified by RFC 5987 using
+    fixed `UTF-8` encoding (as required by RFC 8187).
+    However, all parameters with non latin-1 values are
+    automatically transformed and a `*` suffixed parameter is added
+    (RFC 8187 allows this only for parameters explicitly specified
+    to have this behavior).
+
+    Many HTTP headers use `,` separated lists. For simplicity,
+    such headers are not supported (we would need to recognize
+    `,` inside quoted strings as special).
+    """
+    params = []
+    for p in _parseparam(";" + value):
+        p = p.strip()
+        if not p:
+            continue
+        params.append([s.strip() for s in p.split("=", 1)])
+    known_params = {p[0] for p in params}
+    for p in params[:]:
+        if len(p) == 2 and non_latin_1(p[1]):  # need encoding
+            pn = p[0]
+            pnc = pn + "*"
+            pv = p[1]
+            if pnc not in known_params:
+                if pv.startswith('"'):
+                    pv = pv[1:-1]  # remove quotes
+                params.append((pnc, encode_rfc2231(pv, "utf-8", None)))
+            # backward compatibility for clients not understanding RFC 5987
+            p[1] = p[1].encode("iso-8859-1", "replace").decode("iso-8859-1")
+    return "; ".join("=".join(p) for p in params)
+
+
+header_encoding_registry = HeaderEncodingRegistry()
+header_encoding_registry.register("content-type", encode_params)
+header_encoding_registry.register("content-disposition", encode_params)

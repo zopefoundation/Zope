@@ -2,20 +2,25 @@
 Zope Products
 #############
 
+.. attention::
+
+  This document is currently being reviewed and edited for the
+  upcoming release of Zope 4.
+
+
 Introduction
 ============
 
-Zope *products* extend Zope with new functionality.  Products most
-often provide new addable objects.  In this chapter, we are going to
-look at building products on the file system.  Filesystem products
-require more overhead to build, but offer more power and flexibility,
-and they can be developed with familiar tools such as text editors
-and version controlling systems.
+In this chapter we are looking at building Python packages that are
+**Zope Products**. Products most often provide new addable objects.
 
-Soon we will make the examples referenced in this chapter available
-for download as an example product.  Until that time, you will see
-references to files in this chapter that are not available yet.  This
-will be made available soon.
+.. note:: 
+  In the early days of Zope development, it was quite common to
+  develop "through the web". This is still possible but no longer
+  recommended.
+  For further information please refer to the
+  `Zope Book <https://zope.readthedocs.io/en/latest/zopebook/index.html>`_.
+
 
 Development Process
 ===================
@@ -239,8 +244,8 @@ OFS.SimpleItem.Item
 This base class provides your product with the basics needed to work
 with the Zope management interface.  By inheriting from ``Item`` your
 product class gains a whole host of features: the ability to be cut
-and pasted, capability with management views, WebDAV support, basic
-FTP support, undo support, ownership support, and traversal controls.
+and pasted, capability with management views, WebDAV support,
+undo support, ownership support, and traversal controls.
 It also gives you some standard methods for management views and
 error display including ``manage_main()``.  You also get the
 ``getId()``, ``title_or_id()``, ``title_and_id()`` methods and the
@@ -304,7 +309,7 @@ This base class gives your product the ability to contain other
 ``Item`` instances.  In other words, it makes your product class like
 a Zope folder.  This base class is optional. See the *API Reference*
 for more details.  This base class gives you facilities for adding
-Zope objects, importing and exporting Zope objects, WebDAV, and FTP.
+Zope objects, importing and exporting Zope objects and WebDAV.
 It also gives you the ``objectIds``, ``objectValues``, and
 ``objectItems`` methods.
 
@@ -833,31 +838,8 @@ When creating management views you should include the DTML variables
 ``manage_page_footer`` at the bottom.  These variables are acquired
 by your product and draw a standard management view header, tabs
 widgets, and footer.  The management header also includes CSS
-information which you can take advantage of if you wish to add CSS
-style information to your management views.  The management CSS
-information is defined in the
-`lib/python/App/dtml/manage_page_style.css.dtml`` file.  Here are the
-CSS classes defined in this file and conventions for their use.
-
-- 'form-help' -- Explanatory text related to forms.  In the future,
-  users may have the option to hide this text.
-
-- 'std-text' -- Declarative text unrelated to forms.  You should
-  rarely use this class.
-
-- 'form-title' -- Form titles.
-
-- 'form-label' -- Form labels for required form elements.
-
-- 'form-optional' -- Form labels for optional form elements.
-
-- 'form-element' -- Form elements.  Note, because of a Netscape bug,
-  you should not use this class on 'textarea' elements.
-
-- 'form-text' -- Declarative text in forms.
-
-- 'form-mono' -- Fixed width text in forms.  You should rarely use
-  this class.
+information which you can take advantage of. You can use any of the styles
+Bootstrap 4 provides - see https://getbootstrap.com/docs/4.6/.
 
 Here's an example management view for your poll class.  It allows you
 to edit the poll question and responses (see ``editPollForm.dtml``)::
@@ -1106,21 +1088,20 @@ In addition to providing a through the web management interface your
 products may also support many other user interfaces.  You product
 might have no web management interfaces, and might be controlled
 completely through some other network protocol.  Zope provides
-interfaces and support for FTP, WebDAV and XML-RPC.  If this isn't
+interfaces and support for WebDAV and XML-RPC.  If this isn't
 enough you can add other protocols.
 
-FTP and WebDAV Interfaces
--------------------------
+WebDAV Interfaces
+-----------------
 
-Both FTP and WebDAV treat Zope objects like files and
-directories.  See Chapter 3 for more information on FTP and WebDAV.
+WebDAV treats Zope objects like files and
+directories.  See Chapter 3 for more information on WebDAV.
 
 By simply sub-classing from 'SimpleItem.Item' and 'ObjectManager' if
-necessary, you gain basic FTP and WebDAV support.  Without any work
-your objects will appear in FTP directory listings and if your class
-is an 'ObjectManager' its contents will be accessible via FTP and
-WebDAV.  See Chapter 2 for more information on implementing FTP and
-WebDAV support.
+necessary, you gain basic WebDAV support.  Without any work
+your objects will appear in directory listings and if your class
+is an 'ObjectManager' its contents will be accessible via WebDAV.
+See Chapter 2 for more information on implementing WebDAV support.
 
 XML-RPC and Network Services
 ----------------------------
@@ -1141,20 +1122,6 @@ XML-RPC clients still don't support HTTP basic authorization.
 Depending on which XML-RPC clients you anticipate, you may wish to
 make your XML-RPC methods public and accept authentication
 credentials as arguments to your methods.
-
-Content Management Framework Interface
---------------------------------------
-
-The `Content Management Framework <http://cmf.zope.org>`_ is an
-evolving content management extension for Zope.  It provides a number
-of interfaces and conventions for content objects.  If you wish to
-support the CMF you should consult the CMF user interface guidelines
-and interface documentation.
-
-Supporting the CMF interfaces is not a large burden if you already
-support the Zope management interface.  You should consider
-supporting the CMF if your product class handles user manageable
-content such as documents, images, business forms, etc.
 
 Packaging Products
 ------------------

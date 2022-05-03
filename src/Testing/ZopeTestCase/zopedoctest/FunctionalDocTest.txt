@@ -31,8 +31,8 @@ and turn them into tests:
       user.  Grant the permissions 'Access contents information' and
       'View' to the role.
 
-2. Install tcpwatch.  You can get a recent version from Zope CVS:
-   http://cvs.zope.org/Packages/tcpwatch/
+2. Install tcpwatch.  You can get a recent version from PyPI:
+   https://pypi.org/project/tcpwatch/
 
 3. Create a temporary directory to record tcpwatch output.
 
@@ -95,7 +95,7 @@ Test parameter containing an additional '?'
   True
   >>> response.getBody() == b'index'
   True
-              
+
 Test Unauthorized
 
   >>> self.folder.index_html.manage_permission('View', ['Owner'])
@@ -104,7 +104,7 @@ Test Unauthorized
   ... """, handle_errors=True))
   HTTP/1.1 401 Unauthorized
   ...
-  WWW-Authenticate: basic realm=...
+  Www-Authenticate: basic realm=...
 
 Test Basic Authentication
 
@@ -145,7 +145,7 @@ Test setting cookies
   >>> response.status
   200
 
-  >>> b'Set-Cookie: foo="Bar"; Path=/' in response.getOutput()
+  >>> b'Set-Cookie: foo=Bar; Path=/' in response.getOutput()
   True
 
 Test reading cookies

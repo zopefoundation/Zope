@@ -13,37 +13,33 @@
 """Objects providing context for product initialization
 """
 
-from logging import getLogger
 import os
-import sys
+from logging import getLogger
 
+import Products
 from AccessControl.Permission import registerPermissions
 from AccessControl.PermissionRole import PermissionRole
+from App.FactoryDispatcher import FactoryDispatcher
 from OFS.ObjectManager import ObjectManager
-
 from zope.interface import implementedBy
 
-from App.FactoryDispatcher import FactoryDispatcher
 
-# Waaaa
-import Products
 if not hasattr(Products, 'meta_types'):
     Products.meta_types = ()
 if not hasattr(Products, 'meta_classes'):
     Products.meta_classes = {}
     Products.meta_class_info = {}
 
-if sys.version_info >= (3, ):
-    basestring = str
 
 _marker = []  # Create a new marker object
 LOG = getLogger('ProductContext')
 
 
-class ProductContext(object):
+class ProductContext:
 
     def __init__(self, product, app, package):
         self.__prod = product
+        self.__app = app
         self.__pack = package
 
     def registerClass(self, instance_class=None, meta_type='',
@@ -69,7 +65,7 @@ class ProductContext(object):
            meta type will be used.
 
         constructors -- A list of constructor methods
-          A method can me a callable object with a __name__
+          A method can be a callable object with a __name__
           attribute giving the name the method should have in the
           product, or the method may be a tuple consisting of a
           name and a callable object.  The method must be picklable.
@@ -104,7 +100,7 @@ class ProductContext(object):
         pid = productObject.id
 
         if permissions:
-            if isinstance(permissions, basestring):  # You goofed it!
+            if isinstance(permissions, str):  # You goofed it!
                 raise TypeError(
                     'Product context permissions should be a '
                     'list of permissions not a string', permissions)
@@ -176,7 +172,7 @@ class ProductContext(object):
             # 'action': The action in the add drop down in the ZMI. This is
             #           currently also required by the _verifyObjectPaste
             #           method of CopyContainers like Folders.
-            'action': ('manage_addProduct/%s/%s' % (pid, name)),
+            'action': (f'manage_addProduct/{pid}/{name}'),
             # 'product': product id
             'product': pid,
             # 'permission': Guards the add action.
@@ -202,19 +198,11 @@ class ProductContext(object):
                 m[name] = method
                 m[name + '__roles__'] = pr
 
-    def registerHelp(self, directory=None, clear=None, title_re=None):
-        pass
-
-    def registerHelpTitle(self, title=None):
-        pass
-
-    def getProductHelp(self):
-        class DummyHelp(object):
-            lastRegistered = None
-        return DummyHelp()
+    def getApplication(self):
+        return self.__app
 
 
-class AttrDict(object):
+class AttrDict:
 
     def __init__(self, ob):
         self.ob = ob

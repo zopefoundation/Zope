@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 def delete_method_docstring(klass, method_name):
     # Delete the docstring from the class method.
     # Objects must have a docstring to be published.
@@ -64,7 +61,7 @@ def apply_patches():
     for klass in [Element, Attribute, Interface, Method]:
         try:
             del klass.__doc__
-        except:
+        except Exception:
             pass
         for method_name in element_methods:
             delete_method_docstring(klass, method_name)

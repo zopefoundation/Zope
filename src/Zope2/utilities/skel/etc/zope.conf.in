@@ -1,0 +1,252 @@
+%define INSTANCE <<INSTANCE_HOME>>
+
+instancehome $INSTANCE
+
+<zodb_db main>
+   <filestorage>
+     path $INSTANCE/var/Data.fs
+   </filestorage>
+   mount-point /
+</zodb_db>
+
+
+# Uncomment this if you use Products.Sessions and Products.TemporaryFolder
+# <zodb_db temporary>
+#     <temporarystorage>
+#       name Temporary database (for sessions)
+#     </temporarystorage>
+#     mount-point /temp_folder
+#     container-class Products.TemporaryFolder.TemporaryContainer
+# </zodb_db>
+
+
+# Directive: locale
+#
+# Description:
+#     Overwrite the locale settings found in the environment by supplying a
+#     locale name to be used. See your operating system documentation for
+#     locale information specific to your system. If the requested locale is
+#     not supported by your system, an error will be raised and Zope will not
+#     start.
+#
+# Default: unset
+#
+# Example:
+#
+#    locale fr_FR
+
+
+# Directive: environment
+#
+# Description:
+#     A section which can be used to define arbitrary key-value pairs
+#     for use as environment variables during Zope's run cycle.  It
+#     is not recommended to set system-related environment variables such as
+#     PYTHONPATH within this section.
+#
+# Default: unset
+#
+# Example:
+#
+#    <environment>
+#      MY_PRODUCT_ENVVAR foobar
+#    </environment>
+<environment>
+  CHAMELEON_CACHE $INSTANCE/var/cache
+</environment>
+
+
+# Directive: debug-mode
+#
+# Description:
+#     A switch which controls several aspects of Zope operation useful for
+#     developing under Zope.  When debug mode is on:
+#
+#     - The process will not detach from the controlling terminal
+#
+#     - Errors in product initialization will cause startup to fail
+#       (instead of writing error messages to the event log file).
+#
+#     - Filesystem-based scripts such as skins, PageTemplateFiles, and
+#       DTMLFiles can be edited while the server is running and the server
+#       will detect these changes in real time.  When this switch is
+#       off, you must restart the server to see the changes.
+#
+#     Setting this to 'off' when Zope is in a production environment is
+#     encouraged, as it speeds execution (sometimes dramatically).
+#
+# Default: off
+#
+# Example:
+#
+#    debug-mode on
+
+
+# Directive: debug-exceptions
+#
+# Description:
+#     This switch controls how exceptions are handled. If it is set to
+#     "off" (the default), Zope's own exception handling is active.
+#     Exception views or a standard_error_message are used to handle them.
+#
+#     If set to "on", exceptions are not handled by Zope and can propagate
+#     into the WSGI pipeline, where they may be handled by debugging
+#     middleware.
+#
+#     This setting should always be "off" in production. It is useful for
+#     developers and while debugging site issues.
+#
+# Default: off
+#
+# Example:
+#
+#    debug-exceptions on
+
+
+# Directive: http-realm
+#
+# Description:
+#     The HTTP "Realm" header value sent by this Zope instance. This value
+#     often shows up in basic authentication dialogs.
+#
+# Default: Zope
+#
+# Example:
+#
+#    http-realm Slipknot
+
+
+# Directive: webdav-source-port
+#
+# Description:
+#     This value designates a network port number as WebDAV source port.
+#
+#     If this value is set to a positive integer, any GET request coming into
+#     Zope via the designated port will be marked up to signal that this is a
+#     WebDAV request. This request markup resembles what ZServer did for
+#     requests coming though its designated WebDAV source server port, so it is
+#     backwards-compatible for existing code that offers WebDAV handling under
+#     ZServer.
+#
+#     Please note that Zope itself has no server capabilities and cannot open
+#     network ports. You need to configure your WSGI server to listen on the
+#     designated port.
+#
+# Default: Off
+#
+# Example:
+#
+#     webdav-source-port 9800
+
+
+# Directive:  zmi-bookmarkable-urls
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to show the ZMI right hand
+#     frame's URL in the browser navigation bar as opposed to the static
+#     '/manage'. The default is 'on'. To restore the behavior of Zope 2
+#     where the URL was always static unless you opened the right-hand frame in
+#     its own browser window, set this to off.
+#
+#     Default: on
+#
+# Example:
+#
+#     zmi-bookmarkable-urls off
+
+
+# Directive: pid-filename
+#
+# Description:
+#     The path to the file in which the Zope process id(s) will be written.
+#     This defaults to client-home/Z4.pid.
+#
+# Default: CLIENT_HOME/Z4.pid
+#
+# Example:
+#
+#    pid-filename /home/chrism/projects/sessions/var/Z4.pid
+
+
+# Directive: trusted-proxy
+#
+# Description:
+#     Define one or more 'trusted-proxies' directives, each of which is a
+#     hostname or an IP address.  The set of definitions comprises a list
+#     of front-end proxies that are trusted to supply an accurate
+#     X-Forwarded-For header to Zope.  If a connection comes from
+#     a trusted proxy, Zope will trust any X-Forwarded header to contain
+#     the user's real IP address for the purposes of address-based
+#     authentication restriction.
+#
+# Default: unset
+#
+# Example:
+#
+#    trusted-proxy www.example.com
+#    trusted-proxy 192.168.1.1
+
+
+# Directive: security-policy-implementation
+#
+# Description:
+#     The default Zope security machinery is implemented in C.  Change
+#     this to "python" to use the Python version of the Zope security
+#     machinery.  This setting may impact performance but is useful
+#     for debugging purposes.  See also the "verbose-security" option
+#     below.
+#
+# Default: C
+#
+# Example:
+#
+#    security-policy-implementation python
+
+
+# Directive: skip-authentication-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to skip checks related
+#     to authentication, for servers which serve only anonymous content.
+#     Only works if security-policy-implementation is 'C'.
+#
+# Default: off
+#
+# Example:
+#
+#    skip-authentication-checking on
+
+
+# Directive: skip-ownership-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to ignore ownership checking
+#     when attempting to execute "through the web" code. By default, this
+#     directive is on in order to prevent 'trojan horse' security problems
+#     whereby a user with less privilege can cause a user with more
+#     privilege to execute dangerous code.
+#
+# Default: off
+#
+# Example:
+#
+#    skip-ownership-checking on
+
+
+# Directive: verbose-security
+#
+# Description:
+#     By default, Zope reports authorization failures in a terse manner in
+#     order to avoid revealing unnecessary information.  This option
+#     modifies the Zope security policy to report more information about
+#     the reason for authorization failures.  It's designed for debugging.
+#     If you enable this option, you must also set the
+#     'security-policy-implementation' to 'python'.
+#
+# Default: off
+#
+# Example:
+#
+#    security-policy-implementation python
+#    verbose-security on
+

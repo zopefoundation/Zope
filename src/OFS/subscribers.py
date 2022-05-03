@@ -18,17 +18,17 @@ Subscriber definitions.
 from logging import getLogger
 
 import OFS.interfaces
-from Acquisition import aq_base
-from App.config import getConfiguration
-from AccessControl import getSecurityManager
-from ZODB.POSException import ConflictError
-
 import zope.component
 import zope.interface
 import zope.location.interfaces
+from AccessControl import getSecurityManager
+from Acquisition import aq_base
+from App.config import getConfiguration
+from ZODB.POSException import ConflictError
 from zope.container.contained import dispatchToSublocations
-from zope.lifecycleevent.interfaces import IObjectMovedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+from zope.lifecycleevent.interfaces import IObjectMovedEvent
+
 
 deprecatedManageAddDeleteClasses = []
 
@@ -71,7 +71,7 @@ def maybeWarnDeprecated(ob, method_name):
 
 @zope.interface.implementer(zope.location.interfaces.ISublocations)
 @zope.component.adapter(OFS.interfaces.IObjectManager)
-class ObjectManagerSublocations(object):
+class ObjectManagerSublocations:
     """Get the sublocations for an ObjectManager.
     """
 
@@ -79,8 +79,7 @@ class ObjectManagerSublocations(object):
         self.container = container
 
     def sublocations(self):
-        for ob in self.container.objectValues():
-            yield ob
+        yield from self.container.objectValues()
 
 # The following subscribers should really be defined in ZCML
 # but we don't have enough control over subscriber ordering for

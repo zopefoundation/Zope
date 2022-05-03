@@ -46,7 +46,7 @@ class filestream_iterator(io.FileIO):
     """
 
     def __init__(self, name, mode='rb', bufsize=-1, streamsize=1 << 16):
-        super(filestream_iterator, self).__init__(name, mode)
+        super().__init__(name, mode)
         self.streamsize = streamsize
 
     def __next__(self):

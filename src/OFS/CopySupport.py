@@ -13,48 +13,49 @@
 """Copy interface
 """
 
-from json import dumps
-from json import loads
+import base64
 import logging
 import re
 import tempfile
 import warnings
+from json import dumps
+from json import loads
 from zlib import compress
 from zlib import decompressobj
 
+import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import view_management_screens
 from AccessControl.Permissions import copy_or_move
 from AccessControl.Permissions import delete_objects
+from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-import six
-from six.moves.urllib.parse import quote, unquote
-import transaction
-from zExceptions import Unauthorized, BadRequest, ResourceLockedError
-from ZODB.POSException import ConflictError
-from zope.interface import implementer
-from zope.event import notify
-from zope.lifecycleevent import ObjectCopiedEvent
-from zope.lifecycleevent import ObjectMovedEvent
-from zope.container.contained import notifyContainerModified
-
-from OFS.event import ObjectWillBeMovedEvent
 from OFS.event import ObjectClonedEvent
+from OFS.event import ObjectWillBeMovedEvent
 from OFS.interfaces import ICopyContainer
 from OFS.interfaces import ICopySource
-from OFS.Moniker import loadMoniker
 from OFS.Moniker import Moniker
+from OFS.Moniker import loadMoniker
 from OFS.subscribers import compatibilityCall
+from zExceptions import BadRequest
+from zExceptions import ResourceLockedError
+from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCopiedEvent
+from zope.lifecycleevent import ObjectMovedEvent
 
 
 class CopyError(Exception):
     pass
+
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 logger = logging.getLogger('OFS')
@@ -89,7 +90,7 @@ class CopyContainer(Base):
     def manage_CopyContainerAllItems(self, REQUEST):
         return [self._getOb(i) for i in REQUEST['ids']]
 
-    security.declareProtected(delete_objects, 'manage_cutObjects')
+    @security.protected(delete_objects)
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -119,7 +120,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
         return cp
 
-    security.declareProtected(view_management_screens, 'manage_copyObjects')
+    @security.protected(view_management_screens)
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -159,30 +160,34 @@ class CopyContainer(Base):
         while 1:
             if self._getOb(id, None) is None:
                 return id
-            id = 'copy%s_of_%s' % (n and n + 1 or '', orig_id)
+            id = 'copy{}_of_{}'.format(n and n + 1 or '', orig_id)
             n = n + 1
 
-    security.declareProtected(view_management_screens, 'manage_pasteObjects')
-    def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
+    def _pasteObjects(self, cp, cb_maxsize=0):
         """Paste previously copied objects into the current object.
 
-        If calling manage_pasteObjects from python code, pass the result of a
+        ``cp`` is the list of objects for paste as encoded by ``_cb_encode``.
+        If calling _pasteObjects from python code, pass the result of a
         previous call to manage_cutObjects or manage_copyObjects as the first
         argument.
 
-        Also sends IObjectCopiedEvent and IObjectClonedEvent
+        ``cb_maxsize`` is the maximum size of the JSON representation of the
+        object list. Set it to a non-zero value to prevent DoS attacks with
+        huge object lists or zlib bombs.
+
+        This method sends IObjectCopiedEvent and IObjectClonedEvent
         or IObjectWillBeMovedEvent and IObjectMovedEvent.
+
+        Returns tuple of (operator, list of {'id': orig_id, 'new_id': new_id}).
+        Where `operator` is 0 for a copy operation and 1 for a move operation.
         """
-        cp = cb_copy_data
-        if cp is None and REQUEST is not None and '__cp' in REQUEST:
-            cp = REQUEST['__cp']
         if cp is None:
             raise CopyError('No clipboard data found.')
 
         try:
-            op, mdatas = _cb_decode(cp)
+            op, mdatas = _cb_decode(cp, cb_maxsize)
         except Exception as e:
-            six.raise_from(CopyError('Clipboard Error'), e)
+            raise CopyError('Clipboard Error') from e
 
         oblist = []
         app = self.getPhysicalRoot()
@@ -229,9 +234,6 @@ class CopyContainer(Base):
                 compatibilityCall('manage_afterClone', ob, ob)
 
                 notify(ObjectClonedEvent(ob))
-
-            if REQUEST is not None:
-                return self.manage_main(self, REQUEST, cb_dataValid=1)
 
         elif op == 1:
             # Move operation
@@ -293,20 +295,45 @@ class CopyContainer(Base):
                 # try to make ownership implicit if possible
                 ob.manage_changeOwnershipType(explicit=0)
 
-            if REQUEST is not None:
+        return op, result
+
+    @security.protected(view_management_screens)
+    def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
+        """Paste previously copied objects into the current object.
+
+        If calling manage_pasteObjects from python code, pass the result of a
+        previous call to manage_cutObjects or manage_copyObjects as the first
+        argument.
+
+        Also sends IObjectCopiedEvent and IObjectClonedEvent
+        or IObjectWillBeMovedEvent and IObjectMovedEvent.
+
+        If `REQUEST` is None it returns a
+        list of dicts {'id': orig_id, 'new_id': new_id} otherwise it renders
+        a HTML page.
+        """
+        if cb_copy_data is None and REQUEST is not None and '__cp' in REQUEST:
+            cb_copy_data = REQUEST['__cp']
+        op, result = self._pasteObjects(cb_copy_data, cb_maxsize=8192)
+
+        if REQUEST is not None:
+            if op == 0:
+                cb_valid = 1
+            elif op == 1:
                 REQUEST['RESPONSE'].setCookie(
                     '__cp', 'deleted',
                     path='%s' % cookie_path(REQUEST),
                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
-                return self.manage_main(self, REQUEST, cb_dataValid=0)
+                cb_valid = 0
+            return self.manage_main(self, REQUEST, cb_dataValid=cb_valid)
 
         return result
 
-    security.declareProtected(view_management_screens, 'manage_renameForm')
+    security.declareProtected(view_management_screens, 'manage_renameForm')  # NOQA: D001,E501
     manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
-    security.declareProtected(view_management_screens, 'manage_renameObjects')
+    @security.protected(view_management_screens)
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
@@ -317,7 +344,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declareProtected(view_management_screens, 'manage_renameObject')
+    @security.protected(view_management_screens)
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object.
         """
@@ -372,7 +399,7 @@ class CopyContainer(Base):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST)
 
-    security.declarePublic('manage_clone')
+    @security.public
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """
@@ -483,6 +510,7 @@ class CopyContainer(Base):
                 raise CopyError('Insufficient privileges')
         else:
             raise CopyError('Not Supported')
+
 
 InitializeClass(CopyContainer)
 
@@ -606,6 +634,7 @@ class CopySource(Base):
         if getSecurityManager().checkPermission(copy_or_move, self):
             return 1
 
+
 InitializeClass(CopySource)
 
 
@@ -639,25 +668,21 @@ def _cb_encode(d):
     json_bytes = dumps(d).encode('utf-8')
     squashed_bytes = compress(json_bytes, 2)  # -> bytes w/ useful encoding
     # quote for embeding in cookie
-    if six.PY2:
-        return quote(squashed_bytes)
-    else:
-        return quote(squashed_bytes.decode('latin-1'))
+    return base64.encodebytes(squashed_bytes)
 
 
 def _cb_decode(s, maxsize=8192):
     """Decode a list of IDs from storage in a cookie.
 
     ``s`` is text as encoded by ``_cb_encode``.
+    ``maxsize`` is the maximum size of uncompressed data. ``0`` means no limit.
 
     Return a list of text IDs.
     """
     dec = decompressobj()
-    if six.PY2:
-        squashed = unquote(s)
-    else:
-        squashed = unquote(s).encode('latin-1')
-    data = dec.decompress(squashed, maxsize)
+    if isinstance(s, str):
+        s = s.encode('latin-1')
+    data = dec.decompress(base64.decodebytes(s), maxsize)
     if dec.unconsumed_tail:
         raise ValueError
     json_bytes = data.decode('utf-8')

@@ -13,16 +13,18 @@
 
 import re
 
-from six import exec_
-
 from AccessControl.class_init import InitializeClass
+from AccessControl.PermissionRole import _what_not_even_god_should_do
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
-from AccessControl.Permissions import view_management_screens
-from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
-from Acquisition import aq_base, aq_inner, aq_parent
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from zope.component import queryMultiAdapter as qma
+
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -34,7 +36,7 @@ defaultBindings = {'name_context': 'context',
 _marker = []  # Create a new marker
 
 
-class NameAssignments(object):
+class NameAssignments:
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
@@ -125,7 +127,7 @@ class NameAssignments(object):
             if name in asgns:
                 assigned_name = asgns[name]
                 assigned_names.append(assigned_name)
-                exprtext.append('"%s":%s,' % (assigned_name, expr))
+                exprtext.append(f'"{assigned_name}":{expr},')
         text = '{%s}' % ''.join(exprtext)
         return self._generateCodeBlock(text, assigned_names)
 
@@ -156,7 +158,7 @@ class NameAssignments(object):
         return self._generateCodeBlock(text, assigned_names)
 
 
-class UnauthorizedBinding(object):
+class UnauthorizedBinding:
     """Explanation: as of Zope 2.6.3 a security hole was closed - no
        security check was happening when 'context' and 'container'
        were bound to a script. Adding the check broke lots of sites
@@ -183,7 +185,7 @@ class UnauthorizedBinding(object):
     def __repr__(self):
         return '<UnauthorizedBinding: %s>' % self._name
 
-    def __getattr__(self, name, default=None):
+    def __getattr__(self, name):
         # Make *extra* sure that the wrapper isn't used to access
         # __call__, etc.
         if name.startswith('__'):
@@ -196,7 +198,7 @@ class UnauthorizedBinding(object):
 
             self.__you_lose()
 
-        return guarded_getattr(self._wrapped, name, default)
+        return guarded_getattr(self._wrapped, name)
 
     def __you_lose(self):
         name = self.__dict__['_name']
@@ -205,19 +207,19 @@ class UnauthorizedBinding(object):
     __str__ = __call__ = index_html = __you_lose
 
 
-class Bindings(object):
+class Bindings:
 
     security = ClassSecurityInfo()
 
     _Bindings_client = None
 
-    security.declareProtected('Change bindings', 'ZBindings_edit')
+    @security.protected('Change bindings')
     def ZBindings_edit(self, mapping):
         self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
 
-    security.declareProtected('Change bindings', 'ZBindings_setClient')
+    @security.protected('Change bindings')
     def ZBindings_setClient(self, clientname):
         '''Name the binding to be used as the "client".
 
@@ -233,7 +235,7 @@ class Bindings(object):
         self._bind_names = names = NameAssignments(names)
         return names
 
-    security.declareProtected(view_management_screens, 'getBindingAssignments')
+    @security.protected(view_management_screens)
     def getBindingAssignments(self):
         if not hasattr(self, '_bind_names'):
             self._setupBindings()
@@ -242,8 +244,9 @@ class Bindings(object):
     def __before_publishing_traverse__(self, self2, request):
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
-        if (not names.isNameAssigned('name_subpath') or
-                (path and hasattr(aq_base(self), path[-1]))):
+        if not names.isNameAssigned('name_subpath') or \
+           (path and hasattr(aq_base(self), path[-1])) or \
+           (path and qma((self, request), name=path[-1]) is not None):
             return
         subpath = path[:]
         path[:] = []
@@ -362,10 +365,11 @@ class Bindings(object):
                 bound_data = {}
             else:
                 bound_data = []
-                exec_(bindcode)
+                exec(bindcode)
                 bound_data = bound_data[0]
             return self._exec(bound_data, args, kw)
         finally:
             security.removeContext(self)
+
 
 InitializeClass(Bindings)

@@ -15,24 +15,23 @@
 """
 
 import os
+from urllib.parse import unquote
 
-from six.moves.urllib.parse import unquote
 import zope.browserresource.directory
 import zope.browserresource.file
+from Products.Five.browser import BrowserView
 from zope.browserresource.file import File
 from zope.interface import implementer
-from zope.traversing.browser import absoluteURL
+from zope.ptresource.ptresource import PageTemplate
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.ptresource.ptresource import PageTemplate
-
-from Products.Five.browser import BrowserView
+from zope.traversing.browser import absoluteURL
 
 
 _marker = object()
 
 
-class Resource(object):
+class Resource:
     """A mixin that changes the URL-rendering of resources (__call__).
 
     In zope.browserresource, resource URLs are of the form
@@ -51,7 +50,7 @@ class Resource(object):
         url = unquote(absoluteURL(container, self.request))
         if not isinstance(container, DirectoryResource):
             name = '++resource++%s' % name
-        return "%s/%s" % (url, name)
+        return f"{url}/{name}"
 
 
 @implementer(IBrowserPublisher)
@@ -76,7 +75,7 @@ class FileResource(Resource, zope.browserresource.file.FileResource):
     pass
 
 
-class ResourceFactory(object):
+class ResourceFactory:
 
     factory = None
     resource = None
@@ -123,7 +122,7 @@ class ImageResourceFactory(ResourceFactory):
 
 
 # we only need this class a context for DirectoryResource
-class Directory(object):
+class Directory:
 
     def __init__(self, path, name):
         self.path = path

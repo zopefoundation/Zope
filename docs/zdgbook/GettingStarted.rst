@@ -5,19 +5,32 @@ Getting Started
 Introduction
 ============
 
-This chapter cover installation and getting started with development
-of a simple application.  This guide use a build system called
-`Buildout <http://www.buildout.org>`_ to build the application.  And
-the Python packages developed as part of the application can be
-distributed as `Python eggs
-<http://peak.telecommunity.com/DevCenter/setuptools>`_.
+This chapter covers the installation of Zope and getting started with
+the development of a simple application.  This guide uses a build
+system called `Buildout <http://www.buildout.org>`_ to build the
+application.
 
+Prerequisites
+=============
 
-Directory Structure
+Make sure you have Python installed. Version 3.6 or higher is
+recommended.
+
+Creating and activating a `VirtualEnv <https://pypi.org/project/virtualenv/>`_
+is recommended.
+
+In order to use buildout, you have to install the ``zc.buildout``
+package.
+
+::
+
+  $ pip install zc.buildout
+
+Directory structure
 ===================
 
-To begin the application development, create a directory structure to
-place Python packages and build related files.
+To begin application development, create a directory structure for
+the Python packages and build related files.
 
 ::
 
@@ -25,117 +38,101 @@ place Python packages and build related files.
   $ mkdir poll/poll_build
   $ mkdir poll/poll.main
 
-All build related files can be added inside `poll_build` directory.
-The main Python package can be added inside `poll.main` directory.
-We can make the ``poll``, a namespace package using the functionality
-provided by `pkg_resources` module included in setuptools.
+All build related files will be added inside the ``poll_build``
+directory, whereas the main Python package goes into the
+``poll.main`` directory.
 
-Bootstrapping the Build
-=======================
+Installing Zope using zc.buildout
+=================================
 
-You should have Python 2.6 or 2.7 installed in your system.  To start
-the build process, download and run `bootstrap.py`.  The
-`bootstrap.py` will download and install `setuptools` and
-`zc.buildout` packages.  Also it will create the directory structure
-and `buildout` script inside `bin` directory.
-
-::
-
-  $ cd poll/poll_build
-  $ touch buildout.cfg
-  $ wget -c http://svn.zope.org/repos/main/zc.buildout/trunk/bootstrap/bootstrap.py
-  $ python2.6 bootstrap.py
-
-Installing Zope 2
-=================
-
-Zope 2 is distributed in egg format.  To install Zope 2 egg
-and create an instance, update buildout configuration file
-(``buildout.cfg``) with appropriate parts and recipes.
+Zope is distributed in egg format.  To install Zope
+and create an instance, create a buildout configuration file
+(``poll/poll_build/buildout.cfg``) with following content.
 
 ::
 
   [buildout]
-  parts = zope2
-          instance
-  extends = http://download.zope.org/Zope2/index/2.13.20/versions.cfg
+  extends = https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
+  parts =
+      zope4
 
-  [zope2]
+  [zope4]
   recipe = zc.recipe.egg
-  eggs = Zope2
-  interpreter = zopepy
+  eggs =
+      Zope
+      Paste
 
-  [instance]
-  recipe = plone.recipe.zope2instance
-  user = admin:admin
-  http-address = 8080
-  eggs = ${zope2:eggs}
-
-The ``[zope2]`` part use `zc.recipe.egg` which will download `Zope2`
-egg and all its dependencies.  It will create few console scripts
-inside `bin` directory.  Also it will create a custom Python
-interpreter named ``zopepy``.
-
-The ``[instance]`` part creates a Zope 2 application instance to
-develop application.  It will create a script named ``instance``
-inside `bin` directory.  We can use that script to run the
-application instance.
+The ``[zope4]`` part uses ``zc.recipe.egg`` which will download
+``Zope`` and all its dependencies.  It will create few console
+scripts inside the ``bin`` directory.
 
 After updating the buildout configuration, you can run the `buildout`
 command to build the system.
 
 ::
 
-  $ ./bin/buildout
+  $ cd poll/poll_build
+  $ buildout
 
 The initial build will take some time to complete.
 
-Running Instance
-================
+Creating the instance
+=====================
 
-Once build is completed, you can run Zope 2 instance like this.
+Once the build is complete, you can create an instance as follows.
 
 ::
 
-  $ ./bin/instance fg
+  $ bin/mkwsgiinstance -d .
 
 
-You can see that Zope is running in 8080 port.  You can go to the
-Zope Management Interface (ZMI).
+Running the instance
+====================
+
+Once you got a Zope instance, you can run it like this.
+
+::
+
+  $ bin/runwsgi etc/zope.ini
+
+Now, Zope is running. You can convince yourself by visiting the
+following URL.
+
+::
+
+  http://localhost:8080
+
+You can also visit the administration area.
+
+Use the user name and password you set earlier.
 
 ::
 
   http://localhost:8080/manage
 
-You can provide the user name & password provided in `[instance]`
-part to access this page.
+When you have a look at the drop-down box in the top right corner,
+you see a list of objects you may create.
 
-You can see a list of installable applications in the drop-down box.
-Also you can see it in "Control_Panel" -> "Products".
-
-::
-
-  http://localhost:8080/Control_Panel/Products/manage_main
-
-In the next section we will make the `poll.main` listed here.  And
-later we will make it installable.
+In the next section we will create the poll application. Later, we
+will make it installable, too.
 
 
 Developing the main package
 ===========================
 
-Now we can move to `poll.main` packae to create the main package to
-develop the application.  We can develop the entire application
-inside `poll.main` package.  But it is reccomended to split packages
-logically and maintain the dependencies between packages properly.
+Now, we can move to the ``poll.main`` directory to create the main
+package to develop the application.  We will develop the entire
+application inside the ``poll.main`` package.  For bigger projects,
+it is recommended to split packages logically and maintain the
+dependencies between the packages properly.
 
 ::
 
   $ cd ../poll.main
 
-Again we need to create the basic directory structure and `setup.py`
-to create egg distribution.  We are going to place python package
-inside `src` directory.
+In order to create an egg distribution, we need to create a
+``setup.py`` and a basic directory structure. We are going to place
+the Python package inside the ``src`` directory.
 
 ::
 
@@ -147,19 +144,18 @@ inside `src` directory.
   $ touch src/poll/main/__init__.py
   $ touch src/poll/main/configure.zcml
 
-The last file we created is a configuration file called Zope
-Configuration Markup Language (ZCML). Soon we will add some boiler
-plate code inside ZCML file.
+The last file is a configuration file. The ``.zcml`` file extension stands for
+``Zope Configuration Markup Language``.
 
-To declare `poll` as a namespace package, we need to add this boiler
-plate code to `src/poll/__init__.py`.
+To declare ``poll`` as a namespace package, we need to add following
+code to ``src/poll/__init__.py``.
 
 ::
 
   __import__('pkg_resources').declare_namespace(__name__)
 
-Next we need to add the minimum meta data required for the package in
-`setup.py`.
+Next, we need to add the minimum metadata required for the package
+in ``setup.py``.
 
 ::
 
@@ -172,49 +168,50 @@ Next we need to add the minimum meta data required for the package in
       package_dir={"": "src"},
       namespace_packages=["poll"],
       install_requires=["setuptools",
-                        "Zope2"],
+                        "Zope"],
       )
 
-We need to add two more files to be recognized by Zope.  First,
-define this call-back function in `src/poll/main/__init__.py`.
+We need to edit two more files to be recognized by Zope.  First,
+define the ``initialize`` callback function in ``src/poll/main/__init__.py``.
 
 ::
 
   def initialize(registrar):
       pass
 
-And in the ZCML file add these few lines.
+And, in the ZCML file (``src/poll/main/configure.zcml``), add these
+few lines.
 
 ::
 
-  <configure
-      xmlns="http://namespaces.zope.org/five">
+  <configure xmlns="http://namespaces.zope.org/five">
 
-      <registerPackage package="." initialize=".initialize" />
+    <registerPackage package="." initialize=".initialize" />
 
   </configure>
 
-Creating Installable Application
-================================
+Creating an installable application
+===================================
 
 We need three things to make an installable application.
 
-- Form object created using ZPT (manage_addPollMain)
-- A function to define form action (addPollMain)
-- A class to define toplevel application object (PollMain).
+- A form object created as Zope Page Template (manage_addPollMain)
+- A function to define the form action (addPollMain)
+- A class to define the toplevel application object (PollMain).
 
-And we need to register the class along with form and add function
-using the `registrar` object passed to the `initialize` function.
+Finally, we need to register the class along with the form and add
+the function using the ``registrar`` object passed to the
+``initialize`` function.
 
-We can define all these things in `app.py` and the form template as
-`manage_addPollMain_form.zpt`.
+We can define all these things in ``app.py`` and the form template as
+``manage_addPollMain_form.zpt``.
 
 ::
 
   $ touch src/poll/main/app.py
   $ touch src/poll/main/manage_addPollMain_form.zpt
 
-Here is the code for `app.py`.
+Here is the code for ``app.py``...
 
 ::
 
@@ -224,47 +221,72 @@ Here is the code for `app.py`.
   class PollMain(Folder):
       meta_type = "POLL"
 
+
   manage_addPollMain = PageTemplateFile("manage_addPollMain_form", globals())
+
 
   def addPollMain(context, id):
       """ """
       context._setObject(id, PollMain(id))
       return "POLL Installed: %s" % id
 
-And `manage_addPollMain_form.zpt`.
+... and for ``manage_addPollMain_form.zpt``:
 
 ::
 
-  <html xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:tal="http://xml.zope.org/namespaces/tal">
-    <body>
+  <h1 tal:replace="structure context/manage_page_header">Header</h1>
+  
+  <main class="container-fluid">
+  
+    <h2 tal:define="form_title string:Add POLL"
+        tal:replace="structure here/manage_form_title">Form Title</h2>
+  
+    <form action="addPollMain" method="post">
+  
+      <div class="form-group row">
+        <label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+        <div class="col-sm-9 col-md-10">
+          <input id="id" name="id" class="form-control" type="text" />
+        </div>
+      </div>
+  
+      <div class="form-group row form-optional">
+        <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+        <div class="col-sm-9 col-md-10">
+          <input id="title" name="title" class="form-control" type="text" />
+        </div>
+      </div>
+  
+      <div class="zmi-controls">
+        <input class="btn btn-primary" type="submit" name="submit" value="Add" />
+      </div>
+  
+    </form>
+  
+  </main>
+  
+  <h1 tal:replace="structure context/manage_page_footer">Footer</h1>
 
-      <h2>Add POLL</h2>
-      <form action="addPollMain" method="post">
-        Id: <input type="text" name="id" /><br />
-        Title: <input type="text" name="title" /><br />
-        <input type="submit" value="Add" />
-      </form>
-    </body>
-  </html>
-
-Finally we can register it like this (update `__init__.py`)::
+Finally, we can register it within ``src/poll/main/__init__.py``::
 
   from poll.main.app import PollMain, manage_addPollMain, addPollMain
 
   def initialize(registrar):
-      registrar.registerClass(PollMain,
-                              constructors=(manage_addPollMain, addPollMain))
+      registrar.registerClass(
+          PollMain,
+          constructors=(manage_addPollMain, addPollMain)
+      )
 
 The application is now ready to install.  But we need to make some
-changes in `poll_build` to recognize this package by Zope 2.
+changes in `poll_build`, so it gets installed along Zope.
 
-Adding poll.main to build
+Updating the build config
 =========================
 
-First in `[buildout]` part we need to mention that `poll.main` is
-locally developed.  Otherwise buildout will try to get the package
-from package index server, by default http://pypi.python.org/pypi .
+First, in the ``[buildout]`` section of ``buildout.cfg`` we need
+to mention that ``poll.main`` is locally developed.  Otherwise,
+buildout will try to get the package from package index server, by
+default that is https://pypi.org/ .
 
 ::
 
@@ -272,23 +294,17 @@ from package index server, by default http://pypi.python.org/pypi .
   develop = ../poll.main
   ...
 
-Also we need to add `poll.main` egg to `eggs` option in `[zope2]`
-part.
+Also, we need to add ``poll.main`` to the ``eggs`` option in the
+``[zope4]`` section.
 
 ::
 
   ...
-  eggs = Zope2
-         poll.main
+  eggs =
+      Zope
+      Paste
+      poll.main
   ...
-
-And finally we need to add a new option to include the ZCML file.  So
-that the package will be recognized by Zope.
-
-::
-
-  ...
-  zcml = poll.main
 
 The final `buildout.cfg` will look like this.
 
@@ -296,52 +312,56 @@ The final `buildout.cfg` will look like this.
 
   [buildout]
   develop = ../poll.main
-  parts = zope2
-          instance
-  extends = http://download.zope.org/Zope2/index/2.13.20/versions.cfg
+  extends = https://zopefoundation.github.io/Zope/releases/master/versions-prod.cfg
+  parts =
+      zope4
 
-  [zope2]
+  [zope4]
   recipe = zc.recipe.egg
-  eggs = Zope2
-         poll.main
-  interpreter = zopepy
+  eggs =
+      Zope
+      Paste
+      poll.main
 
-  [instance]
-  recipe = plone.recipe.zope2instance
-  user = admin:admin
-  http-address = 8080
-  eggs = ${zope2:eggs}
-  zcml = poll.main
-
-Now to make these change effective, run the buildout again.
+To make these change effective, run the buildout again.
 
 ::
 
-  $ ./bin/buildout
+  $ buildout
 
-Now we can run application instance again.
+Finally, we have to include our package within
+``poll_build/etc/site.zcml``. Add the following towards the bottom
+of that file:
 
 ::
 
-  $ ./bin/instance fg
+  <include package="poll.main" />
 
-Adding application instance
-===========================
+Now, we can run application instance again.
 
-Visit ZMI and select `POLL` from the drop-down box.  It will display
-the add-form created earlier.  You can provide the ID as `poll` and
-submit the form.  After submitting, it should display a message:
+::
+
+  $ bin/runwsgi etc/zope.ini
+
+Adding an application instance
+==============================
+
+Visit the ZMI ( http://localhost:8080/manage ) and select ``POLL``
+from the drop-down box.  It will display the add-form created
+earlier.  Enter ``poll`` in the ID field and submit the form. After
+submitting, it should display a message:
 "POLL Installed: poll".
 
-Adding the main page to POLL
-============================
+Adding and index page for the POLL application
+==============================================
 
-In this section we will try to add a main page to POLL application.
-So that we can acces POLL application like this:
+In this section we will add a main page to the POLL application, so
+that we can access the POLL application like this:
 http://localhost:8080/poll .
 
-First create a file named `index_html.zpt` inside `src/poll/main` with
-content like this::
+First, create a file named ``index_html.zpt`` inside
+``poll.main/src/poll/main``
+with content like this::
 
   <html>
   <head>
@@ -354,7 +374,7 @@ content like this::
   </body>
   </html>
 
-Now add an attribute named `index_html` inside PollMain class like
+Now add an attribute named ``index_html`` inside PollMain class like
 this::
 
   class PollMain(Folder):
@@ -362,11 +382,11 @@ this::
 
       index_html = PageTemplateFile("index_html", globals())
 
-Restart the Zope. Now you can see that it display the main page when
-you access: http://localhost:8080/poll .
+After restarting Zope, you can see that it displays the main page
+when you access: http://localhost:8080/poll .
 
 Summary
 =======
 
-This chapter covered installation and beginning a simple project in
-Zope 2.
+This chapter covered the installation of Zope and the beginning of
+the development of a simple project in Zope.

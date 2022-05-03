@@ -17,10 +17,9 @@
    a real object that retains its correct version context
    and aquisition relationships via a simple interface.
 """
-import collections
 
 
-class Moniker(object):
+class Moniker:
     """An object moniker is an intelligent reference to a
     persistent object. A moniker can be turned back into
     a real object that retains its correct version context

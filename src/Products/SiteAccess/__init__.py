@@ -1,5 +1,3 @@
-
-
 def initialize(context):
     from Products.SiteAccess import VirtualHostMonster
 

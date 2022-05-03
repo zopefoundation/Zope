@@ -14,7 +14,7 @@
 import os
 
 
-class ZopeFinder(object):
+class ZopeFinder:
 
     def __init__(self, argv):
         self.cmd = argv[0]
@@ -27,9 +27,10 @@ class ZopeFinder(object):
         # given a config file, return a Zope application object
         if config_file is None:
             config_file = self.get_zope_conf()
-        from Zope2.Startup import options, handlers
         import App.config
         import Zope2
+        from Zope2.Startup import handlers
+        from Zope2.Startup import options
         opts = options.ZopeWSGIOptions(configfile=config_file)()
         handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
         App.config.setConfiguration(opts.configroot)
@@ -38,10 +39,10 @@ class ZopeFinder(object):
 
     def get_zope_conf(self):
         # the default config file path is assumed to live in
-        # $instance_home/etc/wsgi.conf, and the console scripts that use this
+        # $instance_home/etc/zope.conf, and the console scripts that use this
         # are assumed to live in $instance_home/bin; override if the
         # environ contains "ZOPE_CONF".
         ihome = os.path.dirname(os.path.abspath(os.path.dirname(self.cmd)))
-        default_config_file = os.path.join(ihome, 'etc', 'wsgi.conf')
+        default_config_file = os.path.join(ihome, 'etc', 'zope.conf')
         zope_conf = os.environ.get('ZOPE_CONF', default_config_file)
         return zope_conf

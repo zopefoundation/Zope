@@ -15,7 +15,8 @@
 """
 
 from zope.component import adapter
-from zope.interface import implementer, Interface
+from zope.interface import Interface
+from zope.interface import implementer
 
 
 class IAdaptable(Interface):
@@ -47,7 +48,7 @@ class IDestination(Interface):
 
 
 @implementer(IAdaptable)
-class Adaptable(object):
+class Adaptable:
 
     def method(self):
         return "The method"
@@ -55,7 +56,7 @@ class Adaptable(object):
 
 @implementer(IAdapted)
 @adapter(IAdaptable)
-class Adapter(object):
+class Adapter:
 
     def __init__(self, context):
         self.context = context
@@ -65,12 +66,12 @@ class Adapter(object):
 
 
 @implementer(IOrigin)
-class Origin(object):
+class Origin:
     pass
 
 
 @implementer(IDestination)
-class OriginalAdapter(object):
+class OriginalAdapter:
 
     def __init__(self, context):
         self.context = context
@@ -80,7 +81,7 @@ class OriginalAdapter(object):
 
 
 @implementer(IDestination)
-class OverrideAdapter(object):
+class OverrideAdapter:
 
     def __init__(self, context):
         self.context = context

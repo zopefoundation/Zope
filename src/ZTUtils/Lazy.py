@@ -10,13 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-from six.moves import xrange
-
 _marker = object()
 
 
-class Lazy(object):
+class Lazy:
 
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__ = True
@@ -41,14 +38,14 @@ class Lazy(object):
         # This is a worst-case len, subclasses should try to do better
         if self._len is not _marker:
             return self._len
-        l = len(self._data)
+        dl = len(self._data)
         while 1:
             try:
-                self[l]
-                l = l + 1
+                self[dl]
+                dl += 1
             except Exception:
-                self._len = l
-                return l
+                self._len = dl
+                return dl
 
     def __add__(self, other):
         if not isinstance(other, Lazy):
@@ -60,7 +57,7 @@ class Lazy(object):
         if isinstance(index, slice):
             r = []
             start, stop, step = index.indices(len(self))
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     r.append(self[i])
                 except IndexError:
@@ -113,7 +110,7 @@ class LazyCat(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyCat, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:
@@ -162,14 +159,14 @@ class LazyCat(Lazy):
         # of its underlying sequences
         if self._len is not _marker:
             return self._len
-        l = 0
+        ld = 0
         try:
             for s in self._seq:
-                l += len(s)
+                ld += len(s)
         except AttributeError:
-            l = len(self._data)
-        self._len = l
-        return l
+            ld = len(self._data)
+        self._len = ld
+        return ld
 
 
 class LazyMap(Lazy):
@@ -192,7 +189,7 @@ class LazyMap(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyMap, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         if index in data:
@@ -215,7 +212,7 @@ class LazyFilter(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyFilter, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:
@@ -266,7 +263,7 @@ class LazyMop(Lazy):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return super(LazyMop, self).__getitem__(index)
+            return super().__getitem__(index)
 
         data = self._data
         try:

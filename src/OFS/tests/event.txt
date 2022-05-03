@@ -25,8 +25,8 @@ Test setup
 A bit of setup for the tests. Because we'll test copy/paste, we need to
 work inside a database::
 
-  >>> import ZODB.tests.util
-  >>> db = ZODB.tests.util.DB()
+  >>> import ZODB.MappingStorage
+  >>> db = ZODB.MappingStorage.DB()
   >>> connection = db.open()
   >>> root = connection.root()
 

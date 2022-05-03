@@ -13,7 +13,6 @@
 """Properties unit tests.
 """
 
-import six
 import unittest
 
 
@@ -93,13 +92,33 @@ class TestPropertyManager(unittest.TestCase):
         pm._updateProperty('test_lines', 'foo\nbar')
         self.assertEqual(pm.getProperty('test_lines'), ('foo', 'bar'))
 
-        # Under Python 3, bytes are decoded back to str
         pm._updateProperty('test_lines', b'bar\nbaz')
         self.assertEqual(pm.getProperty('test_lines'), ('bar', 'baz'))
 
-        pm._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(pm.getProperty('test_lines'), 
-                         (six.u('uni'), six.u('code')))
+
+class TestPropertySheets(unittest.TestCase):
+
+    def _makePropSheet(self, *args, **kw):
+        from OFS.PropertySheets import PropertySheet
+        return PropertySheet(*args, **kw)
+
+    def _makeFolder(self):
+        from OFS.Folder import Folder
+        fldr = Folder('testfolder')
+        return fldr
+
+    def test_get(self):
+        parent = self._makeFolder()
+        pss = parent.propertysheets
+        sheet_w_name = self._makePropSheet(id='test1')
+        sheet_w_xml = self._makePropSheet(id='foobar',
+                                          md={'xmlns': 'test2'})
+        parent.__propsets__ += (sheet_w_name, sheet_w_xml)
+
+        self.assertIsNone(pss.get('unknown'))
+        self.assertEqual(pss.get('unknown', default='moep'), 'moep')
+        self.assertEqual(pss.get('test1').getId(), 'test1')
+        self.assertEqual(pss.get('test2').getId(), 'foobar')
 
 
 class TestPropertySheet(unittest.TestCase):
@@ -130,12 +149,5 @@ class TestPropertySheet(unittest.TestCase):
         ps._updateProperty('test_lines', 'foo\nbar')
         self.assertEqual(ps.getProperty('test_lines'), ('foo', 'bar'))
 
-        # Under Python 3, bytes are decoded back to str
         ps._updateProperty('test_lines', b'bar\nbaz')
         self.assertEqual(ps.getProperty('test_lines'), ('bar', 'baz'))
-
-        ps._updateProperty('test_lines', six.u('uni\ncode'))
-        self.assertEqual(ps.getProperty('test_lines'), 
-                         (six.u('uni'), six.u('code')))
-
-

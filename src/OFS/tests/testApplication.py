@@ -1,5 +1,6 @@
-from Testing.ZopeTestCase import FunctionalTestCase
 import unittest
+
+from Testing.ZopeTestCase import FunctionalTestCase
 
 
 class ApplicationTests(unittest.TestCase):
@@ -63,10 +64,10 @@ class ApplicationTests(unittest.TestCase):
         self.assertEqual(app.__bobo_traverse__(request, 'OTHER'), 'OTHER')
 
     def test_bobo_traverse_attribute_key_miss_R_M_default_real_request(self):
-        from six.moves import UserDict
+        from collections import UserDict
         request = UserDict()
 
-        class _Response(object):
+        class _Response:
             def notFoundError(self, msg):
                 1 / 0
 
@@ -91,27 +92,6 @@ class ApplicationTests(unittest.TestCase):
         request = {'REQUEST_METHOD': 'GET'}
         self.assertRaises(KeyError, app.__bobo_traverse__, request, 'NONESUCH')
 
-    def test_bobo_traverse_attribute_key_miss_R_M_not_GET_POST(self):
-        from OFS import bbb
-        if bbb.HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = bbb.NullResource
-
-        if NullResource is None:
-            return
-
-        from Acquisition import aq_inner, aq_parent
-
-        app = self._makeOne()
-        app._getOb = _noWay
-        request = {'REQUEST_METHOD': 'GOOFY'}
-
-        result = app.__bobo_traverse__(request, 'OTHER')
-
-        self.assertIsInstance(result, NullResource)
-        self.assertTrue(aq_parent(aq_inner(result)) is app)
-
     def test_redirect_regression(self):
         """From code you should still be able to call the Redirect method.
 
@@ -129,6 +109,19 @@ class ApplicationTests(unittest.TestCase):
                 RedirectException,
                 method, 'http://google.nl', 'http://other.url')
 
+    def test_ZopeVersion(self):
+        import pkg_resources
+
+        from App.version_txt import getZopeVersion
+
+        app = self._makeOne()
+        pkg_version = pkg_resources.get_distribution('Zope').version
+        zversion = getZopeVersion()
+
+        self.assertEqual(app.ZopeVersion(major=True), zversion.major)
+        self.assertEqual(app.ZopeVersion(major=True),
+                         int(pkg_version.split('.')[0]))
+
 
 class ApplicationPublishTests(FunctionalTestCase):
 
@@ -140,7 +133,7 @@ class ApplicationPublishTests(FunctionalTestCase):
         # These are all aliases.
         for name in ('Redirect', 'ZopeRedirect'):
             response = self.publish(
-                '/{0}?destination=http://google.nl'.format(name))
+                f'/{name}?destination=http://google.nl')
             # This should *not* return a 302 Redirect.
             self.assertEqual(response.status, 404)
 

@@ -22,20 +22,18 @@ import sys
 from inspect import isfunction
 from inspect import ismethod
 
-from zope.component import queryMultiAdapter
-from zope.component.interface import provideInterface
-from zope.component.zcml import handler
-from zope.configuration.exceptions import ConfigurationError
-from zope.interface import classImplements
-from zope.interface import Interface
-from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from zope.security.zcml import Permission
-
 import zope.browserpage.metaconfigure
 import zope.browserpage.simpleviewclass
+from AccessControl.class_init import InitializeClass
+from AccessControl.security import CheckerPrivateId
+from AccessControl.security import getSecurityInfo
+from AccessControl.security import protectClass
+from AccessControl.security import protectName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Five.browser.resource import DirectoryResourceFactory
+from Products.Five.browser.resource import FileResourceFactory
+from Products.Five.browser.resource import ImageResourceFactory
+from Products.Five.browser.resource import PageTemplateResourceFactory
 from zope.browserpage.metaconfigure import _handle_allowed_attributes
 from zope.browserpage.metaconfigure import _handle_allowed_interface
 from zope.browserpage.metaconfigure import _handle_for
@@ -43,18 +41,17 @@ from zope.browserpage.metaconfigure import _handle_menu
 from zope.browserpage.metaconfigure import _handle_permission
 from zope.browserpage.metaconfigure import providesCallable
 from zope.browserpage.metadirectives import IViewDirective
-
-from AccessControl.class_init import InitializeClass
-from AccessControl.security import getSecurityInfo
-from AccessControl.security import protectClass
-from AccessControl.security import protectName
-from AccessControl.security import CheckerPrivateId
-
-from Products.Five.browser.resource import FileResourceFactory
-from Products.Five.browser.resource import ImageResourceFactory
-from Products.Five.browser.resource import PageTemplateResourceFactory
-from Products.Five.browser.resource import DirectoryResourceFactory
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import queryMultiAdapter
+from zope.component.interface import provideInterface
+from zope.component.zcml import handler
+from zope.configuration.exceptions import ConfigurationError
+from zope.interface import Interface
+from zope.interface import classImplements
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.security.zcml import Permission
 
 
 def is_method(func):
@@ -76,9 +73,9 @@ def _configure_z2security(_context, new_class, required):
         )
     # Make everything else private
     private_attrs = [name for name in dir(new_class)
-                     if ((not name.startswith('_')) and
-                         (name not in required) and
-                         is_method(getattr(new_class, name)))]
+                     if ((not name.startswith('_'))
+                         and (name not in required)
+                         and is_method(getattr(new_class, name)))]
     for attr in private_attrs:
         _context.action(
             discriminator=('five:protectName', new_class, attr),
@@ -131,14 +128,7 @@ def page(_context, name, permission, for_=Interface,
             # class and template
             new_class = SimpleViewClass(template, bases=(class_, ), name=name)
         else:
-            if not hasattr(class_, 'browserDefault'):
-                cdict = {
-                    'browserDefault':
-                    lambda self, request: (getattr(self, attribute), ())
-                }
-            else:
-                cdict = {}
-
+            cdict = {}
             cdict['__name__'] = name
             cdict['__page_attribute__'] = attribute
             cdict.update(getSecurityInfo(class_))
@@ -174,6 +164,8 @@ def page(_context, name, permission, for_=Interface,
                                required)
 
     _handle_for(_context, for_)
+    expected = [attribute, 'browserDefault', '__call__', 'publishTraverse']
+    new_class._simple__whitelist = set(required) - set(expected)
 
     _configure_z2security(_context, new_class, required)
 
@@ -200,8 +192,8 @@ class pages(zope.browserpage.metaconfigure.pages):
 class IFiveViewDirective(IViewDirective):
 
     permission = Permission(
-        title=u"Permission",
-        description=u"The permission needed to use the view.",
+        title="Permission",
+        description="The permission needed to use the view.",
         required=False,
     )
 
@@ -332,21 +324,23 @@ _factory_map = {'image': {'prefix': 'ImageResource',
 def resource(_context, name, layer=IDefaultBrowserLayer,
              permission='zope.Public', file=None, image=None, template=None):
 
-    if ((file and image) or (file and template) or
-            (image and template) or not (file or image or template)):
+    if (file and image) or \
+       (file and template) or \
+       (image and template) or \
+       not (file or image or template):
         raise ConfigurationError(
             "Must use exactly one of file or image or template"
             "attributes for resource directives"
         )
 
     res = file or image or template
-    res_type = ((file and 'file') or
-                (image and 'image') or
-                (template and 'template'))
+    res_type = (file and 'file') or \
+               (image and 'image') or \
+               (template and 'template')
     factory_info = _factory_map.get(res_type)
     factory_info['count'] += 1
     res_factory = factory_info['factory']
-    class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
+    class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
     new_class = type(class_name, (res_factory.resource,), {})
     factory = res_factory(name, res, resource_factory=new_class)
 
@@ -396,8 +390,8 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
             continue
         factory_info = _rd_map.get(factory)
         factory_info['count'] += 1
-        class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
-        factory_name = '%s%s' % (factory.__name__, factory_info['count'])
+        class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
+        factory_name = f'{factory.__name__}{factory_info["count"]}'
         f_resource = type(class_name, (factory.resource,), {})
         f_cache[factory] = type(factory_name, (factory,),
                                 {'resource': f_resource})
@@ -411,7 +405,7 @@ def resourceDirectory(_context, name, directory, layer=IDefaultBrowserLayer,
 
     factory_info = _rd_map.get(DirectoryResourceFactory)
     factory_info['count'] += 1
-    class_name = '%s%s' % (factory_info['prefix'], factory_info['count'])
+    class_name = f'{factory_info["prefix"]}{factory_info["count"]}'
     dir_factory = type(class_name, (resource,), cdict)
     factory = DirectoryResourceFactory(name, directory,
                                        resource_factory=dir_factory)

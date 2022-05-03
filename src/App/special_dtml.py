@@ -12,22 +12,28 @@
 ##############################################################################
 
 import os
-import sys
 from logging import getLogger
 
 import DocumentTemplate
 import MethodObject
 import Persistence
+import Zope2
+from AccessControl import getSecurityManager
+from Acquisition import Explicit
+from Acquisition import aq_acquire
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App import Common
 from App.config import getConfiguration
-import Zope2
-
-from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit, aq_inner, aq_parent, aq_acquire
-from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
-from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-from AccessControl import getSecurityManager
 from ComputedAttribute import ComputedAttribute
+from DocumentTemplate import OLD_DEFAULT_ENCODING
+from DocumentTemplate._DocumentTemplate import InstanceDict
+from DocumentTemplate._DocumentTemplate import TemplateDict
+from DocumentTemplate._DocumentTemplate import render_blocks
+from DocumentTemplate.DT_String import DTReturn
+from DocumentTemplate.DT_String import _marker
+from Shared.DC.Scripts.Bindings import Bindings
+
 
 LOG = getLogger('special_dtml')
 
@@ -36,7 +42,7 @@ PREFIX = os.path.realpath(
 )
 
 
-class Code(object):
+class Code:
     pass
 
 
@@ -93,6 +99,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
         return HTMLFile.inheritedAttribute('__call__')(
             *(self,) + args[1:], **kw)
 
+
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
                    'name_m_self': 'self',
@@ -136,6 +143,9 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     def _exec(self, bound_data, args, kw):
         # Cook if we haven't already
         self._cook_check()
+
+        # If this object has no encoding set, we use the old default
+        encoding = getattr(self, 'encoding', OLD_DEFAULT_ENCODING)
 
         # Get our caller's namespace, and set up our own.
         cns = bound_data['caller_namespace']
@@ -200,7 +210,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             value = self.ZDocumentTemplate_beforeRender(ns, _marker)
             if value is _marker:
                 try:
-                    result = render_blocks(self._v_blocks, ns)
+                    result = render_blocks(self._v_blocks, ns,
+                                           encoding=encoding)
                 except DTReturn as v:
                     result = v.v
 

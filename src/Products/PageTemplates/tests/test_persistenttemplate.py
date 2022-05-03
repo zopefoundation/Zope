@@ -1,13 +1,13 @@
+import html
+import io
 import re
 import unittest
 
 from Products.PageTemplates.ZopePageTemplate import manage_addPageTemplate
+from Testing.utils import capture_stdout
 from Testing.ZopeTestCase import ZopeTestCase
 
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
+from .util import useChameleonEngine
 
 
 macro_outer = """
@@ -67,9 +67,9 @@ options_capture_update_base = """
 
 lp_848200_source = """
 <tal:block>
-  <tag tal:condition="False"
+  <tag tal:condition="python:False"
        tal:attributes="attrib string:false" />
-  <tag tal:condition="True"
+  <tag tal:condition="python:True"
        tal:attributes="attrib string:true" />
 </tal:block>
 """.strip()
@@ -90,9 +90,10 @@ python_path_source = """
 
 
 def generate_capture_source(names):
-    params = ", ".join("%s=%s" % (name, name)
+    params = ", ".join(f"{name}={name}"
                        for name in names)
     return options_capture_update_base % (params,)
+
 
 textarea_content_search = re.compile(
     r'<textarea[^>]*>([^<]+)</textarea>',
@@ -105,14 +106,14 @@ def get_editable_content(template):
     editable_text = textarea_content_search(edit_form).group(1)
     return editable_text
 
+
 _marker = object()
 
 
 class TestPersistent(ZopeTestCase):
+
     def afterSetUp(self):
-        from Zope2.App import zcml
-        import Products.PageTemplates
-        zcml.load_config("configure.zcml", Products.PageTemplates)
+        useChameleonEngine()
         self.setRoles(['Manager'])
 
     def _makeOne(self, template_id, source):
@@ -121,24 +122,24 @@ class TestPersistent(ZopeTestCase):
     def test_simple(self):
         template = self._makeOne('foo', simple_i18n)
         result = template().strip()
-        self.assertEqual(result, u'Hello, World')
+        self.assertEqual(result, 'Hello, World')
         editable_text = get_editable_content(template)
-        self.assertEqual(editable_text, escape(simple_i18n, False))
+        self.assertEqual(editable_text, html.escape(simple_i18n, False))
 
     def test_escape_on_edit(self):
         # check that escapable chars can round-trip intact.
-        source = u"&gt; &amp; &lt;"
+        source = "&gt; &amp; &lt;"
         template = self._makeOne('foo', source)
         self.assertEqual(template(), source)  # nothing to render
         editable_text = get_editable_content(template)
-        self.assertEqual(editable_text, escape(source, False))
+        self.assertEqual(editable_text, html.escape(source, False))
 
     def test_macro_with_i18n(self):
         self._makeOne('macro_outer', macro_outer)
         self._makeOne('macro_middle', macro_middle)
         inner = self._makeOne('macro_inner', macro_inner)
         result = inner().strip()
-        self.assertEqual(result, u'Inner Slot')
+        self.assertEqual(result, 'Inner Slot')
 
     def test_pt_render_with_macro(self):
         # The pt_render method of ZopePageTemplates allows rendering the
@@ -148,7 +149,7 @@ class TestPersistent(ZopeTestCase):
         extra_context = dict(form=object(),
                              context=self.folder,
                              here=object(),)
-        capture = dict((name, None) for name in extra_context)
+        capture = {name: None for name in extra_context}
         source = generate_capture_source(capture)
         self._makeOne('macro_outer', macro_outer)
         template = self._makeOne('test_pt_render', source)
@@ -173,7 +174,7 @@ class TestPersistent(ZopeTestCase):
     def test_repeat_object_security(self):
         template = self._makeOne('foo', repeat_object)
         # this should not raise an Unauthorized error
-        self.assertEqual(template().strip(), u'012')
+        self.assertEqual(template().strip(), '012')
         # The rest of this test is not actually testing
         # the security access, but I couldn't find a simpler
         # way to test if the RepeatItem instance itself allows public
@@ -196,7 +197,7 @@ class TestPersistent(ZopeTestCase):
         # check that the "path" function inside a python expression works
         self.folder.method = 'post'
         template = self._makeOne('foo', python_path_source)
-        self.assertEqual(template(), u'<form method="post" />')
+        self.assertEqual(template(), '<form method="post" />')
 
     def test_filename_attribute(self):
         # check that a persistent page template that happens to have
@@ -205,16 +206,19 @@ class TestPersistent(ZopeTestCase):
         template.filename = 'some/random/path'
         # this should still work, without trying to open some random
         # file on the filesystem
-        self.assertEqual(template().strip(), u'012')
+        self.assertEqual(template().strip(), '012')
 
     def test_edit_with_errors(self):
-        template = self._makeOne('foo', simple_error)
+        # Prevent error output to the console
+        with capture_stdout(io.StringIO()):
+            template = self._makeOne('foo', simple_error)
+
         # this should not raise:
         editable_text = get_editable_content(template)
         # and the errors should be in an xml comment at the start of
         # the editable text
-        error_prefix = escape(
-            '<!-- Page Template Diagnostics\n {0}\n-->\n'.format(
+        error_prefix = html.escape(
+            '<!-- Page Template Diagnostics\n {}\n-->\n'.format(
                 '\n '.join(template._v_errors)
             ),
             False,
@@ -224,15 +228,15 @@ class TestPersistent(ZopeTestCase):
     def test_lp_848200(self):
         # https://bugs.launchpad.net/chameleon.zpt/+bug/848200
         template = self._makeOne('foo', lp_848200_source)
-        self.assertEqual(template().strip(), u'<tag attrib="true" />')
+        self.assertEqual(template().strip(), '<tag attrib="true" />')
 
     def test_onerror_structure(self):
         template = self._makeOne('foo', tal_onerror_structure_source)
-        self.assertEqual(template().strip(), u'<i>error!</i>')
+        self.assertEqual(template().strip(), '<i>error!</i>')
 
     def test_python_nbsp(self):
         template = self._makeOne('foo', python_nbsp_source)
-        self.assertEqual(template().strip(), u'<p>&nbsp;</p>')
+        self.assertEqual(template().strip(), '<p>&nbsp;</p>')
 
 
 def test_suite():

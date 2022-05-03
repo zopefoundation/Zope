@@ -16,24 +16,9 @@
 import io
 import os
 import traceback
-
-from six.moves import UserDict
+from collections import UserDict
 
 from ZODB.config import ZODBDatabase
-from zope.deferredimport import deprecated
-
-# BBB Zope 5.0
-_prefix = 'ZServer.Zope2.Startup.datatypes:'
-deprecated(
-    'Please import from ZServer.Zope2.Startup.datatypes.',
-    cgi_environment=_prefix + 'cgi_environment',
-    LoggerFactory=_prefix + 'LoggerFactory',
-    dns_resolver=_prefix + 'dns_resolver',
-    python_dotted_path=_prefix + 'python_dotted_path',
-    zdaemonEnvironDict=_prefix + 'zdaemonEnvironDict',
-    root_config=_prefix + 'root_config',
-    minimalClassFactory=_prefix + 'minimalClassFactory',
-)
 
 
 def security_policy_implementation(value):
@@ -87,8 +72,8 @@ def importable_name(name):
         IO = io.StringIO()
         traceback.print_exc(file=IO)
         raise ValueError(
-            'The object named by "%s" could not be imported\n%s' % (
-                name, IO.getvalue()))
+            f'The object named by {name!r} could not be imported\n'
+            f'{IO.getvalue()}')
 
 
 class ZDaemonEnvironDict(UserDict):
@@ -106,6 +91,8 @@ def root_wsgi_config(section):
         section.environment = ZDaemonEnvironDict()
     if section.clienthome is None:
         section.clienthome = os.path.join(section.instancehome, "var")
+    if getattr(section, 'pid_filename', None) is None:
+        section.pid_filename = os.path.join(section.clienthome, 'Z4.pid')
 
     if not section.databases:
         section.databases = []
@@ -203,7 +190,9 @@ def default_zpublisher_encoding(value):
     # so a module-level call to getConfiguration in any of them
     # results in getting config data structure without the necessary
     # value in it.
-    from ZPublisher import Converters, HTTPRequest, HTTPResponse
+    from ZPublisher import Converters
+    from ZPublisher import HTTPRequest
+    from ZPublisher import HTTPResponse
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPRequest.HTTPRequest.charset = value
@@ -212,7 +201,7 @@ def default_zpublisher_encoding(value):
     return value
 
 
-class DBTab(object):
+class DBTab:
     """A Zope database configuration, similar in purpose to /etc/fstab.
     """
 

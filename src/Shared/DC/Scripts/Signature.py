@@ -19,7 +19,7 @@ from functools import total_ordering
 
 
 @total_ordering
-class FuncCode(object):
+class FuncCode:
 
     def __init__(self, varnames=(), argcount=-1):
         # The default values are needed for unpickling instances of this class
@@ -32,13 +32,13 @@ class FuncCode(object):
     def __eq__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) ==
+        return ((self.co_argcount, self.co_varnames) ==  # NOQA: W504
                 (other.co_argcount, other.co_varnames))
 
     def __lt__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) <
+        return ((self.co_argcount, self.co_varnames) <  # NOQA: W504
                 (other.co_argcount, other.co_varnames))
 
 

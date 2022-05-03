@@ -15,19 +15,6 @@
 
 import os
 
-from zope.deferredimport import deprecated
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.Zope2.',
-    startup='ZServer.Zope2:startup',
-    _configure='ZServer.Zope2:_configure',
-)
-
-deprecated(
-    'Please import from ZServer.Zope2.Startup.run.',
-    configure='ZServer.Zope2.Startup.run:configure',
-)
 
 _began_startup = 0
 

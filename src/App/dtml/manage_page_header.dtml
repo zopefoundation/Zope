@@ -1,13 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<dtml-unless "REQUEST.get('zmi_dialog','window')=='modal'">
+<!doctype html>
+<html lang="en">
 <head>
-<dtml-unless management_page_charset>
-<dtml-call "REQUEST.set('management_page_charset','utf-8')">
-</dtml-unless>
-<meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
-<dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
+
+<dtml-let charset="REQUEST.charset">
+<meta http-equiv="content-type" content="text/html;charset=&dtml-charset;" />
+<dtml-call "RESPONSE and RESPONSE.setHeader('content-type','text/html;charset='+charset)">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+</dtml-let>
+
 <title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
-<link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/manage_page_style.css" />
+<dtml-in css_urls>
+	<link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;&dtml-sequence-item;" />
+</dtml-in>
+<dtml-in js_urls>
+	<script src="&dtml-BASEPATH1;&dtml-sequence-item;"></script>
+</dtml-in>
+
+<link rel="shortcut icon" type="image/x-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-16x16.png" />
+<link rel="manifest" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/site.webmanifest" />
+<link rel="mask-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+<meta name="msapplication-config" content="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/browserconfig.xml"/>
+<meta name="msapplication-TileColor" content="#2d89ef" />
+<meta name="theme-color" content="#ffffff" />
 
 </head>
-<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+<!-- REFACT what is a better way to get the last part of the current URL? -->
+<body id="nodeid-<dtml-var "getId()">" class="zmi zmi-<dtml-var "this().meta_type.replace(' ', '-').replace('(', '').replace(')', '')"> zmi-<dtml-var "URL0[_.len(URL1)+1:]">">
+</dtml-unless>

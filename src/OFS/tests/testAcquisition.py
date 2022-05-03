@@ -13,17 +13,17 @@
 
 import unittest
 
-from Testing.makerequest import makerequest
-
-from OFS.SimpleItem import SimpleItem
+import Zope2
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.Permissions import view_management_screens
 from AccessControl.ZopeGuards import guarded_getattr
+from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
 
-import Zope2
+
 Zope2.startup_wsgi()
 
 
@@ -31,6 +31,7 @@ class AllowedItem(SimpleItem):
     id = 'allowed'
     security = ClassSecurityInfo()
     security.setDefaultAccess('allow')
+
 
 InitializeClass(AllowedItem)
 
@@ -40,6 +41,7 @@ class DeniedItem(SimpleItem):
     security = ClassSecurityInfo()
     security.setDefaultAccess('deny')
 
+
 InitializeClass(DeniedItem)
 
 
@@ -47,6 +49,7 @@ class ProtectedItem(SimpleItem):
     id = 'protected'
     security = ClassSecurityInfo()
     security.declareObjectProtected(view_management_screens)
+
 
 InitializeClass(ProtectedItem)
 

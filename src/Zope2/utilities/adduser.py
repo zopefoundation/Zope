@@ -13,6 +13,7 @@
 """ Add a Zope management user to the root Zope user folder """
 
 import sys
+
 from Zope2.utilities.finder import ZopeFinder
 
 
@@ -40,6 +41,7 @@ def main(argv=sys.argv):
         print("Got no result back. User creation may have failed.")
         print("Maybe the user already exists and nothing is done then.")
         print("Or the implementation does not give info when it succeeds.")
+
 
 if __name__ == '__main__':
     main()

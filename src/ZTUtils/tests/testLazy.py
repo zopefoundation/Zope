@@ -14,7 +14,7 @@
 import unittest
 
 
-class BaseSequenceTest(object):
+class BaseSequenceTest:
 
     def _compare(self, lseq, seq):
         self.assertEqual(len(lseq), len(seq))
@@ -76,7 +76,8 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
         self.assertEqual(lcat.actual_result_count, 20)
 
     def test_init_multiple(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)
@@ -84,7 +85,8 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
         self._compare(lcat, seq1 + seq2 + seq3)
 
     def test_init_nested(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)
@@ -93,7 +95,8 @@ class TestLazyCat(unittest.TestCase, BaseSequenceTest):
         self._compare(lcat, seq1 + seq2 + seq3)
 
     def test_slicing(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)
@@ -152,7 +155,8 @@ class TestLazyMap(TestLazyCat):
         return LazyMap(mapfunc, totalseq)
 
     def test_map(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)
@@ -189,7 +193,8 @@ class TestLazyFilter(TestLazyCat):
         return LazyFilter(filter, totalseq)
 
     def test_filter(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)
@@ -235,7 +240,8 @@ class TestLazyMop(TestLazyCat):
         return LazyMop(mapfunc, totalseq)
 
     def test_mop(self):
-        from string import hexdigits, ascii_letters
+        from string import ascii_letters
+        from string import hexdigits
         seq1 = list(range(10))
         seq2 = list(hexdigits)
         seq3 = list(ascii_letters)

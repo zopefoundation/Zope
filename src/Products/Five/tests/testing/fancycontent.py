@@ -18,9 +18,8 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
 from OFS.SimpleItem import SimpleItem
-
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 class IFancyContent(Interface):
@@ -35,10 +34,11 @@ class FancyAttribute(Explicit):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('index_html')
+    @security.public
     def index_html(self, REQUEST):
         """Doc test fanatics"""
         return self.name
+
 
 InitializeClass(FancyAttribute)
 
@@ -66,6 +66,7 @@ class FancyContent(SimpleItem):
     def get_size(self):
         return 43
 
+
 InitializeClass(FancyContent)
 
 
@@ -91,6 +92,7 @@ class NonTraversableFancyContent(SimpleItem):
 
     def get_size(self):
         return 43
+
 
 InitializeClass(NonTraversableFancyContent)
 

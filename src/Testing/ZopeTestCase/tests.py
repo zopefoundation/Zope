@@ -13,16 +13,17 @@
 """Test runner that works with zope.testrunner
 """
 
-import unittest
 import os
+import unittest
+
 import Testing.ZopeTestCase
+
 
 suite = unittest.TestSuite()
 
 names = os.listdir(os.path.dirname(__file__))
 tests = [x[:-3] for x in names
-         if x.startswith('test') and x.endswith('.py') and
-         x != 'tests.py']
+         if x.startswith('test') and x.endswith('.py') and x != 'tests.py']
 
 for test in tests:
     m = __import__('Testing.ZopeTestCase.%s' % test)

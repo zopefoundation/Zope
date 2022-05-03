@@ -16,13 +16,12 @@
 
 from operator import itemgetter
 
-from AccessControl.ZopeGuards import guarded_hasattr
 import zope.interface
 import zope.security
+from AccessControl.ZopeGuards import guarded_hasattr
+from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from zope.viewlet import interfaces
 from zope.viewlet.manager import ViewletManagerBase as origManagerBase
-
-from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
 
 class ViewletManagerBase(origManagerBase):
@@ -93,12 +92,12 @@ def ViewletManager(name, interface, template=None, bases=()):
     if ViewletManagerBase not in bases:
         # Make sure that we do not get a default viewlet manager mixin, if the
         # provided base is already a full viewlet manager implementation.
-        if not (len(bases) == 1 and
-                interfaces.IViewletManager.implementedBy(bases[0])):
+        if not (len(bases) == 1
+                and interfaces.IViewletManager.implementedBy(bases[0])):
             bases = bases + (ViewletManagerBase,)
 
     ViewletManager = type(
         '<ViewletManager providing %s>' % interface.getName(), bases, attrDict)
 
-    zope.interface.classImplements(ViewletManager, interface)
+    zope.interface.classImplements(ViewletManager, interface)  # NOQA: D001
     return ViewletManager

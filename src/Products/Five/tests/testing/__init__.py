@@ -14,9 +14,7 @@
 """Test helpers
 """
 
-from Products.Five.tests.testing.folder import (  # NOQA
-    FiveTraversableFolder,
-    manage_addFiveTraversableFolder,
-    manage_addNoVerifyPasteFolder,
-    NoVerifyPasteFolder,
-)
+from .folder import FiveTraversableFolder  # NOQA: F401
+from .folder import NoVerifyPasteFolder  # NOQA: F401
+from .folder import manage_addFiveTraversableFolder  # NOQA: F401
+from .folder import manage_addNoVerifyPasteFolder  # NOQA: F401

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="200" version="1.1" viewBox="0 0 158.75 52.917" xmlns="http://www.w3.org/2000/svg">
+ <g transform="matrix(.5016 0 0 .5016 -251 -172.23)">
+  <path d="m549.72 347.55c-13.617 4e-3 -26.606 5.7256-35.8 15.77h62.217c4.9032 0 7.3972 5.894 3.9842 9.4144l-38.386 45.047h51.44c3.3604-6.7331 5.1097-14.155 5.1098-21.68 0-26.814-21.737-48.551-48.551-48.551zm-43.429 26.872c-3.3599 6.7329-5.1088 14.155-5.1087 21.679 0 26.814 21.737 48.551 48.551 48.551 13.622-1.8e-4 26.617-5.7228 35.814-15.771h-62.217c-4.9032 0-7.3972-5.894-3.9843-9.4144l38.386-45.045z" color="#000000" stop-color="#000000" style="paint-order:markers stroke fill"/>
+  <g transform="translate(-53.756 464.53)">
+   <g transform="translate(53.146 -74.155)" stroke-width="2.9425px" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal" aria-label="ZOPE ">
+    <path d="m658.92-19.851-29.102 49.837h30.022v8.9191h-41.561v-8.0916l29.332-49.837h-28.504v-8.9191h39.814z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    <path d="m688.4 39.595q-6.9882 0-12.321-3.0343-5.3331-3.0803-8.2755-8.6433-2.8964-5.6089-2.8964-12.965v-18.942q0-7.356 2.8964-12.919 2.9424-5.6089 8.2755-8.6433 5.3331-3.0803 12.321-3.0803t12.321 3.0803q5.3331 3.0343 8.2295 8.6433 2.9424 5.563 2.9424 12.919v18.942q0 7.356-2.9424 12.965-2.8964 5.563-8.2295 8.6433-5.3331 3.0343-12.321 3.0343zm0-9.2409q4.1377 0 7.264-1.839 3.1723-1.885 4.8733-5.2871 1.747-3.4481 1.747-7.9536v-19.585q0-4.5055-1.747-7.9077-1.7011-3.4481-4.8733-5.2871-3.1263-1.885-7.264-1.885-4.1377 0-7.31 1.885-3.1263 1.839-4.8733 5.2871-1.7011 3.4021-1.7011 7.9077v19.585q0 4.5055 1.7011 7.9536 1.747 3.4021 4.8733 5.2871 3.1723 1.839 7.31 1.839z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    <path d="m725.93 4.056h21.378q3.0343 0 5.3331-1.4252t3.5401-4.0458q1.2873-2.6206 1.2873-6.0227 0-3.4481-1.2873-6.0687-1.2413-2.6206-3.5401-4.0458-2.2987-1.4712-5.3331-1.4712h-21.378v-8.9191h21.056q5.9767 0 10.528 2.5746 4.5515 2.5286 7.0342 7.1721 2.5286 4.6435 2.5286 10.758 0 6.1146-2.5286 10.758-2.4826 4.5975-7.0342 7.1261-4.5515 2.5286-10.528 2.5286h-21.056zm-4.8274-31.998h9.3789v66.847h-9.3789z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    <path d="m773.76-27.942h9.3789v66.847h-9.3789zm4.5515 57.928h38.389v8.9191h-38.389zm0-28.734h33.332v8.9191h-33.332zm0-29.194h38.389v8.9191h-38.389z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+   </g>
+  </g>
+ </g>
+</svg>

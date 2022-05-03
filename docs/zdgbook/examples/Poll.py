@@ -1,5 +1,6 @@
 from Interface import Base
 
+
 class Poll(Base):
     "A multiple choice poll"
 
@@ -17,4 +18,3 @@ class Poll(Base):
 
     def getQuestion(self):
         "Returns the question"
-

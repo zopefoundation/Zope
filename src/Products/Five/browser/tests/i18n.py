@@ -14,11 +14,12 @@
 """Test i18n.
 """
 
-from zope.i18nmessageid import MessageFactory
 from Products.Five import BrowserView
+from zope.i18nmessageid import MessageFactory
+
 
 _ = MessageFactory('fivetest')
 
 
 class I18nView(BrowserView):
-    this_is_a_message = _(u'This is a message')
+    this_is_a_message = _('This is a message')

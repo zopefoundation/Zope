@@ -15,51 +15,51 @@
 
 import sys
 
+import ZPublisher.HTTPRequest
 from Acquisition import aq_get
 from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
-from zope.interface import implementer
 from zope.i18n.interfaces import IUserPreferredCharsets
+from zope.interface import implementer
 
-from six import text_type, binary_type
 
 default_encoding = sys.getdefaultencoding()
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class DefaultUnicodeEncodingConflictResolver(object):
+class DefaultUnicodeEncodingConflictResolver:
     """ This resolver implements the old-style behavior and will
         raise an exception in case of the string 'text' can't be converted
         properly to unicode.
     """
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
         return text.decode('ascii')
+
 
 DefaultUnicodeEncodingConflictResolver = \
     DefaultUnicodeEncodingConflictResolver()
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class Z2UnicodeEncodingConflictResolver(object):
+class Z2UnicodeEncodingConflictResolver:
     """ This resolver tries to lookup the encoding from the
-        'management_page_charset' property and defaults to
-        sys.getdefaultencoding().
+        'default-zpublisher-encoding' setting in the Zope configuration
+        file and defaults to the old ZMI encoding iso-8859-15.
     """
 
     def __init__(self, mode='strict'):
         self.mode = mode
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
 
         try:
             return text.decode('ascii')
         except UnicodeDecodeError:
-            encoding = getattr(
-                context, 'management_page_charset', default_encoding)
+            encoding = ZPublisher.HTTPRequest.default_encoding
             try:
                 return text.decode(encoding, errors=self.mode)
             except UnicodeDecodeError:
@@ -68,13 +68,13 @@ class Z2UnicodeEncodingConflictResolver(object):
 
 
 @implementer(IUnicodeEncodingConflictResolver)
-class PreferredCharsetResolver(object):
+class PreferredCharsetResolver:
     """ A resolver that tries use the encoding information
         from the HTTP_ACCEPT_CHARSET header.
     """
 
     def resolve(self, context, text, expression):
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             return text
 
         request = aq_get(context, 'REQUEST', None)
@@ -84,11 +84,8 @@ class PreferredCharsetResolver(object):
         # Python default encoding.
 
         if request is None:
-            charsets = [default_encoding]
-            management_charset = getattr(
-                context, 'management_page_charset', None)
-            if management_charset:
-                charsets.insert(0, management_charset)
+            charsets = [ZPublisher.HTTPRequest.default_encoding,
+                        default_encoding]
         else:
             # charsets might by cached within the request
             charsets = getattr(request, '__zpt_available_charsets', None)

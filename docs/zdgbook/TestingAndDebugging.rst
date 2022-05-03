@@ -2,6 +2,8 @@
 Testing and Debugging
 #####################
 
+.. include:: includes/zope2_notice.rst
+
 As you develop Zope applications you may run into problems.  This
 chapter covers debugging and testing techniques that can help you.
 The Zope debugger allow you to peek inside a running process and find
@@ -17,40 +19,6 @@ Debugging
 Zope provides debugging information through a number of sources.  It
 also allows you a couple avenues for getting information about Zope
 as it runs.
-
-The Control Panel
------------------
-
-The control panel provides a number of views that can help you debug
-Zope, especially in the area of performance.  The *Debugging
-Information* link on the control panel provides two views, *Debugging
-Info* and *Profiling*.
-
-Debugging info provides information on the number of object
-references and the status of open requests.  The object references
-list displays the name of the object and the number of references to
-that object in Zope.  Understanding how reference counts help
-debugging is a lengthy subject, but in general you can spot memory
-leaks in your application if the number of references to certain
-objects increases without bound.  The busier your site is, or the
-more content it holds, the more reference counts you will tend to
-have.
-
-Profiling uses the standard Python profiler.  This is turned on by
-setting the 'PROFILE_PUBLISHER' environment variable before executing
-Zope.
-
-When the profiler is running, the performance of your Zope system
-will suffer a lot.  Profiling should only be used for short periods
-of time, or on a separate ZEO client so that your normal users to not
-experience this significant penalty.
-
-Profiling provides you with information about which methods in your
-Zope system are taking the most time to execute.  It builds a
-*profile*, which lists the busiest methods on your system, sorted by
-increasing resource usage.  For details on the meaning of the
-profiler's output, read the `standard Python documentation
-<http://www.python.org/doc/current/lib/profile.html>`_
 
 Product Refresh Settings
 ------------------------
@@ -75,7 +43,7 @@ idea to only turn it on for a few products at a time.
 Debug Mode
 ----------
 
-Setting the 'Z_DEBUG_MODE=1' environment puts Zope into debug mode.
+Normally, debug mode is set using the '-D' switch when starting Zope.
 This mode reduces the performance of Zope a little bit.  Debug model
 has a number of wide ranging effects:
 
@@ -89,9 +57,6 @@ has a number of wide ranging effects:
   will remain attached to the terminal that started it and the main
   logging information will be redirected to that terminal.
 
-Normally, debug mode is set using the '-D' switch when starting Zope,
-though you can set the environment variable directly if you wish.
-
 By using debug mode and product refresh together you will have little
 reason to restart Zope while developing.
 
@@ -104,7 +69,7 @@ familiar with other popular command line debuggers (like gdb) will
 feel right at home in pdb.
 
 For an introduction to pdb see the standard `pdb documentation
-<http://www.python.org/doc/current/lib/module-pdb.html>`_ .
+<https://docs.python.org/library/pdb.html>`_ .
 
 There are a number of ways to debug a Zope process:
 
@@ -174,7 +139,7 @@ debugger::
 
   >>> ZPublisher.Zope('')
   Status: 200 OK
-  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
+  X-Powered-By: Zope (www.zope.dev), Python (www.python.org)
   Content-Length: 1238
   Content-Type: text/html
 
@@ -183,16 +148,16 @@ debugger::
     ... blah blah...
 
   </BODY></HTML>
-  >>> 
+  >>>
 
 If you look closely, you will see that the content returned is
 *exactly* what is returned when you call your root level object
 through HTTP, including all the HTTP headers.
 
 Keep in mind that calling Zope this way does NOT involve a web
-server.  No ports are opened, the 'ZServer' code is not even
-imported.  In fact, this is just an interpreter front end to the same
-application code the ZServer *does* call.
+server.  No ports are opened.
+In fact, this is just an interpreter front end to the same
+application code the WSGI server *does* call.
 
 Interactive Debugging
 ~~~~~~~~~~~~~~~~~~~~~
@@ -244,7 +209,7 @@ one new argument to the call to 'Zope'::
     algorithm.
   * Then type c<cr> to jump to published object call.
   > <string>(0)?()
-  pdb> 
+  pdb>
 
 Here, you call Zope from the interpreter, just like before, but there
 are two differences.  First, you call the 'postnews' method with an
@@ -260,7 +225,7 @@ message, it's useful to know how you have set Zope up to be debugged.
 When Zope fires up in debugger mode, there are three breakpoints set
 for you automatically (if you don't know what a breakpoint is, you
 need to read the python `debugger documentation
-<http://www.python.org/doc/current/lib/module-pdb.html>`_).
+<https://docs.python.org/library/pdb.html>`_).
 
 The first breakpoint stops the program at the point that ZPublisher
 (the Zope ORB) tries to publish the application module (in this case,
@@ -290,7 +255,7 @@ easier method).  For example::
   pdb> import Products
   pdb> b Products.ZopeNews.News.News.postnews
   Breakpoint 5 at C:\Program Files\WebSite\lib\python\Products\ZopeNews\News.py:42
-  pdb> 
+  pdb>
 
 First, you import 'Products'.  Since your module is a Zope product,
 it can be found in the 'Products' package.  Next, you set a new
@@ -350,7 +315,7 @@ final argument is 'request'.  This is the request object and will
 eventually be transformed in to the DTML usable object 'REQUEST'. Now
 continue, your breakpoint is next::
 
-  pdb> c    
+  pdb> c
   > C:\Program Files\WebSite\lib\python\Products\ZopeNews\News.py(42)postnews()
   -> def postnews(self, N)
 
@@ -460,11 +425,8 @@ Unit Testing
 Unit testing allows you to automatically test your classes to make
 sure they are working correctly. By using unit tests you can make
 sure as you develop and change your classes that you are not breaking
-them. Zope comes with Pyunit. You can find out more information on
-Pyunit at `the Pyunit home page <http://pyunit.sourceforge.net/>`_
-. Pyunit is also part of the Python `standard library
-<http://www.python.org/doc/lib/module-unittest.html>`_ as of Python
-2.1.
+them. Zope's own unit tests are written using the built-in Python
+`unittest module <https://docs.python.org/library/unittest.html>`_.
 
 
 What Are Unit Tests
@@ -485,7 +447,7 @@ successful.
 
 It's a good idea to have a sense of the limits of unit testing.  From
 the `Extreme Programming Enthusiast website
-<http://c2.com/cgi/wiki?UnitTestsDefined>`_ here is a list of things
+<http://wiki.c2.com/?UnitTestsDefined>`_ here is a list of things
 that unit tests are *not*:
 
 - Manually operated.
@@ -566,8 +528,8 @@ your product's 'tests' directory.  You can run test your product by
 running the test scripts.
 
 We cannot cover all there is to say about unit testing here. Take a
-look at the Pyunit `documentation
-<http://pyunit.sourceforge.net/pyunit.html>`_ for more background on
+look at the `unittest module documentation
+<https://docs.python.org/library/unittest.html>`_ for more background on
 unit testing.
 
 Zope Test Fixtures
@@ -673,8 +635,8 @@ example::
 
       def testWebRequest(self):
           ZPublisher.Zope('/a/url/representing/a/method?with=a&couple=arguments',
-                          u='username:password', 
-                          s=1, 
+                          u='username:password',
+                          s=1,
                           e={'some':'environment', 'variable':'settings'})
 
 If the 's' argument is passed to 'ZPublisher.Zope' then no output

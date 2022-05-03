@@ -18,7 +18,6 @@ import zlib
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
-import six
 
 
 class TreeNode(Explicit):
@@ -62,10 +61,11 @@ class TreeNode(Explicit):
     def __len__(self):
         return len(self._child_list)
 
+
 _marker = []
 
 
-class TreeMaker(object):
+class TreeMaker:
     '''Class for mapping a hierarchy of objects into a tree of nodes.'''
 
     __allow_access_to_unprotected_subobjects__ = 1
@@ -162,7 +162,6 @@ class TreeMaker(object):
     def node(self, object):
         node = TreeNode()
         node.object = object
-        obid = self.getId(object)
         node.id = b2a(self.getId(object))
         return node
 
@@ -190,8 +189,7 @@ class TreeMaker(object):
             return self._values_function(object)
 
         children = getattr(object, self._values)
-        if not (isinstance(children, list) or
-                isinstance(children, tuple)):
+        if not isinstance(children, (list, tuple)):
             # Assume callable; result not useful anyway otherwise.
             children = children()
 
@@ -227,7 +225,8 @@ class TreeMaker(object):
         return node
 
 
-_SIMPLE_TYPES = set([type(u''), type(b''), type(0), type(0.0), type(None)])
+_SIMPLE_TYPES = {type(''), type(b''), type(0), type(0.0), type(None)}
+
 
 def simple_type(ob):
     return type(ob) in _SIMPLE_TYPES
@@ -236,11 +235,11 @@ def simple_type(ob):
 def b2a(s):
     '''Encode a bytes/string as a cookie- and url-safe string.
 
-    Encoded string use only alpahnumeric characters, and "._-".
+    Encoded string use only alphanumeric characters, and "._-".
     '''
     if not isinstance(s, bytes):
         s = str(s)
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = s.encode('utf-8')
     return base64.urlsafe_b64encode(s)
 
@@ -248,7 +247,7 @@ def b2a(s):
 def a2b(s):
     '''Decode a b2a-encoded value to bytes.'''
     if not isinstance(s, bytes):
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             s = s.encode('ascii')
     return base64.urlsafe_b64decode(s)
 
@@ -270,7 +269,7 @@ def encodeExpansion(nodes, compress=1):
         last_depth = node.depth
         if dd > 0:
             steps.append('_' * dd)
-        steps.append(node.id) # id is bytes
+        steps.append(node.id)  # id is bytes
         node.expansion_number = n
     result = b':'.join(steps)
     if compress and len(result) > 2:

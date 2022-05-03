@@ -14,9 +14,9 @@
 """Five ZCML directive schemas
 """
 
-from zope.interface import Interface
 from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
 from zope.schema import TextLine
 
 
@@ -25,7 +25,7 @@ class ISizableDirective(Interface):
     """
 
     class_ = GlobalObject(
-        title=u"Class",
+        title="Class",
         required=True
     )
 
@@ -35,17 +35,17 @@ class IPagesFromDirectoryDirective(IBasicResourceInformation):
     """
 
     for_ = GlobalObject(
-        title=u"The interface this view is for.",
+        title="The interface this view is for.",
         required=False
     )
 
     module = GlobalObject(
-        title=u"Module",
+        title="Module",
         required=True
     )
 
     directory = TextLine(
-        title=u"Directory",
-        description=u"The directory containing the resource data.",
+        title="Directory",
+        description="The directory containing the resource data.",
         required=True
     )

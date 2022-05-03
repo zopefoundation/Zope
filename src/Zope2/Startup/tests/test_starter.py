@@ -15,15 +15,13 @@
 import io
 import os
 import shutil
-import sys
 import tempfile
 import unittest
 
-import six
 import ZConfig
-
 from Zope2.Startup import get_wsgi_starter
 from Zope2.Startup.options import ZopeWSGIOptions
+
 
 _SCHEMA = None
 
@@ -55,10 +53,7 @@ class WSGIStarterTestCase(unittest.TestCase):
         # of the directory is checked.  This handles this in a
         # platform-independent way.
         text = text.replace("<<INSTANCE_HOME>>", self.TEMPNAME)
-        if six.PY2:
-            sio = io.BytesIO(text)
-        else:
-            sio = io.StringIO(text)
+        sio = io.StringIO(text)
 
         try:
             os.mkdir(self.TEMPNAME)
@@ -91,17 +86,38 @@ class WSGIStarterTestCase(unittest.TestCase):
             # reset to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
 
-    @unittest.skipUnless(six.PY2, 'Python 2 specific checkinterval test.')
-    def testConfigureInterpreter(self):
-        oldcheckinterval = sys.getcheckinterval()
-        newcheckinterval = oldcheckinterval + 1
+    def testSetupConflictRetries(self):
+        from Zope2.Startup.handlers import root_wsgi_handler
+        from ZPublisher.HTTPRequest import HTTPRequest
+
+        # If no value is provided, the default is 3 retries
         conf = self.load_config_text("""
-                    instancehome <<INSTANCE_HOME>>
-                    python-check-interval %d
-                    """ % newcheckinterval)
-        try:
-            starter = self.get_starter(conf)
-            starter.setupInterpreter()
-            self.assertEqual(sys.getcheckinterval(), newcheckinterval)
-        finally:
-            sys.setcheckinterval(oldcheckinterval)
+            instancehome <<INSTANCE_HOME>>""")
+        root_wsgi_handler(conf)
+        self.assertEqual(HTTPRequest.retry_max_count, 3)
+
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>
+            max-conflict-retries 25""")
+        root_wsgi_handler(conf)
+        self.assertEqual(HTTPRequest.retry_max_count, 25)
+
+    def test_webdav_source_port(self):
+        from ZPublisher import WSGIPublisher
+
+        # If no value is provided, the default is 0
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>""")
+        starter = self.get_starter(conf)
+        starter.setupPublisher()
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 0)
+
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>
+            webdav-source-port 9800""")
+        starter = self.get_starter(conf)
+        starter.setupPublisher()
+        self.assertEqual(WSGIPublisher._WEBDAV_SOURCE_PORT, 9800)
+
+        # Cleanup
+        WSGIPublisher.set_webdav_source_port(0)

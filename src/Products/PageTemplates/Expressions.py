@@ -17,9 +17,17 @@ for Python expressions, string literals, and paths.
 """
 
 import logging
-from six import text_type, binary_type
+import warnings
 
+import OFS.interfaces
+from AccessControl import safe_builtins
+from AccessControl.SecurityManagement import getSecurityManager
+from Acquisition import aq_base
+from MultiMapping import MultiMapping
+from zExceptions import NotFound
+from zExceptions import Unauthorized
 from zope.component import queryUtility
+from zope.contentprovider.tales import TALESProviderExpression
 from zope.i18n import translate
 from zope.interface import implementer
 from zope.pagetemplate.engine import ZopeEngine as Z3Engine
@@ -29,23 +37,18 @@ from zope.tales.expressions import LazyExpr
 from zope.tales.expressions import NotExpr
 from zope.tales.expressions import PathExpr
 from zope.tales.expressions import StringExpr
+from zope.tales.expressions import SubPathExpr
 from zope.tales.expressions import Undefs
 from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import Context
 from zope.tales.tales import ErrorInfo as BaseErrorInfo
 from zope.tales.tales import Iterator
-from zope.traversing.interfaces import ITraversable
 from zope.traversing.adapters import traversePathElement
+from zope.traversing.interfaces import ITraversable
 
-import OFS.interfaces
-from MultiMapping import MultiMapping
-from Acquisition import aq_base
-from zExceptions import NotFound
-from zExceptions import Unauthorized
-
-from zope.contentprovider.tales import TALESProviderExpression
-from Products.PageTemplates import ZRPythonExpr
-from Products.PageTemplates.interfaces import IUnicodeEncodingConflictResolver
+from . import ZRPythonExpr
+from .interfaces import IUnicodeEncodingConflictResolver
+from .interfaces import IZopeAwareEngine
 
 
 SecureModuleImporter = ZRPythonExpr._SecureModuleImporter()
@@ -68,16 +71,43 @@ def boboAwareZopeTraverse(object, path_items, econtext):
     necessary (bobo-awareness).
     """
     request = getattr(econtext, 'request', None)
+    validate = getSecurityManager().validate
     path_items = list(path_items)
     path_items.reverse()
 
     while path_items:
         name = path_items.pop()
+
         if OFS.interfaces.ITraversable.providedBy(object):
             object = object.restrictedTraverse(name)
         else:
-            object = traversePathElement(object, name, path_items,
-                                         request=request)
+            found = traversePathElement(object, name, path_items,
+                                        request=request)
+
+            # Special backwards compatibility exception for the name ``_``,
+            # which was often used for translation message factories.
+            # Allow and continue traversal.
+            if name == '_':
+                warnings.warn('Traversing to the name `_` is deprecated '
+                              'and will be removed in Zope 6.',
+                              DeprecationWarning)
+                object = found
+                continue
+
+            # All other names starting with ``_`` are disallowed.
+            # This emulates what restrictedTraverse does.
+            if name.startswith('_'):
+                raise NotFound(name)
+
+            # traversePathElement doesn't apply any Zope security policy,
+            # so we validate access explicitly here.
+            try:
+                validate(object, object, name, found)
+                object = found
+            except Unauthorized:
+                # Convert Unauthorized to prevent information disclosures
+                raise NotFound(name)
+
     return object
 
 
@@ -125,15 +155,46 @@ def render(ob, ns):
     return ob
 
 
+class _CombinedMapping:
+    """Minimal auxiliary class to combine several mappings.
+
+    Earlier mappings take precedence.
+    """
+    def __init__(self, *ms):
+        self.mappings = ms
+
+    def get(self, key, default):
+        for m in self.mappings:
+            value = m.get(key, self)
+            if value is not self:
+                return value
+        return default
+
+
+class UntrustedSubPathExpr(SubPathExpr):
+    ALLOWED_BUILTINS = safe_builtins
+
+
+class TrustedSubPathExpr(SubPathExpr):
+    # we allow both Python's builtins (we are trusted)
+    # as well as ``safe_builtins`` (because it may contain extensions)
+    # Python's builtins take precedence, because those of
+    # ``safe_builtins`` may have special restrictions for
+    # the use in an untrusted context
+    ALLOWED_BUILTINS = _CombinedMapping(
+        __builtins__,
+        safe_builtins)
+
+
 class ZopePathExpr(PathExpr):
 
     _TRAVERSER = staticmethod(boboAwareZopeTraverse)
+    SUBEXPR_FACTORY = UntrustedSubPathExpr
 
     def __init__(self, name, expr, engine):
         if not expr.strip():
             expr = 'nothing'
-        super(ZopePathExpr, self).__init__(name, expr, engine,
-                                           self._TRAVERSER)
+        super().__init__(name, expr, engine, self._TRAVERSER)
 
     # override this to support different call metrics (see bottom of
     # method) and Zope 2's traversal exceptions (ZopeUndefs instead of
@@ -174,6 +235,7 @@ class ZopePathExpr(PathExpr):
 
 class TrustedZopePathExpr(ZopePathExpr):
     _TRAVERSER = staticmethod(trustedBoboAwareZopeTraverse)
+    SUBEXPR_FACTORY = TrustedSubPathExpr
 
 
 class SafeMapping(MultiMapping):
@@ -194,7 +256,7 @@ class SafeMapping(MultiMapping):
 class ZopeContext(Context):
 
     def __init__(self, engine, contexts):
-        super(ZopeContext, self).__init__(engine, contexts)
+        super().__init__(engine, contexts)
         # wrap the top-level 'repeat' variable, as it is visible to
         # restricted code
         self.setContext('repeat', SafeMapping(self.repeat_vars))
@@ -223,7 +285,7 @@ class ZopeContext(Context):
         """ customized version in order to get rid of unicode
             errors for all and ever
         """
-        text = super(ZopeContext, self).evaluateStructure(expr)
+        text = super().evaluateStructure(expr)
         return self._handleText(text, expr)
 
     def evaluateText(self, expr):
@@ -239,11 +301,11 @@ class ZopeContext(Context):
             # XXX: should be unicode???
             return text
 
-        if isinstance(text, text_type):
+        if isinstance(text, str):
             # we love unicode, nothing to do
             return text
 
-        elif isinstance(text, binary_type):
+        elif isinstance(text, bytes):
             # bahh...non-unicode string..we need to convert it to unicode
 
             # catch ComponentLookupError in order to make tests shut-up.
@@ -255,7 +317,8 @@ class ZopeContext(Context):
                 return text.decode('ascii')
 
             try:
-                return resolver.resolve(self.contexts['context'], text, expr)
+                return resolver.resolve(
+                    self.contexts.get('context'), text, expr)
             except UnicodeDecodeError as e:
                 LOG.error("UnicodeDecodeError detected for expression \"%s\"\n"
                           "Resolver class: %s\n"
@@ -268,7 +331,7 @@ class ZopeContext(Context):
         else:
             # This is a weird culprit ...calling text_type() on non-string
             # objects
-            return text_type(text)
+            return str(text)
 
     def createErrorInfo(self, err, position):
         # Override, returning an object accessible to untrusted code.
@@ -290,6 +353,12 @@ class ErrorInfo(BaseErrorInfo):
     __allow_access_to_unprotected_subobjects__ = True
 
 
+# Whether an engine is Zope aware does not depend on the class
+# but how it is configured - especially, that is uses a Zope aware
+# `PathExpr` implementation.
+# Nevertheless, we mark the class as "Zope aware" for simplicity
+# assuming that users of the class use a proper `PathExpr`
+@implementer(IZopeAwareEngine)
 class ZopeEngine(Z3Engine):
 
     _create_context = ZopeContext
@@ -310,19 +379,19 @@ class ZopeIterator(Iterator):
 
     @property
     def index(self):
-        return super(ZopeIterator, self).index()
+        return super().index()
 
     @property
     def start(self):
-        return super(ZopeIterator, self).start()
+        return super().start()
 
     @property
     def end(self):
-        return super(ZopeIterator, self).end()
+        return super().end()
 
     @property
     def item(self):
-        return super(ZopeIterator, self).item()
+        return super().item()
 
     # 'first' and 'last' are Zope 2 enhancements to the TALES iterator
     # spec.
@@ -346,12 +415,12 @@ class ZopeIterator(Iterator):
     def __next__(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return super(ZopeIterator, self).__next__()
+        return super().__next__()
 
     def next(self):
         if self._nextIndex > 0:
             self._last_item = self.item
-        return super(ZopeIterator, self).next()
+        return super().next()
 
 
 @implementer(ITraversable)
@@ -375,9 +444,9 @@ class PathIterator(ZopeIterator):
     def same_part(self, name, ob1, ob2):
         if name is None:
             return ob1 == ob2
-        if isinstance(name, text_type):
-            name = name.split(u'/')
-        elif isinstance(name, binary_type):
+        if isinstance(name, str):
+            name = name.split('/')
+        elif isinstance(name, bytes):
             name = name.split(b'/')
         try:
             ob1 = boboAwareZopeTraverse(ob1, name, None)
@@ -391,7 +460,7 @@ class UnicodeAwareStringExpr(StringExpr):
 
     def __call__(self, econtext):
         vvals = []
-        if isinstance(self._expr, text_type):
+        if isinstance(self._expr, str):
             # coerce values through the Unicode Conflict Resolver
             evaluate = econtext.evaluateText
         else:
@@ -402,7 +471,7 @@ class UnicodeAwareStringExpr(StringExpr):
         return self._expr % tuple(vvals)
 
 
-def createZopeEngine(zpe=ZopePathExpr):
+def createZopeEngine(zpe=ZopePathExpr, untrusted=True):
     e = ZopeEngine()
     e.iteratorFactory = PathIterator
     for pt in zpe._default_type_names:
@@ -414,18 +483,28 @@ def createZopeEngine(zpe=ZopePathExpr):
     e.registerType('lazy', LazyExpr)
     e.registerType('provider', TALESProviderExpression)
     e.registerBaseName('modules', SecureModuleImporter)
+    e.untrusted = untrusted
     return e
 
 
 def createTrustedZopeEngine():
     # same as createZopeEngine, but use non-restricted Python
     # expression evaluator
-    e = createZopeEngine(TrustedZopePathExpr)
+    # still uses the ``SecureModuleImporter``
+    e = createZopeEngine(TrustedZopePathExpr, untrusted=False)
     e.types['python'] = PythonExpr
     return e
+
 
 _engine = createZopeEngine()
 
 
 def getEngine():
     return _engine
+
+
+_trusted_engine = createTrustedZopeEngine()
+
+
+def getTrustedEngine():
+    return _trusted_engine

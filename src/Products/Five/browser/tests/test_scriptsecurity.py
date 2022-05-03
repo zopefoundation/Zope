@@ -1,33 +1,39 @@
-import unittest
-
 from AccessControl import Unauthorized
 
 
-def addPythonScript(folder, id, params='', body=''):
-    """Add a PythonScript to folder."""
-    from Products.PythonScripts.PythonScript import manage_addPythonScript
-    # clean up any 'ps' that's already here..
+def addDTMLMethod(folder, id, body=''):
+    from OFS.DTMLMethod import addDTMLMethod
     if id in folder:
         del folder[id]
-    manage_addPythonScript(folder, id)
-    folder[id].ZPythonScript_edit(params, body)
+    addDTMLMethod(folder, id, file=body)
 
 
-def checkRestricted(folder, psbody):
+def checkRestricted(folder, path, method=''):
     """Perform a check by running restricted Python code."""
-    addPythonScript(folder, 'ps', body=psbody)
+    traverse = "_.this.restrictedTraverse('%s')" % path
+    if not method:
+        body = '<dtml-call "%s()">' % traverse
+    else:
+        body = f'<dtml-call "{traverse}.{method}()">'
+
+    addDTMLMethod(folder, 'ps', body=body)
     try:
-        folder.ps()
+        folder.ps(client=folder)
     except Unauthorized as e:
         raise AssertionError(e)
 
 
-def checkUnauthorized(folder, psbody):
+def checkUnauthorized(folder, path, method=''):
     """Perform a check by running restricted Python code.  Expect to
     encounter an Unauthorized exception."""
-    addPythonScript(folder, 'ps', body=psbody)
+    traverse = "_.this.restrictedTraverse('%s')" % path
+    if not method:
+        body = '<dtml-call "%s()">' % traverse
+    else:
+        body = f'<dtml-call "{traverse}.{method}()">'
+    addDTMLMethod(folder, 'ps', body=body)
     try:
-        folder.ps()
+        folder.ps(client=folder)
     except Unauthorized:
         pass
     else:
@@ -43,10 +49,11 @@ def test_resource_restricted_code():
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_config('resource.zcml',
       ...                  package=Products.Five.browser.tests)
+      >>> folder = self.folder  # NOQA: F821
 
       >>> from Products.Five.tests.testing import (
       ... manage_addFiveTraversableFolder)
-      >>> manage_addFiveTraversableFolder(self.folder, 'testoid', 'Testoid')
+      >>> manage_addFiveTraversableFolder(folder, 'testoid', 'Testoid')
 
       >>> import os, glob
       >>> _prefix = os.path.dirname(Products.Five.browser.tests.__file__)
@@ -66,45 +73,35 @@ def test_resource_restricted_code():
     We should get Unauthorized as long as we're unauthenticated:
 
       >>> for resource in resource_names:
-      ...     checkUnauthorized(
-      ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/++resource++%s")()' %
-      ...             resource)
+      ...     checkUnauthorized(folder, 'testoid/++resource++%s' % resource)
 
       >>> base = 'testoid/++resource++fivetest_resources/%s'
       >>> for resource in dir_resource_names:
-      ...     path = base % resource
-      ...     checkUnauthorized(
-      ...         self.folder, 'context.restrictedTraverse("%s")' % path)
+      ...     checkUnauthorized(folder, base % resource)
 
     Now let's create a manager user account and log in:
 
-      >>> uf = self.folder.acl_users
+      >>> uf = folder.acl_users
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
-      >>> self.login('manager')
+      >>> self.login('manager')  # NOQA: F821
 
     We can now view them all:
 
       >>> for resource in resource_names:
-      ...     checkRestricted(
-      ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/++resource++%s")()' %
-      ...             resource)
+      ...     checkRestricted(folder, 'testoid/++resource++%s' % resource)
 
       >>> base = 'testoid/++resource++fivetest_resources/%s'
       >>> for resource in dir_resource_names:
-      ...     path = base % resource
-      ...     checkRestricted(
-      ...         self.folder, 'context.restrictedTraverse("%s")' %path)
+      ...     checkRestricted(folder, base % resource)
 
     Let's make sure restrictedTraverse() works directly, too. It used to get
     tripped up on subdirectories due to missing security declarations.
 
-      >>> self.folder.restrictedTraverse(
+      >>> folder.restrictedTraverse(
       ...     '++resource++fivetest_resources/resource.txt') is not None
       True
 
-      >>> self.folder.restrictedTraverse(
+      >>> folder.restrictedTraverse(
       ...     '++resource++fivetest_resources/resource_subdir/resource.txt'
       ... ) is not None
       True
@@ -124,19 +121,20 @@ def test_view_restricted_code():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_config('pages.zcml', package=Products.Five.browser.tests)
+      >>> folder = self.folder  # NOQA: F821
 
     Let's add a test object that we view most of the pages off of:
 
       >>> from Products.Five.tests.testing.simplecontent import (
       ... manage_addSimpleContent)
-      >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
+      >>> manage_addSimpleContent(folder, 'testoid', 'Testoid')
 
     We also need to create a stub user account and login; otherwise we
     wouldn't have all the rights to do traversal etc.:
 
-      >>> uf = self.folder.acl_users
+      >>> uf = folder.acl_users
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
-      >>> self.login('manager')
+      >>> self.login('manager')  # NOQA: F821
 
       >>> protected_view_names = [
       ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
@@ -157,35 +155,25 @@ def test_view_restricted_code():
     As long as we're not authenticated, we should get Unauthorized for
     protected views, but we should be able to view the public ones:
 
-      >>> self.logout()
+      >>> self.logout()  # NOQA: F821
       >>> for view_name in protected_view_names:
-      ...     checkUnauthorized(
-      ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
+      ...     checkUnauthorized(folder, 'testoid/%s' % view_name)
 
       >>> for view_name in public_view_names:
-      ...     checkRestricted(
-      ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
-      >>> self.login('manager')
+      ...     checkRestricted(folder, 'testoid/%s' % view_name)
 
     Being logged in as a manager again, we find that the protected pages
     are accessible to us:
 
+      >>> self.login('manager')  # NOQA: F821
       >>> for view_name in protected_view_names:
-      ...     checkRestricted(
-      ...         self.folder,
-      ...         'context.restrictedTraverse("testoid/%s")()' % view_name)
+      ...     checkRestricted(folder, 'testoid/%s' % view_name)
 
-      >>> checkRestricted(
-      ...     self.folder,
-      ...     'context.restrictedTraverse("testoid/eagle.method").eagle()')
+      >>> checkRestricted(folder, 'testoid/eagle.method', method='eagle')
 
     Even when logged in though the private methods should not be accessible:
 
-      >>> checkUnauthorized(
-      ...     self.folder,
-      ...     'context.restrictedTraverse("testoid/eagle.method").mouse()')
+      >>> checkUnauthorized(folder, 'testoid/eagle.method', method='mouse')
 
     Cleanup:
 
@@ -195,14 +183,5 @@ def test_view_restricted_code():
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    try:
-        import Products.PythonScripts  # NOQA
-    except ImportError:
-        pass
-    else:
-        from Testing.ZopeTestCase import ZopeDocTestSuite
-        from Testing.ZopeTestCase import installProduct
-        installProduct('PythonScripts')
-        suite.addTest(ZopeDocTestSuite())
-    return suite
+    from Testing.ZopeTestCase import ZopeDocTestSuite
+    return ZopeDocTestSuite()

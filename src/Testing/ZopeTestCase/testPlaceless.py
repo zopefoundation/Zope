@@ -13,14 +13,14 @@
 """Placeless setup tests
 """
 
-from zope.component import adapter
-from zope.interface import implementer, Interface
-
 from Testing import ZopeTestCase
-
-from Testing.ZopeTestCase.placeless import setUp, tearDown
-from Testing.ZopeTestCase.placeless import zcml
+from Testing.ZopeTestCase.placeless import setUp
+from Testing.ZopeTestCase.placeless import tearDown
 from Testing.ZopeTestCase.placeless import temporaryPlacelessSetUp
+from Testing.ZopeTestCase.placeless import zcml
+from zope.component import adapter
+from zope.interface import Interface
+from zope.interface import implementer
 
 
 def setupZCML():
@@ -49,7 +49,7 @@ class IAdapted(Interface):
 
 
 @implementer(IAdaptable)
-class Adaptable(object):
+class Adaptable:
 
     def method(self):
         return "The method"
@@ -57,7 +57,7 @@ class Adaptable(object):
 
 @implementer(IAdapted)
 @adapter(IAdaptable)
-class Adapter(object):
+class Adapter:
 
     def __init__(self, context):
         self.context = context
@@ -117,7 +117,8 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestPlacelessSetUp))
     return suite

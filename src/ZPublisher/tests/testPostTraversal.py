@@ -1,9 +1,10 @@
 from unittest import TestCase
 
+import Zope2
 from Acquisition import Implicit
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
-import Zope2
+
 
 Zope2.startup_wsgi()
 

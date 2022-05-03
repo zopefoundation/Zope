@@ -15,8 +15,8 @@ import time
 
 from Acquisition import aq_acquire
 from zExceptions import HTTPPreconditionFailed
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 class EtagBaseInterface(Interface):
@@ -57,7 +57,7 @@ class EtagBaseInterface(Interface):
 
 
 @implementer(EtagBaseInterface)
-class EtagSupport(object):
+class EtagSupport:
     """
     This class is the basis for supporting Etags in Zope.  It's main
     function right now is to support the *Lost Updates Problem* by

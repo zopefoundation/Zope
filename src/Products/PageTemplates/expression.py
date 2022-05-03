@@ -1,30 +1,35 @@
+"""``chameleon.tales`` expressions."""
+
+import warnings
 from ast import NodeTransformer
 from ast import parse
-from six import class_types
 
+from chameleon.astutil import Static
+from chameleon.astutil import Symbol
+from chameleon.codegen import template
+from chameleon.tales import NotExpr
+from chameleon.tales import StringExpr
+
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.ZopeGuards import guarded_apply
+from AccessControl.ZopeGuards import guarded_getattr
+from AccessControl.ZopeGuards import guarded_getitem
+from AccessControl.ZopeGuards import guarded_iter
+from AccessControl.ZopeGuards import protected_inplacevar
 from OFS.interfaces import ITraversable
+from RestrictedPython import RestrictingNodeTransformer
+from RestrictedPython.Utilities import utility_builtins
+from z3c.pt import expressions
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-
+from zope.interface import implementer
+from zope.tales.tales import ExpressionEngine
 from zope.traversing.adapters import traversePathElement
 from zope.traversing.interfaces import TraversalError
 
-from RestrictedPython.Utilities import utility_builtins
-from RestrictedPython import RestrictingNodeTransformer
+from .Expressions import render
+from .interfaces import IZopeAwareEngine
 
-from Products.PageTemplates.Expressions import render
-
-from AccessControl.ZopeGuards import guarded_getattr
-from AccessControl.ZopeGuards import guarded_getitem
-from AccessControl.ZopeGuards import guarded_apply
-from AccessControl.ZopeGuards import guarded_iter
-from AccessControl.ZopeGuards import protected_inplacevar
-
-from chameleon.astutil import Symbol
-from chameleon.astutil import Static
-from chameleon.codegen import template
-
-from z3c.pt import expressions
 
 _marker = object()
 
@@ -44,7 +49,7 @@ def static(obj):
     return Static(template("obj", obj=Symbol(obj), mode="eval"))
 
 
-class BoboAwareZopeTraverse(object):
+class BoboAwareZopeTraverse:
     traverse_method = 'restrictedTraverse'
 
     __slots__ = ()
@@ -53,21 +58,49 @@ class BoboAwareZopeTraverse(object):
     def traverse(cls, base, request, path_items):
         """See ``zope.app.pagetemplate.engine``."""
 
-        length = len(path_items)
-        if length:
-            i = 0
-            method = cls.traverse_method
-            while i < length:
-                name = path_items[i]
-                i += 1
+        validate = getSecurityManager().validate
+        path_items = list(path_items)
+        path_items.reverse()
 
-                if ITraversable.providedBy(base):
-                    traverser = getattr(base, method)
-                    base = traverser(name)
-                else:
-                    base = traversePathElement(
-                        base, name, path_items[i:], request=request
-                    )
+        while path_items:
+            name = path_items.pop()
+
+            if ITraversable.providedBy(base):
+                base = getattr(base, cls.traverse_method)(name)
+            else:
+                found = traversePathElement(base, name, path_items,
+                                            request=request)
+
+                # If traverse_method is something other than
+                # ``restrictedTraverse`` then traversal is assumed to be
+                # unrestricted. This emulates ``unrestrictedTraverse``
+                if cls.traverse_method != 'restrictedTraverse':
+                    base = found
+                    continue
+
+                # Special backwards compatibility exception for the name ``_``,
+                # which was often used for translation message factories.
+                # Allow and continue traversal.
+                if name == '_':
+                    warnings.warn('Traversing to the name `_` is deprecated '
+                                  'and will be removed in Zope 6.',
+                                  DeprecationWarning)
+                    base = found
+                    continue
+
+                # All other names starting with ``_`` are disallowed.
+                # This emulates what restrictedTraverse does.
+                if name.startswith('_'):
+                    raise NotFound(name)
+
+                # traversePathElement doesn't apply any Zope security policy,
+                # so we validate access explicitly here.
+                try:
+                    validate(base, base, name, found)
+                    base = found
+                except Unauthorized:
+                    # Convert Unauthorized to prevent information disclosures
+                    raise NotFound(name)
 
         return base
 
@@ -80,8 +113,8 @@ class BoboAwareZopeTraverse(object):
         if call is False:
             return base
 
-        if (getattr(base, '__call__', _marker) is not _marker or
-                callable(base)):
+        if getattr(base, '__call__', _marker) is not _marker or \
+           callable(base):
             base = render(base, econtext)
 
         return base
@@ -100,8 +133,8 @@ class TrustedBoboAwareZopeTraverse(BoboAwareZopeTraverse):
         if call is False:
             return base
 
-        if (getattr(base, '__call__', _marker) is not _marker or
-                isinstance(base, class_types)):
+        if getattr(base, '__call__', _marker) is not _marker or \
+           isinstance(base, type):
             return base()
 
         return base
@@ -154,17 +187,9 @@ class UntrustedPythonExpr(expressions.PythonExpr):
     builtins = expressions.PythonExpr.builtins.copy()
 
     # Update builtins with Restricted Python utility builtins
-    builtins.update(dict(
-        (name, static(builtin)) for (name, builtin) in utility_builtins.items()
-    ))
-
-    def rewrite(self, node):
-        if node.id == 'repeat':
-            node.id = 'wrapped_repeat'
-        else:
-            node = super(UntrustedPythonExpr, self).rewrite(node)
-
-        return node
+    builtins.update({
+        name: static(builtin) for (name, builtin) in utility_builtins.items()
+    })
 
     def parse(self, string):
         encoded = string.encode('utf-8')
@@ -177,3 +202,67 @@ class UntrustedPythonExpr(expressions.PythonExpr):
         self.page_templates_expression_transformer.visit(node)
 
         return node
+
+
+# Whether an engine is Zope aware does not depend on the class
+# but how it is configured - especially, that is uses a Zope aware
+# `PathExpr` implementation.
+# Nevertheless, we mark the class as "Zope aware" for simplicity
+# assuming that users of the class use a proper `PathExpr`
+@implementer(IZopeAwareEngine)
+class ChameleonEngine(ExpressionEngine):
+    """Expression engine for ``chameleon.tales``.
+
+    Only partially implemented: its ``compile`` is currently unusable
+    """
+    def compile(self, expression):
+        raise NotImplementedError()
+
+
+types = dict(
+    python=UntrustedPythonExpr,
+    string=StringExpr,
+    not_=NotExpr,
+    exists=ExistsExpr,
+    path=PathExpr,
+    provider=expressions.ProviderExpr,
+    nocall=NocallExpr)
+
+
+def createChameleonEngine(types=types, untrusted=True, **overrides):
+    e = ChameleonEngine()
+
+    def norm(k):
+        return k[:-1] if k.endswith("_") else k
+
+    e.untrusted = untrusted
+    ts = e.types
+    for k, v in types.items():
+        k = norm(k)
+        e.registerType(k, v)
+    for k, v in overrides.items():
+        k = norm(k)
+        if k in ts:
+            del ts[k]
+        e.registerType(k, v)
+    return e
+
+
+def createTrustedChameleonEngine(**overrides):
+    ovr = dict(python=expressions.PythonExpr, path=TrustedPathExpr)
+    ovr.update(overrides)
+    return createChameleonEngine(untrusted=False, **ovr)
+
+
+_engine = createChameleonEngine()
+
+
+def getEngine():
+    return _engine
+
+
+_trusted_engine = createTrustedChameleonEngine()
+
+
+def getTrustedEngine():
+    return _trusted_engine

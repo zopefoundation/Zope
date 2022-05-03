@@ -14,8 +14,8 @@
 """Parrot directive and support classes
 """
 
-from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
 from zope.schema import TextLine
 
 
@@ -23,13 +23,13 @@ class IParrotDirective(Interface):
     """State that a class implements something.
     """
     class_ = GlobalObject(
-        title=u"Class",
+        title="Class",
         required=True,
     )
 
     name = TextLine(
-        title=u"Name",
-        description=u"The parrots name.",
+        title="Name",
+        description="The parrots name.",
         required=True,
     )
 
@@ -39,7 +39,7 @@ def parrot(_context, class_, name):
     parrot.pineForFjords()
 
 
-class NorwegianBlue(object):
+class NorwegianBlue:
 
     def pineForFjords(self):
         return "This parrot is no more!"

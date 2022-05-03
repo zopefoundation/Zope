@@ -1,108 +1,121 @@
-<h1 tal:replace="structure python:context.manage_page_header(management_page_charset='utf-8')">Header</h1>
+<h1 tal:replace="structure context/manage_page_header">manage_page_header</h1>
 <h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
-    tal:replace="structure context/manage_tabs">Tabs</h2>
+	tal:replace="structure context/manage_tabs">manage_tabs</h2>
+<tal:block define="global body request/other/text | request/form/text | context/read" />
 
-<tal:block define="global body request/other/text | request/form/text
-                                                  | context/read" /> 
-<form action="" method="post" tal:attributes="action request/URL1">
-<input type="hidden" name="encoding" value="utf-8" />
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td align="left" valign="middle">
-      <div class="form-optional">Title</div>
-    </td>
-    <td align="left" valign="middle">
-      <input type="text" name="title" size="40" 
-             tal:attributes="value request/title | context/title" />
-    </td>
-    <td align="left" valign="middle">
-      <div class="form-label">Content-Type</div>
-    </td>
-    <td align="left" valign="middle">
-      <input type="text" name="content_type" size="14" 
-             tal:attributes="value request/content_type | context/content_type" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="middle"></td>
-    <td align="left" valign="middle"></td>
-    <td align="left" valign="top" colspan="2">
-      <a href="source.html" tal:condition="context/html">Browse HTML source</a>
-      <a href="source.xml" tal:condition="not:context/html">Browse XML source</a>
-      <br />
-      <input type="hidden" name="expand:int:default" value="0" />
-      <input type="checkbox" value="1" name="expand:int"
-             tal:attributes="checked request/expand | context/expand" />
-      Expand macros when editing
-    </td>
-  </tr>
+<main class="container-fluid">
+<form action="" method="post" tal:attributes="action request/URL1" class="zmi-zpt zmi-edit">
+	<input type="hidden" name="encoding" value="utf-8" />
 
-  <tr tal:define="errors context/pt_errors" tal:condition="errors">
-    <td align="left" valign="middle" class="form-label">Errors</td>
-    <td align="left" valign="middle" style="background-color: #FFDDDD"
-        colspan="3">
-<pre tal:content="python:'\n'.join(errors)">errors</pre>
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top" colspan="4">
-      <textarea name="text:text" wrap="off" style="width: 100%;" rows="20"
-                tal:content="body">Template Body</textarea>
-    </td>
-  </tr>
+	<div class="form-group row">
+		<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+		<div class="col-sm-9 col-md-10">
+			<input id="title" class="form-control" type="text" name="title"
+			tal:attributes="value request/title | context/title" />
+		</div>
+	</div>
 
-<tr>
-  <td align="left" valign="top" colspan="4">
-  <div class="form-element">
-    <em tal:condition="context/wl_isLocked">Locked</em>
-    <input tal:condition="not:context/wl_isLocked"
-           class="form-element" type="submit" 
-           name="pt_editAction:method" value="Save Changes"/>
-    &nbsp;&nbsp;
-  </div>
-  </td>
-</tr>
-</table>
+	<div class="form-group row">
+		<label for="contenttype" class="form-label col-sm-3 col-md-2">Content&nbsp;Type</label>
+		<div class="col-sm-3 col-md-2">
+			<input id="contenttype" class="form-control" type="text" name="content_type"
+				tal:attributes="value request/content_type | context/content_type" />
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label for="title" class="form-label col-sm-3 col-md-2">Last Modified</label>
+		<div class="col-sm-5 col-md-5">
+			<span tal:replace="python: here.last_modified(here)">2018-01-01 00:00</span>
+		</div>
+		<div class="col-sm-4 col-md-5 text-right">
+			<a class="btn btn-secondary" title="Browse HTML source"
+				target="_blank" href="source.html" tal:condition="context/html">
+				<i class="far fa-eye"></i>
+			</a>
+			<a class="btn btn-secondary" title="Browse XML source"
+				target="_blank" href="source.xml" tal:condition="not:context/html">
+				<i class="far fa-eye"></i>
+			</a>
+		</div>
+
+	</div>
+
+	<div tal:define="errors context/pt_errors" tal:condition="errors"
+		class="alert alert-danger" role="alert">
+		<pre tal:content="python:'\n'.join(errors)">errors</pre>
+	</div>
+
+	<textarea id="content" data-contenttype="html" 
+		class="form-control zmi-zpt zmi-code col-sm-12"
+		name="text:text" wrap="off" rows="20"
+		tal:content="body"
+		tal:attributes="data-readonly python:context.wl_isLocked() and 'true' or 'false'">
+		Template Body</textarea>
+
+	<div class="form-group row">
+
+		<div class="col-6 zmi-controls">
+			<input tal:condition="not:context/wl_isLocked"
+				class="btn btn-primary" type="submit" name="pt_editAction:method"
+				value="Save Changes" />
+			<input tal:condition="context/wl_isLocked"
+				class="btn btn-primary disabled" type="submit"
+				value="Upload File" disabled="disabled" />
+			<span tal:condition="context/wl_isLocked"
+				class="badge badge-warning" title="Locked"><i class="fa fa-lock"></i></span>
+		</div>
+
+		<div class="col-6 text-right pt-4 mt-2">
+			<div class="form-check">
+				<input type="hidden" name="expand:int:default" value="0" />
+				<input id="expand" class="form-check-input" type="checkbox" value="1" name="expand:int"
+					tal:attributes="checked request/expand | context/expand" />
+				<label for="expand" class="form-check-label"
+					title="Caution: Any metal-macros that you use will be expanded in your template's source"
+					>Expand&nbsp;macros <span class="hidden-xs">when editing</span></label>
+			</div>
+		</div>
+
+	</div>
+
 </form>
 
-<p class="form-help">You can upload the text for
-<span tal:replace="context/title_and_id" /> using the following form.
-Choose an existing HTML or XML file from your local computer by
-clicking <em>browse</em>.  You can also <a href="document_src">click
-context</a> to view or download the current text.</p>
 
-<form action="pt_upload" method="post" enctype="multipart/form-data">
-<table cellpadding="2" cellspacing="0" border="0">
-<tr>
-  <td align="left" valign="top">
-    <div class="form-label">File &nbsp;</div>
-  </td>
-  <td align="left" valign="top">
-    <input type="file" name="file" size="40" value="" />
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-    <div class="form-label">Encoding &nbsp;</div>
-  </td>
-  <td align="left" valign="top" colspan="2">
-    <input name="encoding" value="utf-8" />
-  </td>
-  <td align="left" valign="top" colspan="1">
-    <em>(only used for non-XML and non-XHTML content)</em>
-  </td>
-</tr>
-<tr>
-  <td></td>
-  <td align="left" valign="top">
-  <div class="form-element">
-    <em tal:condition="context/wl_isLocked">Locked</em>
-    <input tal:condition="not:context/wl_isLocked"
-           class="form-element" type="submit" value="Upload File" />
-  </div>
-  </td>
-</tr>
-</table>
+
+<form action="pt_upload" method="post" enctype="multipart/form-data" class="zmi-upload mt-4"
+	tal:condition="not:here/wl_isLocked | nothing">
+
+	<p class="form-help">
+		You can upload the text for
+		<span tal:replace="context/title_and_id" /> using the following form.
+		Choose an existing HTML or XML file from your local computer by
+		clicking <em>browse</em>. For non-XML and non-HTML content please set the
+		Encoding attribute. To view or download the current text click
+		<a href="document_src" title="Document Source">here</a>.
+	</p>
+
+	<div class="input-group" title="Select Local File for Uploading">
+		<div class="custom-file">
+			<input type="file" name="file" class="custom-file-input" id="file-data" value=""
+				onchange="$('.custom-file label span').html($(this).val().replace(/^.*(\\|\/|\:)/, ''));" />
+			<label class="custom-file-label" for="file-data"><span>Choose file</span></label>
+		</div>
+		<div class="input-group-append">
+			<input id="encoding" type="text" title="Encoding"
+				class="form-control text-warning"
+				style="width:5rem;border-radius:0;text-align:center"
+				name="encoding" value="utf-8" placeholder="utf-8" />
+		</div>
+		<div class="input-group-append">
+			<input class="btn btn-outline-secondary" type="submit" value="Upload File" />
+		</div>
+	</div>
+	<small id="encodingHelp" class="form-text text-warning text-right">
+		Encoding only used for non-XML and non-HTML content
+	</small>
+
 </form>
+</main>
 
 <h1 tal:replace="structure context/manage_page_footer">Footer</h1>

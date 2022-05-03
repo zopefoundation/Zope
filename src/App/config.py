@@ -14,6 +14,7 @@
 
 import os
 
+
 _config = None
 
 
@@ -50,7 +51,7 @@ def setConfiguration(cfg):
     os.environ["INSTANCE_HOME"] = cfg.instancehome
 
 
-class DefaultConfiguration(object):
+class DefaultConfiguration:
     """
     This configuration should be used effectively only during unit tests
     """

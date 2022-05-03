@@ -13,21 +13,22 @@
 
 from os.path import dirname
 
+import App
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
-import App
 from App.ImageFile import ImageFile
 
 
-class misc_(object):
+class misc_:
     "Miscellaneous product information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
 
+
 InitializeClass(misc_)
 
 
-class p_(object):
+class p_:
     "Shared system information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -35,10 +36,11 @@ class p_(object):
     app_dir = dirname(App.__file__)
     zopelogo_png = ImageFile('www/zopelogo.png', app_dir)
 
+
 InitializeClass(p_)
 
 
-class Misc_(object):
+class Misc_:
     "Miscellaneous product information"
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -55,5 +57,6 @@ class Misc_(object):
 
     def __setitem__(self, name, v):
         self._d[name] = v
+
 
 InitializeClass(Misc_)

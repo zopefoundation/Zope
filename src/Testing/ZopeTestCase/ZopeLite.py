@@ -27,17 +27,28 @@ import os
 import sys
 import time
 
-from six import exec_
-from six import PY2
-
+import App.ProductContext  # NOQA
+import OFS.Application
+import OFS.ObjectManager
+import OFS.SimpleItem
+import Products
+import ZODB
+import Zope2
+import Zope2.Startup.run
+# Allow test authors to install Zope products into the test environment. Note
+# that installProduct() must be called at module level -- never from tests.
+from OFS.Application import get_folder_permissions  # NOQA; NOQA
+from OFS.Application import get_products
+from OFS.Application import install_package
+from OFS.Application import install_product
+from OFS.Folder import Folder  # NOQA
 from Testing.ZopeTestCase import layer
+# ZODB sandbox factory
+from ZODB.DemoStorage import DemoStorage  # NOQA
+
 
 # Allow code to tell it is run by the test framework
 os.environ['ZOPETESTCASE'] = '1'
-
-# Increase performance on MP hardware
-if PY2:
-    sys.setcheckinterval(2500)
 
 # Always shut up
 _quiet = True
@@ -59,8 +70,9 @@ def _exec(cmd):
     '''Prints the time it takes to execute 'cmd'.'''
     if os.environ.get('X', None):
         start = time.time()
-        exec_(cmd)
+        exec(cmd)
         _print('(%.3fs)' % (time.time() - start))
+
 
 _write('Loading Zope, please stand by ')
 _start = time.time()
@@ -94,26 +106,20 @@ def _configure_client_cache():
     config.zeo_client_name = None
     App.config.setConfiguration(config)
 
+
 _configure_logging()
 _configure_debug_mode()
 _configure_client_cache()
 
 _exec('import Zope2')
-import Zope2  # NOQA
-import Zope2.Startup.run  # NOQA
 _exec('import ZODB')
-import ZODB  # NOQA
 _write('.')
 
 _exec('import OFS.SimpleItem')
-import OFS.SimpleItem  # NOQA
 _exec('import OFS.ObjectManager')
-import OFS.ObjectManager  # NOQA
 _write('.')
 
 _exec('import OFS.Application')
-import OFS.Application  # NOQA
-import App.ProductContext  # NOQA
 _write('.')
 
 _patched = False
@@ -146,6 +152,7 @@ def _apply_patches():
     global _patched
     _patched = True
 
+
 _apply_patches()
 
 _theApp = None
@@ -156,15 +163,10 @@ def _startup():
     global _theApp
     _theApp = Zope2.app()
 
+
 # Start ZopeLite
 _startup()
 
-# Allow test authors to install Zope products into the test environment. Note
-# that installProduct() must be called at module level -- never from tests.
-from OFS.Application import get_folder_permissions, get_products  # NOQA
-from OFS.Application import install_product, install_package  # NOQA
-from OFS.Folder import Folder  # NOQA
-import Products  # NOQA
 
 _installedProducts = {}
 _installedPackages = {}
@@ -236,6 +238,7 @@ def _installPackage(name, quiet=0):
             if not quiet:
                 _print('Installing %s ... NOT FOUND\n' % name)
 
+
 installProduct('OFSP', 1)
 
 # So people can use ZopeLite.app()
@@ -248,11 +251,9 @@ configure = Zope2.Startup.run.configure_wsgi
 def startup():
     pass
 
+
 Zope = Zope2
 active = _patched
-
-# ZODB sandbox factory
-from ZODB.DemoStorage import DemoStorage  # NOQA
 
 
 def sandbox(base=None):
@@ -261,5 +262,6 @@ def sandbox(base=None):
         base = Zope2.DB
     storage = DemoStorage(base=base._storage)
     return ZODB.DB(storage)
+
 
 _write(' done (%.3fs)\n' % (time.time() - _start))

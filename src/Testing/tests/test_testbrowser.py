@@ -14,21 +14,18 @@
 """Tests for the testbrowser module.
 """
 
-from AccessControl.Permissions import view
-from ZPublisher.WSGIPublisher import publish_module
-from ZPublisher.httpexceptions import HTTPExceptionHandler
-from six.moves.urllib.error import HTTPError
-from zExceptions import NotFound
-import transaction
+from urllib.error import HTTPError
 
+import transaction
+from AccessControl.Permissions import view
 from OFS.SimpleItem import Item
 from Testing.testbrowser import Browser
-from Testing.testbrowser import WSGITestApp
-from Testing.ZopeTestCase import (
-    FunctionalTestCase,
-    user_name,
-    user_password,
-)
+from Testing.ZopeTestCase import FunctionalTestCase
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
+from zExceptions import NotFound
+from ZPublisher.httpexceptions import HTTPExceptionHandler
+from ZPublisher.WSGIPublisher import publish_module
 
 
 class CookieStub(Item):
@@ -57,7 +54,7 @@ class TestTestbrowser(FunctionalTestCase):
 
     def test_auth(self):
         # Based on Testing.ZopeTestCase.testFunctional
-        basic_auth = '%s:%s' % (user_name, user_password)
+        basic_auth = f'{user_name}:{user_password}'
         self.folder.addDTMLDocument('secret_html', file='secret')
         self.folder.secret_html.manage_permission(view, ['Owner'])
         path = '/' + self.folder.absolute_url(1) + '/secret_html'
@@ -76,7 +73,7 @@ class TestTestbrowser(FunctionalTestCase):
         browser.open(url)
         self.assertTrue(browser.headers['status'].startswith('401'))
 
-        browser.addHeader('Authorization', 'Basic ' + basic_auth)
+        browser.login(user_name, user_password)
         browser.open(url)
         self.assertTrue(browser.headers['status'].startswith('200'))
         self.assertEqual(browser.contents, 'secret')
@@ -92,16 +89,18 @@ class TestTestbrowser(FunctionalTestCase):
 
         browser = Browser()
         browser.open('http://localhost/test_folder_1_/stub')
-        self.assertEqual(browser.cookies.get('evil'), '"cookie"')
+        self.assertEqual(browser.cookies.get('evil'), 'cookie')
 
     def test_handle_errors_true(self):
         self.folder._setObject('stub', ExceptionStub())
         browser = Browser()
 
-        with self.assertRaises(HTTPError):
+        # An error which cannot be handled by Zope is propagated to the client:
+        with self.assertRaises(ValueError):
             browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.headers['status'].startswith('500'))
+        self.assertIsNone(browser.contents)
 
+        # Handled errors become an instance of `HTTPError`:
         with self.assertRaises(HTTPError):
             browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
@@ -120,10 +119,7 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.handleErrors = False
 
-        with self.assertRaises(ValueError):
-            browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.contents is None)
-
+        # Even errors which can be handled by Zope go to the client:
         with self.assertRaises(NotFound):
             browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.contents is None)
@@ -142,7 +138,7 @@ class TestTestbrowser(FunctionalTestCase):
 
         This is needed when HTTPExceptionHandler is part of the WSGI pipeline.
         """
-        class WSGITestAppWithHTTPExceptionHandler(object):
+        class WSGITestAppWithHTTPExceptionHandler:
             """Minimized testbrowser.WSGITestApp with HTTPExceptionHandler."""
 
             def __call__(self, environ, start_response):
@@ -165,9 +161,12 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.raiseHttpErrors = False
 
-        browser.open('http://localhost/test_folder_1_/stub')
-        self.assertTrue(browser.headers['status'].startswith('500'))
+        # Internal server errors are still raised:
+        with self.assertRaises(ValueError):
+            browser.open('http://localhost/test_folder_1_/stub')
+        self.assertIsNone(browser.contents)
 
+        # But errors handled by Zope do not create an exception:
         browser.open('http://localhost/nothing-is-here')
         self.assertTrue(browser.headers['status'].startswith('404'))
 
@@ -193,7 +192,8 @@ class TestTestbrowser(FunctionalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestTestbrowser))
     return suite

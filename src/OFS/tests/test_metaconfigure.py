@@ -1,5 +1,6 @@
 import unittest
 
+
 _marker = object()
 
 
@@ -20,8 +21,9 @@ class TestRegisterClass(unittest.TestCase):
         OFS.metaconfigure._meta_type_regs[:] = []
 
     def tearDown(self):
-        from zope.component.testing import tearDown
         import OFS.metaconfigure
+        from zope.component.testing import tearDown
+
         # restore registrations
         OFS.metaconfigure._meta_type_regs[:] = self._old_mt_regs
         OFS.metaconfigure._register_monkies[:] = self._old_monkies
@@ -42,13 +44,13 @@ class TestRegisterClass(unittest.TestCase):
 
     def _makeClass(self, ifaces=None):
         if ifaces is None:
-            class Dummy(object):
+            class Dummy:
                 pass
         else:
             from zope.interface import implementer
 
             @implementer(ifaces)
-            class Dummy(object):
+            class Dummy:
                 pass
         return Dummy
 
@@ -58,7 +60,7 @@ class TestRegisterClass(unittest.TestCase):
         from zope.security.interfaces import IPermission
 
         @implementer(IPermission)
-        class Perm(object):
+        class Perm:
 
             def __init__(self, title):
                 self. title = title

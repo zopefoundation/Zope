@@ -14,7 +14,9 @@
 """
 
 import re
-import sys
+
+from zope.pagetemplate.pagetemplatefile import DEFAULT_ENCODING
+
 
 xml_preamble_reg = re.compile(
     br'^<\?xml.*?encoding="(.*?)".*?\?>', re.M)
@@ -24,7 +26,7 @@ http_equiv_reg2 = re.compile(
     br'charset.*?=.*?(?P<charset>[\w\-]*)', re.I | re.M | re.S)
 
 
-def encodingFromXMLPreamble(xml):
+def encodingFromXMLPreamble(xml, default=DEFAULT_ENCODING):
     """ Extract the encoding from a xml preamble.
         Expects XML content is binary (encoded), otherwise a previous
         transport encoding is meaningless.
@@ -34,7 +36,7 @@ def encodingFromXMLPreamble(xml):
     match = xml_preamble_reg.match(xml)
 
     if not match:
-        return 'utf-8'
+        return default
     encoding = match.group(1).lower()
     return encoding.decode('ascii')
 
@@ -85,6 +87,6 @@ def convertToUnicode(source, content_type, preferred_encodings):
             return source.decode(enc), enc
         except UnicodeDecodeError:
             continue
-    
+
     # trigger a UnicodeDecodeError so we fail loudly
     return source.decode('utf-8'), 'utf-8'

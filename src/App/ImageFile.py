@@ -17,18 +17,18 @@ import stat
 import time
 import warnings
 
+import Zope2
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Explicit
-from App import bbb
 from App.Common import package_home
-from App.Common import rfc1123_date
 from App.config import getConfiguration
 from DateTime.DateTime import DateTime
 from zope.contenttype import guess_content_type
+from zope.datetime import rfc1123_date
 from ZPublisher.Iterators import filestream_iterator
 
-import Zope2
+
 PREFIX = os.path.realpath(
     os.path.join(os.path.dirname(Zope2.__file__), os.path.pardir))
 
@@ -94,7 +94,6 @@ class ImageFile(Explicit):
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Last-Modified', self.lmh)
         RESPONSE.setHeader('Cache-Control', self.cch)
-        RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         header = REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header = header.split(';')[0]
@@ -114,18 +113,19 @@ class ImageFile(Explicit):
                 else:
                     last_mod = int(0)
                 if last_mod > 0 and last_mod <= mod_since:
+                    RESPONSE.setHeader('Content-Length', '0')
                     RESPONSE.setStatus(304)
                     return ''
 
+        RESPONSE.setHeader('Content-Length', str(self.size).replace('L', ''))
         return filestream_iterator(self.path, mode='rb')
 
-    if bbb.HAS_ZSERVER:
-        security.declarePublic('HEAD')
-        def HEAD(self, REQUEST, RESPONSE):
-            """ """
-            RESPONSE.setHeader('Content-Type', self.content_type)
-            RESPONSE.setHeader('Last-Modified', self.lmh)
-            return ''
+    @security.public
+    def HEAD(self, REQUEST, RESPONSE):
+        """ """
+        RESPONSE.setHeader('Content-Type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', self.lmh)
+        return ''
 
     def __len__(self):
         # This is bogus and needed because of the way Python tests truth.
@@ -133,5 +133,6 @@ class ImageFile(Explicit):
 
     def __str__(self):
         return '<img src="%s" alt="" />' % self.__name__
+
 
 InitializeClass(ImageFile)

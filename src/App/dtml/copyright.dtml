@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <title>Zope Public License (ZPL) Version 2.1</title>
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/zmi_base.css" />
+
+  <link rel="shortcut icon" type="image/x-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/favicon-16x16.png" />
+  <link rel="manifest" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/site.webmanifest" />
+  <link rel="mask-icon" href="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+  <meta name="msapplication-config" content="&dtml-BASEPATH1;/++resource++zmi/logo/favicon/browserconfig.xml"/>
+  <meta name="msapplication-TileColor" content="#2d89ef" />
+  <meta name="theme-color" content="#ffffff" />
+</head>
+
+<body id="nodeid-" class="zmi zmi-Folder zmi-zope_copyright">
+
+  <header class="navbar navbar-nav navbar-expand navbar-dark">
+    <h2>Zope Public License (ZPL) Version 2.1</h2>
+  </header>
+
+  <main>
+
+    <h3>This software is Copyright &copy;
+    <a href="https://www.zope.dev/community.html" target="_top">
+      Zope Foundation</a> and Contributors. All rights reserved.</h3>
+
+    <p>
+      This license has been certified as open source. It has also
+      been designated as GPL compatible by the Free Software
+      Foundation (FSF).
+    </p>
+
+    <p>
+      Redistribution and use in source and binary forms, with or
+      without modification, are permitted provided that the
+      following conditions are met:
+    </p>
+
+    <ol>
+      <li>
+        Redistributions in source code must retain the
+        accompanying copyright notice, this list of conditions,
+        and the following disclaimer.
+      </li>
+      <li>
+        Redistributions in binary form must reproduce the accompanying
+        copyright notice, this list of conditions, and the
+        following disclaimer in the documentation and/or other
+        materials provided with the distribution.
+      </li>
+      <li>
+        Names of the copyright holders must not be used to
+        endorse or promote products derived from this software
+        without prior written permission from the copyright
+        holders.
+      </li>
+      <li>
+        The right to distribute this software or to use it for
+        any purpose does not give you the right to use
+        Servicemarks (sm) or Trademarks (tm) of the copyright
+        holders. Use of them is covered by separate agreement
+        with the copyright holders.
+      </li>
+      <li>
+        If any files are modified, you must cause the modified
+        files to carry prominent notices stating that you changed
+        the files and the date of any change.
+      </li>
+    </ol>
+
+    <h3>Disclaimer</h3>
+    <p>
+      <strong>
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS''
+        AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT
+        NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+        AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
+        NO EVENT SHALL THE COPYRIGHT HOLDERS BE
+        LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+        EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+        LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+        LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+        HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+        CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+        OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+        SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+        DAMAGE.
+      </strong>
+    </p>
+
+  </main>
+
+  <script>
+    // Helpers for Menu Handling
+    var manage_menu = typeof window.parent.frames!="undefined"&&typeof window.parent.frames.manage_menu!="undefined";
+    window.parent.history.replaceState('','Main','/zope_copyright')
+  </script>
+</body>
+</html>

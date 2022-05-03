@@ -24,7 +24,7 @@ class DummyObjectBasic(Implicit):
     pass
 
 
-class BrokenHook(object):
+class BrokenHook:
 
     def __call__(self, *args):
         print('%s called' % self.__class__.__name__)
@@ -81,7 +81,7 @@ def testBeforeTraverse(self):
     ...
     TypeError: BrokenHook
 
-    Unregister the borken hook:
+    Unregister the broken hook:
 
     >>> _ = BeforeTraverse.unregisterBeforeTraverse(container, 'broken_hook')
 
@@ -117,7 +117,7 @@ def testBeforeTraverse(self):
     ...
     TypeError: BrokenHook
 
-    Unregister the borken hook:
+    Unregister the broken hook:
 
     >>> _ = BeforeTraverse.unregisterBeforeTraverse(
     ...         container, 'broken_callable')

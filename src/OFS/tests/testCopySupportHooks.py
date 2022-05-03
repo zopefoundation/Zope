@@ -1,25 +1,21 @@
 import unittest
-import Zope2
 
 import transaction
-
-from zope.testing import cleanup
-
-from Testing.makerequest import makerequest
-
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-
+from OFS.Folder import Folder
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.SimpleItem import SimpleItem
-from OFS.Folder import Folder
-
+from Testing.makerequest import makerequest
 from Zope2.App import zcml
+from zope.testing import cleanup
+
 
 Zope2.startup_wsgi()
 
 
-class EventLogger(object):
+class EventLogger:
     def __init__(self):
         self.reset()
 
@@ -31,6 +27,7 @@ class EventLogger(object):
 
     def called(self):
         return self._called
+
 
 eventlog = EventLogger()
 
@@ -69,7 +66,7 @@ class TestFolder(Folder):
         Folder.manage_beforeDelete(self, item, container)
 
 
-class HookLayer(object):
+class HookLayer:
 
     @classmethod
     def setUp(cls):

@@ -20,15 +20,15 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 
+import transaction
+from AccessControl import getSecurityManager
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from OFS.Folder import Folder
+from OFS.SimpleItem import SimpleItem
+from OFS.userfolder import UserFolder
 from Testing import ZopeTestCase
 
-from Acquisition import aq_base, aq_inner
-from AccessControl import getSecurityManager
-from OFS.SimpleItem import SimpleItem
-from OFS.Folder import Folder
-from OFS.userfolder import UserFolder
-
-import transaction
 
 portal_name = 'dummy_1_'
 user_name = ZopeTestCase.user_name
@@ -518,7 +518,8 @@ class TestSetUpRaises(HookTest):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestPortalTestCase))
     suite.addTest(makeSuite(TestPlainUserFolder))

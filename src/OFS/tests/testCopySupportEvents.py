@@ -1,24 +1,23 @@
 import unittest
-import Zope2
 
 import transaction
-
-from zope import component
-from zope import interface
-from zope.interface.interfaces import IObjectEvent
-from zope.testing import cleanup
-
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
+from zope import component
+from zope import interface
 from Zope2.App import zcml
+from zope.interface.interfaces import IObjectEvent
+from zope.testing import cleanup
+
 
 Zope2.startup_wsgi()
 
 
-class EventLogger(object):
+class EventLogger:
     def __init__(self):
         self.reset()
 
@@ -30,6 +29,7 @@ class EventLogger(object):
 
     def called(self):
         return self._called
+
 
 eventlog = EventLogger()
 
@@ -59,7 +59,7 @@ class TestFolder(Folder):
         pass  # Always allow
 
 
-class EventLayer(object):
+class EventLayer:
 
     @classmethod
     def setUp(cls):
@@ -186,7 +186,7 @@ class TestCopySupportSublocation(EventTest):
         #      relied on between objects.
         if not set(first) == set(second):
             raise self.failureException(
-                (msg or '%r != %r' % (first, second)))
+                msg or f'{first!r} != {second!r}')
 
     def test_1_Clone(self):
         # Test clone

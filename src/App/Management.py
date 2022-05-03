@@ -13,21 +13,22 @@
 """Standard management interface support
 """
 
-from AccessControl import Unauthorized
+import html
+import itertools
+from urllib.parse import quote
+from urllib.parse import unquote
+
+import zope.event
 from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import view_management_screens
+from App.interfaces import ICSSPaths
+from App.interfaces import IJSPaths
 from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
-from six.moves.urllib.parse import quote, unquote
-from zExceptions import Redirect
 from zope.interface import implementer
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class Tabs(Base):
@@ -35,12 +36,12 @@ class Tabs(Base):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('manage_tabs')
+    security.declarePublic('manage_tabs')  # NOQA: D001
     manage_tabs = DTMLFile('dtml/manage_tabs', globals())
 
     manage_options = ()
 
-    security.declarePublic('filtered_manage_options')
+    @security.public
     def filtered_manage_options(self, REQUEST=None):
         result = []
         try:
@@ -55,7 +56,7 @@ class Tabs(Base):
 
             path = d.get('path', None)
             if path is None:
-                    path = d['action']
+                path = d['action']
 
             o = self.restrictedTraverse(path, None)
             if o is None:
@@ -80,27 +81,32 @@ class Tabs(Base):
                 'You are not authorized to view this object.')
 
         if m.find('/'):
-            return REQUEST.RESPONSE.redirect("%s/%s" % (REQUEST['URL1'], m))
+            return REQUEST.RESPONSE.redirect(f"{REQUEST['URL1']}/{m}")
 
         return getattr(self, m)(self, REQUEST)
+
+    def tabs_path_length(self, REQUEST):
+        return len(list(self.tabs_path_default(REQUEST)))
 
     def tabs_path_default(self, REQUEST):
         steps = REQUEST._steps[:-1]
         script = REQUEST['BASEPATH1']
-        linkpat = '<a href="%s/manage_workspace">%s</a>'
-        out = []
-        url = linkpat % (escape(script, True), '&nbsp;/')
+        linkpat = '{0}/manage_workspace'
+        yield {'url': linkpat.format(html.escape(script, True)),
+               'title': 'Root',
+               'last': not bool(steps)}
         if not steps:
-            return url
+            return
         last = steps.pop()
         for step in steps:
-            script = '%s/%s' % (script, step)
-            out.append(linkpat % (escape(script, True), escape(unquote(step))))
-        script = '%s/%s' % (script, last)
-        out.append(
-            '<a class="strong-link" href="%s/manage_workspace">%s</a>' %
-            (escape(script, True), escape(unquote(last), False)))
-        return '%s%s' % (url, '/'.join(out))
+            script = f'{script}/{step}'
+            yield {'url': linkpat.format(html.escape(script, True)),
+                   'title': html.escape(unquote(step)),
+                   'last': False}
+        script = f'{script}/{last}'
+        yield {'url': linkpat.format(html.escape(script, True)),
+               'title': html.escape(unquote(last)),
+               'last': True}
 
     def tabs_path_info(self, script, path):
         out = []
@@ -121,10 +127,11 @@ class Tabs(Base):
         last = path[-1]
         del path[-1]
         for p in path:
-            script = "%s/%s" % (script, quote(p))
-            out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
+            script = f"{script}/{quote(p)}"
+            out.append(f'<a href="{script}/manage_workspace">{p}</a>')
         out.append(last)
         return '/'.join(out)
+
 
 InitializeClass(Tabs)
 
@@ -135,19 +142,18 @@ class Navigation(Base):
 
     security = ClassSecurityInfo()
 
-    security.declareProtected(view_management_screens, 'manage')
+    security.declareProtected(view_management_screens, 'manage')  # NOQA: D001
     manage = DTMLFile('dtml/manage', globals())
 
-    security.declareProtected(view_management_screens, 'manage_menu')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_menu')
     manage_menu = DTMLFile('dtml/menu', globals())
 
-    security.declareProtected(view_management_screens, 'manage_page_header')
-    manage_page_header = DTMLFile('dtml/manage_page_header', globals())
-
-    security.declareProtected(view_management_screens, 'manage_page_footer')
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_page_footer')
     manage_page_footer = DTMLFile('dtml/manage_page_footer', globals())
 
-    security.declarePublic('manage_form_title')
+    security.declarePublic('manage_form_title')  # NOQA: D001
     manage_form_title = DTMLFile('dtml/manage_form_title', globals(),
                                  form_title='Add Form',
                                  help_product=None,
@@ -155,7 +161,27 @@ class Navigation(Base):
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic'))
 
-    security.declarePublic('manage_zmi_logout')
+    _manage_page_header = DTMLFile('dtml/manage_page_header', globals())
+
+    @security.protected(view_management_screens)
+    def manage_page_header(self, *args, **kw):
+        """manage_page_header."""
+        kw['css_urls'] = itertools.chain(
+            itertools.chain(*zope.component.subscribers((self,), ICSSPaths)),
+            self._get_zmi_additionals('zmi_additional_css_paths'))
+        kw['js_urls'] = itertools.chain(
+            itertools.chain(*zope.component.subscribers((self,), IJSPaths)),
+            self._get_zmi_additionals('zmi_additional_js_paths'))
+        return self._manage_page_header(*args, **kw)
+
+    security.declareProtected(view_management_screens,  # NOQA: D001
+                              'manage_navbar')
+    manage_navbar = DTMLFile('dtml/manage_navbar', globals())
+
+    security.declarePublic('zope_copyright')  # NOQA: D001
+    zope_copyright = DTMLFile('dtml/copyright', globals())
+
+    @security.public
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""
         p = getattr(REQUEST, '_logout_path', None)
@@ -175,11 +201,14 @@ You have been logged out.
 </html>""")
         return
 
+    def _get_zmi_additionals(self, attrib):
+        # Get additional assets for styling ZMI defined on properties in ZMI.
+        additionals = getattr(self, attrib, ()) or ()
+        if isinstance(additionals, str):
+            additionals = (additionals, )
+        return additionals
+
+
 # Navigation doesn't have an inherited __class_init__ so doesn't get
 # initialized automatically.
-
-file = DTMLFile('dtml/manage_page_style.css', globals())
-Navigation.security.declarePublic('manage_page_style.css')
-setattr(Navigation, 'manage_page_style.css', file)
-
 InitializeClass(Navigation)

@@ -15,15 +15,13 @@
 After Marius Gedminas' functional.py module for Zope3.
 """
 
-from functools import partial
 import sys
+from functools import partial
 
-from six import PY2
 import transaction
-from zope.interface import implementer
-
 from Testing.ZopeTestCase import interfaces
 from Testing.ZopeTestCase import sandbox
+from zope.interface import implementer
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.utils import basic_auth_encode
 
@@ -62,6 +60,7 @@ class Functional(sandbox.Sandboxed):
         '''Publishes the object at 'path' returning a response object.'''
 
         from io import BytesIO
+
         from ZPublisher.HTTPRequest import WSGIRequest as Request
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.WSGIPublisher import publish_module
@@ -131,7 +130,7 @@ class Functional(sandbox.Sandboxed):
                                wsgi_result, wsgi_headers)
 
 
-class ResponseWrapper(object):
+class ResponseWrapper:
     '''Decorates a response object with additional introspective methods.'''
 
     def __init__(self, response, outstream, path,
@@ -153,17 +152,7 @@ class ResponseWrapper(object):
         return self.getOutput()
 
     def __str__(self):
-        out = self.getOutput()
-        if PY2:
-            return out
-        # This is a hack. This method is called to print a response
-        # as part of a doctest. But if that response contains an
-        # actual binary body, like a GIF image, there's no good
-        # way to print that into the doctest output.
-        try:
-            return out.decode('utf-8')
-        except UnicodeDecodeError:
-            return out.decode('latin-1')
+        return self._decode(self.getOutput())
 
     def getOutput(self):
         '''Returns the complete output, headers and all.'''
@@ -184,3 +173,13 @@ class ResponseWrapper(object):
     def getCookie(self, name):
         '''Returns a response cookie.'''
         return self.cookies.get(name)
+
+    def _decode(self, data):
+        # This is a hack. This method is called to print a response
+        # as part of a doctest. But if that response contains an
+        # actual binary body, like a GIF image, there's no good
+        # way to print that into the doctest output.
+        try:
+            return data.decode('utf-8')
+        except UnicodeDecodeError:
+            return data.decode('latin-1')

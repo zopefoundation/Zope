@@ -13,52 +13,57 @@
 """Image object
 """
 
+import html
+import struct
 from email.generator import _make_boundary
 from io import BytesIO
-import struct
 
+import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import change_images_and_files
+from AccessControl.Permissions import change_images_and_files  # NOQA
+from AccessControl.Permissions import view as View
 from AccessControl.Permissions import view_management_screens
-from AccessControl.Permissions import view as View  # NOQA
-from AccessControl.Permissions import ftp_access
+from AccessControl.Permissions import webdav_access
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
-from DateTime.DateTime import DateTime
-from Persistence import Persistent
-from six import binary_type
-from six import PY2
-from six import text_type
-from zExceptions import Redirect, ResourceLockedError
-from zope.contenttype import guess_content_type
-from zope.event import notify
-from zope.interface import implementer
-from zope.lifecycleevent import ObjectCreatedEvent
-from zope.lifecycleevent import ObjectModifiedEvent
-
-from App.Common import rfc1123_date
 from App.special_dtml import DTMLFile
-from OFS import bbb
+from DateTime.DateTime import DateTime
 from OFS.Cache import Cacheable
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item_w__name__
+from OFS.SimpleItem import PathReprProvider
+from Persistence import Persistent
+from zExceptions import Redirect
+from zExceptions import ResourceLockedError
+from zope.contenttype import guess_content_type
+from zope.datetime import rfc1123_date
+from zope.event import notify
+from zope.interface import implementer
+from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
 
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
-
 
 manage_addFileForm = DTMLFile(
-    'dtml/imageAdd', globals(), Kind='File', kind='file')
+    'dtml/imageAdd',
+    globals(),
+    Kind='File',
+    kind='file',
+)
 
 
-def manage_addFile(self, id, file=b'', title='', precondition='',
-                   content_type='', REQUEST=None):
+def manage_addFile(
+    self,
+    id,
+    file=b'',
+    title='',
+    precondition='',
+    content_type='',
+    REQUEST=None
+):
     """Add a new File object.
 
     Creates a new File object 'id' with the contents of 'file'"""
@@ -90,13 +95,20 @@ def manage_addFile(self, id, file=b'', title='', precondition='',
         REQUEST.RESPONSE.redirect(self.absolute_url() + '/manage_main')
 
 
-@implementer(IWriteLock,
-             HTTPRangeSupport.HTTPRangeInterface)
-class File(Persistent, Implicit, PropertyManager,
-           RoleManager, Item_w__name__, Cacheable):
+@implementer(IWriteLock, HTTPRangeSupport.HTTPRangeInterface)
+class File(
+    PathReprProvider,
+    Persistent,
+    Implicit,
+    PropertyManager,
+    RoleManager,
+    Item_w__name__,
+    Cacheable
+):
     """A File object is a content object for arbitrary files."""
 
     meta_type = 'File'
+    zmi_icon = 'far fa-file-archive'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -108,21 +120,17 @@ class File(Persistent, Implicit, PropertyManager,
                                Kind='File', kind='file')
     manage_editForm._setName('manage_editForm')
 
-    security.declareProtected(view_management_screens, 'manage')
-    security.declareProtected(view_management_screens, 'manage_main')
+    security.declareProtected(view_management_screens, 'manage')  # NOQA: D001
+    security.declareProtected(view_management_screens, 'manage_main')  # NOQA: D001,E501
     manage = manage_main = manage_editForm
     manage_uploadForm = manage_editForm
 
-    manage_options = (
-        (
-            {'label': 'Edit', 'action': 'manage_main'},
-            {'label': 'View', 'action': ''},
-        ) +
-        PropertyManager.manage_options +
-        RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
-    )
+    manage_options = (({'label': 'Edit', 'action': 'manage_main'},
+                       {'label': 'View', 'action': ''})
+                      + PropertyManager.manage_options
+                      + RoleManager.manage_options
+                      + Item_w__name__.manage_options
+                      + Cacheable.manage_options)
 
     _properties = (
         {'id': 'title', 'type': 'string'},
@@ -162,8 +170,9 @@ class File(Persistent, Implicit, PropertyManager,
                 else:
                     last_mod = 0
                 if last_mod > 0 and last_mod <= mod_since:
-                    RESPONSE.setHeader('Last-Modified',
-                                       rfc1123_date(self._p_mtime))
+                    RESPONSE.setHeader(
+                        'Last-Modified', rfc1123_date(self._p_mtime)
+                    )
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setStatus(304)
@@ -220,10 +229,12 @@ class File(Persistent, Implicit, PropertyManager,
 
                 if not satisfiable:
                     RESPONSE.setHeader(
-                        'Content-Range', 'bytes */%d' % self.size)
+                        'Content-Range', 'bytes */%d' % self.size
+                    )
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setHeader(
-                        'Last-Modified', rfc1123_date(self._p_mtime))
+                        'Last-Modified', rfc1123_date(self._p_mtime)
+                    )
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setStatus(416)
@@ -237,35 +248,37 @@ class File(Persistent, Implicit, PropertyManager,
                     size = end - start
 
                     RESPONSE.setHeader(
-                        'Last-Modified', rfc1123_date(self._p_mtime))
+                        'Last-Modified', rfc1123_date(self._p_mtime)
+                    )
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setHeader(
                         'Content-Range',
-                        'bytes %d-%d/%d' % (start, end - 1, self.size))
+                        'bytes %d-%d/%d' % (start, end - 1, self.size)
+                    )
                     RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
-                    if isinstance(data, binary_type):
+                    if isinstance(data, bytes):
                         RESPONSE.write(data[start:end])
                         return True
 
                     # Linked Pdata objects. Urgh.
                     pos = 0
                     while data is not None:
-                        l = len(data.data)
-                        pos = pos + l
+                        length = len(data.data)
+                        pos = pos + length
                         if pos > start:
                             # We are within the range
-                            lstart = l - (pos - start)
+                            lstart = length - (pos - start)
 
                             if lstart < 0:
                                 lstart = 0
 
                             # find the endpoint
                             if end <= pos:
-                                lend = l - (pos - end)
+                                lend = length - (pos - end)
 
                                 # Send and end transmission
                                 RESPONSE.write(data[lstart:lend])
@@ -282,14 +295,15 @@ class File(Persistent, Implicit, PropertyManager,
                     boundary = _make_boundary()
 
                     # Calculate the content length
-                    size = (8 + len(boundary) +  # End marker length
-                            len(ranges) * (  # Constant lenght per set
-                            49 + len(boundary) + len(self.content_type) +
-                            len('%d' % self.size)))
+                    size = (8 + len(boundary)  # End marker length
+                            + len(ranges) * (  # Constant lenght per set
+                                49 + len(boundary)
+                                + len(self.content_type)
+                                + len('%d' % self.size)))
                     for start, end in ranges:
                         # Variable length per set
-                        size = (size + len('%d%d' % (start, end - 1)) +
-                                end - start)
+                        size = (size + len('%d%d' % (start, end - 1))
+                                + end - start)
 
                     # Some clients implement an earlier draft of the spec, they
                     # will only accept x-byteranges.
@@ -298,11 +312,13 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setHeader(
-                        'Last-Modified', rfc1123_date(self._p_mtime))
+                        'Last-Modified', rfc1123_date(self._p_mtime)
+                    )
                     RESPONSE.setHeader(
                         'Content-Type',
-                        'multipart/%sbyteranges; boundary=%s' % (
-                            draftprefix, boundary))
+                        f'multipart/{draftprefix}byteranges;'
+                        f' boundary={boundary}'
+                    )
                     RESPONSE.setStatus(206)  # Partial content
 
                     data = self.data
@@ -313,20 +329,26 @@ class File(Persistent, Implicit, PropertyManager,
 
                     for start, end in ranges:
                         RESPONSE.write(
-                            b'\r\n--' + boundary.encode('ascii') + b'\r\n')
+                            b'\r\n--'
+                            + boundary.encode('ascii')
+                            + b'\r\n'
+                        )
                         RESPONSE.write(
-                            b'Content-Type: ' +
-                            self.content_type.encode('ascii') + b'\r\n')
+                            b'Content-Type: '
+                            + self.content_type.encode('ascii')
+                            + b'\r\n'
+                        )
                         RESPONSE.write(
-                            b'Content-Range: bytes ' +
-                            str(start).encode('ascii') +
-                            b'-' +
-                            str(end - 1).encode('ascii') +
-                            b'/' +
-                            str(self.size).encode('ascii') +
-                            b'\r\n\r\n')
+                            b'Content-Range: bytes '
+                            + str(start).encode('ascii')
+                            + b'-'
+                            + str(end - 1).encode('ascii')
+                            + b'/'
+                            + str(self.size).encode('ascii')
+                            + b'\r\n\r\n'
+                        )
 
-                        if isinstance(data, binary_type):
+                        if isinstance(data, bytes):
                             RESPONSE.write(data[start:end])
 
                         else:
@@ -339,24 +361,25 @@ class File(Persistent, Implicit, PropertyManager,
                                 closest_pos = 0
                             else:
                                 closest_pos = (
-                                    ((start - first_size) >> 16 << 16) +
-                                    first_size)
+                                    ((start - first_size) >> 16 << 16)
+                                    + first_size
+                                )
                             pos = min(closest_pos, max(pdata_map.keys()))
                             data = pdata_map[pos]
 
                             while data is not None:
-                                l = len(data.data)
-                                pos = pos + l
+                                length = len(data.data)
+                                pos = pos + length
                                 if pos > start:
                                     # We are within the range
-                                    lstart = l - (pos - start)
+                                    lstart = length - (pos - start)
 
                                     if lstart < 0:
                                         lstart = 0
 
                                     # find the endpoint
                                     if end <= pos:
-                                        lend = l - (pos - end)
+                                        lend = length - (pos - end)
 
                                         # Send and loop to next range
                                         RESPONSE.write(data[lstart:lend])
@@ -379,7 +402,7 @@ class File(Persistent, Implicit, PropertyManager,
                         b'\r\n--' + boundary.encode('ascii') + b'--\r\n')
                     return True
 
-    security.declareProtected(View, 'index_html')
+    @security.protected(View)
     def index_html(self, REQUEST, RESPONSE):
         """
         The default view of the contents of a File or Image.
@@ -429,7 +452,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
 
         data = self.data
-        if isinstance(data, binary_type):
+        if isinstance(data, bytes):
             RESPONSE.setBase(None)
             return data
 
@@ -439,24 +462,22 @@ class File(Persistent, Implicit, PropertyManager,
 
         return b''
 
-    security.declareProtected(View, 'view_image_or_file')
+    @security.protected(View)
     def view_image_or_file(self, URL1):
-        """
-        The default view of the contents of the File or Image.
-        """
+        """The default view of the contents of the File or Image."""
         raise Redirect(URL1)
 
-    security.declareProtected(View, 'PrincipiaSearchSource')
+    @security.protected(View)
     def PrincipiaSearchSource(self):
-        # Allow file objects to be searched.
+        """Allow file objects to be searched."""
         if self.content_type.startswith('text/'):
             return bytes(self.data)
         return b''
 
-    security.declarePrivate('update_data')
+    @security.private
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, text_type):
-            raise TypeError('Data can only be bytes or file-like.  '
+        if isinstance(data, str):
+            raise TypeError('Data can only be bytes or file-like. '
                             'Unicode objects are expressly forbidden.')
 
         if content_type is not None:
@@ -469,9 +490,19 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
         self.http__refreshEtag()
 
-    security.declareProtected(change_images_and_files, 'manage_edit')
-    def manage_edit(self, title, content_type, precondition='',
-                    filedata=None, REQUEST=None):
+    def _get_encoding(self):
+        """Get the canonical encoding for ZMI."""
+        return ZPublisher.HTTPRequest.default_encoding
+
+    @security.protected(change_images_and_files)
+    def manage_edit(
+        self,
+        title,
+        content_type,
+        precondition='',
+        filedata=None,
+        REQUEST=None
+    ):
         """
         Changes the title and content type attributes of the File or Image.
         """
@@ -485,6 +516,8 @@ class File(Persistent, Implicit, PropertyManager,
         elif self.precondition:
             del self.precondition
         if filedata is not None:
+            if isinstance(filedata, str):
+                filedata = filedata.encode(self._get_encoding())
             self.update_data(filedata, content_type, len(filedata))
         else:
             self.ZCacheable_invalidate()
@@ -496,7 +529,7 @@ class File(Persistent, Implicit, PropertyManager,
             return self.manage_main(
                 self, REQUEST, manage_tabs_message=message)
 
-    security.declareProtected(change_images_and_files, 'manage_upload')
+    @security.protected(change_images_and_files)
     def manage_upload(self, file='', REQUEST=None):
         """
         Replaces the current contents of the File or Image object with file.
@@ -506,17 +539,19 @@ class File(Persistent, Implicit, PropertyManager,
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
-        data, size = self._read_data(file)
-        content_type = self._get_content_type(file, data, self.__name__,
-                                              'application/octet-stream')
-        self.update_data(data, content_type, size)
-
-        notify(ObjectModifiedEvent(self))
+        if file:
+            data, size = self._read_data(file)
+            content_type = self._get_content_type(file, data, self.__name__,
+                                                  'application/octet-stream')
+            self.update_data(data, content_type, size)
+            notify(ObjectModifiedEvent(self))
+            msg = 'Saved changes.'
+        else:
+            msg = 'Please select a file to upload.'
 
         if REQUEST:
-            message = "Saved changes."
             return self.manage_main(
-                self, REQUEST, manage_tabs_message=message)
+                self, REQUEST, manage_tabs_message=msg)
 
     def _get_content_type(self, file, body, id, content_type=None):
         headers = getattr(file, 'headers', None)
@@ -534,7 +569,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         n = 1 << 16
 
-        if isinstance(file, text_type):
+        if isinstance(file, str):
             raise ValueError("Must be bytes")
 
         if isinstance(file, bytes):
@@ -602,7 +637,26 @@ class File(Persistent, Implicit, PropertyManager,
 
         return (_next, size)
 
-    security.declareProtected(View, 'get_size')
+    @security.protected(change_images_and_files)
+    def PUT(self, REQUEST, RESPONSE):
+        """Handle HTTP PUT requests"""
+        self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
+        type = REQUEST.get_header('content-type', None)
+
+        file = REQUEST['BODYFILE']
+
+        data, size = self._read_data(file)
+        if isinstance(data, str):
+            data = data.encode('UTF-8')
+        content_type = self._get_content_type(file, data, self.__name__,
+                                              type or self.content_type)
+        self.update_data(data, content_type, size)
+
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
+    @security.protected(View)
     def get_size(self):
         # Get the size of a file or image.
         # Returns the size of the file or image.
@@ -614,7 +668,7 @@ class File(Persistent, Implicit, PropertyManager,
     # deprecated; use get_size!
     getSize = get_size
 
-    security.declareProtected(View, 'getContentType')
+    @security.protected(View)
     def getContentType(self):
         # Get the content type of a file or image.
         # Returns the content type (MIME type) of a file or image.
@@ -623,9 +677,12 @@ class File(Persistent, Implicit, PropertyManager,
     def __bytes__(self):
         return bytes(self.data)
 
-    if PY2:
-        def __str__(self):
-            return str(self.data)
+    def __str__(self):
+        """In most cases, this is probably not what you want. Use ``bytes``."""
+        if isinstance(self.data, Pdata):
+            return bytes(self.data).decode(self._get_encoding())
+        else:
+            return self.data.decode(self._get_encoding())
 
     def __bool__(self):
         return True
@@ -636,69 +693,58 @@ class File(Persistent, Implicit, PropertyManager,
         data = bytes(self.data)
         return len(data)
 
-    if bbb.HAS_ZSERVER:
-        security.declareProtected(change_images_and_files, 'PUT')
-        def PUT(self, REQUEST, RESPONSE):
-            """Handle HTTP PUT requests"""
-            self.dav__init(REQUEST, RESPONSE)
-            self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
-            type = REQUEST.get_header('content-type', None)
+    @security.protected(webdav_access)
+    def manage_DAVget(self):
+        """Return body for WebDAV."""
+        RESPONSE = self.REQUEST.RESPONSE
 
-            file = REQUEST['BODYFILE']
+        if self.ZCacheable_isCachingEnabled():
+            result = self.ZCacheable_get(default=None)
+            if result is not None:
+                # We will always get None from RAMCacheManager but we will
+                # get something implementing the IStreamIterator interface
+                # from FileCacheManager.
+                # the content-length is required here by HTTPResponse.
+                RESPONSE.setHeader('Content-Length', self.size)
+                return result
 
-            data, size = self._read_data(file)
-            content_type = self._get_content_type(file, data, self.__name__,
-                                                  type or self.content_type)
-            self.update_data(data, content_type, size)
+        data = self.data
+        if isinstance(data, bytes):
+            RESPONSE.setBase(None)
+            return data
 
-            RESPONSE.setStatus(204)
-            return RESPONSE
+        while data is not None:
+            RESPONSE.write(data.data)
+            data = data.next
 
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        security.declareProtected(ftp_access, 'manage_FTPlist')
+        return b''
 
-        security.declareProtected(ftp_access, 'manage_FTPget')
-        def manage_FTPget(self):
-            """Return body for ftp."""
-            RESPONSE = self.REQUEST.RESPONSE
-
-            if self.ZCacheable_isCachingEnabled():
-                result = self.ZCacheable_get(default=None)
-                if result is not None:
-                    # We will always get None from RAMCacheManager but we will
-                    # get something implementing the IStreamIterator interface
-                    # from FileCacheManager.
-                    # the content-length is required here by HTTPResponse,
-                    # even though FTP doesn't use it.
-                    RESPONSE.setHeader('Content-Length', self.size)
-                    return result
-
-            data = self.data
-            if isinstance(data, binary_type):
-                RESPONSE.setBase(None)
-                return data
-
-            while data is not None:
-                RESPONSE.write(data.data)
-                data = data.next
-
-            return b''
 
 InitializeClass(File)
 
 
 manage_addImageForm = DTMLFile(
-    'dtml/imageAdd', globals(), Kind='Image', kind='image')
+    'dtml/imageAdd',
+    globals(),
+    Kind='Image',
+    kind='image',
+)
 
 
-def manage_addImage(self, id, file, title='', precondition='', content_type='',
-                    REQUEST=None):
+def manage_addImage(
+    self,
+    id,
+    file,
+    title='',
+    precondition='',
+    content_type='',
+    REQUEST=None
+):
     """
     Add a new Image object.
 
     Creates a new Image object 'id' with the contents of 'file'.
     """
-
     id = str(id)
     title = str(title)
     content_type = str(content_type)
@@ -749,8 +795,9 @@ def getImageInfo(data):
     # See PNG v1.2 spec (http://www.cdrom.com/pub/png/spec/)
     # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
     # and finally the 4-byte width, height
-    elif ((size >= 24) and (data[:8] == b'\211PNG\r\n\032\n') and
-          (data[12:16] == b'IHDR')):
+    elif (size >= 24
+          and data[:8] == b'\211PNG\r\n\032\n'
+          and data[12:16] == b'IHDR'):
         content_type = 'image/png'
         w, h = struct.unpack(">LL", data[16:24])
         width = int(w)
@@ -796,7 +843,9 @@ class Image(File):
     as File objects.  Images also have a string representation that
     renders an HTML 'IMG' tag.
     """
+
     meta_type = 'Image'
+    zmi_icon = 'far fa-file-image'
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(View)
@@ -806,17 +855,11 @@ class Image(File):
     width = ''
 
     # FIXME: Redundant, already in base class
-    security.declareProtected(change_images_and_files, 'manage_edit')
-    security.declareProtected(change_images_and_files, 'manage_upload')
-    security.declareProtected(View, 'index_html')
-    security.declareProtected(View, 'get_size')
-    security.declareProtected(View, 'getContentType')
-
-    if bbb.HAS_ZSERVER:
-        security.declareProtected(change_images_and_files, 'PUT')
-        security.declareProtected(ftp_access, 'manage_FTPstat')
-        security.declareProtected(ftp_access, 'manage_FTPlist')
-        security.declareProtected(ftp_access, 'manage_FTPget')
+    security.declareProtected(change_images_and_files, 'manage_edit')  # NOQA: D001,E501
+    security.declareProtected(change_images_and_files, 'manage_upload')  # NOQA: D001,E501
+    security.declareProtected(View, 'index_html')  # NOQA: D001
+    security.declareProtected(View, 'get_size')  # NOQA: D001
+    security.declareProtected(View, 'getContentType')  # NOQA: D001
 
     _properties = (
         {'id': 'title', 'type': 'string'},
@@ -828,27 +871,32 @@ class Image(File):
 
     manage_options = (
         ({'label': 'Edit', 'action': 'manage_main'},
-         {'label': 'View', 'action': 'view_image_or_file'}) +
-        RoleManager.manage_options +
-        Item_w__name__.manage_options +
-        Cacheable.manage_options
+         {'label': 'View', 'action': 'view_image_or_file'})
+        + PropertyManager.manage_options
+        + RoleManager.manage_options
+        + Item_w__name__.manage_options
+        + Cacheable.manage_options
     )
 
-    manage_editForm = DTMLFile('dtml/imageEdit', globals(),
-                               Kind='Image', kind='image')
+    manage_editForm = DTMLFile(
+        'dtml/imageEdit',
+        globals(),
+        Kind='Image',
+        kind='image',
+    )
     manage_editForm._setName('manage_editForm')
 
-    security.declareProtected(View, 'view_image_or_file')
+    security.declareProtected(View, 'view_image_or_file')  # NOQA: D001
     view_image_or_file = DTMLFile('dtml/imageView', globals())
 
-    security.declareProtected(view_management_screens, 'manage')
-    security.declareProtected(view_management_screens, 'manage_main')
+    security.declareProtected(view_management_screens, 'manage')  # NOQA: D001
+    security.declareProtected(view_management_screens, 'manage_main')  # NOQA: D001,E501
     manage = manage_main = manage_editForm
     manage_uploadForm = manage_editForm
 
-    security.declarePrivate('update_data')
+    @security.private
     def update_data(self, data, content_type=None, size=None):
-        if isinstance(data, text_type):
+        if isinstance(data, str):
             raise TypeError('Data can only be bytes or file-like.  '
                             'Unicode objects are expressly forbidden.')
 
@@ -876,26 +924,37 @@ class Image(File):
     def __bytes__(self):
         return self.tag().encode('utf-8')
 
-    if PY2:
-        def __str__(self):
-            return self.tag()
+    def __str__(self):
+        return self.tag()
 
-    security.declareProtected(View, 'tag')
-    def tag(self, height=None, width=None, alt=None,
-            scale=0, xscale=0, yscale=0, css_class=None, title=None, **args):
-        # Generate an HTML IMG tag for this image, with customization.
-        # Arguments to self.tag() can be any valid attributes of an IMG tag.
-        # 'src' will always be an absolute pathname, to prevent redundant
-        # downloading of images. Defaults are applied intelligently for
-        # 'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
-        # and 'yscale' keyword arguments will be used to automatically adjust
-        # the output height and width values of the image tag.
+    @security.protected(View)
+    def tag(
+        self,
+        height=None,
+        width=None,
+        alt=None,
+        scale=0,
+        xscale=0,
+        yscale=0,
+        css_class=None,
+        title=None,
+        **args
+    ):
+        """Generate an HTML IMG tag for this image, with customization.
+
+        Arguments to self.tag() can be any valid attributes of an IMG tag.
+        'src' will always be an absolute pathname, to prevent redundant
+        downloading of images. Defaults are applied intelligently for
+        'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
+        and 'yscale' keyword arguments will be used to automatically adjust
+        the output height and width values of the image tag.
         #
-        # Since 'class' is a Python reserved word, it cannot be passed in
-        # directly in keyword arguments which is a problem if you are
-        # trying to use 'tag()' to include a CSS class. The tag() method
-        # will accept a 'css_class' argument that will be converted to
-        # 'class' in the output tag to work around this.
+        Since 'class' is a Python reserved word, it cannot be passed in
+        directly in keyword arguments which is a problem if you are
+        trying to use 'tag()' to include a CSS class. The tag() method
+        will accept a 'css_class' argument that will be converted to
+        'class' in the output tag to work around this.
+        """
         if height is None:
             height = self.height
         if width is None:
@@ -914,27 +973,28 @@ class Image(File):
 
         if alt is None:
             alt = getattr(self, 'alt', '')
-        result = '%s alt="%s"' % (result, escape(alt, True))
+        result = f'{result} alt="{html.escape(alt, True)}"'
 
         if title is None:
             title = getattr(self, 'title', '')
-        result = '%s title="%s"' % (result, escape(title, True))
+        result = f'{result} title="{html.escape(title, True)}"'
 
         if height:
-            result = '%s height="%s"' % (result, height)
+            result = f'{result} height="{height}"'
 
         if width:
-            result = '%s width="%s"' % (result, width)
+            result = f'{result} width="{width}"'
 
         if css_class is not None:
-            result = '%s class="%s"' % (result, css_class)
+            result = f'{result} class="{css_class}"'
 
         for key in list(args.keys()):
             value = args.get(key)
             if value:
-                result = '%s %s="%s"' % (result, key, value)
+                result = f'{result} {key}="{value}"'
 
         return '%s />' % result
+
 
 InitializeClass(Image)
 
@@ -958,10 +1018,6 @@ class Pdata(Persistent, Implicit):
     def __init__(self, data):
         self.data = data
 
-    if PY2:
-        def __getslice__(self, i, j):
-            return self.data[i:j]
-
     def __getitem__(self, key):
         return self.data[key]
 
@@ -981,6 +1037,3 @@ class Pdata(Persistent, Implicit):
             _next = self.next
 
         return b''.join(r)
-
-    if PY2:
-        __str__ = __bytes__

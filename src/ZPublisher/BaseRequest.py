@@ -14,18 +14,19 @@
 """
 
 import types
+from urllib.parse import quote as urllib_quote
 
 from AccessControl.ZopeSecurityPolicy import getRoles
-from Acquisition import aq_base, aq_inner
+from Acquisition import aq_base
+from Acquisition import aq_inner
 from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
-from six.moves.urllib.parse import quote as urllib_quote
 from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.location.interfaces import LocationError
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent
@@ -34,16 +35,10 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
-
-from App.bbb import HAS_ZSERVER
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
+from ZPublisher.xmlrpc import is_xmlrpc_response
 
-if HAS_ZSERVER:
-    from ZServer.ZPublisher.xmlrpc import is_xmlrpc_response
-else:
-    def is_xmlrpc_response(response):
-        return False
 
 _marker = []
 UNSPECIFIED_ROLES = ''
@@ -66,7 +61,7 @@ class RequestContainer(Base):
 
 
 @implementer(IBrowserPublisher)
-class DefaultPublishTraverse(object):
+class DefaultPublishTraverse:
 
     def __init__(self, context, request):
         self.context = context
@@ -173,7 +168,7 @@ class DefaultPublishTraverse(object):
         return self.context, ()
 
 
-class BaseRequest(object):
+class BaseRequest:
     """Provide basic ZPublisher request management
 
     This object provides access to request data. Request data may
@@ -186,7 +181,7 @@ class BaseRequest(object):
     collection of variable to value mappings.
     """
 
-    maybe_webdav_client = HAS_ZSERVER
+    maybe_webdav_client = 1
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -393,12 +388,12 @@ class BaseRequest(object):
 
         # Probably a browser
         no_acquire_flag = 0
-        if (method in ('GET', 'POST', 'PURGE') and
-                not is_xmlrpc_response(response)):
+        if method in ('GET', 'POST', 'PURGE') and \
+           not is_xmlrpc_response(response):
             # index_html is still the default method, only any object can
             # override it by implementing its own __browser_default__ method
             method = 'index_html'
-        elif self.maybe_webdav_client:
+        elif method != 'HEAD' and self.maybe_webdav_client:
             # Probably a WebDAV client.
             no_acquire_flag = 1
 
@@ -441,12 +436,6 @@ class BaseRequest(object):
         # Set the posttraverse for duration of the traversal here
         self._post_traverse = post_traverse = []
 
-        # import time ordering problem
-        if HAS_ZSERVER:
-            from webdav.NullResource import NullResource
-        else:
-            NullResource = None
-
         entry_name = ''
         try:
             # We build parents in the wrong order, so we
@@ -471,12 +460,13 @@ class BaseRequest(object):
                     # This is webdav support. The last object in the path
                     # should not be acquired. Instead, a NullResource should
                     # be given if it doesn't exist:
-                    if (NullResource is not None and no_acquire_flag and
-                            hasattr(object, 'aq_base') and
-                            not hasattr(object, '__bobo_traverse__')):
+                    if no_acquire_flag and \
+                       hasattr(object, 'aq_base') and \
+                       not hasattr(object, '__bobo_traverse__'):
 
                         if (object.__parent__ is not
                                 aq_inner(object).__parent__):
+                            from webdav.NullResource import NullResource
                             object = NullResource(parents[-2], object.getId(),
                                                   self).__of__(parents[-2])
 
@@ -500,9 +490,10 @@ class BaseRequest(object):
                             continue
                         else:
                             entry_name = default_path[0]
-                    elif (method and hasattr(object, method) and
-                          entry_name != method and
-                          getattr(object, method) is not None):
+                    elif (method
+                          and hasattr(object, method)
+                          and entry_name != method
+                          and getattr(object, method) is not None):
                         request._hacked_path = 1
                         entry_name = method
                         method = 'index_html'
@@ -518,12 +509,12 @@ class BaseRequest(object):
                         break
                 step = quote(entry_name)
                 _steps.append(step)
-                request['URL'] = URL = '%s/%s' % (request['URL'], step)
+                request['URL'] = URL = f'{request["URL"]}/{step}'
 
                 try:
                     subobject = self.traverseName(object, entry_name)
-                    if (hasattr(object, '__bobo_traverse__') or
-                            hasattr(object, entry_name)):
+                    if hasattr(object, '__bobo_traverse__') or \
+                       hasattr(object, entry_name):
                         check_name = entry_name
                     else:
                         check_name = None
@@ -558,11 +549,11 @@ class BaseRequest(object):
         # or POST. Otherwise, you could never use
         # PUT to add a new object named 'test' if
         # an object 'test' existed above it in the
-        # heirarchy -- you'd always get the
+        # hierarchy -- you'd always get the
         # existing object :(
-        if (no_acquire_flag and
-                hasattr(parents[1], 'aq_base') and
-                not hasattr(parents[1], '__bobo_traverse__')):
+        if no_acquire_flag and \
+           hasattr(parents[1], 'aq_base') and \
+           not hasattr(parents[1], '__bobo_traverse__'):
             base = aq_base(parents[1])
             if not hasattr(base, entry_name):
                 try:
@@ -596,11 +587,7 @@ class BaseRequest(object):
 
             if inext is not None:
                 i = inext
-
-                if hasattr(groups, 'validate'):
-                    v = groups.validate
-                else:
-                    v = old_validation
+                v = getattr(groups, 'validate', old_validation)
 
                 auth = request._auth
 

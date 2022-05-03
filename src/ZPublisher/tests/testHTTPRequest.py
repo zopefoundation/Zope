@@ -11,24 +11,26 @@
 #
 ##############################################################################
 
-from io import BytesIO
 import sys
 import unittest
+import warnings
+from contextlib import contextmanager
+from io import BytesIO
 
-from six import PY2
+from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
+from zope.component import getGlobalSiteManager
 from zope.component import provideAdapter
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
-
+from ZPublisher.HTTPRequest import search_type
+from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
 from ZPublisher.utils import basic_auth_encode
-
-if sys.version_info >= (3, ):
-    unicode = str
+from ZPublisher.xmlrpc import is_xmlrpc_response
 
 
 class RecordTests(unittest.TestCase):
@@ -74,6 +76,13 @@ class RecordTests(unittest.TestCase):
         rec2.b = 'foo'
         self.assertNotEqual(rec1, rec2)
 
+    def test__str__returns_native_string(self):
+        rec = self._makeOne()
+        rec.a = b'foo'
+        rec.b = 8
+        rec.c = 'bar'
+        self.assertIsInstance(str(rec), str)
+
     def test_str(self):
         rec = self._makeOne()
         rec.a = 1
@@ -88,7 +97,7 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(d, rec.__dict__)
 
 
-class HTTPRequestFactoryMixin(object):
+class HTTPRequestFactoryMixin:
 
     def tearDown(self):
         cleanUp()
@@ -114,7 +123,7 @@ class HTTPRequestFactoryMixin(object):
             environ['REQUEST_METHOD'] = 'GET'
 
         if 'SERVER_NAME' not in environ:
-            environ['SERVER_NAME'] = 'http://localhost'
+            environ['SERVER_NAME'] = 'localhost'
 
         if 'SERVER_PORT' not in environ:
             environ['SERVER_PORT'] = '8080'
@@ -128,7 +137,8 @@ class HTTPRequestFactoryMixin(object):
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
-        from six.moves.urllib.parse import quote_plus
+        from urllib.parse import quote_plus
+
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -137,7 +147,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         query_string = []
         add = query_string.append
         for key, val in inputs:
-            add("%s=%s" % (quote_plus(key), quote_plus(val)))
+            add(f"{quote_plus(key)}={quote_plus(val)}")
         query_string = '&'.join(query_string)
 
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
@@ -155,14 +165,14 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         # when one is found.
         # Also raises an Assertion if a string which *should* have been
         # tainted is found, or when a tainted string is not deemed dangerous.
-        from ZPublisher.HTTPRequest import record
         from AccessControl.tainted import TaintedString
+        from ZPublisher.HTTPRequest import record
 
         retval = 0
 
         if isinstance(val, TaintedString):
-            self.assertFalse(
-                '<' not in val,
+            self.assertTrue(
+                should_be_tainted(val._value),
                 "%r is not dangerous, no taint required." % val)
             retval = 1
 
@@ -181,9 +191,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 if rval:
                     retval = 1
 
-        elif type(val) in (str, unicode):
+        elif isinstance(val, str):
             self.assertFalse(
-                '<' in val,
+                should_be_tainted(val),
                 "'%s' is dangerous and should have been tainted." % val)
 
         return retval
@@ -202,16 +212,16 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def _onlyTaintedformHoldsTaintedStrings(self, req):
         for key, val in list(req.taintedform.items()):
             self.assertTrue(
-                self._valueIsOrHoldsTainted(key) or
-                self._valueIsOrHoldsTainted(val),
+                self._valueIsOrHoldsTainted(key)
+                or self._valueIsOrHoldsTainted(val),
                 'Tainted form holds item %s that is not tainted' % key)
 
         for key, val in list(req.form.items()):
             if key in req.taintedform:
                 continue
             self.assertFalse(
-                self._valueIsOrHoldsTainted(key) or
-                self._valueIsOrHoldsTainted(val),
+                self._valueIsOrHoldsTainted(key)
+                or self._valueIsOrHoldsTainted(val),
                 'Normal form holds item %s that is tainted' % key)
 
     def _taintedKeysAlsoInForm(self, req):
@@ -223,6 +233,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 req.form[key], req.taintedform[key],
                 "Key %s not correctly reproduced in tainted; expected %r, "
                 "got %r" % (key, req.form[key], req.taintedform[key]))
+
+    def test_webdav_source_port_available(self):
+        req = self._makeOne()
+        self.assertFalse(req.get('WEBDAV_SOURCE_PORT'))
+
+        req = self._makeOne(environ={'WEBDAV_SOURCE_PORT': 1})
+        self.assertTrue(req.get('WEBDAV_SOURCE_PORT'))
 
     def test_no_docstring_on_instance(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
@@ -297,22 +314,21 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def test_processInputs_w_unicode_conversions(self):
-        # This tests native strings, which mean something different
-        # under Python 2 / 3.
-        if PY2:
-            reg_char = '\xc2\xae'
-        else:
-            reg_char = '\xae'
-
+        # This tests native strings.
+        reg_char = '\xae'
         inputs = (('ustring:ustring:utf8', 'test' + reg_char),
-                  ('utext:utext:utf8', 'test' + reg_char +
-                   '\ntest' + reg_char + '\n'),
-                  ('utokens:utokens:utf8', 'test' + reg_char +
-                   ' test' + reg_char),
-                  ('ulines:ulines:utf8', 'test' + reg_char +
-                   '\ntest' + reg_char),
+                  ('utext:utext:utf8',
+                   'test' + reg_char + '\ntest' + reg_char + '\n'),
+                  ('utokens:utokens:utf8',
+                   'test' + reg_char + ' test' + reg_char),
+                  ('ulines:ulines:utf8',
+                   'test' + reg_char + '\ntest' + reg_char),
                   ('nouconverter:string:utf8', 'test' + reg_char))
-        req = self._processInputs(inputs)
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            req = self._processInputs(inputs)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -320,10 +336,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             formkeys,
             ['nouconverter', 'ulines', 'ustring', 'utext', 'utokens'])
 
-        self.assertEqual(req['ustring'], u'test\u00AE')
-        self.assertEqual(req['utext'], u'test\u00AE\ntest\u00AE\n')
-        self.assertEqual(req['utokens'], [u'test\u00AE', u'test\u00AE'])
-        self.assertEqual(req['ulines'], [u'test\u00AE', u'test\u00AE'])
+        self.assertEqual(req['ustring'], 'test\u00AE')
+        self.assertEqual(req['utext'], 'test\u00AE\ntest\u00AE\n')
+        self.assertEqual(req['utokens'], ['test\u00AE', 'test\u00AE'])
+        self.assertEqual(req['ulines'], ['test\u00AE', 'test\u00AE'])
 
         # expect a utf-8 encoded version
         self.assertEqual(req['nouconverter'], 'test' + reg_char)
@@ -528,7 +544,12 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
             ('tnouconverter:string:utf8', '<test\xc2\xae>'),
         )
-        req = self._processInputs(inputs)
+
+        # unicode converters will go away with Zope 6
+        # ignore deprecation warning for test run
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -706,7 +727,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         from ZPublisher.Converters import type_converters
         for type, convert in list(type_converters.items()):
             try:
-                convert('<html garbage>')
+                # unicode converters will go away with Zope 6
+                # ignore deprecation warning for test run
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    convert('<html garbage>')
             except Exception as e:
                 self.assertFalse(
                     '<' in e.args,
@@ -765,33 +790,30 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.cookies['multi2'],
                          'cookie data with unquoted spaces')
 
-    def test_postProcessInputs(self):
-        from ZPublisher.HTTPRequest import default_encoding
+    def test_processInputs_xmlrpc(self):
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<methodCall><methodName>test</methodName></methodCall>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.PATH_INFO, '/test')
+        self.assertEqual(req.args, ())
 
-        _NON_ASCII = u'\xc4\xd6\xdc'
-        req = self._makeOne()
-        req.form = {'foo': _NON_ASCII.encode(default_encoding),
-                    'foo_list': [_NON_ASCII.encode(default_encoding), 'SPAM'],
-                    'foo_tuple': (_NON_ASCII.encode(default_encoding), 'HAM'),
-                    'foo_dict': {'foo': _NON_ASCII, 'bar': 'EGGS'}}
-        req.postProcessInputs()
-        self.assertIsInstance(req.form['foo'], unicode)
-        self.assertEqual(req.form['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'], list)
-        self.assertIsInstance(req.form['foo_list'][0], unicode)
-        self.assertEqual(req.form['foo_list'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_list'][1], unicode)
-        self.assertEqual(req.form['foo_list'][1], u'SPAM')
-        self.assertIsInstance(req.form['foo_tuple'], tuple)
-        self.assertIsInstance(req.form['foo_tuple'][0], unicode)
-        self.assertEqual(req.form['foo_tuple'][0], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_tuple'][1], unicode)
-        self.assertEqual(req.form['foo_tuple'][1], u'HAM')
-        self.assertIsInstance(req.form['foo_dict'], dict)
-        self.assertIsInstance(req.form['foo_dict']['foo'], unicode)
-        self.assertEqual(req.form['foo_dict']['foo'], _NON_ASCII)
-        self.assertIsInstance(req.form['foo_dict']['bar'], unicode)
-        self.assertEqual(req.form['foo_dict']['bar'], u'EGGS')
+    def test_processInputs_w_urlencoded_and_qs(self):
+        body = b'foo=1'
+        environ = {
+            'CONTENT_TYPE': 'application/x-www-form-urlencoded',
+            'CONTENT_LENGTH': len(body),
+            'QUERY_STRING': 'bar=2',
+            'REQUEST_METHOD': 'POST',
+        }
+        req = self._makeOne(stdin=BytesIO(body), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.form['foo'], '1')
+        self.assertEqual(req.form['bar'], '2')
 
     def test_close_removes_stdin_references(self):
         # Verifies that all references to the input stream go away on
@@ -844,7 +866,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(password_x, password)
 
     def test__authUserPW_with_embedded_colon(self):
-        # http://www.zope.org/Collectors/Zope/2039
         user_id = 'user'
         password = 'embedded:colon'
         auth_header = basic_auth_encode(user_id, password)
@@ -859,6 +880,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def test_debug_not_in_qs_still_gets_attr(self):
         from zope.publisher.base import DebugFlags
+
         # when accessing request.debug we will see the DebugFlags instance
         request = self._makeOne()
         self.assertIsInstance(request.debug, DebugFlags)
@@ -966,7 +988,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         provideAdapter(BrowserLanguages, [IHTTPRequest],
                        IUserPreferredLanguages)
 
-        env = {'HTTP_ACCEPT_LANGUAGE': 'en', 'HTTP_ACCEPT_LANGUAGE': 'xx'}
+        env = {'HTTP_ACCEPT_LANGUAGE': 'xx'}
 
         # Now test for non-existant locale fallback
         request = self._makeOne(environ=env)
@@ -1093,7 +1115,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(clone['PARENTS'], PARENTS[1:])
 
     def test_clone_preserves_response_class(self):
-        class DummyResponse(object):
+        class DummyResponse:
             pass
         environ = self._makePostEnviron()
         request = self._makeOne(None, environ, DummyResponse())
@@ -1111,8 +1133,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertIsInstance(clone, SubRequest)
 
     def test_clone_preserves_direct_interfaces(self):
-        from zope.interface import directlyProvides
         from zope.interface import Interface
+        from zope.interface import directlyProvides
 
         class IFoo(Interface):
             pass
@@ -1169,6 +1191,101 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req._script = ['foo', 'bar']
         self.assertEqual(req.getVirtualRoot(), '/foo/bar')
 
+    def test__str__returns_native_string(self):
+        r = self._makeOne()
+        self.assertIsInstance(str(r), str)
+
+    def test___str____password_field(self):
+        # It obscures password fields.
+        req = self._makeOne()
+        req.form['passwd'] = 'secret'
+
+        self.assertNotIn('secret', str(req))
+        self.assertIn('password obscured', str(req))
+
+    def test_text__password_field(self):
+        # It obscures password fields.
+        req = self._makeOne()
+        req.form['passwd'] = 'secret'
+
+        self.assertNotIn('secret', req.text())
+        self.assertIn('password obscured', req.text())
+
+    _xmlrpc_call = b"""<?xml version="1.0"?>
+    <methodCall>
+      <methodName>examples.getStateName</methodName>
+      <params>
+         <param>
+            <value><i4>41</i4></value>
+            </param>
+         </params>
+      </methodCall>
+    """
+
+    def test_processInputs_xmlrpc_with_args(self):
+        req = self._makeOne(
+            stdin=BytesIO(self._xmlrpc_call),
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        req.processInputs()
+        self.assertTrue(is_xmlrpc_response(req.response))
+        self.assertEqual(req.args, (41,))
+        self.assertEqual(req.other["PATH_INFO"], "/examples/getStateName")
+
+    def test_processInputs_xmlrpc_controlled_allowed(self):
+        req = self._makeOne(
+            stdin=BytesIO(self._xmlrpc_call),
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        with self._xmlrpc_control(lambda request: True):
+            req.processInputs()
+        self.assertTrue(is_xmlrpc_response(req.response))
+
+    def test_processInputs_xmlrpc_controlled_disallowed(self):
+        req = self._makeOne(
+            environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+        with self._xmlrpc_control(lambda request: False):
+            req.processInputs()
+        self.assertFalse(is_xmlrpc_response(req.response))
+
+    @contextmanager
+    def _xmlrpc_control(self, allow):
+        gsm = getGlobalSiteManager()
+        gsm.registerUtility(allow, IXmlrpcChecker)
+        yield
+        gsm.unregisterUtility(allow, IXmlrpcChecker)
+
+    def test_url_scheme(self):
+        # The default is http
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 80}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'http://myhost')
+
+        # If we bang a SERVER_URL into the environment it is retained
+        env = {'SERVER_URL': 'https://anotherserver:8443'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://anotherserver:8443')
+
+        # Now go through the various environment values that signal
+        # a request uses the https URL scheme
+        for val in ('on', 'ON', '1'):
+            env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443, 'HTTPS': val}
+            req = self._makeOne(environ=env)
+            self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'SERVER_PORT_SECURE': 1}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'REQUEST_SCHEME': 'HTTPS'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
+        env = {'SERVER_NAME': 'myhost', 'SERVER_PORT': 443,
+               'wsgi.url_scheme': 'https'}
+        req = self._makeOne(environ=env)
+        self.assertEqual(req['SERVER_URL'], 'https://myhost')
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
@@ -1195,6 +1312,34 @@ class TestHTTPRequestZope3Views(TestRequestViewsBase):
             NotFound,
             self._makeOne(root).traverse, 'folder/@@meth/request'
         )
+
+
+class TestSearchType(unittest.TestCase):
+    """Test `ZPublisher.HTTPRequest.search_type`
+
+    see "https://github.com/zopefoundation/Zope/pull/512"
+    """
+    def check(self, val, expect):
+        mo = search_type(val)
+        if expect is None:
+            self.assertIsNone(mo)
+        else:
+            self.assertIsNotNone(mo)
+            self.assertEqual(mo.group(), expect)
+
+    def test_image_control(self):
+        self.check("abc.x", ".x")
+        self.check("abc.y", ".y")
+        self.check("abc.xy", None)
+
+    def test_type(self):
+        self.check("abc:int", ":int")
+
+    def test_leftmost(self):
+        self.check("abc:int:record", ":record")
+
+    def test_special(self):
+        self.check("abc:a-_0b", ":a-_0b")
 
 
 TEST_POST_ENVIRON = {

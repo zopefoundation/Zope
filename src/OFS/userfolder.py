@@ -16,27 +16,31 @@
 import os
 
 from AccessControl import ClassSecurityInfo
+from AccessControl import userfolder as accesscontrol_userfolder
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import manage_users as ManageUsers  # NOQA
+from AccessControl.Permissions import manage_users as ManageUsers
 from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import DEFAULTMAXLISTUSERS
-from AccessControl import userfolder as accesscontrol_userfolder
 from AccessControl.users import _remote_user_mode
 from AccessControl.users import emergency_user
 from AccessControl.users import readUserAccessFile
 from AccessControl.users import reqattr
 from Acquisition import aq_base
-from zExceptions import BadRequest
-
 from App.Management import Navigation
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
+from zExceptions import BadRequest
 
 
-class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
-                      accesscontrol_userfolder.BasicUserFolder):
+class BasicUserFolder(
+    Navigation,
+    Tabs,
+    Item,
+    RoleManager,
+    accesscontrol_userfolder.BasicUserFolder
+):
     """Base class for UserFolder-like objects"""
 
     security = ClassSecurityInfo()
@@ -47,12 +51,9 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
     manage_options = ((
         {'label': 'Contents', 'action': 'manage_main'},
         {'label': 'Properties', 'action': 'manage_userFolderProperties'},
-    ) +
-        RoleManager.manage_options +
-        Item.manage_options
-    )
+    ) + RoleManager.manage_options + Item.manage_options)
 
-    security.declareProtected(ManageUsers, 'userFolderAddUser')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
     def userFolderAddUser(self, name, password, roles, domains,
                           REQUEST=None, **kw):
@@ -63,10 +64,17 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    security.declareProtected(ManageUsers, 'userFolderEditUser')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
-    def userFolderEditUser(self, name, password, roles, domains,
-                           REQUEST=None, **kw):
+    def userFolderEditUser(
+        self,
+        name,
+        password,
+        roles,
+        domains,
+        REQUEST=None,
+        **kw
+    ):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
            attributes."""
@@ -74,7 +82,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
             return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplementedError
 
-    security.declareProtected(ManageUsers, 'userFolderDelUsers')
+    @security.protected(ManageUsers)
     @requestmethod('POST')
     def userFolderDelUsers(self, names, REQUEST=None):
         """API method for deleting one or more user objects. Note that not
@@ -93,19 +101,28 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
 
     _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
 
-    def manage_userFolderProperties(self, REQUEST=None,
-                                    manage_tabs_message=None):
+    def manage_userFolderProperties(
+        self,
+        REQUEST=None,
+        manage_tabs_message=None
+    ):
         """
         """
         return self._userFolderProperties(
-            self, REQUEST, manage_tabs_message=manage_tabs_message,
-            management_view='Properties')
+            self,
+            REQUEST,
+            manage_tabs_message=manage_tabs_message,
+            management_view='Properties',
+        )
 
     @requestmethod('POST')
-    def manage_setUserFolderProperties(self, encrypt_passwords=0,
-                                       update_passwords=0,
-                                       maxlistusers=DEFAULTMAXLISTUSERS,
-                                       REQUEST=None):
+    def manage_setUserFolderProperties(
+        self,
+        encrypt_passwords=0,
+        update_passwords=0,
+        maxlistusers=DEFAULTMAXLISTUSERS,
+        REQUEST=None
+    ):
         """
         Sets the properties of the user folder.
         """
@@ -144,8 +161,8 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if not password or not confirm:
             if not domains:
                 raise BadRequest('Password and confirmation must be specified')
-        if self.getUser(name) or (self._emergency_user and
-                                  name == self._emergency_user.getUserName()):
+        em_user = self._emergency_user
+        if self.getUser(name) or (em_user and name == em_user.getUserName()):
             raise BadRequest('A user with the specified name already exists')
         if (password or confirm) and (password != confirm):
             raise BadRequest('Password and confirmation do not match')
@@ -196,7 +213,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if REQUEST:
             return self._mainUser(self, REQUEST)
 
-    security.declareProtected(ManageUsers, 'manage_users')
+    @security.protected(ManageUsers)
     def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
         """This method handles operations on users for the web based forms
            of the ZMI. Application code (code that is outside of the forms
@@ -252,6 +269,7 @@ class BasicUserFolder(Navigation, Tabs, Item, RoleManager,
         if id != self.id:
             raise ValueError('Cannot change the id of a UserFolder')
 
+
 InitializeClass(BasicUserFolder)
 
 
@@ -266,7 +284,7 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
     _ofs_migrated = False
 
     def __init__(self):
-        super(UserFolder, self).__init__()
+        super().__init__()
         self._ofs_migrated = True
 
     def _createInitialUser(self):
@@ -291,6 +309,7 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
                     os.remove(os.path.join(cfg.instancehome, 'inituser'))
                 except Exception:
                     pass
+
 
 InitializeClass(UserFolder)
 

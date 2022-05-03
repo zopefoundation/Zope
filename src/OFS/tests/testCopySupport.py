@@ -1,13 +1,12 @@
-import unittest
-
 import io
+import unittest
 
 import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Acquisition import aq_base
 from Acquisition import Implicit
+from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
@@ -22,12 +21,22 @@ FILE_META_TYPES = ({
 }, )
 
 
-class UnitTestSecurityPolicy(object):
+class UnitTestSecurityPolicy:
     """Stub out the existing security policy for unit testing purposes.
     """
+
     #   Standard SecurityPolicy interface
-    def validate(self, accessed=None, container=None, name=None, value=None,
-                 context=None, roles=None, *args, **kw):
+    def validate(
+        self,
+        accessed=None,
+        container=None,
+        name=None,
+        value=None,
+        context=None,
+        roles=None,
+        *args,
+        **kw
+    ):
         return 1
 
     def checkPermission(self, permission, object, context):
@@ -37,6 +46,7 @@ class UnitTestSecurityPolicy(object):
 class UnitTestUser(Implicit):
     """Stubbed out manager for unit testing purposes.
     """
+
     def getId(self):
         return 'unit_tester'
 
@@ -277,8 +287,34 @@ class TestCopySupport(CopySupportTestBase):
             {'id': 'file2', 'new_id': 'copy_of_file2'},
         ])
 
+    def testPasteNoData(self):
+        from OFS.CopySupport import CopyError
+        with self.assertRaises(CopyError):
+            self.folder1.manage_pasteObjects()
 
-class _SensitiveSecurityPolicy(object):
+    def testPasteTooBigData(self):
+        from OFS.CopySupport import CopyError
+        from OFS.CopySupport import _cb_encode
+
+        def make_data(lenght):
+            return _cb_encode(
+                (1, ['qwertzuiopasdfghjklyxcvbnm' for x in range(lenght)]))
+        # Protect against DoS attack with too big data:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(300))
+        self.assertEqual('Clipboard Error', str(err.exception))
+        # But not too much data is allowed:
+        with self.assertRaises(CopyError) as err:
+            self.folder1.manage_pasteObjects(make_data(250))
+        self.assertEqual('Item Not Found', str(err.exception))
+
+        # _pasteObjects allows to paste without restriction:
+        with self.assertRaises(CopyError) as err:
+            self.folder1._pasteObjects(make_data(3000))
+        self.assertEqual('Item Not Found', str(err.exception))
+
+
+class _SensitiveSecurityPolicy:
 
     def __init__(self, validate_lambda, checkPermission_lambda):
         self._lambdas = (validate_lambda, checkPermission_lambda)
@@ -326,8 +362,9 @@ class TestCopySupportSecurity(CopySupportTestBase):
     def _assertCopyErrorUnauth(self, callable, *args, **kw):
 
         import re
-        from zExceptions import Unauthorized
+
         from OFS.CopySupport import CopyError
+        from zExceptions import Unauthorized
 
         ce_regex = kw.get('ce_regex')
         if ce_regex is not None:
@@ -393,8 +430,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_copyObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_copy_cant_create_target_metatype_not_supported(self):
         folder1, folder2 = self._initFolders()
@@ -404,7 +443,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_copyObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie, ce_regex='Not Supported')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Not Supported',
+        )
 
     def test_copy_cant_copy_invisible_items(self):
         # User can view folder1.
@@ -462,8 +504,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_move_cant_create_target_metatype_not_supported(self):
         folder1, folder2 = self._initFolders()
@@ -473,7 +517,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie, ce_regex='Not Supported')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Not Supported',
+        )
 
     def test_move_cant_create_target_metatype_not_allowed(self):
         folder1, folder2 = self._initFolders()
@@ -486,8 +533,10 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )
 
     def test_move_cant_delete_source(self):
         from AccessControl.Permissions import delete_objects
@@ -503,5 +552,7 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         self._assertCopyErrorUnauth(
-            folder2.manage_pasteObjects, cookie,
-            ce_regex='Insufficient privileges')
+            folder2.manage_pasteObjects,
+            cookie,
+            ce_regex='Insufficient privileges',
+        )

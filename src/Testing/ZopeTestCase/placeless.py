@@ -13,15 +13,14 @@
 """Placeless setup
 """
 
-from zope.component.testing import PlacelessSetup as CAPlacelessSetup
+from AccessControl.security import newInteraction
+# For convenience
+from Zope2.App import zcml  # NOQA
 from zope.component.eventtesting import PlacelessSetup as EventPlacelessSetup
+from zope.component.testing import PlacelessSetup as CAPlacelessSetup
 from zope.container.testing import PlacelessSetup as ContainerPlacelessSetup
 from zope.i18n.testing import PlacelessSetup as I18nPlacelessSetup
 from zope.security.testing import addCheckerPublic
-from AccessControl.security import newInteraction
-
-# For convenience
-from Zope2.App import zcml  # NOQA
 
 
 class PlacelessSetup(CAPlacelessSetup,
@@ -50,6 +49,7 @@ def tearDown():
     def tearDown(doctesttest=None):
         tearDown_()
     return tearDown
+
 
 tearDown = tearDown()
 

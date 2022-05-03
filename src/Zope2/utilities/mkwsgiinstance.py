@@ -28,14 +28,12 @@ necessary to create a Zope WSGI instance home.
 
 import getopt
 import os
+import subprocess
 import sys
-from . import copyzopeskel
+from configparser import ParsingError
+from configparser import RawConfigParser
 
-if sys.version_info > (3, ):
-    raw_input = input
-    from configparser import RawConfigParser
-else:
-    from ConfigParser import RawConfigParser
+from . import copyzopeskel
 
 
 def main():
@@ -118,8 +116,9 @@ def main():
     pythonexe = os.path.join(exedir, 'python.exe')
     pythonwexe = os.path.join(exedir, 'pythonw.exe')
 
-    if (os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
-            (python in [pythonwexe, pythonexe])):
+    if os.path.isfile(pythonwexe) and \
+       os.path.isfile(pythonexe) and \
+       python in [pythonwexe, pythonexe]:
         # we're using a Windows build with both python.exe and pythonw.exe
         # in the same directory
         PYTHON = pythonexe
@@ -157,7 +156,7 @@ def get_skeltarget():
     print('Zope "instance home" files such as database files, configuration')
     print('files, etc.\n')
     while 1:
-        skeltarget = raw_input("Directory: ").strip()
+        skeltarget = input("Directory: ").strip()
         if skeltarget == '':
             print('You must specify a directory')
             continue
@@ -171,7 +170,7 @@ def get_inituser():
     print('Please choose a username and password for the initial user.')
     print('These will be the credentials you use to initially manage')
     print('your new Zope instance.\n')
-    user = raw_input("Username: ").strip()
+    user = input("Username: ").strip()
     if user == '':
         return None, None
     while 1:
@@ -190,12 +189,7 @@ def write_inituser(fn, user, password):
     from hashlib import sha1 as sha
     pw = binascii.b2a_base64(sha(password.encode('utf-8')).digest())[:-1]
     with open(fn, "wb") as fp:
-        fp.write(
-            user.encode('utf-8') +
-            b':{SHA}' +
-            pw +
-            b'\n'
-        )
+        fp.write(user.encode('utf-8') + b':{SHA}' + pw + b'\n')
     os.chmod(fn, 0o644)
 
 
@@ -205,20 +199,31 @@ def check_buildout(script_path):
     buildout_cfg = os.path.join(os.path.dirname(script_path), 'buildout.cfg')
     if os.path.exists(buildout_cfg):
         parser = RawConfigParser()
-        parser.read(buildout_cfg)
-        return 'zopepy' in parser.sections()
+        try:
+            parser.read(buildout_cfg)
+            return 'zopepy' in parser.sections()
+        except ParsingError:
+            # zc.buildout uses its own parser and it allows syntax that
+            # ConfigParser does not like. Here's one really stupid workaround.
+            # The alternative is using the zc.buildout parser, which would
+            # introduce a hard dependency.
+            zope_py = os.path.join(os.path.dirname(script_path),
+                                   'bin', 'zopepy')
+            if os.path.isfile(zope_py) and os.access(zope_py, os.X_OK):
+                return True
 
 
 def get_zope2path(python):
     """ Get Zope2 path from selected Python interpreter.
     """
     zope2file = ''
-    p = os.popen('"%s" -c"import Zope2; print(Zope2.__file__)"' % python)
     try:
-        zope2file = p.readline()[:-1]
-    finally:
-        p.close()
-    if not zope2file:
+        output = subprocess.check_output(
+            [python, '-c', 'import Zope2; print(Zope2.__file__)'],
+            universal_newlines=True,  # makes Python 3 return text, not bytes
+            stderr=subprocess.PIPE)
+        zope2file = output.strip()
+    except subprocess.CalledProcessError:
         # fall back to current Python interpreter
         import Zope2
         zope2file = Zope2.__file__

@@ -1,68 +1,51 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add DTML Document'
-           )">
+<main class="container-fluid">
 
-<p class="form-help">
-A DTML Document is used to hold text content. It can contain
-HTML, XML, plain text, structured-text, etcetera.
-A DTML document can contain DTML scripting tags.
-A DTML Document differs from a DTML Method in that it has properties
-and does not call methods on its container object.
-</p>
+<dtml-var "manage_form_title(this(), _, form_title='Add DTML Document')">
 
-<p class="form-help">
-You may create a new DTML Document using the form below. 
-You may also choose to upload an existing html file from your
-local computer by clicking the <I>Browse</I> button.
-</p>
+	<p class="form-help mb-4">
+		A DTML Document is used to hold text content. It can contain
+		HTML, XML, plain text, structured-text, etcetera.
+		A DTML document can contain DTML scripting tags.
+		A DTML Document differs from a DTML Method in that it has properties
+		and does not call methods on its container object.
+		<br />
+		You may create a new DTML Document using the form below.
+		You may also choose to upload an existing html file from your
+		local computer by clicking the <I>Browse</I> button.
+	</p>
 
-<form action="addDTMLDocument" method="post" enctype="multipart/form-data">
-<table cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    Id
-    </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="id" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-optional">
-    Title
-    </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="title" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-optional">
-    File
-    </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="file" name="file:string" size="25" value="" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
-    <input class="form-element" type="submit" name="submit" 
-     value=" Add " /> 
-    <input class="form-element" type="submit" name="submit" 
-     value=" Add and Edit " />
-    </div>
-    </td>
-  </tr>
-</table>
-</form>
+	<form action="addDTMLDocument" method="post" enctype="multipart/form-data" class="zmi-dtml">
+	
+		<div class="form-group row">
+			<label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="id" class="form-control" type="text" name="id" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="type" class="form-control" type="text" name="title" />
+			</div>
+		</div>
+	
+		<div class="form-group row">
+			<label for="file-data" class="form-label col-sm-3 col-md-2">File</label>
+			<div class="col-sm-9 col-md-10">
+				<input id="file-data" class="btn btn-primary form-control-file" type="file" name="file" value="" />
+			</div>
+		</div>
+	
+		<div class="zmi-controls">
+			<input class="btn btn-primary" type="submit" name="submit" value="Add" />
+			<input class="btn btn-primary" type="submit" name="submit" value="Add and Edit" />
+		</div>
+
+	</form>
+
+</main>
 
 <dtml-var manage_page_footer>

@@ -14,19 +14,18 @@
 # licensed under the BSD-derived Repoze Public License
 # (http://repoze.org/license.html).
 
-from logging.config import fileConfig
+import configparser
 import optparse
 import os
 import re
 import sys
+from logging.config import fileConfig
 
-from paste.deploy import loadserver
 from paste.deploy import loadapp
+from paste.deploy import loadserver
 
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+import Zope2
+from App.config import getConfiguration
 
 
 def parse_vars(args):
@@ -76,10 +75,11 @@ def setup_logging(config_uri, global_conf=None,  # NOQA
             here=os.path.dirname(config_file))
         if global_conf:
             full_global_conf.update(global_conf)
-        return fileConfig(config_file, full_global_conf)
+        return fileConfig(
+            config_file, full_global_conf, disable_existing_loggers=False)
 
 
-class ServeCommand(object):
+class ServeCommand:
 
     usage = '%prog config_uri [var=value]'
     description = """\
@@ -128,6 +128,12 @@ and then use %(http_port)s in your config files.
         const=1,
         dest='debug',
         help="Enable debug mode.")
+    parser.add_option(
+        '-e', '--debug-exceptions',
+        action='store_const',
+        const=1,
+        dest='debug_exceptions',
+        help="Enable exceptions debug mode.")
 
     _scheme_re = re.compile(r'^[a-z][a-z]+:', re.I)
 
@@ -178,6 +184,8 @@ and then use %(http_port)s in your config files.
 
         if 'debug_mode' not in vars and self.options.debug:
             vars['debug_mode'] = 'true'
+        if 'debug_exceptions' not in vars and self.options.debug_exceptions:
+            vars['debug_exceptions'] = 'true'
         app = self.loadapp(app_spec, name=app_name, relative_to=base,
                            global_conf=vars)
 
@@ -189,6 +197,8 @@ and then use %(http_port)s in your config files.
             self.out(msg)
 
         def serve():
+            self.makePidFile()
+
             try:
                 server(app)
             except (SystemExit, KeyboardInterrupt) as e:
@@ -199,6 +209,10 @@ and then use %(http_port)s in your config files.
                 else:
                     msg = ''
                 self.out('Exiting%s (-v to see traceback)' % msg)
+            finally:
+                for db in Zope2.opened:
+                    db.close()
+                self.unlinkPidFile()
 
         serve()
 
@@ -209,10 +223,33 @@ and then use %(http_port)s in your config files.
         return loadserver(
             server_spec, name=name, relative_to=relative_to, **kw)
 
+    def makePidFile(self):
+        options = getConfiguration()
+        try:
+            IO_ERRORS = (IOError, OSError, WindowsError)
+        except NameError:
+            IO_ERRORS = (IOError, OSError)
+
+        try:
+            if os.path.exists(options.pid_filename):
+                os.unlink(options.pid_filename)
+            with open(options.pid_filename, 'w') as fp:
+                fp.write(str(os.getpid()))
+        except IO_ERRORS:
+            pass
+
+    def unlinkPidFile(self):
+        options = getConfiguration()
+        try:
+            os.unlink(options.pid_filename)
+        except OSError:
+            pass
+
 
 def main(argv=sys.argv, quiet=False):
     command = ServeCommand(argv, quiet=quiet)
     return command.run()
+
 
 if __name__ == '__main__':
     sys.exit(main() or 0)

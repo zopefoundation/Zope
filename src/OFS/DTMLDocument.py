@@ -13,21 +13,21 @@
 """DTML Document objects.
 """
 
+from urllib.parse import quote
+
 from AccessControl import getSecurityManager
 from AccessControl.class_init import InitializeClass
-from DocumentTemplate.permissions import change_dtml_methods
+from App.special_dtml import HTML
+from App.special_dtml import DTMLFile
 from DocumentTemplate.permissions import change_dtml_documents
-from six import binary_type
-from six.moves.urllib.parse import quote
-from zExceptions import ResourceLockedError
+from DocumentTemplate.permissions import change_dtml_methods
+from OFS.DTMLMethod import DTMLMethod
+from OFS.DTMLMethod import decapitate
+from OFS.DTMLMethod import safe_file_data
+from OFS.PropertyManager import PropertyManager
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
-
-from App.special_dtml import DTMLFile
-from App.special_dtml import HTML
-from OFS.DTMLMethod import decapitate
-from OFS.DTMLMethod import DTMLMethod
-from OFS.PropertyManager import PropertyManager
+from ZPublisher.HTTPRequest import default_encoding
 
 
 done = 'done'
@@ -39,32 +39,18 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """ DocumentTemplate.HTML objects whose 'self' is the DTML object.
     """
     meta_type = 'DTML Document'
+    zmi_icon = 'far fa-file-alt'
+    _locked_error_text = 'This document has been locked.'
 
-    manage_options = DTMLMethod.manage_options
+    manage_options = (DTMLMethod.manage_options[:2]
+                      + PropertyManager.manage_options
+                      + DTMLMethod.manage_options[2:])
 
     # Replace change_dtml_methods by change_dtml_documents
     __ac_permissions__ = tuple([
-        (perms[0] == change_dtml_methods) and
+        (perms[0] == change_dtml_methods) and  # NOQA: W504
         (change_dtml_documents, perms[1]) or perms
         for perms in DTMLMethod.__ac_permissions__])
-
-    def manage_upload(self, file='', REQUEST=None):
-        """ Replace the contents of the document with the text in 'file'.
-        """
-        self._validateProxy(REQUEST)
-        if self.wl_isLocked():
-            raise ResourceLockedError('This document has been locked.')
-
-        if not isinstance(file, binary_type):
-            if REQUEST and not file:
-                raise ValueError('No file specified')
-            file = file.read()
-
-        self.munge(file)
-        self.ZCacheable_invalidate()
-        if REQUEST:
-            message = "Content uploaded."
-            return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document with the given client object.
@@ -102,7 +88,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
             r = HTML.__call__(self, (client, bself), REQUEST, **kw)
 
-            if RESPONSE is None or not isinstance(r, binary_type):
+            if RESPONSE is None or not isinstance(r, str):
                 if not self._cache_namespace_keys:
                     self.ZCacheable_set(r)
                 return r
@@ -115,7 +101,8 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             if 'content_type' in self.__dict__:
                 c = self.content_type
             else:
-                c, e = guess_content_type(self.__name__, r.encode('utf-8'))
+                encoding = getattr(self, 'encoding', default_encoding)
+                c, e = guess_content_type(self.getId(), r.encode(encoding))
             RESPONSE.setHeader('Content-Type', c)
         result = decapitate(r, RESPONSE)
         if not self._cache_namespace_keys:
@@ -148,13 +135,12 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
-    if hasattr(file, 'read'):
-        file = file.read()
-    if not file:
-        file = default_dd_html
+    data = safe_file_data(file)
+    if not data:
+        data = default_dd_html
     id = str(id)
     title = str(title)
-    ob = DTMLDocument(file, __name__=id)
+    ob = DTMLDocument(data, __name__=id)
     ob.title = title
     id = self._setObject(id, ob)
     if REQUEST is not None:
@@ -162,7 +148,7 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
             u = self.DestinationURL()
         except Exception:
             u = REQUEST['URL1']
-        if submit == " Add and Edit ":
-            u = "%s/%s" % (u, quote(id))
+        if submit == "Add and Edit":
+            u = f"{u}/{quote(id)}"
         REQUEST.RESPONSE.redirect(u + '/manage_main')
     return ''

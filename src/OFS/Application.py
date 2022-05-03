@@ -22,20 +22,20 @@ import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
+from AccessControl.Permissions import view_management_screens
 from Acquisition import aq_base
-from App.ApplicationManager import ApplicationManager
 from App import FactoryDispatcher
+from App.ApplicationManager import ApplicationManager
 from App.ProductContext import ProductContext
+from App.version_txt import getZopeVersion
 from DateTime import DateTime
-from OFS import bbb
 from OFS.FindSupport import FindSupport
 from OFS.metaconfigure import get_packages_to_initialize
 from OFS.metaconfigure import package_initialized
 from OFS.userfolder import UserFolder
-from zExceptions import (
-    Forbidden,
-    Redirect as RedirectException,
-)
+from webdav.NullResource import NullResource
+from zExceptions import Forbidden
+from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
 
 from . import Folder
@@ -43,10 +43,6 @@ from . import misc_
 from .interfaces import IApplication
 from .misc_ import Misc_
 
-if bbb.HAS_ZSERVER:
-    from webdav.NullResource import NullResource
-else:
-    NullResource = bbb.NullResource
 
 LOG = getLogger('Application')
 
@@ -105,14 +101,14 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # available as url.
         if destination.find('//') >= 0:
             raise RedirectException(destination)
-        raise RedirectException("%s/%s" % (URL1, destination))
+        raise RedirectException(f"{URL1}/{destination}")
 
     ZopeRedirect = Redirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name is None:
             # Make this more explicit, otherwise getattr(self, name)
-            # would raise a TypeErorr getattr(): attribute name must be string
+            # would raise a TypeError getattr(): attribute name must be string
             return None
 
         if name == 'Control_Panel':
@@ -128,13 +124,14 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
             pass
 
         method = REQUEST.get('REQUEST_METHOD', 'GET')
-        if NullResource is not None and method not in ('GET', 'POST'):
+
+        if method not in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
 
         # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
-        # There is proabably a better fix for this.
+        # There is probably a better fix for this.
         try:
-            REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
+            REQUEST.RESPONSE.notFoundError(f"{name}\n{method}")
         except AttributeError:
             raise KeyError(name)
 
@@ -142,16 +139,31 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         """Utility function to return current date/time"""
         return DateTime(*args)
 
-    if bbb.HAS_ZSERVER:
-        def DELETE(self, REQUEST, RESPONSE):
-            """Delete a resource object."""
-            self.dav__init(REQUEST, RESPONSE)
-            raise Forbidden('This resource cannot be deleted.')
+    @security.protected(view_management_screens)
+    def ZopeVersion(self, major=False):
+        """Utility method to return the Zope version
 
-        def MOVE(self, REQUEST, RESPONSE):
-            """Move a resource to a new location."""
-            self.dav__init(REQUEST, RESPONSE)
-            raise Forbidden('This resource cannot be moved.')
+        Restricted to ZMI to prevent information disclosure
+        """
+        zversion = getZopeVersion()
+        if major:
+            return zversion.major
+        else:
+            version = f'{zversion.major}.{zversion.minor}.{zversion.micro}'
+            if zversion.status:
+                version += f'.{zversion.status}{zversion.release}'
+
+            return version
+
+    def DELETE(self, REQUEST, RESPONSE):
+        """Delete a resource object."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise Forbidden('This resource cannot be deleted.')
+
+    def MOVE(self, REQUEST, RESPONSE):
+        """Move a resource to a new location."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
         """The absolute URL of the root object is BASE1 or "/".
@@ -191,6 +203,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # We're at the base of the path.
         return ('', )
 
+
 InitializeClass(Application)
 
 
@@ -199,8 +212,8 @@ def initialize(app):
     initializer.initialize()
 
 
-class AppInitializer(object):
-    """ Initialze an Application object (called at startup) """
+class AppInitializer:
+    """ Initialize an Application object (called at startup) """
 
     def __init__(self, app):
         self.app = (app,)
@@ -235,7 +248,7 @@ class AppInitializer(object):
             del app.__dict__['Control_Panel']
             app._objects = tuple(i for i in app._objects
                                  if i['id'] != 'Control_Panel')
-            self.commit(u'Removed persistent Control_Panel')
+            self.commit('Removed persistent Control_Panel')
 
     def install_required_roles(self):
         app = self.getApp()
@@ -243,13 +256,13 @@ class AppInitializer(object):
         # Ensure that Owner role exists.
         if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
             app.__ac_roles__ = app.__ac_roles__ + ('Owner',)
-            self.commit(u'Added Owner role')
+            self.commit('Added Owner role')
 
         # ensure the Authenticated role exists.
         if hasattr(app, '__ac_roles__'):
             if 'Authenticated' not in app.__ac_roles__:
                 app.__ac_roles__ = app.__ac_roles__ + ('Authenticated',)
-                self.commit(u'Added Authenticated role')
+                self.commit('Added Authenticated role')
 
     def install_inituser(self):
         app = self.getApp()
@@ -258,7 +271,7 @@ class AppInitializer(object):
             users = app.acl_users
             if hasattr(users, '_createInitialUser'):
                 app.acl_users._createInitialUser()
-                self.commit(u'Created initial user')
+                self.commit('Created initial user')
             users = aq_base(users)
             migrated = getattr(users, '_ofs_migrated', False)
             if not migrated:
@@ -272,14 +285,14 @@ class AppInitializer(object):
                     users._ofs_migrated = True
                     users._p_changed = True
                     app._p_changed = True
-                    transaction.get().note(u'Migrated user folder')
+                    transaction.get().note('Migrated user folder')
                     transaction.commit()
 
     def install_virtual_hosting(self):
         app = self.getApp()
         if 'virtual_hosting' not in app:
-            from Products.SiteAccess.VirtualHostMonster \
-                import VirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                VirtualHostMonster
             any_vhm = [obj for obj in app.values()
                        if isinstance(obj, VirtualHostMonster)]
             if not any_vhm:
@@ -291,15 +304,15 @@ class AppInitializer(object):
     def install_root_view(self):
         app = self.getApp()
         if 'index_html' not in app:
-            from Products.PageTemplates.ZopePageTemplate \
-                import ZopePageTemplate
+            from Products.PageTemplates.ZopePageTemplate import \
+                ZopePageTemplate
             root_pt = ZopePageTemplate('index_html')
-            root_pt.pt_setTitle(u'Auto-generated default page')
+            root_pt.pt_setTitle('Auto-generated default page')
             app._setObject('index_html', root_pt)
-            self.commit(u'Added default view for root object')
+            self.commit('Added default view for root object')
 
     def install_products(self):
-        return install_products()
+        return install_products(self.getApp())
 
     def install_standards(self):
         app = self.getApp()
@@ -307,7 +320,7 @@ class AppInitializer(object):
             delattr(app, '_standard_objects_have_been_added')
         if getattr(app, '_initializer_registry', None) is not None:
             delattr(app, '_initializer_registry')
-        transaction.get().note(u'Removed unused application attributes.')
+        transaction.get().note('Removed unused application attributes.')
         transaction.commit()
 
 
@@ -340,9 +353,9 @@ def _is_package(product_dir, product_name):
         return False
 
     init_py = os.path.join(package_dir, '__init__.py')
-    if (not os.path.exists(init_py) and
-            not os.path.exists(init_py + 'c') and
-            not os.path.exists(init_py + 'o')):
+    if not os.path.exists(init_py) and \
+       not os.path.exists(init_py + 'c') and \
+       not os.path.exists(init_py + 'o'):
         return False
     return True
 
@@ -370,10 +383,11 @@ def import_products():
     done = {}
     for priority, product_name, index, product_dir in get_products():
         if product_name in done:
-            LOG.warn('Duplicate Product name: '
-                     'After loading Product %r from %r, '
-                     'I skipped the one in %r.' % (
-                         product_name, done[product_name], product_dir))
+            LOG.warning(
+                'Duplicate Product name: '
+                'After loading Product %r from %r, '
+                'I skipped the one in %r.' % (
+                    product_name, done[product_name], product_dir))
             continue
         done[product_name] = product_dir
         import_product(product_dir, product_name)
@@ -423,7 +437,7 @@ def install_product(app, product_dir, product_name, meta_types,
         setattr(Application.misc_, product_name, misc_)
 
     productObject = FactoryDispatcher.Product(product_name)
-    context = ProductContext(productObject, None, product)
+    context = ProductContext(productObject, app, product)
 
     # Look for an 'initialize' method in the product.
     initmethod = pgetattr(product, 'initialize', None)
@@ -438,7 +452,7 @@ def install_package(app, module, init_func, raise_exc=None):
     product.package_name = name
 
     if init_func is not None:
-        newContext = ProductContext(product, None, module)
+        newContext = ProductContext(product, app, module)
         init_func(newContext)
 
     package_initialized(module, init_func)

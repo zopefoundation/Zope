@@ -15,37 +15,21 @@
 
 import os
 import sys
-from time import asctime
 import types
+from time import asctime
 
-import AccessControl.User
+import AccessControl.users
+import App.ZApplication
+import OFS.Application
+import ZODB
+import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-import six
-import ZODB
-from zope.deferredimport import deprecated
+from App.config import getConfiguration
 from zope.event import notify
 from zope.processlifetime import DatabaseOpened
 from zope.processlifetime import DatabaseOpenedWithRoot
 
-from App.config import getConfiguration
-import App.ZApplication
-import OFS.Application
-import Zope2
-
-# BBB Zope 5.0
-deprecated(
-    'Please import from ZServer.ZPublisher.exceptionhook.',
-    RequestContainer='ZServer.ZPublisher.exceptionhook:RequestContainer',
-    zpublisher_exception_hook=(
-        'ZServer.ZPublisher.exceptionhook:EXCEPTION_HOOK'),
-    ZPublisherExceptionHook='ZServer.ZPublisher.exceptionhook:ExceptionHook',
-)
-
-deprecated(
-    'Please import from ZPublisher.WSGIPublisher.',
-    validated_hook='ZPublisher.WSGIPublisher:validate_user',
-)
 
 app = None
 startup_time = asctime()
@@ -71,7 +55,7 @@ def _load_custom_zodb(location):
             except SyntaxError:
                 return None
         module = types.ModuleType('Zope2.custom_zodb', 'Custom database')
-        six.exec_(code_obj, module.__dict__)
+        exec(code_obj, module.__dict__)
         sys.modules['Zope2.custom_zodb'] = module
         return module
 
@@ -136,7 +120,7 @@ def startup():
     DB.classFactory = ClassFactory.ClassFactory
 
     # "Log on" as system user
-    newSecurityManager(None, AccessControl.User.system)
+    newSecurityManager(None, AccessControl.users.system)
 
     # Set up the CA
     load_zcml()

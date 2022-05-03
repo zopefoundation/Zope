@@ -14,11 +14,11 @@
 """
 
 from App.special_dtml import DTMLFile
-from zope.interface import implementer
-
 from OFS.Folder import Folder
 from OFS.interfaces import IOrderedFolder
 from OFS.OrderSupport import OrderSupport
+from zope.interface import implementer
+
 
 manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())
 
@@ -41,8 +41,6 @@ class OrderedFolder(OrderSupport, Folder):
     """ Extends the default Folder by order support.
     """
     meta_type = 'Folder (Ordered)'
+    zmi_icon = 'far fa-folder zmi-icon-folder-ordered'
 
-    manage_options = (
-        OrderSupport.manage_options +
-        Folder.manage_options[1:]
-    )
+    manage_options = OrderSupport.manage_options + Folder.manage_options[1:]

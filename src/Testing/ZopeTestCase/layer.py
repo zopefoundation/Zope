@@ -15,10 +15,11 @@
 
 from Testing.ZopeTestCase import utils
 
+
 _deferred_setup = []
 
 
-class ZopeLite(object):
+class ZopeLite:
     '''The most base layer'''
 
     @classmethod
@@ -37,6 +38,7 @@ class ZopeLite(object):
 
            See zope.testrunner-layers-ntd.txt
         '''
+
 
 ZopeLiteLayer = ZopeLite
 

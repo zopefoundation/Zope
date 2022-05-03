@@ -14,15 +14,15 @@
 """
 
 import contextlib
-import transaction
 
+import transaction
 import ZPublisher.WSGIPublisher
 from Testing.makerequest import makerequest
-from Testing.ZopeTestCase import connections
 from Testing.ZopeTestCase import ZopeLite as Zope2
+from Testing.ZopeTestCase import connections
 
 
-class Sandboxed(object):
+class Sandboxed:
     '''Derive from this class and an xTestCase to make each test
        run in its own ZODB sandbox::
 
@@ -45,7 +45,7 @@ class Sandboxed(object):
         connections.closeAll()
 
 
-class AppZapper(object):
+class AppZapper:
     '''Application object share point'''
 
     __shared_state = {'_app': None}
@@ -75,5 +75,5 @@ def load_app(module_info):
 
 
 if not hasattr(ZPublisher.WSGIPublisher, '__old_load_app__'):
-    ZPublisher.WSGIPublisher.__old_load_app__ = ZPublisher.WSGIPublisher.load_app
+    ZPublisher.WSGIPublisher.__old_load_app__ = ZPublisher.WSGIPublisher.load_app  # NOQA: E501
     ZPublisher.WSGIPublisher.load_app = load_app

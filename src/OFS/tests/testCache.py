@@ -2,13 +2,15 @@ import unittest
 
 from OFS.Cache import CacheManager
 from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
+from OFS.SimpleItem import SimpleItem
 
 
 class DummyCacheManager(CacheManager, SimpleItem):
     def __init__(self, id, *args, **kw):
         self.id = id
+
+
 setDeprecatedManageAddDelete(DummyCacheManager)
 
 
@@ -32,3 +34,17 @@ class CacheTests(unittest.TestCase):
 
         # The parent_cache should still trigger managersExist
         self.assertTrue(managersExist(root.child.child_content))
+
+
+class CacheableTests(unittest.TestCase):
+
+    def _getTargetClass(self):
+        from OFS.Cache import Cacheable
+        return Cacheable
+
+    def _makeOne(self):
+        return self._getTargetClass()()
+
+    def test_ZCacheable_getModTime(self):
+        ob = self._makeOne()
+        self.assertEqual(0, ob.ZCacheable_getModTime())

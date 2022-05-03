@@ -26,6 +26,8 @@ def test_default_view():
       >>> from Zope2.App import zcml
       >>> zcml.load_config("configure.zcml", Products.Five)
       >>> zcml.load_config('defaultview.zcml', Products.Five.browser.tests)
+      >>> folder = self.folder  # NOQA: F821
+      >>> http = http  # NOQA: F821
 
     Now let's add a couple of stub objects:
 
@@ -35,13 +37,13 @@ def test_default_view():
       ... manage_addIndexSimpleContent,
       ... )
 
-      >>> manage_addSimpleContent(self.folder, 'testoid', 'Testoid')
-      >>> manage_addCallableSimpleContent(self.folder, 'testcall', 'TestCall')
-      >>> manage_addIndexSimpleContent(self.folder, 'testindex', 'TestIndex')
+      >>> manage_addSimpleContent(folder, 'testoid', 'Testoid')
+      >>> manage_addCallableSimpleContent(folder, 'testcall', 'TestCall')
+      >>> manage_addIndexSimpleContent(folder, 'testindex', 'TestIndex')
 
     As a last act of preparation, we create a manager login:
 
-      >>> uf = self.folder.acl_users
+      >>> uf = folder.acl_users
       >>> _ignored = uf._doAddUser('manager', 'r00t', ['Manager'], [])
 
     We can specify another default view with browser:defaultView:
@@ -158,7 +160,6 @@ def test_default_method_args_marshalling():
       >>> def args(method):
       ...     f = method.__func__
       ...     c = f.__code__
-      ...     defaults = f.__defaults__
       ...     names = c.co_varnames[1:c.co_argcount]
       ...     return names
       >>> args(view.my_method)

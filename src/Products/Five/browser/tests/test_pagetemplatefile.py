@@ -35,14 +35,14 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(vptf.id, 'dirpage1.pt')
 
     def test_pt_getEngine(self):
+        from Products.PageTemplates.Expressions import SecureModuleImporter
+        from Products.PageTemplates.Expressions import TrustedZopePathExpr
+        from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
+        from zope.contentprovider.tales import TALESProviderExpression
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import LazyExpr
         from zope.tales.expressions import NotExpr
         from zope.tales.pythonexpr import PythonExpr
-        from zope.contentprovider.tales import TALESProviderExpression
-        from Products.PageTemplates.Expressions import TrustedZopePathExpr
-        from Products.PageTemplates.Expressions import SecureModuleImporter
-        from Products.PageTemplates.Expressions import UnicodeAwareStringExpr
 
         vptf = self._makeOne('seagull.pt')
         engine = vptf.pt_getEngine()
@@ -59,9 +59,9 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         self.assertEqual(engine.base_names['modules'], SecureModuleImporter)
 
     def test_pt_getContext_no_kw_no_physicalRoot(self):
+        from AccessControl.SecurityManagement import newSecurityManager
         from Products.Five.browser.pagetemplatefile import ViewMapper
         from Products.PageTemplates.Expressions import SecureModuleImporter
-        from AccessControl.SecurityManagement import newSecurityManager
         newSecurityManager(None, DummyUser('a_user'))
         context = DummyContext()
         request = DummyRequest()
@@ -132,7 +132,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('templates/dirpage1.pt')
         body = vptf(view)
-        self.assertEqual(body, DIRPAGE1)
+        self.assertEqual(body.replace('\r\n', '\n'), DIRPAGE1)
         self.assertEqual(response._headers['Content-Type'], 'text/html')
 
     def test___call___w_previous_content_type(self):
@@ -149,7 +149,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         from Products.Five.browser.pagetemplatefile import BoundPageTemplate
         template = self._makeOne('templates/dirpage1.pt')
 
-        class Foo(object):
+        class Foo:
             def __init__(self, context, request):
                 self.context = context
                 self.request = request
@@ -191,8 +191,8 @@ class ViewMapperTests(unittest.TestCase):
         self.assertRaises(ComponentLookupError, mapper.__getitem__, 'nonesuch')
 
     def test___getitem___hit(self):
-        from zope.interface import Interface
         from zope.component import provideAdapter
+        from zope.interface import Interface
 
         def _adapt(context, request):
             return self
@@ -200,6 +200,7 @@ class ViewMapperTests(unittest.TestCase):
         provideAdapter(_adapt, (None, None), Interface, name='test')
         mapper = self._makeOne()
         self.assertTrue(mapper['test'] is self)
+
 
 _marker = object()
 
@@ -259,6 +260,7 @@ class BoundPageTemplateTests(unittest.TestCase):
         self.assertEqual(rendered, '<h1>Dummy</h1>')
         self.assertEqual(pt._called_with, ('abc', ('def',), {'foo': 'bar'}))
 
+
 DIRPAGE1 = """\
 <html>
 <p>This is page 1</p>
@@ -266,15 +268,15 @@ DIRPAGE1 = """\
 """
 
 
-class DummyContext(object):
+class DummyContext:
     pass
 
 
-class DummyRequest(object):
+class DummyRequest:
     debug = object()
 
 
-class DummyResponse(object):
+class DummyResponse:
     def __init__(self, headers=None):
         if headers is None:
             headers = {}
@@ -287,7 +289,7 @@ class DummyResponse(object):
         self._headers[name] = value
 
 
-class DummyTemplate(object):
+class DummyTemplate:
     filename = 'dummy.pt'
 
     def __init__(self, macros=None):
@@ -300,14 +302,14 @@ class DummyTemplate(object):
         return '<h1>Dummy</h1>'
 
 
-class DummyView(object):
+class DummyView:
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
 
-class DummyUser(object):
+class DummyUser:
 
     def __init__(self, name):
         self._name = name

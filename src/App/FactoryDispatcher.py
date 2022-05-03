@@ -18,14 +18,12 @@ import types
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.owner import UnownableOwner
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.PermissionMapping import aqwrap
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Acquired
-from Acquisition import aq_base
 from Acquisition import Implicit
+from Acquisition import aq_base
 from ExtensionClass import Base
-from zExceptions import Redirect
-
 from OFS.metaconfigure import get_registered_packages
 
 
@@ -61,10 +59,11 @@ class Product(Base):
     def __init__(self, id):
         self.id = id
 
-    security.declarePublic('Destination')
+    @security.public
     def Destination(self):
         "Return the destination for factory output"
         return self
+
 
 InitializeClass(Product)
 
@@ -117,15 +116,15 @@ class FactoryDispatcher(Implicit):
                 v = v[:v.rfind('/')]
                 self._u = v[:v.rfind('/')]
 
-    security.declarePublic('Destination')
+    @security.public
     def Destination(self):
         "Return the destination for factory output"
         return self.__dict__['_d']  # we don't want to wrap the result!
 
-    security.declarePublic('this')
+    security.declarePublic('this')  # NOQA: D001
     this = Destination
 
-    security.declarePublic('DestinationURL')
+    @security.public
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
         url = getattr(self, '_u', None)

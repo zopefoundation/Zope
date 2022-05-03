@@ -10,29 +10,23 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope-specific versions of ZTUTils classes
+"""Zope-specific versions of ZTUtils classes
 """
+
+import html
+from urllib.parse import quote
+from urllib.parse import unquote
 
 from AccessControl import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from AccessControl.ZopeGuards import guarded_getitem
 from DateTime.DateTime import DateTime
-from six import binary_type
-from six import PY2
-from six import text_type
-from six.moves.urllib.parse import quote, unquote
-
 from ZTUtils.Batch import Batch
 from ZTUtils.Lazy import Lazy
 from ZTUtils.SimpleTree import SimpleTreeMaker
+from ZTUtils.Tree import TreeMaker
 from ZTUtils.Tree import decodeExpansion
 from ZTUtils.Tree import encodeExpansion
-from ZTUtils.Tree import TreeMaker
-
-try:
-    from html import escape
-except ImportError:  # PY2
-    from cgi import escape
 
 
 class LazyFilter(Lazy):
@@ -76,7 +70,7 @@ class LazyFilter(Lazy):
                 except Unauthorized as vv:
                     if skip is None:
                         self._eindex = e
-                        msg = '(item %s): %s' % (index, vv)
+                        msg = f'(item {index}): {vv}'
                         raise Unauthorized(msg)
                     skip_this = 1
                 else:
@@ -97,7 +91,7 @@ class LazyFilter(Lazy):
         return data[i]
 
 
-class TreeSkipMixin(object):
+class TreeSkipMixin:
     '''Mixin class to make trees test security, and allow
     skipping of unauthorized objects. '''
     skip = None
@@ -180,7 +174,7 @@ _DEFAULT_ENCODING = None
 
 
 def _default_encoding():
-    ''' Retreive default encoding from config '''
+    ''' Retrieve default encoding from config '''
     global _DEFAULT_ENCODING
     if _DEFAULT_ENCODING is None:
         from App.config import getConfiguration
@@ -214,9 +208,7 @@ def make_query(*args, **kwargs):
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
         k, m, v = qlist[i]
-        if PY2 and isinstance(v, text_type):
-            v = v.encode(_default_encoding())
-        qlist[i] = '%s%s=%s' % (quote(k), m, quote(str(v)))
+        qlist[i] = f'{quote(k)}{m}={quote(str(v))}'
 
     return '&'.join(qlist)
 
@@ -240,7 +232,7 @@ def make_hidden_input(*args, **kwargs):
     d.update(kwargs)
 
     def hq(x):
-        return escape(x, quote=True)
+        return html.escape(x, quote=True)
 
     qlist = complex_marshal(list(d.items()))
     for i in range(len(qlist)):
@@ -280,11 +272,11 @@ def complex_marshal(pairs):
                 if isinstance(sv, list):
                     for ssv in sv:
                         sm = simple_marshal(ssv)
-                        sublist.append(('%s.%s' % (k, sk),
+                        sublist.append((f'{k}.{sk}',
                                         '%s:list:record' % sm, ssv))
                 else:
                     sm = simple_marshal(sv)
-                    sublist.append(('%s.%s' % (k, sk), '%s:record' % sm, sv))
+                    sublist.append((f'{k}.{sk}', '%s:record' % sm, sv))
         elif isinstance(v, list):
             sublist = []
             for sv in v:
@@ -303,13 +295,8 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, str):
         return ''
-    if isinstance(v, binary_type):
-        # Py 3 only
+    if isinstance(v, bytes):
         return ':bytes'
-    if isinstance(v, text_type):
-        # Py 2 only
-        encoding = _default_encoding()
-        return ':%s:ustring' % (encoding,)
     if isinstance(v, bool):
         return ':boolean'
     if isinstance(v, int):
@@ -357,5 +344,5 @@ def url_query(request, req_name="URL", omit=None):
 
         qs = '&'.join([part for part in qsparts if part])
 
-    # We alway append '?' since arguments will be appended to the URL
-    return '%s?%s' % (base, qs)
+    # We always append '?' since arguments will be appended to the URL
+    return f'{base}?{qs}'
