@@ -9,7 +9,7 @@
 <main class="container-fluid">
 
 <dtml-let roles="valid_roles()"
-          short_form="len(roles) > 30">
+          short_form="(len(roles) > 30) and not REQUEST.get('show_long_form')">
 
   <p class="form-help mb-4">
     The listing below shows the current security settings for this item.
@@ -47,6 +47,7 @@
     <p class="form-help mb-4">
       Click on one of the permission names to see the roles they are assigned
       to.
+      <a href="?show_long_form=1">Show the full matrix form</a>
     </p>
 
     <table>
