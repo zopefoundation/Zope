@@ -24,6 +24,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Modify "manage_access" to allow users to switch from the compact view
+  to the complete matrix view when more than 30 roles are defined.
+  (`#1039 <https://github.com/zopefoundation/Zope/pull/1039>`_)
+
 
 5.5.1 (2022-04-05)
 ------------------
