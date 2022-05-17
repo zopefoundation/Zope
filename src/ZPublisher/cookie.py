@@ -242,7 +242,14 @@ def domain_converter(value):
         return value
     from encodings.idna import ToASCII
     from encodings.idna import nameprep
-    return ".".join(to_str(ToASCII(nameprep(c))) for c in u_value.split("."))
+    add_leading_dot = False
+    if u_value.startswith("."):
+        u_value = u_value[1:]
+        add_leading_dot = True
+    value = ".".join(to_str(ToASCII(nameprep(c))) for c in u_value.split("."))
+    if add_leading_dot:
+        value = f".{value}"
+    return value
 
 
 registerCookieParameter("Domain", domain_converter)
