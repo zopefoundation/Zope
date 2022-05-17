@@ -29,6 +29,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (`#1039 <https://github.com/zopefoundation/Zope/pull/1039>`_)
 
 - Allow leading ``.`` in cookie domain names.
+  (`#1041 <https://github.com/zopefoundation/Zope/pull/1041>`_)
 
 
 5.5.1 (2022-04-05)
