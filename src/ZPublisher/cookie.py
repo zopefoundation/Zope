@@ -242,8 +242,9 @@ def domain_converter(value):
         return value
     from encodings.idna import ToASCII
     from encodings.idna import nameprep
+
     # According to https://www.rfc-editor.org/rfc/rfc6265#section-4.1.2.3 a
-    # leading dot is ignored. If it is there `ToASCII` breaks on the empty
+    # leading dot is ignored. If it is there `ToASCII`, breaks on the empty
     # string:
     u_value = u_value.lstrip('.')
     return ".".join(to_str(ToASCII(nameprep(c))) for c in u_value.split("."))
