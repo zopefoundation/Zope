@@ -46,8 +46,7 @@ def find_bad_templates(self):
             pt.pt_macros()
         except PTRuntimeError:
             # html quote "<" characters to be displayed as such
-            errs = [err.replace('<', '&lt;') for err in pt._v_errors]
-            pt_errors[pt_path] = errs
+            pt_errors[pt_path] = [err.replace('<', '&lt;') for err in pt._v_errors]
 
     for pt_path in sorted(pt_errors.keys()):
         html_output += ERROR_HTML % {'pt_path': pt_path,
