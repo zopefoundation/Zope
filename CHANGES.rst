@@ -11,6 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.5.2 (unreleased)
 ------------------
 
+- Improvements on find_bad_templates(): check Filesystem Page
+  Templates too and show html tags in web report
+  (`#1042 <https://github.com/zopefoundation/Zope/issues/1042>`_)
+
 - Fix version pin specifications for Python 3.6 compatibility.
   (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
 
