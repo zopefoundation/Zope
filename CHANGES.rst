@@ -18,13 +18,16 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Quote all components of a redirect URL (not only the path component)
   (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
-  
+
 - Drop the convenience script generation from the buildout configuration
   in order to get rid of a lot of dependency version pins.
   These were only needed for maintainers who can install them manually.
   (`#1019 <https://github.com/zopefoundation/Zope/issues/1019>`_)
 
 - Update dependencies to the latest releases that still support Python 2.
+
+- Strip leading ``.`` in cookie domain names.
+  (`#1041 <https://github.com/zopefoundation/Zope/pull/1041>`_)
 
 
 4.8.1 (2022-04-05)

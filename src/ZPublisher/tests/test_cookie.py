@@ -148,6 +148,10 @@ class CookieParameterRegistryTests(TestCase):
         _, v = convertCookieParameter("domain",
                                       u"Fußball.example".encode("utf-8"))
         self.assertEqual(v, "fussball.example")
+        # a leading dot is stripped as it is ignored according to
+        # https://www.rfc-editor.org/rfc/rfc6265#section-4.1.2.3
+        _, v = convertCookieParameter("domain", ".zope.dev")
+        self.assertEqual(v, "zope.dev")
 
     def test_path(self):
         # test object
