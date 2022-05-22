@@ -49,7 +49,7 @@ def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
         argcount = len(varnames)
     # Generate a change only if we have to.
     if self.__defaults__ != defaults:
-        self.__defaults__ = self.__defaults__ = defaults
+        self.__defaults__ = self.func_defaults = defaults
     code = FuncCode(varnames, argcount)
     if self.__code__ != code:
-        self.__code__ = self.__code__ = code
+        self.__code__ = self.func_code = code
