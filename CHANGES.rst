@@ -9,6 +9,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.2 (unreleased)
 ------------------
 
+- Update ``waitress`` to version 2.1.2.
+
 - Fix version pin specifications for Python 3.6 compatibility.
   (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
 
