@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.5.2 (unreleased)
 ------------------
 
+- Update ``waitress`` to version 2.1.2.
+
 - Improvements on find_bad_templates(): check Filesystem Page
   Templates too and show html tags in web report
   (`#1042 <https://github.com/zopefoundation/Zope/issues/1042>`_)
