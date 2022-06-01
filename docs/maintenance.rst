@@ -38,44 +38,40 @@ Steps for creating a new Zope release
 
 - Garden the change log and check it for spelling issues.
 
-- Check the future PyPI long description for ReST errors::
+- Check the future PyPI long description for ReST errors (example for macOS)::
 
-  $ bin/longtest
+  $ cat README.rst <(echo) CHANGES.rst | bin/rst2html.py >/tmp/test.html && open /tmp/test.html
 
 - Check in the changes.
 
-- Update version information in change log and ``setup.py``::
-
-  $ bin/prerelease
+- Update version information in change log and ``setup.py`` and specify today's
+  date as release date in the change log.
 
 - Pin the Zope version in ``versions-prod.cfg``
 
 - Run ``bin/python util.py`` to update ``requirements-full.txt``. **Note:** The
   script will only run on Python 3.7 or higher!
 
-- Commit the changes.
-
 - Run all tests::
 
   $ bin/tox -pall
 
+- If the tests succeed, commit the changes.
+
 - Upload the tagged release to PyPI::
-
-    $ bin/release
-
-    or
 
     $ git tag -as <TAG-NAME> -m "- tagging release <TAG-NAME>"
     $ git push --tags
     $ bin/zopepy setup.py egg_info -Db '' sdist bdist_wheel
     $ bin/twine upload -s dist/Zope-<TAG-NAME>*
 
-- Update version information::
+- Update version information in the change log and ``setup.py`` and revert the
+  version pin for Zope::
 
-  $ bin/postrelease
-  $ vi versions-prod.cfg (set version pin of Zope back to ``< 5``)
-  $ bin/python util.py
-  $ bin/buildout
+    $ vim CHANGES.rst setup.py
+    $ vim versions-prod.cfg (set version pin of Zope back to ``< 5``)
+    $ bin/python util.py
+    $ bin/buildout
 
 - Commit and push the changes.
 

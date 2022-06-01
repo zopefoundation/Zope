@@ -6,7 +6,7 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
-4.8.2 (unreleased)
+4.8.2 (2022-06-01)
 ------------------
 
 - Update ``waitress`` to version 2.1.2.
