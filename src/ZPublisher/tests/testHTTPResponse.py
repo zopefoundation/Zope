@@ -801,7 +801,7 @@ class HTTPResponseTests(unittest.TestCase):
         self._redirectURLCheck(exc, expected=ENC_URL)
 
     def test_redirect_nonascii_everywhere(self):
-        URL = u"http://uä:pä@sä:80/pä?qä#fä"
+        URL = "http://uä:pä@sä:80/pä?qä#fä"
         ENC_URL = "http://u%C3%A4:p%C3%A4@s%C3%A4:80/p%C3%A4?q%C3%A4#f%C3%A4"
         self._redirectURLCheck(URL, ENC_URL)
 

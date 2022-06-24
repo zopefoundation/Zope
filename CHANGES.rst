@@ -11,12 +11,18 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.6 (unreleased)
 ----------------
 
+- Update ``waitress`` to version 2.1.2.
+
+- Improvements on find_bad_templates(): check Filesystem Page
+  Templates too and show html tags in web report
+  (`#1042 <https://github.com/zopefoundation/Zope/issues/1042>`_)
+
 - Fix version pin specifications for Python 3.6 compatibility.
   (`#1036 <https://github.com/zopefoundation/Zope/issues/1036>`_)
 
 - Quote all components of a redirect URL (not only the path component)
   (`#1027 <https://github.com/zopefoundation/Zope/issues/1027>`_)
-  
+
 - Drop the convenience script generation from the buildout configuration
   in order to get rid of a lot of dependency version pins.
   These were only needed for maintainers who can install them manually.
@@ -25,6 +31,13 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Update to newest compatible versions of dependencies.
 
 - Add preliminary support for Python 3.11 (as of 3.11.0a7).
+
+- Modify "manage_access" to allow users to switch from the compact view
+  to the complete matrix view when more than 30 roles are defined.
+  (`#1039 <https://github.com/zopefoundation/Zope/pull/1039>`_)
+
+- Strip leading ``.`` in cookie domain names.
+  (`#1041 <https://github.com/zopefoundation/Zope/pull/1041>`_)
 
 
 5.5.1 (2022-04-05)
