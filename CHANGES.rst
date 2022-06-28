@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.5.2 (unreleased)
+5.5.2 (2022-06-28)
 ------------------
 
 - Update ``waitress`` to version 2.1.2.
