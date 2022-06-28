@@ -38,27 +38,32 @@ Steps for creating a new Zope release
 
 - Check the future PyPI long description for ReST errors::
 
-  $ bin/longtest
+    $ cat README.rst <(echo) CHANGES.rst | bin/rst2html.py >/tmp/test.html && open /tmp/test.html
 
 - Check in the changes.
 
-- Update version information in change log and ``setup.py``::
+- Update version information in change log and ``setup.py`` and specify today’s
+  date as release date in the change log::
 
-  $ bin/prerelease
+    $ bin/prerelease  # if you use zest.releaser
+
+    or
+
+    $ vi CHANGES.rst setup.py
 
 - Pin the Zope version in ``versions-prod.cfg``.
 
 - Run ``bin/buildout`` to update ``requirements-full.txt``.
 
-- Commit the changes.
-
 - Run all tests::
 
-  $ bin/tox --pall
+    $ bin/tox --pall
+
+- Commit the changes.
 
 - Upload the tagged release to PyPI::
 
-    $ bin/release
+    $ bin/release  # if you use zest.releaser
 
     or
 
@@ -67,11 +72,18 @@ Steps for creating a new Zope release
     $ bin/zopepy setup.py egg_info -Db '' sdist bdist_wheel
     $ bin/twine upload -s dist/Zope-<TAG-NAME>*
 
-- Update version information::
+- Update version information in the change log and setup.py::
 
-  $ bin/postrelease
-  $ vi versions-prod.cfg (remove Zope pin)
-  $ bin/buildout
+    $ bin/postrelease  # if you use zest.releaser
+
+    or 
+
+    $ vi CHANGES.rst setup.py
+
+- Remove the version pin for Zope::
+
+    $ vi versions-prod.cfg (remove Zope pin)
+    $ bin/buildout
 
 - Commit and push the changes.
 
@@ -80,8 +92,8 @@ Steps for creating a new Zope release
 
 - Update https://zopefoundation.github.io/Zope/::
 
-  $ git checkout gh-pages
-  $ python3.7 build_index.py
+    $ git checkout gh-pages
+    $ python3 build_index.py
 
 - Add the newly created files and commit and push the changes.
 
@@ -92,9 +104,9 @@ Steps for creating a new Zope release
   overview of outdated packages on `requires.io
   <https://requires.io/github/zopefoundation/Zope/requirements/?branch=master>`_::
 
-  $ bin/checkversions versions-prod.cfg
-  $ bin/checkversions versions.cfg
-  $ bin/buildout
+    $ bin/checkversions versions-prod.cfg
+    $ bin/checkversions versions.cfg
+    $ bin/buildout
 
 .. note::
 
