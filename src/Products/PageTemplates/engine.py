@@ -196,7 +196,7 @@ class _C2ZContextWrapperBase:
     def getValue(self, name, default=None):
         try:
             return self._c_context[name]
-        except NameError:
+        except (NameError, KeyError):
             return default
 
     get = getValue

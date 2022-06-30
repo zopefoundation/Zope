@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.5.3 (unreleased)
 ------------------
 
+- Make Products.PageTemplate engine compatible with Chameleon 3.10.
+
 - Update to newest compatible versions of dependencies.
 
 
