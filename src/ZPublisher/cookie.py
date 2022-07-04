@@ -73,11 +73,7 @@ defaultCookieParamPolicy = DefaultCookieParamPolicy()
 
 @implementer(ICookieValuePolicy)
 class DefaultCookieValuePolicy:
-    """Default ``ICookieValuePolicy``.
-
-    It adds ``Expires`` when it sees ``Max-Age`` (for compatibility
-    with HTTP/1.0) and urlquotes cookie values.
-    """
+    """Default ``ICookieValuePolicy``."""
 
     @staticmethod
     def dump(name, value):
