@@ -14,7 +14,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
-- Add preliminary support for Python 3.11 (as of 3.11.0a7).
+- Add preliminary support for Python 3.11 (as of 3.11.0b3).
 
 
 5.5.2 (2022-06-28)
