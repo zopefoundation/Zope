@@ -7,9 +7,16 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-
 5.6 (unreleased)
 ----------------
+
+- Make Products.PageTemplate engine compatible with Chameleon 3.10.
+
+- Update to newest compatible versions of dependencies.
+
+
+5.5.2 (2022-06-28)
+------------------
 
 - Update ``waitress`` to version 2.1.2.
 

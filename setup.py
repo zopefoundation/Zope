@@ -31,7 +31,6 @@ CHANGES = _read_file('CHANGES.rst')
 
 version = '5.6.dev0'
 
-
 setup(
     name='Zope',
     version=version,
