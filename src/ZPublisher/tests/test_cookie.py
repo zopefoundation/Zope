@@ -170,9 +170,9 @@ class CookieParameterRegistryTests(TestCase):
         # check quote
         _, v = convertCookieParameter("path", "/a/ /c")
         self.assertEqual(v, "/a/%20/c")
-        # check incomplete quoting
-        with self.assertRaises(ValueError):
-            convertCookieParameter("path", "/a/%20/ ")
+        # check ``%`` dominates
+        _,v = convertCookieParameter("path", "/a/%20/ ")
+        self.assertEqual(v, "/a/%20/ ")
 
     def test_http_only(self):
         # test true

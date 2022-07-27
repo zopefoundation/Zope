@@ -260,7 +260,6 @@ path_safe = compile("["
                     "a-zA-Z0-9"  # letters and digits
                     "/:@&=+$,"   # RFC 2396 section 3.3 (path reserved)
                                  # excluding ``;``
-                    "%"          # assume already quoted
                     "]*$").match
 
 
@@ -269,17 +268,17 @@ def path_converter(value):
 
     The convertion is based on ``absolute_url_path``.
     If *value* lacks this method, it is assumed to be a string.
-    If the string contains ``%``, it is assumed that it is already
-    quoted.
+    If the string contains ``%``, it is used as is; otherwise,
+    it may be quoted by Python's ``urllib.parse.quote``.
 
     **Note**:
     According to RFC 6265 section 5.1.4 a cookie path match **does not**
     unquote its arguments. It is therefore important to use
     the same quoting algorithm for the URL and the cookie path.
     If the cookie path contains only allowed characters
-    (RFC 2396 unreserved (section 2.3),
-    RFC 2396 path special (section 3.3) excluding ``:``
-    or `%`), the value is taken verbatim; otherwise it is quoted
+    (RFC 2396 unreserved (section 2.3) and
+    RFC 2396 path special characters (section 3.3) excluding ``;``),
+    the value is taken verbatim; otherwise it is quoted
     by Python's `urllib.parse.quote` (which
     is used by `OFS.Traversable` as its ULR quoting). It quotes
     all special characters apart from ``-_./``.
@@ -288,10 +287,8 @@ def path_converter(value):
     ap = getattr(aq_base(value), "absolute_url_path", None)
     if ap is not None:
         return value.absolute_url_path()
-    if path_safe(value):
+    if "%" in value or path_safe(value):
         return value
-    if "%" in value:
-        raise ValueError("not path safe but apparently quoted")
     return quote(value)
 
 
