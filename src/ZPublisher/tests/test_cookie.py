@@ -171,7 +171,7 @@ class CookieParameterRegistryTests(TestCase):
         _, v = convertCookieParameter("path", "/a/ /c")
         self.assertEqual(v, "/a/%20/c")
         # check ``%`` dominates
-        _,v = convertCookieParameter("path", "/a/%20/ ")
+        _, v = convertCookieParameter("path", "/a/%20/ ")
         self.assertEqual(v, "/a/%20/ ")
 
     def test_http_only(self):
