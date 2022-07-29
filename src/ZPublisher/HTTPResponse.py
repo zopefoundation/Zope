@@ -317,11 +317,7 @@ class HTTPBaseResponse(BaseResponse):
             name = str(name)
             value = str(value)
 
-        cookies = self.cookies
-        if name in cookies:
-            cookie = cookies[name]
-        else:
-            cookie = cookies[name] = {}
+        cookie = {}
         for k, v in kw.items():
             k, v = convertCookieParameter(k, v)
             cookie[k] = v
@@ -329,6 +325,13 @@ class HTTPBaseResponse(BaseResponse):
         # RFC6265 makes quoting obsolete
         # cookie['quoted'] = quoted
         getCookieParamPolicy().check_consistency(name, cookie)
+
+        # update ``self.cookies`` only if there have been no exceptions
+        cookies = self.cookies
+        if name in cookies:
+            cookies[name].update(cookie)
+        else:
+            cookies[name] = cookie
 
     def appendCookie(self, name, value):
         """ Set an HTTP cookie.
