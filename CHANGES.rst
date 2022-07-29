@@ -14,6 +14,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Fix cookie path parameter handling:
+  If the cookie path value contains ``%`` it is assumed to be
+  fully quoted and used as is;
+  if it contains only characters allowed (unquoted)
+  in an URL path (with the exception of ``;``),
+  it is used as is; otherwise, it is quoted using Python's
+  ``urllib.parse.quote``
+  (`#1052 <https://github.com/zopefoundation/Zope/issues/1052>`_).
+
 
 5.5.2 (2022-06-28)
 ------------------
