@@ -16,10 +16,6 @@
         :target: https://pypi.org/project/Zope/
         :alt: Supported Python versions
 
-.. image:: https://requires.io/github/zopefoundation/Zope/requirements.svg?branch=master
-        :target: https://requires.io/github/zopefoundation/Zope/requirements/?branch=master
-        :alt: Requirements Status
-
 .. |nbsp| unicode:: 0xA0 
         :trim:
 
