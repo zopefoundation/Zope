@@ -1,5 +1,6 @@
 import os
 from typing import Optional, Tuple, List
+from configparser import NoSectionError
 from configparser import RawConfigParser
 
 
@@ -24,9 +25,17 @@ def generate(in_, requirements_file, constraints_file):
     constraints = []
     zope_requirement = (
         '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
-    zope_requirement = _generate(
-        parser.items('versions:python36'), '3.6', requirements, constraints,
-        zope_requirement)
+
+    # Try to include sections for all currently supported Python versions
+    for py_version in ('3.6', '3.7', '3.8', '3.9', '3.10', '3.11'):
+        short_version = py_version.replace('.', '')
+        try:
+            zope_requirement = _generate(
+                parser.items(f'versions:python{short_version}'), py_version,
+                requirements, constraints, zope_requirement)
+        except NoSectionError:
+            continue
+
     # "Unversioned" pins must come last, how they are handled depends on
     # Python version qualifiers for dependencies of the same name.
     zope_requirement = _generate(
@@ -51,7 +60,7 @@ def _generate(
 ) -> str:
     """Generate requirements and constraints for a specific Python version.
 
-    If ``python_version`` is falsy, generate for all python versions.
+    If ``python_version`` is false, generate for all python versions.
     Returns a probably changed ``zope_requirement``.
     """
     global PYTHON_VERSIONED
@@ -74,7 +83,8 @@ def _generate(
             PYTHON_VERSIONED[name] = versions
         else:
             if name in PYTHON_VERSIONED:
-                versions = sorted(PYTHON_VERSIONED.get(name))
+                versions = sorted(PYTHON_VERSIONED.get(name),
+                                  key=lambda s: list(map(int, s.split('.'))))
                 spec = f"{spec}; python_version > '{versions[-1]}'"
 
         requirements.append(spec + '\n')
