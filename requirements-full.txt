@@ -13,7 +13,7 @@ Paste==3.5.1
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
-Products.ZCatalog==6.2
+Products.ZCatalog==6.3
 Record==3.5
 RestrictedPython==5.2; python_version == '3.10'
 RestrictedPython==5.2; python_version == '3.6'
