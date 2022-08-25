@@ -7,12 +7,14 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.5.3 (unreleased)
-------------------
+5.6 (unreleased)
+----------------
 
 - Make Products.PageTemplate engine compatible with Chameleon 3.10.
 
 - Update to newest compatible versions of dependencies.
+
+- Add preliminary support for Python 3.11 (as of 3.11.0b5).
 
 - Fix cookie path parameter handling:
   If the cookie path value contains ``%`` it is assumed to be

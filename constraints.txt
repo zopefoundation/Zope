@@ -12,9 +12,14 @@ Paste==3.5.1
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
-Products.ZCatalog==6.2
+Products.ZCatalog==6.3
 Record==3.5
-RestrictedPython==5.2
+RestrictedPython==5.2; python_version == '3.10'
+RestrictedPython==5.2; python_version == '3.6'
+RestrictedPython==5.2; python_version == '3.7'
+RestrictedPython==5.2; python_version == '3.8'
+RestrictedPython==5.2; python_version == '3.9'
+RestrictedPython==6.0a1.dev0; python_version > '3.10'
 SecretStorage==3.3.2
 WSGIProxy2==0.5.1
 WebOb==1.8.7
@@ -55,7 +60,7 @@ zope.cachedescriptors==4.3.1
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.5.0
+zope.container==4.6
 zope.contentprovider==4.2.1
 zope.contenttype==4.5.0
 zope.datetime==4.3.0
