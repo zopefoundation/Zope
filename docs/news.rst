@@ -25,7 +25,9 @@ What's new in Zope 5
 Added support for Python 3.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Python 3.9 is now fully supported by Zope 5.
+* Python 3.9 is now fully supported by Zope 5.
+
+* Zope 5.4 and newer also supports Python 3.10.
 
 Dropped support for Python 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
