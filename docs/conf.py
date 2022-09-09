@@ -14,18 +14,20 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import datetime
 
 
 # -- Project information -----------------------------------------------------
+year = datetime.datetime.now().year
 
 project = 'Zope documentation'
-copyright = '2009-2021, The Zope developer community'
+copyright = '2009-%s, The Zope developer community' % year
 author = 'The Zope developer community'
 
 # The short X.Y version
-version = '5.3'
+version = '5.6'
 # The full version, including alpha/beta/rc tags
-release = '5.3'
+release = '5.6'
 
 
 # -- General configuration ---------------------------------------------------
