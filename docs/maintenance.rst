@@ -51,6 +51,10 @@ Steps for creating a new Zope release
 
     $ vi CHANGES.rst setup.py
 
+- Update the version information in the Sphinx documentation configuration::
+
+    $ vim docs/conf.py
+
 - Pin the Zope version in ``versions-prod.cfg``.
 
 - Run ``bin/buildout`` to update ``requirements-full.txt``.
