@@ -19,6 +19,7 @@ import sys
 from functools import partial
 
 from six import PY2
+from six.moves.urllib.parse import unquote_to_bytes
 
 import transaction
 from Testing.ZopeTestCase import interfaces
@@ -81,13 +82,14 @@ class Functional(sandbox.Sandboxed):
         env['SERVER_PROTOCOL'] = 'HTTP/1.1'
         env['REQUEST_METHOD'] = request_method
 
-        p = path.split('?')
-        if len(p) == 1:
-            env['PATH_INFO'] = p[0]
-        elif len(p) == 2:
-            [env['PATH_INFO'], env['QUERY_STRING']] = p
+        query = ''
+        if '?' in path:
+            path, query = path.split("?", 1)
+        if PY2:
+            env['PATH_INFO'] = unquote_to_bytes(path)
         else:
-            raise TypeError('')
+            env['PATH_INFO'] = unquote_to_bytes(path).decode('latin-1')
+        env['QUERY_STRING'] = query
 
         if basic:
             env['HTTP_AUTHORIZATION'] = basic_auth_encode(basic)
@@ -98,12 +100,16 @@ class Functional(sandbox.Sandboxed):
 
         if stdin is None:
             stdin = BytesIO()
+        env['wsgi.input'] = stdin
 
         outstream = BytesIO()
         response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
-        request = Request(stdin, env, response)
-        for k, v in extra.items():
-            request[k] = v
+
+        def request_factory(*args):
+            request = Request(*args)
+            for k, v in extra.items():
+                request[k] = v
+            return request
 
         wsgi_headers = BytesIO()
 
@@ -121,7 +127,10 @@ class Functional(sandbox.Sandboxed):
             wsgi_headers.write(headers)
             wsgi_headers.write(b'\r\n\r\n')
 
-        publish = partial(publish_module, _request=request, _response=response)
+        publish = partial(
+            publish_module,
+            _request_factory=request_factory,
+            _response=response)
         if handle_errors:
             publish = HTTPExceptionHandler(publish)
 

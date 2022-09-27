@@ -1,4 +1,5 @@
 ##############################################################################
+# coding: utf-8
 #
 # Copyright (c) 2005 Zope Foundation and Contributors.
 #
@@ -61,6 +62,9 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         # A method changing the title property of an object
         self.folder.addDTMLMethod('change_title', file=CHANGE_TITLE_DTML)
 
+        # A method with a non-ascii path
+        self.folder.addDTMLMethod('täst', file=b'test')
+
     def testPublishFolder(self):
         response = self.publish(self.folder_path)
         self.assertEqual(response.getStatus(), 200)
@@ -70,6 +74,16 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
         response = self.publish(self.folder_path + '/index_html')
         self.assertEqual(response.getStatus(), 200)
         self.assertEqual(response.getBody(), b'index')
+
+    def testPublishDocumentNonAscii(self):
+        response = self.publish(self.folder_path + '/täst')
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response.getBody(), b'test')
+
+    def testPublishDocumentNonAsciiUrlEncoded(self):
+        response = self.publish(self.folder_path + '/t%C3%A4st')
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response.getBody(), b'test')
 
     def testUnauthorized(self):
         response = self.publish(self.folder_path + '/secret_html')
