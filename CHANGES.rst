@@ -20,6 +20,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
   ``urllib.parse.quote``
   (`#1052 <https://github.com/zopefoundation/Zope/issues/1052>`_).
 
+- Change functional testing utilities to support percent encoded and unicode
+  paths (`#1058 <https://github.com/zopefoundation/Zope/issues/1058>`_).
+
 
 4.8.2 (2022-06-01)
 ------------------
