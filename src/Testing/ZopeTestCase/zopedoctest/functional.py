@@ -131,7 +131,7 @@ def http(request_string, handle_errors=True):
 
     This is used for HTTP doc tests.
     """
-    from urllib.parse import unquote
+    from urllib.parse import unquote_to_bytes
 
     from ZPublisher.HTTPRequest import WSGIRequest as Request
     from ZPublisher.HTTPResponse import WSGIResponse
@@ -148,7 +148,6 @@ def http(request_string, handle_errors=True):
     command_line = request_string[:newline].rstrip()
     request_string = request_string[newline + 1:]
     method, path, protocol = command_line.split()
-    path = unquote(path)
 
     env = {
         'HTTP_HOST': 'localhost',
@@ -157,13 +156,11 @@ def http(request_string, handle_errors=True):
         'SERVER_PROTOCOL': protocol,
     }
 
-    p = path.split('?', 1)
-    if len(p) == 1:
-        env['PATH_INFO'] = p[0]
-    elif len(p) == 2:
-        [env['PATH_INFO'], env['QUERY_STRING']] = p
-    else:
-        raise TypeError('')
+    query = ''
+    if '?' in path:
+        path, query = path.split("?", 1)
+    env['PATH_INFO'] = unquote_to_bytes(path).decode('latin-1')
+    env['QUERY_STRING'] = query
 
     header_output = HTTPHeaderOutput(
         protocol, ('x-content-type-warning', 'x-powered-by'))
@@ -196,7 +193,6 @@ def http(request_string, handle_errors=True):
 
     outstream = BytesIO()
     response = WSGIResponse(stdout=outstream, stderr=sys.stderr)
-    request = Request(instream, env, response)
 
     env['wsgi.input'] = instream
     wsgi_headers = BytesIO()
@@ -209,7 +205,10 @@ def http(request_string, handle_errors=True):
         wsgi_headers.write(headers)
         wsgi_headers.write(b'\r\n\r\n')
 
-    publish = partial(publish_module, _request=request, _response=response)
+    publish = partial(
+        publish_module,
+        _request_factory=Request,
+        _response=response)
     if handle_errors:
         publish = HTTPExceptionHandler(publish)
 

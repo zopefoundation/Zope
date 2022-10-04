@@ -12,6 +12,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Change functional testing utilities to support percent encoded and unicode
+  paths (`#1058 <https://github.com/zopefoundation/Zope/issues/1058>`_).
+
 
 5.6 (2022-09-09)
 ----------------
