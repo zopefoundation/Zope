@@ -15,6 +15,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Change functional testing utilities to support percent encoded and unicode
   paths (`#1058 <https://github.com/zopefoundation/Zope/issues/1058>`_).
 
+- Decode basic authentication header as utf-8, not latin1 anymore
+  (`#1061 <https://github.com/zopefoundation/Zope/issues/1061>`_).
+
 
 5.6 (2022-09-09)
 ----------------
