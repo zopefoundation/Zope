@@ -966,7 +966,7 @@ class HTTPResponseTests(unittest.TestCase):
         response._unauthorized()
         self.assertTrue('WWW-Authenticate' in response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
-                         'basic realm="Zope"')
+                         'basic realm="Zope", charset="UTF-8"')
 
     def test__unauthorized_w_realm(self):
         response = self._makeOne()
@@ -974,7 +974,7 @@ class HTTPResponseTests(unittest.TestCase):
         response._unauthorized()
         self.assertTrue('WWW-Authenticate' in response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
-                         'basic realm="Folly"')
+                         'basic realm="Folly", charset="UTF-8"')
 
     def test_unauthorized_no_debug_mode(self):
         response = self._makeOne()
