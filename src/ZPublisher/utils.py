@@ -88,9 +88,11 @@ def basic_auth_encode(user, password=None):
     value = user
     if password is not None:
         value = value + ':' + password
-    header = b'Basic ' + base64.b64encode(value.encode('latin-1'))
     if PY3:
-        header = header.decode('latin-1')
+        value = value.encode()
+    header = b'Basic ' + base64.b64encode(value)
+    if PY3:
+        header = header.decode()
     return header
 
 
@@ -103,6 +105,6 @@ def basic_auth_decode(token):
     value = token.split()[-1]  # Strip 'Basic '
     plain = base64.b64decode(value)
     if PY3:
-        plain = plain.decode('latin-1')
+        plain = plain.decode()
     user, password = plain.split(':', 1)  # Split at most once
     return (user, password)

@@ -1,4 +1,5 @@
 ##############################################################################
+# coding: utf-8
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
 #
@@ -885,6 +886,19 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test__authUserPW_with_embedded_colon(self):
         user_id = 'user'
         password = 'embedded:colon'
+        auth_header = basic_auth_encode(user_id, password)
+
+        environ = {'HTTP_AUTHORIZATION': auth_header}
+        request = self._makeOne(environ=environ)
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual(user_id_x, user_id)
+        self.assertEqual(password_x, password)
+
+    def test__authUserPW_non_ascii(self):
+        user_id = 'usèr'
+        password = 'pàssword'
         auth_header = basic_auth_encode(user_id, password)
 
         environ = {'HTTP_AUTHORIZATION': auth_header}
