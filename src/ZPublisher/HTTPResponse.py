@@ -732,7 +732,10 @@ class HTTPBaseResponse(BaseResponse):
     def _unauthorized(self):
         realm = self.realm
         if realm:
-            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+            self.setHeader(
+                'WWW-Authenticate',
+                'basic realm="%s", charset="UTF-8"' % realm,
+                1)
 
     @staticmethod
     def _html(title, body):
