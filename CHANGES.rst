@@ -23,6 +23,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Change functional testing utilities to support percent encoded and unicode
   paths (`#1058 <https://github.com/zopefoundation/Zope/issues/1058>`_).
 
+- Decode basic authentication header as utf-8, not latin1 anymore
+  (`#1061 <https://github.com/zopefoundation/Zope/issues/1061>`_).
+
+- Make ``ZPublisher.utils.basic_auth_encode`` support non-ascii strings on Python 2
+  (`#1062 <https://github.com/zopefoundation/Zope/issues/1062>`_).
 
 4.8.2 (2022-06-01)
 ------------------
