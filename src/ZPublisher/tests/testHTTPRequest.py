@@ -878,6 +878,19 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(user_id_x, user_id)
         self.assertEqual(password_x, password)
 
+    def test__authUserPW_non_ascii(self):
+        user_id = 'usèr'
+        password = 'pàssword'
+        auth_header = basic_auth_encode(user_id, password)
+
+        environ = {'HTTP_AUTHORIZATION': auth_header}
+        request = self._makeOne(environ=environ)
+
+        user_id_x, password_x = request._authUserPW()
+
+        self.assertEqual(user_id_x, user_id)
+        self.assertEqual(password_x, password)
+
     def test_debug_not_in_qs_still_gets_attr(self):
         from zope.publisher.base import DebugFlags
 
