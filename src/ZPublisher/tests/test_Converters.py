@@ -258,3 +258,8 @@ class ConvertersTests(unittest.TestCase):
         to_convert = '{"key1":"value1","key2": 2,"key3": ["1", "2"]}'
         self.assertEqual(field2json(to_convert),
                          {"key1": "value1", "key2": 2, "key3": ["1", "2"]})
+
+    def test_field2json_with_invalid_json(self):
+        from ZPublisher.Converters import field2json
+        to_convert = '{"key1":"value1","key2":'
+        self.assertRaises(ValueError, field2json, to_convert)
