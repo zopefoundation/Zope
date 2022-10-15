@@ -12,6 +12,7 @@
 ##############################################################################
 
 import html
+import json
 import re
 import warnings
 
@@ -191,6 +192,14 @@ def field2ulines(v):
     return field2lines(v)
 
 
+def field2json(v):
+    try:
+        v = json.loads(v)
+    except ValueError:
+        raise ValueError("Invalid json " + html.escape(repr(v), True))
+    return v
+
+
 type_converters = {
     'float': field2float,
     'int': field2int,
@@ -199,6 +208,7 @@ type_converters = {
     'bytes': field2bytes,
     'date': field2date,
     'date_international': field2date_international,
+    'json': field2json,
     'required': field2required,
     'tokens': field2tokens,
     'lines': field2lines,
