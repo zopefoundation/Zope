@@ -254,7 +254,12 @@ this using ``addzopeuser`` as follows:
 
   $ bin/addzopeuser user password
 
-The script expects to find the configuration file at ``etc/zope.conf``.
+The script expects to find the configuration file at ``etc/zope.conf`` by default.
+If it is located on a different location this can be specified by the `--configuration` option:
+
+.. code-block:: console
+
+  $ bin/addzopeuser --configuration /path/to/etc/zope.conf user password
 
 
 Running Zope (plone.recipe.zope2instance install)
