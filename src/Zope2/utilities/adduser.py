@@ -12,6 +12,7 @@
 ##############################################################################
 """ Add a Zope management user to the root Zope user folder """
 
+import argparse
 import sys
 
 from Zope2.utilities.finder import ZopeFinder
@@ -25,18 +26,26 @@ def adduser(app, user, pwd):
 
 
 def main(argv=sys.argv):
-    import sys
-    try:
-        user, pwd = argv[1], argv[2]
-    except IndexError:
-        print("%s <username> <password>" % argv[0])
-        sys.exit(255)
+    parser = argparse.ArgumentParser(
+        description='Add a Zope management user to the root Zope user folder.'
+    )
+    parser.add_argument(
+        "-c",
+        "--configuration",
+        help="Zope configuration file",
+        nargs="?",
+        type=str,
+        default=None,
+    )
+    parser.add_argument("user", help="name of user to be created")
+    parser.add_argument("password", help="new password for the user")
+    args = parser.parse_args(argv[1:])
     finder = ZopeFinder(argv)
     finder.filter_warnings()
-    app = finder.get_app()
-    result = adduser(app, user, pwd)
+    app = finder.get_app(config_file=args.configuration)
+    result = adduser(app, args.user, args.password)
     if result:
-        print("User %s created." % user)
+        print(f"User {args.user} created.")
     else:
         print("Got no result back. User creation may have failed.")
         print("Maybe the user already exists and nothing is done then.")
