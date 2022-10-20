@@ -255,7 +255,7 @@ this using ``addzopeuser`` as follows:
   $ bin/addzopeuser user password
 
 The script expects to find the configuration file at ``etc/zope.conf`` by default.
-If it is located on a different location this can be specified by the `--configuration` option:
+If it is located in a different location you can specify it with the `--configuration` option:
 
 .. code-block:: console
 
