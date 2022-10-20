@@ -12,7 +12,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Script `addzopeuser` accepts now parameter '-c' or '--configuration'.
   This allows passing in a custom location for the `zope.conf` file to use.
-  If not specified, behavior is not not altered.
+  If not specified, behavior is not altered.
 
 - Update to newest compatible versions of dependencies.
 
