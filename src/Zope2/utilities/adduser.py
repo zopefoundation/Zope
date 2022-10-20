@@ -32,7 +32,7 @@ def main(argv=sys.argv):
     parser.add_argument(
         "-c",
         "--configuration",
-        help="Zope configuration file",
+        help="Path to Zope configuration file",
         nargs="?",
         type=str,
         default=None,
