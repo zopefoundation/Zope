@@ -252,3 +252,14 @@ class ConvertersTests(unittest.TestCase):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             self.assertEqual(field2ulines(to_convert), to_convert.splitlines())
+
+    def test_field2json_with_valid_json(self):
+        from ZPublisher.Converters import field2json
+        to_convert = '{"key1":"value1","key2": 2,"key3": ["1", "2"]}'
+        self.assertEqual(field2json(to_convert),
+                         {"key1": "value1", "key2": 2, "key3": ["1", "2"]})
+
+    def test_field2json_with_invalid_json(self):
+        from ZPublisher.Converters import field2json
+        to_convert = '{"key1":"value1","key2":'
+        self.assertRaises(ValueError, field2json, to_convert)

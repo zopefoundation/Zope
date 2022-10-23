@@ -26,6 +26,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   as described in `RFC7617 <https://datatracker.ietf.org/doc/html/draft-ietf-httpauth-basicauth-update-07#section-2.1>`_
   ( `#1065 <https://github.com/zopefoundation/Zope/pull/1065>`_).
 
+- Added `:json` converter in `ZPublisher.Converters`.
+  (`#957 <https://github.com/zopefoundation/Zope/issues/957>`_)
+
 
 5.6 (2022-09-09)
 ----------------
