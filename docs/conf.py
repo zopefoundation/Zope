@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Zope documentation'
-copyright = '2009-2020, The Zope developer community'
+copyright = '2009-2022, The Zope developer community'
 author = 'The Zope developer community'
 
 # The short X.Y version
-version = '4.6'
+version = '4.8.3'
 # The full version, including alpha/beta/rc tags
-release = '4.6'
+release = '4.8.3'
 
 
 # -- General configuration ---------------------------------------------------
