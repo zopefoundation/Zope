@@ -2,8 +2,9 @@ Zope==<5
 AccessControl==4.3
 Acquisition==4.10
 AuthEncoding==4.3
-BTrees==4.10.0
-Chameleon==3.9.1
+BTrees==4.10.1
+Chameleon==3.10.1; python_version > '2.7'
+Chameleon==3.9.1; python_version == '2.7'
 DateTime==4.4
 DocumentTemplate==3.4; python_version == '2.7'
 DocumentTemplate==3.4; python_version == '3.5'
@@ -11,7 +12,7 @@ DocumentTemplate==4; python_version > '3.5'
 ExtensionClass==4.6
 Missing==4.1
 MultiMapping==4.1
-Paste==3.5.0
+Paste==3.5.2
 PasteDeploy==2.1.1
 Persistence==3.3
 Products.BTreeFolder2==4.3
@@ -41,8 +42,8 @@ mock==3.0.5; python_version == '3.5'
 mock==4.0.3; python_version > '3.5'
 multipart==0.1.1; python_version == '2.7'
 multipart==0.2.4; python_version > '2.7'
-pbr==5.9.0
-persistent==4.9.0
+pbr==5.11.0
+persistent==4.9.1
 pytz==2022.1
 roman==3.3
 shutilwhich==1.1.0
@@ -72,7 +73,9 @@ zope.contenttype==4.5.0
 zope.datetime==4.3.0
 zope.deferredimport==4.4
 zope.deprecation==4.4.0
-zope.dottedname==4.3
+zope.dottedname==4.3; python_version == '2.7'
+zope.dottedname==4.3; python_version == '3.5'
+zope.dottedname==5.0; python_version > '3.5'
 zope.event==4.5.0
 zope.exceptions==4.5
 zope.filerepresentation==5.0.0
@@ -86,11 +89,11 @@ zope.lifecycleevent==4.4
 zope.location==4.2
 zope.pagetemplate==4.6.0
 zope.processlifetime==2.3.0
-zope.proxy==4.5.0
+zope.proxy==4.5.1
 zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
-zope.schema==6.2.0
+zope.schema==6.2.1
 zope.security==5.3
 zope.sendmail==5.2
 zope.sequencesort==4.2
