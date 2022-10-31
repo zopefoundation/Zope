@@ -1,7 +1,7 @@
-.. image:: https://github.com/zopefoundation/Zope/actions/workflows/tests.yml/badge.svg
+.. image:: https://github.com/zopefoundation/Zope/actions/workflows/tests.yml/badge.svg?branch=4.x
         :target: https://github.com/zopefoundation/Zope/actions/workflows/tests.yml
 
-.. image:: https://coveralls.io/repos/github/zopefoundation/Zope/badge.svg?branch=master
+.. image:: https://coveralls.io/repos/github/zopefoundation/Zope/badge.svg?branch=4.x
         :target: https://coveralls.io/github/zopefoundation/Zope?branch=master
 
 .. image:: https://readthedocs.org/projects/zope/badge/?version=4.x
