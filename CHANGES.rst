@@ -11,6 +11,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases for each supported Python version.
 
+- Make Products.PageTemplate engine compatible with Chameleon 3.10.
+
 
 4.8.3 (2022-10-31)
 ------------------
