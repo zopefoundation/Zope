@@ -71,7 +71,9 @@ zope.contenttype==4.5.0
 zope.datetime==4.3.0
 zope.deferredimport==4.4
 zope.deprecation==4.4.0
-zope.dottedname==4.3
+zope.dottedname==4.3; python_version == '2.7'
+zope.dottedname==4.3; python_version == '3.5'
+zope.dottedname==5.0; python_version > '3.5'
 zope.event==4.5.0
 zope.exceptions==4.5
 zope.filerepresentation==5.0.0
