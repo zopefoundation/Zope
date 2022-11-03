@@ -81,7 +81,7 @@ setup(
         'MultiMapping',
         'PasteDeploy',
         'Persistence',
-        'RestrictedPython',
+        'RestrictedPython < 6',
         'ZConfig >= 2.9.2',
         'ZODB',
         'ipaddress ; python_version=="2.7"',
