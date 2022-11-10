@@ -1,6 +1,7 @@
 name: macos
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
