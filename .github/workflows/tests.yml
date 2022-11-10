@@ -19,7 +19,7 @@ jobs:
         os:
         - ubuntu
         - windows
-        - macos-latest
+        - macos
         config:
         # [Python version, tox env]
         - ["3.9",   "lint"]
