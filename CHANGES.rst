@@ -7,8 +7,8 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.6.1 (unreleased)
-------------------
+5.7 (unreleased)
+----------------
 
 - Script `addzopeuser` accepts now parameter '-c' or '--configuration'.
   This allows passing in a custom location for the `zope.conf` file to use.
@@ -28,6 +28,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Added `:json` converter in `ZPublisher.Converters`.
   (`#957 <https://github.com/zopefoundation/Zope/issues/957>`_)
+
+- Support Python 3.11.
 
 
 5.6 (2022-09-09)
