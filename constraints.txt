@@ -1,34 +1,36 @@
-AccessControl==5.4
-Acquisition==4.10
+AccessControl==5.6
+Acquisition==4.12
 AuthEncoding==4.3
-BTrees==4.10.0
+BTrees==4.11.1
 Chameleon==3.10.1
-DateTime==4.6
-DocumentTemplate==4.0
-ExtensionClass==4.6
+DateTime==4.7
+DocumentTemplate==4.1
+ExtensionClass==4.8
 Missing==4.1
 MultiMapping==4.1
 Paste==3.5.2
-PasteDeploy==2.1.1
-Persistence==3.3
+PasteDeploy==2.1.1; python_version == '3.6'
+PasteDeploy==2.1.1; python_version == '3.7'
+PasteDeploy==3.0.1; python_version > '3.7'
+Persistence==3.5
 Products.BTreeFolder2==4.3
 Products.ZCatalog==6.3
-Record==3.5
+Record==3.6
 RestrictedPython==5.2; python_version == '3.10'
 RestrictedPython==5.2; python_version == '3.6'
 RestrictedPython==5.2; python_version == '3.7'
 RestrictedPython==5.2; python_version == '3.8'
 RestrictedPython==5.2; python_version == '3.9'
-RestrictedPython==6.0a1.dev0; python_version > '3.10'
-SecretStorage==3.3.2
+RestrictedPython==6.0; python_version > '3.10'
+SecretStorage==3.3.3
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
 ZConfig==3.6.0
 ZEO==5.3.0
-ZODB==5.7.0
+ZODB==5.8.0
 Zope2==4.0
-cryptography==38.0.1
+cryptography==38.0.3
 five.localsitemanager==3.3
 funcsigs==1.0.2
 future==0.18.2
@@ -37,9 +39,9 @@ jeepney==0.7.1; python_version == '3.6'
 jeepney==0.8.0; python_version > '3.6'
 mock==4.0.3
 multipart==0.2.4
-pbr==5.10.0
-persistent==4.9.0
-pytz==2022.2.1
+pbr==5.11.0
+persistent==4.9.2
+pytz==2022.6
 roman==3.3
 shutilwhich==1.1.0
 six==1.16.0
@@ -50,7 +52,7 @@ z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0
 zdaemon==4.3
-zodbpickle==2.3
+zodbpickle==2.5
 zope.annotation==4.8
 zope.browser==2.4
 zope.browsermenu==4.4
@@ -60,7 +62,7 @@ zope.cachedescriptors==4.4
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.6
+zope.container==4.8
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
@@ -68,25 +70,25 @@ zope.deferredimport==4.4
 zope.deprecation==4.4.0
 zope.dottedname==5.0
 zope.event==4.5.0
-zope.exceptions==4.5
+zope.exceptions==4.6
 zope.filerepresentation==5.0.0
 zope.formlib==5.0.1
-zope.globalrequest==1.5
-zope.hookable==5.1.0
+zope.globalrequest==1.6
+zope.hookable==5.3
 zope.i18n==4.9.0
-zope.i18nmessageid==5.0.1
-zope.interface==5.4.0
+zope.i18nmessageid==5.1.0
+zope.interface==5.5.1
 zope.lifecycleevent==4.4
 zope.location==4.2
 zope.pagetemplate==4.6.0
 zope.processlifetime==2.4
-zope.proxy==4.5.0
+zope.proxy==4.6.0
 zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
-zope.schema==6.2.0
-zope.security==5.3
-zope.sendmail==5.2
+zope.schema==6.2.1
+zope.security==5.5
+zope.sendmail==5.3
 zope.sequencesort==4.2
 zope.site==4.6.1
 zope.size==4.4
