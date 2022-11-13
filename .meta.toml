@@ -31,7 +31,7 @@ additional-config = [
 
 [tox]
 testenv-deps = [
-    "wheel",
+    "cffi",
     ]
 additional-envlist = [
     "pre-commit",

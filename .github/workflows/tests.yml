@@ -60,9 +60,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -U wheel setuptools
-        # The following prevents endless issues with building wheels on macOS
-        pip install -U 'cffi; platform_python_implementation == "CPython"'
         pip install tox
     - name: Test
       run: tox -e ${{ matrix.config[1] }}
