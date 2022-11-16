@@ -1,12 +1,12 @@
 AccessControl==5.6
 Acquisition==4.12
 AuthEncoding==4.3
-BTrees==4.11.1
+BTrees==4.11.2
 Chameleon==3.10.1
 DateTime==4.7
 DocumentTemplate==4.1
 ExtensionClass==4.8
-Missing==4.1
+Missing==4.2
 MultiMapping==4.1
 Paste==3.5.2
 PasteDeploy==2.1.1; python_version == '3.6'
@@ -35,7 +35,7 @@ jeepney==0.8.0; python_version > '3.6'
 mock==4.0.3
 multipart==0.2.4
 pbr==5.11.0
-persistent==4.9.2
+persistent==4.9.3
 pytz==2022.6
 roman==3.3
 shutilwhich==1.1.0
@@ -57,7 +57,7 @@ zope.cachedescriptors==4.4
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.8
+zope.container==4.9
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
@@ -77,12 +77,12 @@ zope.lifecycleevent==4.4
 zope.location==4.2
 zope.pagetemplate==4.6.0
 zope.processlifetime==2.4
-zope.proxy==4.6.0
+zope.proxy==4.6.1
 zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
 zope.schema==6.2.1
-zope.security==5.5
+zope.security==5.6
 zope.sendmail==5.3
 zope.sequencesort==4.2
 zope.site==4.6.1
