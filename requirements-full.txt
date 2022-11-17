@@ -1,19 +1,19 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
-AccessControl==5.6
-Acquisition==4.12
+AccessControl==5.7
+Acquisition==4.13
 AuthEncoding==4.3
-BTrees==4.11.2
+BTrees==4.11.3
 Chameleon==3.10.1
 DateTime==4.7
 DocumentTemplate==4.1
-ExtensionClass==4.8
+ExtensionClass==4.9
 Missing==4.2
 MultiMapping==4.1
 Paste==3.5.2
 PasteDeploy==2.1.1; python_version == '3.6'
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
-Persistence==3.5
+Persistence==3.6
 Products.BTreeFolder2==4.3
 Products.ZCatalog==6.3
 Record==3.6
@@ -48,7 +48,7 @@ z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0
 zdaemon==4.3
-zodbpickle==2.5
+zodbpickle==2.6
 zope.annotation==4.8
 zope.browser==2.4
 zope.browsermenu==4.4
@@ -58,7 +58,7 @@ zope.cachedescriptors==4.4
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.9
+zope.container==4.10
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
@@ -70,10 +70,10 @@ zope.exceptions==4.6
 zope.filerepresentation==5.0.0
 zope.formlib==5.0.1
 zope.globalrequest==1.6
-zope.hookable==5.3
+zope.hookable==5.4
 zope.i18n==4.9.0
-zope.i18nmessageid==5.1.0
-zope.interface==5.5.1
+zope.i18nmessageid==5.1.1
+zope.interface==5.5.2
 zope.lifecycleevent==4.4
 zope.location==4.2
 zope.pagetemplate==4.6.0
@@ -83,7 +83,7 @@ zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
 zope.schema==6.2.1
-zope.security==5.6
+zope.security==5.7
 zope.sendmail==5.3
 zope.sequencesort==4.2
 zope.site==4.6.1
