@@ -15,7 +15,7 @@ available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include
-  **3.6** up to **3.9**.
+  **3.6** up to **3.11**.
 
   .. warning::
 
