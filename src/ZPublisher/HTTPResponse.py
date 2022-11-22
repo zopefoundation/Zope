@@ -514,9 +514,6 @@ class HTTPBaseResponse(BaseResponse):
         You can also specify a title, in which case the title and body
         will be wrapped up in html, head, title, and body tags.
 
-        If the body is a 2-element tuple, then it will be treated
-        as (title,body)
-
         If body has an 'asHTML' method, replace it by the result of that
         method.
 
@@ -539,13 +536,12 @@ class HTTPBaseResponse(BaseResponse):
         if not body:
             return self
 
-        if isinstance(body, tuple) and len(body) == 2:
-            title, body = body
+        content_type = self.headers.get('content-type')
 
         if hasattr(body, 'asHTML'):
             body = body.asHTML()
-
-        content_type = self.headers.get('content-type')
+            if content_type is None:
+                content_type = 'text/html'
 
         if isinstance(body, (bytes, bytearray, memoryview)):
             body = bytes(body)
@@ -567,6 +563,7 @@ class HTTPBaseResponse(BaseResponse):
         else:
             if title:
                 title = str(title)
+                content_type = 'text/html'
                 if not is_error:
                     self.body = body = self._html(
                         title, body.decode(self.charset)).encode(self.charset)
@@ -577,10 +574,7 @@ class HTTPBaseResponse(BaseResponse):
                 self.body = body
 
         if content_type is None:
-            if self.isHTML(body):
-                content_type = f'text/html; charset={self.charset}'
-            else:
-                content_type = f'text/plain; charset={self.charset}'
+            content_type = f'text/plain; charset={self.charset}'
             self.setHeader('content-type', content_type)
         else:
             if content_type.startswith('text/') and \
@@ -892,10 +886,11 @@ class HTTPResponse(HTTPBaseResponse):
                 b = '<unprintable %s object>' % type(b).__name__
 
         if fatal and t is SystemExit and v.code == 0:
+            self.setHeader('content-type', 'text/html')
             body = self.setBody(
-                (str(t),
-                 'Zope has exited normally.<p>'
-                 + self._traceback(t, v, tb) + '</p>'),
+                'Zope has exited normally.<p>'
+                + self._traceback(t, v, tb) + '</p>',
+                title=t,
                 is_error=True)
         else:
             try:
@@ -904,10 +899,11 @@ class HTTPResponse(HTTPBaseResponse):
                 match = None
 
             if match is None:
+                self.setHeader('content-type', 'text/html')
                 body = self.setBody(
-                    (str(t),
-                     'Sorry, a site error occurred.<p>'
-                     + self._traceback(t, v, tb) + '</p>'),
+                    'Sorry, a site error occurred.<p>'
+                    + self._traceback(t, v, tb) + '</p>',
+                    title=t,
                     is_error=True)
             elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
@@ -918,8 +914,8 @@ class HTTPResponse(HTTPBaseResponse):
                     body = self.setBody(b, is_error=True)
             else:
                 body = self.setBody(
-                    (str(t),
-                     b + self._traceback(t, '(see above)', tb, 0)),
+                    b + self._traceback(t, '(see above)', tb, 0),
+                    title=t,
                     is_error=True)
         del tb
         return body
