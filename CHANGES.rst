@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.7.1 (unreleased)
 ------------------
 
+- Update to newest compatible versions of dependencies.
+
 
 5.7 (2022-11-17)
 ----------------
