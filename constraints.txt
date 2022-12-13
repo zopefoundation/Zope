@@ -14,7 +14,7 @@ PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==3.6
 Products.BTreeFolder2==4.3
-Products.ZCatalog==6.3
+Products.ZCatalog==6.4
 Record==3.6
 RestrictedPython==6.0
 SecretStorage==3.3.3
