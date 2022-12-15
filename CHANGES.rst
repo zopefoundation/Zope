@@ -10,6 +10,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.7.1 (unreleased)
 ------------------
 
+- Set the published default ``Content-Type`` header to ``text/plain``
+  if none has been set explicitly to prevent a cross-site scripting attack.
+  Also remove the old behavior of constructing an HTML page for published
+  methods returning a two-item tuple.
+
 - Update to newest compatible versions of dependencies.
 
 
