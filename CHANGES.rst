@@ -9,6 +9,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.4 (unreleased)
 ------------------
 
+- Set the published default ``Content-Type`` header to ``text/plain``
+  if none has been set explicitly to prevent a cross-site scripting attack.
+  Also remove the old behavior of constructing an HTML page for published
+  methods returning a two-item tuple.
+
 - Update dependencies to the latest releases for each supported Python version.
 
 - Make Products.PageTemplate engine compatible with Chameleon 3.10.

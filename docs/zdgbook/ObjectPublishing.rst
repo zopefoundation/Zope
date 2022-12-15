@@ -339,7 +339,7 @@ base with a *base* tag in your ``index_html`` method output.
 Response Headers
 ----------------
 
-The publisher and the web server take care of setting *Content-Length*
+The publisher and the web server take care of setting the *Content-Length*
 response header. Later in the chapter you'll find out how to control
 response headers and also how exceptions are used to set the HTTP
 response code.
