@@ -22,11 +22,11 @@ SecretStorage==3.3.3
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
-ZConfig==3.6.0
+ZConfig==3.6.1
 ZEO==5.3.0
 ZODB==5.8.0
 Zope2==4.0
-cryptography==38.0.3
+cryptography==38.0.4
 five.localsitemanager==3.3
 funcsigs==1.0.2
 future==0.18.2
@@ -47,7 +47,7 @@ waitress==2.1.2; python_version > '3.6'
 z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0
-zdaemon==4.3
+zdaemon==4.4
 zodbpickle==2.6
 zope.annotation==4.8
 zope.browser==2.4
@@ -65,7 +65,7 @@ zope.datetime==4.3.0
 zope.deferredimport==4.4
 zope.deprecation==4.4.0
 zope.dottedname==5.0
-zope.event==4.5.0
+zope.event==4.6
 zope.exceptions==4.6
 zope.filerepresentation==5.0.0
 zope.formlib==5.0.1
@@ -75,7 +75,7 @@ zope.i18n==4.9.0
 zope.i18nmessageid==5.1.1
 zope.interface==5.5.2
 zope.lifecycleevent==4.4
-zope.location==4.2
+zope.location==4.3
 zope.pagetemplate==4.6.0
 zope.processlifetime==2.4
 zope.proxy==4.6.1
@@ -83,7 +83,7 @@ zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
 zope.schema==6.2.1
-zope.security==5.7
+zope.security==5.8
 zope.sendmail==5.3
 zope.sequencesort==4.2
 zope.site==4.6.1
@@ -93,6 +93,6 @@ zope.tal==4.5
 zope.tales==5.2
 zope.testbrowser==5.6.1
 zope.testing==4.10
-zope.testrunner==5.5.1
+zope.testrunner==5.6
 zope.traversing==4.4.1
 zope.viewlet==4.3

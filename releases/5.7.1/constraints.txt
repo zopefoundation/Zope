@@ -1,50 +1,39 @@
-AccessControl==4.3
+AccessControl==5.7
 Acquisition==4.13
 AuthEncoding==4.3
 BTrees==4.11.3
-Chameleon==3.10.1; python_version > '2.7'
-Chameleon==3.9.1; python_version == '2.7'
-DateTime==4.4; python_version == '3.5'
-DateTime==4.7; python_version > '3.5'
-DocumentTemplate==3.4; python_version == '2.7'
-DocumentTemplate==3.4; python_version == '3.5'
-DocumentTemplate==4.1; python_version > '3.5'
+Chameleon==3.10.1
+DateTime==4.7
+DocumentTemplate==4.1
 ExtensionClass==4.9
 Missing==4.2
 MultiMapping==4.1
 Paste==3.5.2
-PasteDeploy==2.1.1; python_version == '2.7'
-PasteDeploy==2.1.1; python_version == '3.5'
 PasteDeploy==2.1.1; python_version == '3.6'
-PasteDeploy==3.0.1; python_version > '3.6'
+PasteDeploy==2.1.1; python_version == '3.7'
+PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==3.6
 Products.BTreeFolder2==4.3
-Products.ZCatalog==5.4
+Products.ZCatalog==6.4
 Record==3.6
-RestrictedPython==5.2
-WSGIProxy2==0.4.6; python_version == '2.7'
-WSGIProxy2==0.4.6; python_version == '3.5'
-WSGIProxy2==0.4.6; python_version == '3.6'
-WSGIProxy2==0.5.1; python_version > '3.6'
+RestrictedPython==6.0
+SecretStorage==3.3.3
+WSGIProxy2==0.5.1
 WebOb==1.8.7
-WebTest==2.0.35; python_version == '2.7'
-WebTest==2.0.35; python_version == '3.5'
-WebTest==3.0.0; python_version > '3.5'
+WebTest==3.0.0
 ZConfig==3.6.1
 ZEO==5.3.0
 ZODB==5.8.0
-ZServer==4.0.2; python_version == '2.7'
 Zope2==4.0
-five.globalrequest==99.1
+cryptography==38.0.4
 five.localsitemanager==3.3
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
-mock==3.0.5; python_version == '2.7'
-mock==3.0.5; python_version == '3.5'
-mock==4.0.3; python_version > '3.5'
-multipart==0.1.1; python_version == '2.7'
-multipart==0.2.4; python_version > '2.7'
+jeepney==0.7.1; python_version == '3.6'
+jeepney==0.8.0; python_version > '3.6'
+mock==4.0.3
+multipart==0.2.4
 pbr==5.11.0
 persistent==4.9.3
 pytz==2022.6
@@ -52,8 +41,6 @@ roman==3.3
 shutilwhich==1.1.0
 six==1.16.0
 transaction==3.0.1
-waitress==1.4.4; python_version == '2.7'
-waitress==1.4.4; python_version == '3.5'
 waitress==2.0.0; python_version == '3.6'
 waitress==2.1.2; python_version > '3.6'
 z3c.pt==3.3.1
@@ -76,10 +63,8 @@ zope.contenttype==4.6
 zope.datetime==4.3.0
 zope.deferredimport==4.4
 zope.deprecation==4.4.0
-zope.dottedname==4.3; python_version == '2.7'
-zope.dottedname==4.3; python_version == '3.5'
-zope.dottedname==5.0; python_version > '3.5'
-zope.event==4.6
+zope.dottedname==5.0
+zope.event==4.5.0
 zope.exceptions==4.6
 zope.filerepresentation==5.0.0
 zope.formlib==5.0.1
