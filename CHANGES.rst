@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.4 (unreleased)
+4.8.4 (2022-12-16)
 ------------------
 
 - Set the published default ``Content-Type`` header to ``text/plain``
@@ -17,7 +17,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 - Update dependencies to the latest releases for each supported Python version.
 
-- Make Products.PageTemplate engine compatible with Chameleon 3.10.
+- Make ``Products.PageTemplates`` compatible with Chameleon 3.10.
 
 
 4.8.3 (2022-10-31)

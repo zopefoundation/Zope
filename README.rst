@@ -44,10 +44,15 @@ https://zope.readthedocs.io.
 Zope 4 - the bridge between Zope 2 and Zope 5
 =============================================
 
+**Zope 4 is no longer fully supported and only receives security fixes at this
+time. Please upgrade to Zope 5 as soon as possible.** The `Zope release
+schedule <https://www.zope.dev/releases.html>`_ has details about support
+policies and timeframes.
+
 Zope 4 supports Python 2 and Python 3. It is meant to act as a bridge for those
 upgrading applications from Zope 2. Once you are on Zope 4 and Python 3 the
-next step to Zope 5 is painless and we recommend upgrading to Zope 5 for a
-future-proof deployment.
+next step to Zope 5 is painless and we recommend upgrading to Zope 5
+immediately.
 
 
 Installation

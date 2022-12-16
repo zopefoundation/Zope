@@ -20,7 +20,7 @@ This is the official home for all Zope 4 documentation.
    operation
    wsgi
    maintenance
-   Zope development roadmap <https://www.zope.dev/developer/roadmap.html>
+   Zope release schedule <https://www.zope.dev/releases.html>
    changes
    zopebook/index
    zdgbook/index
