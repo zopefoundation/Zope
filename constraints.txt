@@ -64,7 +64,7 @@ zope.datetime==4.3.0
 zope.deferredimport==4.4
 zope.deprecation==4.4.0
 zope.dottedname==5.0
-zope.event==4.5.0
+zope.event==4.6
 zope.exceptions==4.6
 zope.filerepresentation==5.0.0
 zope.formlib==5.0.1
