@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.7.2 (unreleased)
 ------------------
 
+- Fix some broken ZMI pages due to the changed default content type
+  from PR https://github.com/zopefoundation/Zope/pull/1075
+  (`#1078 <https://github.com/zopefoundation/Zope/issues/1078>`_)
+
 - Update to newest compatible versions of dependencies.
 
 
