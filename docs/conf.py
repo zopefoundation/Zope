@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Zope documentation'
+project = 'Zope'
 copyright = '2009-2022, The Zope developer community'
 author = 'The Zope developer community'
 
