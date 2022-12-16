@@ -6,8 +6,14 @@ These are all the changes in Zope 4, starting with the alpha releases.
 The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
+
 4.8.4 (unreleased)
 ------------------
+
+- Set the published default ``Content-Type`` header to ``text/plain``
+  if none has been set explicitly to prevent a cross-site scripting attack.
+  Also remove the old behavior of constructing an HTML page for published
+  methods returning a two-item tuple.
 
 - Update dependencies to the latest releases for each supported Python version.
 
