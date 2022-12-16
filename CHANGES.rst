@@ -10,6 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.5 (unreleased)
 ------------------
 
+- Update dependencies to the latest releases for each supported Python version.
+
 
 4.8.4 (2022-12-16)
 ------------------
