@@ -52,7 +52,7 @@ advise you to either upgrade your Zope installation to at least Python 3.7,
 or `switch to a different WSGI server
 <https://zope.readthedocs.io/en/latest/operation.html#recommended-wsgi-servers>`_.
 **Due to this security issue Python 3.6 support is deprecated starting with
-Zope 5.5.1 and will be removed in Zope version 5.7.**
+Zope 5.5.1 and will be removed in Zope version 5.8.**
 
 
 License
