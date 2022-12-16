@@ -559,25 +559,10 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(response.getHeader('Content-Type'), None)
         self.assertEqual(response.getHeader('Content-Length'), None)
 
-    def test_setBody_2_tuple_wo_is_error_converted_to_HTML(self):
-        EXPECTED = (b"<html>\n"
-                    b"<head>\n<title>TITLE</title>\n</head>\n"
-                    b"<body>\nBODY\n</body>\n"
-                    b"</html>\n")
+    def test_setBody_with_is_error_converted_to_Site_Error(self):
         response = self._makeOne()
         response.body = b'BEFORE'
-        result = response.setBody(('TITLE', b'BODY'))
-        self.assertTrue(result)
-        self.assertEqual(response.body, EXPECTED)
-        self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=utf-8')
-        self.assertEqual(response.getHeader('Content-Length'),
-                         str(len(EXPECTED)))
-
-    def test_setBody_2_tuple_w_is_error_converted_to_Site_Error(self):
-        response = self._makeOne()
-        response.body = b'BEFORE'
-        result = response.setBody(('TITLE', b'BODY'), is_error=True)
+        result = response.setBody(b'BODY', 'TITLE', is_error=True)
         self.assertTrue(result)
         self.assertFalse(b'BEFORE' in response.body)
         self.assertTrue(b'<h2>Site Error</h2>' in response.body)
@@ -595,14 +580,16 @@ class HTTPResponseTests(unittest.TestCase):
                          'text/plain; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), '4')
 
-    def test_setBody_string_HTML(self):
+    def test_setBody_string_HTML_uses_text_plain(self):
         HTML = '<html><head></head><body></body></html>'
         response = self._makeOne()
         result = response.setBody(HTML)
         self.assertTrue(result)
         self.assertEqual(response.body, HTML.encode('utf-8'))
+        # content type is set as text/plain, even though body
+        # could be guessed as html
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=utf-8')
+                         'text/plain; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'), str(len(HTML)))
 
     def test_setBody_object_with_asHTML(self):
@@ -628,7 +615,7 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(response.body, ENCODED)
         self.assertEqual(response.getHeader('Content-Type'),
-                         'text/html; charset=utf-8')
+                         'text/plain; charset=utf-8')
         self.assertEqual(response.getHeader('Content-Length'),
                          str(len(ENCODED)))
 
@@ -683,6 +670,10 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.setBody(('a',))
         self.assertEqual(b"('a',)", response.body)
+        response.setBody(('a', 'b'))
+        self.assertEqual(b"('a', 'b')", response.body)
+        response.setBody(('a', 'b', 'c'))
+        self.assertEqual(b"('a', 'b', 'c')", response.body)
 
     def test_setBody_calls_insertBase(self):
         response = self._makeOne()

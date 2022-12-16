@@ -261,25 +261,6 @@ the chapter.
   Depending on the used client, it looks like nothing happens.
 
 
-Optionally, the published method can return a tuple with
-the title and the body of the response. In this case, the publisher
-returns a generated HTML page, with the first item of the tuple used
-for the value of the HTML ``title`` tag of the page, and the second
-item as the content of the HTML ``body`` tag.
-
-
-For example a response of::
-
-  ("my_title", "my_text")
-
-
-is turned into this HTML page::
-
-  <html>
-  <head><title>my_title</title></head>
-  <body>my_text</body>
-  </html>
-
 
 Controlling Base HREF
 ---------------------
@@ -348,10 +329,10 @@ base with a *base* tag in your ``index_html`` method output.
 Response Headers
 ----------------
 
-The publisher and the web server take care of setting response headers
-such as *Content-Length* and *Content-Type*. Later in the chapter
-you'll find out how to control these headers and also how exceptions
-are used to set the HTTP response code.
+The publisher and the web server take care of setting the *Content-Length*
+response header. Later in the chapter you'll find out how to control
+response headers and also how exceptions are used to set the HTTP
+response code.
 
 
 Pre-Traversal Hook
@@ -1121,7 +1102,7 @@ Known issues and caveats
 
    - unrecognized directives are silently ignored
 
-   - if a request paramater contains several converter directives, the
+   - if a request parameter contains several converter directives, the
      leftmost wins
 
    - if a request paramter contains several encoding directives, the
@@ -1163,7 +1144,7 @@ Exceptions
 ----------
 
 When the object publisher catches an unhandled exception, it tries to
-match it with a set of predifined exceptions coming from the
+match it with a set of predefined exceptions coming from the
 **zExceptions** package, such as **HTTPNoContent**, **HTTPNotFound**,
 **HTTPUnauthorized**.
 
@@ -1282,6 +1263,7 @@ being called from the web. Consider this function::
       ...
       result = ...
       if REQUEST is not None:
+          REQUEST.RESPONSE.setHeader("Content-Type", "text/html")
           return "<html><p>Result: %s </p></html>" % result
       return result
 

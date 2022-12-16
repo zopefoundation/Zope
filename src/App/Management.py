@@ -191,6 +191,7 @@ class Navigation(Base):
         realm = RESPONSE.realm
         RESPONSE.setStatus(401)
         RESPONSE.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+        RESPONSE.setHeader('Content-Type', 'text/html')
         RESPONSE.setBody("""<html>
 <head><title>Logout</title></head>
 <body>
