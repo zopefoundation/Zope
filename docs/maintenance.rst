@@ -47,6 +47,10 @@ Steps for creating a new Zope release
 - Update version information in change log and ``setup.py`` and specify today's
   date as release date in the change log.
 
+- Update the version information in the Sphinx documentation configuration::
+
+    $ vim docs/conf.py
+
 - Pin the Zope version in ``versions-prod.cfg``
 
 - Run ``bin/python util.py`` to update ``requirements-full.txt``. **Note:** The
@@ -117,6 +121,8 @@ Steps for creating a new Zope release
 - Build the documentation: ``bin/make-docs``
 - Fix problems.
 - Commit and push the changes.
+
+- Update the Zope release schedule at https://www.zope.dev/releases.html
 
 - Announce the release to the world via zope-announce@zope.dev and https://community.plone.org/c/announcements.
 
