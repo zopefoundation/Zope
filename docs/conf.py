@@ -20,7 +20,7 @@ import datetime
 # -- Project information -----------------------------------------------------
 year = datetime.datetime.now().year
 
-project = 'Zope documentation'
+project = 'Zope'
 copyright = '2009-%s, The Zope developer community' % year
 author = 'The Zope developer community'
 
