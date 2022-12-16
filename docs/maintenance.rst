@@ -63,7 +63,7 @@ Steps for creating a new Zope release
 
     $ bin/tox --pall
 
-- Commit the changes.
+- If the tests succeed, commit the changes.
 
 - Upload the tagged release to PyPI::
 
@@ -132,6 +132,8 @@ Steps for creating a new Zope release
 - Build the documentation: ``bin/make-docs``
 - Fix problems.
 - Commit and push the changes.
+
+- Update the Zope release schedule at https://www.zope.dev/releases.html
 
 - Announce the release to the world via zope-announce@zope.dev and https://community.plone.org/c/announcements.
 

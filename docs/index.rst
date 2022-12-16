@@ -10,7 +10,7 @@ This is the official home for all Zope documentation.
    operation
    migrations/index
    maintenance
-   Zope development roadmap <https://www.zope.dev/developer/roadmap.html>
+   Zope release schedule <https://www.zope.dev/releases.html>
    changes
    zopebook/index
    zdgbook/index
