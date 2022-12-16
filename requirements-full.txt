@@ -4,7 +4,7 @@ Acquisition==4.13
 AuthEncoding==4.3
 BTrees==4.11.3
 Chameleon==3.10.1
-DateTime==4.7
+DateTime==4.8
 DocumentTemplate==4.1
 ExtensionClass==4.9
 Missing==4.2
@@ -14,7 +14,7 @@ PasteDeploy==2.1.1; python_version == '3.6'
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==3.6
-Products.BTreeFolder2==4.3
+Products.BTreeFolder2==4.4
 Products.ZCatalog==6.4
 Record==3.6
 RestrictedPython==6.0
@@ -27,7 +27,7 @@ ZEO==5.3.0
 ZODB==5.8.0
 Zope2==4.0
 cryptography==38.0.4
-five.localsitemanager==3.3
+five.localsitemanager==3.4
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
