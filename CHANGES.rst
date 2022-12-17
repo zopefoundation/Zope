@@ -7,7 +7,7 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.7.2 (unreleased)
+5.7.2 (2022-12-17)
 ------------------
 
 - Fix some broken ZMI pages due to the changed default content type
