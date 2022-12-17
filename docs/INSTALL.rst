@@ -135,6 +135,7 @@ options, please see the
 
     [zopeinstance]
     recipe = plone.recipe.zope2instance
+    eggs =
     user = admin:adminpassword
     http-address = 8080
     zodb-temporary-storage = off
