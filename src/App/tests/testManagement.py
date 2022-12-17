@@ -80,14 +80,14 @@ class TestTabs(Testing.ZopeTestCase.ZopeTestCase):
 class TestManagePages(Testing.ZopeTestCase.ZopeTestCase):
 
     def setUp(self):
-        super().setUp()
+        super(TestManagePages, self).setUp()
         uf = self.folder.acl_users
         uf.userFolderAddUser('mgr', 'foo', ['Manager'], [])
         self.login('mgr')
 
     def tearDown(self):
         self.logout()
-        super().tearDown()
+        super(TestManagePages, self).tearDown()
 
     def test_manage_content_type(self):
         req = self.app.REQUEST
