@@ -18,6 +18,13 @@
 * [requirements-full.txt](releases/4.x/requirements-full.txt)
 * [constraints.txt](releases/4.x/constraints.txt)
 
+## 5.7.2
+
+* [versions.cfg](releases/5.7.2/versions.cfg)
+* [versions-prod.cfg](releases/5.7.2/versions-prod.cfg)
+* [requirements-full.txt](releases/5.7.2/requirements-full.txt)
+* [constraints.txt](releases/5.7.2/constraints.txt)
+
 ## 5.7.1
 
 * [versions.cfg](releases/5.7.1/versions.cfg)
@@ -129,6 +136,13 @@
 * [versions-prod.cfg](releases/5.0a1/versions-prod.cfg)
 * [requirements-full.txt](releases/5.0a1/requirements-full.txt)
 * [constraints.txt](releases/5.0a1/constraints.txt)
+
+## 4.8.5
+
+* [versions.cfg](releases/4.8.5/versions.cfg)
+* [versions-prod.cfg](releases/4.8.5/versions-prod.cfg)
+* [requirements-full.txt](releases/4.8.5/requirements-full.txt)
+* [constraints.txt](releases/4.8.5/constraints.txt)
 
 ## 4.8.4
 
