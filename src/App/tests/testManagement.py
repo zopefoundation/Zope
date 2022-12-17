@@ -69,3 +69,28 @@ class TestTabs(Testing.ZopeTestCase.ZopeTestCase):
         self.app.REQUEST.traverse(path)
 
         self.assertEqual(self.folder.tabs_path_length(self.app.REQUEST), 2)
+
+    def test_Tabs_content_type(self):
+        req = self.app.REQUEST
+
+        self.folder.manage_tabs(req)
+        self.assertIn('text/html', req.RESPONSE.getHeader('Content-Type'))
+
+
+class TestManagePages(Testing.ZopeTestCase.ZopeTestCase):
+
+    def setUp(self):
+        super().setUp()
+        uf = self.folder.acl_users
+        uf.userFolderAddUser('mgr', 'foo', ['Manager'], [])
+        self.login('mgr')
+
+    def tearDown(self):
+        self.logout()
+        super().tearDown()
+
+    def test_manage_content_type(self):
+        req = self.app.REQUEST
+
+        self.folder.manage(req)
+        self.assertIn('text/html', req.RESPONSE.getHeader('Content-Type'))

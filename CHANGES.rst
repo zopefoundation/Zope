@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.5 (unreleased)
 ------------------
 
+- Fix some broken ZMI pages due to the changed default content type
+  from PR https://github.com/zopefoundation/Zope/pull/1075
+  (`#1078 <https://github.com/zopefoundation/Zope/issues/1078>`_)
+
 - Update dependencies to the latest releases for each supported Python version.
 
 

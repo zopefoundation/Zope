@@ -206,6 +206,15 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
 
         security = getSecurityManager()
         security.addContext(self)
+
+        # Set a content type to override the publisher default "text/plain"
+        # This class is only used in the Zope ZMI so it's safe to assume
+        # that it is rendering HTML.
+        if 'REQUEST' in bound_data:
+            response = bound_data['REQUEST'].RESPONSE
+            if not response.getHeader('Content-Type'):
+                response.setHeader('Content-Type', 'text/html')
+
         try:
             value = self.ZDocumentTemplate_beforeRender(ns, _marker)
             if value is _marker:
