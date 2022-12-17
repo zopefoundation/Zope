@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.5 (unreleased)
+4.8.5 (2022-12-17)
 ------------------
 
 - Fix some broken ZMI pages due to the changed default content type
