@@ -35,7 +35,7 @@ from App.special_dtml import HTML
 
 
 class MessageDialogHTML(HTML):
-    """An special version of HTML which is always published as text/html
+    """A special version of HTML which is always published as text/html
     """
     def __call__(self, *args, **kw):
         class _HTMLString(str):
