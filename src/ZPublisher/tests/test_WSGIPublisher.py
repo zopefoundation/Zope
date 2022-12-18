@@ -669,7 +669,7 @@ class TestPublishModule(ZopeTestCase):
             'Exception View: ConflictError'))
         self.assertEqual(_request.retry_count, _request.retry_max_count)
 
-        # The Content-Type response heade should be set to text/html
+        # The Content-Type response header should be set to text/html
         self.assertIn('text/html', _request.response.getHeader('Content-Type'))
 
         unregisterExceptionView(Exception)
