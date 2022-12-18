@@ -670,6 +670,10 @@ class TestPublishModule(ZopeTestCase):
         self.assertTrue(app_iter[1].startswith(
             'Exception View: ConflictError'))
         self.assertEqual(_request.retry_count, _request.retry_max_count)
+
+        # The Content-Type response heade should be set to text/html
+        self.assertIn('text/html', _request.response.getHeader('Content-Type'))
+
         unregisterExceptionView(Exception)
 
     def testCustomExceptionViewUnauthorized(self):
@@ -871,10 +875,10 @@ class ExcViewCreatedTests(ZopeTestCase):
         from zope.interface import directlyProvides
         from zope.publisher.browser import IDefaultBrowserLayer
         from ZPublisher.WSGIPublisher import _exc_view_created_response
-        req = DummyRequest()
+        req = self.app.REQUEST
         req['PARENTS'] = [self.app]
         directlyProvides(req, IDefaultBrowserLayer)
-        return _exc_view_created_response(exc, req, DummyResponse())
+        return _exc_view_created_response(exc, req, req.RESPONSE)
 
     def _registerStandardErrorView(self):
         from OFS.browser import StandardErrorMessageView
@@ -901,13 +905,21 @@ class ExcViewCreatedTests(ZopeTestCase):
         from OFS.DTMLMethod import addDTMLMethod
         from zExceptions import NotFound
         self._registerStandardErrorView()
+        response = self.app.REQUEST.RESPONSE
 
         addDTMLMethod(self.app, 'standard_error_message', file='OOPS')
+
+        # The response content-type header is not set before rendering
+        # the standard error template
+        self.assertFalse(response.getHeader('Content-Type'))
 
         try:
             self.assertTrue(self._callFUT(NotFound))
         finally:
             self._unregisterStandardErrorView()
+
+        # After rendering the response content-type header is set
+        self.assertIn('text/html', response.getHeader('Content-Type'))
 
 
 class WSGIPublisherTests(FunctionalTestCase):
@@ -1062,6 +1074,14 @@ class DummyResponse(object):
         self._status = status
 
     status = property(lambda self: self._status, setStatus)
+
+    def getHeader(self, header):
+        return dict(self._headers).get(header, None)
+
+    def setHeader(self, header, value):
+        headers = dict(self._headers)
+        headers[header] = value
+        self._headers = tuple(headers.items())
 
 
 class DummyCallable(object):

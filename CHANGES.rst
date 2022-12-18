@@ -10,8 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.6 (unreleased)
 ------------------
 
-- Adjust the old ``App.Dialogs.MessageDialog`` to be served as HTML after
-  from PR https://github.com/zopefoundation/Zope/pull/1075 .
+- Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML
+  due to the changed default content type from `#1075
+  <https://github.com/zopefoundation/Zope/pull/1075>`_.
+
 
 4.8.5 (2022-12-17)
 ------------------
