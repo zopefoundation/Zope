@@ -11,8 +11,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.7.3 (unreleased)
 ------------------
 
-- Adjust the old ``App.Dialogs.MessageDialog`` to be served as HTML after
-  from PR https://github.com/zopefoundation/Zope/pull/1075 .
+- Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML
+  due to the changed default content type from `#1075
+  <https://github.com/zopefoundation/Zope/pull/1075>`_.
+
 
 5.7.2 (2022-12-17)
 ------------------

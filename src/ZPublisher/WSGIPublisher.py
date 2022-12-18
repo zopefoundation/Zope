@@ -149,6 +149,11 @@ def _exc_view_created_response(exc, request, response):
             for key, value in exc.headers.items():
                 response.setHeader(key, value)
 
+        # Explicitly set the content type header if it's not there yet so
+        # the response doesn't get served with the text/plain default
+        if not response.getHeader('Content-Type'):
+            response.setHeader('Content-Type', 'text/html')
+
         # Set the response body to the result of calling the view.
         response.setBody(view())
         return True
