@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.6 (unreleased)
+4.8.6 (2022-12-19)
 ------------------
 
 - Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML

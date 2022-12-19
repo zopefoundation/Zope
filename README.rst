@@ -44,8 +44,8 @@ https://zope.readthedocs.io.
 Zope 4 - the bridge between Zope 2 and Zope 5
 =============================================
 
-**Zope 4 is no longer fully supported and only receives security fixes at this
-time. Please upgrade to Zope 5 as soon as possible.** The `Zope release
+**Zope 4 is reaching End Of Life status on 12/31/2022. All support will end at
+that time. Please upgrade to Zope 5 as soon as possible.** The `Zope release
 schedule <https://www.zope.dev/releases.html>`_ has details about support
 policies and timeframes.
 
