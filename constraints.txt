@@ -9,7 +9,6 @@ ExtensionClass==4.9
 Missing==4.2
 MultiMapping==4.1
 Paste==3.5.2
-PasteDeploy==2.1.1; python_version == '3.6'
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==3.6
@@ -30,8 +29,7 @@ five.localsitemanager==3.4
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
-jeepney==0.7.1; python_version == '3.6'
-jeepney==0.8.0; python_version > '3.6'
+jeepney==0.8.0
 mock==4.0.3
 multipart==0.2.4
 pbr==5.11.0
@@ -41,8 +39,7 @@ roman==3.3
 shutilwhich==1.1.0
 six==1.16.0
 transaction==3.0.1
-waitress==2.0.0; python_version == '3.6'
-waitress==2.1.2; python_version > '3.6'
+waitress==2.1.2
 z3c.pt==3.3.1
 zExceptions==4.2
 zc.lockfile==2.0

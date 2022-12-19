@@ -5,7 +5,7 @@ Prerequisites
 -------------
 
 * Update your project to run on the latest version of Zope 4.
-* Update your project to run on Python 3.6+.
+* Update your project to run on Python 3.7+.
 * Make sure no deprecation warnings are emitted when running your tests and
   when running the Zope instance
 

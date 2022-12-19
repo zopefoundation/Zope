@@ -8,8 +8,10 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.7.3 (unreleased)
-------------------
+5.8 (unreleased)
+----------------
+
+- Drop support for Python 3.6, it has been in end-of-life status for a while.
 
 - Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML
   due to the changed default content type from `#1075
