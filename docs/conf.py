@@ -24,9 +24,9 @@ copyright = '2009-2022, The Zope developer community'
 author = 'The Zope developer community'
 
 # The short X.Y version
-version = '4.8.6'
+version = '4.8.7'
 # The full version, including alpha/beta/rc tags
-release = '4.8.6'
+release = '4.8.7'
 
 
 # -- General configuration ---------------------------------------------------
