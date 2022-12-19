@@ -2,7 +2,7 @@ AccessControl==4.3
 Acquisition==4.13
 AuthEncoding==4.3
 BTrees==4.11.3
-Chameleon==3.10.1; python_version > '2.7'
+Chameleon==3.10.2; python_version > '2.7'
 Chameleon==3.9.1; python_version == '2.7'
 DateTime==4.8
 DocumentTemplate==3.4; python_version == '2.7'
@@ -46,7 +46,7 @@ multipart==0.1.1; python_version == '2.7'
 multipart==0.2.4; python_version > '2.7'
 pbr==5.11.0
 persistent==4.9.3
-pytz==2022.6
+pytz==2022.7
 roman==3.3
 shutilwhich==1.1.0
 six==1.16.0
@@ -56,7 +56,7 @@ waitress==1.4.4; python_version == '3.5'
 waitress==2.0.0; python_version == '3.6'
 waitress==2.1.2; python_version > '3.6'
 z3c.pt==3.3.1
-zExceptions==4.2
+zExceptions==4.3
 zc.lockfile==2.0
 zdaemon==4.4
 zodbpickle==2.6
