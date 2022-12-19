@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.7.3 (unreleased)
+5.7.3 (2022-12-19)
 ------------------
 
 - Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML
