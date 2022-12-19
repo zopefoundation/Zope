@@ -34,7 +34,19 @@
 from App.special_dtml import HTML
 
 
-MessageDialog = HTML("""
+class MessageDialogHTML(HTML):
+    """A special version of HTML which is always published as text/html
+    """
+    def __call__(self, *args, **kw):
+        class _HTMLString(str):
+            """A special string that will be published as text/html
+            """
+            def asHTML(self):
+                return self
+        return _HTMLString(super().__call__(*args, **kw))
+
+
+MessageDialog = MessageDialogHTML("""
 <HTML>
 <HEAD>
 <TITLE>&dtml-title;</TITLE>
