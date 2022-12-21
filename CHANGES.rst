@@ -13,6 +13,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Drop support for Python 3.6, it has been in end-of-life status for a while.
 
+- Update to newest compatible versions of dependencies.
+
+
+5.7.3 (2022-12-19)
+------------------
+
 - Explicitly serve ``App.Dialogs.MessageDialog`` and exception views as HTML
   due to the changed default content type from `#1075
   <https://github.com/zopefoundation/Zope/pull/1075>`_.
