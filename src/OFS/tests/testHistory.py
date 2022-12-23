@@ -99,6 +99,14 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual(self.hi.title,
                          'First title')
 
+    def test_HistoricalRevisions(self):
+        r = self.hi.manage_change_history()
+        historical_revision = self.hi.HistoricalRevisions[r[2]['key']]
+        self.assertIsInstance(historical_revision, self._getTargetClass())
+        self.assertEqual(historical_revision.title, 'First title')
+        # do a commit, just like ZPublisher would
+        transaction.commit()
+
     def test_manage_historicalComparison(self):
         r = self.hi.manage_change_history()
         # compare two revisions
