@@ -451,7 +451,7 @@ done.
 Troubleshooting
 ---------------
 
-- This version of Zope requires Python 3.6 and later.
+- This version of Zope requires Python 3.7 and later.
   It will *not* run with any version of PyPy.
 
 - To build Python extensions you need to have Python configuration
@@ -549,14 +549,6 @@ automatically get a ``waitress``-based server. The default configurations set
 up for you will be sufficient for most applications. See the `waitress
 documentation <https://docs.pylonsproject.org/projects/waitress/>`_ for
 additional information.
-
-.. warning::
-
-   Waitress was affected by `an important security issue
-   <https://github.com/Pylons/waitress/security/advisories/GHSA-4f7p-27jc-3c36>`_.
-   The fixed version 2.1.1 is not compatible with Python 3.6. We strongly
-   advise you to either upgrade your Zope installation to at least Python 3.7,
-   or switch to a different WSGI server (see below).
 
 Here's a very simple configuration using ``plone.recipe.zope2instance``:
 

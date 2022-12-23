@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.7.4.dev0'
+version = '5.8.dev0'
 
 setup(
     name='Zope',
@@ -54,7 +54,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -68,7 +67,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
     package_dir={'': 'src'},
-    python_requires='>= 3.6',
+    python_requires='>= 3.7',
     install_requires=[
         'AccessControl >= 5.2',
         'Acquisition',
