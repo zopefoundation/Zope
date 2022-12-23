@@ -115,6 +115,9 @@ class HistoryTests(unittest.TestCase):
                 REQUEST=self.hi.REQUEST,
                 keys=[r[2]['key']]))
 
+        # do a commit, just like ZPublisher would
+        transaction.commit()
+
 
 class HistoryItemWithComparisonSupport(SimpleItem, Historical):
     def manage_historyCompare(self, rev1, rev2, REQUEST,
