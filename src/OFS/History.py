@@ -56,7 +56,7 @@ class HystoryJar:
     def abort(*args, **kw):
         pass
 
-    tpc_begin = tpc_finish = abort
+    register = tpc_begin = tpc_finish = abort
 
 
 def historicalRevision(self, serial):

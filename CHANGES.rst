@@ -12,6 +12,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Fix history page for classes modifying instances in ``__setstate__``,
+  such as ``Products.PythonScripts.PythonScript`` instances.
+  See `launchpad issue 735999
+  <https://bugs.launchpad.net/zope2/+bug/735999>`_.
+
 
 5.7.3 (2022-12-19)
 ------------------

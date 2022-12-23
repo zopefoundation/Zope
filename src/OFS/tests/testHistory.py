@@ -143,3 +143,16 @@ class HistoryWithComparisonSupportTests(HistoryTests):
             self.hi.manage_historicalComparison(
                 REQUEST=self.hi.REQUEST,
                 keys=[r[2]['key']]))
+
+
+class HistoryItemWithSetState(HistoryItem):
+    """A class with a data migration on __setstate__
+    """
+    def __setstate__(self, state):
+        super().__setstate__(state)
+        self.changed_something = True
+
+
+class HistoryWithSetStateTest(HistoryTests):
+    def _getTargetClass(self):
+        return HistoryItemWithSetState
