@@ -39,7 +39,7 @@ jobs:
           - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
           # macOS/Python 3.11 is set up for universal2 architecture
           # which causes build and package selection issues.
-          - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
+          #- { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
