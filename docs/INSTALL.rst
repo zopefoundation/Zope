@@ -15,17 +15,7 @@ available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include
-  **3.6** up to **3.11**.
-
-  .. warning::
-
-     The WSGI server Zope uses by default, waitress, was
-     affected by `an important security issue
-     <https://github.com/Pylons/waitress/security/advisories/GHSA-4f7p-27jc-3c36>`_.
-     The fixed version 2.1.1 is not compatible with Python 3.6. We strongly
-     advise you to either upgrade your Zope installation to at least Python 3.7,
-     or `switch to a different WSGI server
-     <https://zope.readthedocs.io/en/latest/operation.html#recommended-wsgi-servers>`_.
+  **3.7** up to **3.11**.
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the

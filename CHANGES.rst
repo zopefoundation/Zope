@@ -7,8 +7,11 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.7.4 (unreleased)
-------------------
+
+5.8 (unreleased)
+----------------
+
+- Drop support for Python 3.6, it has been in end-of-life status for a while.
 
 - Update to newest compatible versions of dependencies.
 

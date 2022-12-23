@@ -2,11 +2,10 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "931ebd36c89bffdc929019c5080086ed7a45b5d6"
+commit-id = "b2749126"
 
 [python]
 with-pypy = false
-with-legacy-python = false
 with-docs = true
 with-sphinx-doctests = false
 with-windows = true
@@ -57,7 +56,7 @@ testenv-additional = [
     "    pre-commit run --all-files --show-diff-on-failure",
     "",
     "[testenv:autopep8]",
-    "basepython = python3.6",
+    "basepython = python3.8",
     "skip_install = true",
     "deps =",
     "    -cconstraints.txt",
