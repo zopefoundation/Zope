@@ -62,11 +62,11 @@ class HystoryJar:
 def historicalRevision(self, serial):
     state = self._p_jar.oldstate(self, serial)
     rev = self.__class__.__basicnew__()
-    rev._p_jar = HystoryJar(self._p_jar)
     rev._p_oid = self._p_oid
     rev._p_serial = serial
     rev.__setstate__(state)
     rev._p_changed = 0
+    rev._p_jar = HystoryJar(self._p_jar)
     return rev
 
 
