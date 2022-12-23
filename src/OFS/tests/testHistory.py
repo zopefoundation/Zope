@@ -9,6 +9,7 @@ import ZODB
 import Zope2
 from OFS.Application import Application
 from OFS.History import Historical
+from OFS.History import TemporalParadox
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from ZODB.FileStorage import FileStorage
@@ -106,6 +107,12 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual(historical_revision.title, 'First title')
         # do a commit, just like ZPublisher would
         transaction.commit()
+
+    def test_HistoricalRevisions_edit_causes_TemporalParadox(self):
+        r = self.hi.manage_change_history()
+        historical_revision = self.hi.HistoricalRevisions[r[2]['key']]
+        historical_revision.title = 'Changed'
+        self.assertRaises(TemporalParadox, transaction.commit)
 
     def test_manage_historicalComparison(self):
         r = self.hi.manage_change_history()
