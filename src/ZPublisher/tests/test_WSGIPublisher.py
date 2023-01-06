@@ -919,6 +919,26 @@ class ExcViewCreatedTests(ZopeTestCase):
         # After rendering the response content-type header is set
         self.assertIn('text/html', response.getHeader('Content-Type'))
 
+    def testWithEmptyErrorMessage(self):
+        from OFS.DTMLMethod import addDTMLMethod
+        from zExceptions import NotFound
+        self._registerStandardErrorView()
+        response = self.app.REQUEST.RESPONSE
+        addDTMLMethod(self.app, 'standard_error_message', file='')
+        self.app.standard_error_message.raw = ''
+
+        # The response content-type header is not set before rendering
+        # the standard error template
+        self.assertFalse(response.getHeader('Content-Type'))
+
+        try:
+            self.assertTrue(self._callFUT(NotFound))
+        finally:
+            self._unregisterStandardErrorView()
+
+        # After rendering the response still no content-type header is set
+        self.assertFalse(response.getHeader('Content-Type'))
+
 
 class WSGIPublisherTests(FunctionalTestCase):
 

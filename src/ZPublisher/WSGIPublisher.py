@@ -149,9 +149,8 @@ def _exc_view_created_response(exc, request, response):
             for key, value in exc.headers.items():
                 response.setHeader(key, value)
 
-        # Set the response body to the result of calling the view.
+        # Call the view so we can use it as the response body.
         body = view()
-        response.setBody(body)
 
         # Explicitly set the content type header if it's not there yet so
         # the response does not get served with the text/plain default.
@@ -159,9 +158,13 @@ def _exc_view_created_response(exc, request, response):
         # An empty body may indicate a 304 NotModified from Plone,
         # and setting a content type header will change the stored header
         # in for example Varnish.
+        # See https://github.com/zopefoundation/Zope/pull/1088
         if body and not response.getHeader('Content-Type'):
             response.setHeader('Content-Type', 'text/html')
 
+        # Note: setBody would set the Content-Type header to text/plain
+        # if it is not set yet, except when the body is empty.
+        response.setBody(body)
         return True
 
     return False
