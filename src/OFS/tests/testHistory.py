@@ -9,7 +9,9 @@ import ZODB
 import Zope2
 from OFS.Application import Application
 from OFS.History import Historical
+from OFS.History import TemporalParadox
 from OFS.SimpleItem import SimpleItem
+from Testing.makerequest import makerequest
 from ZODB.FileStorage import FileStorage
 
 
@@ -21,6 +23,8 @@ class HistoryItem(SimpleItem, Historical):
 
 
 class HistoryTests(unittest.TestCase):
+    def _getTargetClass(self):
+        return HistoryItem
 
     def setUp(self):
         # set up a zodb
@@ -32,10 +36,10 @@ class HistoryTests(unittest.TestCase):
         r = self.connection.root()
         a = Application()
         r['Application'] = a
-        self.root = a
-        # create a python script
-        a['test'] = HistoryItem()
-        self.hi = hi = a.test
+        self.root = makerequest(a)
+        # create a history item object
+        self.root['test'] = self._getTargetClass()()
+        self.hi = hi = self.root.test
         # commit some changes
         hi.title = 'First title'
         t = transaction.get()
@@ -95,3 +99,78 @@ class HistoryTests(unittest.TestCase):
         # that all other attributes will behave the same
         self.assertEqual(self.hi.title,
                          'First title')
+
+    def test_HistoricalRevisions(self):
+        r = self.hi.manage_change_history()
+        historical_revision = self.hi.HistoricalRevisions[r[2]['key']]
+        self.assertIsInstance(historical_revision, self._getTargetClass())
+        self.assertEqual(historical_revision.title, 'First title')
+        # do a commit, just like ZPublisher would
+        transaction.commit()
+
+    def test_HistoricalRevisions_edit_causes_TemporalParadox(self):
+        r = self.hi.manage_change_history()
+        historical_revision = self.hi.HistoricalRevisions[r[2]['key']]
+        historical_revision.title = 'Changed'
+        self.assertRaises(TemporalParadox, transaction.commit)
+
+    def test_manage_historicalComparison(self):
+        r = self.hi.manage_change_history()
+        # compare two revisions
+        self.assertIn(
+            'This object does not provide comparison support.',
+            self.hi.manage_historicalComparison(
+                REQUEST=self.hi.REQUEST,
+                keys=[r[1]['key'], r[2]['key']]))
+
+        # compare a revision with latest
+        self.assertIn(
+            'This object does not provide comparison support.',
+            self.hi.manage_historicalComparison(
+                REQUEST=self.hi.REQUEST,
+                keys=[r[2]['key']]))
+
+        # do a commit, just like ZPublisher would
+        transaction.commit()
+
+
+class HistoryItemWithComparisonSupport(SimpleItem, Historical):
+    def manage_historyCompare(self, rev1, rev2, REQUEST,
+                              historyComparisonResults=''):
+        return super().manage_historyCompare(
+            rev1, rev2, REQUEST,
+            historyComparisonResults=f'old: {rev1.title} new: {rev2.title}')
+
+
+class HistoryWithComparisonSupportTests(HistoryTests):
+    def _getTargetClass(self):
+        return HistoryItemWithComparisonSupport
+
+    def test_manage_historicalComparison(self):
+        r = self.hi.manage_change_history()
+        # compare two revisions
+        self.assertIn(
+            'old: First title new: Second title',
+            self.hi.manage_historicalComparison(
+                REQUEST=self.hi.REQUEST,
+                keys=[r[1]['key'], r[2]['key']]))
+
+        # compare a revision with latest
+        self.assertIn(
+            'old: First title new: Third title',
+            self.hi.manage_historicalComparison(
+                REQUEST=self.hi.REQUEST,
+                keys=[r[2]['key']]))
+
+
+class HistoryItemWithSetState(HistoryItem):
+    """A class with a data migration on __setstate__
+    """
+    def __setstate__(self, state):
+        super().__setstate__(state)
+        self.changed_something = True
+
+
+class HistoryWithSetStateTest(HistoryTests):
+    def _getTargetClass(self):
+        return HistoryItemWithSetState

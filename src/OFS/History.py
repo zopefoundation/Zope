@@ -45,28 +45,35 @@ class HystoryJar:
 
     def __init__(self, base):
         self.__base__ = base
+        self._needs_to_join = True
+        self._registered_objects = []
 
     def __getattr__(self, name):
         return getattr(self.__base__, name)
 
-    def commit(self, object, transaction):
-        if object._p_changed:
-            raise TemporalParadox("You can't change history!")
+    def commit(self, transaction):
+        raise TemporalParadox("You can't change history!")
 
     def abort(*args, **kw):
         pass
 
     tpc_begin = tpc_finish = abort
 
+    def register(self, obj):
+        if self._needs_to_join:
+            self.transaction_manager.get().join(self)
+        if obj is not None:
+            self._registered_objects.append(obj)
+
 
 def historicalRevision(self, serial):
     state = self._p_jar.oldstate(self, serial)
     rev = self.__class__.__basicnew__()
-    rev._p_jar = HystoryJar(self._p_jar)
     rev._p_oid = self._p_oid
     rev._p_serial = serial
     rev.__setstate__(state)
     rev._p_changed = 0
+    rev._p_jar = HystoryJar(self._p_jar)
     return rev
 
 
