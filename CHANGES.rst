@@ -11,6 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8 (unreleased)
 ----------------
 
+- Only set response header Content-Type as text/html on exception views when the response has content.
+
 - Drop support for Python 3.6, it has been in end-of-life status for a while.
 
 - Update to newest compatible versions of dependencies.
