@@ -144,13 +144,19 @@ def _exc_view_created_response(exc, request, response):
             for key, value in exc.headers.items():
                 response.setHeader(key, value)
 
+        # Set the response body to the result of calling the view.
+        body = view()
+        response.setBody(body)
+
         # Explicitly set the content type header if it's not there yet so
-        # the response doesn't get served with the text/plain default
-        if not response.getHeader('Content-Type'):
+        # the response does not get served with the text/plain default.
+        # But only do this when there is a body.
+        # An empty body may indicate a 304 NotModified from Plone,
+        # and setting a content type header will change the stored header
+        # in for example Varnish.
+        if body and not response.getHeader('Content-Type'):
             response.setHeader('Content-Type', 'text/html')
 
-        # Set the response body to the result of calling the view.
-        response.setBody(view())
         return True
 
     return False
