@@ -150,9 +150,9 @@ def _exc_view_created_response(exc, request, response):
         # Explicitly set the content type header if it's not there yet so
         # the response does not get served with the text/plain default.
         # But only do this when there is a body.
-        # An empty body may indicate a 304 NotModified from Plone,
+        # An empty body may indicate a 304 NotModified response,
         # and setting a content type header will change the stored header
-        # in for example Varnish.
+        # in caching servers such as Varnish.
         # See https://github.com/zopefoundation/Zope/pull/1088
         if body and not response.getHeader('Content-Type'):
             response.setHeader('Content-Type', 'text/html')
