@@ -153,7 +153,7 @@ def _exc_view_created_response(exc, request, response):
         # An empty body may indicate a 304 NotModified response,
         # and setting a content type header will change the stored header
         # in caching servers such as Varnish.
-        # See https://github.com/zopefoundation/Zope/pull/1088
+        # See https://github.com/zopefoundation/Zope/issues/1089
         if body and not response.getHeader('Content-Type'):
             response.setHeader('Content-Type', 'text/html')
 
