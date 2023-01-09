@@ -43,7 +43,8 @@ def _set_wsgi_config(configfile=None):
     """ Configure a Zope instance based on ZopeWSGIOptions.
     Optionally accept a configfile argument (string path) in order
     to specify where the configuration file exists. """
-    from Zope2.Startup import options, handlers
+    from Zope2.Startup import handlers
+    from Zope2.Startup import options
     opts = options.ZopeWSGIOptions(configfile=configfile)()
     handlers.handleWSGIConfig(opts.configroot, opts.confighandlers)
     import App.config

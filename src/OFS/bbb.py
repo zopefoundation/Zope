@@ -12,7 +12,6 @@
 ##############################################################################
 
 import pkg_resources
-
 from zope.deferredimport import deprecated
 
 

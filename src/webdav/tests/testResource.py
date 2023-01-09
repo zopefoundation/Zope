@@ -11,6 +11,7 @@ MS_DAV_AGENT = "Microsoft Data Access Internet Publishing Provider DAV"
 
 def make_request_response(environ=None):
     from io import StringIO
+
     from ZPublisher.HTTPRequest import HTTPRequest
     from ZPublisher.HTTPResponse import HTTPResponse
 

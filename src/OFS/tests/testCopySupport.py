@@ -362,8 +362,9 @@ class TestCopySupportSecurity(CopySupportTestBase):
     def _assertCopyErrorUnauth(self, callable, *args, **kw):
 
         import re
-        from zExceptions import Unauthorized
+
         from OFS.CopySupport import CopyError
+        from zExceptions import Unauthorized
 
         ce_regex = kw.get('ce_regex')
         if ce_regex is not None:

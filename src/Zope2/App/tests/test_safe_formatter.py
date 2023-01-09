@@ -5,8 +5,9 @@ from zExceptions import Unauthorized
 
 
 try:
-    from html import escape
     import functools
+    from html import escape
+
     # We do not want escaped " and ', as PageTemplate neither does it:
     escape = functools.partial(escape, quote=False)
 except ImportError:  # PY2
@@ -135,6 +136,7 @@ class FormatterFunctionalTest(FunctionalTestCase):
 
     def test_access_to_private_content_not_allowed_via_any_attribute(self):
         from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+
         # If access to _delObject would be allowed, it would still only say
         # something like 'bound method _delObject', without actually deleting
         # anything, because methods are not executed in str.format, but there
@@ -150,10 +152,10 @@ class FormatterFunctionalTest(FunctionalTestCase):
             str(err.exception))
 
     def assert_is_checked_via_security_manager(self, pt_content):
-        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
-        from AccessControl.SecurityManager import setSecurityPolicy
-        from AccessControl.SecurityManagement import noSecurityManager
         from AccessControl.SecurityManagement import getSecurityManager
+        from AccessControl.SecurityManagement import noSecurityManager
+        from AccessControl.SecurityManager import setSecurityPolicy
+        from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
 
         pt = ZopePageTemplate('mytemplate', pt_content)
         noSecurityManager()

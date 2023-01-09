@@ -608,9 +608,9 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
         from OFS.Folder import Folder
         from OFS.Image import File
-        from ZODB.DemoStorage import DemoStorage
-        from ZODB.DB import DB
         from transaction import commit
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
         try:
             tf = None  # temporary file required for export/import
             # export/import needs the object manager in ZODB

@@ -484,8 +484,8 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
         return request
 
     def _makeDummyAclUsers(self):
-        from Acquisition import Implicit
         from AccessControl.ZopeSecurityPolicy import _noroles
+        from Acquisition import Implicit
 
         class AclUsers(Implicit):
             def validate(self, request, auth='', roles=_noroles):
@@ -625,8 +625,8 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
 
     def _setDefaultViewName(self, name):
         from zope.component import getGlobalSiteManager
-        from zope.publisher.interfaces import IDefaultViewName
         from zope.publisher.browser import IBrowserRequest
+        from zope.publisher.interfaces import IDefaultViewName
         gsm = getGlobalSiteManager()
         gsm.registerAdapter(name, (self._dummyInterface(), IBrowserRequest),
                             IDefaultViewName, '')

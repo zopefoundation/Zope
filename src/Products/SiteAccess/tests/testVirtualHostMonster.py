@@ -17,8 +17,8 @@ class VHMRegressions(unittest.TestCase):
         if 'virtual_hosting' not in self.app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
-            from Products.SiteAccess.VirtualHostMonster \
-                import manage_addVirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                manage_addVirtualHostMonster
             manage_addVirtualHostMonster(self.app, 'virtual_hosting')
         self.app.manage_addFolder('folder')
         self.app.folder.manage_addDTMLMethod('doc', '')
@@ -170,8 +170,8 @@ class VHMPort(unittest.TestCase):
         if 'virtual_hosting' not in self.app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
-            from Products.SiteAccess.VirtualHostMonster \
-                import manage_addVirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                manage_addVirtualHostMonster
             manage_addVirtualHostMonster(self.app, 'virtual_hosting')
         self.app.manage_addFolder('folder')
         self.app.folder.manage_addDTMLMethod('doc', '')
@@ -271,9 +271,9 @@ class VHMAddingTests(unittest.TestCase):
         self.assertTrue(queryBeforeTraverse(self.root, vhm1.meta_type))
 
     def test_add_manage_addVirtualHostMonster(self):
+        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
         from Products.SiteAccess.VirtualHostMonster import \
             manage_addVirtualHostMonster
-        from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
         from ZPublisher.BeforeTraverse import queryBeforeTraverse
         manage_addVirtualHostMonster(self.root)
 

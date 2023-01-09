@@ -10,6 +10,10 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.7 (unreleased)
 ------------------
 
+- Only set response header Content-Type as text/html on exception views when
+  the response has content.
+  (`#1089 <https://github.com/zopefoundation/Zope/issues/1089>`_)
+
 - Update dependencies to the latest releases for each supported Python version.
 
 

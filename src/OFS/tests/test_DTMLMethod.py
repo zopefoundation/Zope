@@ -15,8 +15,8 @@ from Testing.makerequest import makerequest
 
 
 def _lock_item(item):
-    from OFS.LockItem import LockItem
     from AccessControl.users import nobody
+    from OFS.LockItem import LockItem
     item.wl_setLock('token', LockItem(nobody, token='token'))
 
 
@@ -30,8 +30,8 @@ class DTMLMethodTests(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_class_conforms_to_IWriteLock(self):
-        from zope.interface.verify import verifyClass
         from OFS.interfaces import IWriteLock
+        from zope.interface.verify import verifyClass
         verifyClass(IWriteLock, self._getTargetClass())
 
     def test_edit_taintedstring(self):
@@ -264,8 +264,8 @@ class FactoryTests(unittest.TestCase):
 
     def test_defaults_no_standard_html_header(self):
         # see LP #496961
-        from OFS.DTMLMethod import addDTMLMethod
         from OFS.DTMLMethod import DTMLMethod
+        from OFS.DTMLMethod import addDTMLMethod
         dispatcher = DummyDispatcher()
         addDTMLMethod(dispatcher, 'id')
         method = dispatcher._set['id']
