@@ -18,7 +18,7 @@ import os
 from AccessControl import ClassSecurityInfo
 from AccessControl import userfolder as accesscontrol_userfolder
 from AccessControl.class_init import InitializeClass
-from AccessControl.Permissions import manage_users as ManageUsers  # NOQA
+from AccessControl.Permissions import manage_users as ManageUsers
 from AccessControl.requestmethod import requestmethod
 from AccessControl.rolemanager import DEFAULTMAXLISTUSERS
 from AccessControl.users import _remote_user_mode

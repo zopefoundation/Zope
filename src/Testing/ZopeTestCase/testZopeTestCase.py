@@ -391,7 +391,8 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite, makeSuite
+    from unittest import TestSuite
+    from unittest import makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestZopeTestCase))
     suite.addTest(makeSuite(TestPlainUserFolder))

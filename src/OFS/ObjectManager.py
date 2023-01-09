@@ -799,6 +799,7 @@ class ObjectManager(
                  u'Zope 5.', DeprecationWarning, stacklevel=2)
             mode = 0o0040000
             from AccessControl.User import nobody
+
             # check to see if we are acquiring our objectValues or not
             parents = REQUEST.PARENTS
             if not (len(parents) > 1

@@ -448,6 +448,7 @@ class TreeTests(unittest.TestCase):
 
     def testDecodeDecompressedSizeLimit(self):
         import zlib
+
         from ZTUtils.Tree import b2a
         big = b2a(zlib.compress(b'x' * (1024 * 1100)))
         self.assertTrue(len(big) < 8192)  # Must be under the input size limit

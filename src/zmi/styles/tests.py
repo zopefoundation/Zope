@@ -10,8 +10,8 @@ basic_auth = "{0.user_name}:{0.user_password}".format(Testing.ZopeTestCase)
 def setupZCML():
     """Set up the ZCML needed to render the ZMI and the assets."""
     import AccessControl
-    import Zope2.App
     import zmi.styles
+    import Zope2.App
     zcml.load_config('meta.zcml', Zope2.App)
     zcml.load_config('permissions.zcml', AccessControl)
     zcml.load_config('traversing.zcml', Zope2.App)

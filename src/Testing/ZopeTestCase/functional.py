@@ -63,6 +63,7 @@ class Functional(sandbox.Sandboxed):
         '''Publishes the object at 'path' returning a response object.'''
 
         from io import BytesIO
+
         from ZPublisher.HTTPRequest import WSGIRequest as Request
         from ZPublisher.HTTPResponse import WSGIResponse
         from ZPublisher.WSGIPublisher import publish_module

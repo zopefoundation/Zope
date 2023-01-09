@@ -213,7 +213,9 @@ def default_zpublisher_encoding(value):
     if PY2:
         # unicode is not acceptable as encoding in HTTP headers:
         value = str(value)
-    from ZPublisher import Converters, HTTPRequest, HTTPResponse
+    from ZPublisher import Converters
+    from ZPublisher import HTTPRequest
+    from ZPublisher import HTTPResponse
     Converters.default_encoding = value
     HTTPRequest.default_encoding = value
     HTTPRequest.HTTPRequest.charset = value

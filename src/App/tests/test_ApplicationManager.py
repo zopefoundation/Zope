@@ -464,6 +464,7 @@ class DebugManagerTests(unittest.TestCase):
     def _makeModuleClasses(self):
         import sys
         import types
+
         from ExtensionClass import Base
 
         class Foo(Base):
@@ -513,6 +514,7 @@ class DebugManagerTests(unittest.TestCase):
 
     def test_rcsnapshot(self):
         import sys
+
         import App.ApplicationManager
         from DateTime.DateTime import DateTime
         dm = self._makeOne('test')

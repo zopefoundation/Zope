@@ -295,8 +295,8 @@ class AppInitializer(object):
     def install_virtual_hosting(self):
         app = self.getApp()
         if 'virtual_hosting' not in app:
-            from Products.SiteAccess.VirtualHostMonster \
-                import VirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import \
+                VirtualHostMonster
             any_vhm = [obj for obj in app.values()
                        if isinstance(obj, VirtualHostMonster)]
             if not any_vhm:
@@ -308,8 +308,8 @@ class AppInitializer(object):
     def install_root_view(self):
         app = self.getApp()
         if 'index_html' not in app:
-            from Products.PageTemplates.ZopePageTemplate \
-                import ZopePageTemplate
+            from Products.PageTemplates.ZopePageTemplate import \
+                ZopePageTemplate
             root_pt = ZopePageTemplate('index_html')
             root_pt.pt_setTitle(u'Auto-generated default page')
             app._setObject('index_html', root_pt)
