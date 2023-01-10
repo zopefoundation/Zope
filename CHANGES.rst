@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.7 (unreleased)
+4.8.7 (2023-01-10)
 ------------------
 
 - Only set response header Content-Type as text/html on exception views when
