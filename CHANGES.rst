@@ -8,7 +8,7 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.8 (unreleased)
+5.8 (2023-01-10)
 ----------------
 
 - Only set response header Content-Type as text/html on exception views when
