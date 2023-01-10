@@ -3,8 +3,8 @@ Acquisition==4.13
 AuthEncoding==4.3
 BTrees==4.11.3
 Chameleon==3.10.2
-DateTime==4.8
-DocumentTemplate==4.1
+DateTime==4.9
+DocumentTemplate==4.3
 ExtensionClass==4.9
 Missing==4.2
 MultiMapping==4.1
@@ -24,16 +24,16 @@ ZConfig==3.6.1
 ZEO==5.3.0
 ZODB==5.8.0
 Zope2==4.0
-cryptography==38.0.4
+cryptography==39.0.0
 five.localsitemanager==3.4
 funcsigs==1.0.2
 future==0.18.2
 ipaddress==1.0.23
 jeepney==0.8.0
-mock==4.0.3
+mock==5.0.1
 multipart==0.2.4
 pbr==5.11.0
-persistent==4.9.3
+persistent==5.0
 pytz==2022.7
 roman==3.3
 shutilwhich==1.1.0
@@ -51,7 +51,7 @@ zope.browsermenu==4.4
 zope.browserpage==4.4.0
 zope.browserresource==4.4
 zope.cachedescriptors==4.4
-zope.component==5.0.1
+zope.component==5.1.0
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
 zope.container==4.10
@@ -78,7 +78,7 @@ zope.proxy==4.6.1
 zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.ramcache==2.4
-zope.schema==6.2.1
+zope.schema==7.0.1
 zope.security==5.8
 zope.sendmail==5.3
 zope.sequencesort==4.2
@@ -88,7 +88,7 @@ zope.structuredtext==4.4
 zope.tal==4.5
 zope.tales==5.2
 zope.testbrowser==5.6.1
-zope.testing==4.10
+zope.testing==5.0.1
 zope.testrunner==5.6
 zope.traversing==4.4.1
 zope.viewlet==4.3
