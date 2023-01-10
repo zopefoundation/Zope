@@ -5,7 +5,7 @@ AuthEncoding==4.3
 BTrees==4.11.3
 Chameleon==3.10.2; python_version > '2.7'
 Chameleon==3.9.1; python_version == '2.7'
-DateTime==4.8
+DateTime==4.9
 DocumentTemplate==3.4; python_version == '2.7'
 DocumentTemplate==3.4; python_version == '3.5'
 DocumentTemplate==4.1; python_version > '3.5'
