@@ -345,4 +345,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(
             TestAttributesOfDirtyObjects),
         unittest.defaultTestLoader.loadTestsFromTestCase(TestTransactionAbort),
-        ))
+    ))

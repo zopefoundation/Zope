@@ -398,4 +398,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(TestPlainUserFolder),
         unittest.defaultTestLoader.loadTestsFromTestCase(
             TestWrappingUserFolder),
-        ))
+    ))

@@ -526,4 +526,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(
             TestWrappingUserFolder),
         unittest.defaultTestLoader.loadTestsFromTestCase(TestSetUpRaises),
-        ))
+    ))

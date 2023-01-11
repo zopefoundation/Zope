@@ -145,4 +145,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(TestsOfBroken),
         unittest.defaultTestLoader.loadTestsFromTestCase(
             TestsIntegratedBroken),
-        ))
+    ))

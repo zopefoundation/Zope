@@ -465,4 +465,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage1),
         unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage2),
         unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage3),
-        ))
+    ))

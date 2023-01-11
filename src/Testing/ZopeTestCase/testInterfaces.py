@@ -100,4 +100,4 @@ def test_suite():
         unittest.defaultTestLoader.loadTestsFromTestCase(
             TestFunctionalTestCase),
         unittest.defaultTestLoader.loadTestsFromTestCase(TestPortalTestCase),
-        ))
+    ))
