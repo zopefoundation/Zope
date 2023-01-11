@@ -59,6 +59,5 @@ class TestRecursiveChangeOwnership(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestRecursiveChangeOwnership),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromTestCase(
+        TestRecursiveChangeOwnership)

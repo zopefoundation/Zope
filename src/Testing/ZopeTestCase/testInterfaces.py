@@ -13,6 +13,8 @@
 """Interface tests
 """
 
+import unittest
+
 from Testing.ZopeTestCase import Functional
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import PortalTestCase
@@ -91,12 +93,11 @@ class TestPortalTestCase(PortalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestAbstractClasses))
-    suite.addTest(makeSuite(TestBaseTestCase))
-    suite.addTest(makeSuite(TestZopeTestCase))
-    suite.addTest(makeSuite(TestFunctionalTestCase))
-    suite.addTest(makeSuite(TestPortalTestCase))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestAbstractClasses),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestBaseTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestZopeTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestFunctionalTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestPortalTestCase),
+        ))

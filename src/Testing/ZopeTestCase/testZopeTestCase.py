@@ -20,6 +20,8 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 
+import unittest
+
 import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
@@ -391,10 +393,9 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestZopeTestCase))
-    suite.addTest(makeSuite(TestPlainUserFolder))
-    suite.addTest(makeSuite(TestWrappingUserFolder))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestZopeTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestPlainUserFolder),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestWrappingUserFolder),
+        ))

@@ -141,7 +141,8 @@ class TestsIntegratedBroken(base.TestCase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestsOfBroken))
-    suite.addTest(unittest.makeSuite(TestsIntegratedBroken))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestsOfBroken),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestsIntegratedBroken),
+        ))

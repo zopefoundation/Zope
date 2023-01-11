@@ -14,6 +14,7 @@
 """Tests for the testbrowser module.
 """
 
+import unittest
 from urllib.error import HTTPError
 
 import transaction
@@ -192,8 +193,4 @@ class TestTestbrowser(FunctionalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestTestbrowser))
-    return suite
+    return unittest.defaultTestLoader.loadTestsFromTestCase(TestTestbrowser)

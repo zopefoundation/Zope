@@ -171,12 +171,12 @@ try to access some protected stuff.  Let's not forgot to login again,
 of course:
 
   >>> from AccessControl import allow_module
-  >>> allow_module('smtpd')
+  >>> allow_module('pprint')
   >>> self.logout()
   >>> view = self.folder.unrestrictedTraverse('testoid/security.html')
   >>> print(view())
   <div>NoneType</div>
-  <div>smtpd</div>
+  <div>pprint</div>
   >>> self.login('manager')
 
 Test pages registered through the <five:pagesFromDirectory /> directive:

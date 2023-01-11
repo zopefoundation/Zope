@@ -20,6 +20,8 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 
+import unittest
+
 import transaction
 from AccessControl import getSecurityManager
 from Acquisition import aq_base
@@ -518,11 +520,10 @@ class TestSetUpRaises(HookTest):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestPortalTestCase))
-    suite.addTest(makeSuite(TestPlainUserFolder))
-    suite.addTest(makeSuite(TestWrappingUserFolder))
-    suite.addTest(makeSuite(TestSetUpRaises))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestPortalTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestPlainUserFolder),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestWrappingUserFolder),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestSetUpRaises),
+        ))

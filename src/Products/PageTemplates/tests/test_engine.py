@@ -109,6 +109,4 @@ class TestPatches(Sandboxed, ZopeTestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestPatches),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromTestCase(TestPatches)

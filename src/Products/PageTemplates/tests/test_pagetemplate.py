@@ -83,6 +83,5 @@ class TestPageTemplateFile(ZopeTestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestPageTemplateFile),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromTestCase(
+        TestPageTemplateFile)

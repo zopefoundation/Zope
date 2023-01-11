@@ -160,8 +160,6 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestFunctional))
-    return suite
+    import unittest
+
+    return unittest.defaultTestLoader.loadTestsFromTestCase(TestFunctional)

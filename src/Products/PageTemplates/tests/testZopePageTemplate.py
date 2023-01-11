@@ -569,12 +569,15 @@ class DummyFileUpload:
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(ZPTRegressions),
-        unittest.makeSuite(ZPTUtilsTests),
-        unittest.makeSuite(ZPTMacros),
-        unittest.makeSuite(ZopePageTemplateFileTests),
-        unittest.makeSuite(ZPTUnicodeEncodingConflictResolution),
-        unittest.makeSuite(ZPTBrowserTests),
-        unittest.makeSuite(PreferredCharsetUnicodeResolverTests),
-        unittest.makeSuite(SrcTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ZPTRegressions),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ZPTUtilsTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ZPTMacros),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ZopePageTemplateFileTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            ZPTUnicodeEncodingConflictResolution),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ZPTBrowserTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            PreferredCharsetUnicodeResolverTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(SrcTests),
     ))
