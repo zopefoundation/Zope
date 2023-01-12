@@ -1,5 +1,5 @@
 <div tal:define="comment string:Testing unrestricted code"
       tal:content="python:None.__class__.__name__" />
 <div tal:define="comment string:Testing unrestricted modules access;
-                 smtpd nocall:modules/smtpd"
-      tal:content="python:smtpd.__name__" />
+                 pprint nocall:modules/pprint"
+      tal:content="python:pprint.__name__" />

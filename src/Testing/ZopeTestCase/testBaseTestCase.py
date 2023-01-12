@@ -20,6 +20,7 @@ example test cases. See testSkeleton.py for a quick
 way of getting started.
 """
 import gc
+import unittest
 
 import transaction
 from AccessControl import getSecurityManager
@@ -451,17 +452,17 @@ class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestTestCase))
-    suite.addTest(makeSuite(TestSetUpRaises))
-    suite.addTest(makeSuite(TestTearDownRaises))
-    suite.addTest(makeSuite(TestConnectionRegistry))
-    suite.addTest(makeSuite(TestApplicationRegistry))
-    suite.addTest(makeSuite(TestListConverter))
-    suite.addTest(makeSuite(TestRequestVariables))
-    suite.addTest(makeSuite(TestRequestGarbage1))
-    suite.addTest(makeSuite(TestRequestGarbage2))
-    suite.addTest(makeSuite(TestRequestGarbage3))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestTestCase),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestSetUpRaises),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestTearDownRaises),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestConnectionRegistry),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestApplicationRegistry),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestListConverter),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestVariables),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage1),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage2),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestGarbage3),
+    ))

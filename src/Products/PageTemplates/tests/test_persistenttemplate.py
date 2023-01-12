@@ -240,6 +240,4 @@ class TestPersistent(ZopeTestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestPersistent),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromTestCase(TestPersistent)

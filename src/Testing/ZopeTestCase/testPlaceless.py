@@ -13,6 +13,8 @@
 """Placeless setup tests
 """
 
+import unittest
+
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase.placeless import setUp
 from Testing.ZopeTestCase.placeless import tearDown
@@ -117,8 +119,4 @@ class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestPlacelessSetUp))
-    return suite
+    return unittest.defaultTestLoader.loadTestsFromTestCase(TestPlacelessSetUp)
