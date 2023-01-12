@@ -75,7 +75,6 @@ additional-rules = [
     "include sources.cfg",
     "include versions-prod.cfg",
     "include versions.cfg",
-    "include zope-ecosystem.cfg",
     "recursive-include docs *.bat",
     "recursive-include docs *.css",
     "recursive-include docs *.jpg",
