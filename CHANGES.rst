@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.1 (unreleased)
 ------------------
 
+- Clean out and refactor dependency configuration files.
+
 - Update to newest compatible versions of dependencies.
 
 
