@@ -74,6 +74,4 @@ class StartupTests(ZopeTestCase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(StartupTests))
-    return suite
+    return unittest.defaultTestLoader.loadTestsFromTestCase(StartupTests)

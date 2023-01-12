@@ -18,6 +18,7 @@ work if a savepoint is made before performing the respective operation.
 
 import os
 import tempfile
+import unittest
 
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
@@ -336,12 +337,12 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from unittest import makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestCopyPaste))
-    suite.addTest(makeSuite(TestImportExport))
-    suite.addTest(makeSuite(TestAttributesOfCleanObjects))
-    suite.addTest(makeSuite(TestAttributesOfDirtyObjects))
-    suite.addTest(makeSuite(TestTransactionAbort))
-    return suite
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestCopyPaste),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestImportExport),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestAttributesOfCleanObjects),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestAttributesOfDirtyObjects),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestTransactionAbort),
+    ))

@@ -124,7 +124,8 @@ def setUp(self):
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(HTTPHeaderOutputTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            HTTPHeaderOutputTests),
         FunctionalDocTestSuite(setUp=setUp),
         FunctionalDocFileSuite('FunctionalDocTest.txt', setUp=setUp),
     ))

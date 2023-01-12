@@ -691,8 +691,9 @@ def test_view_doesnt_shadow_attribute():
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestTraverse))
     from Testing.ZopeTestCase import FunctionalDocTestSuite
-    suite.addTest(FunctionalDocTestSuite())
-    return suite
+
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestTraverse),
+        FunctionalDocTestSuite(),
+    ))

@@ -159,9 +159,10 @@ def test_suite():
     from Testing.ZopeTestCase import FunctionalDocFileSuite
     from Testing.ZopeTestCase import ZopeDocFileSuite
     from Testing.ZopeTestCase import ZopeDocTestSuite
+
     return unittest.TestSuite((
         ZopeDocTestSuite(),
-        unittest.makeSuite(TestPublishTraverse),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestPublishTraverse),
         ZopeDocFileSuite('pages.txt', package='Products.Five.browser.tests'),
         FunctionalDocFileSuite('pages_ftest.txt',
                                package='Products.Five.browser.tests'),
