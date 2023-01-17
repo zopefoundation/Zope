@@ -1677,11 +1677,15 @@ class ValueDescriptor:
         if inst is None:
             return self
         file = inst.file
-        fp = file.tell()
+        try:
+            fpos = file.tell()
+        except Exception:
+            fpos = None
         try:
             return file.read()
         finally:
-            file.seek(fp)
+            if fpos is not None:
+                file.seek(fpos)
 
 
 class ValueAccessor:
@@ -1727,7 +1731,10 @@ class ZopeFieldStorage(ValueAccessor):
         self.headers = Headers(hl)
         parts = ()
         if method == "POST":
-            fpos = fp.tell()
+            try:
+                fpos = fp.tell()
+            except Exception:
+                fpos = None
             if content_type is not None and \
                   content_type.startswith("multipart/form-data"):  # noqa: E127
                 ct, options = parse_options_header(content_type)
@@ -1744,12 +1751,13 @@ class ZopeFieldStorage(ValueAccessor):
                 if fp.read(1):
                     raise BadRequest("form data processing "
                                      "requires too much memory")
-                fp.seek(fpos)
             else:
                 # `processInputs` currently expects either
                 # form values or a response body, not both.
                 # reset `qs` to fulfill this expectation.
                 qs = ""
+            if fpos is not None:
+                fp.seek(fpos)
         elif method not in ("GET", "HEAD"):
             # `processInputs` currently expects either
             # form values or a response body, not both.
