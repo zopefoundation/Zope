@@ -531,8 +531,8 @@ class HTTPRequest(BaseRequest):
             fslist = fs.list
             tuple_items = {}
             defaults = {}
-            converter = None
             tainteddefaults = {}
+            converter = None
 
             for item in fslist:  # form data
                 # Note:
