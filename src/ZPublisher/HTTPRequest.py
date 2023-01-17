@@ -1721,10 +1721,10 @@ class ZopeFieldStorage(ValueAccessor):
         method = environ.get("REQUEST_METHOD", "GET").upper()
         qs = environ.get("QUERY_STRING", "")
         hl = []
-        content_type = environ.get("CONTENT_TYPE")
-        if content_type is not None:
-            content_type = content_type
-            hl.append(("content-type", content_type))
+        content_type = environ.get("CONTENT_TYPE",
+                                   "application/x-www-form-urlencoded")
+        content_type = content_type
+        hl.append(("content-type", content_type))
         content_disposition = environ.get("CONTENT_DISPOSITION")
         if content_disposition is not None:
             hl.append(("content-disposition", content_disposition))
@@ -1735,8 +1735,7 @@ class ZopeFieldStorage(ValueAccessor):
                 fpos = fp.tell()
             except Exception:
                 fpos = None
-            if content_type is not None and \
-                  content_type.startswith("multipart/form-data"):  # noqa: E127
+            if content_type.startswith("multipart/form-data"):
                 ct, options = parse_options_header(content_type)
                 parts = MultipartParser(
                     fp, options["boundary"],
