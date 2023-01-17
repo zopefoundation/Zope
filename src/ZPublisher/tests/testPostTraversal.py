@@ -6,7 +6,11 @@ from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
 
-Zope2.startup_wsgi()
+class WSGILayer:
+    @staticmethod
+    def setUp():
+        Zope2.startup_wsgi()
+
 
 pt_simple_was_run = 0
 
@@ -56,6 +60,7 @@ class DummyObjectWithPTHook(DummyObjectBasic):
 
 
 class TestBaseRequestPT(TestCase):
+    layer = WSGILayer
 
     def setUp(self):
         self.root = DummyObjectBasic()

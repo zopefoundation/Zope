@@ -20,13 +20,18 @@ import os
 import random
 import re
 import time
-from cgi import FieldStorage
 from copy import deepcopy
+from types import SimpleNamespace
+from urllib.parse import parse_qsl
 from urllib.parse import unquote
 from urllib.parse import urlparse
 
 from AccessControl.tainted import should_be_tainted
 from AccessControl.tainted import taint_string
+from multipart import Headers
+from multipart import MultipartParser
+from multipart import parse_options_header
+from zExceptions import BadRequest
 from zope.component import queryUtility
 from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.i18n.locales import LoadLocaleError
@@ -45,6 +50,13 @@ from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
 
 from .cookie import getCookieValuePolicy
+
+
+# DOS attack protection -- limiting the amount of memory for forms
+# probably should become configurable
+FORM_MEMORY_LIMIT = 2 ** 20  # memory limit for forms
+FORM_DISK_LIMIT = 2 ** 30    # disk limit for forms
+FORM_MEMFILE_LIMIT = 4000    # limit for `BytesIO` -> temporary file switch
 
 
 # This may get overwritten during configuration
@@ -494,17 +506,14 @@ class HTTPRequest(BaseRequest):
             environ['QUERY_STRING'] = ''
 
         meth = None
-        fs_kw = {}
-        fs_kw['encoding'] = self.charset
 
-        fs = ZopeFieldStorage(
-            fp=fp, environ=environ, keep_blank_values=1, **fs_kw)
+        fs = ZopeFieldStorage(fp, environ)
 
         # Keep a reference to the FieldStorage. Otherwise it's
         # __del__ method is called too early and closing FieldStorage.file.
         self._hold(fs)
 
-        if not hasattr(fs, 'list') or fs.list is None:
+        if not hasattr(fs, 'list'):
             if 'HTTP_SOAPACTION' in environ:
                 # Stash XML request for interpretation by a SOAP-aware view
                 other['SOAPXML'] = fs.value
@@ -522,27 +531,58 @@ class HTTPRequest(BaseRequest):
             fslist = fs.list
             tuple_items = {}
             defaults = {}
-            tainteddefaults = {}
             converter = None
+            tainteddefaults = {}
 
-            for item in fslist:
-
+            for item in fslist:  # form data
+                # Note:
+                # we want to support 2 use cases
+                # 1. the form data has been created by the browser
+                # 2. the form data is free standing
+                # A browser internally works with character data,
+                # which it encodes for transmission to the server --
+                # usually with `self.charset`. Therefore, we
+                # usually expect the form data to represent data
+                # in this charset.
+                # We make this same assumption also for free standing
+                # form data, i.e. we expect the form creator to know
+                # the server's charset. However, sometimes data cannot
+                # be represented in this charset (e.g. arbitrary binary
+                # data). To cover this case, we decode data
+                # with the `surrogateescape` error handler (see PEP 383).
+                # It allows to retrieve the original byte sequence.
+                # With an encoding modifier, the form creator
+                # can specify the correct encoding used by a form field value.
+                # Note: we always expect the form field name
+                # to be representable with `self.charset`. As those
+                # names are expected to be `ASCII`, this should be no
+                # big restriction.
+                # Note: the use of `surrogateescape` can lead to delayed
+                # problems when surrogates reach the application because
+                # they cannot be encoded with a standard error handler.
+                # We might want to prevent this.
+                character_encoding = ''  # currently used encoding
                 isFileUpload = 0
                 key = item.name
                 if key is None:
                     continue
+                key = item.name.encode("latin-1").decode(self.charset)
 
                 if hasattr(item, 'file') and \
                    hasattr(item, 'filename') and \
                    hasattr(item, 'headers'):
-                    if item.file and item.filename is not None:
-                        item = FileUpload(item)
-                        isFileUpload = 1
-                    else:
-                        item = item.value
+                    item = FileUpload(item, self.charset)
+                    isFileUpload = 1
+                else:
+                    character_encoding = self.charset
+                    item = item.value.decode(
+                        character_encoding, "surrogateescape")
+                # from here on, `item` contains the field value
+                # either as `FileUpload` or `str` with
+                # `character_encoding` as encoding.
+                # `key` the field name (`str`)
 
                 flags = 0
-                character_encoding = ''
                 # Variables for potentially unsafe values.
                 tainted = None
                 converter_type = None
@@ -599,7 +639,15 @@ class HTTPRequest(BaseRequest):
                             if not item:
                                 flags = flags | EMPTY
                         elif has_codec(type_name):
+                            # recode:
+                            assert not isFileUpload, "cannot recode files"
+                            item = item.encode(
+                                character_encoding, "surrogateescape")
                             character_encoding = type_name
+                            # we do not use `surrogateescape` as
+                            # we immediately want to determine
+                            # an incompatible encoding modifier
+                            item = item.decode(character_encoding)
 
                         delim = key.rfind(':')
                         if delim < 0:
@@ -644,20 +692,11 @@ class HTTPRequest(BaseRequest):
                     # defer conversion
                     if flags & CONVERTED:
                         try:
-                            if character_encoding:
-                                # We have a string with a specified character
-                                # encoding.  This gets passed to the converter
-                                # either as unicode, if it can handle it, or
-                                # crunched back down to utf-8 if it can not.
-                                if isinstance(item, bytes):
-                                    item = str(item, character_encoding)
-                                if hasattr(converter, 'convert_unicode'):
-                                    item = converter.convert_unicode(item)
-                                else:
-                                    item = converter(
-                                        item.encode(default_encoding))
-                            else:
-                                item = converter(item)
+                            if character_encoding and \
+                               getattr(converter, "binary", False):
+                                item = item.encode(character_encoding,
+                                                   "surrogateescape")
+                            item = converter(item)
 
                             # Flag potentially unsafe values
                             if converter_type in ('string', 'required', 'text',
@@ -1632,15 +1671,110 @@ def sane_environment(env):
     return dict
 
 
-class ZopeFieldStorage(FieldStorage):
-    """This subclass exists to work around a Python bug
-    (see https://bugs.python.org/issue27777) to make sure
-    we can read binary data from a request body.
+class ValueDescriptor:
+    """(non data) descriptor to compute `value` from `file`."""
+    def __get__(self, inst, owner=None):
+        if inst is None:
+            return self
+        file = inst.file
+        fp = file.tell()
+        try:
+            return file.read()
+        finally:
+            file.seek(fp)
+
+
+class ValueAccessor:
+    value = ValueDescriptor()
+
+
+class FormField(SimpleNamespace, ValueAccessor):
+    """represent a single form field.
+
+    Typical attributes:
+    name
+      the field name
+    value
+      the field value (`bytes`)
+
+    File fields additionally have the attributes:
+    file
+      a binary file containing the file content
+    filename
+      the file's name as reported by the client
+    headers
+      a case insensitive dict with header information;
+      usually `content-type` and `content-disposition`.
+
+    Unless otherwise noted, `latin-1` decoded bytes
+    are used to represent textual data.
     """
 
-    def read_binary(self):
-        self._binary_file = True
-        return FieldStorage.read_binary(self)
+
+class ZopeFieldStorage(ValueAccessor):
+    def __init__(self, fp, environ):
+        self.file = fp
+        method = environ.get("REQUEST_METHOD", "GET").upper()
+        qs = environ.get("QUERY_STRING", "")
+        hl = []
+        content_type = environ.get("CONTENT_TYPE")
+        if content_type is not None:
+            content_type = content_type
+            hl.append(("content-type", content_type))
+        content_disposition = environ.get("CONTENT_DISPOSITION")
+        if content_disposition is not None:
+            hl.append(("content-disposition", content_disposition))
+        self.headers = Headers(hl)
+        parts = ()
+        if method == "POST":
+            fpos = fp.tell()
+            if content_type is not None and \
+                  content_type.startswith("multipart/form-data"):  # noqa: E127
+                ct, options = parse_options_header(content_type)
+                parts = MultipartParser(
+                    fp, options["boundary"],
+                    mem_limit=FORM_MEMORY_LIMIT,
+                    disk_limit=FORM_DISK_LIMIT,
+                    memfile_limit=FORM_MEMFILE_LIMIT,
+                    charset="latin-1").parts()
+            elif content_type == "application/x-www-form-urlencoded":
+                if qs:
+                    qs += "&"
+                qs += fp.read(FORM_MEMORY_LIMIT).decode("latin-1")
+                if fp.read(1):
+                    raise BadRequest("form data processing "
+                                     "requires too much memory")
+                fp.seek(fpos)
+            else:
+                # `processInputs` currently expects either
+                # form values or a response body, not both.
+                # reset `qs` to fulfill this expectation.
+                qs = ""
+        elif method not in ("GET", "HEAD"):
+            # `processInputs` currently expects either
+            # form values or a response body, not both.
+            # reset `qs` to fulfill this expectation.
+            qs = ""
+        fl = []
+        add_field = fl.append
+        for name, val in parse_qsl(
+           qs,  # noqa: E121
+           keep_blank_values=True, encoding="latin-1"):
+            add_field(FormField(
+                name=name, value=val.encode("latin-1")))
+        for part in parts:
+            if part.filename:
+                # a file
+                field = FormField(
+                    name=part.name,
+                    file=part.file,
+                    filename=part.filename,
+                    headers=part.headers)
+            else:
+                field = FormField(name=part.name, value=part.raw)
+            add_field(field)
+        if fl:
+            self.list = fl
 
 
 # Original version: zope.publisher.browser.FileUpload
@@ -1660,11 +1794,12 @@ class FileUpload:
     # that protected code can use DTML to work with FileUploads.
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, aFieldStorage):
+    def __init__(self, aFieldStorage, charset):
         self.file = aFieldStorage.file
         self.headers = aFieldStorage.headers
-        self.filename = aFieldStorage.filename
-        self.name = aFieldStorage.name
+        self.filename = aFieldStorage.filename\
+            .encode("latin-1").decode(charset)
+        self.name = aFieldStorage.name.encode("latin-1").decode(charset)
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.

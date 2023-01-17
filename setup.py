@@ -122,6 +122,7 @@ setup(
         'zope.testing',
         'zope.traversing',
         'zope.viewlet',
+        'multipart',
     ],
     include_package_data=True,
     zip_safe=False,
