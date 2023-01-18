@@ -15,7 +15,10 @@
 
 Used by `ZPublisher.HTTPRequest` and `OFS.PropertyManager`.
 
-Converters which work best with binary input have a true `binary` attribute`.
+Binary onverters (i.e. converters which use `bytes` for/in their result)
+are marked with a true `binary` attribute`.
+This allows the publisher to perform the conversion to `bytes`
+based on its more precise encoding knowledge.
 """
 
 
