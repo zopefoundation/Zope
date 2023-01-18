@@ -62,11 +62,11 @@ zope.lifecycleevent==4.4
 zope.location==4.3
 zope.pagetemplate==4.6.0
 zope.processlifetime==2.4
-zope.proxy==4.6.1
+zope.proxy==5.0.0
 zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.schema==7.0.1
-zope.security==5.8
+zope.security==6.1
 zope.sequencesort==4.2
 zope.site==4.6.1
 zope.size==4.4
