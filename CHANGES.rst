@@ -10,6 +10,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.1 (unreleased)
 ------------------
 
+- Replace ``cgi.FieldStorage`` by ``multipart`` avoiding
+  the ``cgi`` module deprecated by Python 3.11.
+
+  Mark binary converters with a true ``binary`` attribute.
+
+  Fix encoding handling and ``:bytes`` converter.
+
+  See `#1094 <https://github.com/zopefoundation/Zope/pull/1094>`_.
+
 - Clean out and refactor dependency configuration files.
 
 - Update to newest compatible versions of dependencies.

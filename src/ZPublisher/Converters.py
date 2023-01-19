@@ -11,6 +11,17 @@
 #
 ##############################################################################
 
+"""Converters
+
+Used by `ZPublisher.HTTPRequest` and `OFS.PropertyManager`.
+
+Binary converters (i.e. converters which use `bytes` for/in their result)
+are marked with a true `binary` attribute`.
+This allows the publisher to perform the conversion to `bytes`
+based on its more precise encoding knowledge.
+"""
+
+
 import html
 import json
 import re
@@ -40,6 +51,9 @@ def field2bytes(v):
         return v.encode(default_encoding)
     else:
         return bytes(v)
+
+
+field2bytes.binary = True
 
 
 def field2text(value, nl=re.compile('\r\n|\n\r').search):

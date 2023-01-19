@@ -16,6 +16,7 @@ import unittest
 import warnings
 from contextlib import contextmanager
 from io import BytesIO
+from unittest.mock import patch
 
 from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
@@ -26,6 +27,7 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
+from ZPublisher.HTTPRequest import BadRequest
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -106,8 +108,11 @@ class HTTPRequestFactoryMixin:
         from ZPublisher.HTTPRequest import HTTPRequest
         return HTTPRequest
 
-    def _makePostEnviron(self, body=b''):
+    def _makePostEnviron(self, body=b'', multipart=True):
         environ = TEST_POST_ENVIRON.copy()
+        environ["CONTENT_TYPE"] = \
+            multipart and 'multipart/form-data; boundary=12345' \
+            or 'application/x-www-form-urlencoded'
         environ['CONTENT_LENGTH'] = str(len(body))
         return environ
 
@@ -1299,6 +1304,25 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(environ=env)
         self.assertEqual(req['SERVER_URL'], 'https://myhost')
 
+    def test_form_urlencoded(self):
+        body = b"a=1"
+        env = self._makePostEnviron(body, False)
+        req = self._makeOne(stdin=BytesIO(body), environ=env)
+        req.processInputs()
+        self.assertEqual(req.form["a"], "1")
+        req = self._makeOne(stdin=BytesIO(body), environ=env)
+        with patch("ZPublisher.HTTPRequest.FORM_MEMORY_LIMIT", 1):
+            with self.assertRaises(BadRequest):
+                req.processInputs()
+
+    def test_bytes_converter(self):
+        val = "äöü".encode("latin-1")
+        body = b"a:bytes:latin-1=" + val
+        env = self._makePostEnviron(body, False)
+        req = self._makeOne(stdin=BytesIO(body), environ=env)
+        req.processInputs()
+        self.assertEqual(req.form["a"], val)
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
@@ -1356,7 +1380,6 @@ class TestSearchType(unittest.TestCase):
 
 
 TEST_POST_ENVIRON = {
-    'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
     'CONTENT_LENGTH': None,
     'REQUEST_METHOD': 'POST',
     'SERVER_NAME': 'localhost',
@@ -1378,4 +1401,7 @@ TEST_LARGEFILE_DATA = b'''
 Content-Disposition: form-data; name="largefile"; filename="largefile"
 Content-Type: application/octet-stream
 
-test ''' + (b'test' * 1000) + b'\n\n'
+test %s
+
+--12345--
+''' % (b'test' * 1000)
