@@ -20,7 +20,6 @@ import random
 import re
 import time
 from cgi import FieldStorage
-from copy import deepcopy
 from warnings import warn
 
 from six import PY2
@@ -31,8 +30,7 @@ from six import text_type
 from six.moves.urllib.parse import unquote
 from six.moves.urllib.parse import urlparse
 
-from AccessControl.tainted import \
-     should_be_tainted as base_should_be_tainted
+from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
 from zope.component import queryUtility
 from zope.i18n.interfaces import IUserPreferredLanguages
@@ -526,7 +524,6 @@ class HTTPRequest(BaseRequest):
 
             for item in fslist:
 
-                isFileUpload = 0
                 key = item.name
                 if key is None:
                     continue
@@ -536,14 +533,11 @@ class HTTPRequest(BaseRequest):
                    hasattr(item, 'headers'):
                     if item.file and item.filename is not None:
                         item = FileUpload(item)
-                        isFileUpload = 1
                     else:
                         item = item.value
 
                 flags = 0
                 character_encoding = ''
-                # Variables for potentially unsafe values.
-                converter_type = None
 
                 # Loop through the different types and set
                 # the appropriate flags
@@ -568,7 +562,6 @@ class HTTPRequest(BaseRequest):
 
                         if c is not None:
                             converter = c
-                            converter_type = type_name
                             flags = flags | CONVERTED
                         elif type_name == 'list':
                             flags = flags | SEQUENCE
@@ -652,7 +645,6 @@ class HTTPRequest(BaseRequest):
                                     item = getattr(item[-1], attr)
                             else:
                                 raise
-
 
                     # Determine which dictionary to use
                     if flags & DEFAULT:

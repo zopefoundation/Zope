@@ -1183,8 +1183,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         #  They happen implicitely in `request.resolve_url`
         #  They creates `zope.schema` events
         # Doing them here avoids those unrelated events
-        import OFS.PropertyManager
-        import OFS.SimpleItem
+        import OFS.PropertyManager  # noqa: F401
+        import OFS.SimpleItem  # noqa: F401
         #
         import zope.event
         events = []
@@ -1432,4 +1432,3 @@ Content-Type: text/html
 
 --12345--
 '''
-
