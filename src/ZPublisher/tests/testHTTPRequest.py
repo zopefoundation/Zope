@@ -1179,6 +1179,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertTrue(IFoo.providedBy(clone))
 
     def test_resolve_url_doesnt_send_endrequestevent(self):
+        # The following imports are necessary:
+        #  They happen implicitely in `request.resolve_url`
+        #  They creates `zope.schema` events
+        # Doing them here avoids those unrelated events
+        import OFS.PropertyManager
+        import OFS.SimpleItem
+        #
         import zope.event
         events = []
         zope.event.subscribers.append(events.append)
