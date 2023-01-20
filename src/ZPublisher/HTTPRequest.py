@@ -1561,7 +1561,7 @@ def taint(d):
         is replaced by the corresponding ``taint_string``.
         """
         __traceback_info__ = v
-        if isinstance(v, string_types) and should_be_tainted(v):
+        if isinstance(v, (binary_type, text_type)) and should_be_tainted(v):
             return taint_string(v)
         if isinstance(v, (list, tuple)):
             return v.__class__(_taint(x) for x in v)
