@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.1 (unreleased)
 ------------------
 
+- Sanitize tainting fixing
+  `#1095 <https://github.com/zopefoundation/Zope/issues/1095>`_
+
 - Replace ``cgi.FieldStorage`` by ``multipart`` avoiding
   the ``cgi`` module deprecated by Python 3.11.
 

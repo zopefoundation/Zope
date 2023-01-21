@@ -18,6 +18,7 @@ from contextlib import contextmanager
 from io import BytesIO
 from unittest.mock import patch
 
+from AccessControl.tainted import TaintedString
 from AccessControl.tainted import should_be_tainted
 from zExceptions import NotFound
 from zope.component import getGlobalSiteManager
@@ -28,6 +29,7 @@ from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 from ZPublisher.HTTPRequest import BadRequest
+from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -1163,6 +1165,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertTrue(IFoo.providedBy(clone))
 
     def test_resolve_url_doesnt_send_endrequestevent(self):
+        # The following imports are necessary:
+        #  They happen implicitely in `request.resolve_url`
+        #  They creates `zope.schema` events
+        # Doing them here avoids those unrelated events
+        import OFS.PropertyManager  # noqa: F401
+        import OFS.SimpleItem  # noqa: F401
+        #
         import zope.event
         events = []
         zope.event.subscribers.append(events.append)
@@ -1323,6 +1332,19 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         self.assertEqual(req.form["a"], val)
 
+    def test_issue_1095(self):
+        body = TEST_ISSUE_1095_DATA
+        env = self._makePostEnviron(body)
+        req = self._makeOne(BytesIO(body), env)
+        req.processInputs()
+        r = req["r"]
+        self.assertEqual(len(r), 2)
+        self.assertIsInstance(r[0].x, FileUpload)
+        self.assertIsInstance(r[1].x, str)
+        r = req.taintedform["r"]
+        self.assertIsInstance(r[0].x, FileUpload)
+        self.assertIsInstance(r[1].x, TaintedString)
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
@@ -1405,3 +1427,19 @@ test %s
 
 --12345--
 ''' % (b'test' * 1000)
+
+TEST_ISSUE_1095_DATA = b'''
+--12345
+Content-Disposition: form-data; name="r.x:records"; filename="fn"
+Content-Type: application/octet-stream
+
+test
+
+--12345
+Content-Disposition: form-data; name="r.x:records"
+Content-Type: text/html
+
+<body>abc</body>
+
+--12345--
+'''
