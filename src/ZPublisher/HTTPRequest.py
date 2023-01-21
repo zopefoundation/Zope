@@ -20,13 +20,12 @@ import os
 import random
 import re
 import time
-from copy import deepcopy
 from types import SimpleNamespace
 from urllib.parse import parse_qsl
 from urllib.parse import unquote
 from urllib.parse import urlparse
 
-from AccessControl.tainted import should_be_tainted
+from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
 from multipart import Headers
 from multipart import MultipartParser
@@ -446,22 +445,11 @@ class HTTPRequest(BaseRequest):
         # vars with the same name - they are more like default values
         # for names not otherwise specified in the form.
         cookies = {}
-        taintedcookies = {}
         k = get_env('HTTP_COOKIE', '')
         if k:
             parse_cookie(k, cookies)
-            for k, v in cookies.items():
-                istainted = 0
-                if should_be_tainted(k):
-                    k = taint_string(k)
-                    istainted = 1
-                if should_be_tainted(v):
-                    v = taint_string(v)
-                    istainted = 1
-                if istainted:
-                    taintedcookies[k] = v
         self.cookies = cookies
-        self.taintedcookies = taintedcookies
+        self.taintedcookies = taint(cookies)
 
     def processInputs(
             self,
@@ -497,7 +485,6 @@ class HTTPRequest(BaseRequest):
 
         form = self.form
         other = self.other
-        taintedform = self.taintedform
 
         # If 'QUERY_STRING' is not present in environ
         # FieldStorage will try to get it from sys.argv[1]
@@ -531,7 +518,6 @@ class HTTPRequest(BaseRequest):
             fslist = fs.list
             tuple_items = {}
             defaults = {}
-            tainteddefaults = {}
             converter = None
 
             for item in fslist:  # form data
@@ -562,7 +548,6 @@ class HTTPRequest(BaseRequest):
                 # they cannot be encoded with a standard error handler.
                 # We might want to prevent this.
                 character_encoding = ''  # currently used encoding
-                isFileUpload = 0
                 key = item.name
                 if key is None:
                     continue
@@ -572,7 +557,6 @@ class HTTPRequest(BaseRequest):
                    hasattr(item, 'filename') and \
                    hasattr(item, 'headers'):
                     item = FileUpload(item, self.charset)
-                    isFileUpload = 1
                 else:
                     character_encoding = self.charset
                     item = item.value.decode(
@@ -583,10 +567,6 @@ class HTTPRequest(BaseRequest):
                 # `key` the field name (`str`)
 
                 flags = 0
-                # Variables for potentially unsafe values.
-                tainted = None
-                converter_type = None
-
                 # Loop through the different types and set
                 # the appropriate flags
 
@@ -610,7 +590,6 @@ class HTTPRequest(BaseRequest):
 
                         if c is not None:
                             converter = c
-                            converter_type = type_name
                             flags = flags | CONVERTED
                         elif type_name == 'list':
                             flags = flags | SEQUENCE
@@ -640,7 +619,8 @@ class HTTPRequest(BaseRequest):
                                 flags = flags | EMPTY
                         elif has_codec(type_name):
                             # recode:
-                            assert not isFileUpload, "cannot recode files"
+                            assert not isinstance(item, FileUpload), \
+                                   "cannot recode files"
                             item = item.encode(
                                 character_encoding, "surrogateescape")
                             character_encoding = type_name
@@ -662,11 +642,6 @@ class HTTPRequest(BaseRequest):
                 if key in isCGI_NAMEs or key.startswith('HTTP_'):
                     continue
 
-                # If the key is tainted, mark it so as well.
-                tainted_key = key
-                if should_be_tainted(key):
-                    tainted_key = taint_string(key)
-
                 if flags:
 
                     # skip over empty fields
@@ -678,17 +653,6 @@ class HTTPRequest(BaseRequest):
                         key = key.split(".")
                         key, attr = ".".join(key[:-1]), key[-1]
 
-                        # Update the tainted_key if necessary
-                        tainted_key = key
-                        if should_be_tainted(key):
-                            tainted_key = taint_string(key)
-
-                        # Attributes cannot hold a <.
-                        if should_be_tainted(attr):
-                            raise ValueError(
-                                "%s is not a valid record attribute name" %
-                                html.escape(attr, True))
-
                     # defer conversion
                     if flags & CONVERTED:
                         try:
@@ -697,23 +661,6 @@ class HTTPRequest(BaseRequest):
                                 item = item.encode(character_encoding,
                                                    "surrogateescape")
                             item = converter(item)
-
-                            # Flag potentially unsafe values
-                            if converter_type in ('string', 'required', 'text',
-                                                  'ustring', 'utext'):
-                                if not isFileUpload and \
-                                   should_be_tainted(item):
-                                    tainted = taint_string(item)
-                            elif converter_type in ('tokens', 'lines',
-                                                    'utokens', 'ulines'):
-                                is_tainted = 0
-                                tainted = item[:]
-                                for i in range(len(tainted)):
-                                    if should_be_tainted(tainted[i]):
-                                        is_tainted = 1
-                                        tainted[i] = taint_string(tainted[i])
-                                if not is_tainted:
-                                    tainted = None
 
                         except Exception:
                             if not item and \
@@ -724,31 +671,14 @@ class HTTPRequest(BaseRequest):
                                     item = getattr(item, attr)
                                 if flags & RECORDS:
                                     item = getattr(item[-1], attr)
-                                if tainted_key in tainteddefaults:
-                                    tainted = tainteddefaults[tainted_key]
-                                    if flags & RECORD:
-                                        tainted = getattr(tainted, attr)
-                                    if flags & RECORDS:
-                                        tainted = getattr(tainted[-1], attr)
                             else:
                                 raise
-
-                    elif not isFileUpload and should_be_tainted(item):
-                        # Flag potentially unsafe values
-                        tainted = taint_string(item)
-
-                    # If the key is tainted, we need to store stuff in the
-                    # tainted dict as well, even if the value is safe.
-                    if should_be_tainted(tainted_key) and tainted is None:
-                        tainted = item
 
                     # Determine which dictionary to use
                     if flags & DEFAULT:
                         mapping_object = defaults
-                        tainted_mapping = tainteddefaults
                     else:
                         mapping_object = form
-                        tainted_mapping = taintedform
 
                     # Insert in dictionary
                     if key in mapping_object:
@@ -757,49 +687,6 @@ class HTTPRequest(BaseRequest):
                             # in the list. reclist is mutable.
                             reclist = mapping_object[key]
                             x = reclist[-1]
-
-                            if tainted:
-                                # Store a tainted copy as well
-                                if tainted_key not in tainted_mapping:
-                                    tainted_mapping[tainted_key] = deepcopy(
-                                        reclist)
-                                treclist = tainted_mapping[tainted_key]
-                                lastrecord = treclist[-1]
-
-                                if not hasattr(lastrecord, attr):
-                                    if flags & SEQUENCE:
-                                        tainted = [tainted]
-                                    setattr(lastrecord, attr, tainted)
-                                else:
-                                    if flags & SEQUENCE:
-                                        getattr(
-                                            lastrecord, attr).append(tainted)
-                                    else:
-                                        newrec = record()
-                                        setattr(newrec, attr, tainted)
-                                        treclist.append(newrec)
-
-                            elif tainted_key in tainted_mapping:
-                                # If we already put a tainted value into this
-                                # recordset, we need to make sure the whole
-                                # recordset is built.
-                                treclist = tainted_mapping[tainted_key]
-                                lastrecord = treclist[-1]
-                                copyitem = item
-
-                                if not hasattr(lastrecord, attr):
-                                    if flags & SEQUENCE:
-                                        copyitem = [copyitem]
-                                    setattr(lastrecord, attr, copyitem)
-                                else:
-                                    if flags & SEQUENCE:
-                                        getattr(
-                                            lastrecord, attr).append(copyitem)
-                                    else:
-                                        newrec = record()
-                                        setattr(newrec, attr, copyitem)
-                                        treclist.append(newrec)
-
                             if not hasattr(x, attr):
                                 # If the attribute does not
                                 # exist, set it
@@ -836,57 +723,9 @@ class HTTPRequest(BaseRequest):
                                 # it is not a sequence so
                                 # set the attribute
                                 setattr(b, attr, item)
-
-                            # Store a tainted copy as well if necessary
-                            if tainted:
-                                if tainted_key not in tainted_mapping:
-                                    tainted_mapping[tainted_key] = deepcopy(
-                                        mapping_object[key])
-                                b = tainted_mapping[tainted_key]
-                                if flags & SEQUENCE:
-                                    seq = getattr(b, attr, [])
-                                    seq.append(tainted)
-                                    setattr(b, attr, seq)
-                                else:
-                                    setattr(b, attr, tainted)
-
-                            elif tainted_key in tainted_mapping:
-                                # If we already put a tainted value into this
-                                # record, we need to make sure the whole record
-                                # is built.
-                                b = tainted_mapping[tainted_key]
-                                if flags & SEQUENCE:
-                                    seq = getattr(b, attr, [])
-                                    seq.append(item)
-                                    setattr(b, attr, seq)
-                                else:
-                                    setattr(b, attr, item)
-
                         else:
                             # it is not a record or list of records
                             found = mapping_object[key]
-
-                            if tainted:
-                                # Store a tainted version if necessary
-                                if tainted_key not in tainted_mapping:
-                                    copied = deepcopy(found)
-                                    if isinstance(copied, list):
-                                        tainted_mapping[tainted_key] = copied
-                                    else:
-                                        tainted_mapping[tainted_key] = [copied]
-                                tainted_mapping[tainted_key].append(tainted)
-
-                            elif tainted_key in tainted_mapping:
-                                # We may already have encountered a tainted
-                                # value for this key, and the tainted_mapping
-                                # needs to hold all the values.
-                                tfound = tainted_mapping[tainted_key]
-                                if isinstance(tfound, list):
-                                    tainted_mapping[tainted_key].append(item)
-                                else:
-                                    tainted_mapping[tainted_key] = [tfound,
-                                                                    item]
-
                             if isinstance(found, list):
                                 found.append(item)
                             else:
@@ -902,15 +741,6 @@ class HTTPRequest(BaseRequest):
                                 item = [item]
                             setattr(a, attr, item)
                             mapping_object[key] = [a]
-
-                            if tainted:
-                                # Store a tainted copy if necessary
-                                a = record()
-                                if flags & SEQUENCE:
-                                    tainted = [tainted]
-                                setattr(a, attr, tainted)
-                                tainted_mapping[tainted_key] = [a]
-
                         elif flags & RECORD:
                             # Create a new record, set its attribute
                             # and put it in the dictionary
@@ -918,63 +748,20 @@ class HTTPRequest(BaseRequest):
                                 item = [item]
                             r = mapping_object[key] = record()
                             setattr(r, attr, item)
-
-                            if tainted:
-                                # Store a tainted copy if necessary
-                                if flags & SEQUENCE:
-                                    tainted = [tainted]
-                                r = tainted_mapping[tainted_key] = record()
-                                setattr(r, attr, tainted)
                         else:
                             # it is not a record or list of records
                             if flags & SEQUENCE:
                                 item = [item]
                             mapping_object[key] = item
 
-                            if tainted:
-                                # Store a tainted copy if necessary
-                                if flags & SEQUENCE:
-                                    tainted = [tainted]
-                                tainted_mapping[tainted_key] = tainted
-
                 else:
                     # This branch is for case when no type was specified.
                     mapping_object = form
-
-                    if not isFileUpload and should_be_tainted(item):
-                        tainted = taint_string(item)
-                    elif should_be_tainted(key):
-                        tainted = item
 
                     # Insert in dictionary
                     if key in mapping_object:
                         # it is not a record or list of records
                         found = mapping_object[key]
-
-                        if tainted:
-                            # Store a tainted version if necessary
-                            if tainted_key not in taintedform:
-                                copied = deepcopy(found)
-                                if isinstance(copied, list):
-                                    taintedform[tainted_key] = copied
-                                else:
-                                    taintedform[tainted_key] = [copied]
-                            elif not isinstance(
-                                    taintedform[tainted_key], list):
-                                taintedform[tainted_key] = [
-                                    taintedform[tainted_key]]
-                            taintedform[tainted_key].append(tainted)
-
-                        elif tainted_key in taintedform:
-                            # We may already have encountered a tainted value
-                            # for this key, and the taintedform needs to hold
-                            # all the values.
-                            tfound = taintedform[tainted_key]
-                            if isinstance(tfound, list):
-                                taintedform[tainted_key].append(item)
-                            else:
-                                taintedform[tainted_key] = [tfound, item]
-
                         if isinstance(found, list):
                             found.append(item)
                         else:
@@ -982,54 +769,20 @@ class HTTPRequest(BaseRequest):
                             mapping_object[key] = found
                     else:
                         mapping_object[key] = item
-                        if tainted:
-                            taintedform[tainted_key] = tainted
 
             # insert defaults into form dictionary
             if defaults:
                 for key, value in defaults.items():
-                    tainted_key = key
-                    if should_be_tainted(key):
-                        tainted_key = taint_string(key)
-
                     if key not in form:
                         # if the form does not have the key,
                         # set the default
                         form[key] = value
-
-                        if tainted_key in tainteddefaults:
-                            taintedform[tainted_key] = \
-                                tainteddefaults[tainted_key]
                     else:
                         # The form has the key
-                        tdefault = tainteddefaults.get(tainted_key, value)
                         if isinstance(value, record):
                             # if the key is mapped to a record, get the
                             # record
                             r = form[key]
-
-                            # First deal with tainted defaults.
-                            if tainted_key in taintedform:
-                                tainted = taintedform[tainted_key]
-                                for k, v in tdefault.__dict__.items():
-                                    if not hasattr(tainted, k):
-                                        setattr(tainted, k, v)
-
-                            elif tainted_key in tainteddefaults:
-                                # Find out if any of the tainted default
-                                # attributes needs to be copied over.
-                                missesdefault = 0
-                                for k, v in tdefault.__dict__.items():
-                                    if not hasattr(r, k):
-                                        missesdefault = 1
-                                        break
-                                if missesdefault:
-                                    tainted = deepcopy(r)
-                                    for k, v in tdefault.__dict__.items():
-                                        if not hasattr(tainted, k):
-                                            setattr(tainted, k, v)
-                                    taintedform[tainted_key] = tainted
-
                             for k, v in value.__dict__.items():
                                 # loop through the attributes and value
                                 # in the default dictionary
@@ -1044,56 +797,6 @@ class HTTPRequest(BaseRequest):
                             val = form[key]
                             if not isinstance(val, list):
                                 val = [val]
-
-                            # First deal with tainted copies
-                            if tainted_key in taintedform:
-                                tainted = taintedform[tainted_key]
-                                if not isinstance(tainted, list):
-                                    tainted = [tainted]
-                                for defitem in tdefault:
-                                    if isinstance(defitem, record):
-                                        for k, v in defitem.__dict__.items():
-                                            for origitem in tainted:
-                                                if not hasattr(origitem, k):
-                                                    setattr(origitem, k, v)
-                                    else:
-                                        if defitem not in tainted:
-                                            tainted.append(defitem)
-                                taintedform[tainted_key] = tainted
-
-                            elif tainted_key in tainteddefaults:
-                                missesdefault = 0
-                                for defitem in tdefault:
-                                    if isinstance(defitem, record):
-                                        try:
-                                            for k, v in \
-                                                    defitem.__dict__.items():
-                                                for origitem in val:
-                                                    if not hasattr(
-                                                            origitem, k):
-                                                        missesdefault = 1
-                                                        raise NestedLoopExit
-                                        except NestedLoopExit:
-                                            break
-                                    else:
-                                        if defitem not in val:
-                                            missesdefault = 1
-                                            break
-                                if missesdefault:
-                                    tainted = deepcopy(val)
-                                    for defitem in tdefault:
-                                        if isinstance(defitem, record):
-                                            for k, v in (
-                                                    defitem.__dict__.items()):
-                                                for origitem in tainted:
-                                                    if not hasattr(
-                                                            origitem, k):
-                                                        setattr(origitem, k, v)
-                                        else:
-                                            if defitem not in tainted:
-                                                tainted.append(defitem)
-                                    taintedform[tainted_key] = tainted
-
                             for x in value:
                                 # for each x in the list
                                 if isinstance(x, record):
@@ -1140,9 +843,6 @@ class HTTPRequest(BaseRequest):
                     attr = new
                     if k in form:
                         # If the form has the split key get its value
-                        tainted_split_key = k
-                        if should_be_tainted(k):
-                            tainted_split_key = taint_string(k)
                         item = form[k]
                         if isinstance(item, record):
                             # if the value is mapped to a record, check if it
@@ -1160,24 +860,8 @@ class HTTPRequest(BaseRequest):
                                     # convert it to a tuple and set it
                                     value = tuple(getattr(x, attr))
                                     setattr(x, attr, value)
-
-                        # Do the same for the tainted counterpart
-                        if tainted_split_key in taintedform:
-                            tainted = taintedform[tainted_split_key]
-                            if isinstance(item, record):
-                                seq = tuple(getattr(tainted, attr))
-                                setattr(tainted, attr, seq)
-                            else:
-                                for trec in tainted:
-                                    if hasattr(trec, attr):
-                                        seq = getattr(trec, attr)
-                                        seq = tuple(seq)
-                                        setattr(trec, attr, seq)
                     else:
                         # the form does not have the split key
-                        tainted_key = key
-                        if should_be_tainted(key):
-                            tainted_key = taint_string(key)
                         if key in form:
                             # if it has the original key, get the item
                             # convert it to a tuple
@@ -1185,9 +869,7 @@ class HTTPRequest(BaseRequest):
                             item = tuple(form[key])
                             form[key] = item
 
-                        if tainted_key in taintedform:
-                            tainted = tuple(taintedform[tainted_key])
-                            taintedform[tainted_key] = tainted
+            self.taintedform = taint(self.form)
 
         if meth:
             if 'PATH_INFO' in environ:
@@ -1952,3 +1634,63 @@ def _filterPasswordFields(items):
 def use_builtin_xmlrpc(request):
     checker = queryUtility(IXmlrpcChecker)
     return checker is None or checker(request)
+
+
+def taint(d):
+    """return as ``dict`` the items from *d* which require tainting.
+
+    *d* must be a ``dict`` with ``str`` keys and values recursively
+    build from elementary values, ``list``, ``tuple``, ``record`` and
+    ``dict``.
+    """
+    def should_taint(v):
+        """check whether *v* needs tainting."""
+        if isinstance(v, (list, tuple)):
+            return any(should_taint(x) for x in v)
+        if isinstance(v, (record, dict)):
+            for k in v:
+                if should_taint(k):
+                    return True
+                if should_taint(v[k]):
+                    return True
+        return should_be_tainted(v)
+
+    def _taint(v):
+        """return a copy of *v* with tainted replacements.
+
+        In the copy, each ``str`` which requires tainting
+        is replaced by the corresponding ``taint_string``.
+        """
+        __traceback_info__ = v
+        if isinstance(v, (bytes, str)) and should_be_tainted(v):
+            return taint_string(v)
+        if isinstance(v, (list, tuple)):
+            return v.__class__(_taint(x) for x in v)
+        if isinstance(v, record):
+            rn = record()
+            for k in v:
+                __traceback_info__ = v, k
+                if should_be_tainted(k):
+                    raise ValueError("Cannot taint `record` attribute names")
+                setattr(rn, k, _taint(v[k]))
+            return rn
+        if isinstance(v, dict):
+            return v.__class__((_taint(k), _taint(v[k])) for k in v)
+        return v
+    td = {}
+    for k in d:
+        v = d[k]
+        if should_taint(k) or should_taint(v):
+            td[_taint(k)] = _taint(v)
+    return td
+
+
+def should_be_tainted(v):
+    """Work around ``AccessControl`` weakness."""
+    if isinstance(v, FileUpload):
+        # `base_should_be_tainted` would read `v` as a side effect
+        return False
+    try:
+        return base_should_be_tainted(v)
+    except Exception:
+        return False
