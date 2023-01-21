@@ -10,6 +10,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.8 (unreleased)
 ------------------
 
+- Sanitize tainting fixing
+  `#1095 <https://github.com/zopefoundation/Zope/issues/1095>`_
+
 
 4.8.7 (2023-01-10)
 ------------------
