@@ -5,7 +5,7 @@ BTrees==4.11.3
 Chameleon==3.10.2
 DateTime==5.0
 DocumentTemplate==4.4
-ExtensionClass==4.9
+ExtensionClass==5.0
 MultiMapping==4.1
 Paste==3.5.2
 PasteDeploy==2.1.1; python_version == '3.7'
@@ -18,13 +18,13 @@ WebTest==3.0.0
 ZConfig==3.6.1
 ZODB==5.8.0
 Zope2==4.0
-beautifulsoup4==4.11.1
+beautifulsoup4==4.11.2
 cffi==1.15.1
 multipart==0.2.4
 persistent==5.0
 pycparser==2.21
 python-gettext==4.1
-pytz==2022.7
+pytz==2022.7.1
 roman==3.3
 six==1.16.0
 soupsieve==2.3.2.post1
@@ -38,12 +38,12 @@ zodbpickle==2.6
 zope.annotation==4.8
 zope.browser==2.4
 zope.browsermenu==4.4
-zope.browserpage==4.4.0
+zope.browserpage==5.0
 zope.browserresource==4.4
 zope.cachedescriptors==4.4
 zope.component==5.1.0
 zope.configuration==4.4.1
-zope.container==4.10
+zope.container==5.0
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
@@ -52,7 +52,7 @@ zope.deprecation==4.4.0
 zope.dottedname==5.0
 zope.event==4.6
 zope.exceptions==4.6
-zope.filerepresentation==5.0.0
+zope.filerepresentation==6.0
 zope.globalrequest==1.6
 zope.hookable==5.4
 zope.i18n==4.9.0
@@ -67,11 +67,11 @@ zope.ptresource==4.3.0
 zope.publisher==6.1.0
 zope.schema==7.0.1
 zope.security==6.1
-zope.sequencesort==4.2
+zope.sequencesort==5.0
 zope.site==4.6.1
 zope.size==4.4
 zope.structuredtext==4.4
-zope.tal==4.5
+zope.tal==5.0.1
 zope.tales==5.2
 zope.testbrowser==5.6.1
 zope.testing==5.0.1
