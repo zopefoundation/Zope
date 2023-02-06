@@ -290,7 +290,7 @@ class PropPatch:
                          '  </d:prop>\n'
                          '  <d:status>HTTP/1.1 %s</d:status>\n'
                          '</d:propstat>\n' % (ns, name, status))
-        errmsg = '\n'.join(errors) or 'The operation succeded.'
+        errmsg = '\n'.join(errors) or 'The operation succeeded.'
         result.write('<d:responsedescription>\n'
                      '%s\n'
                      '</d:responsedescription>\n'
