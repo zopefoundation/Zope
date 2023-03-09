@@ -1477,18 +1477,27 @@ class FileUpload:
     In addition, they have a 'headers' attribute that is a dictionary
     containing the file-upload headers, and a 'filename' attribute
     containing the name of the uploaded file.
+
+    Note that file names in HTTP/1.1 use latin-1 as charset.  See
+    https://github.com/zopefoundation/Zope/pull/1094#issuecomment-1459654636
     '''
 
     # Allow access to attributes such as headers and filename so
     # that protected code can use DTML to work with FileUploads.
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, aFieldStorage, charset):
+    def __init__(self, aFieldStorage, charset=None):
+        charset = charset or default_encoding
         self.file = aFieldStorage.file
         self.headers = aFieldStorage.headers
-        self.filename = aFieldStorage.filename\
-            .encode("latin-1").decode(charset)
-        self.name = aFieldStorage.name.encode("latin-1").decode(charset)
+        # Prevent needless encode-decode when both charsets are the same.
+        if charset != "latin-1":
+            self.filename = aFieldStorage.filename\
+                .encode("latin-1").decode(charset)
+            self.name = aFieldStorage.name.encode("latin-1").decode(charset)
+        else:
+            self.filename = aFieldStorage.filename
+            self.name = aFieldStorage.name
 
         # Add an assertion to the rfc822.Message object that implements
         # self.headers so that managed code can access them.

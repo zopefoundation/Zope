@@ -845,6 +845,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         f = req.form.get('largefile')
         self.assertTrue(f.name)
         self.assertEqual(4006, len(f.file.read()))
+        f.file.close()
 
     def test_processInputs_with_file_upload_gets_iterator(self):
         # checks fileupload object supports the iterator protocol
