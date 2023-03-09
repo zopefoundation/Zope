@@ -16,6 +16,7 @@
 
 import codecs
 import html
+import logging
 import os
 import random
 import re
@@ -50,6 +51,8 @@ from ZPublisher.utils import basic_auth_decode
 
 from .cookie import getCookieValuePolicy
 
+
+logger = logging.getLogger('ZPublisher')
 
 # DOS attack protection -- limiting the amount of memory for forms
 # probably should become configurable
@@ -1425,7 +1428,25 @@ class ZopeFieldStorage(ValueAccessor):
                     disk_limit=FORM_DISK_LIMIT,
                     memfile_limit=FORM_MEMFILE_LIMIT,
                     charset="latin-1").parts()
-            elif content_type == "application/x-www-form-urlencoded":
+            elif content_type.startswith("application/x-www-form-urlencoded"):
+                # In some cases we get a charset:
+                # "application/x-www-form-urlencoded; charset=UTF-8"
+                # This is illegal according to the specification.
+                # See https://github.com/plone/buildout.coredev/pull/844
+                # We ignore it.
+                # When the charset does not match our default encoding,
+                # we log a warning, to make the user aware.
+                ct_split = content_type.split("charset=")
+                if len(ct_split) > 1:
+                    requested_charset = ct_split[1].lower()
+                    if requested_charset != default_encoding:
+                        logger.warning(
+                            "Specifying a charset in this Content-Type header "
+                            "is not allowed by the HTTP specification. "
+                            "We ignore the charset. Header is: %r",
+                            content_type
+                        )
+
                 if qs:
                     qs += "&"
                 qs += fp.read(FORM_MEMORY_LIMIT).decode("latin-1")

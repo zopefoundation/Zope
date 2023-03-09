@@ -20,6 +20,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
   Fix encoding handling and ``:bytes`` converter.
 
+  Accept but ignore illegal charset in Content-Type header ``application/x-www-form-urlencoded``.
+  Warn when this does not fit the default encoding.
+
   See `#1094 <https://github.com/zopefoundation/Zope/pull/1094>`_.
 
 - Clean out and refactor dependency configuration files.
