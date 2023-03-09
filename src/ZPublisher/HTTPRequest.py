@@ -1486,7 +1486,8 @@ class FileUpload:
     # that protected code can use DTML to work with FileUploads.
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, aFieldStorage, charset=default_encoding):
+    def __init__(self, aFieldStorage, charset=None):
+        charset = charset or default_encoding
         self.file = aFieldStorage.file
         self.headers = aFieldStorage.headers
         # Prevent needless encode-decode when both charsets are the same.
