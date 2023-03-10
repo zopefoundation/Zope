@@ -547,23 +547,24 @@ class HTTPRequest(BaseRequest):
                 # problems when surrogates reach the application because
                 # they cannot be encoded with a standard error handler.
                 # We might want to prevent this.
-                character_encoding = ''  # currently used encoding
                 key = item.name
                 if key is None:
                     continue
-                key = item.name.encode("latin-1").decode(self.charset)
+                character_encoding = ""
+                key = item.name.encode("latin-1").decode(
+                    item.name_charset or self.charset)
 
                 if hasattr(item, 'file') and \
                    hasattr(item, 'filename') and \
                    hasattr(item, 'headers'):
                     item = FileUpload(item, self.charset)
                 else:
-                    character_encoding = self.charset
+                    character_encoding = item.value_charset or self.charset
                     item = item.value.decode(
                         character_encoding, "surrogateescape")
                 # from here on, `item` contains the field value
                 # either as `FileUpload` or `str` with
-                # `character_encoding` as encoding.
+                # `character_encoding` as encoding,
                 # `key` the field name (`str`)
 
                 flags = 0
@@ -1382,6 +1383,9 @@ class FormField(SimpleNamespace, ValueAccessor):
       the field name
     value
       the field value (`bytes`)
+    name_charset, value_charset
+      the charset for the name and value, respectively, or ``None``
+      if no charset has been specified.
 
     File fields additionally have the attributes:
     file
@@ -1396,17 +1400,21 @@ class FormField(SimpleNamespace, ValueAccessor):
     are used to represent textual data.
     """
 
+    name_charset = value_charset = None
+
 
 class ZopeFieldStorage(ValueAccessor):
     def __init__(self, fp, environ):
         self.file = fp
         method = environ.get("REQUEST_METHOD", "GET").upper()
-        qs = environ.get("QUERY_STRING", "")
+        url_qs = environ.get("QUERY_STRING", "")
+        post_qs = ""
         hl = []
         content_type = environ.get("CONTENT_TYPE",
                                    "application/x-www-form-urlencoded")
-        content_type = content_type
         hl.append(("content-type", content_type))
+        content_type, options = parse_options_header(content_type)
+        content_type = content_type.lower()
         content_disposition = environ.get("CONTENT_DISPOSITION")
         if content_disposition is not None:
             hl.append(("content-disposition", content_disposition))
@@ -1417,8 +1425,7 @@ class ZopeFieldStorage(ValueAccessor):
                 fpos = fp.tell()
             except Exception:
                 fpos = None
-            if content_type.startswith("multipart/form-data"):
-                ct, options = parse_options_header(content_type)
+            if content_type == "multipart/form-data":
                 parts = MultipartParser(
                     fp, options["boundary"],
                     mem_limit=FORM_MEMORY_LIMIT,
@@ -1426,31 +1433,28 @@ class ZopeFieldStorage(ValueAccessor):
                     memfile_limit=FORM_MEMFILE_LIMIT,
                     charset="latin-1").parts()
             elif content_type == "application/x-www-form-urlencoded":
-                if qs:
-                    qs += "&"
-                qs += fp.read(FORM_MEMORY_LIMIT).decode("latin-1")
+                post_qs = fp.read(FORM_MEMORY_LIMIT).decode("latin-1")
                 if fp.read(1):
                     raise BadRequest("form data processing "
                                      "requires too much memory")
-            else:
-                # `processInputs` currently expects either
-                # form values or a response body, not both.
-                # reset `qs` to fulfill this expectation.
-                qs = ""
+            elif url_qs:
+                raise NotImplementedError("request parameters and body")
             if fpos is not None:
                 fp.seek(fpos)
-        elif method not in ("GET", "HEAD"):
-            # `processInputs` currently expects either
-            # form values or a response body, not both.
-            # reset `qs` to fulfill this expectation.
-            qs = ""
+        elif url_qs and content_type != "application/x-www-form-urlencoded":
+            raise NotImplementedError("request parameters and body")
         fl = []
         add_field = fl.append
-        for name, val in parse_qsl(
-           qs,  # noqa: E121
-           keep_blank_values=True, encoding="latin-1"):
-            add_field(FormField(
-                name=name, value=val.encode("latin-1")))
+        post_opts = {}
+        if options.get("charset"):
+            post_opts["name_charset"] = post_opts["value_charset"] = \
+                options["charset"]
+        for qs, opts in ((url_qs, {}), (post_qs, post_opts)):
+            for name, val in parse_qsl(
+               qs,  # noqa: E121
+               keep_blank_values=True, encoding="latin-1"):
+                add_field(FormField(
+                    name=name, value=val.encode("latin-1"), **opts))
         for part in parts:
             if part.filename:
                 # a file
@@ -1460,10 +1464,19 @@ class ZopeFieldStorage(ValueAccessor):
                     filename=part.filename,
                     headers=part.headers)
             else:
-                field = FormField(name=part.name, value=part.raw)
+                field = FormField(
+                    name=part.name, value=part.raw,
+                    value_charset=_mp_charset(part))
             add_field(field)
         if fl:
             self.list = fl
+
+
+def _mp_charset(part):
+    """the charset of *part*."""
+    content_type = part.headers.get("Content-Type", "")
+    _, options = parse_options_header(content_type)
+    return options.get("charset")
 
 
 # Original version: zope.publisher.browser.FileUpload

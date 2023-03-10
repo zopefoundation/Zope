@@ -26,6 +26,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Support the (non standard) ``charset`` parameter for
+  content type ``application/x-www-form-urlencoded``.
+  This is required (e.g. for ``Plone``) because
+  ``jquery`` constructs content types of the form
+  ```application/x-www-form-urlencoded; charset=utf-8``.
+  For details see
+  `plone/buildout.coredev#844
+  <https://github.com/plone/buildout.coredev/pull/844>`_.
+
 
 5.8 (2023-01-10)
 ----------------
