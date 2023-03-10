@@ -17,6 +17,7 @@ import warnings
 from contextlib import contextmanager
 from io import BytesIO
 from unittest.mock import patch
+from urllib.parse import quote_plus
 
 from AccessControl.tainted import TaintedString
 from AccessControl.tainted import should_be_tainted
@@ -144,8 +145,6 @@ class HTTPRequestFactoryMixin:
 class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _processInputs(self, inputs):
-        from urllib.parse import quote_plus
-
         # Have the inputs processed, and return a HTTPRequest object
         # holding the result.
         # inputs is expected to be a list of (key, value) tuples, no CGI
@@ -1346,6 +1345,26 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertIsInstance(r[0].x, FileUpload)
         self.assertIsInstance(r[1].x, TaintedString)
 
+    def test_field_charset(self):
+        body = TEST_FIELD_CHARSET_DATA
+        env = self._makePostEnviron(body)
+        env["QUERY_STRING"] = "y=" + quote_plus("äöü")
+        req = self._makeOne(BytesIO(body), env)
+        req.processInputs()
+        self.assertEqual(req["x"], "äöü")
+        self.assertEqual(req["y"], "äöü")
+
+    def test_form_charset(self):
+        body = ("x=" + quote_plus("äöü", encoding="latin-1")).encode("ASCII")
+        env = self._makePostEnviron(body)
+        env["CONTENT_TYPE"] = \
+            "application/x-www-form-urlencoded; charset=latin-1"
+        env["QUERY_STRING"] = "y=" + quote_plus("äöü")
+        req = self._makeOne(BytesIO(body), env)
+        req.processInputs()
+        self.assertEqual(req["x"], "äöü")
+        self.assertEqual(req["y"], "äöü")
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
@@ -1444,3 +1463,12 @@ Content-Type: text/html
 
 --12345--
 '''
+
+TEST_FIELD_CHARSET_DATA = b'''
+--12345
+Content-Disposition: form-data; name="x"
+Content-Type: text/plain; charset=latin-1
+
+%s
+--12345--
+''' % 'äöü'.encode("latin-1")
