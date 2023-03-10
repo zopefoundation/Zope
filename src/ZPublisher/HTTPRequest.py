@@ -1413,7 +1413,8 @@ class ZopeFieldStorage(ValueAccessor):
         content_type = environ.get("CONTENT_TYPE",
                                    "application/x-www-form-urlencoded")
         hl.append(("content-type", content_type))
-        content_type, options = parse_options_header(content_type.lower())
+        content_type, options = parse_options_header(content_type)
+        content_type = content_type.lower()
         content_disposition = environ.get("CONTENT_DISPOSITION")
         if content_disposition is not None:
             hl.append(("content-disposition", content_disposition))
