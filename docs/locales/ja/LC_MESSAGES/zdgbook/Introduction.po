@@ -1,0 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 11:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zdgbook/Introduction.rst:3
+msgid "Introduction"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:6
+msgid "Overview"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:8
+msgid ""
+"Zope is a free and open-source, object-oriented web application server "
+"written in the Python programming language.  The term ZOPE is an acronym "
+"for \"Z Object Publishing Environment\" (the Z doesn't really mean "
+"anything in particular).  However, nowadays ZOPE is simply written as "
+"Zope.  It has three distinct audiences."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:20
+msgid "*Site Managers*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:15
+msgid ""
+"Individuals who use of Zope's \"out of the box\" features to build "
+"websites.  This audience is interested in making use of Zope's existing "
+"array of features to create content management solutions. They are "
+"generally less concerned about code reuse than the speed with which they "
+"can create a custom application or website."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:26
+msgid "*Developers*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:23
+msgid ""
+"Individuals who wish to extend Zope to create highly customized "
+"solutions.  This audience is likely interested in creating highly "
+"reusable custom code that makes Zope do something new and interesting."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:30
+msgid "*Administrators*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:29
+msgid ""
+"Individuals responsible for keeping a Zope site running and performing "
+"installations and upgrades."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:32
+msgid ""
+"This guide is intended to document Zope for the second audience, "
+"Developers, as defined above.  If you fit more into the \"user\" audience"
+" defined above, you'll probably want to start by reading `The Zope Book "
+"<https://zope.readthedocs.io/en/latest/zopebook/>`_ ."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:37
+msgid ""
+"Throughout this guide, it is assumed that you know how to program in the "
+"Python programming language.  Most of the examples in this guide will be "
+"in Python.  There are a number of great resources and books for learning "
+"Python; the best online resource is the `python.org web site "
+"<https://www.python.org/>`_ and many books can be found on the shelves of"
+" your local bookstore."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:45
+msgid "Organization of the book"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:47
+msgid ""
+"This book describes Zope's services to the developer from a hands on, "
+"example-oriented standpoint.  This book is not a complete reference to "
+"the Zope API, but rather a practical guide to applying Zope's services to"
+" develop and deploy your own web applications.  This book covers the "
+"following topics:"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:55
+msgid "*Getting Started*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:54
+msgid ""
+"This chapter provides a brief overview of installation and getting "
+"started with application development."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:60
+msgid "*Components and Interfaces*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:58
+msgid ""
+"Zope uses a component-centric development model.  This chapter describes "
+"the component model in Zope and how Zope components are described through"
+" interfaces."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:66
+msgid "*Object Publishing*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:63
+msgid ""
+"Developing applications for Zope involves more than just creating a "
+"component, that component must be *publishable* on the web.  This chapter"
+" describes publication, and how your components need to be designed to be"
+" published."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:70
+msgid "*Zope Products*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:69
+msgid ""
+"New Zope components are distributed and installed in packages called "
+"\"Products\".  This chapter explains Products in detail."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:75
+msgid "*Persistent Components*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:73
+msgid ""
+"Zope provides a built-in, transparent Python object database called ZODB."
+"  This chapter describes how to create persistent components, and how "
+"they work in conjunction with the ZODB."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:79
+msgid "*Acquisition*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:78
+msgid ""
+"Zope relies heavily on a dynamic technique called acquisition. This "
+"chapter explores acquisition thoroughly."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:85
+msgid "*Security*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:82
+msgid ""
+"When your component is used by many different people through the web, "
+"security becomes a big concern.  This chapter describes Zope's security "
+"API and how you can use it to make security assertions about your object."
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:89
+msgid "*Debugging and Testing*"
+msgstr ""
+
+#: ../../zdgbook/Introduction.rst:88
+msgid ""
+"Zope has built in debugging and testing support.  This chapter describes "
+"these facilities and how you can debug and test your components."
+msgstr ""
+

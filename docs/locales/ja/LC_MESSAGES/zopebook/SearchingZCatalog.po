@@ -1,0 +1,2146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 11:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zopebook/SearchingZCatalog.rst:2
+msgid "Searching and Categorizing Content"
+msgstr ""
+
+#: ../../zopebook/includes/zope2_notice.rst:3
+msgid "This document was written for Zope 2."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:6
+msgid ""
+"The **ZCatalog** is Zope's built in search engine. It allows you to "
+"categorize and search all kinds of Zope objects. You can also use it to "
+"search external data such as relational data, files, and remote web "
+"pages.  In addition to searching you can use the ZCatalog to organize "
+"collections of objects."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:12
+msgid ""
+"The **ZCatalog** supports a rich query interface. You can perform full "
+"text searching, search multiple indexes at once and even specify weighing"
+" for different fields in your results. In addition, the **ZCatalog** "
+"keeps track of meta-data about indexed objects."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:17
+msgid "The two most common ZCatalog usage patterns are:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:20
+msgid "Mass Cataloging"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:20
+msgid "Cataloging a large collection of objects all at once."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:23
+#: ../../zopebook/SearchingZCatalog.rst:1283
+msgid "Automatic Cataloging"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:23
+msgid "Cataloging objects as they are created and tracking changes made to them."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:26
+msgid "Getting started with Mass Cataloging"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:28
+msgid ""
+"Let's take a look at how to use the **ZCatalog** to search documents. "
+"Cataloging a bunch of objects all at once is called *mass cataloging*."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:31
+msgid "Mass cataloging involves four steps:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:33
+msgid "Creating a **ZCatalog**"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:35
+msgid "Creating indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:37
+msgid "Finding objects and cataloging them"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:39
+msgid "Creating a web interface to search the **ZCatalog**"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:42
+msgid "Creating a ZCatalog"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:44
+msgid ""
+"Choose ``ZCatalog`` from the product add list to create a **ZCatalog** "
+"object within a subfolder named ``Zoo``.  This takes you to the **Add "
+"ZCatalog** form, as shown in the figure below."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:50
+msgid "Add ZCatalog form"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:52
+msgid ""
+"The Add form asks you for an **Id** and a **Title**.  Give your "
+"**ZCatalog** the **Id** ``AnimalCatalog`` and click **Add** to create "
+"your new **ZCatalog**.  The **ZCatalog** icon looks like a folder with a "
+"small magnifying glass on it.  Select the ``AnimalCatalog`` icon to see "
+"the **Contents** view of the **ZCatalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:58
+msgid ""
+"A **ZCatalog** looks a lot like a folder, but it has a few more tabs.  "
+"Six tabs on the **ZCatalog** are the exact same six tabs you find on a "
+"standard folder."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:62
+msgid ""
+"A **ZCatalog** has the following views: ``Contents``, ``Catalog``, "
+"``Properties``, ``Indexes``, ``Metadata``, ``Find Objects``, "
+"``Advanced``, ``Undo``, ``Security``, and ``Ownership``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:66
+msgid ""
+"When you click on a **ZCatalog**, you are on the **Contents** view. Here,"
+" you can add new objects and the **ZCatalog** will contain them just as "
+"any folder does. Although a **ZCatalog** is like a normal Zope folder, "
+"this does not imply that the objects contained within it are "
+"automatically searchable.  A **ZCatalog** can catalog objects at any "
+"level of your site, and it needs to be told exactly which ones to index."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:75
+msgid "Creating Indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:77
+msgid ""
+"In order to tell Zope what to catalog and where to store the information,"
+" we need to create a **Lexicon** and an **Index**.  A **Lexicon** is "
+"necessary to provide word storage services for full-text searching, and "
+"an **Index** is the object which stores the data necessary to perform "
+"fast searching."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:83
+msgid ""
+"In the contents view of the **AnimalCatalog ZCatalog**, choose "
+"**ZCTextIndex Lexicon**, and give it an **Id** of ``zooLexicon``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:88
+msgid "Add ZCTextIndex Lexicon form"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:90
+msgid ""
+"Now we can create an index that will record the information we want to "
+"have in the **ZCatalog**.  Click on the **Indexes** tab of the "
+"**ZCatalog**.  A drop down menu lists the available indexes.  Choose "
+"**ZCTextIndex**; in the add form fill in the **Id** ``zooTextIdx``. Fill "
+"in ``PrincipiaSearchSource`` in the **Field name** input.  This tells the"
+" **ZCTextIndex** to index the body text of the DTML Documents "
+"(``PrincipiaSearchSource`` is an API method of all DTML Document and "
+"Method objects).  Note that ``zooLexicon`` is preselected in the "
+"**Lexicon** menu."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:102
+msgid "Add ZCTextIndex form"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:106
+msgid ""
+"When you want the **TextIndex** to work on other types of objects, they "
+"have to provide a method named ``PrincipiaSearchSource`` which returns "
+"the data of the object which has to be searched."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:110
+msgid ""
+"To keep this example short we will skip over some of the options "
+"presented here.  In the section on indexes below, we will discuss this "
+"more thoroughly."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:114
+msgid ""
+"Additionally, we will have to tell the **ZCatalog** which attributes of "
+"each cataloged object that it should store directly.  These attributes "
+"are called **Metadata**, however they should not be confused with the "
+"idea of metadata in Zope CMF, Plone, or other content management systems."
+" Here, this just means that these are attributes that will be stored "
+"directly in the catalog for performance benefits.  For now, just go to "
+"the **Metadata** tab of the **ZCatalog** and add ``id`` and ``title``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:124
+msgid "Finding and Cataloging Objects"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:126
+msgid ""
+"Now that you have created a **ZCatalog** and an **Index**, you can move "
+"onto the next step: finding objects and cataloging them."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:129
+msgid ""
+"Suppose you have a zoo site with information about animals.  To work with"
+" these examples, create two DTML Documents along-side the "
+"``AnimalCatalog`` object (within the same folder that contains the "
+"**AnimalCatalog ZCatalog**) that contain information about reptiles and "
+"amphibians."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:135
+msgid ""
+"The first should have an **Id** of ``chilean_frog``, a **Title** "
+"``Chilean four-eyed frog`` and its body text should read something like "
+"this::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:146
+msgid ""
+"For the second, fill in an **Id** of ``carpet_python`` and a **Title** of"
+" ``Carpet Python``; its body text could be::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:155
+msgid ""
+"Visitors to your Zoo want to be able to search for information on the "
+"Zoo's animals.  Eager herpetologists want to know if you have their "
+"favorite snake, so you should provide them with the ability to search for"
+" certain words and show all the documents that contain those words.  "
+"Searching is one of the most useful and common web activities."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:162
+msgid ""
+"The **AnimalCatalog ZCatalog** you created can catalog all of the "
+"documents in your Zope site and let your users search for specific words."
+"  To catalog your documents, go to the **AnimalCatalog ZCatalog** and "
+"click on the **Find Objects** tab."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:167
+msgid ""
+"In this view, you tell the **ZCatalog** what kind of objects you are "
+"interested in.  You want to catalog all DTML Documents so select ``DTML "
+"Document`` from the **Find objects of type** multiple selection and click"
+" **Find and Catalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:172
+msgid ""
+"The **ZCatalog** will now start from the folder where it is located and "
+"search for all DTML Documents.  It will search the folder and then "
+"descend down into all of the sub-folders and their sub-folders.  For "
+"example, if your ZCatalog is located at ``/Zoo/AnimalCatalog``, then the "
+"``/Zoo`` folder and all its subfolders will get searched."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:179
+msgid ""
+"If you have lots and lots of objects, this may take a long time to "
+"complete, so be patient."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:182
+msgid ""
+"After a period of time, the **ZCatalog** will take you to the **Catalog**"
+" view automatically, with a status message telling you what it just did."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:186
+msgid ""
+"Below the status information is a list of objects that are cataloged, "
+"they are all DTML Documents.  To confirm that these are the objects you "
+"are interested in, you can click on them to visit them.  Viewing an "
+"object in the catalog shows you what was indexed for the object, and what"
+" metadata items are stored for it."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:192
+msgid ""
+"You have completed the first step of searching your objects, cataloging "
+"them into a **ZCatalog**. Now your documents are in the **ZCatalog**'s "
+"database. Now you can move onto the fourth step, creating a web page and "
+"result form to query the **ZCatalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:198
+msgid "Search and Report Forms"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:200
+msgid ""
+"To create search and report forms, make sure you are inside the "
+"**AnimalCatalog ZCatalog** and select ``Z Search Interface`` from the add"
+" list.  Select ``AnimalCatalog`` as the searchable object, as shown in "
+"the figure below."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:207
+msgid "Creating a search form for a ZCatalog"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:209
+msgid ""
+"Name the **Report Id** ``SearchResults``, the **Search Input Id** "
+"``SearchForm``, select ``Generate Page Templates`` and click **Add**. "
+"This will create two new Page Templates in the ``AnimalCatalog`` "
+"**ZCatalog** named ``SearchForm`` and ``SearchResults``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:214
+msgid ""
+"These objects are *contained in* the **ZCatalog**, but they are not "
+"*cataloged by* the **ZCatalog**.  The **AnimalCatalog** has only "
+"cataloged DTML Documents.  The search form and report templates are just "
+"a user interface to search the animal documents in the **ZCatalog**. You "
+"can verify this by noting that the search and report forms are not listed"
+" in the **Cataloged Objects** tab."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:221
+msgid ""
+"To search the **AnimalCatalog**, select the ``SearchForm`` template and "
+"click on its **Test** tab."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:224
+msgid ""
+"By typing words into the ``ZooTextIdx`` form element you can search all "
+"of the documents cataloged by the **AnimalCatalog**. For example, type in"
+" the word ``Reptiles``.  The **AnimalCatalog** will be searched and "
+"return a simple table of objects that have the word **Reptiles** in them."
+"  The search results should include the carpet python.  You can also try "
+"specifying multiple search terms like ``reptiles OR amphibians``.  Search"
+" results for this query should include both the Chilean four-eyed Frog "
+"and the carpet python."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:234
+msgid ""
+"Congratulations, you have successfully created a **ZCatalog**, cataloged "
+"content into it and searched it through the web."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:238
+msgid "Configuring ZCatalogs"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:240
+msgid ""
+"The **ZCatalog** is capable of much more powerful and complex searches "
+"than the one you just performed. Let's take a look at how the "
+"**ZCatalog** stores information. This will help you tailor your "
+"**ZCatalogs** to provide the sort of searching you want."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:246
+msgid "Defining Indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:248
+msgid ""
+"**ZCatalogs** store information about objects and their contents in fast "
+"databases called **indexes**.  Indexes can store and retrieve large "
+"volumes of information very quickly.  You can create different kinds of "
+"indexes that remember different kinds of information about your objects."
+"  For example, you could have one index that remembers the text content "
+"of DTML Documents, and another index that remembers any objects that have"
+" a specific property."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:257
+msgid ""
+"When you search a **ZCatalog** you are not searching through your objects"
+" one by one. That would take far too much time if you had a lot of "
+"objects.  Before you search a **ZCatalog**, it looks at your objects and "
+"remembers whatever you tell it to remember about them.  This process is "
+"called **indexing**.  From then on, you can search for certain criteria "
+"and the **ZCatalog** will return objects that match the criteria you "
+"provide."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:265
+msgid ""
+"A good way to think of an index in a **ZCatalog** is just like an index "
+"in a book.  For example, in a book's index you can look up the word "
+"**Python**::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:271
+msgid ""
+"The word **Python** appears on three pages.  Zope indexes work like this "
+"except that they map the search term, in this case the word **Python**, "
+"to a list of all the objects that contain it, instead of a list of pages "
+"in a book."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:276
+msgid ""
+"Indexes can be added and removed from a **ZCatalog** using the "
+"\"pluggable\" index interface as shown in the figure below:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:281
+msgid "Managing indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:283
+msgid ""
+"Each index has a name, like ``PrincipiaSearchSource``, and a type, like "
+"``ZCTextIndex``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:286
+msgid ""
+"When you catalog an object the **ZCatalog** uses each index to examine "
+"the object. The **ZCatalog** consults attributes and methods to find an "
+"object's value for each index. For example, in the case of the DTML "
+"Documents cataloged with a ``PrincipiaSearchSource`` index, the "
+"**ZCatalog** calls each document's ``PrincipiaSearchSource`` method and "
+"records the results in its ``PrincipiaSearchSource`` index. If the "
+"**ZCatalog** cannot find an attribute or method for an index, then it "
+"ignores it. In other words it's fine if an object does not support a "
+"given index."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:297
+msgid "Among others, the **ZCatalog** comes with following indexes:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:301
+msgid "ZCTextIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:300
+msgid "Searches text. Use this kind of index when you want a full-text search."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:306
+msgid "FieldIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:304
+msgid ""
+"Searches objects for specific values. Use this kind of index when you "
+"want to search objects, numbers, or specific strings."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:311
+msgid "KeywordIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:309
+msgid ""
+"Searches collections of specific values. This index is like a FieldIndex,"
+" but it allows you to search collections rather than single values."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:316
+msgid "PathIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:314
+msgid ""
+"Searches for all objects that contain certain URL path elements.  For "
+"example, you could search for all the objects whose paths begin with "
+"``/Zoo/Animals``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:322
+msgid "TopicIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:319
+msgid ""
+"Searches among FilteredSets;  each set contains the document IDs of "
+"documents which match the set's filter expression.  Use this kind of "
+"index to optimize frequently-accessed searches."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:327
+msgid "DateIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:325
+msgid ""
+"A subclass of FieldIndex, optimized for DateTime values.  Use this index "
+"for any field known to be a date or a DateTime."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:333
+msgid "DateRangeIndex"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:330
+msgid ""
+"Searches objects based on a pair of DateTime objects.  Use this index to "
+"search for objects which are **current** or **in effect** at a given "
+"time."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:335
+msgid ""
+"We'll examine these different indexes more closely later in the chapter. "
+"New indexes can be created from the **Indexes** view of a **ZCatalog**.  "
+"There, you can enter the **name** and select a **type** for your new "
+"index.  This creates a new empty index in the **ZCatalog**.  To populate "
+"this index with information, you need to go to the **Advanced** view and "
+"click the the **Update Catalog** button.  Recataloging your content may "
+"take a while if you have lots of cataloged objects.  For a ZCTextIndex, "
+"you will also need a **ZCTextIndex Lexicon** object in your **ZCatalog** "
+"- see below for details."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:346
+msgid ""
+"To remove an index from a **ZCatalog**, select the index and click on the"
+" **Delete** button.  This will delete the index and all of its indexed "
+"content."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:351
+msgid "Defining Meta Data"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:353
+msgid ""
+"The **ZCatalog** can not only index information about your object, but it"
+" can also store information about your object in a **tabular database** "
+"called the **Metadata Table**.  The **Metadata Table** works similarly to"
+" a relational database table, it consists of one or more **columns** that"
+" define the **schema** of the table.  The table is filled with **rows** "
+"of information about cataloged objects.  These rows can contain "
+"information about cataloged objects that you want to store in the table. "
+"Your meta data columns don't need to match your **ZCatalog's** indexes. "
+"Indexes allow you to search; meta data allows you to report search "
+"results."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:365
+msgid ""
+"The **Metadata Table** is useful for generating search reports. It keeps "
+"track of information about objects that goes on your report forms.  For "
+"example, if you create a **Metadata Table** column called **Title**, then"
+" your report forms can use this information to show the titles of your "
+"objects that are returned in search results instead of requiring that you"
+" actually obtain the object to show its title."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:373
+msgid ""
+"To add a new **Metadata Table** column, type in the name of the column on"
+" the **Metadata Table** view and click **Add**.  To remove a column from "
+"the **Metadata Table**, select the column check box and click on the "
+"**Delete** button.  This will delete the column and all of its content "
+"for each row."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:379
+msgid ""
+"While meta data columns are useful, there are performance tradeoffs from "
+"using too many.  As more meta data columns are added, the catalog itself "
+"becomes larger (and slower), and getting the result objects becomes more "
+"memory- and performance-intensive. Therefore, you should choose meta data"
+" columns only for those fields that you'll want to show on common search "
+"results. Consider carefully before adding a field that returns a large "
+"result (like the full text of a document) to meta data."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:388
+msgid "Next let's look more closely at how to search a **ZCatalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:391
+msgid "Searching ZCatalogs"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:393
+msgid ""
+"You can search a **ZCatalog** by passing it search terms. These search "
+"terms describe what you are looking for in one or more indexes. The "
+"**ZCatalog** can extract this information from the web request, or you "
+"can pass this information explicitly from DTML or Python. In response to "
+"a search request, a **ZCatalog** will return a list of records "
+"corresponding to the cataloged objects that match the search terms."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:402
+msgid "Searching with Forms"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:404
+msgid ""
+"In this chapter you used the **Z Search Interface** to automatically "
+"build a Form/Action pair to query a **ZCatalog** (the Form/Action pattern"
+" is discussed in the chapter entitled `Advanced Page Templates "
+"<AdvZPT.html>`_ ).  The **Z Search Interface** builds a very simple form "
+"and a very simple report. These two methods are a good place to start "
+"understanding how **ZCatalogs** are queried and how you can customize and"
+" extend your search interface."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:413
+msgid ""
+"Suppose you have a **ZCatalog** that holds news items named "
+"**NewsCatalog**.  Each news item has ``content``, an ``author`` and a "
+"``date`` attribute.  Your **ZCatalog** has three indexes that correspond "
+"to these attributes, namely ``contentTextIdx``, ``author`` and ``date``."
+"  The contents index is a ZCTextIndex, and the author and date indexes "
+"are a FieldIndex and a DateIndex. For the ZCTextIndex you will need a "
+"ZCTextIndexLexicon, and to display the search results in the **Report** "
+"template, you should add the ``author``, ``date`` and ``absolute_url`` "
+"attributes as meta data.  Here is a search form that would allow you to "
+"query such a **ZCatalog**::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:442
+msgid ""
+"This form consists of three input boxes named ``contentTextIdx``, "
+"``author``, and ``date``.  These names must match the names of the "
+"**ZCatalog's** indexes for the **ZCatalog** to find the search terms. "
+"Here is a report form that works with the search form::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:472
+msgid ""
+"There are a few things going on here which merit closer examination.  The"
+" heart of the whole thing is in the definition of the ``searchResults`` "
+"variable::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:478
+msgid ""
+"This calls the ``NewsCatalog`` ZCatalog.  Notice how the form parameters "
+"from the search form (``contentTextIdx``, ``author``, ``date``) are not "
+"mentioned here at all. Zope automatically makes sure that the query "
+"parameters from the search form are given to the **ZCatalog**.  All you "
+"have to do is make sure the report form calls the **ZCatalog**.  Zope "
+"locates the search terms in the web request and passes them to the "
+"**ZCatalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:486
+msgid ""
+"The **ZCatalog** returns a sequence of **Record Objects** (just like ZSQL"
+" Methods).  These record objects correspond to **search hits**, which are"
+" objects that match the search criteria you typed in. For a record to "
+"match a search, it must match all criteria for each specified index. So "
+"if you enter an author and some search terms for the contents, the "
+"**ZCatalog** will only return records that match both the author and the "
+"contents."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:494
+msgid ""
+"ZSQL Record objects have an attribute for every column in the database "
+"table.  Record objects for **ZCatalogs** work very similarly, except that"
+" a **ZCatalog** Record object has an attribute for every column in the "
+"**Metadata Table**.  In fact, the purpose of the **Metadata Table** is to"
+" define the schema for the Record objects that **ZCatalog** queries "
+"return."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:502
+msgid "Searching from Python"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:504
+msgid ""
+"Page Templates make querying a **ZCatalog** from a form very simple. For "
+"the most part, Page Templates will automatically make sure your search "
+"parameters are passed properly to the **ZCatalog**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:508
+msgid ""
+"Sometimes though you may not want to search a **ZCatalog** from a web "
+"form; some other part of your application may want to query a "
+"**ZCatalog**.  For example, suppose you want to add a sidebar to the Zope"
+" Zoo that shows news items that only relate to the animals in the section"
+" of the site that you are currently looking at. As you've seen, the Zope "
+"Zoo site is built up from folders that organize all the sections "
+"according to animal.  Each folder's id is a name that specifies the group"
+" or animal the folder contains.  Suppose you want your sidebar to show "
+"you all the news items that contain the id of the current section.  Here "
+"is a script called ``relevantSectionNews`` that queries the news "
+"**ZCatalog** with the current folder's id::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:527
+msgid ""
+"This script queries the ``NewsCatalog`` by calling it like a method.  "
+"**ZCatalogs** expect a **mapping** as the first argument when they are "
+"called.  The argument maps the name of an index to the search terms you "
+"are looking for.  In this case, the ``contentTextIdx`` index will be "
+"queried for all news items that contain the name of the current folder.  "
+"To use this in your sidebar place you could insert this snippet where "
+"appropriate in the main Zope Zoo Page Template::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:546
+msgid ""
+"This template assumes that you have defined ``absolute_url`` and "
+"``title`` as meta data columns in the ``NewsCatalog``. Now, when you are "
+"in a particular section, the sidebar will show a simple list of links to "
+"news items that contain the id of the current animal section you are "
+"viewing."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:554
+msgid ""
+"In reality, you shouldn't use an index called ``absolute_url``, but "
+"should rely instead on the ``getURL()`` method call below, as that works "
+"even in virtual hosting settings."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:559
+msgid "Methods of Search Results"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:561
+msgid ""
+"The list of results you get for a catalog search is actually a list of "
+"**Catalog Brain** objects.  In addition to having an attribute for each "
+"item of your meta data, they also have several useful methods:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:568
+msgid "has_key(key)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:567
+msgid "Returns true if the result object has a meta data element named key."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:573
+msgid "getPath()"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:571
+msgid ""
+"Returns the physical path of the result object.  This can be used to "
+"uniquely identify each object if some kind of post-processing is "
+"performed."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:578
+msgid "getURL()"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:576
+msgid ""
+"Returns the URL of the result object.  You should use this instead of "
+"creating a meta data element for ``absolute_url``. This can differ from "
+"``getPath()`` if you are using virtual hosting."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:596
+msgid "getObject()"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:581
+msgid ""
+"Returns the actual Zope object from the result object.  This is useful if"
+" you want to examine or show an attribute or method of the object that "
+"isn't in the meta data. Once we have the actual object, we can get any "
+"normal attribute or method of it.  However, be careful not to use this "
+"instead of defining meta data.  Meta data, being stored in the catalog, "
+"is pre-calculated and quickly accessed; getting the same type of "
+"information by using ``getObject().attribute_name`` requires actually "
+"pulling your real object from the ZODB and may be a good deal slower.  On"
+" the other hand, stuffing everything you might ever need into meta data "
+"will slow down all querying of your catalog, so you'll want to strike a "
+"balance. A good idea is to list in meta data those things that would "
+"normally appear on a tabular search results form; other things that might"
+" be needed less commonly (and for fewer result objects at a time) can be "
+"retrieved with getObject."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:601
+msgid "getRID()"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:599
+msgid ""
+"Returns the Catalog's record id for the result object.  This is an "
+"implementation detail, and is not useful except for advanced uses."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:604
+msgid "Searching and Indexing Details"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:606
+msgid ""
+"Earlier you saw that the **ZCatalog** includes several types of indexes."
+"  Let's examine these indexes more closely, and look at some of the "
+"additional available indexes, to understand what they are good for and "
+"how to search them."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:612
+msgid "Searching ZCTextIndexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:614
+msgid ""
+"A **ZCTextIndex** is used to index text.  After indexing, you can search "
+"the index for objects that contain certain words. ZCTextIndexes support a"
+" rich search grammar for doing more advanced searches than just looking "
+"for a word."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:620
+msgid "Boolean expressions"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:622
+msgid "Search for **Boolean expressions** like::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:626
+msgid ""
+"This will search for all objects that contain **both** ``word1`` and "
+"``word2``.  Valid boolean operators include ``AND``, ``OR``, and ``NOT``."
+"  A synonym for ``NOT`` is a leading hyphen::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:632
+msgid ""
+"which would search for occurrences of ``word1`` but would exclude "
+"documents which contain ``word2``.  A sequence of words without operators"
+" implies ``AND``. A search for ``carpet python snakes`` translates to "
+"``carpet AND python AND snakes``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:638
+msgid "Parentheses"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:640
+msgid "Control search order with parenthetical expressions::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:644
+msgid ""
+"This will return objects containing ``word1`` and ``word2`` **or** just "
+"objects that contain the term ``word3``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:648
+msgid "Wild cards"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:650
+msgid "Search for wild cards like::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:654
+msgid "which returns all words that begin with **Z**, or::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:658
+msgid ""
+"which returns all words that begin with **Zop** and have one more "
+"character - just like in a Unix shell.  Note though that wild cards "
+"cannot be at the beginning of a search phrase. ``?ope`` is an illegal "
+"search term and will be ignored."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:664
+msgid "Phrase search"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:666
+msgid "Double-quoted text implies phrase search,  for example::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:670
+msgid ""
+"will search for all occurrences of the phrase ``carpet python`` or of the"
+" word ``frogs``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:673
+msgid "All of these advanced features can be mixed together.  For example::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:678
+msgid ""
+"will return all objects that contain the terms ``bob`` and ``uncle`` but "
+"will not include any objects that contain words that start with ``Zoo`` "
+"like **Zoologist**, **Zoology**, or **Zoo** itself."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:682
+msgid "Similarly, a search for::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:686
+msgid ""
+"will return all objects which contain the word ``snakes`` or ``frogs`` "
+"but do not contain the phrase ``carpet python``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:689
+msgid ""
+"Querying a **ZCTextIndex** with these advanced features works just like "
+"querying it with the original simple features.  In the HTML search form "
+"for DTML Documents, for example, you could enter ``Koala AND Lion`` and "
+"get all documents about Koalas and Lions. Querying a **ZCTextIndex** from"
+" Python with advanced features works much the same; suppose you want to "
+"change your ``relevantSectionNews`` script to not include any news items "
+"that contain the word ``catastrophic``::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:706
+msgid ""
+"**ZCTextIndexes** are very powerful.  When mixed with the automatic "
+"cataloging pattern described later in the chapter, they give you the "
+"ability to automatically full-text search all of your objects as you "
+"create and edit them."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:712
+msgid "Lexicons"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:714
+msgid ""
+"**Lexicons** are used by ZCTextIndexes.  Lexicons process and store the "
+"words from the text and help in processing queries."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:717
+msgid "Lexicons can:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:722
+msgid "Normalize Case"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:720
+msgid ""
+"Often you want search terms to be case insensitive, eg. a search for "
+"\"python\", \"Python\" and \"pYTHON\" should return the same results.  "
+"The lexicons' **Case Normalizer** does exactly that."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:731
+msgid "Remove stop words"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:725
+msgid ""
+"Stop words are words that are very common in a given language and should "
+"be removed from the index.  They would only cause bloat in the index and "
+"add little information.  In addition, stop words, being common words, "
+"would appear in almost every page, without this option turned on, a user "
+"searching for ``the python house`` would get back practically every "
+"single document on the site (since they would all likely contain "
+"**the**), taking longer and adding no quality to their results."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:740
+msgid "Split text into words"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:734
+msgid ""
+"A splitter parses text into words.  Different texts have different needs "
+"of word splitting - if you are going to process HTML documents, you might"
+" want to use the HTML aware splitter which effectively removes HTML tags."
+" On the other hand, if you are going to index plain text documents "
+"**about** HTML, you don't want to remove HTML tags - people might want to"
+" look them up.  Also, an eg. chinese language document has a different "
+"concept of words and you might want to use a different splitter."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:742
+msgid ""
+"The **Lexicon** uses a pipeline architecture. This makes it possible to "
+"mix and match pipeline components.  For instance, you could implement a "
+"different splitting strategy for your language and use this pipeline "
+"element in conjunction with the standard text processing elements.  "
+"Implementing a pipeline element is out of the scope of this book; for "
+"examples of implementing and registering a pipeline element see eg. "
+"``Products.ZCTextIndex.Lexicon.py``.  A pipeline element should conform "
+"to the ``IPipelineElement`` interface."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:752
+msgid ""
+"To create a **ZCTextIndex**, you first have to create a Lexicon object.  "
+"Multiple ZCTextIndexes can share the same lexicon."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:756
+msgid "Searching Field Indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:758
+msgid ""
+"**FieldIndexes** have different aims than ZCTextIndexes.  A ZCTextIndex "
+"will treat the value it finds in your object, for example the contents of"
+" a news item, like text.  This means that it breaks the text up into "
+"words and indexes all the individual words."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:763
+msgid ""
+"A FieldIndex does not break up the value it finds.  Instead, it indexes "
+"the entire value it finds.  This is very useful for tracking object "
+"attributes that contain simple values, such as numbers or short string "
+"identifiers."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:768
+msgid ""
+"In the news item example, you created a FieldIndex ``author``.  With the "
+"existing search form, this field is not very useful.  Unless you know "
+"exactly the name of the author you are looking for, you will not get any "
+"results.  It would be better to be able to select from a list of all the "
+"**unique** authors indexed by the author index."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:775
+msgid ""
+"There is a special method on the **ZCatalog** that does exactly this "
+"called ``uniqueValuesFor``.  The ``uniqueValuesFor`` method returns a "
+"list of unique values for a certain index.  Let's change your search form"
+" and replace the original ``author`` input box with something a little "
+"more useful::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:806
+msgid "The new, important bit of code added to the search form is::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:816
+msgid ""
+"In this example, you are changing the form element ``author`` from just a"
+" simple text box to an HTML multiple select box.  This box contains a "
+"unique list of all the authors that are indexed in the ``author`` "
+"FieldIndex.  When the form gets submitted, the select box will contain "
+"the exact value of an authors name, and thus match against one or more of"
+" the news objects.  Your search form should look now like the figure "
+"below."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:826
+msgid "Unique Authors"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:828
+msgid ""
+"Be careful if you catalog objects with many different values; you can "
+"easily end up with a form with a thousand items in the drop-down menu. "
+"Also, items must match **exactly**, so strings that differ in "
+"capitalization will be considered different."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:833
+msgid ""
+"That's it.  You can continue to extend this search form using HTML form "
+"elements to be as complex as you'd like.  In the next section, we'll show"
+" you how to use the next kind of index, keyword indexes."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:838
+msgid "Searching KeywordIndexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:840
+msgid ""
+"A **KeywordIndex** indexes a sequence of keywords for objects and can be "
+"queried for any objects that have one or more of those keywords."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:844
+msgid ""
+"Suppose that you have a number of image objects that have a **keywords** "
+"property. The **keywords** property is a lines property that lists the "
+"relevant keywords for a given image, for example, ``Portraits``, ``19th "
+"Century``, and ``Women`` for a picture of Queen Victoria."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:850
+msgid ""
+"The keywords provide a way of categorizing images. Each image can belong "
+"in one or more categories depending on its **keywords** property. For "
+"example, the portrait of Queen Victoria belongs to three categories and "
+"can thus be found by searching for any of the three terms."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:856
+msgid ""
+"You can use a **Keyword** index to search the **keywords** property. "
+"Define a **Keyword** index with the name ``keywords`` on your "
+"**ZCatalog**. Then catalog your images. Now you should be able to find "
+"all the images that are portraits by creating a search form and searching"
+" for ``Portraits`` in the **keywords** field. You can also find all "
+"pictures that represent 19th Century subjects by searching for ``19th "
+"Century``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:864
+msgid ""
+"It's important to realize that the same image can be in more than one "
+"category. This gives you much more flexibility in searching and "
+"categorizing your objects than you get with a FieldIndex. Using a "
+"FieldIndex your portrait of Queen Victoria can only be categorized one "
+"way.  Using a KeywordIndex it can be categorized a couple different ways."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:871
+msgid ""
+"Often you will use a small list of terms with **KeywordIndexes**. In this"
+" case you may want to use the ``uniqueValuesFor`` method to create a "
+"custom search form. For example here's a snippet of a Page Template that "
+"will create a multiple select box for all the values in the **keywords** "
+"index::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:885
+msgid ""
+"Using this search form you can provide users with a range of valid search"
+" terms. You can select as many keywords as you want and Zope will find "
+"all the images that match one or more of your selected keywords. Not only"
+" can each object have several indexed terms, but you can provide several "
+"search terms and find all objects that have one or more of those values."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:893
+msgid "Searching Path Indexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:895
+msgid ""
+"Path indexes allow you to search for objects based on their location in "
+"Zope. Suppose you have an object whose path is "
+"``/zoo/animals/Africa/tiger.doc``. You can find this object with the path"
+" queries: ``/zoo``, or ``/zoo/animals``, or ``/zoo/animals/Africa``. In "
+"other words, a path index allows you to find objects within a given "
+"folder (and below)."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:902
+msgid ""
+"If you place related objects within the same folders, you can use path "
+"indexes to quickly locate these objects. For example::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:914
+msgid ""
+"This query searches a **ZCatalog** for all images that are located within"
+" the ``/Zoo/Lizards`` folder and below. It creates a link to each image."
+"  To make this work, you will have to create a FieldIndex ``meta_type`` "
+"and a meta data entry for ``title``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:919
+msgid ""
+"Depending on how you choose to arrange objects in your site, you may find"
+" that a path indexes are more or less effective.  If you locate objects "
+"without regard to their subject (for example, if objects are mostly "
+"located in user **home folders**) then path indexes may be of limited "
+"value.  In these cases, key word and field indexes will be more useful."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:927
+msgid "Searching DateIndexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:929
+msgid ""
+"**DateIndexes** work like FieldIndexes, but are optimized for DateTime "
+"values.  To minimize resource usage, DateIndexes have a resolution of one"
+" minute, which is considerably lower than the resolution of DateTime "
+"values."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:934
+msgid ""
+"**DateIndexes** are used just like FieldIndexes; below in the section on "
+"**Advanced Searching with Records** we present an example of searching "
+"them."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:939
+msgid "Searching DateRangeIndexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:941
+msgid ""
+"**DateRangeIndexes** are specialized for searching for ranges of DateTime"
+" values.  An example application would be NewsItems which have two "
+"DateTime attributes ``effective`` and ``expiration``, and which should "
+"only be published if the current date would fall somewhere in between "
+"these two date values.  Like DateIndexes, **DateRangeIndexes** have a "
+"resolution of one minute."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:948
+msgid ""
+"**DateRangeIndexes** are widely used in CMF and Plone, where content is "
+"compared to an effective date and an expiration date."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:952
+msgid ""
+"**DateRangeIndexes** also allow one or both of the boundary dates of the "
+"indexed objects to be left open which greatly simplifies application "
+"logic when querying for **active** content where expiration and effective"
+" dates are optional."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:958
+msgid "Searching TopicIndexes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:960
+msgid ""
+"A **TopicIndex** is a container for so-called FilteredSets. A FilteredSet"
+" consists of an expression and a set of internal **ZCatalog** document "
+"identifiers that represent a pre-calculated result list for performance "
+"reasons. Instead of executing the same query on a **ZCatalog** multiple "
+"times it is much faster to use a TopicIndex instead."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:967
+msgid ""
+"**TopicIndexes** are also useful for indexing boolean attributes or "
+"attributes where only one value is queried for. They can do this more "
+"efficiently then a field index."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:971
+msgid ""
+"Building up FilteredSets happens on the fly when objects are cataloged "
+"and uncatalogued. Every indexed object is evaluated against the "
+"expressions of every FilteredSet. An object is added to a FilteredSet if "
+"the expression with the object evaluates to True. Uncatalogued objects "
+"are removed from the FilteredSet."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:977
+msgid ""
+"A built-in type of FilteredSet is the PythonFilteredSet - it would be "
+"possible to construct custom types though."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:980
+msgid ""
+"A PythonFilteredSet evaluates using the ``eval()`` function inside the "
+"context of the FilteredSet class. The object to be indexed must be "
+"referenced inside the expression using ``o``.  Below are some examples of"
+" expressions."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:985
+msgid "This would index all DTML Methods::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:989
+msgid "This would index all folderish objects which have a non-empty title::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:994
+msgid ""
+"Querying of **TopicIndexes** is done much in the same way as with other "
+"Indexes.  Eg., if we named the last FilteredSet above "
+"``folders_with_titles``, we could query our TopicIndex with a Python "
+"snippet like::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1002
+msgid ""
+"Provided our **AnimalCatalog** contains a TopicIndex ``topicindex``, this"
+" would return all folderish objects in **AnimalCatalog** which had a non-"
+"empty title."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1006
+msgid ""
+"**TopicIndexes** also support the ``operator`` parameter with Records. "
+"More on Records below."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1010
+msgid "Advanced Searching with Records"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1012
+msgid ""
+"A more advanced feature is the ability to query indexes more precisely "
+"using record objects.  Record objects contain information about how to "
+"query an index.  Records are Python objects with attributes, or mappings."
+"  Different indexes support different record attributes."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1018
+msgid ""
+"Note that you don't have to use record-style queries unless you need the "
+"features introduced by them: you can continue to use traditional queries,"
+" as demonstrated above."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1022
+msgid ""
+"A record style query involves passing a record (or dictionary) to the "
+"catalog instead of a simple query string."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1026
+msgid "KeywordIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1029
+#: ../../zopebook/SearchingZCatalog.rst:1054
+#: ../../zopebook/SearchingZCatalog.rst:1107
+#: ../../zopebook/SearchingZCatalog.rst:1197
+msgid "query"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1029
+msgid "Either a sequence of words or a single word (mandatory)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1034
+#: ../../zopebook/SearchingZCatalog.rst:1253
+msgid "operator"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1032
+msgid ""
+"Specifies whether all keywords or only one need to match. Allowed values:"
+" ``and``, ``or`` (optional, default: ``or``)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1036
+msgid "For example::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1045
+msgid ""
+"The second query matches objects that have both the keywords ``big`` and "
+"``shiny``. Without using the record syntax you can only match objects "
+"that are big or shiny."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1050
+msgid "FieldIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1053
+#: ../../zopebook/SearchingZCatalog.rst:1196
+msgid ""
+"Either a sequence of objects or a single value to be passed as query to "
+"the index (mandatory)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1072
+#: ../../zopebook/SearchingZCatalog.rst:1216
+msgid "range"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1057
+msgid "Defines a range search on a FieldIndex (optional, default: not set)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1059
+#: ../../zopebook/SearchingZCatalog.rst:1202
+msgid "Allowed values:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1063
+#: ../../zopebook/SearchingZCatalog.rst:1206
+msgid "min"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1062
+#: ../../zopebook/SearchingZCatalog.rst:1205
+msgid ""
+"Searches for all objects with values larger than the minimum of the "
+"values passed in the ``query`` parameter."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1067
+#: ../../zopebook/SearchingZCatalog.rst:1210
+msgid "max"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1066
+#: ../../zopebook/SearchingZCatalog.rst:1209
+msgid ""
+"Searches for all objects with values smaller than the maximum of the "
+"values passed in the ``query`` parameter."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1072
+#: ../../zopebook/SearchingZCatalog.rst:1216
+msgid "min:max"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1070
+#: ../../zopebook/SearchingZCatalog.rst:1213
+msgid ""
+"Searches for all objects with values smaller than the maximum of the "
+"values passed in the ``query`` parameter and larger than the minimum of "
+"the values passed in the ``query`` parameter."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1074
+msgid "For example, here is a PythonScript snippet using a range search::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1084
+msgid ""
+"This query matches all objects in the **AnimalCatalog** which have a "
+"population count greater than 5 (provided that there is a FieldIndex "
+"``population_count`` and an attribute ``population_count`` present)."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1089
+msgid "Or::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1098
+msgid ""
+"This query matches all animals with population count between 5 and 10 "
+"(provided that the same FieldIndex ``population_count`` indexing the "
+"attribute ``population_count``.)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1103
+msgid "Path Index Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1106
+msgid ""
+"Path to search for either as a string (e.g. ``/Zoo/Birds``) or list (e.g."
+" ``[\"Zoo\", \"Birds\"]``) (mandatory)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1112
+msgid "level"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1110
+msgid ""
+"The path level to begin searching at.  Level defaults to ``0``, which "
+"means searching from the root.  A level of ``-1`` means start from "
+"anywhere in the path."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1114
+msgid "Suppose you have a collection of objects with these paths:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1116
+#: ../../zopebook/SearchingZCatalog.rst:1141
+msgid "``'/aa/bb/aa'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1118
+#: ../../zopebook/SearchingZCatalog.rst:1143
+#: ../../zopebook/SearchingZCatalog.rst:1160
+#: ../../zopebook/SearchingZCatalog.rst:1169
+msgid "``'/aa/bb/bb'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1120
+#: ../../zopebook/SearchingZCatalog.rst:1145
+msgid "``'/aa/bb/cc'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1122
+#: ../../zopebook/SearchingZCatalog.rst:1150
+#: ../../zopebook/SearchingZCatalog.rst:1171
+msgid "``'/bb/bb/aa'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1124
+#: ../../zopebook/SearchingZCatalog.rst:1152
+#: ../../zopebook/SearchingZCatalog.rst:1162
+#: ../../zopebook/SearchingZCatalog.rst:1173
+msgid "``'/bb/bb/bb'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1126
+#: ../../zopebook/SearchingZCatalog.rst:1154
+#: ../../zopebook/SearchingZCatalog.rst:1175
+msgid "``'/bb/bb/cc'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1128
+msgid "``'/cc/bb/aa'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1130
+#: ../../zopebook/SearchingZCatalog.rst:1164
+#: ../../zopebook/SearchingZCatalog.rst:1177
+msgid "``'/cc/bb/bb'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1132
+msgid "``'/cc/bb/cc'``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1134
+msgid ""
+"Here are some examples queries and their results to show how the "
+"**level** attribute works:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1145
+msgid "``query=\"/aa/bb\", level=0``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1138
+msgid ""
+"This gives the same behavior as our previous examples, ie. searching "
+"absolute from the root, and results in:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1154
+msgid "``query=\"/bb/bb\", level=0``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1148
+msgid "Again, this returns the default:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1164
+msgid "``query=\"/bb/bb\", level=1``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1157
+msgid ""
+"This searches for all objects which have ``'/bb/bb'`` one level down from"
+" the root:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1177
+msgid "``query=\"/bb/bb\", level=-1``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1167
+msgid "Gives all objects which have ``/bb/bb`` anywhere in their path:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1180
+msgid "``query=\"/xx\", level=-1``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1180
+msgid "Returns ``None``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1182
+msgid ""
+"You can use the level attribute to flexibly search different parts of the"
+" path."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1185
+msgid ""
+"You can also include level information in a search without using a "
+"record. Simply use a tuple containing the query and the level. Here's an "
+"example tuple: ``(\"/aa/bb\", 1)``."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1190
+msgid "DateIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1192
+msgid "The supported Record Attributes are the same as those of the FieldIndex:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1200
+msgid "Defines a range search on a DateIndex (optional, default: not set)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1218
+msgid ""
+"As an example, we go back to the NewsItems we created in the Section "
+"**Searching with Forms**.  For this example, we created news items with "
+"attributes ``content``, ``author``, and ``date``. Additionally, we "
+"created a search form and a report template for viewing search results."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1224
+msgid ""
+"Searching for dates of NewsItems was not very comfortable though - we had"
+" to type in exact dates to match a document."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1227
+msgid ""
+"With a ``range`` query we are now able to search for ranges of dates.  "
+"Take a look at this PythonScript snippet::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1237
+msgid "DateRangeIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1239
+msgid ""
+"**DateRangeIndexes** only support the ``query`` attribute on Record "
+"objects.  The ``query`` attribute results in the same functionality as "
+"querying directly; returning matches where the date supplied to the query"
+" falls between the start and end dates from the indexed object."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1246
+msgid "TopicIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1248
+msgid "Like KeywordIndexes, **TopicIndexes** support the ``operator`` attribute:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1252
+msgid ""
+"Specifies whether all FieldSets or only one need to match. Allowed "
+"values: ``and``, ``or`` (optional, default: ``or``)"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1256
+msgid "ZCTextIndex Record Attributes"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1258
+msgid ""
+"Because **ZCTextIndex** operators are embedded in the query string, there"
+" are no additional Record Attributes for ZCTextIndexes."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1262
+msgid "Creating Records in HTML"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1264
+msgid ""
+"You can also perform record queries using HTML forms. Here's an example "
+"showing how to create a search form using records::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1278
+msgid ""
+"For more information on creating records in HTML see the section "
+"**Passing Parameters to Scripts** in Chapter 14, Advanced Zope Scripting."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1285
+msgid ""
+"**Automatic Cataloging** is an advanced **ZCatalog** usage pattern that "
+"keeps objects up to date as they are changed. It requires that as objects"
+" are created, changed, and destroyed, they are automatically tracked by a"
+" **ZCatalog**. This usually involves the objects notifying the "
+"**ZCatalog** when they are created, changed, or deleted."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1292
+msgid ""
+"This usage pattern has a number of advantages in comparison to mass "
+"cataloging. Mass cataloging is simple but has drawbacks.  The total "
+"amount of content you can index in one transaction is equivalent to the "
+"amount of free virtual memory available to the Zope process, plus the "
+"amount of temporary storage the system has. In other words, the more "
+"content you want to index all at once, the better your computer hardware "
+"has to be.  Mass cataloging works well for indexing up to a few thousand "
+"objects, but beyond that automatic indexing works much better."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1302
+msgid ""
+"If you can trade off memory for time, you can enable **Subtransactions** "
+"in the **Advanced** tab of the catalog. This commits the work in chunks, "
+"reducing memory requirements, but taking longer. It is a good solution "
+"for mass cataloging with a very large number of records."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1308
+msgid ""
+"Another major advantage of automatic cataloging is that it can handle "
+"objects that change. As objects evolve and change, the index information "
+"is always current, even for rapidly changing information sources like "
+"message boards."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1313
+msgid ""
+"On the other hand, cataloging a complex object when it changes may be too"
+" time consuming during operation (especially if the catalog index "
+"attempts to translate the information). Some sites may benefit from mass "
+"cataloging, and having a cron job or other scheduled job initiate the "
+"mass cataloging every night."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1319
+msgid ""
+"In standard (non-CMF, non-Plone) Zope, none of the built-in object types "
+"attempt to automatically catalog themselves. In CMF and Plone, the "
+"\"contentish\" object (Documents, News Item, Event, etc.) all use "
+"automatic cataloging to add themselves to the standard CMF catalog, "
+"**portal_catalog**.  CMF and especially Plone offer many advantages; if "
+"you're interested in building a content-oriented site, you should "
+"consider these technologies."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1329
+msgid "Advanced Catalog Topics"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1332
+msgid "Sorting"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1334
+msgid ""
+"When you execute a **ZCatalog** call, your result set may or may not be "
+"returned in a particular order:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1337
+msgid ""
+"If your query contains no text index fields, your results will not be "
+"sorted in any particular order.  For example, with a query based off a "
+"**KeywordIndex**, or query based off both a **KeywordIndex** and a "
+"**DateIndex**, you will get a indeterminate ordering."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1343
+msgid ""
+"For results that include a text index, your results will be returned in "
+"order of relevance of the text search.  That is, the result set will be "
+"sorted based how often search words appear in the indexes.  A search for "
+"the word ``frog`` against a text index will give priority toward an "
+"object that uses that word many times compared with an object that uses "
+"that fewer.  This is a simplified version of the way that many web search"
+" engines work: the more **relevant** your keywords are to an item, the "
+"higher its ordering in the results. In particular, with the "
+"**ZCTextIndex**, you have a choice between two algorithms for how to "
+"weight the sorting:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1356
+msgid ""
+"Okapi: is the best general choice. It does very well when comparing an "
+"ordinary **human query** against a longer text field. For example, "
+"querying a long description field for a short query like ``indoor OR "
+"mammal`` would work very well."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1362
+msgid ""
+"Cosine: is better suited for when the length of the query comes close to "
+"matching the length of the field itself."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1366
+msgid ""
+"You, of course, may want to force a particular order onto your results.  "
+"You can do this after you get a result set using normal Python syntax::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1376
+msgid "This can be, however, very inefficient."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1378
+msgid ""
+"When results are returned by the **ZCatalog**, they are in a special form"
+" called a ``LazyResults`` set.  This means that Zope hasn't gone to the "
+"trouble of actually creating the entire list, but has just sketched out "
+"the list and will fill it in at the exact point that you ask for each "
+"item.  This is helpful, since it lets you query the catalog for a result "
+"set with 10,000 items without Zope having to really construct a 10,000 "
+"item long list of results. However, when we try to sort this, Zope will "
+"have to actually create this list since it can't rely on it's lazy, just-"
+"in-time method."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1389
+msgid ""
+"Normally, you'll only show the first 20 or 50 or so of a result set, so "
+"sorting 10,000 items just to show the first 20 is a waste of time and "
+"memory.  Instead, we can ask the catalog to do the sorting for us, saving"
+" both time and space."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1394
+msgid ""
+"To do this, we'll pass along several additional keywords in our search "
+"method call or query:"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1398
+msgid "sort_on"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1398
+msgid "The field name to sort the results on"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1403
+msgid "sort_order"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1401
+msgid ""
+"``ascending`` or ``descending``, with the default being ``ascending``. "
+"Note that you can also use ``reverse`` as a synonym for ``descending``"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1410
+msgid "sort_limit"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1406
+msgid ""
+"Since you're likely to only want to use the first 20 or 50 or so items, "
+"we can give a hint to the **ZCatalog** not to bother to sort beyond this "
+"by passing along a ``sort_limit`` parameter, which is the number of "
+"records to sort."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1412
+msgid ""
+"For example, assuming we have a ``latin_name`` FieldIndex on our animals,"
+" we can sort them by name in a PythonScript with::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1418
+msgid "or::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1423
+msgid "or, if we know we'll only want to show the first 20 records::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1430
+msgid "or, combining this with a query restriction::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1438
+msgid ""
+"This gives us all records with the **title** ``frog``, sorted by "
+"``latin_name``, and doesn't bother to sort after the first 20 records."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1442
+msgid ""
+"Note that using **sort_limit** does not guarantee that we'll get exactly "
+"that number of records - we may get fewer if they're aren't that many "
+"matching or query, and we may get more. **sort_limit** is merely a "
+"request for optimization. To ensure that we get no more than 20 records, "
+"we'll want to truncate our result set::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1455
+msgid "Unsortable Fields"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1457
+msgid ""
+"In order to sort on an index, we have to actually keep the full attribute"
+" or method value in that index.  For many index types, such as DateIndex "
+"or FieldIndex, this is normally done.  However, for text indexes, such as"
+" ZCTextIndex, the index doesn't keep the actual attribute or method "
+"results in the index.  Instead, it cleans up the input (often removing "
+"**stop words**, normalizing input, lowercasing it, removing duplicates, "
+"etc., depending on the options chosen.  So a term paper with an attribute"
+" value of::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1470
+msgid "could actually be indexed as :"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1472
+msgid "( 'critique', 'tora' )"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1474
+msgid ""
+"once the common stop words (\"a\", \"of\") are removed, it is lowercased "
+"and deduplicated.  In reality, the indexed information is much richer, as"
+" it keeps track of things like how often words appear, and which words "
+"appear earlier in the stream, but this gives you an idea of what is "
+"stored."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1481
+msgid ""
+"This is a necessary and positive step to make the index use less storage "
+"and less memory, and increases search results, as your site user doesn't "
+"have to worry about getting incidental words (\"the\", \"a\", etc.) "
+"correct, nor about capitalization, etc."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1487
+msgid ""
+"However, this process means that the index no longer knows the actual "
+"value, and, therefore, can't sort on it. Due to this, it is not possible "
+"to use the **sort_on** feature with text indexes types."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1492
+msgid ""
+"To work around this, you can either sort the results of the query using "
+"the normal python ``sort()`` feature (shown above), or you can create an "
+"additional non-text index on the field, described below, in the section "
+"**Indexing a Field with Two Index Types**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1498
+msgid ""
+"Similarly, the API call ``uniqueValuesFor``, described above, cannot be "
+"used on text-type indexes, since the exact values are not kept."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1503
+msgid "Searching in More Than One Index Using \"OR\""
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1505
+msgid ""
+"As mentioned, if you search in more than one index, you must meet your "
+"criteria for each index you search in, i.e., there is an implied ``AND`` "
+"between each of the searches::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1514
+msgid ""
+"This query finds all sunset art by Van Gogh: both of these conditions "
+"must be true."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1517
+msgid ""
+"There is no way to directly search in more than one index without this "
+"``AND`` condition; instead, you can perform two catalog searches and "
+"concatenate their results. For example::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1527
+msgid ""
+"This method, however, does not remove duplicates, so a painting of a "
+"sunset by VanGogh would appear twice."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1530
+msgid ""
+"For an alternate strategy about searching in two places, see "
+"**PrincipiaSearchSource** below."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1534
+msgid "Indexing a Field With Two Index Types"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1536
+msgid ""
+"Since the different indexes act differently, it can be advantageous to "
+"have the same attribute indexed by more than one index.  For example, our"
+" animals have a **latin_name** attribute that gives their formal "
+"genus/species latin name.  A user should be able to search that trying to"
+" match a name **exactly**, and we should be able to sort results based on"
+" that, both of which suggest a **FieldIndex**.  In addition, though, "
+"users may want to search that like a text field, where they can match "
+"parts of words, in which case we would a **ZCTextIndex**."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1546
+msgid ""
+"In a case like this, a good strategy is to create one index for the "
+"FieldIndex on **latin_name**.  Let's call that index ``latin_name``. "
+"Then, you can create a **ZCTextIndex** that uses a new feature: the "
+"ability to have the indexed attribute be different than the index name "
+"itself."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1552
+msgid ""
+"When you create the second index, the **ZCTextIndex**, you can give it "
+"the id ``latin_name_text``, and have the **Indexed attributes** field be "
+"``latin_name``.  Now, when we catalog our animals, their ``latin_name`` "
+"attribute is indexed in two ways: once, as a **FieldIndex**, that we can "
+"sort against and match exactly, and once as a **ZCTextIndex**, that we "
+"can search like a text field with full text search."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1560
+msgid ""
+"The second index has a different name, so when we make our catalog call, "
+"we'll need to be sure to use that name if we want to search it like a "
+"text field::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1569
+msgid ""
+"Note that a good strategy is to have the search be against the "
+"**ZCTextIndex**, but sort it by the **FieldIndex**::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1578
+msgid "PrincipiaSearchSource"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1580
+msgid ""
+"You can choose to create indexes on any attribute or method that you "
+"would find useful to search on; however, one that is generally helpful is"
+" **PrincipiaSearchSource**.  Several of the built-in Zope objects, such "
+"as DTMLDocuments, and many add-on objects to Zope have a "
+"**PrincipiaSearchSource** attribute or method that returns a value that "
+"is meant to be used for general purpose searching.  Traditionally, "
+"**PrincipiaSearchSource** would include the text in an object's title, "
+"it's body, and anywhere else you'd want to be able to search."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1590
+msgid ""
+"For example, if you downloaded a Zope product that managed our zoo, and "
+"it had an animal type that you could add to your site, this animal type "
+"would probably expose a **PrincipiaSearchSource** that looked something "
+"like this::"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1600
+msgid ""
+"So that, if you create a **PrincipiaSearchSource** index and search again"
+" that, you can find this animal by using words that are in it's "
+"``title``, ``latin_name``, ``description``, or ``environment``, without "
+"having to worry about which field, exactly, they're in.  This is similar "
+"to searching with a web search engine, in that you use can use a single "
+"text string to find the **right** information, without needing to know "
+"about the type of object you're looking for.  It is especially helpful in"
+" allowing you to create a site-wide search: searching animals "
+"specifically by their ``latin_name`` or ``environment`` might be useful "
+"for a biologist in the right section of your site, but for a general "
+"purpose visitor, they might like to search using the phrase ``jungle`` "
+"and find results without having to know to search for that in the "
+"``environment`` field of a search form."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1616
+msgid ""
+"If you create custom types by using more advanced techniques described "
+"elsewhere, you should create a **PrincipiaSearchSource** method that "
+"returns appropriate object-wide text searching capabilities."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1621
+msgid "ZCatalogs and CMF/Plone"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1623
+msgid ""
+"The CMF was built from the ground up to understand the difference between"
+" things that are **content**, such as a news item or press release, and "
+"those things that are not, such as a **DTMLMethod** used to show a press "
+"release, or a **ZCatalog** object.  In addition, the CMF includes several"
+" stock items that are intended to be used for content, including: "
+"Document, Event, NewsItem, and others.  These content items are already "
+"set up for automatic cataloging, so that any changes made will appear in "
+"the catalog."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1633
+msgid ""
+"In non-CMF Zope, the traditional name for a general-purpose catalog is "
+"**Catalog**. Though you can always create your own catalog with any id "
+"you want; we've used the example **AnimalCatalog** in this chapter for a "
+"special-purpose catalog for searching animal-specific info in our zoo.  "
+"Even though **Catalog** is the traditional name, Zope does not come with "
+"such a catalog in the ZODB already, you have to create it."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1641
+msgid ""
+"In CMF (and Plone, an out-of-the-box portal system built on top of the "
+"CMF), there is always a catalog created, called **portal_catalog**, at "
+"the root of the CMF site.  All of the built-in content objects (and "
+"almost every add-on content object for the CMF/Plone) are set to "
+"automatically catalog to this **portal_catalog**.  This is required, "
+"since many of the features of the CMF and Plone, such as listing current "
+"content, finding content of correct types, etc., rely on the "
+"**portal_catalog** and the searching techniques shown here to function."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1651
+msgid ""
+"In CMF and Plone, the index name **PrincipiaSearchSource** is not "
+"traditionally used.  Instead, an index is created called "
+"**SearchableText**, and used in the same manner as "
+"**PrincipiaSearchSource**.  All of the standard \"contentish\" objects "
+"have a **SearchableText** method that returns things like title, "
+"description, body, etc., so that they can be general-text searched."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1661
+msgid "Conclusion"
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1663
+msgid ""
+"The cataloging features of **ZCatalog** allow you to search your objects "
+"for certain attributes very quickly.  This can be very useful for sites "
+"with lots of content that many people need to be able to search in an "
+"efficient manner."
+msgstr ""
+
+#: ../../zopebook/SearchingZCatalog.rst:1668
+msgid ""
+"Searching the **ZCatalog** works a lot like searching a relational "
+"database, except that the searching is more object-oriented.  Not all "
+"data models are object-oriented however, so in some cases you will want "
+"to use the **ZCatalog**, but in other cases you may want to use a "
+"relational database.  The next chapter goes into more details about how "
+"Zope works with relational databases, and how you can use relational data"
+" as objects in Zope."
+msgstr ""
+
