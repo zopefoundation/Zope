@@ -27,7 +27,7 @@ author = 'The Zope developer community'
 # The short X.Y version
 version = '5.8'
 # The full version, including alpha/beta/rc tags
-release = '5.8'
+release = '5.8.1'
 
 
 # -- General configuration ---------------------------------------------------
