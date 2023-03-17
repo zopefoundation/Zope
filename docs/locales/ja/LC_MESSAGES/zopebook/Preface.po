@@ -1,0 +1,407 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 11:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zopebook/Preface.rst:2
+msgid "Preface"
+msgstr ""
+
+#: ../../zopebook/includes/zope2_notice.rst:3
+msgid "This document was written for Zope 2."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:6
+msgid ""
+"Welcome to *The Zope Book*.  This book is designed to introduce you to "
+"``Zope2``, an open-source web application server."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:9
+msgid ""
+"To make effective use of the book, you should know how to use a web "
+"browser and have a basic understanding of the ``Hyper Text Markup "
+"Language`` (HTML) and ``Uniform Resource Locators`` (URLs)."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:13
+msgid ""
+"You don't need to be a highly-skilled programmer in order to use Zope2, "
+"but you may find the understanding of some programming concepts "
+"(particularly in object-oriented programming) to be extremely helpful."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:18
+msgid "Preface to the 2.12 edition"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:20
+msgid ""
+"This book has originally been written for Zope 2.6 back in 2002. It has "
+"been available in an almost unmodified form for the last seven years. "
+"During those many years quite a bit has happened in Zope itself and the "
+"general web market."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:24
+msgid ""
+"The 2.12 edition of this book does not try to write a new book on how-to "
+"do Zope development today. Instead it tries to update the original books "
+"content to be true and helpful again. Many of the underlying principles "
+"of Zope2 have not changed in the last years. The ZMI, security machinery,"
+" page templates and how-to use the ZCatalog are still there in an almost "
+"unmodified fashion. The general ideas behind object orientation, being "
+"Python based and the general architecture are still the same."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:32
+msgid ""
+"If you want to understand Zope2 you still need to understand how "
+"Acquisition works, even though it has been discouraged as a way to design"
+" your application logic."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:36
+msgid ""
+"One of the most notable differences between the original Zope2 approach "
+"and todays best-practices is in the way you develop applications with "
+"Zope2. The original Zope2 approach has focussed on a Through-The-Web "
+"(TTW) development model. You would create your entire application and "
+"manage your data through the same browser interface and store everything "
+"transparently in the same database. This model has worked very well in "
+"the beginning of \"the web\" as many dynamic websites have been rather "
+"simple and specialized projects."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:44
+msgid ""
+"Over the years websites have grown their requirements and often turned "
+"into development projects of a considerable size. Today websites are "
+"understood as applications in themselves and need an approach which is no"
+" longer compatible with the TTW approach of the early Zope2."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:49
+msgid ""
+"In this book you will still read about using the TTW approach for many of"
+" the examples. Please understand this as a way to quickly and easily "
+"learn about the underlying technologies. If you want to built an "
+"application based on top of Zope2, you are almost always better of "
+"approaching the project from the so called \"file-system based approach\""
+" or using Python packages to extend Zope in a predictable way."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:58
+msgid "How the Book Is Organized"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:60
+msgid "This book is laid out in the following chapters:"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:62
+msgid "Introducing Zope"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:64
+msgid ""
+"This chapter explains what Zope is and what it can do for you. You'll "
+"also learn about the differences between Zope and other web application "
+"servers."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:67
+msgid "Zope Concepts and Architecture"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:69
+msgid ""
+"This chapter explains fundamental Zope concepts and describes the basics "
+"about Zope's architecture."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:72
+msgid "Installing and Starting Zope"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:74
+msgid ""
+"This chapter explains how to install and start Zope for the first time. "
+"By the end of this chapter, you will have Zope installed and working."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:77
+msgid "Object Orientation"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:79
+msgid ""
+"This chapter explains the concept of *object orientation*, which is the "
+"development methodology most often used to create Zope applications."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:82
+msgid "Using the Zope Management Interface"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:84
+msgid ""
+"This chapter explains how to use Zope's web-based management interface. "
+"By the end of this chapter, you will be able to navigate around the Zope "
+"object space, copy and move objects, and use other basic Zope features."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:88
+msgid "Using Basic Zope Objects"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:90
+msgid ""
+"This chapter introduces *objects*, which are the most important elements "
+"of Zope. You'll learn the basic Zope objects: content objects, "
+"presentation objects, and logic objects, and you'll build a simple "
+"application using these objects."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:95
+msgid "Acquisition"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:97
+msgid ""
+"This chapter introduces *Acquisition*, which is Zope's mechanism for "
+"sharing site behavior and content."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:100
+msgid "Basic Zope Scripting"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:102
+msgid "This chapter will introduce you to the basics of scripting."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:104
+msgid "Using Zope Page Templates"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:106
+msgid ""
+"This chapter introduces *Zope Page Templates*, another Zope tool used to "
+"create dynamic web pages. You will learn about basic template statements "
+"that let you insert dynamic content, and how to create and edit page "
+"templates."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:111
+msgid "Creating Basic Zope Applications"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:113
+msgid ""
+"This chapter presents several real-world examples of building a Zope "
+"application. You'll learn how to use basic Zope objects and how they can "
+"work together to form basic applications."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:117
+msgid "Users and Security"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:119
+msgid ""
+"This chapter looks at how Zope handles users, authentication, "
+"authorization, and other security-related matters."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:122
+msgid "Advanced Page Templates"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:124
+msgid ""
+"This chapter goes into more depth with Zope Page Templates. You will "
+"learn all about template statements, expression types, and macros, which "
+"let you reuse presentation elements."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:128
+msgid "Advanced Zope Scripting"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:130
+msgid ""
+"This chapter covers scripting Zope with Python. You will learn how to "
+"write business logic in Zope using tools more powerful than TAL, about "
+"the idea of *scripts* in Zope, and about Scripts (Python)."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:134
+msgid "Zope Services"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:136
+msgid ""
+"This chapter covers Zope objects that are considered \"services,\" which "
+"don't readily fit into any of the basic \"content,\" \"presentation,\" or"
+" \"logic\" object groups."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:140
+msgid "Basic DTML"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:142
+msgid ""
+"This chapter introduces DTML, the second tag-based scripting language. "
+"You'll learn DTML syntax, its basic tags, and how to use DTML templates "
+"and scripting facilities. After reading this chapter, you'll be able to "
+"create dynamic web pages with DTML."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:147
+msgid "Advanced DTML"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:149
+msgid ""
+"This chapter takes a closer look at DTML. You'll learn about DTML "
+"security, the tricky issue of how variables are looked up in DTML, "
+"advanced use of basic tags, and the myriad of special purpose tags."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:153
+msgid "Searching and Categorizing Content"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:155
+msgid ""
+"This chapter shows you how to index and search objects with Zope's built-"
+"in search engine: the *Catalog*. You'll learn about indexing concepts, "
+"different patterns for indexing and searching, metadata, and search "
+"results."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:160
+msgid "Relational Database Connectivity"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:162
+msgid ""
+"This chapter describes how Zope connects to external relational "
+"databases. You'll learn about features that allow you to treat relational"
+" data as though it were Zope objects, and security and performance "
+"considerations."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:166
+msgid "Virtual Hosting Services"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:168
+msgid ""
+"This chapter explains how to set up Zope in a \"virtual hosting\" "
+"environment, in which Zope sub-folders can be served as \"top-level\" "
+"host names. It includes examples that allow virtual hosting to be "
+"performed either \"natively\" or using Apache's 'mod_rewrite' facility."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:173
+msgid "Sessions"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:175
+msgid ""
+"This chapter describes Zope's \"sessioning\" services, which allow Zope "
+"developers to \"keep state\" between HTTP requests."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:178
+msgid "Scalability and ZEO"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:180
+msgid ""
+"This chapter covers issues and solutions for building and maintaining "
+"large web applications, and focuses on issues of management and "
+"scalability. In particular, the Zope Enterprise Option (ZEO) is covered "
+"in detail. You'll learn about the tools and techniques needed to turn a "
+"small site into a large-scale site, servicing many simultaneous visitors."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:186
+msgid "Managing Zope Objects Using External Tools"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:188
+msgid ""
+"This chapter explains how to use tools outside of your web browser to "
+"manipulate Zope objects."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:191
+msgid "Maintaining Zope"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:193
+msgid ""
+"This chapter covers Zope maintenance and administration tasks, such as "
+"database \"packing\" and package installation."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:196
+msgid "Appendix A: DTML Reference"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:198
+msgid "Reference of DTML syntax and commands."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:200
+msgid "Appendix B: API Reference"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:202
+msgid "Reference of Zope object APIs."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:204
+msgid "Appendix C: Page Template Reference"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:206
+msgid "Reference of Zope Page Template syntax and commands."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:208
+msgid "Appendix D: Zope Resources"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:210
+msgid ""
+"Reference of \"resources\" which can be used to further enhance your Zope"
+" learning experience."
+msgstr ""
+
+#: ../../zopebook/Preface.rst:213
+msgid "Appendix E:"
+msgstr ""
+
+#: ../../zopebook/Preface.rst:215
+msgid "DTML Name Lookup Rules Describes DTML's name lookup rules."
+msgstr ""
+

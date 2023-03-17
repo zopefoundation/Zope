@@ -1,0 +1,244 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 11:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zdgbook/AppendixA.rst:3
+msgid "Appendix A: Zope Core Permissions"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:5
+msgid ""
+"This is a list of standard permissions included with Zope.  It is a good "
+"idea to use these permissions when applicable with your Zope products, "
+"rather than creating new ones.  A list of built-in Zope permissions are "
+"available in the `source code of the AccessControl package "
+"<https://github.com/zopefoundation/AccessControl/blob/master/src/AccessControl/Permissions.py>`_."
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:12
+msgid "Core Permissions"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:14
+msgid "Access contents information"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:15
+msgid "Add Database Methods"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:16
+msgid "Add Documents, Images, and Files"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:17
+msgid "Add External Methods"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:18
+msgid "Add Folders"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:19
+msgid "Add MailHost objects"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:20
+msgid "Add Page Templates"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:21
+msgid "Add Python Scripts"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:22
+msgid "Add User Folders"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:23
+msgid "Add Vocabularies"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:24
+msgid "Add Z Gadfly Database Connections"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:25
+msgid "Add ZCatalogs"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:26
+msgid "Add Zope Tutorials"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:27
+msgid "Change Database Connections"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:28
+msgid "Change Database Methods"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:29
+msgid "Change External Methods"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:30
+msgid "Change Images and Files"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:31
+msgid "Change Python Scripts"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:32
+msgid "Change configuration"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:33
+msgid "Change Page Templates"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:34
+msgid "Change permissions"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:35
+msgid "Change proxy roles"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:36
+msgid "Copy or Move"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:37
+msgid "Create class instances"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:38
+msgid "Define permissions"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:39
+msgid "Delete objects"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:40
+msgid "Edit Factories"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:41
+msgid "FTP access"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:42
+msgid "Import/Export objects"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:43
+msgid "Manage Vocabulary"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:44
+msgid "Manage ZCatalog Entries"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:45
+msgid "Manage ZCatalogIndex Entries"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:46
+msgid "Manage properties"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:47
+msgid "Manage users"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:48
+msgid "Open/Close Database Connection"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:49
+msgid "Open/Close Database Connections"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:50
+msgid "Query Vocabulary"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:51
+msgid "Search ZCatalog"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:52
+msgid "Take ownership"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:53
+msgid "Test Database Connections"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:54
+msgid "Undo changes"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:55
+msgid "Use Database Methods"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:56
+msgid "Use Factories"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:57
+msgid "Use mailhost services"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:58
+msgid "View"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:59
+msgid "View management screens"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:60
+msgid "WebDAV access"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:61
+msgid "WebDAV Lock items"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:62
+msgid "WebDAV Unlock items"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:65
+msgid "Document Template Permissions"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:67
+msgid "Change DTML Documents"
+msgstr ""
+
+#: ../../zdgbook/AppendixA.rst:68
+msgid "Change DTML Methods"
+msgstr ""
+

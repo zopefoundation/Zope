@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 11:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../migrations/zope5.rst:2
+msgid "Migration from Zope 4 to Zope 5.0"
+msgstr ""
+
+#: ../../migrations/zope5.rst:5
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../migrations/zope5.rst:7
+msgid "Update your project to run on the latest version of Zope 4."
+msgstr ""
+
+#: ../../migrations/zope5.rst:8
+msgid "Update your project to run on Python 3.7+."
+msgstr ""
+
+#: ../../migrations/zope5.rst:9
+msgid ""
+"Make sure no deprecation warnings are emitted when running your tests and"
+" when running the Zope instance"
+msgstr ""
+
+#: ../../migrations/zope5.rst:13
+msgid "Migration"
+msgstr ""
+
+#: ../../migrations/zope5.rst:15
+msgid "Switch to use Zope 5.0 by using its dependencies for your project."
+msgstr ""
+
+#: ../../migrations/zope5.rst:16
+msgid ""
+"No additional steps should be necessary if the prerequisites are "
+"fulfilled."
+msgstr ""
+
