@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../CHANGES.rst:2
 msgid "Change log"
-msgstr ""
+msgstr "Veränderungen"
 
 #: ../../../CHANGES.rst:4
 msgid ""
