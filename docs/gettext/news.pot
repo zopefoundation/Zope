@@ -1,0 +1,213 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../news.rst:2
+msgid "What's new in Zope"
+msgstr ""
+
+#: ../../news.rst:3
+msgid "The article explains the new high-level features and changes found in Zope."
+msgstr ""
+
+#: ../../news.rst:5
+msgid "You can have a look at the `detailed change log <./changes.html>`_ to learn about all minor new features and bugs being solved in the latest release."
+msgstr ""
+
+#: ../../news.rst:8
+msgid "The `Zope release schedule <https://www.zope.dev/releases.html>`_ on `www.zope.dev <https://www.zope.dev>`_ explains which versions are supported and for how long."
+msgstr ""
+
+#: ../../news.rst:14
+msgid "If you are upgrading from Zope 2, make sure you study the :ref:`zope4migration` documentation"
+msgstr ""
+
+#: ../../news.rst:23
+msgid "What's new in Zope 5"
+msgstr ""
+
+#: ../../news.rst:26
+msgid "Added support for Python 3.9"
+msgstr ""
+
+#: ../../news.rst:28
+msgid "Python 3.9 is now fully supported by Zope 5."
+msgstr ""
+
+#: ../../news.rst:30
+msgid "Zope 5.4 and newer also supports Python 3.10."
+msgstr ""
+
+#: ../../news.rst:33
+msgid "Dropped support for Python 2"
+msgstr ""
+
+#: ../../news.rst:34
+msgid "Zope 5 supports Python 3 only, versions 3.6 up through 3.9. All support code and special casing for Python 2, including the use of the ``six`` package, have been removed."
+msgstr ""
+
+#: ../../news.rst:39
+msgid "Dropped support for ``ZServer``"
+msgstr ""
+
+#: ../../news.rst:40
+msgid "As ``ZServer`` only supports Python 2, its integration has been removed. Only `WSGI` is now supported for web service."
+msgstr ""
+
+#: ../../news.rst:46
+msgid "What's new in Zope 4"
+msgstr ""
+
+#: ../../news.rst:49
+msgid "Restored sane version numbering"
+msgstr ""
+
+#: ../../news.rst:50
+msgid "Version numbers for Zope have been confusing in the past. The original Zope project iterated through version one to two up to version 2.13. In parallel a separate project was launched using the name Zope 3. Zope 3 wasn't a new version of the original Zope project and in hindsight should have used a different project name. These days this effort is known as BlueBream."
+msgstr ""
+
+#: ../../news.rst:56
+msgid "In order to avoid confusion between the separate Zope 3 project and a new version of this project, it was decided to skip ahead and use Zope 4.0 as the next version number. The increase in the major part of the version also indicates the number of backwards incompatible changes found in this release."
+msgstr ""
+
+#: ../../news.rst:64
+msgid "Extended Python version support"
+msgstr ""
+
+#: ../../news.rst:65
+msgid "Zope 4 supports Python 2.7 and Python 3 versions 3.5 up to 3.8."
+msgstr ""
+
+#: ../../news.rst:67
+msgid "The Python 3 support currently covers the core dependencies shipped with Zope and is limited to the new WSGI based publisher."
+msgstr ""
+
+#: ../../news.rst:70
+msgid "Migrating an existing ZODB to Python 3 is not an automated process. You have to update to Zope 4 first, see :ref:`zope4migration`."
+msgstr ""
+
+#: ../../news.rst:75
+msgid "WSGI as the new default server type"
+msgstr ""
+
+#: ../../news.rst:76
+msgid "Zope 2.13 first gained support for running Zope as a WSGI application, using any WSGI capable web server instead of the built-in ZServer."
+msgstr ""
+
+#: ../../news.rst:79
+msgid "Zope 4.0 takes this one step further and uses WSGI as the default setup. Functional testing (testbrowser) support also uses the new WSGI publisher."
+msgstr ""
+
+#: ../../news.rst:83
+msgid "The ZServer based publisher got moved into its own optional project. So if you rely on ZServer features, like FTP, zdaemon or zopectl support, please make sure to install ZServer and use its ``mkzopeinstance`` script to create a Zope instance."
+msgstr ""
+
+#: ../../news.rst:88
+msgid "The ZServer project also includes limited functional testing support in the ``ZServer.Testing`` sub-package. testbrowser support is exclusively available based on the WSGI publisher, as a result of a switch from the unmaintained mechanize project to WebTest."
+msgstr ""
+
+#: ../../news.rst:93
+msgid "By default Zope only ships with a new ``mkwsgiinstance`` script which creates a Zope instance configured to run as a WSGI application. The example configuration uses the ``waitress`` web server, but Zope can be run using any WSGI capable web server."
+msgstr ""
+
+#: ../../news.rst:98
+msgid "To make running Zope easier, a new ``runwsgi`` command line script got added, which can read a PasteDeploy configuration and create and run the WSGI pipeline specified in it. By default such a configuration is created in the ``etc/zope.ini`` file. The ``runwsgi`` script supports both ``-v`` / ``--verbose`` and ``-d`` / ``--debug`` arguments to print out more information on the console. The debug argument enables Zope's debug mode and disables the catch-all part of the httpexceptions WSGI middleware. This means unexpected and uncaught exceptions show their full traceback on the console and make it easier to debug them. Without debug mode, these exceptions result in a 500 Internal Server Error rendered as a normal HTML response."
+msgstr ""
+
+#: ../../news.rst:112
+msgid "In case you experience an ``HTTP 500: Internal Server Error``, where you would expect a ``Redirect``, the following might help you."
+msgstr ""
+
+#: ../../news.rst:115
+msgid "Although the ``zope.ini`` created by ``mkwsgiinstance`` includes ``egg:Zope#httpexceptions`` as part of the pipeline, this might not be sufficient for existing projects. In case your project has configured a middleware handling and creating error views for HTTP exceptions, you need to make sure that ``egg:Zope#httpexceptions`` runs before that middleware. Otherwise a ``Redirect`` might not be handled as such. This can result in a non-functional ZMI."
+msgstr ""
+
+#: ../../news.rst:123
+msgid "The WSGI support has no built-in support for running as a daemon. Your chosen WSGI server might support this or you can use external projects like supervisord or systemd."
+msgstr ""
+
+#: ../../news.rst:127
+msgid "The WSGI support in Zope 4 has changed in a number of ways to make it more similar to its ZServer equivalent. In Zope 2.13 the WSGI support required using repoze WSGI middlewares to add transaction and retry handling. The WSGI support in Zope 4 no longer supports those middlewares but integrates transaction and retry handling back into the publisher code. This allows it to also add back full support for publication events and exception views. It does mean that the transaction is begun and committed or aborted inside the publisher code and you can no longer write WSGI middlewares that take part in the transaction cycle, but instead have to use Zope specific hooks like you do in the ZServer based publisher."
+msgstr ""
+
+#: ../../news.rst:141
+msgid "View component Acquisition changes"
+msgstr ""
+
+#: ../../news.rst:142
+msgid "In Zope 2.12 Zope Toolkit view components changed and stopped inheriting from Acquisition base classes, as Acquisition got aware of `__parent__` pointers, which meant that ``aq_parent(view)`` worked, without the view having to mix-in an Acquisition base class. For backwards compatibility a new `AcqusitionBBB` class was mixed in, to continue to support calling ``view.aq_parent``. This backwards compatibility class has been removed in Zope 4, so ``view.aq_parent`` no longer works and you have to use ``aq_parent(view)``. The same applies for other view components like view page template files or viewlets."
+msgstr ""
+
+#: ../../news.rst:154
+msgid "Page Templates now rendered by Chameleon"
+msgstr ""
+
+#: ../../news.rst:155
+msgid "Chameleon is an alternative implementation of the page template language supporting additional features and impressive template rendering speed."
+msgstr ""
+
+#: ../../news.rst:158
+msgid "So far it was available via the `five.pt` project. In Zope 4 the code from `five.pt` has been merged into Zope core and the Chameleon based engine is now the default, removing the need to install `five.pt` manually."
+msgstr ""
+
+#: ../../news.rst:165
+msgid "The page template language parser in Chameleon is extremely strict. For example, in Zope 2, the parser does not care about opening and closing tags that are not matched in terms of being uppercase/lowercase, or unmatched opening/closing tags in general. All this will now cause template compilation to fail. See :ref:`zope4pagetemplatemigration` for help."
+msgstr ""
+
+#: ../../news.rst:173
+msgid "Lower memory consumption at runtime"
+msgstr ""
+
+#: ../../news.rst:174
+msgid "Zope 4 depends on a new DateTime release. The new release has been optimized for better memory use. Applications using a lot of DateTime values like the Plone CMS have seen total memory usage to decrease by 10% to 20% for medium to large deployments."
+msgstr ""
+
+#: ../../news.rst:181
+msgid "Simplified encoding configuration"
+msgstr ""
+
+#: ../../news.rst:182
+msgid "As it is reasonable to have one unified encoding in ZMI and frontend, support for ``management_page_charset`` (as property of a folder) has been removed. ``default-zpublisher-encoding`` in `zope.conf` is the only place where to define the site encoding that governs how the ZPublisher and Zope Page Templates handle encoding and decoding of text."
+msgstr ""
+
+#: ../../news.rst:190
+msgid "Restyled Zope Management Interface (ZMI)"
+msgstr ""
+
+#: ../../news.rst:191
+msgid "The ZMI (Zope Management Interface) is now styled with Bootstrap. See :ref:`ZMI-label` for details how to adapt Zope add-on packages to the new styling."
+msgstr ""
+
+#: ../../news.rst:199
+msgid "The newly styled ZMI root"
+msgstr ""
+
+#: ../../news.rst:205
+msgid "The `Ace` editor on a Page Template"
+msgstr ""
+
+#: ../../news.rst:205
+msgid "The `Ace` editor on a page template. The editor is also used for Python Scripts, DTML Methods/Documents and Z SQL Methods."
+msgstr ""
+
+#: ../../news.rst:212
+msgid "The central `Undo` view is reached from the new left-side menu"
+msgstr ""
+
+#: ../../news.rst:218
+msgid "The restyled `Properties` view"
+msgstr ""

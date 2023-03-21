@@ -1,0 +1,218 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../maintenance.rst:2
+msgid "Maintainer information"
+msgstr ""
+
+#: ../../maintenance.rst:6
+msgid "This is internal documentation, mostly for Zope maintainers who manage software releases and the documentation"
+msgstr ""
+
+#: ../../maintenance.rst:9
+msgid "Contents"
+msgstr ""
+
+#: ../../maintenance.rst:12
+msgid "Release process"
+msgstr ""
+
+#: ../../maintenance.rst:15
+msgid "Maintainers"
+msgstr ""
+
+#: ../../maintenance.rst:17
+msgid "The following persons have access to the ``Zope`` package on PyPI (in order to release new versions):"
+msgstr ""
+
+#: ../../maintenance.rst:20
+#: ../../maintenance.rst:171
+msgid "Hanno Schlichting"
+msgstr ""
+
+#: ../../maintenance.rst:21
+#: ../../maintenance.rst:172
+msgid "Michael Howitz"
+msgstr ""
+
+#: ../../maintenance.rst:22
+#: ../../maintenance.rst:173
+msgid "Tres Seaver"
+msgstr ""
+
+#: ../../maintenance.rst:23
+#: ../../maintenance.rst:174
+msgid "Jens Vagelpohl"
+msgstr ""
+
+#: ../../maintenance.rst:26
+msgid "Steps for creating a new Zope release"
+msgstr ""
+
+#: ../../maintenance.rst:28
+msgid "Make sure you have the necessary tools around and install the manually if needed::"
+msgstr ""
+
+#: ../../maintenance.rst:33
+msgid "Create releases for the packages mentioned in `buildout.cfg` below ``auto-checkout`` enter them into ``versions-prod.cfg`` and run ``bin/buildout`` to update ``requirements-full.txt``."
+msgstr ""
+
+#: ../../maintenance.rst:37
+msgid "Garden the change log and check it for spelling issues."
+msgstr ""
+
+#: ../../maintenance.rst:39
+msgid "Check the future PyPI long description for ReST errors::"
+msgstr ""
+
+#: ../../maintenance.rst:43
+msgid "Check in the changes."
+msgstr ""
+
+#: ../../maintenance.rst:45
+msgid "Update version information in change log and ``setup.py`` and specify today’s date as release date in the change log::"
+msgstr ""
+
+#: ../../maintenance.rst:54
+msgid "Update the version information in the Sphinx documentation configuration::"
+msgstr ""
+
+#: ../../maintenance.rst:58
+msgid "Pin the Zope version in ``versions-prod.cfg``."
+msgstr ""
+
+#: ../../maintenance.rst:60
+msgid "Run ``bin/buildout`` to update ``requirements-full.txt``."
+msgstr ""
+
+#: ../../maintenance.rst:62
+msgid "Run all tests::"
+msgstr ""
+
+#: ../../maintenance.rst:66
+msgid "If the tests succeed, commit the changes."
+msgstr ""
+
+#: ../../maintenance.rst:68
+msgid "Upload the tagged release to PyPI::"
+msgstr ""
+
+#: ../../maintenance.rst:79
+msgid "Update version information in the change log and setup.py::"
+msgstr ""
+
+#: ../../maintenance.rst:87
+msgid "Remove the version pin for Zope::"
+msgstr ""
+
+#: ../../maintenance.rst:92
+#: ../../maintenance.rst:134
+msgid "Commit and push the changes."
+msgstr ""
+
+#: ../../maintenance.rst:94
+msgid "Check that the changes have been propagated to https://zope.readthedocs.io/en/latest/changes.html. (This should be done automatically via web hooks defined in GitHub and RTD.)"
+msgstr ""
+
+#: ../../maintenance.rst:97
+msgid "Update https://zopefoundation.github.io/Zope/::"
+msgstr ""
+
+#: ../../maintenance.rst:102
+msgid "Add the newly created files and commit and push the changes."
+msgstr ""
+
+#: ../../maintenance.rst:104
+msgid "Check on https://zopefoundation.github.io/Zope/ for the new release."
+msgstr ""
+
+#: ../../maintenance.rst:106
+msgid "Check the versions.cfg file for outdated or updated packages and update version information where necessary. You can get a good overview of outdated packages on `requires.io <https://requires.io/github/zopefoundation/Zope/requirements/?branch=master>`_::"
+msgstr ""
+
+#: ../../maintenance.rst:117
+msgid "This step is done after the release to have time to fix problems which might get introduced by new versions of the dependencies."
+msgstr ""
+
+#: ../../maintenance.rst:120
+msgid "There is no version pin for `zc.buildout` as it has to be installed in the virtual environment but `checkversions` also prints its version number."
+msgstr ""
+
+#: ../../maintenance.rst:124
+msgid "There is no version pin for `zc.recipe.egg` in `versions-prod.cfg` as it is only needed for buildout install and not for pip, so we do not want to have it in `requirements.txt`."
+msgstr ""
+
+#: ../../maintenance.rst:128
+msgid "The script is called two times so the rendered version updates can be easily assigned to the correct file."
+msgstr ""
+
+#: ../../maintenance.rst:131
+msgid "Run the tests: ``bin/tox -pall``"
+msgstr ""
+
+#: ../../maintenance.rst:132
+msgid "Build the documentation: ``bin/make-docs``"
+msgstr ""
+
+#: ../../maintenance.rst:133
+msgid "Fix problems."
+msgstr ""
+
+#: ../../maintenance.rst:136
+msgid "Update the Zope release schedule at https://www.zope.dev/releases.html"
+msgstr ""
+
+#: ../../maintenance.rst:138
+msgid "Announce the release to the world via zope-announce@zope.dev and https://community.plone.org/c/announcements."
+msgstr ""
+
+#: ../../maintenance.rst:142
+msgid "Maintaining the Zope documentation"
+msgstr ""
+
+#: ../../maintenance.rst:145
+msgid "Contributing to the documentation"
+msgstr ""
+
+#: ../../maintenance.rst:146
+msgid "Any signed Zope contributor may contribute to the Sphinx-based documentation in the ``docs`` subfolder, including `The Zope Book` and the `Zope Developer's guide`."
+msgstr ""
+
+#: ../../maintenance.rst:150
+msgid "Just like with code contributions, please follow best practice. Test your changes locally before creating a pull request or pushing to the repository. Use a reasonable line length (<80)."
+msgstr ""
+
+#: ../../maintenance.rst:155
+msgid "Building the documentation"
+msgstr ""
+
+#: ../../maintenance.rst:156
+msgid "After you have bootstrapped and run the buildout, you can build the documentation using the script ``bin/make-docs`` to create the documentation HTML output. The script will tell you where it saves the output."
+msgstr ""
+
+#: ../../maintenance.rst:161
+msgid "The official documentation site on `Read the Docs`"
+msgstr ""
+
+#: ../../maintenance.rst:162
+msgid "Pushes to the Zope repository on GitHub will automatically trigger an automatic documentation refresh on the official documentation site at https://zope.readthedocs.io. This is true for the ``master`` branch, but also for versions 2.12 and 2.13. The trigger is implemented as a GitHub Webhook, see `Settings` | `Webhooks` in the GitHub repository."
+msgstr ""
+
+#: ../../maintenance.rst:168
+msgid "The RTD configuration at https://readthedocs.org/projects/zope/ is currently maintained by the following people:"
+msgstr ""

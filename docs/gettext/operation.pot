@@ -1,0 +1,1257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../operation.rst:2
+msgid "Configuring and Running Zope"
+msgstr ""
+
+#: ../../operation.rst:3
+msgid "Whichever method you used to install Zope and create a server instance (see :doc:`INSTALL`), the end result is configured and operated the same way."
+msgstr ""
+
+#: ../../operation.rst:8
+msgid "If you have installed Zope using ``zc.buildout`` in conjunction with ``plone.recipe.zope2instance`` as outlined in :doc:`INSTALL`, many of the following tasks are already done for you and some others differ slightly. You can immediately skip down to `Running Zope`."
+msgstr ""
+
+#: ../../operation.rst:18
+msgid "Creating a Zope instance"
+msgstr ""
+
+#: ../../operation.rst:20
+msgid "Once you've installed Zope, you will need to create an \"instance home\". This is a directory that contains configuration and data for a Zope server process.  The instance home is created using the ``mkwsgiinstance`` script:"
+msgstr ""
+
+#: ../../operation.rst:29
+msgid "The `-d .` argument specifies the directory to create the instance home in."
+msgstr ""
+
+#: ../../operation.rst:32
+msgid "You will be asked to provide a user name and password for an administrator's account during ``mkwsgiinstance``.  To see all available command-line options, run the script with the ``--help`` option:"
+msgstr ""
+
+#: ../../operation.rst:40
+msgid "If you followed the example and chose the current directory, you'll find the instances files in the subdirectories of the ``virtualenv``:"
+msgstr ""
+
+#: ../../operation.rst:43
+msgid "``etc/`` will hold the configuration files."
+msgstr ""
+
+#: ../../operation.rst:44
+msgid "``var/`` will hold the database files."
+msgstr ""
+
+#: ../../operation.rst:45
+msgid "``var/log`` will hold log files."
+msgstr ""
+
+#: ../../operation.rst:49
+msgid "Filesystem Permissions"
+msgstr ""
+
+#: ../../operation.rst:50
+msgid "You need to set permissions on the directory Zope uses to store its data. This will normally be the `var` directory in the instance home. Zope needs to read and write data to this directory. Before running Zope you should ensure that you give adequate permissions to this directory for the user id Zope will run under."
+msgstr ""
+
+#: ../../operation.rst:56
+msgid "Do not run Zope as root. Either create a user specifically for Zope or use an existing account with non-admin privileges."
+msgstr ""
+
+#: ../../operation.rst:61
+msgid "Configuring Zope"
+msgstr ""
+
+#: ../../operation.rst:63
+msgid "Your instance's configuration is defined in its ``etc/zope.conf`` and ``etc/zope.ini`` configuration files."
+msgstr ""
+
+#: ../../operation.rst:68
+msgid "Any changes in these configuration files require you to restart your Zope instance before they become active."
+msgstr ""
+
+#: ../../operation.rst:72
+msgid "``zope.ini``: WSGI configuration"
+msgstr ""
+
+#: ../../operation.rst:74
+msgid "The file ``etc/zope.ini`` contains all settings related to the `WSGI` pipeline, the `WSGI` server and logging."
+msgstr ""
+
+#: ../../operation.rst:77
+msgid "When starting Zope, if you see errors indicating that an address is in use, then you may have to change the ports Zope uses for HTTP. The default HTTP port used by Zope is 8080. You can change the port used by editing the ``[server]`` configuration section, which defines settings for the `WSGI` server itself:"
+msgstr ""
+
+#: ../../operation.rst:90
+msgid "See the section `Using alternative WSGI server software`_ to learn how to integrate `WSGI` servers other than the default ``waitress``."
+msgstr ""
+
+#: ../../operation.rst:93
+msgid "Zope is configured in the ``[app]`` section. It defines the so-called \"entry point\" called by the `WSGI` server and where the Zope configuration file ``zope.conf`` is located:"
+msgstr ""
+
+#: ../../operation.rst:103
+msgid "The logging configurations are part of the ``etc/zope.ini`` file as well. The default configurations created by ``mkwsgiinstance`` and ``plone.recipe.zope2instance`` are suitable for most applications. The `Python Logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html>`_ has a great selection of topics for advanced configurations."
+msgstr ""
+
+#: ../../operation.rst:110
+msgid "Keep in mind that different WSGI servers have different logging behaviors. Some have their own access and event logging, some don't log anything at all. For good control over your application's logging needs, the default configurations use the ``translogger`` WSGI middleware from the ``Paste`` package. It can capture and log all errors propagating from your application."
+msgstr ""
+
+#: ../../operation.rst:118
+msgid "If your application is created using a custom ``zc.buildout`` configuration and you want to use ``translogger`` for logging, make sure to specify the ``wsgi`` extra for Zope in your buildout's ``eggs`` specification, like ``Zope[wsgi]``."
+msgstr ""
+
+#: ../../operation.rst:124
+msgid "``zope.conf``: Zope settings"
+msgstr ""
+
+#: ../../operation.rst:126
+msgid "You configure Zope itself in ``etc/zope.conf``."
+msgstr ""
+
+#: ../../operation.rst:128
+msgid "For a full description of the supported sections and directives for ``zope.conf``, refer to the :ref:`configuration reference section <configuration_reference>`."
+msgstr ""
+
+#: ../../operation.rst:134
+msgid "Running Zope"
+msgstr ""
+
+#: ../../operation.rst:137
+#: ../../operation.rst:273
+msgid "Running Zope in the foreground"
+msgstr ""
+
+#: ../../operation.rst:138
+#: ../../operation.rst:274
+msgid "To run Zope without detaching from the console, use:"
+msgstr ""
+
+#: ../../operation.rst:146
+msgid "In this mode, Zope emits its log messages to the console, and does not detach from the terminal."
+msgstr ""
+
+#: ../../operation.rst:149
+msgid "By default this command does not enable Zope's debug mode, so it can be used for production."
+msgstr ""
+
+#: ../../operation.rst:152
+msgid "In order to enable debug mode, you can add the additional ``-d`` or ``--debug`` argument to the command:"
+msgstr ""
+
+#: ../../operation.rst:161
+msgid "The runwsgi commands takes a PasteDeploy configuration file as its argument. You can configure different WSGI capable servers, the WSGI pipeline or logging configuration in this file."
+msgstr ""
+
+#: ../../operation.rst:165
+msgid "Now you are able to log in using a browser, as described in `Logging In To Zope`_."
+msgstr ""
+
+#: ../../operation.rst:170
+#: ../../operation.rst:284
+msgid "Running Zope as a Daemon"
+msgstr ""
+
+#: ../../operation.rst:171
+msgid "Zope itself has no built-in support for running as a daemon any more."
+msgstr ""
+
+#: ../../operation.rst:173
+msgid "If you create your Zope instance using ``plone.recipe.zope2instance`` you can use its start/stop script to daemonize Zope. See the next section for how to do that."
+msgstr ""
+
+#: ../../operation.rst:177
+msgid "Alternatively, you can use projects like supervisord to achieve this or use your operating system's built-in process manager, like ``systemd`` on most Linux versions. As an example, the following ``systemd`` service configuration works with the ``runwsgi`` script. It assumes your buildout is located at ``/opt/zopeinstance`` and the user account your Zope instance runs under is ``zope``:"
+msgstr ""
+
+#: ../../operation.rst:201
+#: ../../operation.rst:331
+msgid "Save this configuration under ``/etc/systemd/system/zopeinstance.service`` and execute ``systemctl daemon-reload`` for ``systemd`` to read it. After that you can use standard ``systemctl`` commands to start, restart or stop the Zope instance:"
+msgstr ""
+
+#: ../../operation.rst:216
+#: ../../operation.rst:346
+msgid "Debugging Zope"
+msgstr ""
+
+#: ../../operation.rst:217
+msgid "In order to debug the Zope application, it can be helpful to connect to its database and inspect or change it on the command line. This feature was previously available via the dedicated `zopectl debug` command - in the new WSGI setup this is available via the `zconsole` module and console script:"
+msgstr ""
+
+#: ../../operation.rst:239
+#: ../../operation.rst:367
+msgid "Running scripts"
+msgstr ""
+
+#: ../../operation.rst:240
+msgid "This was previously availabe using `zopectl run <path_to_script> <scriparg1> ...`. Again in the WSGI setup the `zconsole` module and console script can be used:"
+msgstr ""
+
+#: ../../operation.rst:249
+#: ../../operation.rst:378
+msgid "Adding users"
+msgstr ""
+
+#: ../../operation.rst:250
+msgid "If you need to add a Manager to an existing Zope instance, you can do this using ``addzopeuser`` as follows:"
+msgstr ""
+
+#: ../../operation.rst:257
+msgid "The script expects to find the configuration file at ``etc/zope.conf`` by default. If it is located in a different location you can specify it with the `--configuration` option:"
+msgstr ""
+
+#: ../../operation.rst:266
+msgid "Running Zope (plone.recipe.zope2instance install)"
+msgstr ""
+
+#: ../../operation.rst:267
+msgid "Scipt names and invocations vary slightly in installations that use ``plone.recipe.zope2instance``, but the outcome is the same as described above. The following examples assume that the name of the buildout section was ``zopeinstance``."
+msgstr ""
+
+#: ../../operation.rst:285
+msgid "The ``zopeinstance`` runner script can daemonize the Zope process:"
+msgstr ""
+
+#: ../../operation.rst:293
+msgid "Here's how to get status information and how to stop the Zope instance:"
+msgstr ""
+
+#: ../../operation.rst:304
+msgid "To have your instance start automatically upon reboot, you will need to integrate with your operating system's service startup facility. As an example, the following ``systemd`` service configuration works with the start/stop script generated by ``plone.recipe.zope2instance``. It assumes the script name is ``zopeinstance``, your buildout is located at ``/opt/zopeinstance`` and the user account your Zope instance runs under is ``zope``:"
+msgstr ""
+
+#: ../../operation.rst:347
+msgid "Debugging can be done at the command line:"
+msgstr ""
+
+#: ../../operation.rst:368
+msgid "You can run Python scripts from the command line. The name ``app`` is injected into the top level namespace, it represents the root application object for your site."
+msgstr ""
+
+#: ../../operation.rst:379
+msgid "If you need to add a Manager to an existing Zope instance:"
+msgstr ""
+
+#: ../../operation.rst:388
+msgid "Logging In To Zope"
+msgstr ""
+
+#: ../../operation.rst:390
+msgid "Once you've started Zope, you can then connect to the Zope webserver by directing your browser to::"
+msgstr ""
+
+#: ../../operation.rst:395
+msgid "where 'yourhost' is the DNS name or IP address of the machine running Zope.  If you changed the HTTP port as described, use the port you configured."
+msgstr ""
+
+#: ../../operation.rst:399
+msgid "You will be prompted for a user name and password. Use the user name and password you provided in response to the prompts issued during the Zope instance creation, or configured into your buildout configuration for installs based on ``plone.recipe.zope2instance``."
+msgstr ""
+
+#: ../../operation.rst:404
+msgid "Now you're off and running! You should be looking at the Zope management screen which is divided into two frames. On the left you can navigate between Zope objects and on the right you can edit them by selecting different management functions with the tabs at the top of the frame."
+msgstr ""
+
+#: ../../operation.rst:410
+msgid "To create content to be rendered at http://yourhost:8080/ create a `Page Template` or `DTML Document` named ``index_html``."
+msgstr ""
+
+#: ../../operation.rst:415
+msgid "Special access user accounts"
+msgstr ""
+
+#: ../../operation.rst:418
+msgid "The Initial User"
+msgstr ""
+
+#: ../../operation.rst:419
+msgid "An initial username and password is needed to \"bootstrap\" the creation of normal managers of your Zope site. This is accomplished through the use of the 'inituser' file in the directory specified as the instance home."
+msgstr ""
+
+#: ../../operation.rst:424
+msgid "The first time Zope starts, it will detect that no users have been defined in the root user folder.  It will search for the 'inituser' file and, if it exists, will add the user defined in the file to the root user folder."
+msgstr ""
+
+#: ../../operation.rst:429
+msgid "Normally, 'inituser' is created by the ``makewsgiinstance`` install script."
+msgstr ""
+
+#: ../../operation.rst:434
+msgid "The super user (\"break glass in emergency\" user)"
+msgstr ""
+
+#: ../../operation.rst:435
+msgid "If you find yourself locked out of your Zope instance you can create a user by placing a file named ``access`` in the directory specified as the instance home. The file has one line with a colon-separated login and password, like:"
+msgstr ""
+
+#: ../../operation.rst:443
+msgid "Now restart Zope and use these credentials to log in. This type of user account cannot create any content, but it can add new users to the user folder or edit existing users to get you out of a bind."
+msgstr ""
+
+#: ../../operation.rst:447
+msgid "Do not forget to delete the ``access`` file and restart Zope when you are done."
+msgstr ""
+
+#: ../../operation.rst:452
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../operation.rst:454
+msgid "This version of Zope requires Python 3.7 and later. It will *not* run with any version of PyPy."
+msgstr ""
+
+#: ../../operation.rst:457
+msgid "To build Python extensions you need to have Python configuration information available. If your Python comes from an RPM you may need the python-devel (or python-dev) package installed too. If you built Python from source all the configuration information should already be available."
+msgstr ""
+
+#: ../../operation.rst:463
+msgid "See the :doc:`changes` for important notes on this version of Zope."
+msgstr ""
+
+#: ../../operation.rst:470
+msgid "Using alternative WSGI server software"
+msgstr ""
+
+#: ../../operation.rst:471
+msgid "The WSGI integration gives you a choice of WSGI server software to run your Zope application. This section lists several options that were selected because they either have a `PasteDeploy` entry point or have one provided by shim software, which means they work with the default Zope scripts for starting/stopping the service."
+msgstr ""
+
+#: ../../operation.rst:479
+msgid "Things to watch out for"
+msgstr ""
+
+#: ../../operation.rst:480
+msgid "The ZODB uses connection pooling where a working thread grabs a connection from the pool to serve content and then releases it when the work is done. The default size of this connection pool is 7. You should choose a number of application threads that stays safely below that number of ZODB connections. If the WSGI server lets you configure the number of threads, 4 is a safe choice."
+msgstr ""
+
+#: ../../operation.rst:487
+msgid "Another recommendation from Zope 2 is still valid as well: If you have a choice between less Zope instances with a higher number of threads each, or more instances with less threads each, choose the latter. Create more separate Zope instances and set the WSGI server threads value to e.g. 2."
+msgstr ""
+
+#: ../../operation.rst:494
+msgid "If the WSGI server software lets you configure a number of worker processes, like ``gunicorn`` does, do not configure more than a single worker. Otherwise you will see issues due to concurrent ZODB access by more than one process, which may corrupt your ZODB."
+msgstr ""
+
+#: ../../operation.rst:501
+msgid "Test criteria for recommendations"
+msgstr ""
+
+#: ../../operation.rst:502
+msgid "A simple contrived load test was done with the following parameters:"
+msgstr ""
+
+#: ../../operation.rst:504
+msgid "100 concurrent clients accessing Zope"
+msgstr ""
+
+#: ../../operation.rst:505
+msgid "100 seconds run time"
+msgstr ""
+
+#: ../../operation.rst:506
+msgid "the clients just fetch \"/\""
+msgstr ""
+
+#: ../../operation.rst:507
+msgid "standard Zope 4 instances, one with ZEO and one without"
+msgstr ""
+
+#: ../../operation.rst:508
+msgid "Python 2.7.16 on macOS Mojave/10.14.4"
+msgstr ""
+
+#: ../../operation.rst:509
+msgid "standard WSGI server configurations, the only changes are to number of threads and/or number of workers where available."
+msgstr ""
+
+#: ../../operation.rst:512
+msgid "This load test uncovered several issues:"
+msgstr ""
+
+#: ../../operation.rst:514
+msgid "``cheroot`` (tested version: 6.5.5) was magnitudes slower than all others. Unlike the others, it did not max out CPU. It is unclear where the slowdown originates. Others reached 500-750 requests/second. ``cheroot`` only served 12 requests/second per configured thread."
+msgstr ""
+
+#: ../../operation.rst:518
+msgid "``gunicorn`` (tested version: 19.9.0) showed very strange behavior against the non-ZEO Zope instance. It serves around 500 requests/second, but then hangs and serves no requests for several seconds, before picking up again."
+msgstr ""
+
+#: ../../operation.rst:521
+msgid "``gunicorn`` (tested version: 19.9.0) does not like the ZEO instance at all. No matter what configuration in terms of threads or workers was chosen ``gunicorn`` just hung so badly that even CTRL-C would not kill it. Switching to an asynchronous type of worker (tested with ``gevent``) did not make a difference."
+msgstr ""
+
+#: ../../operation.rst:526
+msgid "``werkzeug`` (tested version: 0.15.2) does not let you specify the number of threads, you only tell it to use threads or not. In threaded mode it spawns too many threads and immedialy runs up agains the ZODB connection pool limits, so with Zope only the unthreaded mode is suitable. Even in unthreaded mode, the service speed was inconsistent. Just like ``gunicorn`` it had intermittent hangs before recovering."
+msgstr ""
+
+#: ../../operation.rst:532
+msgid "``bjoern`` (tested version: 3.0.0) is the clear speed winner with 740 requests/second against both the ZEO and non-ZEO Zope instance, even though it is single-threaded."
+msgstr ""
+
+#: ../../operation.rst:535
+msgid "``waitress`` (tested version: 1.3.0) is the all-around best choice. It's just 10-15% slower than ``bjoern``, but both the built-in WSGI tools as well as ``plone.recipe.zope2instance`` use it as the default and make it very convenient to use."
+msgstr ""
+
+#: ../../operation.rst:542
+msgid "Recommended WSGI servers"
+msgstr ""
+
+#: ../../operation.rst:545
+msgid "waitress (the default and recommended choice)"
+msgstr ""
+
+#: ../../operation.rst:546
+msgid "If you create a Zope instance using the ``mkwsgiinstance`` script described above or the ``plone.recipe.zope2instance`` buildout recipe, you will automatically get a ``waitress``-based server. The default configurations set up for you will be sufficient for most applications. See the `waitress documentation <https://docs.pylonsproject.org/projects/waitress/>`_ for additional information."
+msgstr ""
+
+#: ../../operation.rst:553
+msgid "Here's a very simple configuration using ``plone.recipe.zope2instance``:"
+msgstr ""
+
+#: ../../operation.rst:564
+msgid "Note the empty ``eggs`` section, you cannot leave it out."
+msgstr ""
+
+#: ../../operation.rst:566
+msgid "``waitress`` has many options that you can add to the buildout section. A full list is `part of the waitress documentation <https://docs.pylonsproject.org/projects/waitress/en/stable/arguments.html>`_."
+msgstr ""
+
+#: ../../operation.rst:572
+msgid "bjoern (the fastest)"
+msgstr ""
+
+#: ../../operation.rst:573
+msgid "The `bjoern WSGI server <https://github.com/jonashaag/bjoern>`_ can be integrated using a shim package called `dataflake.wsgi.bjoern <https://dataflakewsgibjoern.readthedocs.io/>`_. See the `Using this package` section for details on how to integrate `bjoern` using Zope's own ``runwsgi`` script and how to create a suitable WSGI configuration."
+msgstr ""
+
+#: ../../operation.rst:579
+#: ../../operation.rst:690
+msgid "If you use ``plone.recipe.zope2instance``, the following section will pull in the correct dependencies:"
+msgstr ""
+
+#: ../../operation.rst:595
+msgid "Problematic WSGI servers"
+msgstr ""
+
+#: ../../operation.rst:598
+msgid "werkzeug"
+msgstr ""
+
+#: ../../operation.rst:599
+msgid "`werkzeug <https://palletsprojects.com/p/werkzeug/>`_ is a WSGI library that contains not just a WSGI server, but also a powerful debugger. It can easily integrate with Zope using a shim package called `dataflake.wsgi.werkzeug <https://dataflakewsgiwerkzeug.readthedocs.io/>`_. See the `Using this package` section for how to integrate `werkzeug` using Zope's own ``runwsgi`` script and how to create a suitable WSGI configuration."
+msgstr ""
+
+#: ../../operation.rst:606
+msgid "If you use ``plone.recipe.zope2instance``, the following section will pull in the correct dependencies, after you have created a WSGI configuration file:"
+msgstr ""
+
+#: ../../operation.rst:622
+msgid "gunicorn"
+msgstr ""
+
+#: ../../operation.rst:623
+msgid "The `gunicorn WSGI server <https://gunicorn.org/>`_ has a built-in `PasteDeploy` entry point and integrates easily. The following example buildout configuration section will create a ``bin/runwsgi`` script that uses `gunicorn`."
+msgstr ""
+
+#: ../../operation.rst:638
+msgid "You can use this script with a WSGI configuration file that you have to create yourself. Please see the `gunicorn documentation <https://docs.gunicorn.org/>`_, especially the `Configuration File` section on `Configuration Overview`, for Paster Application configuration information. A very simple server configuration looks like this:"
+msgstr ""
+
+#: ../../operation.rst:652
+msgid "You can then run the server using ``runwsgi``:"
+msgstr ""
+
+#: ../../operation.rst:661
+msgid "gunicorn version 19.9.0 or less will print an ominous warning message on the console upon startup that seems to suggest their WSGI entry point is deprecated in favor of using their own built-in scripts. This is misleading. Future versions will not show this message."
+msgstr ""
+
+#: ../../operation.rst:666
+msgid "If you use ``plone.recipe.zope2instance``, you can make it use `gunicorn` by adding its egg to the buildout section and setting the WSGI configuration file path to the path of the configuration file you created yourself:"
+msgstr ""
+
+#: ../../operation.rst:683
+msgid "cheroot"
+msgstr ""
+
+#: ../../operation.rst:684
+msgid "The `cheroot WSGI server <https://cheroot.cherrypy.org>`_ can be integrated using a shim package called `dataflake.wsgi.cheroot <https://dataflakewsgicheroot.readthedocs.io/>`_. See the `Using this package` section for details on how to integrate `cheroot` using Zope's own ``runwsgi`` script and how to create a suitable WSGI configuration."
+msgstr ""
+
+#: ../../operation.rst:706
+msgid "Debugging Zope applications under WSGI"
+msgstr ""
+
+#: ../../operation.rst:707
+msgid "You can debug a WSGI-based Zope application by adding a statement to activate the debugger. In addition, you can take advantage of WSGI middleware or debugging facilities built into the chosen WSGI server."
+msgstr ""
+
+#: ../../operation.rst:712
+msgid "When developing your application or debugging, which is the moment you want to use debugging tools, you can start your Zope instance in `exceptions debug mode`. This will disable all registered exception views including ``standard_error_message`` so that exceptions are not masked or hidden."
+msgstr ""
+
+#: ../../operation.rst:717
+msgid "This is how you run Zope in exceptions debug mode using the built-in ``runwsgi`` script:"
+msgstr ""
+
+#: ../../operation.rst:724
+msgid "If you built your environment using ``plone.recipe.zope2instance`` you will need to do a manual change to your Zope configuration file. Enable exceptions debug mode by adding the ``debug-exceptions on`` setting before starting your application. The example presumes the Zope instance was named ``zopeinstance``, your Zope configuration file will be at `parts/zopeinstance/etc/zope.conf`."
+msgstr ""
+
+#: ../../operation.rst:734
+msgid "With Zope set up to let WSGI handle exceptions, these are a few options for the WSGI pipeline:"
+msgstr ""
+
+#: ../../operation.rst:737
+msgid "If you use ``waitress``, you can make it output exception tracebacks in the browser by configuring ``expose_tracebacks``. The keyword works in both standard and ``plone.recipe.zope2instance`` configurations:"
+msgstr ""
+
+#: ../../operation.rst:758
+msgid "``werkzeug`` includes a full-featured debugging tool. See the `dataflake.wsgi.werkzeug documentation <https://dataflakewsgiwerkzeug.readthedocs.io/en/latest/usage.html#using-the-werkzeug-debugger>`_ for how to enable the debugger. Once you're up and running, the `werkzeug debugger documentation <https://werkzeug.palletsprojects.com/en/0.15.x/debug/#using-the-debugger>`_ will show you how to use it."
+msgstr ""
+
+#: ../../operation.rst:768
+msgid "Zope configuration reference"
+msgstr ""
+
+#: ../../Schema:0
+msgid "zodb.storage*"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<blobstorage> (ZODB.config.BlobStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "blob-dir (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "Path name to the blob storage directory."
+msgstr ""
+
+#: ../../Schema:0
+msgid "<demostorage> (ZODB.config.DemoStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "name (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The storage name, used by the :meth:`~ZODB.interfaces.IStorage.getName` and :meth:`~ZODB.interfaces.IStorage.sortKey` methods."
+msgstr ""
+
+#: ../../Schema:0
+msgid "<filestorage> (ZODB.config.FileStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "path (existing-dirpath)"
+msgstr ""
+
+#: ../../description:1
+msgid "Path name to the main storage file.  The names for supplemental files, including index and lock files, will be computed from this."
+msgstr ""
+
+#: ../../Schema:0
+msgid "blob-dir (existing-dirpath)"
+msgstr ""
+
+#: ../../description:1
+msgid "If supplied, the file storage will provide blob support and this is the name of a directory to hold blob data.  The directory will be created if it doesn't exist.  If no value (or an empty value) is provided, then no blob support will be provided. (You can still use a BlobStorage to provide blob support.)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "create (boolean)"
+msgstr ""
+
+#: ../../description:1
+msgid "Flag that indicates whether the storage should be truncated if it already exists."
+msgstr ""
+
+#: ../../Schema:0
+msgid "read-only (boolean)"
+msgstr ""
+
+#: ../../description:1
+msgid "If true, only reads may be executed against the storage.  Note that the \"pack\" operation is not considered a write operation and is still allowed on a read-only filestorage."
+msgstr ""
+
+#: ../../Schema:0
+msgid "quota (byte-size)"
+msgstr ""
+
+#: ../../description:1
+msgid "Maximum allowed size of the storage file.  Operations which would cause the size of the storage to exceed the quota will result in a ZODB.FileStorage.FileStorageQuotaError being raised."
+msgstr ""
+
+#: ../../Schema:0
+msgid "packer (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The dotted name (dotted module name and object name) of a packer object.  This is used to provide an alternative pack implementation."
+msgstr ""
+
+#: ../../Schema:0
+msgid "pack-gc (boolean)  (default: true)"
+msgstr ""
+
+#: ../../description:1
+msgid "If false, then no garbage collection will be performed when packing.  This can make packing go much faster and can avoid problems when objects are referenced only from other databases."
+msgstr ""
+
+#: ../../Schema:0
+msgid "pack-keep-old (boolean)  (default: true)"
+msgstr ""
+
+#: ../../description:1
+msgid "If true, a copy of the database before packing is kept in a \".old\" file."
+msgstr ""
+
+#: ../../Schema:0
+msgid "<fullstorage> (ZODB.config.BDBFullStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "envdir (string)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "interval (time-interval)  (default: 2m)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "kbyte (integer)  (default: 0)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "min (integer)  (default: 0)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "logdir (string)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "cachesize (byte-size)  (default: 128MB)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "frequency (time-interval)  (default: 0)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "packtime (time-interval)  (default: 4h)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "gcpack (integer)  (default: 0)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "read-only (boolean)  (default: off)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<mappingstorage> (ZODB.config.MappingStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "name (string)  (default: Mapping Storage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<minimalstorage> (ZODB.config.BDBMinimalStorage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<temporarystorage> (tempstorage.config.TemporaryStorage)"
+msgstr ""
+
+#: ../../description:1
+msgid "A nonundoing storage which keeps data in RAM and which does not need to be packed unless cyclic references are kept."
+msgstr ""
+
+#: ../../Schema:0
+msgid "name (string)  (default: Temporary Storage)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<zeoclient> (ZODB.config.ZEOClient)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "server (*) (socket-connection-address)"
+msgstr ""
+
+#: ../../description:1
+msgid "Path name to the blob cache directory."
+msgstr ""
+
+#: ../../Schema:0
+msgid "shared-blob-dir (boolean)  (default: no)"
+msgstr ""
+
+#: ../../description:1
+msgid "Tells whether the cache is a shared writable directory and that the ZEO protocol should not transfer the file but only the filename when committing."
+msgstr ""
+
+#: ../../Schema:0
+msgid "blob-cache-size (byte-size)"
+msgstr ""
+
+#: ../../description:1
+msgid "Maximum size of the ZEO blob cache, in bytes.  If not set, then the cache size isn't checked and the blob directory will grow without bound."
+msgstr ""
+
+#: ../../description:5
+msgid "This option is ignored if shared_blob_dir is true."
+msgstr ""
+
+#: ../../Schema:0
+msgid "blob-cache-size-check (integer)"
+msgstr ""
+
+#: ../../description:1
+msgid "ZEO check size as percent of blob_cache_size.  The ZEO cache size will be checked when this many bytes have been loaded into the cache. Defaults to 10% of the blob cache size.   This option is ignored if shared_blob_dir is true."
+msgstr ""
+
+#: ../../Schema:0
+msgid "storage (string)  (default: 1)"
+msgstr ""
+
+#: ../../description:1
+msgid "The name of the storage that the client wants to use.  If the ZEO server serves more than one storage, the client selects the storage it wants to use by name.  The default name is '1', which is also the default name for the ZEO server."
+msgstr ""
+
+#: ../../Schema:0
+msgid "cache-size (byte-size)  (default: 20MB)"
+msgstr ""
+
+#: ../../description:1
+msgid "The maximum size of the client cache, in bytes, KB or MB."
+msgstr ""
+
+#: ../../description:1
+msgid "The storage name.  If unspecified, the address of the server will be used as the name."
+msgstr ""
+
+#: ../../Schema:0
+msgid "client (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "Enables persistent cache files.  The string passed here is used to construct the cache filenames.  If it is not specified, the client creates a temporary cache that will only be used by the current object."
+msgstr ""
+
+#: ../../Schema:0
+msgid "var (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The directory where persistent cache files are stored.  By default cache files, if they are persistent, are stored in the current directory."
+msgstr ""
+
+#: ../../Schema:0
+msgid "min-disconnect-poll (integer)  (default: 5)"
+msgstr ""
+
+#: ../../description:1
+msgid "The minimum delay in seconds between attempts to connect to the server, in seconds.  Defaults to 5 seconds."
+msgstr ""
+
+#: ../../Schema:0
+msgid "max-disconnect-poll (integer)  (default: 300)"
+msgstr ""
+
+#: ../../description:1
+msgid "The maximum delay in seconds between attempts to connect to the server, in seconds.  Defaults to 300 seconds."
+msgstr ""
+
+#: ../../Schema:0
+msgid "wait (boolean)  (default: on)"
+msgstr ""
+
+#: ../../description:1
+msgid "A boolean indicating whether the constructor should wait for the client to connect to the server and verify the cache before returning.  The default is true."
+msgstr ""
+
+#: ../../description:1
+msgid "A flag indicating whether this should be a read-only storage, defaulting to false (i.e. writing is allowed by default)."
+msgstr ""
+
+#: ../../Schema:0
+msgid "read-only-fallback (boolean)  (default: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "A flag indicating whether a read-only remote storage should be acceptable as a fall-back when no writable storages are available.  Defaults to false.  At most one of read_only and read_only_fallback should be true."
+msgstr ""
+
+#: ../../Schema:0
+msgid "username (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The authentication user name of the server."
+msgstr ""
+
+#: ../../Schema:0
+msgid "password (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The authentication password of the server."
+msgstr ""
+
+#: ../../Schema:0
+msgid "realm (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "The authentication realm of the server.  Some authentication schemes use a realm to identify the logic set of user names that are accepted by this server."
+msgstr ""
+
+#: ../../Schema:0
+msgid "drop-cache-rather-verify (boolean)  (default: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "A flag indicating whether the client cache should be dropped instead of an expensive verification."
+msgstr ""
+
+#: ../../Schema:0
+msgid "client-label (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "A label for the client in server logs"
+msgstr ""
+
+#: ../../Schema:0
+msgid "zodb.database+"
+msgstr ""
+
+#: ../../description:1
+msgid "Zope ZODB databases must have a name, and they are required to be referenced via the \"zodb_db\" database type because it is the only kind of database definition that implements the required mount-point argument.  There is another database sectiontype named \"zodb\", but it cannot be used in the context of a proper Zope configuration (due to lack of a mount-point)."
+msgstr ""
+
+#: ../../Schema:0
+msgid "<zodb> (ZODB.config.ZODBDatabase)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "cache-size (integer)  (default: 5000)"
+msgstr ""
+
+#: ../../description:1
+msgid "Target size, in number of objects, of each connection's object cache."
+msgstr ""
+
+#: ../../Schema:0
+msgid "cache-size-bytes (byte-size)  (default: 0)"
+msgstr ""
+
+#: ../../description:1
+msgid "Target size, in total estimated size for objects, of each connection's object cache. \"0\" means no limit."
+msgstr ""
+
+#: ../../Schema:0
+msgid "large-record-size (byte-size)  (default: 16MB)"
+msgstr ""
+
+#: ../../description:1
+msgid "When object records are saved that are larger than this, a warning is issued, suggesting that blobs should be used instead."
+msgstr ""
+
+#: ../../Schema:0
+msgid "pool-size (integer)  (default: 7)"
+msgstr ""
+
+#: ../../description:1
+msgid "The expected maximum number of simultaneously open connections. There is no hard limit (as many connections as are requested will be opened, until system resources are exhausted).  Exceeding pool-size connections causes a warning message to be logged, and exceeding twice pool-size connections causes a critical message to be logged."
+msgstr ""
+
+#: ../../Schema:0
+msgid "pool-timeout (time-interval)"
+msgstr ""
+
+#: ../../description:1
+msgid "The minimum interval that an unused (non-historical) connection should be kept."
+msgstr ""
+
+#: ../../Schema:0
+msgid "historical-pool-size (integer)  (default: 3)"
+msgstr ""
+
+#: ../../description:1
+msgid "The expected maximum total number of historical connections simultaneously open."
+msgstr ""
+
+#: ../../Schema:0
+msgid "historical-cache-size (integer)  (default: 1000)"
+msgstr ""
+
+#: ../../description:1
+msgid "Target size, in number of objects, of each historical connection's object cache."
+msgstr ""
+
+#: ../../Schema:0
+msgid "historical-cache-size-bytes (byte-size)  (default: 0)"
+msgstr ""
+
+#: ../../description:1
+msgid "Target size, in total estimated size of objects, of each historical connection's object cache."
+msgstr ""
+
+#: ../../Schema:0
+msgid "historical-timeout (time-interval)  (default: 5m)"
+msgstr ""
+
+#: ../../description:1
+msgid "The minimum interval that an unused historical connection should be kept."
+msgstr ""
+
+#: ../../Schema:0
+msgid "database-name (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "When multi-databases are in use, this is the name given to this database in the collection.  The name must be unique across all databases in the collection.  The collection must also be given a mapping from its databases' names to their databases, but that cannot be specified in a ZODB config file.  Applications using multi-databases typical supply a way to configure the mapping in their own config files, using the \"databases\" parameter of a DB constructor."
+msgstr ""
+
+#: ../../Schema:0
+msgid "allow-implicit-cross-references (boolean)"
+msgstr ""
+
+#: ../../description:1
+msgid "If set to false, implicit cross references (the only kind currently possible) are disallowed."
+msgstr ""
+
+#: ../../Schema:0
+msgid "<zodb_db> (Zope2.Startup.datatypes.ZopeDatabase)"
+msgstr ""
+
+#: ../../description:1
+msgid "We need to specialize the database configuration section for Zope only by including a (required) mount-point argument, which is a string.  A Zope ZODB database can have multiple mount points, so this is a multikey."
+msgstr ""
+
+#: ../../Schema:0
+msgid "mount-point (*) (Zope2.Startup.datatypes.mount_point)"
+msgstr ""
+
+#: ../../description:1
+msgid "The mount point is a slash-separated path to a 'Products.ZODBMountPoint.Mount.MountPoint' instance in Zope. If such an instance exists, it can mount an object (the mounted object) into Zope. By default, the object will be mounted at the same path in Zope (i.e. '/foo/bar' in the database will be mounted at '/foo/bar' in Zope)."
+msgstr ""
+
+#: ../../description:8
+msgid "The object can be mounted at a different point using the 'virtual_path:real_path' syntax (e.g.  'mount-point /foo/bar:/bar' will mount the object at '/bar' in the database to '/foo/bar' in Zope). The name of the mount point ('bar') must be the same as the mounted object."
+msgstr ""
+
+#: ../../description:14
+msgid "It is also possible to specify the root that should be used in the mounted database by using the syntax 'virtual_path:~real_root:real_path'. The root defaults to 'Application' and should not normally be changed."
+msgstr ""
+
+#: ../../Schema:0
+msgid "connection-class (Zope2.Startup.datatypes.importable_name)"
+msgstr ""
+
+#: ../../description:1
+msgid "Change the connection class a database uses on a per-database basis to support different connection policies.  Use a Python dotted-path name to specify the connection class."
+msgstr ""
+
+#: ../../Schema:0
+msgid "class-factory (Zope2.Startup.datatypes.importable_name)  (default: Zope2.Startup.datatypes.simpleClassFactory)"
+msgstr ""
+
+#: ../../description:1
+msgid "Change the class factory function a database uses on a per-database basis to support different class factory policy. Use a Python dotted-path name to specify the class factory function."
+msgstr ""
+
+#: ../../Schema:0
+msgid "container-class (string)"
+msgstr ""
+
+#: ../../description:1
+msgid "Change the container class a (mounted) database uses on a per-database basis to support a different container than a plain Folder. Use a Python dotted-path name to specify the container class."
+msgstr ""
+
+#: ../../Schema:0
+msgid "zope.product.base+"
+msgstr ""
+
+#: ../../description:1
+msgid "Product-specific configuration stanzas."
+msgstr ""
+
+#: ../../description:3
+msgid "Products may use the <product-config> section type, or may supply a component.xml which defines section types with their own schemas."
+msgstr ""
+
+#: ../../description:6
+msgid "All sections for this multisection will be collected into the 'product_config' attribute of the configuration object."
+msgstr ""
+
+#: ../../description:1
+msgid "Base type for product-specific configuration sections."
+msgstr ""
+
+#: ../../description:3
+msgid "Specific products should implement configuration sections by defining section types that implement this abstract type and using their own schema component to define meaningful settings."
+msgstr ""
+
+#: ../../Schema:0
+msgid "product-config (null)"
+msgstr ""
+
+#: ../../description:1
+msgid "Product-specific configuration, expressed as arbitrary name-value pairs."
+msgstr ""
+
+#: ../../Schema:0
+msgid "+ (string)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<environment> (Zope2.Startup.datatypes.environment)"
+msgstr ""
+
+#: ../../description:1
+msgid "A section which allows you to define simple key-value pairs which will be used as environment variable settings during startup."
+msgstr ""
+
+#: ../../description:1
+msgid "Use any key/value pair, e.g. 'MY_PRODUCT_ENVVAR foo_bar'"
+msgstr ""
+
+#: ../../Schema:0
+msgid "zodb.database"
+msgstr ""
+
+#: ../../Schema:0
+msgid "zodb.storage"
+msgstr ""
+
+#: ../../Schema:0
+msgid "zope.product.base"
+msgstr ""
+
+#: ../../Schema:0
+msgid "<environment *> (Zope2.Startup.datatypes.environment)"
+msgstr ""
+
+#: ../../Schema:0
+msgid "instancehome (existing-directory)"
+msgstr ""
+
+#: ../../description:1
+msgid "The top-level directory which contains the \"instance\" data for the application server. It may also contain \"etc\", \"bin\", \"log\", and \"var\" directories depending on how you've configured your Zope instance."
+msgstr ""
+
+#: ../../Schema:0
+msgid "clienthome (existing-directory)  (metadefault: $instancehome/var)"
+msgstr ""
+
+#: ../../description:1
+msgid "The directory used to store the default filestorage file used to back the ZODB database, as well as other files used by the Zope applications server during runtime."
+msgstr ""
+
+#: ../../Schema:0
+msgid "debug-mode (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "A switch which controls several aspects of Zope operation useful for developing under Zope.  When debug mode is on:"
+msgstr ""
+
+#: ../../description:4
+msgid "Errors in product initialization will cause startup to fail (instead of writing error messages to the event log file)."
+msgstr ""
+
+#: ../../description:7
+msgid "Filesystem-based scripts such as skins, PageTemplateFiles, and DTMLFiles can be edited while the server is running and the server will detect these changes in real time.  When this switch is off, you must restart the server to see the changes."
+msgstr ""
+
+#: ../../description:12
+msgid "Setting this to 'off' when Zope is in a production environment is encouraged, as it speeds execution (sometimes dramatically)."
+msgstr ""
+
+#: ../../Schema:0
+msgid "debug-exceptions (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "This switch controls how exceptions are handled. If it is set to \"off\" (the default), Zope's own exception handling is active. Exception views or a standard_error_message are used to handle them."
+msgstr ""
+
+#: ../../description:5
+msgid "If set to \"on\", exceptions are not handled by Zope and can propagate into the WSGI pipeline, where they may be handled by debugging middleware."
+msgstr ""
+
+#: ../../description:9
+msgid "This setting should always be \"off\" in production. It is useful for developers and while debugging site issues."
+msgstr ""
+
+#: ../../Schema:0
+msgid "locale (locale)  (metadefault: unset)"
+msgstr ""
+
+#: ../../description:1
+msgid "Locale name to be used. See your operating system documentation for locale information specific to your system. If the requested locale is not supported by your system, an error will be raised and Zope will not start."
+msgstr ""
+
+#: ../../Schema:0
+msgid "datetime-format (Zope2.Startup.datatypes.datetime_format)  (default: us)  (metadefault: us)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this variable either to \"us\" or \"international\" to force the DateTime module to parse date strings either with month-before-days-before-year (\"us\") or days-before-month-before-year (\"international\").  The default behaviour of DateTime (when this setting is left unset) is to parse dates as US dates."
+msgstr ""
+
+#: ../../Schema:0
+msgid "python-check-interval (integer)  (default: 1000)"
+msgstr ""
+
+#: ../../description:1
+msgid "Value passed to Python's sys.setcheckinterval() function.  The higher this is, the less frequently the Python interpreter checks for keyboard interrupts.  Setting this to higher values also reduces the frequency of potential thread switches, which can improve the performance of a busy server."
+msgstr ""
+
+#: ../../Schema:0
+msgid "http-realm (string)  (default: Zope)  (metadefault: Zope)"
+msgstr ""
+
+#: ../../description:1
+msgid "The HTTP \"Realm\" header value sent by this Zope instance. This value often shows up in basic authentication dialogs."
+msgstr ""
+
+#: ../../Schema:0
+msgid "automatically-quote-dtml-request-data (boolean)  (default: on)  (metadefault: on)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'off' in order to disable the autoquoting of implicitly retrieved REQUEST data by DTML code which contains a '<' when used in <dtml-var> construction. When this directive is 'on', all data implicitly retrieved from the REQUEST in DTML (as opposed to addressing REQUEST.somevarname directly) that contains a '<' will be HTML-quoted when interpolated via a <dtml-var> or &dtml- construct. This mitigates the possibility that DTML programmers will leave their sites open to a \"client-side trojan\" attack."
+msgstr ""
+
+#: ../../Schema:0
+msgid "zmi-bookmarkable-urls (boolean)  (default: on)  (metadefault: on)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'on' to cause Zope to show the ZMI right hand frame's URL in the browser navigation bar as opposed to the static '/manage'. The default is 'on'. To restore the behavior of Zope 2 where the URL was always static unless you opened the right-hand frame in its own browser window, set this to off."
+msgstr ""
+
+#: ../../Schema:0
+msgid "pid-filename (existing-dirpath)  (metadefault: $clienthome/Z4.pid)"
+msgstr ""
+
+#: ../../description:1
+msgid "The full path to which the Zope process will write its OS process id at startup."
+msgstr ""
+
+#: ../../Schema:0
+msgid "trusted-proxy (*) (ipaddr-or-hostname)  (metadefault: unset)"
+msgstr ""
+
+#: ../../description:1
+msgid "Define one or more 'trusted-proxies' keys, each of which is a hostname or an IP address.  The set of definitions comprises a list of front-end proxies that are trusted to supply an accurate X_FORWARDED_FOR header to Zope (security-related)."
+msgstr ""
+
+#: ../../Schema:0
+msgid "max-conflict-retries (integer)  (default: 3)"
+msgstr ""
+
+#: ../../description:1
+msgid "The maximum number of retries on a conflict error"
+msgstr ""
+
+#: ../../Schema:0
+msgid "security-policy-implementation (Zope2.Startup.datatypes.security_policy_implementation)  (default: C)  (metadefault: C)"
+msgstr ""
+
+#: ../../description:1
+msgid "The default Zope \"security policy\" implementation is written in C. Set this key to \"PYTHON\" to use the Python implementation (useful for debugging purposes); set it to \"C\" to use the C implementation."
+msgstr ""
+
+#: ../../Schema:0
+msgid "skip-authentication-checking (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'on' to cause Zope to prevent Zope from attempting to authenticate users during normal operation. Potentially dangerous from a security perspective.  Only works if security-policy-implementation is set to 'C'."
+msgstr ""
+
+#: ../../Schema:0
+msgid "skip-ownership-checking (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'on' to cause Zope to ignore ownership checking when attempting to execute \"through the web\" code. By default, this directive is off in order to prevent 'trojan horse' security problems whereby a user with less privilege can cause a user with more privilege to execute code which the less privileged user has written."
+msgstr ""
+
+#: ../../Schema:0
+msgid "verbose-security (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'on' to enable verbose security exceptions. This can help you track down the reason for Unauthorized exceptions, but it is not suitable for public sites because it may reveal unnecessary information about the structure of your site.  Only works if security-policy-implementation is set to 'PYTHON'."
+msgstr ""
+
+#: ../../Schema:0
+msgid "default-zpublisher-encoding (Zope2.Startup.datatypes.default_zpublisher_encoding)  (default: utf-8)"
+msgstr ""
+
+#: ../../description:1
+msgid "This key controls what character set is used to encode unicode data that reaches ZPublisher without any other specified encoding."
+msgstr ""
+
+#: ../../Schema:0
+msgid "webdav-source-port (integer)  (default: 0)"
+msgstr ""
+
+#: ../../description:1
+msgid "This value designates a network port number as WebDAV source port."
+msgstr ""
+
+#: ../../description:3
+msgid "WebDAV requires special handling for GET requests. A WebDAV client expects to receive the un-rendered source in the returned response body, not the rendered result a web browser would get."
+msgstr ""
+
+#: ../../description:7
+msgid "If this value is set to a positive integer, any GET request coming into Zope via the designated port will be marked up to signal that this is a WebDAV request. This request markup resembles what ZServer did for requests coming though its designated WebDAV source server port, so it is backwards-compatible for existing code that offers WebDAV handling under ZServer."
+msgstr ""
+
+#: ../../description:14
+msgid "Please note that Zope itself has no server capabilities and cannot open network ports. You need to configure your WSGI server to listen on the designated port."
+msgstr ""
+
+#: ../../Schema:0
+msgid "enable-ms-public-header (boolean)  (default: off)  (metadefault: off)"
+msgstr ""
+
+#: ../../description:1
+msgid "Set this directive to 'on' to enable sending the \"Public\" header in response to an WebDAV OPTIONS request - but only those coming from Microsoft WebDAV clients."
+msgstr ""
+
+#: ../../description:5
+msgid "Though recent WebDAV drafts mention this header, the original WebDAV RFC did not mention it as part of the standard. Very few web servers out there include this header in their replies, most notably IIS and Netscape Enterprise 3.6."
+msgstr ""
+
+#: ../../description:10
+msgid "Documentation about this header is sparse. Some versions of Microsoft Web Folders after 2005 apparently require its presence, but most documentation links have expired."
+msgstr ""

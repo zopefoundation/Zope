@@ -1,0 +1,328 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../migrations/zope4/zodb.rst:4
+msgid "Migrating the ZODB"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:6
+msgid "This document describes the process of migrating a ZODB created with Zope 2 into a Zope 4 environment. The migration example steps have been tested on a ``FileStorage``-based ZODB with a ``Data.fs`` file."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:11
+msgid "As soon as you open a ZODB from Zope 2 under Zope 4 you cannot use it under Zope 2 anymore, regardless of how the ZODB is opened (direct access to a ``Data.fs`` file or indirect access through a ``ZEO`` server). Always work on a copy of your ZODB so you retain a working copy for Zope 2 if you need to go back."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:22
+msgid "Pre-migration steps on Zope 2"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:24
+msgid "The following pre-migration steps can be done while still on Zope 2 and will ease the final process."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:29
+msgid "Prepare ZODB-based code"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:31
+msgid "Syntax changes that come with the move from Python 2 to Python 3 for filesystem code apply to ZODB code as well, such as Python Scripts, DTML Methods, DTML Documents, Z SQL Methods and Page Templates. Typical issues include:"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:35
+msgid "switching ``print`` statements to ``print`` function call syntax"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:36
+msgid "switching removed ``string`` module function calls to their string method equivalents"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:38
+msgid "safe handling of changed return value types for dictionary methods, such as ``keys``, ``values`` or ``items``"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:40
+msgid "fix indentation where a mix of spaces and tabs is used"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:41
+msgid "etc."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:43
+msgid "Many of these and others will be familiar from changing filesystem code to be Python 3 compatible."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:48
+msgid "Delete ZODB objects that no longer exist under Zope 4"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:50
+msgid "The ``Control_Panel`` has seen changes in Zope 4 that have a risk of introducing spurious errors when verifying the ZODB contents in the steps below. Visit the ZMI **while still running on Zope 2** and delete all objects you see in the Products folder at ``/Control_Panel/Products/manage_main``. Pack the ZODB after the cleanup."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:58
+msgid "Migrate to Zope 4 on Python 2"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:60
+msgid "There are no specific ZODB-related migration steps to take when moving to a Python 2-based Zope 4 environment, except when you're proceeding with a Python 3 migration. See the section `Going from Zope 2 to Zope 4` below for details."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:67
+msgid "Migrate to Zope 4 on Python 3"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:71
+msgid "This part describes the process of migrating a ZODB created with Python 2 (using Zope 2 or 4) to Python 3 (using Zope 4). As there are significant changes between the two platforms, there is no automated process to cover all edge cases, so it is necessary to prepare and test your migration well in advance."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:79
+msgid "Migration example"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:81
+msgid "**Back up your ZODB before proceeding**"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:83
+msgid "Make all ZODB-persisted code Python 3 compatible (see above), while keeping Python 2 compatibility."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:86
+msgid "Test that converted code works as expected"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:90
+msgid "Going from Zope 2 to Zope 4"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:92
+msgid "If your ZODB was created under Zope 2 you have a few additional steps that will ensure the latest ZODB code under Python 3 will work with your ZODB data. Make sure your ZODB is packed before going on."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:96
+msgid "prepare a Python 2 environment containing..."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:98
+msgid "Zope 4 (latest)"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:99
+msgid "all relevant applications and addons for your ZODB"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:100
+#: ../../migrations/zope4/zodb.rst:135
+msgid "`zodbverify <https://pypi.org/project/zodbverify/>`_"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:102
+msgid "prepare a Zope configuration"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:104
+#: ../../migrations/zope4/zodb.rst:139
+msgid "Create a new Zope instance using ``mkwsgiinstance`` or a ``plone.recipe.zope2instance`` buildout configuration"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:107
+#: ../../migrations/zope4/zodb.rst:142
+msgid "make sure the created configuration files (under ``etc/`` if you used ``mkwsgiinstance`` and under ``parts/<INSTANCE_NAME>/etc`` if you used ``plone.recipe.zope2instance``) reflect what was in your Zope 2 configuration before the migration"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:112
+msgid "start the Application using ``bin/runwsgi etc/zope.ini`` or ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the instance configuration. Test it intensively for incompatibilities and errors."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:116
+msgid "shut down the Zope instance(s) and ZEO server that serves your ZODB"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:118
+msgid "run ``bin/zodbverify -f path/to/Data.fs`` to uncover any errors in your ZODB. You may see cryptic errors pointing to the ``Products`` attribute of the ``Control_Panel``, this is not critical. All others need to be fixed."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:122
+msgid "Now you have a ZODB that is ready to be opened under Python 3 for the remaining steps."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:127
+msgid "Going from Python 2 to Python 3"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:129
+msgid "Prepare a Python 3 environment, containing:"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:131
+msgid "Zope 4 (latest),"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:132
+msgid "all relevant applications and addons for your ZODB, (make sure they are compatible with Python 3)"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:134
+msgid "`zodbupdate <https://pypi.org/project/zodbupdate/>`_"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:137
+msgid "Prepare a Zope configuration"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:147
+msgid "make sure the Zope instance(s) and ZEO server that serves your ZODB are shut down"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:150
+msgid "to prevent any compatibility issues with the ZODB index files created under Python 2, remove ``Data.fs.index`` before proceeding."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:153
+msgid "run the ZODB conversion. Please note that you cannot use ``-n`` to use the nondestructive ``--dry-run`` mode at this moment, but the actual conversion works: ``bin/zodbupdate --pack -f var/filestorage/Data.fs --convert-py3 --encoding utf-8 --encoding-fallback latin1``"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:158
+msgid "Verify the ZODB by iterative loading every pickle using ``bin/zodbverify -f path/to/Data.fs``"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:161
+msgid "Start the Application using ``bin/runwsgi etc/zope.ini`` or ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the instance configuration."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:165
+msgid "Verify that the Application works as expected."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:167
+msgid "If your application uses the ZCatalog and there are problems with any of them, do a clear and rebuild."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:172
+msgid "Finding broken scripts and templates"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:174
+msgid "You can find most scripts and templates that no longer compile under Python 3 by visiting the ZMI edit tabs, where you will see error messages for e.g. syntax errors. Page Templates that have Python expressions embedded can only be diagnosed at run time with manual site testing."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:179
+msgid "The ZMI edit tab method can be scripted as well by emulating what happens behind the scenes. You can write a script that uses e.g. ``ZopeFind`` to find objects of those script-like types and then calling the methods that attempt to compile the script content, such as..."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:184
+msgid "``pt_macros()`` for Page Templates, which will store errors in an attribute ``_v_errors`` that you can read out"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:186
+msgid "``_compile()`` on Python Scripts that will store errors in an attribute ``errors`` that you can read out, or the call will directly raise a ``SyntaxError``"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:189
+msgid "``template.cook()`` for Z SQL Methods, which will raise an exception of type ``DocumentTemplate.DT_Util.ParseError`` if there are problems"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:191
+msgid "``cook()`` for DTML Methods and DTML Documents, which will raise an exception of type ``DocumentTemplate.DT_Util.ParseError`` if there are problems"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:196
+msgid "If you encounter ``UnicodeDecodeError`` exceptions"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:198
+msgid "If ``zodbupdate`` or the Application raises a ``UnicodeDecodeError`` after startup, there are several things to consider:"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:201
+msgid "If the error happens on an object of a Product that is not migrated yet, you can add an ``entry_point`` in ``setup.py`` for the package containing the persistent Python classes. The entry point has to be named ``\"zodbupdate.decode\"`` and needs to point to a dictionary mapping paths to ``str`` attributes to a conversion (``binary`` resp. a specific encoding). For details, see `zodbupdate documentation and <https://github.com/zopefoundation/zodbupdate/blob/master/README.rst>`__ or `a code example in PythonScripts <https://github.com/zopefoundation/Products.PythonScripts/pull/19/files>`__."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:214
+msgid "Under the hood: Changes in ZODB storage on Python 3"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:216
+msgid "This section provides deeper technical detail about how the move to Python 3 affects the ZODB."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:220
+msgid "The string problem"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:222
+msgid "A ZODB ``Data.fs`` which was created under Python 2 cannot be opened under Python 3. This is prevented by using a different magic code in the first bytes of the file. This is done on purpose because ``str`` has a different meaning for the two Python versions: Under Python 2, a ``str`` is a container for characters with an arbitrary encoding (aka ``bytes​``). Python 3 knows ``str`` as a text datatype which was called ``unicode`` in Python 2."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:231
+msgid "Trying to load a ``str`` object in Python 3 which actually contains binary data will fail. It has to be bytes, but ``bytes`` is an alias for ``str`` in Python 2. This means Python 2 replaces ``bytes`` with ``str``, making it impossible to give Python 3 the class it expects for binary data. A Python 2 ``str`` with any non-ascii characters will break, too."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:238
+msgid "For more details, read the `Saltlab-Sprint notes from Harald Frisnegger <https://github.com/frisi/coredev52multipy/blob/3e440d6bd918adba3e6f2557f7281ce448a9c3cc/README.rst>`_"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:242
+msgid "The string solution"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:244
+msgid "The ``Data.fs`` has to be migrated: each ``str`` which actually contains ``bytes`` has to be converted into a ``zodbpickle.binary`` object which deserialises as ``bytes`` under Python 3. The ``str`` objects actually containing text have to be decoded to ``str`` (known as ``unicode`` in Python 2)."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:252
+msgid "The code problem"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:254
+msgid "Python 3 is not backwards-compatible to Python 2 in terms of its syntax, which is a problem for ``Persistent`` objects in the ZODB containing Python code. This is problem might arise with ``PythonScript`` objects, and ``TAL`` or ``DTML`` templates that contain Python statements or expressions."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:262
+msgid "The code solution"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:264
+msgid "There are several tools that help with getting your code ready for Python 3, especially in large code bases:"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:267
+msgid "`2to3 <https://docs.python.org/2/library/2to3.html>`__ comes with modern Python distributions preinstalled and can be used to convert either extracted code in files or directly on the ZODB through a custom script."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:270
+msgid "`gocept.template_rewrite <https://github.com/gocept/gocept.template_rewrite>`__ can extract and rewrite code parts of template files (DTML, ZPT)."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:272
+msgid "`zodbsync <https://github.com/perfact/zodbsync>`__ is a tool to serialize ZODB objects and store them in a file system tree and restore ZODB them from the same structure."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:276
+msgid "The migration path heavily depends on your specific use case and can range from manually finding, inspecting and fixing code objects to setting up a large, auditable and automated process. The tooling referenced above even allows users to extract code to a file system, convert it and restoring it back to the ZODB while keeping changes under version control."
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:284
+msgid "Further reading"
+msgstr ""
+
+#: ../../migrations/zope4/zodb.rst:286
+msgid "The Plone project documentation contains a section `Migrate a ZODB from Python 2.7 to Python 3 <https://github.com/plone/documentation/blob/5.2/manage/upgrading/version_specific_migration/upgrade_zodb_to_python3.rst>`_"
+msgstr ""
