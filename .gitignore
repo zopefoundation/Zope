@@ -2,6 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 *.dll
 *.egg-info/
+*.mo
 *.profraw
 *.pyc
 *.pyo
