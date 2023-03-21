@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zopebook/AppendixD.rst:2
+msgid "Appendix D: Zope Resources"
+msgstr ""
+
+#: ../../zopebook/includes/zope2_notice.rst:3
+msgid "This document was written for Zope 2."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:6
+msgid ""
+"At the time of this writing there is a multitude of sources for Zope "
+"information on the Internet and in print. We've collected a number of the"
+" most important links which you can use to find out more about Zope."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:11
+msgid "Zope Web Sites"
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:13
+msgid ""
+"`zope.dev <https://www.zope.dev>`_ is the official Zope website. It has "
+"downloads, documentation, news, and lots of community resources."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:17
+msgid "Zope Documentation"
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:19
+msgid ""
+"The main Zope documentation site is at https://zope.readthedocs.io/. It "
+"contains technical documentation as well as the `Zope Book "
+"<https://zope.readthedocs.io/en/latest/zopebook/index.html>`_ and the "
+"`Zope Developer's Guide "
+"<https://zope.readthedocs.io/en/latest/zdgbook/index.html>`_."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:25
+msgid "(Other) Zope Books"
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:27
+msgid ""
+"All of these books have been written for Zope version 2. Many concepts "
+"and examples still apply to Zope versions 4 and up."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:30
+msgid ""
+"`The Zope Bible <https://www.amazon.com/Zope-Bible-Michael-"
+"Bernstein/dp/0764548573/>`_ by Scott Robertson and Michael Bernstein, "
+"published April 2002."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:34
+msgid ""
+"`The Book of Zope <https://www.amazon.com/Book-Zope-"
+"Beehive/dp/1886411573/>`_ by Beehive, published November 2001."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:38
+msgid ""
+"`The Zope Web Application Construction Kit <https://www.amazon.com/Zope-"
+"Web-Application-Construction-Kit/dp/0672321335/>`_ edited by Martina "
+"Brockman, et. al., published October 2001."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:42
+msgid ""
+"`Zope: Web Application Development and Content Management "
+"<https://www.amazon.com/Zope-Application-Development-Management-"
+"Landmark/dp/0735711100/>`_ edited by Steve Spicklemire et al., published "
+"December 2001."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:46
+msgid ""
+"`Zope: Timely, Practical, Reliable "
+"<https://www.amazon.com/Zope/dp/0470844515/>`_ written by Pierre Julien "
+"Grizel."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:50
+msgid ""
+"`The Zope Book <https://www.amazon.com/Zope-Book-Amos-"
+"Latteier/dp/0735711372/>`_ is the hardcover version of the original "
+"edition Zope Book on which the first version of this text is based. The "
+"first edition was published in July 2001."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:57
+msgid "Mailing Lists"
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:59
+msgid ""
+"Zope mailing lists are managed at `mail.zope.dev "
+"<https://mail.zope.dev/>`_ ."
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:62
+msgid "Python Information"
+msgstr ""
+
+#: ../../zopebook/AppendixD.rst:64
+msgid ""
+"`Python.org <https://www.python.org>`_ has lots of information about "
+"Python including a tutorial and reference documentation."
+msgstr ""
+

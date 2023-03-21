@@ -1,0 +1,1717 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zdgbook/ObjectPublishing.rst:3
+msgid "Object Publishing"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:6
+msgid "Introduction"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:8
+msgid ""
+"Zope puts your objects on the web. This is called **object publishing**. "
+"One of Zope's unique characteristics is the way it allows you to walk up "
+"to your objects and call methods on them with simple URLs. In addition to"
+" HTTP, Zope makes your objects available via XML-RPC."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:14
+msgid ""
+"In this chapter you'll find out exactly how Zope publishes objects. "
+"You'll learn all you need to know in order to design your objects for web"
+" publishing."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:20
+msgid "HTTP Publishing"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:22
+msgid ""
+"Zope 4 no longer ships with a builtin web server, so when you want to "
+"interact with Zope via browser you have to setup a WSGI server."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:28
+msgid ""
+"For usage on a production server you will probably want to setup a "
+"reverse proxy in front of the WSGI server."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:32
+msgid ""
+"The WSGI server receives the request and hands it over to Zope, where it "
+"is processed by *ZPublisher*, which is Zope's object publisher. "
+"**ZPublisher** is a kind of light-weight ORB (Object Request Broker). It "
+"takes the request and locates an object to handle the request. The "
+"publisher uses the request URL as a map to locate the published object. "
+"Finding an object to handle the request is called **traversal**, since "
+"the publisher moves from object to object as it looks for the right one. "
+"Once the published object is found, the publisher calls a method on the "
+"published object, passing it parameters as necessary. The publisher uses "
+"information in the request to determine which method to call and what "
+"parameters to pass. The process of extracting parameters from the request"
+" is called **argument marshalling**. The published object then returns a "
+"response, which is passed back to the WSGI server. Finally, the WSGI "
+"server passes the response back to your web browser."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:49
+msgid "The publishing process is summarized in [2-1]"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:53
+msgid "2.1 Object publishing"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:56
+msgid ""
+"Typically the published object is a persistent object that the published "
+"module loads from the ZODB. See Chapter 6 for more information on the "
+"ZODB."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:61
+msgid "This chapter will cover all the steps of object publishing in detail."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:64
+msgid "To summarize, object publishing consists of the main steps:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:66
+msgid "A request is sent to the publisher."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:68
+msgid "The publisher locates the published object using the request URL as a map."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:71
+msgid "The publisher calls the published object with arguments from the request."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:74
+msgid "The publisher interprets the results and passes them back."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:76
+msgid ""
+"The chapter will also cover all the technical details, special cases and "
+"extra-steps that this list glosses over."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:81
+msgid "URL Traversal"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:83
+msgid ""
+"Traversal is the process the publisher uses to locate the published "
+"object. Typically the publisher locates the published object by walking "
+"along the URL. Take for example a collection of objects::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:104
+msgid ""
+"This collection of objects forms an object hierarchy. Using Zope you can "
+"publish objects with URLs. For example, the URL "
+"http://zope/vertebrates/mammals/monkey/screech will traverse the object "
+"hierarchy, find the *monkey* object and call its *screech* method."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:112
+msgid "2.2 Traversal path through an object hierarchy"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:114
+msgid ""
+"The publisher starts from the root object and takes each step in the URL "
+"as a key to locate the next object. It moves to the next object and "
+"continues to move from object to object using the URL as a guide."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:118
+msgid ""
+"Typically the next object is a sub-object of the current object that is "
+"named by the path segment. So in the example above, when the publisher "
+"gets to the *vertebrates* object, the next path segment is *mammals*, and"
+" this tells the publisher to look for a sub-object of the current object "
+"with that name. Traversal stops when Zope comes to the end of the URL. If"
+" the final object is found, then it is published, otherwise an error is "
+"returned."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:126
+msgid "Now let's take a closer look at traversal."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:130
+msgid "Publishable Object Requirements"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:132
+msgid ""
+"Zope has few restrictions on publishable objects. The basic rule is that "
+"the object must have a doc string. This requirement goes for methods, "
+"too."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:136
+msgid ""
+"Another requirement is that a publishable object must not have a name "
+"that begins with an underscore. These two restrictions are designed to "
+"keep private objects from being published."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:140
+msgid "Finally, published objects cannot be Python modules."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:144
+msgid "Traversal Methods"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:146
+msgid ""
+"During traversal, *ZPublisher* cuts the URL into path elements delimited "
+"by slashes, and uses each path element to traverse from the current "
+"object to the next object. *ZPublisher* locates the next object in one of"
+" three ways:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:151
+msgid "Using ``__bobo_traverse__``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:153
+msgid "Using ``getattr``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:155
+msgid "Using dictionary access."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:157
+msgid ""
+"First, the publisher attempts to call the traversal hook method "
+"``__bobo_traverse__``. If the current object has this method it is called"
+" with the request and the current path element. The method should return "
+"the next object or ``None`` to indicate that a next object can't be "
+"found. You can also return a tuple of objects from ``__bobo_traverse__`` "
+"indicating a sequence of sub-objects. This allows you to add additional "
+"parent objects into the request. This is almost never necessary."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:167
+msgid "Here's an example of how to use ``__bobo_traverse__``::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:176
+msgid ""
+"This example shows how you can examine the request during the traversal "
+"process."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:179
+msgid ""
+"If the current object does not define a ``__bobo_traverse__`` method, "
+"then the next object is searched for using ``getattr``. This locates "
+"subobjects in the normal Python sense."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:183
+msgid ""
+"If the next object can't be found with ``getattr``, *ZPublisher* calls on"
+" the current object as though it were a dictionary. Note: the path "
+"element will be a string, not an integer, so you cannot traverse "
+"sequences using index numbers in the URL."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:188
+msgid ""
+"For example, suppose ``a`` is the current object, and ``next`` is the "
+"name of the path element. Here are the three things that *ZPublisher* "
+"will try in order to find the next object:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:192
+msgid "``a.__bobo_traverse__(\"next\")``"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:194
+msgid "``a.next``"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:196
+msgid "``a[\"next\"]``"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:200
+msgid "Publishing Methods"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:202
+msgid ""
+"Once the published object is located with traversal, Zope *publishes* it "
+"in one of three possible ways:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:205
+msgid ""
+"Calling the published object -- If the published object is a function or "
+"method or other callable object, the publisher calls it. Later in the "
+"chapter you'll find out how the publisher figures out what arguments to "
+"pass when calling."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:210
+msgid ""
+"Calling the default method -- If the published object is not callable, "
+"the publisher uses the default method. For HTTP *GET* and *POST* requests"
+" the default method is 'index_html'. For other HTTP requests such as "
+"*PUT* the publisher looks for a method named by the HTTP method. So for "
+"an HTTP *HEAD* request, the publisher would call the *HEAD* method on the"
+" published object."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:217
+msgid ""
+"Stringifying the published object -- If the published object isn't "
+"callable, and doesn't have a default method, the publisher publishes it "
+"using the Python ``str`` function to turn it into a string."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:223
+msgid ""
+"After the response method has been determined and called, the publisher "
+"must interpret the results."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:228
+msgid "Character Encodings for Responses"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:230
+msgid ""
+"If the published method returns an object of type *binary*, the publisher"
+" will use it directly as the body of the response."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:233
+msgid ""
+"Things are different if the published method returns a unicode string, "
+"because the publisher has to apply some character encoding. The published"
+" method can choose which character encoding it uses by setting a "
+"*Content-Type* response header which includes a *charset* property "
+"(setting response headers is explained later in this chapter). A common "
+"choice of character encoding is UTF-8, which is also the default "
+"encoding."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:241
+msgid ""
+"If the *Content-Type* header does not include a charset or is not set at "
+"all, the default encoding is set."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:244
+msgid ""
+"If you want to manually set a *Content-Type* header you have to set a "
+"value like ``text/html; charset=UTF-8``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:249
+msgid "HTTP Responses"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:251
+msgid ""
+"Usually, the published method returns a string which is considered the "
+"body of the HTTP response. The response headers can be controlled by "
+"calling methods on the response object, which is described later in the "
+"chapter."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:258
+msgid ""
+"When the return value is empty, e.g. an empty list, instead of returning "
+"an empty page, Zope issues a header with a 204 status code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:261
+msgid "Depending on the used client, it looks like nothing happens."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:266
+msgid "Controlling Base HREF"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:268
+msgid ""
+"When you publish an object that returns HTML relative links should allow "
+"you to navigate between methods."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:271
+msgid "Consider this example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:295
+msgid ""
+"However, the default method ``index_html`` presents a problem. Since you "
+"can access ``index_html`` without specifying the method name in the URL, "
+"relative links returned by ``index_html`` won't work right."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:299
+#: ../../zdgbook/ObjectPublishing.rst:401
+#: ../../zdgbook/ObjectPublishing.rst:557
+#: ../../zdgbook/ObjectPublishing.rst:1297
+msgid "For example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:315
+msgid ""
+"If you publish an instance of the *Example* class with the URL "
+"'http://zope/example', then the relative link to method ``one`` will be "
+"'http://zope/one', instead of the correct link, "
+"'http://zope/example/one'."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:321
+msgid ""
+"Zope solves this problem for you by inserting a *base* tag between the "
+"*head* tags in the HTML output of ``index_html`` when it is accessed as "
+"the default method. You will probably never notice this, but if you see a"
+" mysterious *base* tag in your HTML output, you know where it came from. "
+"You can avoid this behavior by manually setting your own base with a "
+"*base* tag in your ``index_html`` method output."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:330
+msgid "Response Headers"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:332
+msgid ""
+"The publisher and the web server take care of setting response headers "
+"such as *Content-Length* and *Content-Type*. Later in the chapter you'll "
+"find out how to control these headers and also how exceptions are used to"
+" set the HTTP response code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:339
+msgid "Pre-Traversal Hook"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:341
+msgid ""
+"The pre-traversal hook allows your objects to take special action before "
+"they are traversed. This is useful for doing things like changing the "
+"request. Applications of this include special authentication controls and"
+" virtual hosting support."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:346
+msgid ""
+"If your object has a method named ``__before_publishing_traverse__``, the"
+" publisher will call it with the current object and the request before "
+"traversing your object. Most often your method will change the request. "
+"The publisher ignores anything you return from the pre-traversal hook "
+"method."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:352
+msgid ""
+"The ``ZPublisher.BeforeTraverse`` module contains some functions that "
+"help you register pre-traversal callbacks. This allows you to perform "
+"fairly complex callbacks to multiple objects when a given object is about"
+" to be traversed."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:359
+msgid "Traversal and Acquisition"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:363
+msgid ""
+"Simply put, acquisition means that a Zope object can acquire any "
+"attribute of its parents."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:366
+msgid "For detailed information about acquisition please refer to chapter 7."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:368
+msgid ""
+"Acquisition affects traversal in several ways. The most obvious way is in"
+" locating the next object in a path. As we discussed earlier, the next "
+"object during traversal is often found using ``getattr``. Since "
+"acquisition affects ``getattr``, it will affect traversal. The upshot is "
+"that when you are traversing objects that support implicit acquisition, "
+"you can use traversal to walk over acquired objects."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:375
+msgid "Consider the the following object hierarchy::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:388
+msgid ""
+"When publishing these objects, acquisition can come into play. For "
+"example, consider the URL */fruit/apple/orange*. The publisher would "
+"traverse from *fruit*, to *apple*, and then using acquisition, it would "
+"traverse to *orange*."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:393
+msgid ""
+"Mixing acquisition and traversal can get complex. In general you should "
+"limit yourself to constructing URLs which use acquisition to acquire "
+"along containment, rather than context lines."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:397
+msgid ""
+"It's reasonable to publish an object or method that you acquire from your"
+" container, but it's probably a bad idea to publish an object or method "
+"that your acquire from outside your container."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:425
+msgid ""
+"The URL */basket/apple/number_of_items* uses acquisition along "
+"containment lines to publish the ``number_of_items`` method (assuming "
+"that *apple* doesn't have a ``number_of_items`` attribute). However, the "
+"URL */basket/carrot/apple/texture* uses acquisition to locate the "
+"``texture`` method from the *apple* object's context, rather than from "
+"its container. While this distinction may be obscure, the guiding idea is"
+" to keep URLs as simple as possible. By keeping acquisition simple and "
+"along containment lines your application increases in clarity, and "
+"decreases in fragility."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:435
+msgid ""
+"A second usage of acquisition in traversal concerns the request. The "
+"publisher tries to make the request available to the published object via"
+" acquisition. It does this by wrapping the first object in an acquisition"
+" wrapper that allows it to acquire the request with the name 'REQUEST'."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:441
+msgid ""
+"This means that you can normally acquire the request in the published "
+"object like so::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:446
+msgid "or like so::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:450
+msgid ""
+"Of course, this will not work if your objects do not support acquisition,"
+" or if any traversed objects have an attribute named 'REQUEST'."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:454
+msgid ""
+"Finally, acquisition has a totally different role in object publishing "
+"related to security which we'll examine next."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:459
+msgid "Traversal and Security"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:461
+msgid ""
+"As the publisher moves from object to object during traversal it makes "
+"security checks. The current user must be authorized to access each "
+"object along the traversal path. The publisher controls access in a "
+"number of ways. For more information about Zope security, see chapter 8 "
+"\"Security\"."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:469
+msgid "Basic Publisher Security"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:471
+msgid ""
+"The publisher imposes a few basic restrictions on traversable objects. "
+"These restrictions are the same of those for publishable objects. As "
+"previously stated, publishable objects must have doc strings and must not"
+" have names beginning with underscore."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:476
+msgid ""
+"The following details are not important if you are using the Zope "
+"framework. However, if your are publishing your own modules, the rest of "
+"this section will be helpful."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:480
+msgid ""
+"The publisher checks authorization by examining the ``__roles__`` "
+"attribute of each object as it performs traversal. If present, the "
+"``__roles__`` attribute should be ``None`` or a list of role names. If it"
+" is ``None``, the object is considered public. Otherwise the access to "
+"the object requires validation."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:486
+msgid ""
+"Some objects such as functions and methods historically did not support "
+"creating attributes. Consequently, if the object has no ``__roles__`` "
+"attribute, the publisher will look for an attribute on the object's "
+"parent with the name of the object followed by ``__roles__``. For "
+"example, a function named ``getInfo`` would store its roles in its "
+"parent's ``getInfo__roles__`` attribute."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:493
+msgid ""
+"If an object has a ``__roles__`` attribute that is not empty and not "
+"``None``, the publisher tries to find a user database to authenticate the"
+" user. It searches for user databases by looking for an "
+"``__allow_groups__`` attribute, first in the published object, then in "
+"the previously traversed object, and so on until a user database is "
+"found."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:500
+msgid ""
+"When a user database is found, the publisher attempts to validate the "
+"user against the user database. If validation fails, then the publisher "
+"will continue searching for user databases until the user can be "
+"validated or until no more user databases can be found."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:505
+msgid "The user database may be an object that provides a validate method::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:510
+msgid ""
+"where ``request`` is a mapping object that contains request information, "
+"``http_authorization`` is the value of the *HTTP Authorization* header or"
+" ``None`` if no authorization header was provided, and ``roles`` is a "
+"list of user role names."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:515
+msgid ""
+"The validate method returns a user object if succeeds, and ``None`` if it"
+" cannot validate the user. See Chapter 8 for more information on user "
+"objects. Normally, if the validate method returns ``'None``, the "
+"publisher will try to use other user databases, however, a user database "
+"can prevent this by raising an exception."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:521
+msgid ""
+"If validation fails, Zope will return an HTTP header that causes your "
+"browser to display a user name and password dialog."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:524
+msgid ""
+"If validation succeeds the publisher assigns the user object to the "
+"request variable ``AUTHENTICATED_USER``. The publisher places no "
+"restrictions on user objects."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:530
+msgid "Zope Security"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:532
+msgid ""
+"The publisher uses acquisition to locate user folders and perform "
+"security checks. The upshot of this is that your published objects must "
+"inherit from ``Acquisition.Implicit`` or ``Acquisition.Explicit``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:539
+msgid ""
+"For more information on *Acquisition*, visit one of the following "
+"resources:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:542
+msgid "chapter 7 \"Acquisition\" of this Zope Developer's Guide"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:543
+msgid ""
+"chapter 8 `\"Acquisition\" "
+"<https://zope.readthedocs.io/en/latest/zopebook/Acquisition.html>`_ of "
+"*The Zope Book*"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:546
+msgid ""
+"the excellent `readme <https://github.com/zopefoundation/Acquisition>`__ "
+"of the \"Acquisition\" package"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:550
+msgid ""
+"Also, when traversing, each object must be returned in an acquisition "
+"context. This is done automatically when traversing via ``getattr``, but "
+"you must wrap traversed objects manually when using ``__getitem__`` and "
+"``__bobo_traverse__``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:568
+msgid ""
+"Finally, traversal security can be circumvented with the "
+"``__allow_access_to_unprotected_subobjects__`` attribute as described in "
+"Chapter 8, \"Security\"."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:574
+msgid "Calling the Published Object"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:576
+msgid ""
+"The publisher marshals arguments from the request and automatically makes"
+" them available to the published object. This allows you to accept "
+"parameters from web forms without having to parse the forms. Your objects"
+" usually don't have to do anything special to be called from the web."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:583
+msgid "Consider this function::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:589
+msgid ""
+"You can provide the ``name`` argument to this function by calling it with"
+" a **URL** like ``greet?name=World``. You can also call it with a **HTTP "
+"POST request** which includes ``name`` as a form variable."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:593
+msgid ""
+"In the next sections we'll take a closer look at how the publisher "
+"marshals arguments."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:598
+msgid "Marshalling Arguments from the Request"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:600
+msgid ""
+"Zope responds to requests, specified via URL, request headers and an "
+"optional request body. A URL consists of various parts, among them a "
+"*path* and a *query*, see `RFC 2396 "
+"<https://www.ietf.org/rfc/rfc2396.txt>`_ for details."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:605
+msgid ""
+"Zope uses the *path* to locate an object, method or view for producing "
+"the response (this process is called *traversal*) and *query* - if "
+"present - as a specification for request parameters. Additionally, "
+"request parameters can come from the optional request body."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:611
+msgid ""
+"Zope preprocesses the incoming request information and makes the result "
+"available in the so called *request* object. This way, the response "
+"generation code can access all relevant request information in an easy "
+"and natural (pythonic) way. Preprocessing transforms the request "
+"*parameters* into request (or form) *variables*. They are made available "
+"via the request object's ``form`` attribute (a ``dict``) or directly via "
+"the request object itself, as long as they are not hidden by other "
+"request information."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:621
+msgid ""
+"The request parameters coming from the *query* have the form *name*\\ "
+"``=``\\ *value* and are separated by ``&``; request parameters from a "
+"request body can have different forms and can be separated in different "
+"ways dependent on the request ``Content-Type``, but they, too, have a "
+"*name* and a *value*."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:627
+msgid ""
+"All request parameter names and values are strings. A parameter value, "
+"however, often designates a value of a specific type, e.g. an integer or "
+"a datetime. The response generating code can be simplified significantly "
+"when it does not need to make the type conversion itself. In addition, in"
+" some cases the request parameters are not independent from one another "
+"but related. In those cases it can help if the related parameters are "
+"aggregated into a single object. Zope supports both cases but it needs "
+"directives to guide the process. It uses *name* suffixes of the form "
+"``:``\\ *directive* to specify such directives. For example, the "
+"parameter ``i:int=1`` tells Zope to convert the value ``'1'`` to an "
+"integer and use it as value for request variable ``i``; the parameter "
+"sequence ``x.name:record=Peter&x.age:int:record=10`` tells Zope to "
+"construct a record ``x`` with attributes ``name`` and ``age`` and "
+"respective values ``'Peter'`` and ``10``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:643
+msgid ""
+"The publisher also marshals arguments from CGI environment variables and "
+"cookies. When locating arguments, the publisher first looks in other "
+"(i.e. explicitly set or special) request variables, then CGI environment "
+"variables, then form variables, and finally cookies. Once a variable is "
+"found, no further searching is done. So for example, if your published "
+"object expects to be called with a form variable named ``SERVER_URL``, it"
+" will fail, since this argument will be marshalled from the CGI "
+"environment first, before the form data."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:653
+msgid ""
+"The publisher provides a number of additional special variables such as "
+"``URL``, ``URLn``, ``BASEn`` and others, which are derived from the "
+"request."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:657
+msgid "Unfortunately, there is no current documentation for those variables."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:661
+msgid "Argument Conversion"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:663
+msgid ""
+"The publisher supports argument conversion. For example consider this "
+"function::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:670
+msgid ""
+"This function cannot be called from the web because by default the "
+"publisher marshals arguments into strings, not numbers. This is why the "
+"publisher provides a number of converters. To signal an argument "
+"conversion you name your form variables with a colon followed by a type "
+"conversion code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:676
+msgid ""
+"For example, to call the above function with 66 as the argument you can "
+"use this URL ``one_third?number:int=66``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:679
+msgid ""
+"Some converters employ special logic for the conversion. For example, "
+"both ``tokens`` as well as ``lines`` convert to a list of strings but "
+"``tokens`` splits the input at whitespace, ``lines`` at newlines."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:684
+msgid "The publisher supports many converters:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:686
+msgid ""
+"**boolean** -- Converts a variable to ``True`` or ``False``. Variables "
+"that are  0, None, an empty string, or an empty sequence are ``False``, "
+"all others are ``True``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:690
+msgid ""
+"**int** -- Converts a variable to a Python integer. Also converts a "
+"list/tuple of variables to a list/tuple of integers."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:693
+msgid ""
+"**long** -- Converts a variable to a Python integer. Strips the trailing "
+"\"L\" symbol at the end of the value. Also converts a list/tuple of "
+"variables to a list/tuple of integers."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:697
+msgid ""
+"**float** -- Converts a variable to a Python floating point number. Also "
+"converts a list/tuple of variables to a list/tuple of floats."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:700
+msgid ""
+"**string** -- Converts a variable to a native string. So the result is "
+"``str``, no matter which Python version you are on."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:703
+msgid "**ustring** -- Converts a variable to a Python unicode string."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:705
+msgid "**bytes** -- Converts a variable to a Python bytes object/string."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:707
+msgid ""
+"**required** -- Raises an exception if the variable is not present or is "
+"an empty string."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:710
+msgid ""
+"**date** -- Converts a string to a **DateTime** object. The formats "
+"accepted are fairly flexible, for example ``10/16/2000``, ``12:01:13 "
+"pm``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:714
+msgid ""
+"**date_international** -- Converts a string to a **DateTime** object, but"
+" especially treats ambiguous dates as \"days before month before year\". "
+"This useful if you need to parse non-US dates."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:718
+msgid ""
+"**lines** -- Converts a variable to a Python list of native strings by "
+"splitting the string on line breaks. Also converts list/tuple of "
+"variables to list/tuple of native strings."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:722
+msgid ""
+"**tokens** -- Converts a variable to a Python list of native strings by "
+"splitting the variable on whitespace."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:725
+msgid ""
+"**text** -- Converts a variable to a native string with normalized line "
+"breaks. Different browsers on various platforms encode line endings "
+"differently, so this converter makes sure the line endings are "
+"consistent, regardless of how they were encoded by the browser."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:730
+msgid ""
+"**ulines**, **utokens**, **utext** -- like **lines**, **tokens**, "
+"**text**, but always converts into unicode strings."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:734
+msgid ""
+"Please note that the above listed **unicode converters** are deprecated, "
+"and will be removed in Zope 6."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:737
+msgid ""
+"The full list of supported converters can be found in "
+"``ZPublisher.Converters.type_converters``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:740
+msgid ""
+"If the publisher cannot coerce a request parameter into the type required"
+" by the type converter it will raise an error. This is useful for simple "
+"applications, but restricts your ability to tailor error messages. If you"
+" wish to provide your own error messages, you should convert arguments "
+"manually in your published objects rather than relying on the publisher "
+"for coercion."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:748
+msgid ""
+"Client-side validation with HTML 5 and/or JavaScript may improve the "
+"usability of the application, but it is never a replacement for server "
+"side validation."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:752
+msgid ""
+"You can combine type converters to a limited extent. For example you "
+"could create a list of integers like so::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:761
+msgid "Create and register a custom converter"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:763
+msgid ""
+"If you need a custom converter, you can create one on your own and "
+"register it as follows::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:777
+msgid "Aggregators"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:779
+msgid ""
+"An aggregator directive tells Zope how to process parameters with the "
+"same or a similar name."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:782
+msgid "Zope supports the following aggregators:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:784
+msgid ""
+"**list** -- collect all values with this name into a list. If there are "
+"two or more parameters with the same name they are collected into a list "
+"by default. The ``list`` aggregator is mainly used to ensure that the "
+"parameter leads to a list value even in the case that there is only one "
+"of them."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:791
+msgid "**tuple** -- collect all values with this name into a tuple."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:793
+msgid ""
+"**default** -- use the value of this parameter as a default value; it can"
+" be overridden by a parameter of the same name without the ``default`` "
+"directive."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:797
+msgid ""
+"**record** -- this directive assumes that the parameter name starts with "
+"*var*\\ ``.``\\ *attr*. It tells Zope to create a request variable *var* "
+"of type record (more precisely, a ``ZPublisher.HTTPRequest.record`` "
+"instance) and set its attribute *attr* to the parameter value. If such a "
+"request variable already exists, then only its attribute *attr* is "
+"updated."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:805
+msgid ""
+"**records** -- this directive is similar to ``record``. However, *var* "
+"gets as value not a single record but a list of records. Zope starts a "
+"new record (and appends it to the list) when the current request "
+"parameter would override an attribute in the last record of the list "
+"constructed so far (or this list is empty)."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:812
+msgid ""
+"**ignore_empty** -- this directive causes Zope to ignore the parameter if"
+" its value is empty."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:817
+msgid "An aggregator in detail: the `record` argument"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:819
+msgid ""
+"Sometimes you may wish to consolidate form data into a structure rather "
+"than pass arguments individually. **Record arguments** allow you to do "
+"this."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:823
+msgid ""
+"The ``record`` type converter allows you to combine multiple form "
+"variables into a single input variable. For example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:830
+msgid ""
+"This form will result in a single variable, ``date``, with the attributes"
+" ``year``, ``month``, and ``day``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:833
+msgid ""
+"You can skip empty record elements with the ``ignore_empty`` converter. "
+"For example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:838
+msgid ""
+"When the email form field is left blank the publisher skips over the "
+"variable rather than returning an empty string as its value. When the "
+"record ``person`` is returned it will not have an ``email`` attribute if "
+"the user did not enter one."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:843
+msgid ""
+"You can also provide default values for record elements with the "
+"``default`` converter. For example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:857
+msgid ""
+"The ``default`` type allows a specified value to be inserted when the "
+"form field is left blank. In the above example, if the user does not "
+"select values from the list of toppings, the default value will be used. "
+"The record ``pizza`` will have the attribute ``toppings`` and its value "
+"will be the list containing the word \"All\" (if the field is empty) or a"
+" list containing the selected toppings."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:864
+msgid ""
+"You can even marshal large amounts of form data into multiple records "
+"with the ``records`` type converter. Here's an example::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:883
+msgid ""
+"This form data will be marshalled into a list of records named "
+"``members``. Each record will have a ``name``, ``email``, and ``age`` "
+"attribute."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:887
+msgid ""
+"Record marshalling provides you with the ability to create complex forms."
+" However, it is a good idea to keep your web interfaces as simple as "
+"possible."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:893
+msgid ""
+"Records do not work with input fields of type radio as you might expect, "
+"as all radio fields with the same name are considered as one group - even"
+" if they are in different records. That means, activating one radio "
+"button will also deactivate all other radio buttons from the other "
+"records."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:901
+msgid ""
+"When using records please note that there is a known issue when you use a"
+" form, where checkboxes are used in the first \"column\"."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:904
+msgid ""
+"As browsers leave out empty checkboxes when sending a request, the "
+"**object publisher** may not be able to match checked checkboxes with the"
+" correct record."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:908
+msgid "This behaviour cannot not be fixed."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:910
+msgid ""
+"If you want a checkbox as the first form field, you can work around the "
+"problem by using a hidden input field."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:913
+msgid "**Code example with applied workaround**::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:930
+msgid "Specifying argument character encodings"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:932
+msgid ""
+"An encoding directive tells the converting process the encoding of the "
+"parameter value. Typical encodings are e.g. \"utf8\" or  \"latin1\"."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:935
+msgid ""
+"An encoding directive is ignored if the parameter does not have a "
+"converter directive as well. If there is no encoding directive, the "
+"converter uses the default encoding as specified by the Zope "
+"configuration option ``zpublisher-default-encoding``. The default value "
+"for this configuration option in Zope 4 is ``utf-8``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:942
+msgid ""
+"In principle, Zope supports any encoding known by the ``codecs`` module. "
+"However, the converter may impose restrictions."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:946
+msgid "**Special cases**"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:948
+msgid ""
+"If your pages use a different encoding, such as ``Windows-1252`` or "
+"``ISO-8859-1``, which was the default encoding for HTML 4, you have to "
+"add the encoding, eg ``:cp1252``, for all argument type converts, such as"
+" follows::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:959
+msgid "For a full list of supported encodings, please have a look at:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:961
+msgid "https://docs.python.org/3.7/library/codecs.html#standard-encodings"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:963
+msgid ""
+"If your pages all use a character encoding which has ASCII as a subset, "
+"such as Latin-1, UTF-8, etc., then you do not need to specify any "
+"character encoding for boolean, int, long, float and date types."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:969
+msgid ""
+"The **form submission encoding** can be overridden by the ``accept-"
+"charset`` attribute of the ``form`` tag:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:972
+msgid ""
+"https://www.w3.org/TR/html5/sec-forms.html#selecting-a-form-submission-"
+"encoding"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:976
+msgid "Method Arguments"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:978
+msgid ""
+"Normally, a request parameter is transformed into a request variable and "
+"made available via the ``form`` attribute of the request object. The "
+"*method* directive tells Zope to extend the path used for traversal."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:982
+msgid ""
+"You can use a `method` directive to control which object is published "
+"based on form data. For example, you might want to have a form with a "
+"select list that calls different methods depending on the item chosen. "
+"Similarly, you might want to have multiple submit buttons which invoke a "
+"different method for each button."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:988
+msgid ""
+"The publisher provides a way to select methods using form variables "
+"through the use of the ``method`` argument type. The method type allows "
+"the request variable ``PATH_INFO`` to be augmented using information from"
+" a form item's name or value."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:993
+msgid ""
+"If the name of a form field is ``:method``, then the value of the field "
+"is added to ``PATH_INFO``. For example, if the original ``PATH_INFO`` is "
+"``foo/bar`` and the value of a ``:method`` field is ``x/y``, then "
+"``PATH_INFO`` is transformed to ``foo/bar/x/y``. This is useful when "
+"presenting a select list. Method names can be placed in the select option"
+" values."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1000
+msgid ""
+"If the name of a form field **ends** in ``:method`` then the part of the "
+"name before ``:method`` is added to ``PATH_INFO``. For example, if the "
+"original ``PATH_INFO`` is ``foo/bar`` and there is a ``x/y:method`` "
+"field, then ``PATH_INFO`` is transformed to ``foo/bar/x/y``. In this "
+"case, the form value is ignored. This is useful for mapping submit "
+"buttons to methods, since submit button values are displayed and should "
+"therefore not contain method names."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1008
+msgid ""
+"Zope supports the following method directives: ``method`` (synonym "
+"``action``), and ``default_method`` (synonym ``default_action``). A path "
+"extension specified by a ``default_method`` directive is overridden by a "
+"``method`` directive."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1015
+msgid "Processing model for request data marshaling"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1016
+msgid ""
+"Zope processes the request parameters in "
+"``ZPublisher.HTTPRequest.HTTPRequest.processInputs``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1019
+msgid ""
+"This section describes the complex processing model in some detail as its"
+" various steps and peculiar logic may lead to surprises. If you are "
+"developing `with` Zope as opposed to developing Zope itelf, you may skip "
+"over these details."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1024
+msgid ""
+"In a preliminary step the request parameters are collected from the "
+"potential sources, i.e. the \"query\" and request body (if present), and "
+"normalized. The result is a sequence of name/value pairs, each describing"
+" a single request parameter."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1029
+msgid "Zope then sets up some variables:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1032
+msgid "form"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1032
+msgid "as target for the collected form variables"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1035
+msgid "defaults"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1035
+msgid "as target for the collected form variable defaults"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1038
+msgid "tuple_items"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1038
+msgid "to remember which form variable should be tuples"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1041
+msgid "method"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1041
+msgid "as target for the path extension from method directives."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1043
+msgid "It then loops over the request parameter sequence."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1046
+msgid ""
+"For each request parameter, the processing consists of the following "
+"steps:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1048
+msgid "Some variables are set up:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1051
+msgid "isFileUpload"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1051
+msgid "does the parameter represent an uploaded file?"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1054
+msgid "converter_type"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1054
+msgid "the most recently seen converter from a converter directive"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1057
+msgid "character_encoding"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1057
+msgid "the most recently seen encoding from an encoding directive"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1064
+msgid "flags"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1060
+msgid "to indicate which processing types are requested via directives"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1062
+msgid ""
+"Processing types are \"ignore\", \"aggregate as sequence\", \"aggregate "
+"as record\", \"aggregate as records\", \"use as default\", \"convert\" "
+"(using ``converter_type`` and ``character_encoding``)."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1066
+msgid ""
+"The parameter value is checked to see if it is a file upload. In this "
+"case, it is wrapped into a ``FileUpload``, and ``isFileUpload`` is "
+"updated."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1070
+msgid ""
+"All directives in the paramter name are examined from right to left and "
+"the variables set up in step 1 are updated accordingly. ``:tuple`` "
+"directives update ``flags`` and ``tuple_items``, and method directives "
+"update ``flags`` and ``method``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1075
+msgid "The actions stored in ``flags`` during step 3 are executed."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1077
+msgid ""
+"If ``flags`` indicate the use as default, the step operates on "
+"``defaults``, otherwise on ``form``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1080
+msgid ""
+"After all request parameters have been processed request variables from "
+"``defaults`` are put into ``form`` as long as it does not contain that "
+"variable already. If a method directive has been encountered the "
+"traversal path is extended accordingly."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1086
+msgid ""
+"As a security measure, mainly for DTML use, request variables are not "
+"only made available in the request attribute ``form``. A (somewhat) "
+"secured version of them is also stored in the attribute ``taintedform``. "
+"In the *tainted* request variable variant, strings potentially containing"
+" HTML fragments use ``TaintedString`` as data type rather than the normal"
+" ``str``. DTML will automatically quote those values to give some "
+"protection against cross site scripting attacks via HTML injection. With "
+"the more modern page templates, all values (not only tainted ones) are "
+"quoted by default. They typically do not use the tainted form of the "
+"request variables."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1099
+msgid "Known issues and caveats"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1101
+msgid "There is almost no error handling:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1103
+msgid "unrecognized directives are silently ignored"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1105
+msgid ""
+"if a request parameter contains several converter directives, the "
+"leftmost wins"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1108
+msgid ""
+"if a request paramter contains several encoding directives, the leftmost "
+"wins"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1111
+msgid ""
+"if a request parameter contains an encoding but no converter directive, "
+"the encoding directive is silently ignored"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1114
+msgid ""
+"some directive combinations do not make sense (e.g. ``:record:records``);"
+" for them, some of the directives are silently ignored"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1117
+msgid ""
+"Usually, the order of aggregator directives in a request parameter does "
+"not matter. However, this is not the case for the ``:tuple`` directive. "
+"To really produce a tuple request variable, it must be the left most "
+"directive; otherwise, it is equivalent to ``:list``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1122
+msgid ""
+"In addition, ``:tuple`` is always equivalent to ``:list`` for request "
+"variables aggregated as record or sequence of records."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1125
+msgid ""
+"The main use case for the ``:default`` directive is to provide a default "
+"value for form controls (e.g. checkboxes) for which the browser may or "
+"may not pass on a value when the form is submitted. Unfortunately, this "
+"only works at the top level. It does not work for subcomponents, e.g. an "
+"attribute of a \"record\". As a consequence, if a request parameter "
+"combines ``:default`` with another aggregator directive, the result may "
+"be unexpected."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1133
+msgid ""
+"The request preprocessing happens at a very early stage, before traversal"
+" has taken place. As a consequence, important configuration for "
+"application specific error handling may not yet have taken effect. "
+"Exceptions raised during this stage are reported and tracked only via "
+"\"root level\" error handling. For the reason it is typically better to "
+"use a form framework such as ``z3c.form`` or ``zope.formlib`` for form "
+"processing rather than the built-in features described in this document."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1144
+msgid "Exceptions"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1146
+msgid ""
+"When the object publisher catches an unhandled exception, it tries to "
+"match it with a set of predefined exceptions coming from the "
+"**zExceptions** package, such as **HTTPNoContent**, **HTTPNotFound**, "
+"**HTTPUnauthorized**."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1151
+msgid ""
+"If there is a match, the exception gets upgraded to the matching "
+"**zException**, which then results in a proper response returned to the "
+"browser, including an appropriate HTTP status code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1157
+msgid ""
+"For a full list of exceptions please directly refer to the implemented "
+"exception classes within the `zExceptions package "
+"<https://github.com/zopefoundation/zExceptions/blob/master/src/zExceptions/__init__.py>`_."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1165
+msgid ""
+"When you create a custom exception, please make sure not to inherit from "
+"**BaseException**, but from **Exception** or one of its child classes, "
+"otherwise you'll run into an exception in waitress."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1171
+msgid ""
+"Beginning with Zope 4, a standard installation no longer comes with a "
+"``standard_error_message``."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1174
+msgid "There are two ways to catch and render an exception:"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1176
+msgid ""
+"create a ``standard_error_message``, which can be a **DTML Method**, "
+"**DTML Document**, **Script (Python)** or **Page Template**"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1177
+msgid ""
+"create an ``exception view``, see blog post `Catching and rendering "
+"exceptions <https://blog.gocept.com/2017/10/24/zope4-errorhandling/>`_"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1179
+msgid "If the exception is not handled, it travels up the WSGI stack."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1181
+msgid ""
+"What happens then depends entirely on the possibly installed WSGI "
+"middleware or the WSGI server. By default Zope uses **waitress** and by "
+"default **waitress** returns an error message as follows::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1191
+msgid "**Further information:**"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1193
+msgid ""
+"`Debugging Zope applications under WSGI "
+"<https://zope.readthedocs.io/en/latest/operation.html#debugging-zope-"
+"applications-under-wsgi>`_"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1198
+msgid "Exceptions and Transactions"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1200
+msgid ""
+"When Zope receives a request it begins a transaction. Then it begins the "
+"process of traversal. Zope automatically commits the transaction after "
+"the published object is found and called. So normally each web request "
+"constitutes one transaction which Zope takes care of for you."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1205
+msgid ""
+"If an unhandled exception is raised during the publishing process, Zope "
+"aborts the transaction. When a **ConflictError** occurs, Zope retries the"
+" request up to three times by default. You can change that number in the "
+"**zope.conf** by adding a ``max_conflict_retries`` directive."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1213
+msgid ""
+"For further information on transactions please refer to chapter 6 `ZODB "
+"Persistent Components "
+"<https://zope.readthedocs.io/en/latest/zdgbook/ZODBPersistentComponents.html>`_."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1218
+msgid "Manual Access to Request and Response"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1220
+msgid ""
+"Normally published objects access the request and response by listing "
+"them in the signature of the published method. If this is not possible "
+"you can usually use acquisition to get a reference to the request. Once "
+"you have the request, you can always get the response from the request "
+"like so::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1228
+msgid "The APIs of request and response can be looked up in the source code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1230
+msgid ""
+"We'll look at a few common uses of the request and response. If you need "
+"access to the complete API, please directly refer to the source code."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1234
+msgid ""
+"One reason to access the request is to get more precise information about"
+" form data. As we mentioned earlier, argument marshalling comes from a "
+"number of places including cookies, form data, and the CGI environment. "
+"For example, you can use the request to differentiate between form and "
+"cookie data::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1243
+msgid ""
+"One common use of the response object is to set response headers. "
+"Normally the publisher in concert with the web server will take care of "
+"response headers for you. However, sometimes you may wish manually "
+"control headers::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1250
+msgid ""
+"Another reason to access the response is to stream response data. You can"
+" do this with the ``write`` method::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1259
+msgid ""
+"Here's a final example that shows how to detect if your method is being "
+"called from the web. Consider this function::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1270
+msgid ""
+"The ``calculate`` function can be called from Python, and also from the "
+"web. By including ``REQUEST=None`` in the signature you can differentiate"
+" between being called from Python and being called form the web."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1277
+msgid "Other Network Protocols"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1280
+msgid "XML-RPC"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1282
+msgid ""
+"**XML-RPC** is a light-weight remote procedure call (RPC) protocol that "
+"uses **XML** to encode its calls and **HTTP** as a transport mechanism."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1286
+msgid ""
+"All objects in Zope support XML-RPC publishing. Generally you will select"
+" a published object as the end-point and select one of its methods as the"
+" method. For example you can call the ``getId`` method on a Zope folder "
+"at ``http://example.com/myfolder`` like so::"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1295
+msgid "You can also do traversal via a dot notation."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1311
+msgid "This example shows different routes to the same object publishing call."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1314
+msgid ""
+"XML-RPC supports marshalling of basic Python types for both publishing "
+"requests and responses. The upshot of this arrangement is that when you "
+"are designing methods for use via XML-RPC you should limit your arguments"
+" and return values to simple values such as Python strings, lists, "
+"numbers and dictionaries. You should not accept or return Zope objects "
+"from methods that will be called via XML-RPC."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1323
+msgid "**XML-RPC** does not support keyword arguments."
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1327
+msgid "Summary"
+msgstr ""
+
+#: ../../zdgbook/ObjectPublishing.rst:1329
+msgid ""
+"Object publishing is a simple and powerful way to bring objects to the "
+"web. Two of Zope's most appealing qualities is how it maps objects to "
+"URLs, and you don't need to concern yourself with web plumbing. If you "
+"wish, there are quite a few details that you can use to customize how "
+"your objects are located and published."
+msgstr ""
+

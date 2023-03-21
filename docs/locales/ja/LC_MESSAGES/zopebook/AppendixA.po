@@ -1,0 +1,2502 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../zopebook/AppendixA.rst:3
+msgid "Appendix A: DTML Reference"
+msgstr ""
+
+#: ../../zopebook/includes/zope2_notice.rst:3
+msgid "This document was written for Zope 2."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:7
+msgid ""
+"DTML is the *Document Template Markup Language*, a handy presentation and"
+" templating language that comes with Zope. This Appendix is a reference "
+"to all of DTMLs markup tags and how they work."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:12
+msgid "call: Call a method"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:14
+msgid ""
+"The 'call' tag lets you call a method without inserting the results into "
+"the DTML output."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:18 ../../zopebook/AppendixA.rst:54
+#: ../../zopebook/AppendixA.rst:312 ../../zopebook/AppendixA.rst:367
+#: ../../zopebook/AppendixA.rst:688 ../../zopebook/AppendixA.rst:743
+#: ../../zopebook/AppendixA.rst:828 ../../zopebook/AppendixA.rst:866
+#: ../../zopebook/AppendixA.rst:892 ../../zopebook/AppendixA.rst:962
+#: ../../zopebook/AppendixA.rst:1059 ../../zopebook/AppendixA.rst:1154
+#: ../../zopebook/AppendixA.rst:1198 ../../zopebook/AppendixA.rst:1337
+#: ../../zopebook/AppendixA.rst:1441 ../../zopebook/AppendixA.rst:1476
+#: ../../zopebook/AppendixA.rst:1614
+msgid "Syntax"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:20
+msgid "'call' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:24
+msgid ""
+"If the call tag uses a variable, the methods arguments are passed "
+"automatically by DTML just as with the 'var' tag. If the method is "
+"specified in a expression, then you must pass the arguments yourself."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:29 ../../zopebook/AppendixA.rst:65
+#: ../../zopebook/AppendixA.rst:336 ../../zopebook/AppendixA.rst:615
+#: ../../zopebook/AppendixA.rst:704 ../../zopebook/AppendixA.rst:801
+#: ../../zopebook/AppendixA.rst:840 ../../zopebook/AppendixA.rst:876
+#: ../../zopebook/AppendixA.rst:931 ../../zopebook/AppendixA.rst:988
+#: ../../zopebook/AppendixA.rst:1117 ../../zopebook/AppendixA.rst:1177
+#: ../../zopebook/AppendixA.rst:1315 ../../zopebook/AppendixA.rst:1394
+#: ../../zopebook/AppendixA.rst:1453 ../../zopebook/AppendixA.rst:1572
+#: ../../zopebook/AppendixA.rst:1636
+msgid "Examples"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:31
+msgid "Calling by variable name::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:35
+msgid "This calls the 'UpdateInfo' object automatically passing arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:37
+msgid "Calling by expression::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:42 ../../zopebook/AppendixA.rst:293
+#: ../../zopebook/AppendixA.rst:355 ../../zopebook/AppendixA.rst:731
+#: ../../zopebook/AppendixA.rst:817 ../../zopebook/AppendixA.rst:851
+#: ../../zopebook/AppendixA.rst:947 ../../zopebook/AppendixA.rst:1047
+#: ../../zopebook/AppendixA.rst:1140 ../../zopebook/AppendixA.rst:1187
+#: ../../zopebook/AppendixA.rst:1425 ../../zopebook/AppendixA.rst:1465
+#: ../../zopebook/AppendixA.rst:1655
+msgid "See Also"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:44
+msgid "var tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:48
+msgid "comment: Comments DTML"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:50
+msgid ""
+"The comment tag lets you document your DTML with comments. You can also "
+"use it to temporarily disable DTML tags by commenting them out."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:56
+msgid "'comment' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:61
+msgid ""
+"The 'comment' tag is a block tag. The contents of the block are not "
+"executed, nor are they inserted into the DTML output."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:67
+msgid "Documenting DTML::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:73
+msgid "Commenting out DTML::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:80
+msgid ""
+"Zope still validates the DTML inside the comment block and will not save "
+"any comments that are not valid DTML. It is also not possible to comment "
+"in a way that breaks code flow, for example you cannot inproperly nest a "
+"comment and a dtml-in."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:87
+msgid "functions: DTML Functions"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:89
+msgid ""
+"DTML utility functions provide some Python built-in functions and some "
+"DTML-specific functions."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:93
+msgid "Functions"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:98
+msgid "abs(number)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:96
+msgid ""
+"Return the absolute value of a number. The argument may be a plain or "
+"long integer or a floating point number. If the argument is a complex "
+"number, its magnitude is returned."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:104
+msgid "chr(integer)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:101
+msgid ""
+"Return a string of one character whose ASCII code is the integer, e.g., "
+"'chr(97)' returns the string 'a'. This is the inverse of ord(). The "
+"argument must be in the range 0 to 255, inclusive; 'ValueError' will be "
+"raised if the integer is outside that range."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:108
+msgid "DateTime()"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:107
+msgid ""
+"Returns a Zope 'DateTime' object given constructor arguments. See the "
+"DateTime API reference for more information on constructor arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:118
+msgid "divmod(number, number)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:111
+msgid ""
+"Take two numbers as arguments and return a pair of numbers consisting of "
+"their quotient and remainder when using long division. With mixed operand"
+" types, the rules for binary arithmetic operators apply. For plain and "
+"long integers, the result is the same as '(a / b, a % b)'. For floating "
+"point numbers the result is '(q, a % b)', where *q* is usually "
+"'math.floor(a / b)' but may be 1 less than that. In any case 'q * b + a %"
+" b' is very close to *a*, if 'a % b' is non-zero it has the same sign as "
+"*b*, and '0 <= abs(a % b) < abs(b)'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:126
+msgid "float(number)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:121
+msgid ""
+"Convert a string or a number to floating point. If the argument is a "
+"string, it must contain a possibly signed decimal or floating point "
+"number, possibly embedded in whitespace; this behaves identical to "
+"'string.atof(number)'. Otherwise, the argument may be a plain or long "
+"integer or a floating point number, and a floating point number with the "
+"same value (within Python's floating point precision) is returned."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:133
+msgid "getattr(object, string)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:129
+msgid ""
+"Return the value of the named attributed of object. name must be a "
+"string. If the string is the name of one of the object's attributes, the "
+"result is the value of that attribute. For example, 'getattr(x, "
+"\"foobar\")' is equivalent to 'x.foobar'. If the named attribute does not"
+" exist, default is returned if provided, otherwise 'AttributeError' is "
+"raised."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:137
+msgid "getitem(variable, render=0)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:136
+msgid ""
+"Returns the value of a DTML variable. If 'render' is true, the variable "
+"is rendered. See the 'render' function."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:143
+msgid "hasattr(object, string)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:140
+msgid ""
+"The arguments are an object and a string. The result is 1 if the string "
+"is the name of one of the object's attributes, 0 if not. (This is "
+"implemented by calling getattr(object, name) and seeing whether it raises"
+" an exception or not.)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:149
+msgid "hash(object)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:146
+msgid ""
+"Return the hash value of the object (if it has one). Hash values are "
+"integers. They are used to quickly compare dictionary keys during a "
+"dictionary lookup. Numeric values that compare equal have the same hash "
+"value (even if they are of different types, e.g. 1 and 1.0)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:152
+msgid "has_key(variable)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:152
+msgid "Returns true if the DTML namespace contains the named variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:160
+msgid "hex(integer)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:155
+msgid ""
+"Convert an integer number (of any size) to a hexadecimal string. The "
+"result is a valid Python expression. Note: this always yields an unsigned"
+" literal, e.g. on a 32-bit machine, 'hex(-1)' yields '0xffffffff'. When "
+"evaluated on a machine with the same word size, this literal is evaluated"
+" as -1; at a different word size, it may turn up as a large positive "
+"number or raise an 'OverflowError' exception."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:171
+msgid "int(number)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:163
+msgid ""
+"Convert a string or number to a plain integer. If the argument is a "
+"string, it must contain a possibly signed decimal number representable as"
+" a Python integer, possibly embedded in whitespace; this behaves "
+"identical to 'string.atoi(number[, radix]'). The 'radix' parameter gives "
+"the base for the conversion and may be any integer in the range 2 to 36. "
+"If 'radix' is specified and the number is not a string, 'TypeError' is "
+"raised. Otherwise, the argument may be a plain or long integer or a "
+"floating point number. Conversion of floating point numbers to integers "
+"is defined by the C semantics; normally the conversion truncates towards "
+"zero."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:175
+msgid "len(sequence)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:174
+msgid ""
+"Return the length (the number of items) of an object. The argument may be"
+" a sequence (string, tuple or list) or a mapping (dictionary)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:180
+msgid "max(s)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:178
+msgid ""
+"With a single argument s, return the largest item of a non-empty sequence"
+" (e.g., a string, tuple or list). With more than one argument, return the"
+" largest of the arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:185
+msgid "min(s)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:183
+msgid ""
+"With a single argument s, return the smallest item of a non-empty "
+"sequence (e.g., a string, tuple or list). With more than one argument, "
+"return the smallest of the arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:189
+msgid "namespace([name=value]...)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:188
+msgid ""
+"Returns a new DTML namespace object. Keyword argument 'name=value' pairs "
+"are pushed into the new namespace."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:197
+msgid "oct(integer)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:192
+msgid ""
+"Convert an integer number (of any size) to an octal string. The result is"
+" a valid Python expression. Note: this always yields an unsigned literal,"
+" e.g. on a 32-bit machine, 'oct(-1)' yields '037777777777'. When "
+"evaluated on a machine with the same word size, this literal is evaluated"
+" as -1; at a different word size, it may turn up as a large positive "
+"number or raise an OverflowError exception."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:201
+msgid "ord(character)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:200
+msgid ""
+"Return the ASCII value of a string of one character. E.g., 'ord(\"a\")' "
+"returns the integer 97. This is the inverse of 'chr()'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:209
+msgid "pow(x, y [,z])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:204
+msgid ""
+"Return *x* to the power *y*; if *z* is present, return *x* to the power "
+"*y*, modulo *z* (computed more efficiently than 'pow(x, y) % z'). The "
+"arguments must have numeric types. With mixed operand types, the rules "
+"for binary arithmetic operators apply. The effective operand type is also"
+" the type of the result; if the result is not expressible in this type, "
+"the function raises an exception; e.g., 'pow(2, -1)' or 'pow(2, 35000)' "
+"is not allowed."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:219
+msgid "range([start,] stop [,step])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:212
+msgid ""
+"This is a versatile function to create lists containing arithmetic "
+"progressions. The arguments must be plain integers. If the step argument "
+"is omitted, it defaults to 1. If the start argument is omitted, it "
+"defaults to 0. The full form returns a list of plain integers '[start, "
+"start + step, start + 2 * step, ...]'. If step is positive, the last "
+"element is the largest 'start + i * step' less than *stop*; if *step* is "
+"negative, the last element is the largest 'start + i * step' greater than"
+" *stop*. *step* must not be zero (or else 'ValueError' is raised)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:226
+msgid "round(x [,n])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:222
+msgid ""
+"Return the floating point value *x* rounded to *n* digits after the "
+"decimal point. If n is omitted, it defaults to zero. The result is a "
+"floating point number. Values are rounded to the closest multiple of 10 "
+"to the power minus n; if two multiples are equally close, rounding is "
+"done away from 0 (so e.g. round(0.5) is 1.0 and round(-0.5) is -1.0)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:230
+msgid "render(object)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:229
+msgid ""
+"Render 'object'. For DTML objects this evaluates the DTML code with the "
+"current namespace. For other objects, this is equivalent to "
+"'str(object)'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:237
+msgid "reorder(s [,with] [,without])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:233
+msgid ""
+"Reorder the items in s according to the order given in 'with' and without"
+" the items mentioned in 'without'. Items from s not mentioned in with are"
+" removed. s, with, and without are all either sequences of strings or "
+"sequences of key-value tuples, with ordering done on the keys. This "
+"function is useful for constructing ordered select lists."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:242
+msgid "SecurityCalledByExecutable()"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:240
+msgid ""
+"Return a true if the current object (e.g. DTML document or method) is "
+"being called by an executable (e.g. another DTML document or method, a "
+"script or a SQL method)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:248
+msgid "SecurityCheckPermission(permission, object)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:245
+msgid ""
+"Check whether the security context allows the given permission on the "
+"given object. For example, 'SecurityCheckPermission(\"Add Documents, "
+"Images, and Files\", this())' would return true if the current user was "
+"authorized to create documents, images, and files in the current "
+"location."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:253
+msgid "SecurityGetUser()"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:251
+msgid ""
+"Return the current user object. This is normally the same as the "
+"'REQUEST.AUTHENTICATED_USER' object. However, the 'AUTHENTICATED_USER' "
+"object is insecure since it can be replaced."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:260
+msgid "SecurityValidate([object] [,parent] [,name] [,value])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:256
+msgid ""
+"Return true if the value is accessible to the current user. 'object' is "
+"the object the value was accessed in, 'parent' is the container of the "
+"value, and 'name' is the named used to access the value (for example, if "
+"it was obtained via 'getattr'). You may omit some of the arguments, "
+"however it is best to provide all available arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:264
+msgid "SecurityValidateValue(object)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:263
+msgid ""
+"Return true if the object is accessible to the current user. This "
+"function is the same as calling 'SecurityValidate(None, None, None, "
+"object)'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:268
+msgid "str(object)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:267
+msgid ""
+"Return a string containing a nicely printable representation of an "
+"object. For strings, this returns the string itself."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:274
+msgid "test(condition, result [,condition, result]... [,default])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:271
+msgid ""
+"Takes one or more condition, result pairs and returns the result of the "
+"first true condition. Only one result is returned, even if more than one "
+"condition is true. If no condition is true and a default is given, the "
+"default is returned. If no condition is true and there is no default, "
+"None is returned."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:278
+msgid "unichr(number)"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:277
+msgid ""
+"Return a unicode string representing the value of number as a unicode "
+"character. This is the inverse of ord() for unicode characters."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:283
+msgid "unicode(string[, encoding[, errors ] ])"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:281
+msgid ""
+"Decodes string using the codec for encoding. Error handling is done "
+"according to errors. The default behavior is to decode UTF-8 in strict "
+"mode, meaning that encoding errors raise ValueError."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:286 ../../zopebook/AppendixA.rst:389
+#: ../../zopebook/AppendixA.rst:757 ../../zopebook/AppendixA.rst:906
+#: ../../zopebook/AppendixA.rst:977 ../../zopebook/AppendixA.rst:1071
+#: ../../zopebook/AppendixA.rst:1165 ../../zopebook/AppendixA.rst:1215
+#: ../../zopebook/AppendixA.rst:1373 ../../zopebook/AppendixA.rst:1505
+#: ../../zopebook/AppendixA.rst:1626
+msgid "Attributes"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:290
+msgid "None"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:289
+msgid ""
+"The 'None' object is equivalent to the Python built-in object 'None'. "
+"This is usually used to represent a Null or false value."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:295
+msgid "`string module <https://docs.python.org/library/string.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:297
+msgid "`random module <https://docs.python.org/library/random.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:299
+msgid "`math module <https://docs.python.org/library/math.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:301
+msgid "`sequence module <https://docs.python.org/library/functions.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:305
+msgid "if: Tests Conditions"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:307
+msgid ""
+"The 'if' tags allows you to test conditions and to take different actions"
+" depending on the conditions. The 'if' tag mirrors Python's "
+"'if/elif/else' condition testing statements."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:314
+msgid "If tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:322
+msgid ""
+"The 'if' tag is a block tag. The 'if' tag and optional 'elif' tags take a"
+" condition variable name or a condition expression, but not both. If the "
+"condition name or expression evaluates to true then the 'if' block is "
+"executed. True means not zero, an empty string or an empty list.  If the "
+"condition variable is not found then the condition is considered false."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:329
+msgid ""
+"If the initial condition is false, each 'elif' condition is tested in "
+"turn. If any 'elif' condition is true, its block is executed. Finally the"
+" optional 'else' block is executed if none of the 'if' and 'elif' "
+"conditions were true. Only one block will be executed."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:338
+msgid "Testing for a variable::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:344
+msgid "Testing for expression conditions::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:357
+msgid ""
+"`Python Tutorial If Statements "
+"<https://docs.python.org/3/tutorial/controlflow.html#if-statements>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:361
+msgid "in: Loops over sequences"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:363
+msgid ""
+"The 'in' tag gives you powerful controls for looping over sequences and "
+"performing batch processing."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:369
+msgid "'in' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:375
+msgid ""
+"a commenting identifier at the end tag is allowed and will be ignored "
+"like::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:379
+msgid "same for '</dtml-if>' and '</dtml-let>'"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:381
+msgid ""
+"The 'in' block is repeated once for each item in the sequence variable or"
+" sequence expression. The current item is pushed on to the DTML namespace"
+" during each executing of the 'in' block."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:385
+msgid ""
+"If there are no items in the sequence variable or expression, the "
+"optional 'else' block is executed."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:393 ../../zopebook/AppendixA.rst:1633
+msgid "mapping"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:392
+msgid ""
+"Iterates over mapping objects rather than instances. This allows values "
+"of the mapping objects to be accessed as DTML variables."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:396 ../../zopebook/AppendixA.rst:1254
+msgid "reverse"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:396
+msgid "Reverses the sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:399 ../../zopebook/AppendixA.rst:1251
+msgid "sort=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:399
+msgid "Sorts the sequence by the given attribute name."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:402
+msgid "start=int"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:402
+msgid "The number of the first item to be shown, where items are numbered from 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:405
+msgid "end=int"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:405
+msgid "The number of the last item to be shown, where items are numbered from 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:408
+msgid "size=int"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:408
+msgid "The size of the batch."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:411 ../../zopebook/AppendixA.rst:1267
+msgid "skip_unauthorized"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:411
+msgid "Don't raise an exception if an unauthorized item is encountered."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:422
+msgid "orphan=int"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:414
+msgid ""
+"The desired minimum batch size. This controls how sequences are split "
+"into batches. If a batch smaller than the orphan size would occur, then "
+"no split is performed, and a batch larger than the batch size results."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:418
+msgid ""
+"For example, if the sequence size is 12, the batch size is 10 the orphan "
+"size is 3, then the result is one batch with all 12 items since splitting"
+" the items into two batches would result in a batch smaller than the "
+"orphan size."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:422
+msgid "The default value is 0."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:425
+msgid "overlap=int"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:425
+msgid "The number of items to overlap between batches. The default is no overlap."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:429
+msgid "previous"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:428
+msgid ""
+"Iterates once if there is a previous batch. Sets batch variables for "
+"previous sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:433
+msgid "next"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:432
+msgid ""
+"Iterates once if there is a next batch. Sets batch variables for the next"
+" sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:439 ../../zopebook/AppendixA.rst:1277
+msgid "prefix=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:436
+msgid ""
+"Provide versions of the tag variables that start with this prefix instead"
+" of \"sequence\", and that use underscores (_) instead of hyphens (-). "
+"The prefix must start with a letter and contain only alphanumeric "
+"characters and underscores (_)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:443
+msgid "sort_expr=expression"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:442
+msgid ""
+"Sorts the sequence by an attribute named by the value of the expression. "
+"This allows you to sort on different attributes."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:447
+msgid "reverse_expr=expression"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:446
+msgid ""
+"Reverses the sequence if the expression evaluates to true. This allows "
+"you to selectively reverse the sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:450 ../../zopebook/AppendixA.rst:1280
+#: ../../zopebook/AppendixA.rst:1380
+msgid "Tag Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:453
+msgid "Current Item Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:455
+msgid "These variables describe the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:458
+msgid "sequence-item"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:458
+msgid "The current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:462
+msgid "sequence-key"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:461
+msgid ""
+"The current key. When looping over tuples of the form '(key,value)', the "
+"'in' tag interprets them as '(sequence-key, sequence-item)'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:465
+msgid "sequence-index"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:465
+msgid "The index starting with 0 of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:468
+msgid "sequence-number"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:468
+msgid "The index starting with 1 of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:471
+msgid "sequence-roman"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:471
+msgid "The index in lowercase Roman numerals of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:474
+msgid "sequence-Roman"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:474
+msgid "The index in uppercase Roman numerals of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:477
+msgid "sequence-letter"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:477
+msgid "The index in lowercase letters of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:480
+msgid "sequence-Letter"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:480
+msgid "The index in uppercase letters of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:483
+msgid "sequence-start"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:483
+msgid "True if the current item is the first item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:486
+msgid "sequence-end"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:486
+msgid "True if the current item is the last item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:489
+msgid "sequence-even"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:489
+msgid "True if the index of the current item is even."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:492
+msgid "sequence-odd"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:492
+msgid "True if the index of the current item is odd."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:495
+msgid "sequence-length"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:495
+msgid "The length of the sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:502
+msgid "sequence-var-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:498
+msgid ""
+"A variable in the current item. For example, 'sequence-var-title' is the "
+"'title' variable of the current item. Normally you can access these "
+"variables directly since the current item is pushed on the DTML "
+"namespace. However these variables can be useful when displaying previous"
+" and next batch information."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:505
+msgid "sequence-index-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:505
+msgid "The index of a variable of the current item."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:508
+msgid "Summary Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:510
+msgid ""
+"These variable summarize information about numeric item variables. To use"
+" these variable you must loop over objects (like database query results) "
+"that have numeric variables."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:515
+msgid "total-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:515
+msgid "The total of all occurrences of an item variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:518
+msgid "count-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:518
+msgid "The number of occurrences of an item variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:521
+msgid "min-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:521
+msgid "The minimum value of an item variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:524
+msgid "max-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:524
+msgid "The maximum value of an item variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:527
+msgid "mean-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:527
+msgid "The mean value of an item variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:530
+msgid "variance-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:530
+msgid "The variance of an item variable with count-1 degrees of freedom."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:533
+msgid "variance-n-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:533
+msgid "The variance of an item variable with n degrees of freedom."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:536
+msgid "standard-deviation-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:536
+msgid ""
+"The standard-deviation of an item variable with count-1 degrees of "
+"freedom."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:539
+msgid "standard-deviation-n-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:539
+msgid "The standard-deviation of an item variable with n degrees of freedom."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:542
+msgid "Grouping Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:544
+msgid "These variables allow you to track changes in current item variables."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:547
+msgid "first-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:547
+msgid ""
+"True if the current item is the first with a particular value for a "
+"variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:550
+msgid "last-*variable*"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:550
+msgid ""
+"True if the current item is the last with a particular value for a "
+"variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:553
+msgid "Batch Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:557
+msgid "sequence-query"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:556
+msgid ""
+"The query string with the 'start' variable removed. You can use this "
+"variable to construct links to next and previous batches."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:560
+msgid "sequence-step-size"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:560
+msgid "The batch size."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:564
+msgid "previous-sequence"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:563
+msgid ""
+"True if the current batch is not the first one. Note, this variable is "
+"only true for the first loop iteration."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:567
+msgid "previous-sequence-start-index"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:567
+msgid "The starting index of the previous batch."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:571
+msgid "previous-sequence-start-number"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:570
+msgid ""
+"The starting number of the previous batch. Note, this is the same as "
+"'previous-sequence-start-index' + 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:574
+msgid "previous-sequence-end-index"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:574
+msgid "The ending index of the previous batch."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:578
+msgid "previous-sequence-end-number"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:577
+msgid ""
+"The ending number of the previous batch. Note, this is the same as "
+"'previous-sequence-end-index' + 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:581
+msgid "previous-sequence-size"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:581
+msgid "The size of the previous batch."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:586
+msgid "previous-batches"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:584
+msgid ""
+"A sequence of mapping objects with information about all previous "
+"batches. Each mapping object has these keys 'batch-start-index', 'batch-"
+"end-index', and 'batch-size'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:590
+msgid "next-sequence"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:589
+msgid ""
+"True if the current batch is not the last batch. Note, this variable is "
+"only true for the last loop iteration."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:593
+msgid "next-sequence-start-index"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:593
+msgid "The starting index of the next sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:597
+msgid "next-sequence-start-number"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:596
+msgid ""
+"The starting number of the next sequence. Note, this is the same as "
+"'next-sequence-start-index' + 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:600
+msgid "next-sequence-end-index"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:600
+msgid "The ending index of the next sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:604
+msgid "next-sequence-end-number"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:603
+msgid ""
+"The ending number of the next sequence. Note, this is the same as 'next-"
+"sequence-end-index' + 1."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:607
+msgid "next-sequence-size"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:607
+msgid "The size of the next index."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:612
+msgid "next-batches"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:610
+msgid ""
+"A sequence of mapping objects with information about all following "
+"batches. Each mapping object has these keys 'batch-start-index', 'batch-"
+"end-index', and 'batch-size'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:617
+msgid "Looping over sub-objects::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:623
+msgid "Looping over two sets of objects, using prefixes::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:636
+msgid "Looping over a list of '(key, value)' tuples::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:642
+msgid "Creating alternate colored table rows::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:654
+msgid "Basic batch processing::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:678
+msgid ""
+"This example creates *Previous* and *Next* links to navigate between "
+"batches. Note, by using 'sequence-query', you do not lose any GET "
+"variables as you navigate between batches."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:683
+msgid "let: Defines DTML variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:685
+msgid "The 'let' tag defines variables in the DTML namespace."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:690
+msgid "'let' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:695
+msgid ""
+"The 'let' tag is a block tag. Variables are defined by tag arguments. "
+"Defined variables are pushed onto the DTML namespace while the 'let' "
+"block is executed. Variables are defined by attributes. The 'let' tag can"
+" have one or more attributes with arbitrary names. If the attributes are "
+"defined with double quotes they are considered expressions, otherwise "
+"they are looked up by name. Attributes are processed in order, so later "
+"attributes can reference, and/or overwrite earlier ones."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:706 ../../zopebook/AppendixA.rst:1119
+#: ../../zopebook/AppendixA.rst:1179
+msgid "Basic usage::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:713
+msgid "Using the 'let' tag with the 'in' tag::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:723
+msgid "This yields::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:733
+msgid "with tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:737
+msgid "mime: Formats data with MIME"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:739
+msgid ""
+"The 'mime' tag allows you to create MIME encoded data. It is chiefly used"
+" to format email inside the 'sendmail' tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:745
+msgid "'mime' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:752
+msgid ""
+"The 'mime' tag is a block tag. The block is can be divided by one or more"
+" 'boundry' tags to create a multi-part MIME message. 'mime' tags may be "
+"nested. The 'mime' tag is most often used inside the 'sendmail' tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:759
+msgid "Both the 'mime' and 'boundry' tags have the same attributes."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:766
+msgid "encode=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:762
+msgid ""
+"MIME Content-Transfer-Encoding header, defaults to 'base64'. Valid "
+"encoding options include 'base64', 'quoted-printable', 'uuencode', "
+"'x-uuencode', 'uue', 'x-uue', and '7bit'. If the 'encode' attribute is "
+"set to '7bit' no encoding is done on the block and the data is assumed to"
+" be in a valid MIME format."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:769 ../../zopebook/AppendixA.rst:1077
+#: ../../zopebook/AppendixA.rst:1171
+msgid "type=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:769
+msgid "MIME Content-Type header."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:773
+msgid "type_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:772
+msgid ""
+"MIME Content-Type header as a variable expression. You cannot use both "
+"'type' and 'type_expr'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:776
+msgid "name=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:776
+msgid "MIME Content-Type header name."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:780
+msgid "name_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:779
+msgid ""
+"MIME Content-Type header name as a variable expression. You cannot use "
+"both 'name' and 'name_expr'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:783
+msgid "disposition=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:783
+msgid "MIME Content-Disposition header."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:787
+msgid "disposition_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:786
+msgid ""
+"MIME Content-Disposition header as a variable expression. You cannot use "
+"both 'disposition' and 'disposition_expr'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:790
+msgid "filename=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:790
+msgid "MIME Content-Disposition header filename."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:794
+msgid "filename_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:793
+msgid ""
+"MIME Content-Disposition header filename as a variable expression. You "
+"cannot use both 'filename' and 'filename_expr'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:798
+msgid "skip_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:797
+msgid ""
+"A variable expression that if true, skips the block. You can use this "
+"attribute to selectively include MIME blocks."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:803
+msgid "Sending a file attachment::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:819
+msgid ""
+"`Python Library mimetools "
+"<https://docs.python.org/library/mimetools.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:822
+msgid "raise: Raises an exception"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:824
+msgid ""
+"The 'raise' tag raises an exception, mirroring the Python 'raise' "
+"statement."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:830
+msgid "'raise' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:835
+msgid ""
+"The 'raise' tag is a block tag. It raises an exception. Exceptions can be"
+" an exception class or a string. The contents of the tag are passed as "
+"the error value."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:842
+msgid "Raising a KeyError::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:846
+msgid "Raising an HTTP 404 error::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:853
+msgid "try tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:855 ../../zopebook/AppendixA.rst:1429
+msgid ""
+"`Python Tutorial Errors and Exceptions "
+"<https://docs.python.org/tutorial/errors.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:857 ../../zopebook/AppendixA.rst:1431
+msgid ""
+"`Python Built-in Exceptions "
+"<https://docs.python.org/library/exceptions.html>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:860
+msgid "return: Returns data"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:862
+msgid ""
+"The 'return' tag stops executing DTML and returns data. It mirrors the "
+"Python 'return' statement."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:868
+msgid "'return' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:872
+msgid ""
+"Stops execution of DTML and returns a variable or expression. The DTML "
+"output is not returned. Usually a return expression is more useful than a"
+" return variable. Scripts largely obsolete this tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:878
+msgid "Returning a variable::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:882
+msgid "Returning a Python dictionary::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:887
+msgid "sendmail: Sends email with SMTP"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:889
+msgid "The 'sendmail' tag sends an email message using SMTP."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:894
+msgid "'sendmail' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:899
+msgid ""
+"The 'sendmail' tag is a block tag. It either requires a 'mailhost' or a "
+"'smtphost' argument, but not both. The tag block is sent as an email "
+"message. The beginning of the block describes the email headers. The "
+"headers are separated from the body by a blank line. Alternately the "
+"'To', 'From' and 'Subject' headers can be set with tag arguments."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:910
+msgid "mailhost"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:909
+msgid ""
+"The name of a Zope MailHost object to use to send email. You cannot "
+"specify both a mailhost and a smtphost."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:914
+msgid "smtphost"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:913
+msgid ""
+"The name of a SMTP server used to send email. You cannot specify both a "
+"mailhost and a smtphost."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:918
+msgid "port"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:917
+msgid ""
+"If the smtphost attribute is used, then the port attribute is used to "
+"specify a port number to connect to. If not specified, then port 25 will "
+"be used."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:922
+msgid "mailto"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:921
+msgid ""
+"The recipient address or a list of recipient addresses separated by "
+"commas. This can also be specified with the 'To' header."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:925
+msgid "mailfrom"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:925
+msgid "The sender address. This can also be specified with the 'From' header."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:928
+msgid "subject"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:928
+msgid "The email subject. This can also be specified with the 'Subject' header."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:933
+msgid "Sending an email message using a Mail Host::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:949
+msgid "`RFC 821 (SMTP Protocol) <https://www.ietf.org/rfc/rfc0821.txt>`_"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:951
+msgid "mime tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:955
+msgid "sqlgroup: Formats complex SQL expressions"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:957
+msgid ""
+"The 'sqlgroup' tag formats complex boolean SQL expressions. You can use "
+"it along with the 'sqltest' tag to build dynamic SQL queries that tailor "
+"themselves to the environment. This tag is used in SQL Methods."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:964
+msgid "'sqlgroup' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:972
+msgid ""
+"The 'sqlgroup' tag is a block tag. It is divided into blocks with one or "
+"more optional 'or' and 'and' tags. 'sqlgroup' tags can be nested to "
+"produce complex logic."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:981
+msgid "required=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:980
+msgid ""
+"Indicates whether the group is required. If it is not required and "
+"contains nothing, it is excluded from the DTML output."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:985
+msgid "where=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:984
+msgid ""
+"If true, includes the string \"where\". This is useful for the outermost "
+"'sqlgroup' tag in a SQL 'select' query."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:990
+msgid "Sample usage::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1001
+msgid "If 'first' is 'Bob' and 'last' is 'Smith, McDonald' it renders::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1010
+msgid "If 'salary' is 50000 and 'last' is 'Smith' it renders::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1019
+msgid "Nested 'sqlgroup' tags::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1032
+msgid "Given sample arguments, this template renders to SQL like so::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1049 ../../zopebook/AppendixA.rst:1189
+msgid "sqltest tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1053
+msgid "sqltest: Formats SQL condition tests"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1055
+msgid ""
+"The 'sqltest' tag inserts a condition test into SQL code. It tests a "
+"column against a variable. This tag is used in SQL Methods."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1061
+msgid "'sqltest' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1065
+msgid ""
+"The 'sqltest' tag is a singleton. It inserts a SQL condition test "
+"statement. It is used to build SQL queries. The 'sqltest' tag correctly "
+"escapes the inserted variable. The named variable or variable expression "
+"is tested against a SQL column using the specified comparison operation."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1074
+msgid ""
+"The type of the variable. Valid types include: 'string', 'int', 'float' "
+"and 'nb'. 'nb' means non-blank string, and should be used instead of "
+"'string' unless you want to test for blank values. The type attribute is "
+"required and is used to properly escape inserted variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1081
+msgid "column=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1080
+msgid ""
+"The name of the SQL column to test against. This attribute defaults to "
+"the variable name."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1085
+msgid "multiple=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1084
+msgid ""
+"If true, then the variable may be a sequence of values to test the column"
+" against."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1089 ../../zopebook/AppendixA.rst:1174
+msgid "optional=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1088
+msgid ""
+"If true, then the test is optional and will not be rendered if the "
+"variable is empty or non-existent."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1114
+msgid "op=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1092
+msgid "The comparison operation. Valid comparisons include:"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1095
+msgid "eq"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1095
+msgid "equal to"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1098
+msgid "gt"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1098
+msgid "greater than"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1101
+msgid "lt"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1101
+msgid "less than"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1104
+msgid "ne"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1104
+msgid "not equal to"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1107
+msgid "ge"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1107
+msgid "greater than or equal to"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1110
+msgid "le"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1110
+msgid "less than or equal to"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1112
+msgid ""
+"The comparison defaults to equal to. If the comparison is not recognized "
+"it is used anyway. Thus you can use comparisons such as 'like'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1124
+msgid "If the 'name' variable is 'Bob' then this renders::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1129
+msgid "Multiple values::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1134
+msgid "If the 'empid' variable is '(12,14,17)' then this renders::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1142
+msgid "sqlgroup tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1144
+msgid "sqlvar tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1148
+msgid "sqlvar: Inserts SQL variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1150
+msgid ""
+"The 'sqlvar' tag safely inserts variables into SQL code. This tag is used"
+" in SQL Methods."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1156
+msgid "'sqlvar' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1160
+msgid ""
+"The 'sqlvar' tag is a singleton. Like the 'var' tag, the 'sqlvar' tag "
+"looks up a variable and inserts it. Unlike the var tag, the formatting "
+"options are tailored for SQL code."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1168
+msgid ""
+"The type of the variable. Valid types include: 'string', 'int', 'float' "
+"and 'nb'. 'nb' means non-blank string and should be used in place of "
+"'string' unless you want to use blank strings. The type attribute is "
+"required and is used to properly escape inserted variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1174
+msgid ""
+"If true and the variable is null or non-existent, then nothing is "
+"inserted."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1184
+msgid "This SQL quotes the 'name' string variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1193
+msgid "tree: Inserts a tree widget"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1195
+msgid "The 'tree' tag displays a dynamic tree widget by querying Zope objects."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1200
+msgid "'tree' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1205
+msgid ""
+"The 'tree' tag is a block tag. It renders a dynamic tree widget in HTML. "
+"The root of the tree is given by variable name or expression, if present,"
+" otherwise it defaults to the current object. The 'tree' block is "
+"rendered for each tree node, with the current node pushed onto the DTML "
+"namespace."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1211
+msgid ""
+"Tree state is set in HTTP cookies. Thus for trees to work, cookies must "
+"be enabled. Also you can only have one tree per page."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1219
+msgid "branches=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1218
+msgid ""
+"Finds tree branches by calling the named method. The default method is "
+"'tpValues' which most Zope objects support."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1222
+msgid "branches_expr=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1222
+msgid "Finds tree branches by evaluating the expression."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1226
+msgid "id=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1225
+msgid ""
+"The name of a method or id to determine tree state. It defaults to 'tpId'"
+" which most Zope objects support. This attribute is for advanced usage "
+"only."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1231
+msgid "url=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1229
+msgid ""
+"The name of a method or attribute to determine tree item URLs. It "
+"defaults to 'tpURL' which most Zope objects support. This attribute is "
+"for advanced usage only."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1237
+msgid "leaves=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1234
+msgid ""
+"The name of a DTML Document or Method used to render nodes that don't "
+"have any children. Note: this document should begin with '<dtml-var "
+"standard_html_header>' and end with '<dtml-var standard_html_footer>' in "
+"order to ensure proper display in the tree."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1241
+msgid "header=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1240
+msgid ""
+"The name of a DTML Document or Method displayed before expanded nodes. If"
+" the header is not found, it is skipped."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1245
+msgid "footer=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1244
+msgid ""
+"The name of a DTML Document or Method displayed after expanded nodes. If "
+"the footer is not found, it is skipped."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1248
+msgid "nowrap=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1248
+msgid ""
+"If true then rather than wrap, nodes may be truncated to fit available "
+"space."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1251
+msgid "Sorts the branches by the named attribute."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1254
+msgid "Reverses the order of the branches."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1259
+msgid "assume_children=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1257
+msgid ""
+"Assumes that nodes have children. This is useful if fetching and querying"
+" child nodes is a costly process. This results in plus boxes being drawn "
+"next to all nodes."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1263
+msgid "single=boolean"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1262
+msgid ""
+"Allows only one branch to be expanded at a time. When you expand a new "
+"branch, any other expanded branches close."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1266
+msgid ""
+"Skips nodes that the user is unauthorized to see, rather than raising an "
+"error."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1271
+msgid "urlparam=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1270
+msgid ""
+"A query string which is included in the expanding and contracting widget "
+"links. This attribute is for advanced usage only."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1274
+msgid ""
+"Provide versions of the tag variables that start with this prefix instead"
+" of \"tree\", and that use underscores (_) instead of hyphens (-). The "
+"prefix must start with a letter and contain only alphanumeric characters "
+"and underscores (_)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1283
+msgid "tree-item-expanded"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1283
+msgid "True if the current node is expanded."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1286
+msgid "tree-item-url"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1286
+msgid "The URL of the current node."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1289
+msgid "tree-root-url"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1289
+msgid "The URL of the root node."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1292
+msgid "tree-level"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1292
+msgid "The depth of the current node. Top-level nodes have a depth of zero."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1297
+msgid "tree-colspan"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1295
+msgid ""
+"The number of levels deep the tree is being rendered. This variable along"
+" with the 'tree-level' variable can be used to calculate table rows and "
+"colspan settings when inserting table rows into the tree table."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1301
+msgid "tree-state"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1300
+msgid ""
+"The tree state expressed as a list of ids and sub-lists of ids. This "
+"variable is for advanced usage only."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1304
+msgid "Tag Control Variables"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1306
+msgid "You can control the tree tag by setting these variables."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1309
+msgid "expand_all"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1309
+msgid "If this variable is true then the entire tree is expanded."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1312
+msgid "collapse_all"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1312
+msgid "If this variable is true then the entire tree is collapsed."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1317
+msgid "Display a tree rooted in the current object::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1323
+msgid "Display a tree rooted in another object, using a custom branches method::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1331
+msgid "try: Handles exceptions"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1333
+msgid ""
+"The 'try' tag allows exception handling in DTML, mirroring the Python "
+"'try/except' and 'try/finally' constructs."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1339
+msgid ""
+"The 'try' tag has two different syntaxes, 'try/except/else' and "
+"'try/finally'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1341
+msgid "'try/except/else' Syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1349
+msgid ""
+"The 'try' tag encloses a block in which exceptions can be caught and "
+"handled. There can be one or more 'except' tags that handles zero or more"
+" exceptions. If an 'except' tag does not specify an exception, then it "
+"handles all exceptions."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1353
+msgid ""
+"When an exception is raised, control jumps to the first 'except' tag that"
+" handles the exception. If there is no 'except' tag to handle the "
+"exception, then the exception is raised normally."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1357
+msgid ""
+"If no exception is raised, and there is an 'else' tag, then the 'else' "
+"tag will be executed after the body of the 'try' tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1360
+msgid "The 'except' and 'else' tags are optional."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1362
+msgid "'try/finally' Syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1368
+msgid ""
+"The 'finally' tag cannot be used in the same 'try' block as the 'except' "
+"and 'else' tags. If there is a 'finally' tag, its block will be executed "
+"whether or not an exception is raised in the 'try' block."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1377
+msgid "except"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1376
+msgid ""
+"Zero or more exception names. If no exceptions are listed then the except"
+" tag will handle all exceptions."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1382
+msgid "Inside the 'except' block these variables are defined."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1385
+msgid "error_type"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1385
+msgid "The exception type."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1388
+msgid "error_value"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1388
+msgid "The exception value."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1391
+msgid "error_tb"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1391
+msgid "The traceback."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1396
+msgid "Catching a math error::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1404
+msgid "Returning information about the handled exception::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1414
+msgid ""
+"Using finally to make sure to perform clean up regardless of whether an "
+"error is raised or not::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1427
+msgid "raise tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1435
+msgid "unless: Tests a condition"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1437
+msgid ""
+"The 'unless' tag provides a shortcut for testing negative conditions. For"
+" more complete condition testing use the 'if' tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1443
+msgid "'unless' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1448
+msgid ""
+"The 'unless' tag is a block tag. If the condition variable or expression "
+"evaluates to false, then the contained block is executed. Like the 'if' "
+"tag, variables that are not present are considered false."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1455
+msgid "Testing a variable::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1461
+msgid ""
+"The block will be executed if 'testMode' does not exist, or exists but is"
+" false."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1467
+msgid "if tag"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1471
+msgid "var: Inserts a variable"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1473
+msgid "The 'var' tags allows you insert variables into DTML output."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1478
+msgid "'var' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1482
+msgid ""
+"The 'var' tag is a singleton tag. The 'var' tag finds a variable by "
+"searching the DTML namespace which usually consists of current object, "
+"the current object's containers, and finally the web request. If the "
+"variable is found, it is inserted into the DTML output. If not found, "
+"Zope raises an error."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1487
+msgid "'var' tag entity syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1491
+msgid ""
+"Entity syntax is a short cut which inserts and HTML quotes the variable. "
+"It is useful when inserting variables into HTML tags."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1494
+msgid "'var' tag entity syntax with attributes::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1498
+msgid ""
+"To a limited degree you may specify attributes with the entity syntax. "
+"You may include zero or more attributes delimited by periods. You cannot "
+"provide arguments for attributes using the entity syntax. If you provide "
+"zero or more attributes, then the variable is not automatically HTML "
+"quoted. Thus you can avoid HTML quoting with this syntax, "
+"'&dtml.-variableName;'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1509
+msgid "html_quote"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1508
+msgid ""
+"Convert characters that have special meaning in HTML to HTML character "
+"entities."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1512
+msgid "missing=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1512
+msgid "Specify a default value in case Zope cannot find the variable."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1522
+msgid "fmt=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1515
+msgid ""
+"Format a variable. Zope provides a few built-in formats including C-style"
+" format strings. For more information on C-style format strings see the "
+"`Python Library Reference <https://docs.python.org/library/stdtypes.html"
+"#typesseq-strings>`_. If the format string is not a built-in format, then"
+" it is assumed to be a method of the object, and it called."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1522
+msgid "collection-length"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1522
+msgid "The length of the variable, assuming it is a sequence."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1525
+msgid "null=string"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1525
+msgid "A default value to use if the variable is None."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1528
+msgid "lower"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1528
+msgid "Converts upper-case letters to lower case."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1531
+msgid "upper"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1531
+msgid "Converts lower-case letters to upper case."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1534
+msgid "capitalize"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1534
+msgid "Capitalizes the first character of the inserted word."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1537
+msgid "spacify"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1537
+msgid "Changes underscores in the inserted value to spaces."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1541
+msgid "thousands_commas"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1540
+msgid ""
+"Inserts commas every three digits to the left of a decimal point in "
+"values containing numbers for example '12000' becomes '12,000'."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1544
+msgid "url"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1544
+msgid "Inserts the URL of the object, by calling its 'absolute_url' method."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1548
+msgid "url_quote"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1547
+msgid ""
+"Converts characters that have special meaning in URLs to HTML character "
+"entities."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1552
+msgid "url_quote_plus"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1551
+msgid ""
+"URL quotes character, like 'url_quote' but also converts spaces to plus "
+"signs."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1556
+msgid "sql_quote"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1555
+msgid ""
+"Converts single quotes to pairs of single quotes. This is needed to "
+"safely include values in SQL strings."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1559
+msgid "newline_to_br"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1559
+msgid "Convert newlines (including carriage returns) to HTML break tags."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1564
+msgid "size=arg"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1562
+msgid ""
+"Truncates the variable at the given length (Note: if a space occurs in "
+"the second half of the truncated string, then the string is further "
+"truncated to the right-most space)."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1569
+msgid "etc=arg"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1567
+msgid ""
+"Specifies a string to add to the end of a string which has been truncated"
+" (by setting the 'size' attribute listed above). By default, this is "
+"'...'"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1574
+msgid "Inserting a simple variable into a document::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1578
+msgid "Truncation::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1582
+msgid ""
+"will produce the following output if *colors* is the string 'red yellow "
+"green'::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1587
+msgid "C-style string formatting::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1591
+msgid "renders to::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1595
+msgid ""
+"Inserting a variable, *link*, inside an HTML 'A' tag with the entity "
+"syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1599
+msgid ""
+"Inserting a link to a document 'doc', using entity syntax with "
+"attributes::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1603
+msgid ""
+"This creates an HTML link to an object using its URL and title. This "
+"example calls the object's 'absolute_url' method for the URL (using the "
+"'url' attribute) and its 'title_or_id' method for the title."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1608
+msgid "with: Controls DTML variable look up"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1610
+msgid ""
+"The 'with' tag pushes an object onto the DTML namespace. Variables will "
+"be looked up in the pushed object first."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1616
+msgid "'with' tag syntax::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1621
+msgid ""
+"The 'with' tag is a block tag. It pushes the named variable or variable "
+"expression onto the DTML namespace for the duration of the 'with' block. "
+"Thus names are looked up in the pushed object first."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1629
+msgid "only"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1629
+msgid ""
+"Limits the DTML namespace to only include the one defined in the 'with' "
+"tag."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1632
+msgid ""
+"Indicates that the variable or expression is a mapping object. This "
+"ensures that variables are looked up correctly in the mapping object."
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1638
+msgid "Looking up a variable in the REQUEST::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1648
+msgid "Pushing the first child on the DTML namespace::"
+msgstr ""
+
+#: ../../zopebook/AppendixA.rst:1657
+msgid "let tag"
+msgstr ""
+

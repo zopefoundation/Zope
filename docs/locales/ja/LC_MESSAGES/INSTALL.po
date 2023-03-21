@@ -1,0 +1,250 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2009-2023, The Zope developer community
+# This file is distributed under the same license as the Zope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zope 5.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-21 02:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Takeaki Matsunaga\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../INSTALL.rst:2
+msgid "Installing Zope"
+msgstr "Zope のインストール"
+
+#: ../../INSTALL.rst:3
+msgid ""
+"This document describes installing Zope with `zc.buildout "
+"<https://pypi.org/project/zc.buildout/>`_ (the **recommended** method) or"
+" via ``pip``."
+msgstr ""
+"このドキュメントでは `zc.buildout "
+"<https://pypi.org/project/zc.buildout/>`_ (**推奨**) または"
+" ``pip`` を使った Zope のインストール方法について説明します。"
+
+#: ../../INSTALL.rst:12
+msgid "Prerequisites"
+msgstr "前提"
+
+#: ../../INSTALL.rst:13
+msgid ""
+"In order to install Zope, you must have the following prerequisites "
+"available:"
+msgstr ""
+"Zope をインストールするには、次の前提を満たしておく必要があります。"
+
+#: ../../INSTALL.rst:16
+msgid ""
+"A supported version of Python, including the development support if "
+"installed from system-level packages.  Supported versions include **3.7**"
+" up to **3.11**."
+msgstr ""
+"Zope がサポートする Python のバージョン。"
+"Python がシステムレベルのパッケージからインストールされていれば、開発サポートも含みます。"
+"Zope がサポートするバージョンは **3.7** から **3.11** までです。"
+
+#: ../../INSTALL.rst:20
+msgid ""
+"Zope needs the Python ``zlib`` module to be importable.  If you are "
+"building your own Python from source, please be sure that you have the "
+"headers installed which correspond to your system's ``zlib``."
+msgstr ""
+"Zope は Python の ``zlib`` モジュールをインポートします。"
+"Python をソースからビルドするなら、システムの ``zlib`` に対応するヘッダが"
+"既にインストールされていることを確認してください。"
+
+#: ../../INSTALL.rst:24
+msgid ""
+"A C compiler capable of building extension modules for your Python (gcc "
+"recommended)."
+msgstr ""
+"Python の拡張モジュールをビルドできる C コンパイラ（gcc 推奨）。"
+
+#: ../../INSTALL.rst:27
+msgid ""
+"If you are using a Python interpreter shipping with your Linux "
+"distribution, you need to install the matching Python development "
+"package. As example, for Python 3 on Ubuntu 18.04, you have to type the "
+"following:"
+msgstr ""
+"Linux に同梱されていた Python のインタプリタを使っているなら、"
+" 開発者用パッケージをインストールしてください。"
+"例えば、Ubuntu 18.03 の Python 3 であれば、次のように入力してください。"
+
+#: ../../INSTALL.rst:37
+msgid "Installing Zope with ``zc.buildout``"
+msgstr "``zc.buildout`` を使った Zope のインストール"
+
+#: ../../INSTALL.rst:38
+msgid ""
+"`zc.buildout <https://pypi.org/project/zc.buildout/>`_ is a powerful tool"
+" for creating repeatable builds of a given software configuration and "
+"environment.  The Zope developers use ``zc.buildout`` to develop Zope "
+"itself, as well as the underlying packages it uses. **This is the "
+"recommended way of installing Zope**."
+msgstr ""
+"`zc.buildout <https://pypi.org/project/zc.buildout/>`_ は強力なツールで、"
+"既定のソフトウェア構成と環境について再現性あるビルドを実現します。"
+"Zope の開発者は Zope 自体を開発するために ``zc.buildout`` を使うのは勿論のこと、"
+"Zope の基礎となるパッケージも開発しています。"
+
+#: ../../INSTALL.rst:44
+msgid ""
+"Installing the Zope software using ``zc.buildout`` involves the following"
+" steps:"
+msgstr ""
+"``zc.buildout`` を使った Zope ソフトウェアのインストールは次の手順を伴います。"
+
+#: ../../INSTALL.rst:47
+msgid ""
+"Download and uncompress the Zope source distribution from `PyPI`__ if you"
+" are using the built-in standard buildout configuration"
+msgstr ""
+"同梱されている標準の buildout コンフィグを使おうと考えているなら、"
+"`PyPI`__ で配布される Zope のソースをダウンロードして展開します。"
+
+#: ../../INSTALL.rst:52
+msgid "Create a virtual environment"
+msgstr "仮想環境を作ります。"
+
+
+#: ../../INSTALL.rst:54
+msgid "Install ``zc.buildout`` into the virtual environment"
+msgstr "仮想環境のなかに ``zc.buildout`` をインストールします。"
+
+#: ../../INSTALL.rst:56
+msgid "Run the buildout"
+msgstr "buildout を実行します。"
+
+#: ../../INSTALL.rst:58
+msgid ""
+"The following examples are from Linux and use Zope version 5.0. Just "
+"replace that version number with your desired version."
+msgstr ""
+"次の例は Linux で Zope バージョン 5.0 を使うものです。"
+"お望みのバージョンで読み替えてください。" 
+
+#: ../../INSTALL.rst:62
+msgid "Built-in standard buildout configuration"
+msgstr "同梱の標準 buildout コンフィグ"
+
+#: ../../INSTALL.rst:75
+msgid "Custom buildout configurations"
+msgstr "カスタム buildout コンフィグ"
+
+#: ../../INSTALL.rst:76
+msgid ""
+"Instead of using the buildout configuration shipping with Zope itself, "
+"you can also start with your own buildout configuration file."
+msgstr ""
+"Zope に同梱されていた buildout コンフィグを使うことなく、"
+"自分自身の buildout コンフィグを使うこともできます。"
+
+#: ../../INSTALL.rst:79
+msgid ""
+"The installation with a custom buildout configuration does not require "
+"you to download Zope first:"
+msgstr ""
+"カスタム buildout コンフィグでのインストールでは、"
+"Zope を先にダウンロードしておく必要はありません。"
+
+#: ../../INSTALL.rst:92
+msgid "Minimum configuration"
+msgstr "最小限のコンフィグ"
+
+#: ../../INSTALL.rst:93
+msgid "Here's a minimum ``buildout.cfg`` configuration  example:"
+msgstr "これは最小限の ``buildout.cfg`` の設定例です。"
+
+#: ../../INSTALL.rst:111
+msgid "Using ``plone.recipe.zope2instance``"
+msgstr "``plone.recipe.zope2instance`` を使う"
+
+#: ../../INSTALL.rst:112
+msgid ""
+"To make your life a lot easier, you can use "
+"``plone.recipe.zope2instance`` to automate a lot of the configuration "
+"tasks from the following document, :doc:`operation`. "
+"``plone.recipe.zope2instance`` has a myriad configuration options, please"
+" see the `PyPI page "
+"<https://pypi.org/project/plone.recipe.zope2instance/>`_."
+msgstr ""
+"もっと楽をするために、``plone.recipe.zope2instance`` を使うこともできます。"
+"これは次のドキュメント :doc:`operation` で語られる設定についてのタスクの多くを自動化します。"
+"``plone.recipe.zope2instance`` は無数のオプションを持つので、"
+"`PyPI <https://pypi.org/project/plone.recipe.zope2instance/>`_ のページを見てください。"
+
+#: ../../INSTALL.rst:133
+msgid ""
+"One feature this kind of installation offers is the easy integration of "
+"WSGI servers other than the built-in ``waitress``. You can specify a file"
+" path to a WSGI configuration file to use when starting the Zope "
+"instance. This works for WSGI servers that offer a PasteDeply-compatible "
+"entry point, like ``gunicorn``. You will need to create the ``.ini`` file"
+" yourself, and don't forget to include the WSGI server software egg in "
+"the ``eggs`` specification:"
+msgstr ""
+"この種のインストールがもたらす特徴のひとつは、"
+"同梱の ``waitress`` 以外の WSGI サーバーと簡単に統合できることです。"
+"Zope のインスタンスを起動するときに、使いたい WSGI サーバーのコンフィグファイルのパスを指定できます。"
+"これは、gunicorn のように PasteDeply と互換性のあるエントリーポイントを提供する WSGI サーバーで動作します。"
+"自分自身で ``.ini`` ファイルを作る必要があります。そして、WSGI サーバーの egg を、"
+"``eggs`` の指定に含めるのを忘れないでください。"
+
+#: ../../INSTALL.rst:152
+msgid "Installing Zope with ``pip``"
+msgstr "``pip`` を使った Zope のインストール"
+
+#: ../../INSTALL.rst:153
+msgid "Installing the Zope software using ``pip`` involves the following steps:"
+msgstr "``pip`` を使った Zope ソフトウェアのインストールは次の手順を伴います。"
+
+#: ../../INSTALL.rst:156
+msgid "Create a virtual environment (There is no need to activate it.)"
+msgstr "仮想環境を作ります（アクティベートする必要はありません）。"
+
+#: ../../INSTALL.rst:158
+msgid "Install Zope and its dependencies"
+msgstr "Zope とそれが依存するものをインストールします。"
+
+#: ../../INSTALL.rst:160
+msgid ""
+"Example steps on Linux. Replace the version number \"5.0\" with the "
+"latest version you find on https://zopefoundation.github.io/Zope/:"
+msgstr ""
+"例は Linux での手順です。バージョン \"5.0\" を最新のバージョンに置き換えてください。"
+"最新のバージョンは https://zopefoundation.github.io/Zope/ で見つけることができます。"
+
+#: ../../INSTALL.rst:171
+msgid ""
+"You can also install Zope using a single requirements file. **Note that "
+"this installation method might install packages that are not actually "
+"needed** (i. e. more than are listed in the ``install_requires`` section "
+"of ``setup.py``):"
+msgstr ""
+"requirements ファイルを使って Zope をインストールすることもできます。"
+"**このインストール方法では実際には必要のないパッケージがインストールされることがあることに注意してください**。"
+"（言い換えれば、``setup.py`` の ``install_requires`` セクションにリストされているもの"
+"よりも多くのものがインストールされることがあります。）"
+
+#: ../../INSTALL.rst:182
+msgid "Building the documentation with ``Sphinx``"
+msgstr "``Sphinx`` を使ったドキュメントのビルド"
+
+#: ../../INSTALL.rst:183
+msgid ""
+"If you have used ``zc.buildout`` for installation, you can build the HTML"
+" documentation locally:"
+msgstr ""
+"``zc.buildout`` をインストールに使ったのであれば、"
+"HTML のドキュメントをローカルでビルドできます。"
+
