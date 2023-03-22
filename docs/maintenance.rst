@@ -172,3 +172,58 @@ maintained by the following people:
 - Michael Howitz
 - Tres Seaver
 - Jens Vagelpohl
+
+Maintaining Zope documentation translations
+-------------------------------------------
+The Sphinx documentation has some translations now. Adding new translations or
+maintaining existing ones is done in several steps. The following is mostly
+taken from https://www.sphinx-doc.org/en/master/usage/advanced/intl.html.
+
+Adding a new document translation
++++++++++++++++++++++++++++++++++
+If you are just working on an existing ``.po`` file you can skip these steps.
+
+- Create the ``.pot`` files that form the basis for all translations::
+
+    $ cd docs
+    $ make gettext
+
+- Copy the ``.pot`` file for the new document to the correct language folder,
+  the following example uses ``ja`` for the Japanese translation. If the folder
+  does not exist yet, just create it::
+
+    $ mkdir -p locale/ja/LC_MESSAGES
+    $ cp _build/gettext/maintenance.pot locale/ja/LC_MESSAGES/maintenance.po
+
+Now continue with the steps in the next section.
+
+
+Maintaining existing translations
++++++++++++++++++++++++++++++++++
+Start here if the translation ``.po`` file already exists. This example uses a
+file ``maintenance.po`` from the Japanese translation:
+
+- At the top of the ``.po`` file, enter your name and optionally email address
+  into the field `Last-Translator`::
+
+    $ cd docs
+    $ vim locale/ja/LC_MESSAGES/maintenance.po
+
+- Enter translated strings into the various `msgstr` fields
+
+- Build the translated HTML pages from the ``docs`` folder::
+
+    $ make -e SPHINXOPTS="-D language='ja'" html
+
+- When you are happy with the result, commit the changes to the repository::
+
+    $ git commit locale/ja/LC_MESSAGES/maintenance.po
+
+  .. note::
+
+    Please do not add any ``.po`` files to the repository that have no
+    translations. Those will not do anything but increase the size of the
+    released package.
+
+
+

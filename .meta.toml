@@ -79,6 +79,7 @@ additional-rules = [
     "recursive-include docs *.css",
     "recursive-include docs *.jpg",
     "recursive-include docs *.png",
+    "recursive-include docs *.po",
     "recursive-include docs *.tgz",
     "recursive-include src *.css",
     "recursive-include src *.dtml",
