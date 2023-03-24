@@ -22,9 +22,8 @@ class TypeSniffingTestCase(unittest.TestCase):
             DefaultUnicodeEncodingConflictResolver
         from zope.component import provideUtility
 
-        self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
-        self.TEMPFILENAME = self.tmpfile.name
-        self.tmpfile.close()
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
 
         # Make sure we use the new default chameleon engine
         useChameleonEngine()
@@ -157,9 +156,8 @@ class LineEndingsTestCase(unittest.TestCase):
     OUTPUT = 'foo bar spam eggs'
 
     def setUp(self):
-        self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
-        self.TEMPFILENAME = self.tmpfile.name
-        self.tmpfile.close()
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
         transaction.begin()
         self.root = makerequest(Zope2.app())
 
@@ -190,9 +188,8 @@ class LineEndingsTestCase(unittest.TestCase):
 class LazyLoadingTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
-        self.TEMPFILENAME = self.tmpfile.name
-        self.tmpfile.close()
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
 
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):
