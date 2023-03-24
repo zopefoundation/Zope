@@ -13,7 +13,6 @@
 ##############################################################################
 
 import io
-import os
 import shutil
 import tempfile
 import unittest
@@ -38,7 +37,7 @@ def getSchema():
 class WSGIStarterTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.TEMPNAME = tempfile.mktemp()
+        self.TEMPNAME = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self.TEMPNAME)
@@ -54,13 +53,6 @@ class WSGIStarterTestCase(unittest.TestCase):
         # platform-independent way.
         text = text.replace("<<INSTANCE_HOME>>", self.TEMPNAME)
         sio = io.StringIO(text)
-
-        try:
-            os.mkdir(self.TEMPNAME)
-        except OSError as why:
-            if why == 17:
-                # already exists
-                pass
         conf, self.handler = ZConfig.loadConfigFile(getSchema(), sio)
         self.assertEqual(conf.instancehome, self.TEMPNAME)
         return conf

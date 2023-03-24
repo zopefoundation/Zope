@@ -33,6 +33,8 @@ import sys
 from configparser import ParsingError
 from configparser import RawConfigParser
 
+from AuthEncoding import pw_encrypt
+
 from . import copyzopeskel
 
 
@@ -185,11 +187,16 @@ def get_inituser():
 
 
 def write_inituser(fn, user, password):
-    import binascii
-    from hashlib import sha1 as sha
-    pw = binascii.b2a_base64(sha(password.encode('utf-8')).digest())[:-1]
+    try:  # Try safest encryption first
+        pw = pw_encrypt(password, 'BCRYPT')
+    except ValueError:  # bcrypt is not available
+        pw = pw_encrypt(password, 'SHA256')
+
+    if isinstance(user, str):
+        user = user.encode('UTF-8')
+
     with open(fn, "wb") as fp:
-        fp.write(user.encode('utf-8') + b':{SHA}' + pw + b'\n')
+        fp.write(user + b':' + pw + b'\n')
     os.chmod(fn, 0o644)
 
 
