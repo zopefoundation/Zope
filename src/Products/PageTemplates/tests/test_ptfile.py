@@ -24,6 +24,7 @@ class TypeSniffingTestCase(unittest.TestCase):
 
         self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
         self.TEMPFILENAME = self.tmpfile.name
+        self.tmpfile.close()
 
         # Make sure we use the new default chameleon engine
         useChameleonEngine()
@@ -158,6 +159,7 @@ class LineEndingsTestCase(unittest.TestCase):
     def setUp(self):
         self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
         self.TEMPFILENAME = self.tmpfile.name
+        self.tmpfile.close()
         transaction.begin()
         self.root = makerequest(Zope2.app())
 
@@ -190,6 +192,7 @@ class LazyLoadingTestCase(unittest.TestCase):
     def setUp(self):
         self.tmpfile = tempfile.NamedTemporaryFile(suffix=".zpt", delete=False)
         self.TEMPFILENAME = self.tmpfile.name
+        self.tmpfile.close()
 
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):
