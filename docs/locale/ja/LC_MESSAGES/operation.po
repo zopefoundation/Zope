@@ -139,7 +139,7 @@ msgstr ""
 
 #: ../../operation.rst:72
 msgid "``zope.ini``: WSGI configuration"
-msgstr "``zope.ini``: WSGI の設定"
+msgstr "``zope.ini``：WSGI の設定"
 
 #: ../../operation.rst:74
 msgid ""
@@ -225,7 +225,7 @@ msgstr ""
 
 #: ../../operation.rst:124
 msgid "``zope.conf``: Zope settings"
-msgstr "``zope.conf``: Zope の設定"
+msgstr "``zope.conf``：Zope の設定"
 
 #: ../../operation.rst:126
 msgid "You configure Zope itself in ``etc/zope.conf``."
@@ -300,7 +300,9 @@ msgstr "Zope をデーモンとして実行する"
 
 #: ../../operation.rst:171
 msgid "Zope itself has no built-in support for running as a daemon any more."
-msgstr "Zope 自体が、デーモンとして実行することを同梱でサポートすることはもうありません。"
+msgstr ""
+"Zope 自体が、デーモンとして実行することを組み込みでサポートすることは"
+"もうありません。"
 
 #: ../../operation.rst:173
 msgid ""
@@ -322,7 +324,7 @@ msgid ""
 "instance runs under is ``zope``:"
 msgstr ""
 "代わりに、supervisord のようなプロジェクトを使ったり、ほとんどの"
-"Linux バージョンに乗っている ``systemd`` のような OS 同梱のプロセスマネージャーを"
+"Linux バージョンに乗っている ``systemd`` のような OS 組み込みのプロセスマネージャーを"
 "使えます。例として、次の ``systemd`` のサービス設定は"
 " ``runwsgi`` スクリプトと一緒に動きます。"
 "buildout は ``/opt/zopeinstance`` に配置され、"
@@ -398,7 +400,7 @@ msgstr ""
 
 #: ../../operation.rst:266
 msgid "Running Zope (plone.recipe.zope2instance install)"
-msgstr ""
+msgstr "Zope を実行する（plone.recipe.zope2instance でのインストール）"
 
 #: ../../operation.rst:267
 msgid ""
@@ -407,14 +409,21 @@ msgid ""
 "above. The following examples assume that the name of the buildout "
 "section was ``zopeinstance``."
 msgstr ""
+"plone.recipe.zope2instance を使用したインストールでは、"
+" スクリプトの名前と呼び出しが若干異なりますが、結果は上で述べた通りです。"
+"以下の例では、buildout セクションの名前が zopeinstance であったと"
+"仮定します。"
+
 
 #: ../../operation.rst:285
 msgid "The ``zopeinstance`` runner script can daemonize the Zope process:"
 msgstr ""
+"``zopeinstance`` ランナースクリプトは Zope プロセスをデーモン化できます。"
 
 #: ../../operation.rst:293
 msgid "Here's how to get status information and how to stop the Zope instance:"
 msgstr ""
+"ステータスの情報の取り方と Zope インスタンスの停止の仕方は次の通りです。"
 
 #: ../../operation.rst:304
 msgid ""
@@ -426,10 +435,17 @@ msgid ""
 "``/opt/zopeinstance`` and the user account your Zope instance runs under "
 "is ``zope``:"
 msgstr ""
+"リブート時に自動的にインスタンスを起動させるには、"
+"OS のサービス起動機能と統合する必要があります。"
+"例として、次の ``systemd`` のサービス設定は ``plone.recipe.zope2instance`` "
+"によって生成された起動/停止スクリプトと連動します。"
+"スクリプト名は ``zopeinstance``、buildout は ``/opt/zopeinstance``、"
+"Zope インスタンスを動作させるユーザーアカウントは ``zope`` であると"
+"仮定します。"
 
 #: ../../operation.rst:347
 msgid "Debugging can be done at the command line:"
-msgstr ""
+msgstr "コマンドラインでデバッグができます。"
 
 #: ../../operation.rst:368
 msgid ""
@@ -437,20 +453,27 @@ msgid ""
 "injected into the top level namespace, it represents the root application"
 " object for your site."
 msgstr ""
+"コマンドラインから Python スクリプトを走らせることもできます。"
+"``app`` という名前は、トップレベルの名前空間に挿入され、"
+"サイトのルートアプリケーションオブジェクトを表します。"
 
 #: ../../operation.rst:379
 msgid "If you need to add a Manager to an existing Zope instance:"
 msgstr ""
+"既存の Zope インスタンスに Manager を追加する必要があるなら、"
+"次のようにしてください。"
 
 #: ../../operation.rst:388
 msgid "Logging In To Zope"
-msgstr ""
+msgstr "Zope にログインする"
 
 #: ../../operation.rst:390
 msgid ""
 "Once you've started Zope, you can then connect to the Zope webserver by "
 "directing your browser to::"
 msgstr ""
+"Zope を起動したら、ブラウザで次の URL にアクセスすることで Zope の"
+"Web サーバーに接続できます。"
 
 #: ../../operation.rst:395
 msgid ""
@@ -458,6 +481,8 @@ msgid ""
 "Zope.  If you changed the HTTP port as described, use the port you "
 "configured."
 msgstr ""
+"'yourhost' の場所には Zope が走っているマシンの DNS 名か IP アドレスを"
+"入れてください。"
 
 #: ../../operation.rst:399
 msgid ""
@@ -466,6 +491,11 @@ msgid ""
 "instance creation, or configured into your buildout configuration for "
 "installs based on ``plone.recipe.zope2instance``."
 msgstr ""
+"ユーザー名とパスワードの入力を求められます。"
+"Zope インスタンスを作ったときに、プロンプトに応答して入力したユーザー名と"
+"パスワードを使ってください。"
+"``plone.recipe.zope2instance`` に基づいてインストールしたなら、"
+"buildout コンフィグの中で設定したユーザー名とパスワードを使ってください。"
 
 #: ../../operation.rst:404
 msgid ""
@@ -474,20 +504,26 @@ msgid ""
 "between Zope objects and on the right you can edit them by selecting "
 "different management functions with the tabs at the top of the frame."
 msgstr ""
+"これで `Zope を実行する` は終わりです！ふたつのフレームに別れた"
+" Zope の管理画面を見ているはずです。左側のものでは Zope オブジェクトの間を"
+"移動できます。右側のものではオブジェクトを編集できます。"
+"編集時にはフレームの上部にあるタブで異なる管理機能を選択できます。"
 
 #: ../../operation.rst:410
 msgid ""
 "To create content to be rendered at http://yourhost:8080/ create a `Page "
 "Template` or `DTML Document` named ``index_html``."
 msgstr ""
+"http://yourhost:8080/ に描画する内容を作るには、``index_html`` "
+"という名前の `Page Template` か `DTML Document` を作ってください。"
 
 #: ../../operation.rst:415
 msgid "Special access user accounts"
-msgstr ""
+msgstr "特別なアクセス権限をもつユーザーアカウント"
 
 #: ../../operation.rst:418
 msgid "The Initial User"
-msgstr ""
+msgstr "初期ユーザー（Initial User）"
 
 #: ../../operation.rst:419
 msgid ""
@@ -496,6 +532,10 @@ msgid ""
 "use of the 'inituser' file in the directory specified as the instance "
 "home."
 msgstr ""
+"初期ユーザー名とパスワードは Zope サイトで通常の Manager を作成する"
+" \"自動処理（bootstrap）\" をするために必要になります。"
+"これはインスタンスホームとして指定されたディレクトリの中の 'inituser' "
+"ファイルを使うことによって実現されます。"
 
 #: ../../operation.rst:424
 msgid ""
@@ -504,16 +544,22 @@ msgid ""
 "and, if it exists, will add the user defined in the file to the root user"
 " folder."
 msgstr ""
+"Zope が初めて起動したとき、Zope はルートユーザーフォルダの中に"
+"ユーザーが定義されていないことを検知します。"
+"Zope は 'inituser' ファイルを探して、もしあれば、そのファイル内に定義された"
+"ユーザーをルートフォルダに追加します。" 
 
 #: ../../operation.rst:429
 msgid ""
 "Normally, 'inituser' is created by the ``makewsgiinstance`` install "
 "script."
 msgstr ""
+"通常、'inituser' は ``makewsgiinstance`` インストールスクリプトによって"
+"作られます。"
 
 #: ../../operation.rst:434
 msgid "The super user (\"break glass in emergency\" user)"
-msgstr ""
+msgstr "スーパーユーザー（Super User：緊急用のユーザー）"
 
 #: ../../operation.rst:435
 msgid ""
@@ -522,6 +568,11 @@ msgid ""
 " instance home. The file has one line with a colon-separated login and "
 "password, like:"
 msgstr ""
+"Zope のインスタンスから締め出されてしまったら、インスタンスホームとして"
+"定義されたディレクトリ内の ``access`` という名前のファイルを置き換える"
+"ことで、ユーザーを作ることができます。"
+"そのファイルはコロンで区切られたログインとパスワードを一行で持っていて、"
+"次のようになっています。"
 
 #: ../../operation.rst:443
 msgid ""
@@ -529,22 +580,31 @@ msgid ""
 "account cannot create any content, but it can add new users to the user "
 "folder or edit existing users to get you out of a bind."
 msgstr ""
+"ファイルの中身を書き換えたら、Zope を再起動して、ログインするために"
+"これらの認証情報を使ってください。"
+"このユーザーアカウントのタイプではコンテンツを作ることはできません。"
+"しかし、ユーザーフォルダに新しいユーザーを追加したり、既存のユーザーを"
+"編集したりすることはできるので、窮地を脱することができます。"
 
 #: ../../operation.rst:447
 msgid ""
 "Do not forget to delete the ``access`` file and restart Zope when you are"
 " done."
 msgstr ""
+"用事が済んだら、``access`` ファイルを削除して、Zope を再起動することを"
+"忘れないでください。"
 
 #: ../../operation.rst:452
 msgid "Troubleshooting"
-msgstr ""
+msgstr "トラブルシューティング"
 
 #: ../../operation.rst:454
 msgid ""
 "This version of Zope requires Python 3.7 and later. It will *not* run "
 "with any version of PyPy."
 msgstr ""
+"このバージョンの Zope は Python3.7 以上が必要です。"
+"PyPy ではどのバージョンを使っても Zope は動作しません。"
 
 #: ../../operation.rst:457
 msgid ""
@@ -554,14 +614,21 @@ msgid ""
 "from source all the configuration information should already be "
 "available."
 msgstr ""
+"Python 拡張をビルドするためには、Python の設定情報を利用できるようにしておく"
+"必要があります。"
+"もし RPM 由来の Python であったら、python-devel （または python-dev）"
+"パッケージもインストールしておく必要があるかもしれません。"
+"もし Python をソースからビルドしたなら、全ての設定情報は"
+"既に利用できるようになっているはずです。"
 
 #: ../../operation.rst:463
 msgid "See the :doc:`changes` for important notes on this version of Zope."
 msgstr ""
+"このバージョンの Zope の重要事項については :doc:`changes` を見てください。"
 
 #: ../../operation.rst:470
 msgid "Using alternative WSGI server software"
-msgstr ""
+msgstr "他の WSGI サーバーソフトウェアを使う"
 
 #: ../../operation.rst:471
 msgid ""
@@ -571,10 +638,18 @@ msgid ""
 " provided by shim software, which means they work with the default Zope "
 "scripts for starting/stopping the service."
 msgstr ""
+"WSGI の統合では、Zope アプリケーションを走らせる WSGI サーバーソフトウェアを"
+"選択できます。"
+"この節ではいくつかの選択肢を紹介します。"
+"それらの選択肢は `PasteDeploy` のエントリーポイントか"
+"シム（訳者注：プログラム間の差異を埋めるもの）ソフトウェアによって提供"
+"されるエントリーポイントを持っています。"
+"それはサービスを起動/停止するデフォルトの Zope スクリプトと連動することを"
+"意味します。" 
 
 #: ../../operation.rst:479
 msgid "Things to watch out for"
-msgstr ""
+msgstr "気を付けること"
 
 #: ../../operation.rst:480
 msgid ""
@@ -585,6 +660,13 @@ msgid ""
 "number of ZODB connections. If the WSGI server lets you configure the "
 "number of threads, 4 is a safe choice."
 msgstr ""
+"ZODB はコネクションプールを使っています。作業スレッドはプールから"
+"コネクションを取得してコンテンツを提供し、作業が終わるとコネクションを"
+"解放します。"
+"コネクションプールのデフォルトのサイズは 7 です。"
+"アプリケーションのスレッド数は、ZODB のコネクション数を下回る安全な数を"
+"選ぶべきです。"
+"WSGI サーバーでスレッド数を設定するなら、4 が安全な選択です。"
 
 #: ../../operation.rst:487
 msgid ""
@@ -593,6 +675,12 @@ msgid ""
 "or more instances with less threads each, choose the latter. Create more "
 "separate Zope instances and set the WSGI server threads value to e.g. 2."
 msgstr ""
+"Zope 2 から推奨されていて、今だに有効なものは他にもあります。"
+"スレッド数は多いがインスタンス数の少ない Zope の構成と、"
+"スレッド数は少ないがインスタンス数の多い Zope の構成なら、"
+"後者を選んでください。"
+"より多くの独立した Zope インスタンスを作り、WSGI サーバーのスレッドの値は、"
+"例えば 2 に設定してください。" 
 
 #: ../../operation.rst:494
 msgid ""
@@ -601,44 +689,55 @@ msgid ""
 "worker. Otherwise you will see issues due to concurrent ZODB access by "
 "more than one process, which may corrupt your ZODB."
 msgstr ""
+"例えば ``gunicorn`` のような WSGI サーバーソフトウェアでワーカープロセスの"
+"数を設定できても、単一のワーカーより多く設定しないでください。"
+"そうしないと、複数のプロセスからの ZODB への同時アクセスによる問題が起こり、"
+"ZODB が壊れるかもしれません。"
 
 #: ../../operation.rst:501
 msgid "Test criteria for recommendations"
-msgstr ""
+msgstr "推奨のテスト基準"
 
 #: ../../operation.rst:502
 msgid "A simple contrived load test was done with the following parameters:"
 msgstr ""
+"次のパラメーターを用いて、簡単な仕掛けを含む負荷テストを実施しました。"
 
 #: ../../operation.rst:504
 msgid "100 concurrent clients accessing Zope"
-msgstr ""
+msgstr "100 クライアントから Zope への同時アクセス"
 
 #: ../../operation.rst:505
 msgid "100 seconds run time"
-msgstr ""
+msgstr "100 秒間の実行時間"
 
 #: ../../operation.rst:506
 msgid "the clients just fetch \"/\""
-msgstr ""
+msgstr "\"/\" を取得するだけのクライアント"
 
 #: ../../operation.rst:507
 msgid "standard Zope 4 instances, one with ZEO and one without"
 msgstr ""
+"標準の Zope 4 のインスタンス 2 つで、片方は ZEO あり、"
+"もう片方はなし"
 
 #: ../../operation.rst:508
 msgid "Python 2.7.16 on macOS Mojave/10.14.4"
 msgstr ""
+"macOS Mojave/10.14.4 上の Python 2.7.16"
 
 #: ../../operation.rst:509
 msgid ""
 "standard WSGI server configurations, the only changes are to number of "
 "threads and/or number of workers where available."
 msgstr ""
+"スレッド数および/または利用可能なワーカー数だけ変更した"
+"標準の WSGI サーバー設定"
 
 #: ../../operation.rst:512
 msgid "This load test uncovered several issues:"
 msgstr ""
+"この負荷テストはいくつかの問題を明らかにしました。"
 
 #: ../../operation.rst:514
 msgid ""
@@ -647,6 +746,10 @@ msgid ""
 "the slowdown originates. Others reached 500-750 requests/second. "
 "``cheroot`` only served 12 requests/second per configured thread."
 msgstr ""
+"``cheroot`` （テストされたバージョン：6.5.5）は他のどれよりも数段遅かった"
+"です。他とは違い、CPU を使い切ることがありませんでした。"
+"減速の原因は不明です。他が 500-750 リクエスト/秒に達したのに対して、"
+"``cheroot`` は設定したスレッド毎に 12 リクエスト/秒しか対応できませんでした。"
 
 #: ../../operation.rst:518
 msgid ""
@@ -655,6 +758,10 @@ msgid ""
 "but then hangs and serves no requests for several seconds, before picking"
 " up again."
 msgstr ""
+"``gunicorn`` （テストされたバージョン：19.9.0） は ZEO なしの Zope インスタンス"
+"に対してとても奇妙な振る舞いを示しました。"
+"約 500 リクエスト/秒までは応答しますが、その後ハングして、再度受け付けるよう"
+"になるまで数秒リクエストを受け付けませせん。
 
 #: ../../operation.rst:521
 msgid ""
@@ -664,6 +771,11 @@ msgid ""
 "it. Switching to an asynchronous type of worker (tested with ``gevent``) "
 "did not make a difference."
 msgstr ""
+"``gunicorn`` （テストされたバージョン：19.9.0）は ZEO インスタンスを全く"
+"好みません。スレッドやワーカーについてどのように設定しても、"
+"``gunicorn`` は CTRL-C でも止められないほど酷くハングしました。"
+"ワーカーのタイプを非同期（``gevent`` でテストしました）に変更しても、"
+"違いはありませんでした。"
 
 #: ../../operation.rst:526
 msgid ""
@@ -674,6 +786,12 @@ msgid ""
 "unthreaded mode, the service speed was inconsistent. Just like "
 "``gunicorn`` it had intermittent hangs before recovering."
 msgstr ""
+"``werkzeug`` （テストされたバージョン：0.15.2）ではスレッド数を指定する"
+"ことはできません。マルチスレッドを使うかどうかだけ設定できます。"
+"スレッドモードでは、多くのスレッドが生成され、すぐに ZODB のコネクション"
+"プールの上限に達してしまうので、Zope ではアンスレッドモードだけ使えます。"
+"アンスレッドモードでも、サービススピードは一定ではありません。"
+"``gunicorn`` のように回復するまで断続的にハングしました。"
 
 #: ../../operation.rst:532
 msgid ""
@@ -681,6 +799,9 @@ msgid ""
 "requests/second against both the ZEO and non-ZEO Zope instance, even "
 "though it is single-threaded."
 msgstr ""
+"``bjoern`` （テストされたバージョン：3.0.0）は明らかにスピード面での勝者"
+"で、740 リクエスト/秒の速度で ZEO と ZEO なしの両方の Zope インスタンスに"
+"対して処理しました。"
 
 #: ../../operation.rst:535
 #, python-format
@@ -690,14 +811,20 @@ msgid ""
 "well as ``plone.recipe.zope2instance`` use it as the default and make it "
 "very convenient to use."
 msgstr ""
+"``waitress`` （テストされたバージョン：1.3.0）はオールラウンドでベストな"
+"選択肢です。``bjoern`` より 10-15% ほど遅いですが、"
+"組み込みの WSGI ツールと ``plone.recipe.zope2instance`` との両方が"
+" ``waitress`` をデフォルトとして使っており、"
+"とても簡単に使えるようになっています。"
 
 #: ../../operation.rst:542
 msgid "Recommended WSGI servers"
-msgstr ""
+msgstr "推奨の WSGI サーバー"
 
 #: ../../operation.rst:545
 msgid "waitress (the default and recommended choice)"
 msgstr ""
+"waitress （デフォルトで推奨の選択）"
 
 #: ../../operation.rst:546
 msgid ""
@@ -709,14 +836,22 @@ msgid ""
 "<https://docs.pylonsproject.org/projects/waitress/>`_ for additional "
 "information."
 msgstr ""
+"上で説明した ``mkwsgiinstance`` スクリプトか、``plone.recipe.zope2instance`` "
+"buildout レシピを使って Zope のインスタンスを作ったのなら、"
+"自動的に ``waitress`` ベースのサーバーが使えます。"
+"デフォルトのセットアップはほとんどのアプリケーションにとって十分なものです。"
+"詳細な情報は `waitress のドキュメント "
+"<https://docs.pylonsproject.org/projects/waitress/>`_ を見てください。"
 
 #: ../../operation.rst:553
 msgid "Here's a very simple configuration using ``plone.recipe.zope2instance``:"
 msgstr ""
+"これは ``plone.recipe.zope2instance`` を使ったとても簡単な設定です。"
 
 #: ../../operation.rst:564
 msgid "Note the empty ``eggs`` section, you cannot leave it out."
 msgstr ""
+"空の ``eggs`` セクションに注意してください。省くことはできません。"
 
 #: ../../operation.rst:566
 msgid ""
@@ -724,10 +859,14 @@ msgid ""
 " full list is `part of the waitress documentation "
 "<https://docs.pylonsproject.org/projects/waitress/en/stable/arguments.html>`_."
 msgstr ""
+"``waitress`` はたくさんのオプションがあり、buildout セクションに追加できます。"
+"完全な一覧は `waitress のドキュメントの一部 "
+"<https://docs.pylonsproject.org/projects/waitress/en/stable/arguments.html>`_"
+" に掲載されています。"
 
 #: ../../operation.rst:572
 msgid "bjoern (the fastest)"
-msgstr ""
+msgstr "bjoern（最速）"
 
 #: ../../operation.rst:573
 msgid ""
@@ -737,20 +876,28 @@ msgid ""
 "package` section for details on how to integrate `bjoern` using Zope's "
 "own ``runwsgi`` script and how to create a suitable WSGI configuration."
 msgstr ""
+"`bjoern WSGI サーバー <https://github.com/jonashaag/bjoern>`_ は"
+" `dataflake.wsgi.bjoern <https://dataflakewsgibjoern.readthedocs.io/>`_ "
+"というシムパッケージを使って統合することができます。"
+"``runwsgi`` スクリプトを使って `bjoern` を統合する方法や、"
+"適した WSGI の設定を作る方法の詳細は、`Using this package` 節を見てください。"
 
 #: ../../operation.rst:579 ../../operation.rst:690
 msgid ""
 "If you use ``plone.recipe.zope2instance``, the following section will "
 "pull in the correct dependencies:"
 msgstr ""
+"``plone.recipe.zope2instance`` を使うなら、次のセクションは正しい"
+"ディペンデンシーを取ってきます。"
 
 #: ../../operation.rst:595
 msgid "Problematic WSGI servers"
-msgstr ""
+msgstr "問題のある WSGI サーバー"
+
 
 #: ../../operation.rst:598
 msgid "werkzeug"
-msgstr ""
+msgstr "werkzeug"
 
 #: ../../operation.rst:599
 msgid ""
@@ -762,6 +909,12 @@ msgid ""
 "package` section for how to integrate `werkzeug` using Zope's own "
 "``runwsgi`` script and how to create a suitable WSGI configuration."
 msgstr ""
+"`werkzeug <https://palletsprojects.com/p/werkzeug/>`_ は WSGI ライブラリで、"
+"単なる WSGI サーバーだけでなく、パワフルなデバッガーも含んでいます。"
+"`dataflake.wsgi.werkzeug <https://dataflakewsgiwerkzeug.readthedocs.io/>`_ "
+"というシムパッケージを使って Zope と簡単に統合できます。"
+"``runwsgi`` スクリプトを使って `werkzrug` を統合する方法や、"
+"適した WSGI の設定を作る方法の詳細は、`Using this package` 節を見てください。"
 
 #: ../../operation.rst:606
 msgid ""
@@ -769,10 +922,13 @@ msgid ""
 "pull in the correct dependencies, after you have created a WSGI "
 "configuration file:"
 msgstr ""
+"``plone.recipe.zope2instance`` を使うなら、WSGI コンフィグファイルを"
+"見てください。"
+"作った後に、次のセクションは正しいディペンデンシーを取ってきます。"
 
 #: ../../operation.rst:622
 msgid "gunicorn"
-msgstr ""
+msgstr "gunicorn"
 
 #: ../../operation.rst:623
 msgid ""
@@ -781,6 +937,10 @@ msgid ""
 "buildout configuration section will create a ``bin/runwsgi`` script that "
 "uses `gunicorn`."
 msgstr ""
+"`gunicorn WSGI サーバー <https://gunicorn.org/>`_ は組み込みの "
+"`PasteDeploy` エントリーポイントをもっており、簡単に統合できます。"
+"次の buildout コンフィグのセクションの例は、`gunicorn` を使う "
+"``bin/runwsgi`` スクリプトを作ります。" 
 
 #: ../../operation.rst:638
 msgid ""
@@ -790,10 +950,15 @@ msgid ""
 "section on `Configuration Overview`, for Paster Application configuration"
 " information. A very simple server configuration looks like this:"
 msgstr ""
+"このスクリプトは、自分で作成する必要がある WSGI コンフィグファイルとともに"
+"使うことができます。`gunicorn のドキュメント <https://docs.gunicorn.org/>`_ "
+"を見てください。特に Paster アプリケーションの設定についての情報を "
+"`Configuration Overview` の `Configuration File` 節で確認してください。"
+"とてもシンプルな設定例は次の通りです。"
 
 #: ../../operation.rst:652
 msgid "You can then run the server using ``runwsgi``:"
-msgstr ""
+msgstr "``runwsgi`` を使ってサーバーを走らせることができます。"
 
 #: ../../operation.rst:661
 msgid ""
@@ -802,6 +967,11 @@ msgid ""
 "deprecated in favor of using their own built-in scripts. This is "
 "misleading. Future versions will not show this message."
 msgstr ""
+"gunicorn のバージョン 19.9.0 以下では、起動時にコンソールに怪しい警告"
+"メッセージが表示されます。これは WSGI エントリーポイントが非推奨である"
+"ことを示唆し、gunicorn の組み込みスクリプトを使用することを推奨している"
+"ようです。これは誤解を招きます。それより後のバージョンでは"
+"このメッセージは表示されません。"
 
 #: ../../operation.rst:666
 msgid ""
@@ -810,10 +980,14 @@ msgid ""
 "configuration file path to the path of the configuration file you created"
 " yourself:"
 msgstr ""
+"`plone.recipe.zope2instance` を使うなら、gunicorn の egg を buildout "
+"セクションに追加して、WSGI コンフィグファイルのパスを"
+"自分で作成したコンフィグファイルのパスに設定することで "
+"gunicorn を使うことができます。"
 
 #: ../../operation.rst:683
 msgid "cheroot"
-msgstr ""
+msgstr "cheroot"
 
 #: ../../operation.rst:684
 msgid ""
@@ -823,10 +997,15 @@ msgid ""
 "package` section for details on how to integrate `cheroot` using Zope's "
 "own ``runwsgi`` script and how to create a suitable WSGI configuration."
 msgstr ""
+"`cheroot WSGI サーバー <https://cheroot.cherrypy.org>`_ は"
+" `dataflake.wsgi.cheroot <https://dataflakewsgicheroot.readthedocs.io/>`_ "
+"というシムパッケージを使って統合することができます。"
+"``runwsgi`` スクリプトを使って `cheroot` を統合する方法や、"
+"適した WSGI の設定を作る方法の詳細は、`Using this package` 節を見てください。"
 
 #: ../../operation.rst:706
 msgid "Debugging Zope applications under WSGI"
-msgstr ""
+msgstr "WSGI の下で Zope アプリケーションをデバッグする"
 
 #: ../../operation.rst:707
 msgid ""
@@ -834,6 +1013,10 @@ msgid ""
 "activate the debugger. In addition, you can take advantage of WSGI "
 "middleware or debugging facilities built into the chosen WSGI server."
 msgstr ""
+"デバッガーを有効にするステートメントを追加することで、WSGI ベースの"
+" Zope アプリケーションをデバッグすることができます。"
+"加えて、WSGI ミドルウェアや、選択した WSGI サーバーに"
+"組み込まれたデバッグ機能を利用できます。"
 
 #: ../../operation.rst:712
 msgid ""
@@ -843,12 +1026,18 @@ msgid ""
 " including ``standard_error_message`` so that exceptions are not masked "
 "or hidden."
 msgstr ""
+"アプリケーションを開発する時やデバッグする時、つまりデバッグツールを"
+"使いたい時に、Zope インスタンスを `例外デバッグモード` で起動できます。"
+"これは ``standard_error_message`` を含む全ての登録された例外ビューを無効にし、"
+"例外がマスクされたり隠されたりしないようにします。"
 
 #: ../../operation.rst:717
 msgid ""
 "This is how you run Zope in exceptions debug mode using the built-in "
 "``runwsgi`` script:"
 msgstr ""
+"組み込みの ``runwsgi`` スクリプトを使って、Zope を例外デバッグモードで"
+"走らせる方法は次の通りです。"
 
 #: ../../operation.rst:724
 msgid ""
@@ -859,12 +1048,21 @@ msgid ""
 "was named ``zopeinstance``, your Zope configuration file will be at "
 "`parts/zopeinstance/etc/zope.conf`."
 msgstr ""
+"``plone.recipe.zope2instance`` を使って環境を構築した場合は、"
+"Zope のコンフィグファイルを手動で変更する必要があります。"
+"アプリケーションを起動する前に、``debug-exceptions on`` の設定を加える"
+"ことで、例外デバッグモードを有効にしてください。"
+"この例では、Zope インスタンスは ``zopeinstance`` という名前であり、"
+"Zope のコンフィグファイルは `parts/zopeinstance/etc/zope.conf` にあること"
+"を想定しています。"
 
 #: ../../operation.rst:734
 msgid ""
 "With Zope set up to let WSGI handle exceptions, these are a few options "
 "for the WSGI pipeline:"
 msgstr ""
+"Zope が WSGI に例外を処理させるように設定する時に、"
+"WSGI パイプラインのためのオプションがあります。"
 
 #: ../../operation.rst:737
 msgid ""
@@ -872,6 +1070,9 @@ msgid ""
 "the browser by configuring ``expose_tracebacks``. The keyword works in "
 "both standard and ``plone.recipe.zope2instance`` configurations:"
 msgstr ""
+"``waitress`` を使う場合、``expose_tracebacks`` を設定することで"
+"ブラウザに例外のトレースバックを出力させることができます。"
+"このキーワードは標準と ``plone.recipe.zope2instance`` の構成で動きます。"
 
 #: ../../operation.rst:758
 msgid ""
@@ -883,6 +1084,14 @@ msgid ""
 "<https://werkzeug.palletsprojects.com/en/0.15.x/debug/#using-the-"
 "debugger>`_ will show you how to use it."
 msgstr ""
+"``werkzeug`` にはフル装備のデバッグツールが含まれています。"
+"どのようにデバッガーを有効にするかは "
+"`dataflake.wsgi.werkzeug のドキュメント "
+"<https://dataflakewsgiwerkzeug.readthedocs.io/en/latest/usage.html#using-"
+"the-werkzeug-debugger>`_ を見てください。"
+"設定を終えて起動をすると、`werkzeug デバッガー "
+"<https://werkzeug.palletsprojects.com/en/0.15.x/debug/#using-the-"
+"debugger>`_ が表示されて、使い方を教えてくれます。"
 
 #: ../../operation.rst:768
 msgid "Zope configuration reference"
