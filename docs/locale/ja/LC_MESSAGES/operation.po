@@ -27,8 +27,8 @@ msgid ""
 "(see :doc:`INSTALL`), the end result is configured and operated the same "
 "way."
 msgstr ""
-"どのような方法で Zope をインストールし、サーバーインスタンスを作ったとしても(see "
-":doc:`INSTALL`)、最終的には同じ方法で設定と運用がなされます。"
+"どのような方法で Zope をインストールし、サーバーインスタンスを作ったとしても（"
+":doc:`INSTALL` を見てください）、最終的には同じ方法で設定と運用がなされます。"
 
 #: ../../operation.rst:8
 msgid ""
