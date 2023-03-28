@@ -15,6 +15,7 @@
 import codecs
 import io
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -26,8 +27,6 @@ from Zope2.Startup.options import ZopeWSGIOptions
 
 
 _SCHEMA = None
-TEMPNAME = tempfile.mktemp()
-TEMPVAR = os.path.join(TEMPNAME, "var")
 
 
 def getSchema():
@@ -43,8 +42,12 @@ class WSGIStartupTestCase(unittest.TestCase):
 
     def setUp(self):
         self.default_encoding = ZPublisher.HTTPRequest.default_encoding
+        self.TEMPNAME = tempfile.mkdtemp()
+        self.TEMPVAR = os.path.join(self.TEMPNAME, "var")
+        os.mkdir(self.TEMPVAR)
 
     def tearDown(self):
+        shutil.rmtree(self.TEMPNAME)
         Zope2.Startup.datatypes.default_zpublisher_encoding(
             self.default_encoding)
 
@@ -52,17 +55,10 @@ class WSGIStartupTestCase(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        text = text.replace("<<INSTANCE_HOME>>", TEMPNAME)
+        text = text.replace("<<INSTANCE_HOME>>", self.TEMPNAME)
         sio = io.StringIO(text)
-
-        os.mkdir(TEMPNAME)
-        os.mkdir(TEMPVAR)
-        try:
-            conf, handler = ZConfig.loadConfigFile(getSchema(), sio)
-        finally:
-            os.rmdir(TEMPVAR)
-            os.rmdir(TEMPNAME)
-        self.assertEqual(conf.instancehome, TEMPNAME)
+        conf, handler = ZConfig.loadConfigFile(getSchema(), sio)
+        self.assertEqual(conf.instancehome, self.TEMPNAME)
         return conf, handler
 
     def test_load_config_template(self):

@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
+- Implement code change suggestions from CodeQL scanning.
+
 - Added Japanese translations for some Sphinx docs
   (`#1109 <https://github.com/zopefoundation/Zope/issues/1109>`_)
 

@@ -15,14 +15,15 @@ from .util import useChameleonEngine
 
 class TypeSniffingTestCase(unittest.TestCase):
 
-    TEMPFILENAME = tempfile.mktemp(".zpt")
-
     def setUp(self):
         from Products.PageTemplates.interfaces import \
             IUnicodeEncodingConflictResolver
         from Products.PageTemplates.unicodeconflictresolver import \
             DefaultUnicodeEncodingConflictResolver
         from zope.component import provideUtility
+
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
 
         # Make sure we use the new default chameleon engine
         useChameleonEngine()
@@ -148,7 +149,6 @@ class TypeSniffingTestCase(unittest.TestCase):
 
 class LineEndingsTestCase(unittest.TestCase):
 
-    TEMPFILENAME = tempfile.mktemp(".zpt")
     TAL = (b'''<html tal:replace="python: ' '.join(('foo',''',
            b'''                                    'bar',''',
            b'''                                    'spam',''',
@@ -156,6 +156,8 @@ class LineEndingsTestCase(unittest.TestCase):
     OUTPUT = 'foo bar spam eggs'
 
     def setUp(self):
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
         transaction.begin()
         self.root = makerequest(Zope2.app())
 
@@ -185,7 +187,9 @@ class LineEndingsTestCase(unittest.TestCase):
 
 class LazyLoadingTestCase(unittest.TestCase):
 
-    TEMPFILENAME = tempfile.mktemp(".zpt")
+    def setUp(self):
+        with tempfile.NamedTemporaryFile(suffix=".zpt", delete=False) as fp:
+            self.TEMPFILENAME = fp.name
 
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):

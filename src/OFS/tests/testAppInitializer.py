@@ -24,9 +24,6 @@ from OFS.Application import Application
 from Zope2.Startup.options import ZopeWSGIOptions
 
 
-TEMPNAME = tempfile.mktemp()
-TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
-
 good_cfg = """
 instancehome <<INSTANCE_HOME>>
 
@@ -54,13 +51,13 @@ class TestInitialization(unittest.TestCase):
         global original_config
         if original_config is None:
             original_config = getConfiguration()
-        os.makedirs(TEMPNAME)
-        os.makedirs(TEMPPRODUCTS)
+        self.TEMPNAME = tempfile.mkdtemp()
+        os.mkdir(os.path.join(self.TEMPNAME, "Products"))
 
     def tearDown(self):
         import App.config
         App.config.setConfiguration(original_config)
-        shutil.rmtree(TEMPNAME)
+        shutil.rmtree(self.TEMPNAME)
         import Products
         Products.__path__ = [d for d in Products.__path__
                              if os.path.exists(d)]
@@ -69,13 +66,13 @@ class TestInitialization(unittest.TestCase):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        config_path = os.path.join(TEMPNAME, 'zope.conf')
+        config_path = os.path.join(self.TEMPNAME, 'zope.conf')
         with open(config_path, 'w') as fd:
-            fd.write(text.replace("<<INSTANCE_HOME>>", TEMPNAME))
+            fd.write(text.replace("<<INSTANCE_HOME>>", self.TEMPNAME))
 
         options = ZopeWSGIOptions(config_path)()
         config = options.configroot
-        self.assertEqual(config.instancehome, TEMPNAME)
+        self.assertEqual(config.instancehome, self.TEMPNAME)
         setConfiguration(config)
 
     def getOne(self):
@@ -100,7 +97,7 @@ class TestInitialization(unittest.TestCase):
         self.assertTrue('Authenticated' in app.__ac_roles__)
 
     def test_install_inituser(self):
-        fname = os.path.join(TEMPNAME, 'inituser')
+        fname = os.path.join(self.TEMPNAME, 'inituser')
         f = open(fname, 'w')
         f.write('theuser:password')
         f.close()
