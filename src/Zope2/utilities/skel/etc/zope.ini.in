@@ -62,12 +62,12 @@ formatter = generic
 
 [handler_accesslog]
 class = FileHandler
-args = ('<<INSTANCE_HOME>>/var/log/Z4.log','a')
+args = (r'<<INSTANCE_HOME>>/var/log/Z4.log','a')
 level = INFO
 formatter = message
 
 [handler_eventlog]
 class = FileHandler
-args = ('<<INSTANCE_HOME>>/var/log/event.log', 'a')
+args = (r'<<INSTANCE_HOME>>/var/log/event.log', 'a')
 level = INFO
 formatter = generic
