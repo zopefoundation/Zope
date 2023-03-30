@@ -18,6 +18,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Update to newest compatible versions of dependencies.
 
 - Update zope.ini.in skel to support log paths that use backslashes.
+  (`#1106 <https://github.com/zopefoundation/Zope/issues/1106>`_)
 
 
 5.8.1 (2023-03-17)
