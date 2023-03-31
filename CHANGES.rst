@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
+- Support Plone REST API calls with a query string.
+  For details see `plone/plone.restapi#1611
+  <https://github.com/plone/plone.restapi/issues/1611>`_.
+
 - Implement code change suggestions from CodeQL scanning.
 
 - Added Japanese translations for some Sphinx docs

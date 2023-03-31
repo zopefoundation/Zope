@@ -1441,7 +1441,7 @@ class ZopeFieldStorage(ValueAccessor):
                 raise NotImplementedError("request parameters and body")
             if fpos is not None:
                 fp.seek(fpos)
-        elif url_qs and content_type != "application/x-www-form-urlencoded":
+        elif fp and url_qs:
             raise NotImplementedError("request parameters and body")
         fl = []
         add_field = fl.append
