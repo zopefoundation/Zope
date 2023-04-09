@@ -365,16 +365,14 @@ def get_products():
     [(priority, dir_name, index, base_dir), ...] for each Product directory
     found, sort before returning """
     products = []
-    i = 0
-    for product_dir in Products.__path__:
+    for index, product_dir in enumerate(Products.__path__):
         product_names = os.listdir(product_dir)
         for product_name in product_names:
             if _is_package(product_dir, product_name):
                 # i is used as sort ordering in case a conflict exists
                 # between Product names.  Products will be found as
                 # per the ordering of Products.__path__
-                products.append((0, product_name, i, product_dir))
-        i = i + 1
+                products.append((0, product_name, index, product_dir))
     products.sort()
     return products
 
