@@ -1359,7 +1359,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             },
             None,
         )
-        with self.assertRaises(NotImplementedError()):
+        with self.assertRaises(NotImplementedError):
             req.processInputs()
 
     def test_issue_1095(self):
