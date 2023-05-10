@@ -10,9 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
-- Support Plone REST API calls with a query string.
-  For details see `plone/plone.restapi#1611
-  <https://github.com/plone/plone.restapi/issues/1611>`_.
+- Do not break on GET requests that pass a query string
+  and a `Content-Type` header.
+  For details see `#1117 <https://github.com/zopefoundation/Zope/pull/1117>`_.
 
 - Implement code change suggestions from CodeQL scanning.
 
