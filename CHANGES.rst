@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
+- Do not break on POST requests with Gunicorn WSGI
+  For details see `#1125 <https://github.com/zopefoundation/Zope/issues/1125>`_.
+
 - Do not break on GET requests that pass a query string
   and a `Content-Type` header.
   For details see `#1117 <https://github.com/zopefoundation/Zope/pull/1117>`_.

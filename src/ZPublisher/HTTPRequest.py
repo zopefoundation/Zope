@@ -1053,10 +1053,14 @@ class HTTPRequest(BaseRequest):
                 return URL
 
             if key == 'BODY' and self._file is not None:
-                p = self._file.tell()
-                self._file.seek(0)
+                try:
+                    fpos = self._file.tell()
+                    self._file.seek(0)
+                except Exception:
+                    fpos = None
                 v = self._file.read()
-                self._file.seek(p)
+                if fpos is not None:
+                    self._file.seek(fpos)
                 self.other[key] = v
                 return v
 
