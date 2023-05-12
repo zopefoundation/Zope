@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
+- Do not break on GET requests that pass a query string
+  and a `Content-Type` header.
+  For details see `#1117 <https://github.com/zopefoundation/Zope/pull/1117>`_.
+
 - Implement code change suggestions from CodeQL scanning.
 
 - Added Japanese translations for some Sphinx docs

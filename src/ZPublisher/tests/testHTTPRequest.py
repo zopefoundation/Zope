@@ -1332,6 +1332,36 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         self.assertEqual(req.form["a"], val)
 
+    def test_get_with_body_and_query_string_ignores_body(self):
+        req_factory = self._getTargetClass()
+        req = req_factory(
+            BytesIO(b"foo"),
+            {
+                "SERVER_NAME": "localhost",
+                "SERVER_PORT": "8080",
+                "REQUEST_METHOD": "GET",
+                "QUERY_STRING": "bar"
+            },
+            None,
+        )
+        req.processInputs()
+        self.assertDictEqual(req.form, {"bar": ""})
+
+    def test_put_with_body_and_query_string_raises(self):
+        req_factory = self._getTargetClass()
+        req = req_factory(
+            BytesIO(b"foo"),
+            {
+                "SERVER_NAME": "localhost",
+                "SERVER_PORT": "8080",
+                "REQUEST_METHOD": "PUT",
+                "QUERY_STRING": "bar"
+            },
+            None,
+        )
+        with self.assertRaises(NotImplementedError):
+            req.processInputs()
+
     def test_issue_1095(self):
         body = TEST_ISSUE_1095_DATA
         env = self._makePostEnviron(body)
