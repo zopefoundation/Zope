@@ -808,6 +808,54 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.PATH_INFO, '/test')
         self.assertEqual(req.args, ())
 
+    def test_processInputs_xmlrpc_query_string(self):
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<methodCall><methodName>test</methodName></methodCall>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        environ['QUERY_STRING'] = 'x=1'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.PATH_INFO, '/test')
+        self.assertEqual(req.args, ())
+        self.assertEqual(req.form["x"], '1')
+
+    def test_processInputs_xmlrpc_method(self):
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<methodCall><methodName>test</methodName></methodCall>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        environ['QUERY_STRING'] = ':method=method'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+        with self.assertRaises(BadRequest):
+            req.processInputs()
+
+    def test_processInputs_SOAP(self):
+        # ZPublisher does not really have SOAP support
+        # all it does is put the body into ``SOAPXML``
+        body = b'soap'
+        environ = TEST_POST_ENVIRON.copy()
+        environ['HTTP_SOAPACTION'] = "soapaction"
+        req = self._makeOne(stdin=BytesIO(body), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.SOAPXML, body)
+
+    def test_processInputs_SOAP_query_string(self):
+        # ZPublisher does not really have SOAP support
+        # all it does is put the body into ``SOAPXML``
+        body = b'soap'
+        environ = TEST_POST_ENVIRON.copy()
+        environ['QUERY_STRING'] = 'x=1'
+        environ['HTTP_SOAPACTION'] = "soapaction"
+        req = self._makeOne(stdin=BytesIO(body), environ=environ)
+        req.processInputs()
+        self.assertEqual(req.SOAPXML, body)
+        self.assertEqual(req.form["x"], '1')
+
     def test_processInputs_w_urlencoded_and_qs(self):
         body = b'foo=1'
         environ = {
@@ -1347,7 +1395,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         self.assertDictEqual(req.form, {"bar": ""})
 
-    def test_put_with_body_and_query_string_raises(self):
+    def test_put_with_body_and_query_string(self):
         req_factory = self._getTargetClass()
         req = req_factory(
             BytesIO(b"foo"),
@@ -1355,12 +1403,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 "SERVER_NAME": "localhost",
                 "SERVER_PORT": "8080",
                 "REQUEST_METHOD": "PUT",
-                "QUERY_STRING": "bar"
+                "QUERY_STRING": "bar=bar"
             },
             None,
         )
-        with self.assertRaises(NotImplementedError):
-            req.processInputs()
+        req.processInputs()
+        self.assertEqual(req.BODY, b"foo")
+        self.assertEqual(req.form["bar"], "bar")
 
     def test_issue_1095(self):
         body = TEST_ISSUE_1095_DATA

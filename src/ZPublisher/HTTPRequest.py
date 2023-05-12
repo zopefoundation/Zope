@@ -500,21 +500,15 @@ class HTTPRequest(BaseRequest):
         # __del__ method is called too early and closing FieldStorage.file.
         self._hold(fs)
 
-        if not hasattr(fs, 'list'):
-            if 'HTTP_SOAPACTION' in environ:
-                # Stash XML request for interpretation by a SOAP-aware view
-                other['SOAPXML'] = fs.value
-            elif (method == 'POST'
-                  and 'text/xml' in fs.headers.get('content-type', '')
-                  and use_builtin_xmlrpc(self)):
-                # Ye haaa, XML-RPC!
-                meth, self.args = xmlrpc.parse_input(fs.value)
-                response = xmlrpc.response(response)
-                other['RESPONSE'] = self.response = response
-                self.maybe_webdav_client = 0
-            else:
-                self._file = fs.file
-        else:
+        self._file = fs.file
+
+        if 'HTTP_SOAPACTION' in environ:
+            # Stash XML request for interpretation by a SOAP-aware view
+            other['SOAPXML'] = fs.value
+            if 'CONTENT_TYPE' not in environ:
+                environ['CONTENT_TYPE'] = 'application/soap+xml'
+
+        if fs.list:
             fslist = fs.list
             tuple_items = {}
             defaults = {}
@@ -871,6 +865,18 @@ class HTTPRequest(BaseRequest):
                             form[key] = item
 
             self.taintedform = taint(self.form)
+
+        if method == 'POST' \
+           and 'text/xml' in fs.headers.get('content-type', '') \
+           and use_builtin_xmlrpc(self):
+            # Ye haaa, XML-RPC!
+            if meth is not None:
+                raise BadRequest('method directive not supported for '
+                                 'xmlrpc request')
+            meth, self.args = xmlrpc.parse_input(fs.value)
+            response = xmlrpc.response(response)
+            other['RESPONSE'] = self.response = response
+            self.maybe_webdav_client = 0
 
         if meth:
             if 'PATH_INFO' in environ:
@@ -1437,13 +1443,9 @@ class ZopeFieldStorage(ValueAccessor):
                 if fp.read(1):
                     raise BadRequest("form data processing "
                                      "requires too much memory")
-            elif url_qs:
-                raise NotImplementedError("request parameters and body")
             if fpos is not None:
                 fp.seek(fpos)
-        elif url_qs and fp is not None:
-            raise NotImplementedError("request parameters and body")
-        fl = []
+        self.list = fl = []
         add_field = fl.append
         post_opts = {}
         if options.get("charset"):
@@ -1468,8 +1470,6 @@ class ZopeFieldStorage(ValueAccessor):
                     name=part.name, value=part.raw,
                     value_charset=_mp_charset(part))
             add_field(field)
-        if fl:
-            self.list = fl
 
 
 def _mp_charset(part):
