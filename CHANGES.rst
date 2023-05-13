@@ -17,6 +17,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   (a ``bytes`` object) or ``BODYFILE`` (a file like object).
   Fixes `#1122 <https://github.com/zopefoundation/Zope/issues/1122>`_.
 
+- Support access to the request's ``BODY`` key for WSGI servers
+  which hand over an unseekable request body (such as e.g.
+  ``Gunicorn``).
+  Fixes `#1125 <https://github.com/zopefoundation/Zope/issues/1125>`_.
+
 - Do not break on GET requests that pass a query string
   and a `Content-Type` header.
   For details see `#1117 <https://github.com/zopefoundation/Zope/pull/1117>`_.

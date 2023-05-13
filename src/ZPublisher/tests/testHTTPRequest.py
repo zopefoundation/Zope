@@ -907,6 +907,46 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         f.seek(0)
         self.assertEqual(next(f), b'test\n')
 
+    def test_processInputs_BODY(self):
+        s = BytesIO(b"body")
+        environ = TEST_POST_ENVIRON.copy()
+        environ["CONTENT_TYPE"] = "text/plain"
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        self.assertEqual(req["BODY"], b"body")
+        self.assertIs(req["BODYFILE"], s)
+
+    def test_processInputs_BODY_unseekable(self):
+        s = _Unseekable(BytesIO(b"body"))
+        environ = TEST_POST_ENVIRON.copy()
+        environ["CONTENT_TYPE"] = "text/plain"
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        self.assertEqual(req["BODY"], b"body")
+        self.assertIs(req["BODYFILE"], s)
+
+    def test_processInputs_seekable_form_data(self):
+        s = BytesIO(TEST_FILE_DATA)
+        environ = self._makePostEnviron(body=TEST_FILE_DATA)
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        f = req.form.get('smallfile')
+        self.assertEqual(list(f), [b'test\n'])
+        self.assertEqual(req["BODY"], TEST_FILE_DATA)
+        self.assertEqual(req["BODYFILE"].read(), TEST_FILE_DATA)
+
+    def test_processInputs_unseekable_form_data(self):
+        s = _Unseekable(BytesIO(TEST_FILE_DATA))
+        environ = self._makePostEnviron(body=TEST_FILE_DATA)
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        f = req.form.get('smallfile')
+        self.assertEqual(list(f), [b'test\n'])
+        # we cannot access ``BODY`` in this case
+        # as the underlying file has been read
+        with self.assertRaises(KeyError):
+            req["BODY"]
+
     def test__authUserPW_simple(self):
         user_id = 'user'
         password = 'password'
@@ -1498,6 +1538,13 @@ class TestSearchType(unittest.TestCase):
 
     def test_special(self):
         self.check("abc:a-_0b", ":a-_0b")
+
+
+class _Unseekable:
+    """Auxiliary class emulating an unseekable file like object"""
+    def __init__(self, file):
+        for m in ("read", "readline", "close", "__del__"):
+            setattr(self, m, getattr(file, m))
 
 
 TEST_POST_ENVIRON = {

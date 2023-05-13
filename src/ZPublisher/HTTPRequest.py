@@ -164,8 +164,8 @@ class HTTPRequest(BaseRequest):
 
     _hacked_path = None
     args = ()
-    _file = None
     _urls = ()
+    _fs = None
 
     charset = default_encoding
     retry_max_count = 0
@@ -190,7 +190,9 @@ class HTTPRequest(BaseRequest):
         # Clear all references to the input stream, possibly
         # removing tempfiles.
         self.stdin = None
-        self._file = None
+        if self._fs is not None:
+            self._fs.file = None
+            del self._fs
         self.form.clear()
         # we want to clear the lazy dict here because BaseRequests don't have
         # one.  Without this, there's the possibility of memory leaking
@@ -494,13 +496,7 @@ class HTTPRequest(BaseRequest):
 
         meth = None
 
-        fs = ZopeFieldStorage(fp, environ)
-
-        # Keep a reference to the FieldStorage. Otherwise it's
-        # __del__ method is called too early and closing FieldStorage.file.
-        self._hold(fs)
-
-        self._file = fs.file
+        self._fs = fs = ZopeFieldStorage(fp, environ)
 
         if 'HTTP_SOAPACTION' in environ:
             # Stash XML request for interpretation by a SOAP-aware view
@@ -1058,16 +1054,12 @@ class HTTPRequest(BaseRequest):
                     self._urls = self._urls + (key,)
                 return URL
 
-            if key == 'BODY' and self._file is not None:
-                p = self._file.tell()
-                self._file.seek(0)
-                v = self._file.read()
-                self._file.seek(p)
-                self.other[key] = v
+            if key == 'BODY' and self._fs.file is not None:
+                v = self.other[key] = self._fs.value
                 return v
 
-            if key == 'BODYFILE' and self._file is not None:
-                v = self._file
+            if key == 'BODYFILE' and self._fs.file is not None:
+                v = self._fs.file
                 self.other[key] = v
                 return v
 
@@ -1371,7 +1363,11 @@ class ValueDescriptor:
         except Exception:
             fpos = None
         try:
-            return file.read()
+            v = file.read()
+            if fpos is None:
+                # store the value as we cannot read it again
+                inst.value = v
+            return v
         finally:
             if fpos is not None:
                 file.seek(fpos)
@@ -1426,7 +1422,9 @@ class ZopeFieldStorage(ValueAccessor):
             hl.append(("content-disposition", content_disposition))
         self.headers = Headers(hl)
         parts = ()
-        if method == "POST":
+        if method == "POST" \
+           and content_type in \
+           ("multipart/form-data", "application/x-www-form-urlencoded"):
             try:
                 fpos = fp.tell()
             except Exception:
@@ -1445,6 +1443,9 @@ class ZopeFieldStorage(ValueAccessor):
                                      "requires too much memory")
             if fpos is not None:
                 fp.seek(fpos)
+            else:
+                # we cannot read the file again
+                self.file = None
         self.list = fl = []
         add_field = fl.append
         post_opts = {}
