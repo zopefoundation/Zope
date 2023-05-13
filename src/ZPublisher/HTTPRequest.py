@@ -165,7 +165,7 @@ class HTTPRequest(BaseRequest):
     _hacked_path = None
     args = ()
     _urls = ()
-    _fs = None
+    _file = None
 
     charset = default_encoding
     retry_max_count = 0
@@ -190,9 +190,8 @@ class HTTPRequest(BaseRequest):
         # Clear all references to the input stream, possibly
         # removing tempfiles.
         self.stdin = None
-        if self._fs is not None:
-            self._fs.file = None
-            del self._fs
+        self._file = None
+        self._fs = None
         self.form.clear()
         # we want to clear the lazy dict here because BaseRequests don't have
         # one.  Without this, there's the possibility of memory leaking
@@ -497,6 +496,7 @@ class HTTPRequest(BaseRequest):
         meth = None
 
         self._fs = fs = ZopeFieldStorage(fp, environ)
+        self._file = fs.file
 
         if 'HTTP_SOAPACTION' in environ:
             # Stash XML request for interpretation by a SOAP-aware view
@@ -1054,12 +1054,12 @@ class HTTPRequest(BaseRequest):
                     self._urls = self._urls + (key,)
                 return URL
 
-            if key == 'BODY' and self._fs.file is not None:
+            if key == 'BODY' and self._file is not None:
                 v = self.other[key] = self._fs.value
                 return v
 
-            if key == 'BODYFILE' and self._fs.file is not None:
-                v = self._fs.file
+            if key == 'BODYFILE' and self._file is not None:
+                v = self._file
                 self.other[key] = v
                 return v
 
