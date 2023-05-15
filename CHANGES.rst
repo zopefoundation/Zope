@@ -10,6 +10,18 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.2 (unreleased)
 ------------------
 
+- Allow ``ZPublisher`` to handle both a query string and a request body;
+  the request parameters from the query string are made available
+  in the request attribute ``form`` (a ``dict``),
+  the request body can be accessed via the request keys ``BODY``
+  (a ``bytes`` object) or ``BODYFILE`` (a file like object).
+  Fixes `#1122 <https://github.com/zopefoundation/Zope/issues/1122>`_.
+
+- Support access to the request's ``BODY`` key for WSGI servers
+  which hand over an unseekable request body (such as e.g.
+  ``Gunicorn``).
+  Fixes `#1125 <https://github.com/zopefoundation/Zope/issues/1125>`_.
+
 - Do not break on GET requests that pass a query string
   and a `Content-Type` header.
   For details see `#1117 <https://github.com/zopefoundation/Zope/pull/1117>`_.
