@@ -27,7 +27,6 @@ pycparser==2.21
 python-gettext==5.0
 pytz==2023.3
 roman==4.0
-setuptools==65.7.0
 six==1.16.0
 soupsieve==2.4.1
 transaction==3.1.0
