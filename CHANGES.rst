@@ -12,6 +12,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Add preliminary support for Python 3.12b2.
+
 
 5.8.3 (2023-06-15)
 ------------------
