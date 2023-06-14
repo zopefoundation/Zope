@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "fe63cb4c"
+commit-id = "b91d4ff9"
 
 [python]
 with-pypy = false
@@ -31,6 +31,10 @@ additional-config = [
 [tox]
 testenv-deps = [
     "cffi",
+    ]
+testenv-setenv = [
+    "py312: VIRTUALENV_PIP=23.1.2",
+    "py312: PIP_REQUIRE_VIRTUALENV=0",
     ]
 additional-envlist = [
     "pre-commit",
