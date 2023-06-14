@@ -372,26 +372,22 @@ def manage_addPageTemplate(self, id, title='', text='', encoding='utf-8',
     "Add a Page Template with optional file content."
 
     filename = ''
+    filehandle = None
     content_type = 'text/html'
 
-    if REQUEST and 'file' in REQUEST:
-        file = REQUEST['file']
-        filename = file.filename
-        text = file.read()
-        headers = getattr(file, 'headers', None)
+    if REQUEST and hasattr(REQUEST.get('file', None), 'read'):
+        filehandle = REQUEST['file']
+    elif hasattr(text, 'read'):
+        filehandle = text
+
+    if filehandle is not None:
+        filename = getattr(filehandle, 'filename', '')
+        text = filehandle.read()
+        headers = getattr(filehandle, 'headers', None)
         if headers and 'content_type' in headers:
             content_type = headers['content_type']
         else:
             content_type = guess_type(filename, text)
-    else:
-        if hasattr(text, 'read'):
-            filename = getattr(text, 'filename', '')
-            headers = getattr(text, 'headers', None)
-            text = text.read()
-            if headers and 'content_type' in headers:
-                content_type = headers['content_type']
-            else:
-                content_type = guess_type(filename, text)
 
     # ensure that we pass text_type to the constructor to
     # avoid further hassles with pt_edit()
