@@ -7,12 +7,12 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.8.3 (unreleased)
+5.8.3 (2023-06-15)
 ------------------
 
 - Fix handling of a request parameter of type ``file`` if no value
   has been specified;
-  fixes `#1130 <https://github.com/zopefoundation/Zope/issues/1130>`_.
+  fixes `#1132 <https://github.com/zopefoundation/Zope/issues/1132>`_.
 
 - Fix adding Page Templates without valid file input from the ZMI
   (`#1130 <https://github.com/zopefoundation/Zope/issues/1130>`_)

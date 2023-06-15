@@ -61,7 +61,7 @@ Steps for creating a new Zope release
 
 - Run all tests::
 
-    $ bin/tox --pall
+    $ bin/tox -pall
 
 - If the tests succeed, commit the changes.
 
