@@ -432,6 +432,18 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
+    def testAddWithoutTextOrFile(self):
+        # Test without passing file or text.
+        request = self.app.REQUEST
+        self._addPT('pt1', REQUEST=request)
+        # no object is returned when REQUEST is passed.
+        pt = self.app.pt1
+
+        with open(pt._default_content_fn) as fd:
+            default_text = fd.read()
+
+        self.assertEqual(pt.document_src(), default_text.strip())
+
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 

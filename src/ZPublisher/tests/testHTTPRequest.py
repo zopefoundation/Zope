@@ -947,6 +947,15 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         with self.assertRaises(KeyError):
             req["BODY"]
 
+    def test_processInputs_unspecified_file(self):
+        s = BytesIO(TEST_FILE_DATA_UNSPECIFIED)
+        environ = self._makePostEnviron(body=TEST_FILE_DATA_UNSPECIFIED)
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        f = req.form.get('smallfile')
+        self.assertEqual(f.filename, "")
+        self.assertEqual(list(f), [])
+
     def test__authUserPW_simple(self):
         user_id = 'user'
         password = 'password'
@@ -1560,6 +1569,14 @@ Content-Disposition: form-data; name="smallfile"; filename="smallfile"
 Content-Type: application/octet-stream
 
 test
+
+--12345--
+'''
+
+TEST_FILE_DATA_UNSPECIFIED = b'''
+--12345
+Content-Disposition: form-data; name="smallfile"; filename=""
+Content-Type: application/octet-stream
 
 --12345--
 '''

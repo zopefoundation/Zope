@@ -1459,7 +1459,7 @@ class ZopeFieldStorage(ValueAccessor):
                 add_field(FormField(
                     name=name, value=val.encode("latin-1"), **opts))
         for part in parts:
-            if part.filename:
+            if part.filename is not None:
                 # a file
                 field = FormField(
                     name=part.name,
