@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.3 (unreleased)
 ------------------
 
+- Fix adding Page Templates without valid file input from the ZMI
+  (`#1130 <https://github.com/zopefoundation/Zope/issues/1130>`_)
+
 - Update to newest compatible versions of dependencies.
 
 

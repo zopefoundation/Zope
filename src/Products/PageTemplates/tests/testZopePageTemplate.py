@@ -422,6 +422,16 @@ class ZPTRegressions(unittest.TestCase):
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
 
+    def testAddWithRequestAndBadFile(self):
+        # Test with a file attribute on the Request that is not
+        # a valid file object.
+        request = self.app.REQUEST
+        request.form['file'] = ''
+        self._addPT('pt1', text=self.text, REQUEST=request)
+        # no object is returned when REQUEST is passed.
+        pt = self.app.pt1
+        self.assertEqual(pt.document_src(), self.text)
+
 
 class ZPTMacros(zope.component.testing.PlacelessSetup, unittest.TestCase):
 
