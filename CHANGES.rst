@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.3 (unreleased)
 ------------------
 
+- Fix handling of a request parameter of type ``file`` if no value
+  has been specified;
+  fixes `#1130 <https://github.com/zopefoundation/Zope/issues/1130>`_.
+
 - Fix adding Page Templates without valid file input from the ZMI
   (`#1130 <https://github.com/zopefoundation/Zope/issues/1130>`_)
 
