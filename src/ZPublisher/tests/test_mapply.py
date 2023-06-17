@@ -90,3 +90,17 @@ class MapplyTests(unittest.TestCase):
 
         ob = NoCallButAcquisition().__of__(Root())
         self.assertRaises(TypeError, mapply, ob, (), {})
+
+    def testFunctionWithSignature(self):
+        from inspect import Parameter
+        from inspect import Signature
+
+        def f(*args, **kw):
+            return args, kw
+
+        f.__signature__ = Signature(
+            (Parameter("a", Parameter.POSITIONAL_OR_KEYWORD),
+             Parameter("b", Parameter.POSITIONAL_OR_KEYWORD, default="b")))
+
+        self.assertEqual(mapply(f, ("a",), {}), (("a", "b"), {}))
+        self.assertEqual(mapply(f, (), {"a": "A", "b": "B"}), (("A", "B"), {}))
