@@ -58,7 +58,7 @@ def mapply(object, positional=(), keyword={},
             # We use ``getfullargspec`` because it packages
             # the signature information in the way we need it here.
             # Should the function get deprecated, we could do the
-            # packaging outselves
+            # packaging ourselves
             argspec = getfullargspec(f)
             defaults = argspec.defaults
             names = argspec.args[count:]
