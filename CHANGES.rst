@@ -15,6 +15,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   For details, see
   `#1136 <https://github.com/zopefoundation/Zope/issues/1136>`_.
 
+- Restore filename on code objects of objects returned from
+  ``App.Extensions.getObject()``. This got lost in 4.0a6.
+
 - Update to newest compatible versions of dependencies.
 
 
