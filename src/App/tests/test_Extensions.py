@@ -27,7 +27,8 @@ class GetObjectTests(unittest.TestCase):
         self.assertIsInstance(obj, types.FunctionType)
         self.assertEqual(obj.__name__, 'f1')
         path = obj()
-        self.assertTrue(path.endswith('/App/tests/fixtures/getObject.py'))
+        self.assertTrue(
+            path.endswith(str(Path('App/tests/fixtures/getObject.py'))))
 
     def test_Extensions__getObject__2(self):
         """It raises a SyntaxError if necessary."""
