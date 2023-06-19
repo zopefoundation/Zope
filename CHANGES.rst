@@ -13,6 +13,9 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 - Sanitize tainting fixing
   `#1095 <https://github.com/zopefoundation/Zope/issues/1095>`_
 
+- Restore filename on code objects of objects returned from
+  ``App.Extensions.getObject()``. This got lost in 4.0a6.
+
 
 4.8.7 (2023-01-10)
 ------------------
