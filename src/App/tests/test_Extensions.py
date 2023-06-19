@@ -19,9 +19,9 @@ class GetObjectTests(unittest.TestCase):
         del cfg.extensions
 
     def test_Extensions__getObject__1(self):
-        """It returns an the requested function.
+        """Check that "getObject" returns the requested function and ...
 
-        The code object of this function has the file name set.
+        that its code object has the path set.
         """
         obj = getObject('getObject', 'f1')
         self.assertIsInstance(obj, types.FunctionType)
