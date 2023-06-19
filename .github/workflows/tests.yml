@@ -33,6 +33,7 @@ jobs:
           - { os: ["windows", "windows-latest"], config: ["3.8",   "lint"] }
           - { os: ["windows", "windows-latest"], config: ["3.8",   "docs"] }
           - { os: ["windows", "windows-latest"], config: ["3.8",   "coverage"] }
+          - { os: ["windows", "windows-latest"], config: ["2.7",   "py27"] }
           - { os: ["windows", "windows-latest"], config: ["2.7",   "py27-zserver"] }
 
     runs-on: ${{ matrix.os[1] }}
