@@ -180,8 +180,9 @@ def getObject(module, name, reload=0):
     except Exception:
         raise NotFound("The specified module, '%s', "
                        "couldn't be opened." % module)
+    execcode = compile(execsrc, path, 'exec')
     module_dict = {}
-    exec(execsrc, module_dict)
+    exec(execcode, module_dict)
 
     if old is not None:
         # XXX Accretive??
