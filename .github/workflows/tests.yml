@@ -36,7 +36,6 @@ jobs:
           - { os: ["windows", "windows-latest"], config: ["2.7",   "py27-zserver"] }
 
     runs-on: ${{ matrix.os[1] }}
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: ${{ matrix.os[0] }}-${{ matrix.config[1] }}
     steps:
     - uses: actions/checkout@v3
