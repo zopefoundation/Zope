@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.8 (unreleased)
+4.8.8 (2023-06-20)
 ------------------
 
 - Sanitize tainting fixing
