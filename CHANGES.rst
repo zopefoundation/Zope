@@ -14,7 +14,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Make ``mapply`` ``__signature__`` aware.
   This allows to publish methods decorated via a decorator
-  which sets ``__signature__` on the wrapper to specify
+  which sets ``__signature__`` on the wrapper to specify
   the signature to use.
   For details, see
   `#1134 <https://github.com/zopefoundation/Zope/issues/1134>`_.
