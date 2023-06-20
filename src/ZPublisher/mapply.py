@@ -12,6 +12,8 @@
 ##############################################################################
 """Provide an apply-like facility that works with any mapping object
 """
+from inspect import getfullargspec
+
 import zope.publisher.publish
 
 
@@ -50,9 +52,20 @@ def mapply(object, positional=(), keyword={},
             if maybe:
                 return object
             raise
-        code = f.__code__
-        defaults = f.__defaults__
-        names = code.co_varnames[count:code.co_argcount]
+        if hasattr(f, "__signature__"):
+            # The function has specified the signature to use
+            # (likely via a decorator)
+            # We use ``getfullargspec`` because it packages
+            # the signature information in the way we need it here.
+            # Should the function get deprecated, we could do the
+            # packaging ourselves
+            argspec = getfullargspec(f)
+            defaults = argspec.defaults
+            names = argspec.args[count:]
+        else:
+            code = f.__code__
+            defaults = f.__defaults__
+            names = code.co_varnames[count:code.co_argcount]
 
     nargs = len(names)
     if positional:
