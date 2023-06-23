@@ -10,9 +10,26 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.4 (unreleased)
 ------------------
 
+- Disable a ``ZCatalog`` (more precisly: ``Products.PluginIndexes``)
+  performance test which occasionally fails on GITHUB.
+  For details, see
+  `#1136 <https://github.com/zopefoundation/Zope/issues/1136>`_.
+
+- Restore filename on code objects of objects returned from
+  ``App.Extensions.getObject()``. This got lost in 4.0a6.
+
 - Update to newest compatible versions of dependencies.
 
 - Add preliminary support for Python 3.12b2.
+
+- Make ``mapply`` ``__signature__`` aware.
+  This allows to publish methods decorated via a decorator
+  which sets ``__signature__`` on the wrapper to specify
+  the signature to use.
+  For details, see
+  `#1134 <https://github.com/zopefoundation/Zope/issues/1134>`_.
+  Note: ``mapply`` still does not support keyword only, var positional
+  and var keyword parameters.
 
 
 5.8.3 (2023-06-15)
