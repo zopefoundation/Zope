@@ -21,7 +21,7 @@ Persistence==3.6
 Products.BTreeFolder2==4.4
 Products.ZCatalog==5.4
 Record==3.6
-RestrictedPython==5.2
+RestrictedPython==5.3
 WSGIProxy2==0.4.6; python_version == '2.7'
 WSGIProxy2==0.4.6; python_version == '3.5'
 WSGIProxy2==0.4.6; python_version == '3.6'
