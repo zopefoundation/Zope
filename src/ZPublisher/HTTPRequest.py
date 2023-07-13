@@ -53,9 +53,9 @@ from .cookie import getCookieValuePolicy
 
 # DOS attack protection -- limiting the amount of memory for forms
 # probably should become configurable
-FORM_MEMORY_LIMIT = 2 ** 20  # memory limit for forms
-FORM_DISK_LIMIT = 2 ** 30    # disk limit for forms
-FORM_MEMFILE_LIMIT = 4000    # limit for `BytesIO` -> temporary file switch
+FORM_MEMORY_LIMIT = 2 ** 20   # memory limit for forms
+FORM_DISK_LIMIT = 2 ** 30     # disk limit for forms
+FORM_MEMFILE_LIMIT = 2 ** 12  # limit for `BytesIO` -> temporary file switch
 
 
 # This may get overwritten during configuration
@@ -1354,6 +1354,8 @@ def sane_environment(env):
 
 class ValueDescriptor:
     """(non data) descriptor to compute `value` from `file`."""
+    VALUE_LIMIT = FORM_MEMORY_LIMIT
+
     def __get__(self, inst, owner=None):
         if inst is None:
             return self
@@ -1364,6 +1366,8 @@ class ValueDescriptor:
             fpos = None
         try:
             v = file.read()
+            if self.VALUE_LIMIT and file.read(1):
+                raise BadRequest("data exceeds memory limit")
             if fpos is None:
                 # store the value as we cannot read it again
                 inst.value = v

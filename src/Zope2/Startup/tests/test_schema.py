@@ -190,3 +190,46 @@ class WSGIStartupTestCase(unittest.TestCase):
             self.assertFalse(webdav.enable_ms_public_header)
         finally:
             webdav.enable_ms_public_header = default_setting
+
+    def test_dos_protection(self):
+        from ZPublisher import HTTPRequest
+
+        params = ["FORM_%s_LIMIT" % name
+                  for name in ("MEMORY", "DISK", "MEMFILE")]
+        defaults = dict((name, getattr(HTTPRequest, name)) for name in params)
+
+        try:
+            # missing section
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                """)
+            handleWSGIConfig(None, handler)
+            for name in params:
+                self.assertEqual(getattr(HTTPRequest, name), defaults[name])
+
+            # empty section
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                <dos_protection />
+                """)
+            handleWSGIConfig(None, handler)
+            for name in params:
+                self.assertEqual(getattr(HTTPRequest, name), defaults[name])
+
+            # configured values
+
+            # empty section
+            conf, handler = self.load_config_text("""\
+                instancehome <<INSTANCE_HOME>>
+                <dos_protection>
+                  form-memory-limit 1KB
+                  form-disk-limit 1KB
+                  form-memfile-limit 1KB
+                </dos_protection>
+                """)
+            handleWSGIConfig(None, handler)
+            for name in params:
+                self.assertEqual(getattr(HTTPRequest, name), 1024)
+        finally:
+            for name in params:
+                setattr(HTTPRequest, name, defaults[name])
