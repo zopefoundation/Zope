@@ -1354,8 +1354,6 @@ def sane_environment(env):
 
 class ValueDescriptor:
     """(non data) descriptor to compute `value` from `file`."""
-    VALUE_LIMIT = FORM_MEMORY_LIMIT
-
     def __get__(self, inst, owner=None):
         if inst is None:
             return self
@@ -1365,9 +1363,13 @@ class ValueDescriptor:
         except Exception:
             fpos = None
         try:
-            v = file.read()
-            if self.VALUE_LIMIT and file.read(1):
-                raise BadRequest("data exceeds memory limit")
+            limit = inst.VALUE_LIMIT
+            if limit:
+                v = file.read(limit)
+                if file.read(1):
+                    raise BadRequest("data exceeds memory limit")
+            else:
+                v = file.read()
             if fpos is None:
                 # store the value as we cannot read it again
                 inst.value = v
@@ -1377,7 +1379,19 @@ class ValueDescriptor:
                 file.seek(fpos)
 
 
+class Global:
+    """(non data) descriptor to access a (modul) global attribute."""
+    def __init__(self, name):
+        """access global *name*."""
+        self.name = name
+
+    def __get__(self, inst, owner=None):
+        return globals()[self.name]
+
+
 class ValueAccessor:
+    VALUE_LIMIT = None
+
     value = ValueDescriptor()
 
 
@@ -1410,6 +1424,8 @@ class FormField(SimpleNamespace, ValueAccessor):
 
 
 class ZopeFieldStorage(ValueAccessor):
+    VALUE_LIMIT = Global("FORM_MEMORY_LIMIT")
+
     def __init__(self, fp, environ):
         self.file = fp
         method = environ.get("REQUEST_METHOD", "GET").upper()

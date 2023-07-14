@@ -1460,6 +1460,27 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.BODY, b"foo")
         self.assertEqual(req.form["bar"], "bar")
 
+    def test_put_with_body_limit(self):
+        req_factory = self._getTargetClass()
+        req = req_factory(
+            BytesIO(b"foo"),
+            {
+                "SERVER_NAME": "localhost",
+                "SERVER_PORT": "8080",
+                "REQUEST_METHOD": "PUT",
+            },
+            None,
+        )
+        from ZPublisher import HTTPRequest
+        saved_form_memory_limit = HTTPRequest.FORM_MEMORY_LIMIT
+        HTTPRequest.FORM_MEMORY_LIMIT = 1
+        try:
+            req.processInputs()
+            with self.assertRaises(BadRequest):
+                req.BODY
+        finally:
+            HTTPRequest.FORM_MEMORY_LIMIT = saved_form_memory_limit
+
     def test_issue_1095(self):
         body = TEST_ISSUE_1095_DATA
         env = self._makePostEnviron(body)
