@@ -250,33 +250,3 @@ instancehome $INSTANCE
 #    security-policy-implementation python
 #    verbose-security on
 
-<dos_protection>
-# 
-# Description:
-#   You can use this section to configure Zope's
-#   parameters for denial of service attack protection.
-#   The examples below document the default values.
-
-# Parameter: form-memory-limit
-# Description: 
-#    The maximum size for each part in a multipart post request,
-#    for the complete body in an urlencoded post request
-#    and for the complete request body when accessed as bytes
-#    (rather than a file).
-# Example:
-#    form-memory-limit 1MB
-
-# Parameter: form-disk-limit
-# Description: 
-#    The maximum size of a POST request body
-# Example:
-#    form-disk-limit 1GB
-
-# Parameter: form-memfile-limit
-# Description: 
-#    The value of form variables of type file with larger size
-#    are stored on disk rather than in memory.
-# Example:
-#    form-memfile-limit 4KB
-
-</dos_protection>

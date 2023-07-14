@@ -90,11 +90,3 @@ def handleWSGIConfig(cfg, multihandler):
         if not name.startswith('_'):
             handlers[name] = value
     return multihandler(handlers)
-
-
-def dos_protection(cfg):
-    if cfg is None:
-        return
-    from ZPublisher import HTTPRequest
-    for attr in cfg.getSectionAttributes():
-        setattr(HTTPRequest, attr.upper(), getattr(cfg, attr))
