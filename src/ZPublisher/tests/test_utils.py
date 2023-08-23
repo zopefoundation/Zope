@@ -45,7 +45,7 @@ class NoUpdatePropertyManager:
     _properties = ()
 
     def _setPropValue(self, id, value):
-        if type(value) == list:
+        if isinstance(value, list):
             value = tuple(value)
         setattr(self, id, value)
 
