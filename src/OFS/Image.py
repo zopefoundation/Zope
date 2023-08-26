@@ -15,9 +15,9 @@
 
 import html
 import struct
-import xml.dom.minidom
 from email.generator import _make_boundary
 from io import BytesIO
+from xml.dom import minidom
 
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
@@ -840,7 +840,7 @@ def getImageInfo(data):
     elif (size >= 16) and (b'<?xml' in data[:16]):
         content_type = 'image/svg+xml'
         try:
-            xmldoc = xml.dom.minidom.parseString(data)
+            xmldoc = minidom.parseString(data)
         except Exception:
             return content_type, width, height
         for svg in xmldoc.getElementsByTagName('svg'):
