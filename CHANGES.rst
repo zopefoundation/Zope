@@ -31,6 +31,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   Note: ``mapply`` still does not support keyword only, var positional
   and var keyword parameters.
 
+- Make Zope's parameters for denial of service protection configurable
+  `#1141 <https://github.com/zopefoundation/Zope/issues/1141>_`.
+
 
 5.8.3 (2023-06-15)
 ------------------

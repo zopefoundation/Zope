@@ -80,6 +80,34 @@
 
   </sectiontype>
 
+  <sectiontype name="dos_protection">
+
+    <description>Defines parameters for DOS attack protection</description>
+
+    <key name="form-memory-limit" datatype="byte-size" default="1MB">
+      <description>
+       The maximum size for each part in a multipart post request,
+       for the complete body in an urlencoded post request
+       and for the complete request body when accessed as bytes
+       (rather than a file).
+      </description>
+    </key>
+
+    <key name="form-disk-limit" datatype="byte-size" default="1GB">
+      <description>
+       The maximum size of a POST request body
+      </description>
+    </key>
+
+    <key name="form-memfile-limit" datatype="byte-size" default="4KB">
+      <description>
+       The value of form variables of type file with larger size 
+       are stored on disk rather than in memory.
+      </description>
+    </key>
+  </sectiontype>
+
+
   <!-- end of type definitions -->
 
   <!-- schema begins  -->
@@ -384,5 +412,8 @@
    </description>
    <metadefault>off</metadefault>
   </key>
+
+  <section type="dos_protection" handler="dos_protection"
+           name="*" attribute="dos_protection" />
 
 </schema>

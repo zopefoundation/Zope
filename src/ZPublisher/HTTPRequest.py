@@ -53,9 +53,9 @@ from .cookie import getCookieValuePolicy
 
 # DOS attack protection -- limiting the amount of memory for forms
 # probably should become configurable
-FORM_MEMORY_LIMIT = 2 ** 20  # memory limit for forms
-FORM_DISK_LIMIT = 2 ** 30    # disk limit for forms
-FORM_MEMFILE_LIMIT = 4000    # limit for `BytesIO` -> temporary file switch
+FORM_MEMORY_LIMIT = 2 ** 20   # memory limit for forms
+FORM_DISK_LIMIT = 2 ** 30     # disk limit for forms
+FORM_MEMFILE_LIMIT = 2 ** 12  # limit for `BytesIO` -> temporary file switch
 
 
 # This may get overwritten during configuration
@@ -1363,7 +1363,13 @@ class ValueDescriptor:
         except Exception:
             fpos = None
         try:
-            v = file.read()
+            limit = inst.VALUE_LIMIT
+            if limit:
+                v = file.read(limit)
+                if file.read(1):
+                    raise BadRequest("data exceeds memory limit")
+            else:
+                v = file.read()
             if fpos is None:
                 # store the value as we cannot read it again
                 inst.value = v
@@ -1373,7 +1379,19 @@ class ValueDescriptor:
                 file.seek(fpos)
 
 
+class Global:
+    """(non data) descriptor to access a (modul) global attribute."""
+    def __init__(self, name):
+        """access global *name*."""
+        self.name = name
+
+    def __get__(self, inst, owner=None):
+        return globals()[self.name]
+
+
 class ValueAccessor:
+    VALUE_LIMIT = None
+
     value = ValueDescriptor()
 
 
@@ -1406,6 +1424,8 @@ class FormField(SimpleNamespace, ValueAccessor):
 
 
 class ZopeFieldStorage(ValueAccessor):
+    VALUE_LIMIT = Global("FORM_MEMORY_LIMIT")
+
     def __init__(self, fp, environ):
         self.file = fp
         method = environ.get("REQUEST_METHOD", "GET").upper()
