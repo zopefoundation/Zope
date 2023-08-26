@@ -850,7 +850,7 @@ def getImageInfo(data):
                 try:
                     w = int(float(w))
                     h = int(float(h))
-                except:
+                except Exception:
                     if str(w).endswith('px'):
                         w = int(float(w[:-2]))
                         h = int(float(h[:-2]))
