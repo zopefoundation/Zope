@@ -15,9 +15,9 @@
 
 import html
 import struct
+import xml.dom.minidom
 from email.generator import _make_boundary
 from io import BytesIO
-import xml.dom.minidom
 
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
