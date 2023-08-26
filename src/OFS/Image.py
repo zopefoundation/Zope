@@ -845,27 +845,27 @@ def getImageInfo(data):
             return content_type, width, height
         for svg in xmldoc.getElementsByTagName('svg'):
             if 'height' in svg.attributes and 'width' in svg.attributes:
-              w = svg.attributes['width'].value
-              h = svg.attributes['height'].value
-              try:
-                w = int(float(w))
-                h = int(float(h))
-              except:
-                if str(w).endswith('px'):
-                  w = int(float(w[:-2]))
-                  h = int(float(h[:-2]))
-                elif str(w).endswith('mm'):
-                  w = int(float(w[:-2]) * 3.7795)
-                  h = int(float(h[:-2]) * 3.7795)
-                elif str(w).endswith('cm'):
-                  w = int(float(w[:-2]) * 37.795)
-                  h = int(float(h[:-2]) * 37.795)
-              break
+                w = svg.attributes['width'].value
+                h = svg.attributes['height'].value
+                try:
+                    w = int(float(w))
+                    h = int(float(h))
+                except:
+                    if str(w).endswith('px'):
+                        w = int(float(w[:-2]))
+                        h = int(float(h[:-2]))
+                    elif str(w).endswith('mm'):
+                        w = int(float(w[:-2]) * 3.7795)
+                        h = int(float(h[:-2]) * 3.7795)
+                    elif str(w).endswith('cm'):
+                        w = int(float(w[:-2]) * 37.795)
+                        h = int(float(h[:-2]) * 37.795)
+                break
             elif 'viewBox' in svg.attributes:
-              viewBox = svg.attributes['viewBox'].value
-              viewBox = [int(float(x)) for x in viewBox.split(' ')]
-              w = viewBox[2] - viewBox[0]
-              h = viewBox[3] - viewBox[1]
+                viewBox = svg.attributes['viewBox'].value
+                viewBox = [int(float(x)) for x in viewBox.split(' ')]
+                w = viewBox[2] - viewBox[0]
+                h = viewBox[3] - viewBox[1]
         width = int(w)
         height = int(h)
 
