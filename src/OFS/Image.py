@@ -838,12 +838,12 @@ def getImageInfo(data):
 
     # handle SVGs
     elif (size >= 16) and (b'<?xml' in data[:16]):
-        content_type = 'image/svg+xml'
         try:
             xmldoc = minidom.parseString(data)
         except Exception:
             return content_type, width, height
         for svg in xmldoc.getElementsByTagName('svg'):
+            content_type = 'image/svg+xml'
             if 'height' in svg.attributes and 'width' in svg.attributes:
                 w = svg.attributes['width'].value
                 h = svg.attributes['height'].value
