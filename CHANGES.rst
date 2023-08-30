@@ -10,7 +10,7 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update ``RestrictedPython`` to 5.4 to mitigate a security issue.
 
 
 4.8.8 (2023-06-20)
