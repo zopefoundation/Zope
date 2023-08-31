@@ -259,7 +259,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
                 props.append(prop)
             pself._properties = tuple(props)
 
-        if type(value) == list:
+        if isinstance(value, list):
             value = tuple(value)
         setattr(self.v_self(), id, value)
 

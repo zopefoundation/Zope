@@ -21,7 +21,7 @@ Persistence==3.6
 Products.BTreeFolder2==4.4
 Products.ZCatalog==5.4
 Record==3.6
-RestrictedPython==5.3
+RestrictedPython==5.4
 WSGIProxy2==0.4.6; python_version == '2.7'
 WSGIProxy2==0.4.6; python_version == '3.5'
 WSGIProxy2==0.4.6; python_version == '3.6'
@@ -70,7 +70,8 @@ zope.cachedescriptors==4.4
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.10
+zope.container==4.10; python_version < '3.7'
+zope.container==5.1; python_version >= '3.7'
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
