@@ -180,7 +180,7 @@ class PropertyManager(Base):
 
     def _setPropValue(self, id, value):
         self._wrapperCheck(value)
-        if type(value) == list:
+        if isinstance(value, list):
             value = tuple(value)
         setattr(self, id, value)
 
