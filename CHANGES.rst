@@ -7,7 +7,7 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.9 (unreleased)
+4.8.9 (2023-09-05)
 ------------------
 
 - Update ``RestrictedPython`` to version 5.4 to fix a potential a security
