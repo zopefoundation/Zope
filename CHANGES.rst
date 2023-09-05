@@ -10,11 +10,11 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.9 (unreleased)
 ------------------
 
-- Update ``RestrictedPython`` to version 5.4 to mitigate a security issue.
-  (CVE-2023-41039)
+- Update ``RestrictedPython`` to version 5.4 to fix a potential a security
+  issue. (CVE-2023-41039)
 
-- Update ``AccessControl`` to version 4.4 to mitigate a security problem.
-  (CVE-2023-41050)
+- Update ``AccessControl`` to version 4.4 to fix a potential a security
+  issue. (CVE-2023-41050)
 
 
 4.8.8 (2023-06-20)
