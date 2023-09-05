@@ -1,4 +1,4 @@
-Zope==<5
+Zope==< 5
 AccessControl==4.4
 Acquisition==4.13
 AuthEncoding==4.3
@@ -70,8 +70,10 @@ zope.cachedescriptors==4.4
 zope.component==5.0.1
 zope.componentvocabulary==2.3.0
 zope.configuration==4.4.1
-zope.container==4.10; python_version < '3.7'
-zope.container==5.1; python_version >= '3.7'
+zope.container==4.10; python_version == '2.7'
+zope.container==4.10; python_version == '3.5'
+zope.container==4.10; python_version == '3.6'
+zope.container==5.1; python_version > '3.6'
 zope.contentprovider==4.2.1
 zope.contenttype==4.6
 zope.datetime==4.3.0
