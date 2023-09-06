@@ -39,7 +39,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   and var keyword parameters.
 
 - Make Zope's parameters for denial of service protection configurable
-  `#1141 <https://github.com/zopefoundation/Zope/issues/1141>_`.
+  `#1141 <https://github.com/zopefoundation/Zope/issues/1141>`_.
 
 - Update ``RestrictedPython`` to version 6.2 to mitigate a security problem.
   (CVE-2023-41039)
