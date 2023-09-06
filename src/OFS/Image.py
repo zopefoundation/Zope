@@ -837,7 +837,7 @@ def getImageInfo(data):
             pass
 
     # handle SVGs
-    elif (size >= 16) and (b'<?xml' in data[:16]):
+    elif (size >= 16) and ((b'<?xml' in data[:16]) or (b'<svg' in data[:16])):
         try:
             xmldoc = minidom.parseString(data)
         except Exception:
