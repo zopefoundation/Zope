@@ -7,11 +7,11 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.8.4 (unreleased)
+5.8.4 (2023-09-06)
 ------------------
 
 - Disable a ``ZCatalog`` (more precisly: ``Products.PluginIndexes``)
-  performance test which occasionally fails on GITHUB.
+  performance test which occasionally fails on GitHub.
   For details, see
   `#1136 <https://github.com/zopefoundation/Zope/issues/1136>`_.
 
