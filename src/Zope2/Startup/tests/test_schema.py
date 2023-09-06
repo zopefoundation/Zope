@@ -196,7 +196,7 @@ class WSGIStartupTestCase(unittest.TestCase):
 
         params = ["FORM_%s_LIMIT" % name
                   for name in ("MEMORY", "DISK", "MEMFILE")]
-        defaults = dict((name, getattr(HTTPRequest, name)) for name in params)
+        defaults = {name: getattr(HTTPRequest, name) for name in params}
 
         try:
             # missing section

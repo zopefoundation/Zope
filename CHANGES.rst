@@ -20,6 +20,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Add preliminary support for Python 3.12rc1.
+
 - Make ``mapply`` ``__signature__`` aware.
   This allows to publish methods decorated via a decorator
   which sets ``__signature__`` on the wrapper to specify
