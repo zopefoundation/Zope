@@ -7,6 +7,13 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
+
+5.8.5 (unreleased)
+------------------
+
+- Update to newest compatible versions of dependencies.
+
+
 5.8.4 (2023-09-06)
 ------------------
 
