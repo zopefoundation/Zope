@@ -34,7 +34,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Make Zope's parameters for denial of service protection configurable
   `#1141 <https://github.com/zopefoundation/Zope/issues/1141>_`.
 
-- Update ``RestrictedPython`` to 6.2 to mitigate a security problem.
+- Update ``RestrictedPython`` to version 6.2 to mitigate a security problem.
+  (CVE-2023-41039)
+
+- Update ``AccessControl`` to version 6.2 to mitigate a security problem.
+  (CVE-2023-41050)
 
 
 5.8.3 (2023-06-15)
