@@ -61,6 +61,12 @@ that version number with your desired version.
 Built-in standard buildout configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    The standard buildout configuration is designed to create scripts needed
+    for developing and testing Zope, it is not for production use. Please use
+    a custom buildout configuration, a minimal example is shown below.
+
 .. code-block:: console
 
   $ wget https://pypi.org/packages/source/Z/Zope/Zope-5.0.tar.gz
