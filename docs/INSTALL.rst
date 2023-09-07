@@ -110,8 +110,7 @@ Here's a minimum ``buildout.cfg`` configuration  example:
     recipe = zc.recipe.egg
     interpreter = zopepy
     eggs =
-        Zope
-        Paste
+        Zope[wsgi]
 
 Using ``plone.recipe.zope2instance``
 ++++++++++++++++++++++++++++++++++++
