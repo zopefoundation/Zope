@@ -1,4 +1,5 @@
 import unittest
+from urllib.parse import urlparse
 
 from Testing.ZopeTestCase import FunctionalTestCase
 
@@ -121,6 +122,45 @@ class ApplicationTests(unittest.TestCase):
         self.assertEqual(app.ZopeVersion(major=True), zversion.major)
         self.assertEqual(app.ZopeVersion(major=True),
                          int(pkg_version.split('.')[0]))
+
+    def test_getZMIMainFrameTarget(self):
+        app = self._makeOne()
+
+        for URL1 in ('http://nohost', 'https://nohost/some/path'):
+            request = {'URL1': URL1}
+            parsed_url1 = urlparse(URL1)
+
+            # No came_from at all
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
+            # Empty came_from
+            request['came_from'] = ''
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+            request['came_from'] = None
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
+            # Local (path only) came_from
+            request['came_from'] = '/new/path'
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'/new/path')
+
+            # came_from URL outside our own server
+            request['came_from'] = 'https://www.zope.dev/index.html'
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
+            # came_from with wrong scheme
+            request['came_from'] = URL1.replace('http', 'ftp')
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
+            # acceptable came_from
+            request['came_from'] = f'{URL1}/added/path'
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/added/path')
 
 
 class ApplicationPublishTests(FunctionalTestCase):

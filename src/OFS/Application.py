@@ -16,6 +16,7 @@
 import os
 import sys
 from logging import getLogger
+from urllib.parse import urlparse
 
 import Products
 import transaction
@@ -104,6 +105,34 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         raise RedirectException(f"{URL1}/{destination}")
 
     ZopeRedirect = Redirect
+
+    @security.protected(view_management_screens)
+    def getZMIMainFrameTarget(self, REQUEST):
+        """Utility method to get the right hand side ZMI frame source URL
+
+        For cases where JavaScript is disabled the ZMI uses a simple REQUEST
+        variable ``came_from`` to set the source URL for the right hand side
+        ZMI frame. Since this value can be manipulated by the user it must be
+        sanity-checked first.
+        """
+        parent_url = REQUEST['URL1']
+        default = f'{parent_url}/manage_workspace'
+        came_from = REQUEST.get('came_from', None)
+
+        if not came_from:
+            return default
+
+        parsed_parent_url = urlparse(parent_url)
+        parsed_came_from = urlparse(came_from)
+
+        # Only allow a passed-in ``came_from`` URL if it is local (just a path)
+        # or if the URL scheme and hostname are the same as our own
+        if (not parsed_came_from.scheme and not parsed_came_from.netloc) or \
+           (parsed_parent_url.scheme == parsed_came_from.scheme and
+            parsed_parent_url.netloc == parsed_came_from.netloc):
+            return came_from
+
+        return default
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name is None:
