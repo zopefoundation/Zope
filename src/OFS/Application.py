@@ -128,8 +128,8 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         # Only allow a passed-in ``came_from`` URL if it is local (just a path)
         # or if the URL scheme and hostname are the same as our own
         if (not parsed_came_from.scheme and not parsed_came_from.netloc) or \
-           (parsed_parent_url.scheme == parsed_came_from.scheme and
-            parsed_parent_url.netloc == parsed_came_from.netloc):
+           (parsed_parent_url.scheme == parsed_came_from.scheme
+                and parsed_parent_url.netloc == parsed_came_from.netloc):
             return came_from
 
         return default

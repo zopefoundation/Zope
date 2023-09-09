@@ -1,5 +1,4 @@
 import unittest
-from urllib.parse import urlparse
 
 from Testing.ZopeTestCase import FunctionalTestCase
 
@@ -128,7 +127,6 @@ class ApplicationTests(unittest.TestCase):
 
         for URL1 in ('http://nohost', 'https://nohost/some/path'):
             request = {'URL1': URL1}
-            parsed_url1 = urlparse(URL1)
 
             # No came_from at all
             self.assertEqual(app.getZMIMainFrameTarget(request),
@@ -145,7 +143,7 @@ class ApplicationTests(unittest.TestCase):
             # Local (path only) came_from
             request['came_from'] = '/new/path'
             self.assertEqual(app.getZMIMainFrameTarget(request),
-                             f'/new/path')
+                             '/new/path')
 
             # came_from URL outside our own server
             request['came_from'] = 'https://www.zope.dev/index.html'
