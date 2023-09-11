@@ -19,7 +19,7 @@
 		name="manage_menu"
 		marginwidth="2" marginheight="2"
 		/>
-	<frame src="<dtml-var "REQUEST.get('came_from',None)!=None and REQUEST.get('came_from',None) or '%s/manage_workspace'%(REQUEST.URL1)" html_quote>"
+	<frame src="<dtml-var "getZMIMainFrameTarget(REQUEST)" html_quote>"
 		name="manage_main"
 		marginwidth="2" marginheight="2"
 		/>
