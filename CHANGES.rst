@@ -8,8 +8,10 @@ The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-5.9 (unreleased)
-----------------
+5.8.5 (unreleased)
+------------------
+
+- Tighten down the ZMI frame source logic to only allow site-local sources.
 
 - Update to newest compatible versions of dependencies.
 
