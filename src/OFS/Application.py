@@ -24,6 +24,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from AccessControl.Permissions import view_management_screens
+from AccessControl.tainted import TaintedString
 from Acquisition import aq_base
 from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
@@ -122,14 +123,29 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         if not came_from:
             return default
 
+        # When came_from contains suspicious code, it will not be a string,
+        # but an instance of AccessControl.tainted.TaintedString.
+        # Passing this to urlparse, gives:
+        # AttributeError: 'str' object has no attribute 'decode'
+        # This is good, but let's check explicitly.
+        if isinstance(came_from, TaintedString):
+            return default
+        try:
+            parsed_came_from = urlparse(came_from)
+        except AttributeError:
+            return default
         parsed_parent_url = urlparse(parent_url)
-        parsed_came_from = urlparse(came_from)
 
         # Only allow a passed-in ``came_from`` URL if it is local (just a path)
         # or if the URL scheme and hostname are the same as our own
-        if (not parsed_came_from.scheme and not parsed_came_from.netloc) or \
-           (parsed_parent_url.scheme == parsed_came_from.scheme
+        if (parsed_parent_url.scheme == parsed_came_from.scheme
                 and parsed_parent_url.netloc == parsed_came_from.netloc):
+            return came_from
+        if (not parsed_came_from.scheme and not parsed_came_from.netloc):
+            # This is only a path.  But some paths can be misinterpreted
+            # by browsers.
+            if parsed_came_from.path.startswith("//"):
+                return default
             return came_from
 
         return default

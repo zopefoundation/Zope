@@ -1,5 +1,6 @@
 import unittest
 
+from AccessControl.tainted import TaintedString
 from Testing.ZopeTestCase import FunctionalTestCase
 
 
@@ -145,6 +146,12 @@ class ApplicationTests(unittest.TestCase):
             self.assertEqual(app.getZMIMainFrameTarget(request),
                              '/new/path')
 
+            # Tainted local path.  came_from can be marked as 'tainted' if it
+            # suspicious contents.  It is not accepted then.
+            request['came_from'] = TaintedString('/new/path')
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
             # came_from URL outside our own server
             request['came_from'] = 'https://www.zope.dev/index.html'
             self.assertEqual(app.getZMIMainFrameTarget(request),
@@ -159,6 +166,23 @@ class ApplicationTests(unittest.TestCase):
             request['came_from'] = f'{URL1}/added/path'
             self.assertEqual(app.getZMIMainFrameTarget(request),
                              f'{URL1}/added/path')
+
+            # Anything beginning with '<script>' should already be marked as
+            # 'tainted'
+            request['came_from'] = TaintedString(
+                '<script>alert("hi");</script>'
+            )
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+
+            # double slashes as path should not be accepted.
+            # Try a few forms.
+            request['came_from'] = '//www.example.org'
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
+            request['came_from'] = '////www.example.org'
+            self.assertEqual(app.getZMIMainFrameTarget(request),
+                             f'{URL1}/manage_workspace')
 
 
 class ApplicationPublishTests(FunctionalTestCase):
