@@ -18,6 +18,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Added image dimensions to SVG file properties
   `#1146 <https://github.com/zopefoundation/Zope/pull/1146>`_.
 
+- Fix username not in access log for error requests, see issue
+  `#1155 <https://github.com/zopefoundation/Zope/issues/1155>`_.
+
 5.8.4 (2023-09-06)
 ------------------
 

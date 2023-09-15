@@ -820,6 +820,15 @@ class TestPublishModule(ZopeTestCase):
         self._callFUT(environ, start_response, _publish)
         self.assertFalse('REMOTE_USER' in environ)
 
+    def test_set_REMOTE_USER_environ_error(self):
+        environ = self._makeEnviron()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._raise = ValueError()
+        with self.assertRaises(ValueError):
+            self._callFUT(environ, start_response, _publish)
+        self.assertEqual(environ['REMOTE_USER'], user_name)
+
     def test_webdav_source_port(self):
         from ZPublisher import WSGIPublisher
         old_webdav_source_port = WSGIPublisher._WEBDAV_SOURCE_PORT
