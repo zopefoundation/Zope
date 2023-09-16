@@ -17,6 +17,7 @@ import html
 import struct
 from email.generator import _make_boundary
 from io import BytesIO
+from xml.dom import minidom
 
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
@@ -834,6 +835,39 @@ def getImageInfo(data):
             height = int(h)
         except Exception:
             pass
+
+    # handle SVGs
+    elif (size >= 16) and ((b'<?xml' in data[:16]) or (b'<svg' in data[:16])):
+        try:
+            xmldoc = minidom.parseString(data)
+        except Exception:
+            return content_type, width, height
+        for svg in xmldoc.getElementsByTagName('svg'):
+            content_type = 'image/svg+xml'
+            if 'height' in svg.attributes and 'width' in svg.attributes:
+                w = svg.attributes['width'].value
+                h = svg.attributes['height'].value
+                try:
+                    w = int(float(w))
+                    h = int(float(h))
+                except Exception:
+                    if str(w).endswith('px'):
+                        w = int(float(w[:-2]))
+                        h = int(float(h[:-2]))
+                    elif str(w).endswith('mm'):
+                        w = int(float(w[:-2]) * 3.7795)
+                        h = int(float(h[:-2]) * 3.7795)
+                    elif str(w).endswith('cm'):
+                        w = int(float(w[:-2]) * 37.795)
+                        h = int(float(h[:-2]) * 37.795)
+                break
+            elif 'viewBox' in svg.attributes:
+                viewBox = svg.attributes['viewBox'].value
+                viewBox = [int(float(x)) for x in viewBox.split(' ')]
+                w = viewBox[2] - viewBox[0]
+                h = viewBox[3] - viewBox[1]
+        width = int(w)
+        height = int(h)
 
     return content_type, width, height
 
