@@ -34,7 +34,9 @@ Steps for creating a new Zope release
   ``auto-checkout`` enter them into ``versions-prod.cfg`` and run
   ``bin/buildout`` to update ``requirements-full.txt``.
 
-- Garden the change log and check it for spelling issues.
+- Garden the change log and check it for spelling issues. Look at the changes
+  for this new release and decide on the version number. Features should
+  trigger a feature release.
 
 - Check the future PyPI long description for ReST errors::
 

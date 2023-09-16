@@ -7,11 +7,20 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.8.4 (unreleased)
+
+5.8.5 (unreleased)
+------------------
+
+- Tighten down the ZMI frame source logic to only allow site-local sources.
+
+- Update to newest compatible versions of dependencies.
+
+
+5.8.4 (2023-09-06)
 ------------------
 
 - Disable a ``ZCatalog`` (more precisly: ``Products.PluginIndexes``)
-  performance test which occasionally fails on GITHUB.
+  performance test which occasionally fails on GitHub.
   For details, see
   `#1136 <https://github.com/zopefoundation/Zope/issues/1136>`_.
 
@@ -19,6 +28,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   ``App.Extensions.getObject()``. This got lost in 4.0a6.
 
 - Update to newest compatible versions of dependencies.
+
+- Add preliminary support for Python 3.12rc1.
 
 - Make ``mapply`` ``__signature__`` aware.
   This allows to publish methods decorated via a decorator
@@ -30,7 +41,13 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   and var keyword parameters.
 
 - Make Zope's parameters for denial of service protection configurable
-  `#1141 <https://github.com/zopefoundation/Zope/issues/1141>_`.
+  `#1141 <https://github.com/zopefoundation/Zope/issues/1141>`_.
+
+- Update ``RestrictedPython`` to version 6.2 to mitigate a security problem.
+  (CVE-2023-41039)
+
+- Update ``AccessControl`` to version 6.2 to mitigate a security problem.
+  (CVE-2023-41050)
 
 - Added image dimensions to SVG file properties 
   `#1146 <https://github.com/zopefoundation/Zope/pull/1146>`_.

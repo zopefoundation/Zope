@@ -16,6 +16,7 @@
 import os
 import sys
 from logging import getLogger
+from urllib.parse import urlparse
 
 import Products
 import transaction
@@ -23,6 +24,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import ApplicationDefaultPermissions
 from AccessControl.Permissions import view_management_screens
+from AccessControl.tainted import TaintedString
 from Acquisition import aq_base
 from App import FactoryDispatcher
 from App.ApplicationManager import ApplicationManager
@@ -104,6 +106,49 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         raise RedirectException(f"{URL1}/{destination}")
 
     ZopeRedirect = Redirect
+
+    @security.protected(view_management_screens)
+    def getZMIMainFrameTarget(self, REQUEST):
+        """Utility method to get the right hand side ZMI frame source URL
+
+        For cases where JavaScript is disabled the ZMI uses a simple REQUEST
+        variable ``came_from`` to set the source URL for the right hand side
+        ZMI frame. Since this value can be manipulated by the user it must be
+        sanity-checked first.
+        """
+        parent_url = REQUEST['URL1']
+        default = f'{parent_url}/manage_workspace'
+        came_from = REQUEST.get('came_from', None)
+
+        if not came_from:
+            return default
+
+        # When came_from contains suspicious code, it will not be a string,
+        # but an instance of AccessControl.tainted.TaintedString.
+        # Passing this to urlparse, gives:
+        # AttributeError: 'str' object has no attribute 'decode'
+        # This is good, but let's check explicitly.
+        if isinstance(came_from, TaintedString):
+            return default
+        try:
+            parsed_came_from = urlparse(came_from)
+        except AttributeError:
+            return default
+        parsed_parent_url = urlparse(parent_url)
+
+        # Only allow a passed-in ``came_from`` URL if it is local (just a path)
+        # or if the URL scheme and hostname are the same as our own
+        if (parsed_parent_url.scheme == parsed_came_from.scheme
+                and parsed_parent_url.netloc == parsed_came_from.netloc):
+            return came_from
+        if (not parsed_came_from.scheme and not parsed_came_from.netloc):
+            # This is only a path.  But some paths can be misinterpreted
+            # by browsers.
+            if parsed_came_from.path.startswith("//"):
+                return default
+            return came_from
+
+        return default
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name is None:

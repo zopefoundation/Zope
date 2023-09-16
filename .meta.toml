@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "dec712c6"
+commit-id = "28abbfda"
 
 [python]
 with-pypy = false
@@ -46,6 +46,7 @@ testenv-commands = [
 coverage-basepython = "python3.8"
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
+    "allowlist_externals = *",
     "",
     "[testenv:pre-commit]",
     "basepython = python3",
