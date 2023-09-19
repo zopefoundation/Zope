@@ -387,12 +387,13 @@ def publish_module(environ, start_response,
             try:
                 with load_app(module_info) as new_mod_info:
                     with transaction_pubevents(request, response):
-                        response = _publish(request, new_mod_info)
-
-                        user = getSecurityManager().getUser()
-                        if user is not None and \
-                           user.getUserName() != 'Anonymous User':
-                            environ['REMOTE_USER'] = user.getUserName()
+                        try:
+                            response = _publish(request, new_mod_info)
+                        finally:
+                            user = getSecurityManager().getUser()
+                            if user is not None and \
+                               user.getUserName() != 'Anonymous User':
+                                environ['REMOTE_USER'] = user.getUserName()
                 break
             except TransientError:
                 if request.supports_retry():
