@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "28abbfda"
+commit-id = "a3ddb354"
 
 [python]
 with-pypy = false
@@ -36,7 +36,7 @@ additional-envlist = [
     "pre-commit",
     ]
 testenv-commands-pre = [
-    "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install alltests",
+    "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} buildout:root-directory={toxinidir}",
     ]
 testenv-commands = [
     "# the `layer` argument below suppresses a `ZCatalog` performance test",
