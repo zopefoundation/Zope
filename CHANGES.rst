@@ -15,6 +15,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Added image dimensions to SVG file properties
+  `#1146 <https://github.com/zopefoundation/Zope/pull/1146>`_.
 
 5.8.4 (2023-09-06)
 ------------------
@@ -49,8 +51,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Update ``AccessControl`` to version 6.2 to mitigate a security problem.
   (CVE-2023-41050)
 
-- Added image dimensions to SVG file properties 
-  `#1146 <https://github.com/zopefoundation/Zope/pull/1146>`_.
 
 5.8.3 (2023-06-15)
 ------------------
