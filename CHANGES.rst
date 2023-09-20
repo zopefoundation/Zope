@@ -12,6 +12,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 ------------------
 
 - Tighten down the ZMI frame source logic to only allow site-local sources.
+  Problem reported by Miguel Segovia Gil.
 
 - Update to newest compatible versions of dependencies.
 
