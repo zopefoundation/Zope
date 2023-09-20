@@ -10,7 +10,8 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Tighten down the ZMI frame source logic to only allow site-local sources.
+  Problem reported by Miguel Segovia Gil.
 
 
 4.8.9 (2023-09-05)
