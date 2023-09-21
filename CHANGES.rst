@@ -21,6 +21,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix username not in access log for error requests, see issue
   `#1155 <https://github.com/zopefoundation/Zope/issues/1155>`_.
 
+- Add preliminary support for Python 3.12rc3.
+
 5.8.4 (2023-09-06)
 ------------------
 
