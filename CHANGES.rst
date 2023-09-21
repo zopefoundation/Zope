@@ -13,6 +13,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Move all linters to pre-commit (hook).
+
 
 5.8.5 (2023-09-21)
 ------------------

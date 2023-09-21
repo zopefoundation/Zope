@@ -62,7 +62,7 @@ class CallableSimpleContent(SimpleItem):
     meta_type = "Five CallableSimpleContent"
 
     def __call__(self, *args, **kw):
-        """"""
+        """."""  # We need some content to be traversable.
         return "Default __call__ called"
 
 
@@ -76,7 +76,7 @@ class IndexSimpleContent(SimpleItem):
     meta_type = 'Five IndexSimpleContent'
 
     def index_html(self, *args, **kw):
-        """"""
+        """."""  # We need some content to be traversable.
         return "Default index_html called"
 
 

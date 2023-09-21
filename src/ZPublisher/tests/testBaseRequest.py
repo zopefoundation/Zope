@@ -129,7 +129,7 @@ class BaseRequest_factory:
         from ZPublisher.interfaces import UseTraversalDefault
 
         class _DummyResult:
-            """"""
+            """."""  # We need some content to be traversable.
 
             def __init__(self, tag):
                 self.tag = tag
