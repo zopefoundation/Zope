@@ -24,15 +24,16 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Tighten down the ZMI frame source logic to only allow site-local sources.
   Problem reported by Miguel Segovia Gil.
 
-- Update to newest compatible versions of dependencies.
-
 - Added image dimensions to SVG file properties
   `#1146 <https://github.com/zopefoundation/Zope/pull/1146>`_.
 
 - Fix username not in access log for error requests, see issue
   `#1155 <https://github.com/zopefoundation/Zope/issues/1155>`_.
 
+- Update to newest compatible versions of dependencies.
+
 - Add preliminary support for Python 3.12rc3.
+
 
 5.8.4 (2023-09-06)
 ------------------
