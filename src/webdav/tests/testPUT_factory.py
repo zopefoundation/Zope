@@ -45,35 +45,35 @@ class TestPUTFactory(unittest.TestCase):
         request = self.app.REQUEST
         put = request.traverse('/folder/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('doc' in self.folder.objectIds())
+        self.assertIn('doc', self.folder.objectIds())
 
     def testSimpleVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/'
                                'VirtualHostRoot/folder/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('doc' in self.folder.objectIds())
+        self.assertIn('doc', self.folder.objectIds())
 
     def testSubfolderVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/'
                                'folder/VirtualHostRoot/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('doc' in self.folder.objectIds())
+        self.assertIn('doc', self.folder.objectIds())
 
     def testInsideOutVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/'
                                'VirtualHostRoot/_vh_foo/folder/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('doc' in self.folder.objectIds())
+        self.assertIn('doc', self.folder.objectIds())
 
     def testSubfolderInsideOutVirtualHosting(self):
         request = self.app.REQUEST
         put = request.traverse('/VirtualHostBase/http/foo.com:80/'
                                'folder/VirtualHostRoot/_vh_foo/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('doc' in self.folder.objectIds())
+        self.assertIn('doc', self.folder.objectIds())
 
     def testCollector2261(self):
         from OFS.DTMLMethod import addDTMLMethod
@@ -106,7 +106,7 @@ class TestPUTFactory(unittest.TestCase):
         request = self.app.REQUEST
         put = request.traverse('/folder/doc')
         put(request, request.RESPONSE)
-        self.assertTrue('newname' in self.folder.objectIds())
+        self.assertIn('newname', self.folder.objectIds())
 
     def test_default_PUT_factory_type_guessing(self):
         # Check how the default PUT factory guesses the type of object to

@@ -105,7 +105,7 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_evaluate_alternative_first_missing(self):
         ec = self._makeContext()
-        self.assertTrue(ec.evaluate('x | nothing') is None)
+        self.assertIsNone(ec.evaluate('x | nothing'))
 
     def test_evaluate_dict_key_as_underscore(self):
         # Traversing to the name `_` will raise a DeprecationWarning
@@ -204,8 +204,8 @@ class EngineTestsBase(PlacelessSetup):
 
     def test_builtin_in_path_expr(self):
         ec = self._makeContext()
-        self.assertIs(ec.evaluate('True'), True)
-        self.assertIs(ec.evaluate('False'), False)
+        self.assertTrue(ec.evaluate('True'))
+        self.assertFalse(ec.evaluate('False'))
         self.assertIs(ec.evaluate('nocall: test'), safe_builtins["test"])
 
 
@@ -343,5 +343,5 @@ class ZopeContextTests(unittest.TestCase):
         # See: https://bugs.launchpad.net/zope2/+bug/174705
         context = self._makeOne()
         info = context.createErrorInfo(AttributeError('nonesuch'), (12, 3))
-        self.assertTrue(info.type is AttributeError)
+        self.assertIs(info.type, AttributeError)
         self.assertEqual(info.__allow_access_to_unprotected_subobjects__, 1)

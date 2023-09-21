@@ -84,7 +84,7 @@ class TestInitialization(unittest.TestCase):
         i = self.getOne()
         i.install_virtual_hosting()
         app = i.getApp()
-        self.assertTrue('virtual_hosting' in app)
+        self.assertIn('virtual_hosting', app)
         self.assertEqual(
             app.virtual_hosting.meta_type, 'Virtual Host Monster')
 
@@ -93,8 +93,8 @@ class TestInitialization(unittest.TestCase):
         i = self.getOne()
         i.install_required_roles()
         app = i.getApp()
-        self.assertTrue('Owner' in app.__ac_roles__)
-        self.assertTrue('Authenticated' in app.__ac_roles__)
+        self.assertIn('Owner', app.__ac_roles__)
+        self.assertIn('Authenticated', app.__ac_roles__)
 
     def test_install_inituser(self):
         fname = os.path.join(self.TEMPNAME, 'inituser')
@@ -122,7 +122,7 @@ class TestInitialization(unittest.TestCase):
         i = self.getOne()
         i.install_root_view()
         app = i.getApp()
-        self.assertTrue('index_html' in app)
+        self.assertIn('index_html', app)
         self.assertEqual(app.index_html.meta_type, 'Page Template')
 
     def test_install_products_which_need_the_application(self):

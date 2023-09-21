@@ -90,8 +90,8 @@ class UserFolderTests(unittest.TestCase):
         user = uf.getUser('user1')
         app.manage_addLocalRoles('user1', ['Owner'])
         roles = user.getRolesInContext(app)
-        self.assertTrue('role1' in roles)
-        self.assertTrue('Owner' in roles)
+        self.assertIn('role1', roles)
+        self.assertIn('Owner', roles)
 
     def testHasRole(self):
         app = self._makeApp()

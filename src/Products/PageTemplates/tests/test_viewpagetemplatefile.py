@@ -47,7 +47,7 @@ class TestPageTemplateFile(ZopeTestCase):
     def test_simple(self):
         view = SimpleView(self.folder, self.folder.REQUEST)
         result = view.index()
-        self.assertTrue('Hello world!' in result)
+        self.assertIn('Hello world!', result)
 
     def test_secure(self):
         view = SecureView(self.folder, self.folder.REQUEST)
@@ -57,18 +57,18 @@ class TestPageTemplateFile(ZopeTestCase):
         except Unauthorized:
             self.fail("Unexpected exception.")
         else:
-            self.assertTrue('&lt;foo&gt;&lt;/bar&gt;' in result)
+            self.assertIn('&lt;foo&gt;&lt;/bar&gt;', result)
 
     def test_locals(self):
         view = LocalsView(self.folder, self.folder.REQUEST)
         result = view.index()
-        self.assertTrue("view:yes" in result)
-        self.assertTrue('here==context:True' in result)
-        self.assertTrue('here==container:True' in result)
-        self.assertTrue("root:(\'\',)" in result)
-        self.assertTrue("nothing:" in result)
+        self.assertIn("view:yes", result)
+        self.assertIn('here==context:True', result)
+        self.assertIn('here==container:True', result)
+        self.assertIn("root:(\'\',)", result)
+        self.assertIn("nothing:", result)
         # test for the existence of the cgi.parse function
-        self.assertTrue("parse" in result)
+        self.assertIn("parse", result)
 
     def test_options(self):
         view = OptionsView(self.folder, self.folder.REQUEST)
@@ -78,8 +78,8 @@ class TestPageTemplateFile(ZopeTestCase):
             c='abc',
         )
         result = view.index(**options)
-        self.assertTrue("a : 1" in result)
-        self.assertTrue("c : abc" in result)
+        self.assertIn("a : 1", result)
+        self.assertIn("c : abc", result)
 
     def test_processing_instruction(self):
         view = ProcessingInstructionTestView(self.folder, self.folder.REQUEST)

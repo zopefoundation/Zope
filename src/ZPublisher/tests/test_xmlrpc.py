@@ -58,7 +58,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response = self._makeOne(faux)
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
-        self.assertIs(data[0]['public'], None)
+        self.assertIsNone(data[0]['public'])
 
     def test_instance(self):
         # Instances are turned into dicts with their private
@@ -135,8 +135,8 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(folder)
         data, method = xmlrpc.client.loads(faux._body)
 
-        self.assertFalse('file1' in data[0].keys())
-        self.assertTrue('file2' in data[0].keys())
+        self.assertNotIn('file1', data[0].keys())
+        self.assertIn('file2', data[0].keys())
 
     def test_zopedatetimeinstance(self):
         # DateTime instance at top-level
@@ -146,7 +146,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]
-        self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
+        self.assertIsInstance(data, xmlrpc.client.DateTime)
         self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeattribute(self):
@@ -157,7 +157,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['public']
-        self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
+        self.assertIsInstance(data, xmlrpc.client.DateTime)
         self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeattribute_recursive(self):
@@ -169,7 +169,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['public']['public']
-        self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
+        self.assertIsInstance(data, xmlrpc.client.DateTime)
         self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeinstance_in_list(self):
@@ -180,7 +180,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0][0]
-        self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
+        self.assertIsInstance(data, xmlrpc.client.DateTime)
         self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_zopedatetimeinstance_in_dict(self):
@@ -191,7 +191,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
         data, method = xmlrpc.client.loads(faux._body)
         data = data[0]['date']
-        self.assertTrue(isinstance(data, xmlrpc.client.DateTime))
+        self.assertIsInstance(data, xmlrpc.client.DateTime)
         self.assertEqual(data.value, '2006-05-24T07:00:00+00:00')
 
     def test_functionattribute(self):

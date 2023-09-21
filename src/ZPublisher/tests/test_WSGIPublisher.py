@@ -84,7 +84,7 @@ class WSGIResponseTests(unittest.TestCase):
         response.setBody('TESTING')
         headers = response.listHeaders()
         sv = [x for x in headers if x[0] == 'Server']
-        self.assertTrue(('Server', 'TESTME') in sv)
+        self.assertIn(('Server', 'TESTME'), sv)
 
     def test_listHeaders_includes_Date_header(self):
         import time
@@ -119,7 +119,7 @@ class WSGIResponseTests(unittest.TestCase):
         body = TestStreamIterator()
         response.setBody(body)
         response.finalize()
-        self.assertTrue(body is response.body)
+        self.assertIs(body, response.body)
         self.assertEqual(response._streaming, 1)
 
     def test_setBody_IStreamIterator(self):
@@ -147,7 +147,7 @@ class WSGIResponseTests(unittest.TestCase):
         body = TestStreamIterator()
         response.setBody(body)
         response.finalize()
-        self.assertTrue(body is response.body)
+        self.assertIs(body, response.body)
         self.assertEqual(response._streaming, 0)
         self.assertEqual(response.getHeader('Content-Length'),
                          '%d' % len(TestStreamIterator.data))
@@ -225,7 +225,7 @@ class TestPublish(unittest.TestCase):
         _realm = 'TESTING'
         _debug_mode = True
         returned = self._callFUT(request, (_object, _realm, _debug_mode))
-        self.assertTrue(returned is response)
+        self.assertIs(returned, response)
         self.assertTrue(request._processedInputs)
         self.assertTrue(response.debug_mode)
         self.assertEqual(response.realm, 'TESTING')
@@ -399,7 +399,7 @@ class TestPublishModule(ZopeTestCase):
         except ZTK_NotFound:
             self.fail('ZTK exception raised, expected zExceptions.')
         except NotFound as exc:
-            self.assertTrue('name_not_found' in str(exc))
+            self.assertIn('name_not_found', str(exc))
 
     def test_response_body_is_file(self):
         from io import BytesIO
@@ -420,7 +420,7 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertTrue(app_iter is body)
+        self.assertIs(app_iter, body)
 
     def test_response_is_stream(self):
         from zope.interface import implementer
@@ -448,7 +448,7 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertTrue(app_iter is body)
+        self.assertIs(app_iter, body)
 
     def test_response_is_unboundstream(self):
         from zope.interface import implementer
@@ -475,7 +475,7 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertTrue(app_iter is body)
+        self.assertIs(app_iter, body)
 
     def test_stream_file_wrapper(self):
         from zope.interface import implementer
@@ -504,8 +504,8 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertTrue(app_iter.file is body)
-        self.assertTrue(isinstance(app_iter, Wrapper))
+        self.assertIs(app_iter.file, body)
+        self.assertIsInstance(app_iter, Wrapper)
         self.assertEqual(
             int(_response.headers['content-length']), len(body))
         self.assertTrue(
@@ -542,8 +542,8 @@ class TestPublishModule(ZopeTestCase):
         _publish = DummyCallable()
         _publish._result = _response
         app_iter = self._callFUT(environ, start_response, _publish)
-        self.assertTrue(app_iter.file is body)
-        self.assertTrue(isinstance(app_iter, Wrapper))
+        self.assertIs(app_iter.file, body)
+        self.assertIsInstance(app_iter, Wrapper)
         self.assertEqual(
             int(_response.headers['content-length']), len(body))
         self.assertTrue(
@@ -576,8 +576,8 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         # The stream iterator has no ``read`` and will not be used
         # for ``wsgi.file_wrapper``. It is returned as-is.
-        self.assertTrue(app_iter is body)
-        self.assertTrue(isinstance(app_iter, TestStreamIterator))
+        self.assertIs(app_iter, body)
+        self.assertIsInstance(app_iter, TestStreamIterator)
         self.assertEqual(
             int(_response.headers['content-length']), len(body))
         self.assertTrue(
@@ -684,7 +684,7 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '401 Unauthorized')
-        self.assertTrue(b'Exception View: Unauthorized' in body)
+        self.assertIn(b'Exception View: Unauthorized', body)
         unregisterExceptionView(IUnauthorized)
 
     def testCustomExceptionViewForbidden(self):
@@ -697,7 +697,7 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '403 Forbidden')
-        self.assertTrue(b'Exception View: Forbidden' in body)
+        self.assertIn(b'Exception View: Forbidden', body)
         unregisterExceptionView(IForbidden)
 
     def testCustomExceptionViewNotFound(self):
@@ -710,7 +710,7 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
-        self.assertTrue(b'Exception View: NotFound' in body)
+        self.assertIn(b'Exception View: NotFound', body)
         unregisterExceptionView(INotFound)
 
     def testCustomExceptionViewZTKNotFound(self):
@@ -723,7 +723,7 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '404 Not Found')
-        self.assertTrue(b'Exception View: NotFound' in body)
+        self.assertIn(b'Exception View: NotFound', body)
         unregisterExceptionView(INotFound)
 
     def testCustomExceptionViewBadRequest(self):
@@ -736,7 +736,7 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         body = b''.join(app_iter)
         self.assertEqual(start_response._called_with[0][0], '400 Bad Request')
-        self.assertTrue(b'Exception View: BadRequest' in body)
+        self.assertIn(b'Exception View: BadRequest', body)
         unregisterExceptionView(IException)
 
     def testCustomExceptionViewInternalError(self):
@@ -750,7 +750,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         self.assertEqual(
             start_response._called_with[0][0], '500 Internal Server Error')
-        self.assertTrue(b'Exception View: InternalError' in body)
+        self.assertIn(b'Exception View: InternalError', body)
         unregisterExceptionView(IException)
 
     def testRedirectExceptionView(self):
@@ -764,7 +764,7 @@ class TestPublishModule(ZopeTestCase):
         body = b''.join(app_iter)
         status, headers = start_response._called_with[0]
         self.assertEqual(status, '302 Found')
-        self.assertTrue(b'Exception View: Redirect' in body)
+        self.assertIn(b'Exception View: Redirect', body)
         headers = dict(headers)
         self.assertEqual(headers['Location'], 'http://localhost:9/')
         unregisterExceptionView(IException)
@@ -811,14 +811,14 @@ class TestPublishModule(ZopeTestCase):
         _response = DummyResponse()
         _publish = DummyCallable()
         _publish._result = _response
-        self.assertFalse('REMOTE_USER' in environ)
+        self.assertNotIn('REMOTE_USER', environ)
         self._callFUT(environ, start_response, _publish)
         self.assertEqual(environ['REMOTE_USER'], user_name)
         # After logout there is no REMOTE_USER in environ
         environ = self._makeEnviron()
         self.logout()
         self._callFUT(environ, start_response, _publish)
-        self.assertFalse('REMOTE_USER' in environ)
+        self.assertNotIn('REMOTE_USER', environ)
 
     def test_set_REMOTE_USER_environ_error(self):
         environ = self._makeEnviron()

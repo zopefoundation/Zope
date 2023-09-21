@@ -193,7 +193,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_no_docstring_on_instance(self):
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
-        self.assertTrue(r.__doc__ is None)
+        self.assertIsNone(r.__doc__)
 
     def test___bobo_traverse___raises(self):
         root, folder = self._makeRootAndFolder()
