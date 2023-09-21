@@ -368,6 +368,7 @@ class ImageTests(FileTests):
         response = request.RESPONSE
         result = self.file.index_html(request, response)
         self.assertEqual(result, self.data)
+        self.assertIsNone(response.getHeader("Content-Disposition"))
 
     def test_interfaces(self):
         from OFS.Image import Image
@@ -380,6 +381,61 @@ class ImageTests(FileTests):
         self.assertEqual(six.text_type(self.file),
                          '<img src="http://nohost/file"'
                          ' alt="" title="" height="16" width="16" />')
+
+
+class SVGTests(ImageTests):
+    content_type = 'image/svg+xml'
+
+    def testViewImageOrFile(self):
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        result = self.file.index_html(request, response)
+        self.assertEqual(result, self.data)
+        self.assertEqual(
+            response.getHeader("Content-Disposition"),
+            "attachment; filename*=UTF-8''file.svg",
+        )
+
+    def testViewImageOrFileNonAscii(self):
+        try:
+            factory = getattr(self.app, self.factory)
+            factory('hällo',
+                    file=self.data, content_type=self.content_type)
+            transaction.commit()
+        except Exception:
+            transaction.abort()
+            self.connection.close()
+            raise
+        transaction.begin()
+        image = getattr(self.app, 'hällo')
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        result = image.index_html(request, response)
+        self.assertEqual(result, self.data)
+        self.assertEqual(
+            response.getHeader("Content-Disposition"),
+            "attachment; filename*=UTF-8''h%C3%A4llo.svg",
+        )
+
+    def testViewImageOrFile_with_denylist(self):
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        self.file.use_denylist = True
+        result = self.file.index_html(request, response)
+        self.assertEqual(result, self.data)
+        self.assertEqual(
+            response.getHeader("Content-Disposition"),
+            "attachment; filename*=UTF-8''file.svg",
+        )
+
+    def testViewImageOrFile_with_empty_denylist(self):
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        self.file.use_denylist = True
+        self.file.disallowed_inline_mimetypes = []
+        result = self.file.index_html(request, response)
+        self.assertEqual(result, self.data)
+        self.assertIsNone(response.getHeader("Content-Disposition"))
 
 
 class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):

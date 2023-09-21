@@ -10,6 +10,16 @@ https://zope.readthedocs.io/en/2.13/CHANGES.html
 4.8.10 (unreleased)
 -------------------
 
+- Allow only some image types to be displayed inline. Force download for
+  others, especially SVG images.  By default we use a list of allowed types.
+  You can switch a to a list of denied types by setting OS environment variable
+  ``OFS_IMAGE_USE_DENYLIST=1``.  You can override the allowed list with
+  environment variable ``ALLOWED_INLINE_MIMETYPES`` and the disallowed list
+  with ``DISALLOWED_INLINE_MIMETYPES``.  Separate multiple entries by either
+  comma or space.  This change only affects direct URL access.
+  ``<img src="image.svg" />`` works the same as before. (CVE-2023-42458)
+  See `security advisory <https://github.com/zopefoundation/Zope/security/advisories/GHSA-wm8q-9975-xh5v>`_.
+
 - Tighten down the ZMI frame source logic to only allow site-local sources.
   Problem reported by Miguel Segovia Gil.
 

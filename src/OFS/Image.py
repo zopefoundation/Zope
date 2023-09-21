@@ -13,16 +13,19 @@
 """Image object
 """
 
+import os
 import struct
 from email.generator import _make_boundary
 from io import BytesIO
 from io import TextIOBase
+from mimetypes import guess_extension
 from tempfile import TemporaryFile
 from warnings import warn
 
 from six import PY2
 from six import binary_type
 from six import text_type
+from six.moves.urllib.parse import quote
 
 import ZPublisher.HTTPRequest
 from AccessControl.class_init import InitializeClass
@@ -59,6 +62,64 @@ try:
     from html import escape
 except ImportError:  # PY2
     from cgi import escape
+
+
+def _get_list_from_env(name, default=None):
+    """Get list from environment variable.
+
+    Supports splitting on comma or white space.
+    Use the default as fallback only when the variable is not set.
+    So if the env variable is set to an empty string, this will ignore the
+    default and return an empty list.
+    """
+    value = os.environ.get(name)
+    if value is None:
+        return default or []
+    value = value.strip()
+    if "," in value:
+        return value.split(",")
+    return value.split()
+
+
+# We have one list for allowed, and one for disallowed inline mimetypes.
+# This is for security purposes.
+# By default we use the allowlist.  We give integrators the option to choose
+# the denylist via an environment variable.
+ALLOWED_INLINE_MIMETYPES = _get_list_from_env(
+    "ALLOWED_INLINE_MIMETYPES",
+    default=[
+        "image/gif",
+        # The mimetypes registry lists several for jpeg 2000:
+        "image/jp2",
+        "image/jpeg",
+        "image/jpeg2000-image",
+        "image/jpeg2000",
+        "image/jpx",
+        "image/png",
+        "image/webp",
+        "image/x-icon",
+        "image/x-jpeg2000-image",
+        "text/plain",
+        # By popular request we allow PDF:
+        "application/pdf",
+    ]
+)
+DISALLOWED_INLINE_MIMETYPES = _get_list_from_env(
+    "DISALLOWED_INLINE_MIMETYPES",
+    default=[
+        "application/javascript",
+        "application/x-javascript",
+        "text/javascript",
+        "text/html",
+        "image/svg+xml",
+        "image/svg+xml-compressed",
+    ]
+)
+try:
+    USE_DENYLIST = os.environ.get("OFS_IMAGE_USE_DENYLIST")
+    USE_DENYLIST = bool(int(USE_DENYLIST))
+except (ValueError, TypeError, AttributeError):
+    USE_DENYLIST = False
 
 
 manage_addFileForm = DTMLFile(
@@ -120,6 +181,13 @@ class File(
     Cacheable
 ):
     """A File object is a content object for arbitrary files."""
+    # You can control which mimetypes may be shown inline
+    # and which must always be downloaded, for security reasons.
+    # Make the configuration available on the class.
+    # Then subclasses can override this.
+    allowed_inline_mimetypes = ALLOWED_INLINE_MIMETYPES
+    disallowed_inline_mimetypes = DISALLOWED_INLINE_MIMETYPES
+    use_denylist = USE_DENYLIST
 
     meta_type = 'File'
     zmi_icon = 'far fa-file-archive'
@@ -418,6 +486,19 @@ class File(
                         b'\r\n--' + boundary.encode('ascii') + b'--\r\n')
                     return True
 
+    def _should_force_download(self):
+        # If this returns True, the caller should set a
+        # Content-Disposition header with filename.
+        mimetype = self.content_type
+        if not mimetype:
+            return False
+        if self.use_denylist:
+            # We explicitly deny a few mimetypes, and allow the rest.
+            return mimetype in self.disallowed_inline_mimetypes
+        # Use the allowlist.
+        # We only explicitly allow a few mimetypes, and deny the rest.
+        return mimetype not in self.allowed_inline_mimetypes
+
     @security.protected(View)
     def index_html(self, REQUEST, RESPONSE):
         """
@@ -455,6 +536,24 @@ class File(
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Content-Length', self.size)
         RESPONSE.setHeader('Accept-Ranges', 'bytes')
+
+        if self._should_force_download():
+            # We need a filename, even a dummy one if needed.
+            filename = self.getId()
+            if "." not in filename:
+                # This either returns None or ".some_extension"
+                ext = guess_extension(self.content_type, strict=False)
+                if not ext:
+                    # image/svg+xml -> svg
+                    ext = "." + self.content_type.split("/")[-1].split("+")[0]
+                filename += ext
+            if not isinstance(filename, bytes):
+                filename = filename.encode("utf8")
+            filename = quote(filename)
+            RESPONSE.setHeader(
+                "Content-Disposition",
+                "attachment; filename*=UTF-8''{}".format(filename),
+            )
 
         if self.ZCacheable_isCachingEnabled():
             result = self.ZCacheable_get(default=None)
