@@ -11,7 +11,12 @@ Paste==3.5.3
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==4.0.post1
-RestrictedPython==6.2
+RestrictedPython==6.2; python_version == '3.10'
+RestrictedPython==6.2; python_version == '3.11'
+RestrictedPython==6.2; python_version == '3.7'
+RestrictedPython==6.2; python_version == '3.8'
+RestrictedPython==6.2; python_version == '3.9'
+RestrictedPython==7.0a1.dev1; python_version > '3.11'
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
@@ -46,7 +51,7 @@ zope.component==6.0
 zope.configuration==5.0
 zope.container==5.1
 zope.contentprovider==5.0
-zope.contenttype==5.0
+zope.contenttype==5.1
 zope.datetime==5.0.0
 zope.deferredimport==5.0
 zope.deprecation==5.0

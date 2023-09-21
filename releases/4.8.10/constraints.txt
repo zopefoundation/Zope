@@ -1,0 +1,114 @@
+AccessControl==4.4
+Acquisition==4.13
+AuthEncoding==4.3
+BTrees==4.11.3
+Chameleon==3.10.2; python_version > '2.7'
+Chameleon==3.9.1; python_version == '2.7'
+DateTime==4.9
+DocumentTemplate==3.4; python_version == '2.7'
+DocumentTemplate==3.4; python_version == '3.5'
+DocumentTemplate==4.1; python_version > '3.5'
+ExtensionClass==4.9
+Missing==4.2
+MultiMapping==4.1
+Paste==3.5.2
+PasteDeploy==2.1.1; python_version == '2.7'
+PasteDeploy==2.1.1; python_version == '3.5'
+PasteDeploy==2.1.1; python_version == '3.6'
+PasteDeploy==3.0.1; python_version > '3.6'
+Persistence==3.6
+Products.BTreeFolder2==4.4
+Products.ZCatalog==5.4
+Record==3.6
+RestrictedPython==5.4
+WSGIProxy2==0.4.6; python_version == '2.7'
+WSGIProxy2==0.4.6; python_version == '3.5'
+WSGIProxy2==0.4.6; python_version == '3.6'
+WSGIProxy2==0.5.1; python_version > '3.6'
+WebOb==1.8.7
+WebTest==2.0.35; python_version == '2.7'
+WebTest==2.0.35; python_version == '3.5'
+WebTest==3.0.0; python_version > '3.5'
+ZConfig==3.6.1
+ZEO==5.3.0
+ZODB==5.8.0
+ZServer==4.0.2; python_version == '2.7'
+Zope2==4.0
+five.globalrequest==99.1
+five.localsitemanager==3.4
+funcsigs==1.0.2
+future==0.18.2
+ipaddress==1.0.23
+mock==3.0.5; python_version == '2.7'
+mock==3.0.5; python_version == '3.5'
+mock==4.0.3; python_version > '3.5'
+multipart==0.1.1; python_version == '2.7'
+multipart==0.2.4; python_version > '2.7'
+pbr==5.11.0
+persistent==4.9.3
+pytz==2022.7
+roman==3.3
+shutilwhich==1.1.0
+six==1.16.0
+transaction==3.0.1
+waitress==1.4.4; python_version == '2.7'
+waitress==1.4.4; python_version == '3.5'
+waitress==2.0.0; python_version == '3.6'
+waitress==2.1.2; python_version > '3.6'
+z3c.pt==3.3.1
+zExceptions==4.3
+zc.lockfile==2.0
+zdaemon==4.4
+zodbpickle==2.6
+zope.annotation==4.8
+zope.browser==2.4
+zope.browsermenu==4.4
+zope.browserpage==4.4.0
+zope.browserresource==4.4
+zope.cachedescriptors==4.4
+zope.component==5.0.1
+zope.componentvocabulary==2.3.0
+zope.configuration==4.4.1
+zope.container==4.10; python_version == '2.7'
+zope.container==4.10; python_version == '3.5'
+zope.container==4.10; python_version == '3.6'
+zope.container==5.1; python_version > '3.6'
+zope.contentprovider==4.2.1
+zope.contenttype==4.6
+zope.datetime==4.3.0
+zope.deferredimport==4.4
+zope.deprecation==4.4.0
+zope.dottedname==4.3; python_version == '2.7'
+zope.dottedname==4.3; python_version == '3.5'
+zope.dottedname==5.0; python_version > '3.5'
+zope.event==4.6
+zope.exceptions==4.6
+zope.filerepresentation==5.0.0
+zope.formlib==5.0.1
+zope.globalrequest==1.6
+zope.hookable==5.4
+zope.i18n==4.9.0
+zope.i18nmessageid==5.1.1
+zope.interface==5.5.2
+zope.lifecycleevent==4.4
+zope.location==4.3
+zope.pagetemplate==4.6.0
+zope.processlifetime==2.4
+zope.proxy==4.6.1
+zope.ptresource==4.3.0
+zope.publisher==6.1.0
+zope.ramcache==2.4
+zope.schema==6.2.1
+zope.security==5.8
+zope.sendmail==5.3
+zope.sequencesort==4.2
+zope.site==4.6.1
+zope.size==4.4
+zope.structuredtext==4.4
+zope.tal==4.5
+zope.tales==5.2
+zope.testbrowser==5.6.1
+zope.testing==4.10
+zope.testrunner==5.6
+zope.traversing==4.4.1
+zope.viewlet==4.3
