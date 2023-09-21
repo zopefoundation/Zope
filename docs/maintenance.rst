@@ -133,7 +133,7 @@ Steps for creating a new Zope release
 - Fix problems.
 - Commit and push the changes.
 
-- Update the Zope release schedule at https://www.zope.dev/releases.html
+- Update the Zope release schedule at https://github.com/zopefoundation/www.zope.org/blob/master/docs/releases.rst
 
 - Announce the release to the world via zope-announce@zope.dev and https://community.plone.org/c/announcements.
 
