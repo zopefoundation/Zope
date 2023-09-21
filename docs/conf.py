@@ -23,10 +23,8 @@ project = 'Zope'
 copyright = '2009-2023, The Zope developer community'
 author = 'The Zope developer community'
 
-# The short X.Y version
-version = '4.8.9'
-# The full version, including alpha/beta/rc tags
-release = '4.8.9'
+# The X.Y.Z version
+version = release = '4.8.10'
 
 
 # -- General configuration ---------------------------------------------------
