@@ -27,6 +27,11 @@ repos:
       additional_dependencies:
         - flake8-coding
         - flake8-debugger
+  - repo: https://github.com/isidentical/teyit
+    rev: 0.4.3
+    hooks:
+    - id: teyit
+      exclude: src/App/tests/fixtures/error.py  # invalid syntax
   - repo: https://github.com/mgedmin/check-manifest
     rev: "0.49"
     hooks:
