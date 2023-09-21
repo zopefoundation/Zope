@@ -29,9 +29,11 @@ Added support for Python 3.9
 
 * Zope 5.4 and newer also supports Python 3.10.
 
+* Zope 5.7 and newer also supports Python 3.11.
+
 Dropped support for Python 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Zope 5 supports Python 3 only, versions 3.6 up through 3.9. All support code
+Zope 5 supports Python 3 only, versions 3.6 up through 3.11. All support code
 and special casing for Python 2, including the use of the ``six`` package, have
 been removed.
 
