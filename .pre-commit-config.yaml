@@ -3,10 +3,10 @@ ci:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: "v2.6.2"
+    rev: "v3.11.1"
     hooks:
     - id: pyupgrade
-      args: [--py36-plus]
+      args: [--py37-plus]
   - repo: https://github.com/pycqa/isort
     rev: "5.12.0"
     hooks:
@@ -16,7 +16,7 @@ repos:
     hooks:
     - id: docformatter
   - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: "v2.0.2"
+    rev: "v2.0.4"
     hooks:
     - id: autopep8
       args: [--in-place, --aggressive, --aggressive]
