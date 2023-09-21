@@ -68,7 +68,7 @@ class TestPatches(Sandboxed, ZopeTestCase):
         self.assertIn(
             'Hello world',
             template(
-            greeting='Hello world')
+                greeting='Hello world')
         )
 
         # test commit

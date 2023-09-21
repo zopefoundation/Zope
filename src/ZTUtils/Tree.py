@@ -223,7 +223,7 @@ class TreeMaker:
         return node
 
 
-_SIMPLE_TYPES = {type(''), type(b''), type(0), type(0.0), type(None)}
+_SIMPLE_TYPES = {str, bytes, int, float, type(None)}
 
 
 def simple_type(ob):

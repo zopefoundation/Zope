@@ -60,7 +60,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 # Drop the protocol, if any
                 line = line.split('://')[-1]
                 try:
-                    host, path = [x.strip() for x in line.split('/', 1)]
+                    host, path = (x.strip() for x in line.split('/', 1))
                 except Exception:
                     raise ValueError(
                         'Line needs a slash between host and path: %s' % line)

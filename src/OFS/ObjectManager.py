@@ -783,9 +783,9 @@ class ObjectManager(
             if ob_size < 1024:
                 return '1 KiB'
             elif ob_size > 1048576:
-                return "{:0.02f} MiB".format(ob_size / 1048576.0)
+                return f"{ob_size / 1048576.0:0.02f} MiB"
             else:
-                return "{:0.0f} KiB".format(ob_size / 1024.0)
+                return f"{ob_size / 1024.0:0.0f} KiB"
 
     @security.protected(access_contents_information)
     def last_modified(self, ob):

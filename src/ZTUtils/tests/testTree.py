@@ -451,6 +451,6 @@ class TreeTests(unittest.TestCase):
 
         from ZTUtils.Tree import b2a
         big = b2a(zlib.compress(b'x' * (1024 * 1100)))
-        self.assertLess(len(big), 8192) # Must be under the input size limit
+        self.assertLess(len(big), 8192)  # Must be under the input size limit
         with self.assertRaises(ValueError):
             Tree.decodeExpansion(b':' + big)

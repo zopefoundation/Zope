@@ -42,7 +42,7 @@ class XMLRPCResponseTests(unittest.TestCase):
         response.setBody(body)
 
         body_str = faux._body
-        self.assertEqual(type(body_str), type(''))
+        self.assertEqual(type(body_str), str)
 
         as_set, method = xmlrpc.client.loads(body_str)
         as_set = as_set[0]
