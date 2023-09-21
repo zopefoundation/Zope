@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Interfaces test fixtures
-"""
+"""Interfaces test fixtures."""
 
 from zope.interface import Interface
 
@@ -26,10 +25,8 @@ class Two:
 
 
 class IOne(Interface):
-    """This is a Zope interface.
-    """
+    """This is a Zope interface."""
 
 
 class ITwo(Interface):
-    """This is another Zope interface.
-    """
+    """This is another Zope interface."""

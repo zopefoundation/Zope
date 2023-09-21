@@ -1,7 +1,7 @@
 """Virtual Host Monster regression tests.
 
-These tests mainly verify that OFS.Traversable.absolute_url()
-works correctly in a VHM environment.
+These tests mainly verify that OFS.Traversable.absolute_url() works
+correctly in a VHM environment.
 """
 import unittest
 

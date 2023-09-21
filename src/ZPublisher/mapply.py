@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Provide an apply-like facility that works with any mapping object
-"""
+"""Provide an apply-like facility that works with any mapping object."""
 from inspect import getfullargspec
 
 import zope.publisher.publish

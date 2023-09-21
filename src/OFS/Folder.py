@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Folder object
+"""Folder object.
 
-Folders are the basic container objects and are analogous to directories.
+Folders are the basic container objects and are analogous to
+directories.
 """
 
 from AccessControl.class_init import InitializeClass
@@ -40,8 +41,7 @@ def manage_addFolder(
     createUserF=0,
     REQUEST=None
 ):
-    """Add a new Folder object with id *id*.
-    """
+    """Add a new Folder object with id *id*."""
     ob = Folder(id)
     ob.title = title
     self._setObject(id, ob)
@@ -61,9 +61,11 @@ class Folder(
     Item,
     FindSupport
 ):
-    """Folders are basic container objects that provide a standard
-    interface for object management. Folder objects also implement
-    a management interface and can have arbitrary properties.
+    """Folders are basic container objects that provide a standard interface
+    for object management.
+
+    Folder objects also implement a management interface and can have
+    arbitrary properties.
     """
     meta_type = 'Folder'
     zmi_icon = 'far fa-folder'

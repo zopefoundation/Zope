@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Image object
-"""
+"""Image object."""
 
 import html
 import os
@@ -54,10 +53,10 @@ from ZPublisher.HTTPRequest import FileUpload
 def _get_list_from_env(name, default=None):
     """Get list from environment variable.
 
-    Supports splitting on comma or white space.
-    Use the default as fallback only when the variable is not set.
-    So if the env variable is set to an empty string, this will ignore the
-    default and return an empty list.
+    Supports splitting on comma or white space. Use the default as
+    fallback only when the variable is not set. So if the env variable
+    is set to an empty string, this will ignore the default and return
+    an empty list.
     """
     value = os.environ.get(name)
     if value is None:
@@ -128,7 +127,8 @@ def manage_addFile(
 ):
     """Add a new File object.
 
-    Creates a new File object 'id' with the contents of 'file'"""
+    Creates a new File object 'id' with the contents of 'file'
+    """
 
     id = str(id)
     title = str(title)
@@ -486,8 +486,7 @@ class File(
 
     @security.protected(View)
     def index_html(self, REQUEST, RESPONSE):
-        """
-        The default view of the contents of a File or Image.
+        """The default view of the contents of a File or Image.
 
         Returns the contents of the file or image.  Also, sets the
         Content-Type HTTP header to the objects content type.
@@ -601,9 +600,8 @@ class File(
         filedata=None,
         REQUEST=None
     ):
-        """
-        Changes the title and content type attributes of the File or Image.
-        """
+        """Changes the title and content type attributes of the File or
+        Image."""
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
 
@@ -629,10 +627,10 @@ class File(
 
     @security.protected(change_images_and_files)
     def manage_upload(self, file='', REQUEST=None):
-        """
-        Replaces the current contents of the File or Image object with file.
+        """Replaces the current contents of the File or Image object with file.
 
-        The file or images contents are replaced with the contents of 'file'.
+        The file or images contents are replaced with the contents of
+        'file'.
         """
         if self.wl_isLocked():
             raise ResourceLockedError("File is locked.")
@@ -737,7 +735,7 @@ class File(
 
     @security.protected(change_images_and_files)
     def PUT(self, REQUEST, RESPONSE):
-        """Handle HTTP PUT requests"""
+        """Handle HTTP PUT requests."""
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         type = REQUEST.get_header('content-type', None)
@@ -776,7 +774,10 @@ class File(
         return bytes(self.data)
 
     def __str__(self):
-        """In most cases, this is probably not what you want. Use ``bytes``."""
+        """In most cases, this is probably not what you want.
+
+        Use ``bytes``.
+        """
         if isinstance(self.data, Pdata):
             return bytes(self.data).decode(self._get_encoding())
         else:
@@ -838,8 +839,7 @@ def manage_addImage(
     content_type='',
     REQUEST=None
 ):
-    """
-    Add a new Image object.
+    """Add a new Image object.
 
     Creates a new Image object 'id' with the contents of 'file'.
     """
@@ -972,9 +972,11 @@ def getImageInfo(data):
 
 
 class Image(File):
-    """Image objects can be GIF, PNG or JPEG and have the same methods
-    as File objects.  Images also have a string representation that
-    renders an HTML 'IMG' tag.
+    """Image objects can be GIF, PNG or JPEG and have the same methods as File
+    objects.
+
+    Images also have a string representation that renders an HTML 'IMG'
+    tag.
     """
 
     meta_type = 'Image'
@@ -1075,18 +1077,17 @@ class Image(File):
     ):
         """Generate an HTML IMG tag for this image, with customization.
 
-        Arguments to self.tag() can be any valid attributes of an IMG tag.
-        'src' will always be an absolute pathname, to prevent redundant
-        downloading of images. Defaults are applied intelligently for
-        'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
-        and 'yscale' keyword arguments will be used to automatically adjust
-        the output height and width values of the image tag.
-        #
-        Since 'class' is a Python reserved word, it cannot be passed in
-        directly in keyword arguments which is a problem if you are
-        trying to use 'tag()' to include a CSS class. The tag() method
-        will accept a 'css_class' argument that will be converted to
-        'class' in the output tag to work around this.
+        Arguments to self.tag() can be any valid attributes of an IMG
+        tag. 'src' will always be an absolute pathname, to prevent
+        redundant downloading of images. Defaults are applied
+        intelligently for 'height', 'width', and 'alt'. If specified,
+        the 'scale', 'xscale', and 'yscale' keyword arguments will be
+        used to automatically adjust the output height and width values
+        of the image tag. # Since 'class' is a Python reserved word, it
+        cannot be passed in directly in keyword arguments which is a
+        problem if you are trying to use 'tag()' to include a CSS class.
+        The tag() method will accept a 'css_class' argument that will be
+        converted to 'class' in the output tag to work around this.
         """
         if height is None:
             height = self.height

@@ -11,9 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-Subscriber definitions.
-"""
+"""Subscriber definitions."""
 
 from logging import getLogger
 
@@ -53,8 +51,7 @@ def compatibilityCall(method_name, *args):
 
 
 def maybeWarnDeprecated(ob, method_name):
-    """Send a warning if a method is deprecated.
-    """
+    """Send a warning if a method is deprecated."""
     if not deprecatedManageAddDeleteClasses:
         # Directives not fully loaded
         return
@@ -72,8 +69,7 @@ def maybeWarnDeprecated(ob, method_name):
 @zope.interface.implementer(zope.location.interfaces.ISublocations)
 @zope.component.adapter(OFS.interfaces.IObjectManager)
 class ObjectManagerSublocations:
-    """Get the sublocations for an ObjectManager.
-    """
+    """Get the sublocations for an ObjectManager."""
 
     def __init__(self, container):
         self.container = container
@@ -95,8 +91,7 @@ class ObjectManagerSublocations:
 @zope.component.adapter(OFS.interfaces.IItem,
                         OFS.interfaces.IObjectWillBeMovedEvent)
 def dispatchObjectWillBeMovedEvent(ob, event):
-    """Multi-subscriber for IItem + IObjectWillBeMovedEvent.
-    """
+    """Multi-subscriber for IItem + IObjectWillBeMovedEvent."""
     # First, dispatch to sublocations
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
@@ -106,8 +101,7 @@ def dispatchObjectWillBeMovedEvent(ob, event):
 
 @zope.component.adapter(OFS.interfaces.IItem, IObjectMovedEvent)
 def dispatchObjectMovedEvent(ob, event):
-    """Multi-subscriber for IItem + IObjectMovedEvent.
-    """
+    """Multi-subscriber for IItem + IObjectMovedEvent."""
     # First, do the manage_afterAdd dance
     callManageAfterAdd(ob, event.object, event.newParent)
     # Next, dispatch to sublocations
@@ -118,8 +112,7 @@ def dispatchObjectMovedEvent(ob, event):
 @zope.component.adapter(OFS.interfaces.IItem,
                         OFS.interfaces.IObjectClonedEvent)
 def dispatchObjectClonedEvent(ob, event):
-    """Multi-subscriber for IItem + IObjectClonedEvent.
-    """
+    """Multi-subscriber for IItem + IObjectClonedEvent."""
     # First, do the manage_afterClone dance
     callManageAfterClone(ob, event.object)
     # Next, dispatch to sublocations
@@ -129,16 +122,14 @@ def dispatchObjectClonedEvent(ob, event):
 
 @zope.component.adapter(OFS.interfaces.IItem, IObjectCopiedEvent)
 def dispatchObjectCopiedEvent(ob, event):
-    """Multi-subscriber for IItem + IObjectCopiedEvent.
-    """
+    """Multi-subscriber for IItem + IObjectCopiedEvent."""
     # Dispatch to sublocations
     if OFS.interfaces.IObjectManager.providedBy(ob):
         dispatchToSublocations(ob, event)
 
 
 def callManageAfterAdd(ob, item, container):
-    """Compatibility subscriber for manage_afterAdd.
-    """
+    """Compatibility subscriber for manage_afterAdd."""
     if container is None:
         return
     if getattr(aq_base(ob), 'manage_afterAdd', None) is None:
@@ -148,8 +139,7 @@ def callManageAfterAdd(ob, item, container):
 
 
 def callManageBeforeDelete(ob, item, container):
-    """Compatibility subscriber for manage_beforeDelete.
-    """
+    """Compatibility subscriber for manage_beforeDelete."""
     if container is None:
         return
     if getattr(aq_base(ob), 'manage_beforeDelete', None) is None:
@@ -171,8 +161,7 @@ def callManageBeforeDelete(ob, item, container):
 
 
 def callManageAfterClone(ob, item):
-    """Compatibility subscriber for manage_afterClone.
-    """
+    """Compatibility subscriber for manage_afterClone."""
     if getattr(aq_base(ob), 'manage_afterClone', None) is None:
         return
     maybeWarnDeprecated(ob, 'manage_afterClone')

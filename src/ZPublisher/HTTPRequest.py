@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" HTTP request management.
-"""
+"""HTTP request management."""
 
 import codecs
 import html
@@ -113,7 +112,7 @@ class NestedLoopExit(Exception):
 
 @implementer(IBrowserRequest)
 class HTTPRequest(BaseRequest):
-    """ Model HTTP request data.
+    """Model HTTP request data.
 
     This object provides access to request data.  This includes, the
     input headers, form data, server data, and cookies.
@@ -200,7 +199,7 @@ class HTTPRequest(BaseRequest):
         BaseRequest.clear(self)
 
     def setServerURL(self, protocol=None, hostname=None, port=None):
-        """ Set the parts of generated URLs. """
+        """Set the parts of generated URLs."""
         other = self.other
         server_url = other.get('SERVER_URL', '')
         if protocol is None and hostname is None and port is None:
@@ -222,7 +221,7 @@ class HTTPRequest(BaseRequest):
         return server_url
 
     def setVirtualRoot(self, path, hard=0):
-        """ Treat the current publishing object as a VirtualRoot """
+        """Treat the current publishing object as a VirtualRoot."""
         other = self.other
         if isinstance(path, str):
             path = path.split('/')
@@ -235,14 +234,14 @@ class HTTPRequest(BaseRequest):
         self._resetURLS()
 
     def getVirtualRoot(self):
-        """ Return a slash-separated virtual root.
+        """Return a slash-separated virtual root.
 
         If it is same as the physical root, return ''.
         """
         return '/'.join([''] + self._script)
 
     def physicalPathToVirtualPath(self, path):
-        """ Remove the path to the VirtualRoot from a physical path """
+        """Remove the path to the VirtualRoot from a physical path."""
         if isinstance(path, str):
             path = path.split('/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
@@ -255,7 +254,7 @@ class HTTPRequest(BaseRequest):
         return path[i:]
 
     def physicalPathToURL(self, path, relative=0):
-        """ Convert a physical path into a URL in the current context """
+        """Convert a physical path into a URL in the current context."""
         path = self._script + list(
             map(quote, self.physicalPathToVirtualPath(path)))
         if relative:
@@ -265,9 +264,11 @@ class HTTPRequest(BaseRequest):
         return '/'.join(path)
 
     def physicalPathFromURL(self, URL):
-        """ Convert a URL into a physical path in the current context.
-            If the URL makes no sense in light of the current virtual
-            hosting context, a ValueError is raised."""
+        """Convert a URL into a physical path in the current context.
+
+        If the URL makes no sense in light of the current virtual
+        hosting context, a ValueError is raised.
+        """
         other = self.other
         path = [_p for _p in URL.split('/') if _p]
 
@@ -293,8 +294,7 @@ class HTTPRequest(BaseRequest):
         self._urls = ()
 
     def getClientAddr(self):
-        """ The IP address of the client.
-        """
+        """The IP address of the client."""
         return self._client_addr
 
     def setupLocale(self):
@@ -611,7 +611,7 @@ class HTTPRequest(BaseRequest):
                         elif has_codec(type_name):
                             # recode:
                             assert not isinstance(item, FileUpload), \
-                                   "cannot recode files"
+                                "cannot recode files"
                             item = item.encode(
                                 character_encoding, "surrogateescape")
                             character_encoding = type_name
@@ -955,11 +955,13 @@ class HTTPRequest(BaseRequest):
         return clone
 
     def getHeader(self, name, default=None, literal=False):
-        """Return the named HTTP header, or an optional default
-        argument or None if the header is not found. Note that
-        both original and CGI-ified header names are recognized,
-        e.g. 'Content-Type', 'CONTENT_TYPE' and 'HTTP_CONTENT_TYPE'
-        should all return the Content-Type header, if available.
+        """Return the named HTTP header, or an optional default argument or
+        None if the header is not found.
+
+        Note that both original and CGI-ified header names are
+        recognized, e.g. 'Content-Type', 'CONTENT_TYPE' and
+        'HTTP_CONTENT_TYPE' should all return the Content-Type header,
+        if available.
         """
         environ = self.environ
         if not literal:
@@ -977,24 +979,21 @@ class HTTPRequest(BaseRequest):
             URLmatch=re.compile('URL(PATH)?([0-9]+)$').match,
             BASEmatch=re.compile('BASE(PATH)?([0-9]+)$').match,
             ):
-        """Get a variable value
+        """Get a variable value.
 
         Return a value for the variable key, or default if not found.
 
-        If key is "REQUEST", return the request.
-        Otherwise, the value will be looked up from one of the request data
-        categories. The search order is:
-        other (the target for explicitly set variables),
-        the special URL and BASE variables,
-        environment variables,
-        common variables (defined by the request class),
-        lazy variables (set with set_lazy),
-        form data and cookies.
+        If key is "REQUEST", return the request. Otherwise, the value
+        will be looked up from one of the request data categories. The
+        search order is: other (the target for explicitly set
+        variables), the special URL and BASE variables, environment
+        variables, common variables (defined by the request class), lazy
+        variables (set with set_lazy), form data and cookies.
 
-        If returnTaints has a true value, then the access to
-        form and cookie variables returns values with special
-        protection against embedded HTML fragments to counter
-        some cross site scripting attacks.
+        If returnTaints has a true value, then the access to form and
+        cookie variables returns values with special protection against
+        embedded HTML fragments to counter some cross site scripting
+        attacks.
         """
 
         if key == 'REQUEST':
@@ -1151,14 +1150,14 @@ class HTTPRequest(BaseRequest):
         # Cache URLN and BASEN in self.other.
         # This relies on a side effect of has_key.
         n = 0
-        while 1:
+        while True:
             n = n + 1
             key = "URL%s" % n
             if key not in self:  # NOQA
                 break
 
         n = 0
-        while 1:
+        while True:
             n = n + 1
             key = "BASE%s" % n
             if key not in self:  # NOQA
@@ -1172,8 +1171,7 @@ class HTTPRequest(BaseRequest):
         if returnTaints:
             keys.update(self.taintedform)
 
-        keys = list(keys.keys())
-        keys.sort()
+        keys = sorted(keys.keys())
 
         return keys
 
@@ -1266,7 +1264,7 @@ class HTTPRequest(BaseRequest):
 
     # Original version: zope.publisher.http.HTTPRequest.shiftNameToApplication
     def shiftNameToApplication(self):
-        """see zope.publisher.interfaces.http.IVirtualHostRequest"""
+        """See zope.publisher.interfaces.http.IVirtualHostRequest."""
         if len(self._steps) == 1:
             self._script.append(self._steps.pop())
             self._resetURLS()
@@ -1354,6 +1352,7 @@ def sane_environment(env):
 
 class ValueDescriptor:
     """(non data) descriptor to compute `value` from `file`."""
+
     def __get__(self, inst, owner=None):
         if inst is None:
             return self
@@ -1381,8 +1380,9 @@ class ValueDescriptor:
 
 class Global:
     """(non data) descriptor to access a (modul) global attribute."""
+
     def __init__(self, name):
-        """access global *name*."""
+        """Access global *name*."""
         self.name = name
 
     def __get__(self, inst, owner=None):
@@ -1396,7 +1396,7 @@ class ValueAccessor:
 
 
 class FormField(SimpleNamespace, ValueAccessor):
-    """represent a single form field.
+    """Represent a single form field.
 
     Typical attributes:
     name
@@ -1494,7 +1494,7 @@ class ZopeFieldStorage(ValueAccessor):
 
 
 def _mp_charset(part):
-    """the charset of *part*."""
+    """The charset of *part*."""
     content_type = part.headers.get("Content-Type", "")
     _, options = parse_options_header(content_type)
     return options.get("charset")
@@ -1502,7 +1502,7 @@ def _mp_charset(part):
 
 # Original version: zope.publisher.browser.FileUpload
 class FileUpload:
-    '''File upload objects
+    """File upload objects.
 
     File upload objects are used to represent file-uploaded data.
 
@@ -1514,7 +1514,7 @@ class FileUpload:
 
     Note that file names in HTTP/1.1 use latin-1 as charset.  See
     https://github.com/zopefoundation/Zope/pull/1094#issuecomment-1459654636
-    '''
+    """
 
     # Allow access to attributes such as headers and filename so
     # that protected code can use DTML to work with FileUploads.
@@ -1557,9 +1557,8 @@ class FileUpload:
         return self.file.__iter__()
 
     def __bool__(self):
-        """FileUpload objects are considered false if their
-           filename is empty.
-        """
+        """FileUpload objects are considered false if their filename is
+        empty."""
         return bool(self.filename)
 
     def __next__(self):
@@ -1680,14 +1679,14 @@ def use_builtin_xmlrpc(request):
 
 
 def taint(d):
-    """return as ``dict`` the items from *d* which require tainting.
+    """Return as ``dict`` the items from *d* which require tainting.
 
     *d* must be a ``dict`` with ``str`` keys and values recursively
     build from elementary values, ``list``, ``tuple``, ``record`` and
     ``dict``.
     """
     def should_taint(v):
-        """check whether *v* needs tainting."""
+        """Check whether *v* needs tainting."""
         if isinstance(v, (list, tuple)):
             return any(should_taint(x) for x in v)
         if isinstance(v, (record, dict)):
@@ -1699,7 +1698,7 @@ def taint(d):
         return should_be_tainted(v)
 
     def _taint(v):
-        """return a copy of *v* with tainted replacements.
+        """Return a copy of *v* with tainted replacements.
 
         In the copy, each ``str`` which requires tainting
         is replaced by the corresponding ``taint_string``.

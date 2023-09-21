@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Page Template Expression Engine
+"""Page Template Expression Engine.
 
-Page Template-specific implementation of TALES, with handlers
-for Python expressions, string literals, and paths.
+Page Template-specific implementation of TALES, with handlers for Python
+expressions, string literals, and paths.
 """
 
 import logging
@@ -66,9 +66,9 @@ ZopeUndefs = Undefs + (NotFound, Unauthorized)
 def boboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
 
-    This uses zope.traversing path traversal where possible and interacts
-    correctly with objects providing OFS.interface.ITraversable when
-    necessary (bobo-awareness).
+    This uses zope.traversing path traversal where possible and
+    interacts correctly with objects providing
+    OFS.interface.ITraversable when necessary (bobo-awareness).
     """
     request = getattr(econtext, 'request', None)
     validate = getSecurityManager().validate
@@ -114,9 +114,9 @@ def boboAwareZopeTraverse(object, path_items, econtext):
 def trustedBoboAwareZopeTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
 
-    This uses zope.traversing path traversal where possible and interacts
-    correctly with objects providing OFS.interface.ITraversable when
-    necessary (bobo-awareness).
+    This uses zope.traversing path traversal where possible and
+    interacts correctly with objects providing
+    OFS.interface.ITraversable when necessary (bobo-awareness).
     """
     request = getattr(econtext, 'request', None)
     path_items = list(path_items)
@@ -133,8 +133,10 @@ def trustedBoboAwareZopeTraverse(object, path_items, econtext):
 
 
 def render(ob, ns):
-    """Calls the object, possibly a document template, or just returns
-    it if not callable.  (From DT_Util.py)
+    """Calls the object, possibly a document template, or just returns it if
+    not callable.
+
+    (From DT_Util.py)
     """
     if hasattr(ob, '__render_with_namespace__'):
         ob = ZRPythonExpr.call_with_ns(ob.__render_with_namespace__, ns)
@@ -160,6 +162,7 @@ class _CombinedMapping:
 
     Earlier mappings take precedence.
     """
+
     def __init__(self, *ms):
         self.mappings = ms
 
@@ -241,10 +244,10 @@ class TrustedZopePathExpr(ZopePathExpr):
 class SafeMapping(MultiMapping):
     """Mapping with security declarations and limited method exposure.
 
-    Since it subclasses MultiMapping, this class can be used to wrap
-    one or more mapping objects.  Restricted Python code will not be
-    able to mutate the SafeMapping or the wrapped mappings, but will be
-    able to read any value.
+    Since it subclasses MultiMapping, this class can be used to wrap one
+    or more mapping objects.  Restricted Python code will not be able to
+    mutate the SafeMapping or the wrapped mappings, but will be able to
+    read any value.
     """
     __allow_access_to_unprotected_subobjects__ = True
     push = pop = None
@@ -282,16 +285,14 @@ class ZopeContext(Context):
         return bool(value)
 
     def evaluateStructure(self, expr):
-        """ customized version in order to get rid of unicode
-            errors for all and ever
-        """
+        """Customized version in order to get rid of unicode errors for all and
+        ever."""
         text = super().evaluateStructure(expr)
         return self._handleText(text, expr)
 
     def evaluateText(self, expr):
-        """ customized version in order to get rid of unicode
-            errors for all and ever
-        """
+        """Customized version in order to get rid of unicode errors for all and
+        ever."""
         text = self.evaluate(expr)
         return self._handleText(text, expr)
 
@@ -339,7 +340,7 @@ class ZopeContext(Context):
         return ErrorInfo(err, position)
 
     def evaluateCode(self, lang, code):
-        """ See ITALExpressionEngine.
+        """See ITALExpressionEngine.
 
         o This method is a fossil:  nobody actually calls it, but the
           interface requires it.
@@ -348,8 +349,7 @@ class ZopeContext(Context):
 
 
 class ErrorInfo(BaseErrorInfo):
-    """Information about an exception passed to an on-error handler.
-    """
+    """Information about an exception passed to an on-error handler."""
     __allow_access_to_unprotected_subobjects__ = True
 
 
@@ -425,8 +425,8 @@ class ZopeIterator(Iterator):
 
 @implementer(ITraversable)
 class PathIterator(ZopeIterator):
-    """A TALES Iterator with the ability to use first() and last() on
-    subpaths of elements."""
+    """A TALES Iterator with the ability to use first() and last() on subpaths
+    of elements."""
 
     def traverse(self, name, furtherPath):
         if name in ('first', 'last'):

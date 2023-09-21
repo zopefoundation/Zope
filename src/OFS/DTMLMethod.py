@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""DTML Method objects.
-"""
+"""DTML Method objects."""
 import re
 from urllib.parse import quote
 
@@ -61,8 +60,8 @@ class DTMLMethod(
     Historical,
     Cacheable
 ):
-    """ DocumentTemplate.HTML objects that act as methods of their containers.
-    """
+    """DocumentTemplate.HTML objects that act as methods of their
+    containers."""
     meta_type = 'DTML Method'
     zmi_icon = 'far fa-file-alt'
     _proxy_roles = ()
@@ -114,10 +113,10 @@ class DTMLMethod(
 
     @security.protected(View)
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
-        """Render using the given client object
+        """Render using the given client object.
 
-        o If client is not passed, we are being called as a sub-template:
-          don't do any error propagation.
+        o If client is not passed, we are being called as a sub-
+        template:   don't do any error propagation.
 
         o If supplied, use the REQUEST mapping, Response, and key word
         arguments.
@@ -267,8 +266,7 @@ class DTMLMethod(
 
     @security.protected(change_dtml_methods)
     def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
-        """ Replace contents with 'data', title with 'title'.
-        """
+        """Replace contents with 'data', title with 'title'."""
         self._validateProxy()
         if self.wl_isLocked():
             raise ResourceLockedError(self._locked_error_text)
@@ -295,7 +293,7 @@ class DTMLMethod(
 
     @security.protected(change_dtml_methods)
     def manage_upload(self, file='', REQUEST=None):
-        """ Replace the contents of the document with the text in 'file'.
+        """Replace the contents of the document with the text in 'file'.
 
         Store `file` as a native `str`.
         """
@@ -339,7 +337,7 @@ class DTMLMethod(
     @security.protected(change_proxy_roles)
     @requestmethod('POST')
     def manage_proxy(self, roles=(), REQUEST=None):
-        """Change Proxy Roles"""
+        """Change Proxy Roles."""
         user = getSecurityManager().getUser()
         if 'Manager' not in user.getRolesInContext(self):
             self._validateProxy(roles)
@@ -365,8 +363,7 @@ class DTMLMethod(
 
     @security.protected(change_dtml_methods)
     def PUT(self, REQUEST, RESPONSE):
-        """ Handle HTTP PUT requests.
-        """
+        """Handle HTTP PUT requests."""
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         body = safe_file_data(REQUEST.get('BODY', ''))
@@ -394,7 +391,7 @@ def decapitate(html, RESPONSE=None):
     headers = []
     spos = 0
     eolen = 1
-    while 1:
+    while True:
         m = hdr_start(html, spos)
         if not m:
             if html[spos:spos + 2] == '\r\n':
@@ -454,8 +451,9 @@ addForm = DTMLFile('dtml/methodAdd', globals())
 
 
 def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
-    """Add a DTML Method object with the contents of file. If
-    'file' is empty, default document text is used.
+    """Add a DTML Method object with the contents of file.
+
+    If 'file' is empty, default document text is used.
     """
     data = safe_file_data(file)
     if not data:

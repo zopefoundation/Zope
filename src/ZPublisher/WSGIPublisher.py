@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-""" Python Object Publisher -- Publish Python objects on web servers
-"""
+"""Python Object Publisher -- Publish Python objects on web servers."""
 import sys
 from _thread import allocate_lock
 from contextlib import closing

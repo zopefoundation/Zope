@@ -1,9 +1,8 @@
 def test_check_permission():
     """Code (in Zope packages) often uses
-    zope.security.management.checkPermission to determine whether the
-    current user has a certain permission in a given context. Five
-    inserts its own interaction that assures that such calls still
-    work.
+    zope.security.management.checkPermission to determine whether the current
+    user has a certain permission in a given context. Five inserts its own
+    interaction that assures that such calls still work.
 
       >>> configure_zcml = '''
       ... <configure
@@ -55,13 +54,12 @@ def test_check_permission():
 
       >>> from zope.component.testing import tearDown
       >>> tearDown()
-
     """
 
 
 def test_allowed_interface():
-    """This test demonstrates that allowed_interface security declarations
-    work as expected.
+    """This test demonstrates that allowed_interface security declarations work
+    as expected.
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()

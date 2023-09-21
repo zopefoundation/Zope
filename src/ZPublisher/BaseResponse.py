@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""CGI Response Output formatter"""
+"""CGI Response Output formatter."""
 
 from zExceptions import BadRequest
 from zExceptions import Forbidden
@@ -19,8 +19,7 @@ from zExceptions import Unauthorized
 
 
 class BaseResponse:
-    """Base Response Class
-    """
+    """Base Response Class."""
     body = b''
     debug_mode = None
     _auth = None
@@ -67,9 +66,9 @@ class BaseResponse:
         """Set an HTTP cookie on the browser.
 
         The response will include an HTTP header that sets a cookie on
-        cookie-enabled browsers with a key "name" and value
-        "value". This overwrites any previously set value for the
-        cookie in the Response object.
+        cookie-enabled browsers with a key "name" and value "value".
+        This overwrites any previously set value for the cookie in the
+        Response object.
         """
         cookies = self.cookies
         if name in cookies:
@@ -87,8 +86,7 @@ class BaseResponse:
         """Get a header value.
 
         Returns the value associated with a HTTP return header, or
-        "None" if no such header has been set in the response
-        yet.
+        "None" if no such header has been set in the response yet.
         """
         return self.headers.get(name, None)
 
@@ -119,8 +117,8 @@ class BaseResponse:
         The published object should first set any output headers or
         cookies on the response object.
 
-        Note that published objects must not generate any errors
-        after beginning stream-oriented output.
+        Note that published objects must not generate any errors after
+        beginning stream-oriented output.
         """
         if isinstance(data, str):
             raise ValueError('Data must be binary.')
@@ -131,8 +129,8 @@ class BaseResponse:
 
         The fatal argument indicates whether the error is fatal.
 
-        The info argument, if given should be a tuple with an
-        error type, value, and traceback.
+        The info argument, if given should be a tuple with an error
+        type, value, and traceback.
         """
 
     def notFoundError(self, v=''):

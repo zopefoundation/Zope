@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Provide basic resource functionality
-"""
+"""Provide basic resource functionality."""
 
 import os
 from urllib.parse import unquote
@@ -35,14 +34,15 @@ class Resource:
     """A mixin that changes the URL-rendering of resources (__call__).
 
     In zope.browserresource, resource URLs are of the form
-    nearest_site/@@/resource_name.  Since Zope 2 didn't have support
-    for sites from the beginning of the Five integration, resource
-    URLs in Zope 2 are of the form context/++resource++resource_name.
+    nearest_site/@@/resource_name.  Since Zope 2 didn't have support for
+    sites from the beginning of the Five integration, resource URLs in
+    Zope 2 are of the form context/++resource++resource_name.
 
     TODO It would be good if that could be changed in the long term,
     thus making this mixin (and probably the other classes in this
     module) obsolete.
     """
+
     def __call__(self):
         name = self.__name__
         container = self.__parent__
@@ -63,7 +63,7 @@ class PageTemplateResource(Resource, BrowserView):
         raise NotFound(self, name, request)
 
     def render(self):
-        """Rendered content"""
+        """Rendered content."""
         # ZPublisher might have called setBody with an incorrect URL
         # we definitely don't want that if we are plain html
         self.request.response.setBase(None)
@@ -101,21 +101,21 @@ def _PageTemplate(self, path, name):
 
 
 class PageTemplateResourceFactory(ResourceFactory):
-    """A factory for Page Template resources"""
+    """A factory for Page Template resources."""
 
     factory = _PageTemplate
     resource = PageTemplateResource
 
 
 class FileResourceFactory(ResourceFactory):
-    """A factory for File resources"""
+    """A factory for File resources."""
 
     factory = File
     resource = FileResource
 
 
 class ImageResourceFactory(ResourceFactory):
-    """A factory for Image resources"""
+    """A factory for Image resources."""
 
     factory = File
     resource = FileResource

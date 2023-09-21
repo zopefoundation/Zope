@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Tests for the marker interface edit views
-"""
+"""Tests for the marker interface edit views."""
 import AccessControl
 import Products.Five
 import Products.Five.utilities

@@ -306,7 +306,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
 
 
 def _succeed():
-    ''' '''
+    """"""
     return 'success'
 
 

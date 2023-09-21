@@ -20,7 +20,7 @@ raiser = 'raise_standardErrorMessage'
 
 
 class StandardErrorMessageView(BrowserView):
-    """ View rendered on SiteError.
+    """View rendered on SiteError.
 
     Requires a callable object named ``standard_error_message`` on the
     published object's acquisition path. The callable can be a DTML Method,

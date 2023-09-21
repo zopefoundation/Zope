@@ -78,8 +78,7 @@ class WSGIStartupTestCase(unittest.TestCase):
               NSYNC doesnt
             </environment>
             """)
-        items = list(conf.environment.items())
-        items.sort()
+        items = sorted(conf.environment.items())
         self.assertEqual(
             items, [("FEARFACTORY", "rocks"), ("NSYNC", "doesnt")])
 

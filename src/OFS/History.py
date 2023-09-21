@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Object Histories
-"""
+"""Object Histories."""
 
 import difflib
 from html import escape
@@ -40,8 +39,8 @@ class HistorySelectionError(Exception):
 
 
 class HystoryJar:
-    """A ZODB Connection-like object that provides access to data
-    but prevents history from being changed."""
+    """A ZODB Connection-like object that provides access to data but prevents
+    history from being changed."""
 
     def __init__(self, base):
         self.__base__ = base
@@ -78,8 +77,8 @@ def historicalRevision(self, serial):
 
 
 class Historian(Implicit):
-    """An Historian's job is to find hysterical revisions of
-    objects, given a time."""
+    """An Historian's job is to find hysterical revisions of objects, given a
+    time."""
 
     def __getitem__(self, key):
         self = self.aq_parent
@@ -94,18 +93,19 @@ class Historian(Implicit):
         return rev.__of__(self.aq_parent)
 
     def manage_workspace(self, REQUEST):
-        """ We aren't real, so we delegate to that that spawned us! """
+        """We aren't real, so we delegate to that that spawned us!"""
         raise Redirect('/%s/manage_change_history_page' % REQUEST['URL2'])
 
 
 class Historical(Base):
-    """Mix-in class to provide a veiw that shows hystorical changes
-    The display is similar to that used for undo, except that the transactions
-    are limited to those that effect the displayed object and that the
-    interface doesn't provide an undo capability.
-    This interface is generally *only* interesting for objects, such
-    as methods, and documents, that are self-contained, meaning that
-    they don't have persistent sub-objects.
+    """Mix-in class to provide a veiw that shows hystorical changes The display
+    is similar to that used for undo, except that the transactions are limited
+    to those that effect the displayed object and that the interface doesn't
+    provide an undo capability.
+
+    This interface is generally *only* interesting for objects, such as
+    methods, and documents, that are self-contained, meaning that they
+    don't have persistent sub-objects.
     """
     security = ClassSecurityInfo()
     HistoricalRevisions = Historian()
@@ -147,7 +147,7 @@ class Historical(Base):
         pass
 
     def manage_historyCopy(self, keys=[], RESPONSE=None, URL1=None):
-        """ Copy a selected revision to the present """
+        """Copy a selected revision to the present."""
         if not keys:
             raise HistorySelectionError('No historical revision selected.')
 
@@ -188,7 +188,7 @@ class Historical(Base):
 
     @security.protected(view_history)
     def manage_historicalComparison(self, REQUEST, keys=[]):
-        """ Compare two selected revisions """
+        """Compare two selected revisions."""
         if not keys:
             raise HistorySelectionError('No historical revision selected.')
         if len(keys) > 2:

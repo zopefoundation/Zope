@@ -29,7 +29,7 @@ from ..cookie import wdmap
 
 
 def assertRfc1123(self, s):
-    """check *s* is an RFC1123 date."""
+    """Check *s* is an RFC1123 date."""
     m = match(r"(.{3}), \d{2} (.{3}) \d{4} \d{2}:\d{2}:\d{2} GMT$", s)
     self.assertIsNotNone(m)
     self.assertIn(m.group(1), tuple(wdmap.values()))

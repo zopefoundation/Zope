@@ -628,9 +628,8 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(resp.body, str(body).encode('ascii'))
 
     def test_setBody_io(self):
-        """
-        Test that BytesIO.getbuffer() can be used to write a binary response.
-        """
+        """Test that BytesIO.getbuffer() can be used to write a binary
+        response."""
         from io import BytesIO
         resp = self._makeOne()
         value = b'\x00\x01'
@@ -639,10 +638,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(resp.body, value)
 
     def test_setBody_by_content_type(self):
-        """
-        Check that a list as response is treated differently depending on the
-        content type.
-        """
+        """Check that a list as response is treated differently depending on
+        the content type."""
         resp = self._makeOne()
         body = [1, 2, 3]
 
@@ -1433,11 +1430,12 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         )
 
     def test_unicode(self):
-        """HTTP headers need to be latin-1 compatible
+        """HTTP headers need to be latin-1 compatible.
 
-        In order to offer file downloads which contain unicode file names,
-        the file name has to be treated in a special way, see
-        https://stackoverflow.com/questions/1361604 .
+        In order to offer file downloads which contain unicode file
+        names, the file name has to be treated in a special way, see
+        https://stackoverflow.com/questions/1361604
+        .
         """
         self.assertEqual(
             make_content_disposition('inline', 'ıq.png'),

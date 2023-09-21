@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test browser resources
-"""
+"""Test browser resources."""
 import unittest
 
 

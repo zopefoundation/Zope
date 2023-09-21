@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Object Manager
-"""
+"""Object Manager."""
 
 import html
 import os
@@ -157,9 +156,10 @@ class ObjectManager(
     LockableItem,
     Traversable
 ):
-    """Generic object manager
+    """Generic object manager.
 
-    This class provides core behavior for collections of heterogeneous objects.
+    This class provides core behavior for collections of heterogeneous
+    objects.
     """
 
     security = ClassSecurityInfo()
@@ -526,7 +526,7 @@ class ObjectManager(
 
     @security.protected(delete_objects)
     def manage_delObjects(self, ids=[], REQUEST=None):
-        """Delete a subordinate object
+        """Delete a subordinate object.
 
         The objects specified in 'ids' get deleted.
         """
@@ -576,8 +576,7 @@ class ObjectManager(
                 if hasattr(self, id):
                     r.append(self._getOb(id))
         else:
-            obj_ids = self.objectIds()
-            obj_ids.sort()
+            obj_ids = sorted(self.objectIds())
             for id in obj_ids:
                 o = self._getOb(id)
                 if hasattr(aq_base(o), 'isPrincipiaFolderish') and \
@@ -635,7 +634,7 @@ class ObjectManager(
     @security.protected(import_export_objects)
     def manage_importObject(self, file, REQUEST=None, set_owner=1,
                             suppress_events=False):
-        """Import an object from a file"""
+        """Import an object from a file."""
         dirname, file = os.path.split(file)
         if dirname:
             raise BadRequest('Invalid file name %s' % html.escape(file, True))
@@ -797,15 +796,14 @@ class ObjectManager(
 
     @security.protected(view_management_screens)
     def manage_get_sortedObjects(self, sortkey, revkey):
-        '''
-        Return dictionaries used for the management page, sorted by sortkey
-        (which is 'id' or an attribute of the objects). The direction is
-        determined by rkey, which can be 'asc' for ascending or 'desc' for
-        descending.
-        It returns a list of dictionaries, with keys 'id' and 'obj', where 'id'
-        is the ID of the object as known by the parent and 'obj' is the child
-        object.
-        '''
+        """Return dictionaries used for the management page, sorted by sortkey
+        (which is 'id' or an attribute of the objects).
+
+        The direction is determined by rkey, which can be 'asc' for
+        ascending or 'desc' for descending. It returns a list of
+        dictionaries, with keys 'id' and 'obj', where 'id' is the ID of
+        the object as known by the parent and 'obj' is the child object.
+        """
         if sortkey not in ['position', 'title', 'meta_type', 'get_size',
                            '_p_mtime']:
             sortkey = 'id'
@@ -848,7 +846,7 @@ class ObjectManager(
 
     @security.protected(view_management_screens)
     def getBookmarkableURLs(self):
-        """ Helper method to expose a configuration flag """
+        """Helper method to expose a configuration flag."""
         return getattr(CONFIG, 'zmi_bookmarkable_urls', True)
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
@@ -856,9 +854,8 @@ class ObjectManager(
 
 
 def findChildren(obj, dirname=''):
-    """ recursive walk through the object hierarchy to
-    find all children of an object (ajung)
-    """
+    """Recursive walk through the object hierarchy to find all children of an
+    object (ajung)"""
 
     lst = []
     for name, child in obj.objectItems():

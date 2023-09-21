@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Property management
-"""
+"""Property management."""
 
 import html
 
@@ -32,10 +31,9 @@ from ZPublisher.Converters import type_converters
 
 @implementer(IPropertyManager)
 class PropertyManager(Base):
-    """
-    The PropertyManager mixin class provides an object with
-    transparent property management. An object which wants to
-    have properties should inherit from PropertyManager.
+    """The PropertyManager mixin class provides an object with transparent
+    property management. An object which wants to have properties should
+    inherit from PropertyManager.
 
     An object may specify that it has one or more predefined
     properties, by specifying an _properties structure in its
@@ -148,8 +146,8 @@ class PropertyManager(Base):
     def getProperty(self, id, d=None):
         """Get the property 'id'.
 
-        Returns the optional second argument or None if no such property is
-        found.
+        Returns the optional second argument or None if no such property
+        is found.
         """
         if self.hasProperty(id):
             return getattr(self, id)
@@ -252,8 +250,7 @@ class PropertyManager(Base):
 
     @security.protected(access_contents_information)
     def propertyLabel(self, id):
-        """Return a label for the given property id
-        """
+        """Return a label for the given property id."""
         for p in self._properties:
             if p['id'] == id:
                 return p.get('label', id)
@@ -261,8 +258,7 @@ class PropertyManager(Base):
 
     @security.protected(access_contents_information)
     def propertyDescription(self, id):
-        """Return a description for the given property id
-        """
+        """Return a description for the given property id."""
         for p in self._properties:
             if p['id'] == id:
                 return p.get('description', '')
@@ -292,8 +288,8 @@ class PropertyManager(Base):
         """Edit object properties via the web.
 
         The purpose of this method is to change all property values,
-        even those not listed in REQUEST; otherwise checkboxes that
-        get turned off will be ignored.  Use manage_changeProperties()
+        even those not listed in REQUEST; otherwise checkboxes that get
+        turned off will be ignored.  Use manage_changeProperties()
         instead for most situations.
         """
         for prop in self._propertyMap():

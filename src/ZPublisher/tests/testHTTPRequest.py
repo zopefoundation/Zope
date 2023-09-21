@@ -275,8 +275,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('multi', '1'), ('multi', '2'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['foo', 'key', 'multi', 'number', 'spacey key', 'spam'])
@@ -299,8 +298,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('morewords:text', 'one\ntwo\n'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['2tokens', 'accountedfor', 'aday', 'bign',
@@ -336,8 +334,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             warnings.simplefilter('ignore')
             req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['nouconverter', 'ulines', 'ustring', 'utext', 'utokens'])
@@ -364,8 +361,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('setrec.foo:records', 'spam'), ('setrec.bar:records', 'eggs'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['alist', 'atuple', 'oneitem', 'oneitemtuple', 'onerec', 'setrec'])
@@ -394,8 +390,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tlist:tokens:list', 'one two'), ('tlist:list:tokens', '3 4'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['ftuple', 'ilist', 'tlist'])
 
         self.assertEqual(req['ilist'], [1, 2, 3])
@@ -424,8 +419,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('setrec.ituple:tuple:int:records', '2'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['onerec', 'setrec'])
 
         self.assertEqual(req['onerec'].name, 'foo')
@@ -471,8 +465,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         )
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys, ['alist', 'bar', 'explicitlist', 'foo', 'setrec'])
 
@@ -504,8 +497,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tallmulti', '<1>'), ('tallmulti', '<2>'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<tainted key>', 'tainted',
@@ -526,8 +518,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tmorewords:text', '<one\ntwo>\n'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<taday>', '<tbign>', '<tfract>',
@@ -557,8 +548,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             warnings.simplefilter('ignore')
             req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferulines', 'tdeferutokens',
@@ -605,8 +595,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tdeferdefersetrec.bar:records', '<eggs>'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<tkeyoneitem>', 'tdeferalist',
@@ -657,8 +646,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         )
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferfirstsetrec', 'tdeferonerec',
@@ -711,8 +699,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('srdoesnotapply.foo:records', 'ham'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferbar', 'tdeferlist',
@@ -753,8 +740,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('name.:tuple', 'name with dot as tuple'),)
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['name.'])
 
         self.assertEqual(req['name.'], ('name with dot as tuple',))
@@ -1547,6 +1533,7 @@ class TestSearchType(unittest.TestCase):
 
     see "https://github.com/zopefoundation/Zope/pull/512"
     """
+
     def check(self, val, expect):
         mo = search_type(val)
         if expect is None:
@@ -1571,7 +1558,8 @@ class TestSearchType(unittest.TestCase):
 
 
 class _Unseekable:
-    """Auxiliary class emulating an unseekable file like object"""
+    """Auxiliary class emulating an unseekable file like object."""
+
     def __init__(self, file):
         for m in ("read", "readline", "close", "__del__"):
             setattr(self, m, getattr(file, m))

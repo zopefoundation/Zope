@@ -444,7 +444,7 @@ class SVGTests(ImageTests):
 
 
 class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
-    """Browser testing ..Image.File"""
+    """Browser testing ..Image.File."""
 
     def setUp(self):
         super().setUp()

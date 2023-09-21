@@ -14,7 +14,7 @@ class PageTemplate(ZopePageTemplate):
 
 
 class TestPredefinedVariables(PlacelessSetup, TestCase):
-    """test predefined variables
+    """Test predefined variables.
 
     as documented by
     `<https://zope.readthedocs.io/en/latest/zopebook/AppendixC.html#built-in-names`_

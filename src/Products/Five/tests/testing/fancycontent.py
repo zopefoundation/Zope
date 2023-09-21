@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test content objects.
-"""
+"""Test content objects."""
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -27,7 +26,7 @@ class IFancyContent(Interface):
 
 
 class FancyAttribute(Explicit):
-    """Doc test fanatics"""
+    """Doc test fanatics."""
 
     def __init__(self, name):
         self.name = name
@@ -36,7 +35,7 @@ class FancyAttribute(Explicit):
 
     @security.public
     def index_html(self, REQUEST):
-        """Doc test fanatics"""
+        """Doc test fanatics."""
         return self.name
 
 
@@ -45,8 +44,8 @@ InitializeClass(FancyAttribute)
 
 @implementer(IFancyContent)
 class FancyContent(SimpleItem):
-    """A class that already comes with its own __bobo_traverse__ handler.
-    Quite fancy indeed.
+    """A class that already comes with its own __bobo_traverse__ handler. Quite
+    fancy indeed.
 
     It also comes with its own get_size method.
     """
@@ -72,8 +71,8 @@ InitializeClass(FancyContent)
 
 @implementer(IFancyContent)
 class NonTraversableFancyContent(SimpleItem):
-    """A class that already comes with its own __bobo_traverse__ handler.
-    Quite fancy indeed.
+    """A class that already comes with its own __bobo_traverse__ handler. Quite
+    fancy indeed.
 
     It also comes with its own get_size method.
     """

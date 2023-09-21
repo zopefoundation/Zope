@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Viewlet tests
-"""
+"""Viewlet tests."""
 
 import unittest
 
@@ -29,10 +28,9 @@ class Content(SimpleItem):
 
 
 class UnitTestSecurityPolicy:
-    """
-        Stub out the existing security policy for unit testing purposes.
-    """
+    """Stub out the existing security policy for unit testing purposes."""
     # Standard SecurityPolicy interface
+
     def validate(self,
                  accessed=None,
                  container=None,

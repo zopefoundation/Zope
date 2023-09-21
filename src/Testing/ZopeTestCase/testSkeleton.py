@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Skeleton ZopeTestCase
-"""
+"""Skeleton ZopeTestCase."""
 
 from Testing import ZopeTestCase
 

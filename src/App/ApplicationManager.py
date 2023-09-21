@@ -45,8 +45,7 @@ class FakeConnection:
 
 
 class DatabaseChooser(Tabs, Traversable, Implicit):
-    """ Choose which database to view
-    """
+    """Choose which database to view."""
 
     __allow_access_to_unprotected_subobjects__ = 1
 
@@ -69,8 +68,7 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
 
     def getDatabaseNames(self, quote=False):
         configuration = getConfiguration()
-        names = configuration.dbtab.listDatabaseNames()
-        names.sort()
+        names = sorted(configuration.dbtab.listDatabaseNames())
         if quote:
             return [(name, parse.quote(name)) for name in names]
         return names
@@ -94,8 +92,7 @@ InitializeClass(DatabaseChooser)
 
 
 class ConfigurationViewer(Tabs, Traversable, Implicit):
-    """ Provides information about the running configuration
-    """
+    """Provides information about the running configuration."""
     manage = manage_main = manage_workspace = DTMLFile('dtml/cpConfiguration',
                                                        globals())
     manage_main._setName('manage_main')
@@ -145,8 +142,7 @@ _v_rst = None
 
 
 class DebugManager(Tabs, Traversable, Implicit):
-    """ Debug and profiling information
-    """
+    """Debug and profiling information."""
     manage = manage_main = manage_workspace = DTMLFile('dtml/debug', globals())
     manage_main._setName('manage_main')
     id = 'DebugInfo'
@@ -240,8 +236,7 @@ class ApplicationManager(CacheManager,
                          Tabs,
                          Traversable,
                          Implicit):
-    """System management
-    """
+    """System management."""
     __allow_access_to_unprotected_subobjects__ = 1
     __roles__ = ('Manager',)
 
@@ -312,8 +307,7 @@ class ApplicationManager(CacheManager,
 
 
 class AltDatabaseManager(Traversable, UndoSupport):
-    """ Database management DBTab-style
-    """
+    """Database management DBTab-style."""
     id = 'DatabaseManagement'
     name = title = 'Database Management'
     meta_type = 'Database Management'
@@ -371,7 +365,7 @@ class AltDatabaseManager(Traversable, UndoSupport):
 
     @requestmethod('POST')
     def manage_pack(self, days=0, REQUEST=None):
-        """Pack the database"""
+        """Pack the database."""
         if not isinstance(days, (int, float)):
             try:
                 days = float(days)

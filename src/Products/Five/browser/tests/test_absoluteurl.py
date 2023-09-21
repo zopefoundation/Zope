@@ -11,13 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test AbsoluteURL
-"""
+"""Test AbsoluteURL."""
 
 
 def test_absoluteurl():
-    """This tests the absolute url view (IAbsoluteURL or @@absolute_url),
-    in particular the breadcrumb functionality.
+    """This tests the absolute url view (IAbsoluteURL or @@absolute_url), in
+    particular the breadcrumb functionality.
 
     First we make some preparations:
 

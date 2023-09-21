@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Application support
-"""
+"""Application support."""
 
 import os
 import sys
@@ -53,7 +52,7 @@ APP_MANAGER = None
 
 @implementer(IApplication)
 class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
-    """Top-level system object"""
+    """Top-level system object."""
 
     security = ClassSecurityInfo()
 
@@ -109,7 +108,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
 
     @security.protected(view_management_screens)
     def getZMIMainFrameTarget(self, REQUEST):
-        """Utility method to get the right hand side ZMI frame source URL
+        """Utility method to get the right hand side ZMI frame source URL.
 
         For cases where JavaScript is disabled the ZMI uses a simple REQUEST
         variable ``came_from`` to set the source URL for the right hand side
@@ -181,12 +180,12 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
             raise KeyError(name)
 
     def ZopeTime(self, *args):
-        """Utility function to return current date/time"""
+        """Utility function to return current date/time."""
         return DateTime(*args)
 
     @security.protected(view_management_screens)
     def ZopeVersion(self, major=False):
-        """Utility method to return the Zope version
+        """Utility method to return the Zope version.
 
         Restricted to ZMI to prevent information disclosure
         """
@@ -211,8 +210,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
         raise Forbidden('This resource cannot be moved.')
 
     def absolute_url(self, relative=0):
-        """The absolute URL of the root object is BASE1 or "/".
-        """
+        """The absolute URL of the root object is BASE1 or "/"."""
         if relative:
             return ''
         try:
@@ -222,16 +220,14 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
             return '/'
 
     def absolute_url_path(self):
-        """The absolute URL path of the root object is BASEPATH1 or "/".
-        """
+        """The absolute URL path of the root object is BASEPATH1 or "/"."""
         try:
             return self.REQUEST['BASEPATH1'] or '/'
         except (AttributeError, KeyError):
             return '/'
 
     def virtual_url_path(self):
-        """The virtual URL path of the root object is empty.
-        """
+        """The virtual URL path of the root object is empty."""
         return ''
 
     def getPhysicalRoot(self):
@@ -258,7 +254,7 @@ def initialize(app):
 
 
 class AppInitializer:
-    """ Initialize an Application object (called at startup) """
+    """Initialize an Application object (called at startup)"""
 
     def __init__(self, app):
         self.app = (app,)

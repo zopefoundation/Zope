@@ -35,12 +35,13 @@ from zope.interface import implementer
 
 @implementer(IDAVCollection)
 class Collection(Resource):
+    """The Collection class provides basic WebDAV support for collection
+    objects.
 
-    """The Collection class provides basic WebDAV support for
-    collection objects. It provides default implementations
-    for all supported WebDAV HTTP methods. The behaviors of some
-    WebDAV HTTP methods for collections are slightly different
-    than those for non-collection resources."""
+    It provides default implementations for all supported WebDAV HTTP
+    methods. The behaviors of some WebDAV HTTP methods for collections
+    are slightly different than those for non-collection resources.
+    """
     security = ClassSecurityInfo()
 
     __dav_collection__ = 1
@@ -74,19 +75,25 @@ class Collection(Resource):
         raise NotFound('The requested resource does not exist.')
 
     def PUT(self, REQUEST, RESPONSE):
-        """The PUT method has no inherent meaning for collection
-        resources, though collections are not specifically forbidden
-        to handle PUT requests. The default response to a PUT request
-        for collections is 405 (Method Not Allowed)."""
+        """The PUT method has no inherent meaning for collection resources,
+        though collections are not specifically forbidden to handle PUT
+        requests.
+
+        The default response to a PUT request for collections is 405
+        (Method Not Allowed).
+        """
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for collections.')
 
     @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
-        """Delete a collection resource. For collection resources, DELETE
-        may return either 200 (OK) or 204 (No Content) to indicate total
-        success, or may return 207 (Multistatus) to indicate partial
-        success. Note that in Zope a DELETE currently never returns 207."""
+        """Delete a collection resource.
+
+        For collection resources, DELETE may return either 200 (OK) or
+        204 (No Content) to indicate total success, or may return 207
+        (Multistatus) to indicate partial success. Note that in Zope a
+        DELETE currently never returns 207.
+        """
 
         from webdav.davcmds import DeleteCollection
 

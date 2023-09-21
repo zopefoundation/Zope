@@ -165,8 +165,8 @@ def main():
 
 
 def copyskel(sourcedir, targetdir, uid, gid, **replacements):
-    """ This is an independent function because we'd like to
-    import and call it from mkzopeinstance """
+    """This is an independent function because we'd like to import and call it
+    from mkzopeinstance."""
     # Create the top of the instance:
     if not os.path.exists(targetdir):
         os.makedirs(targetdir)

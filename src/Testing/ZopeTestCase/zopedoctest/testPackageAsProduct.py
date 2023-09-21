@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests for installPackage
-"""
+"""Tests for installPackage."""
 
 import sys
 from unittest import TestSuite
@@ -24,8 +23,7 @@ from zope.testing import cleanup
 
 
 def testInstallPackage():
-    """
-    Test if installPackage works.
+    """Test if installPackage works.
 
       >>> from Testing import ZopeTestCase
       >>> from Zope2.App import zcml

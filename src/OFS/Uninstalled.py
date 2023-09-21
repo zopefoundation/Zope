@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-Objects for packages that have been uninstalled.
-"""
+"""Objects for packages that have been uninstalled."""
 import html
 from _thread import allocate_lock
 from logging import getLogger

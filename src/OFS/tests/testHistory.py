@@ -164,8 +164,8 @@ class HistoryWithComparisonSupportTests(HistoryTests):
 
 
 class HistoryItemWithSetState(HistoryItem):
-    """A class with a data migration on __setstate__
-    """
+    """A class with a data migration on __setstate__"""
+
     def __setstate__(self, state):
         super().__setstate__(state)
         self.changed_something = True

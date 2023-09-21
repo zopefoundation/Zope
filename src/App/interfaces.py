@@ -10,15 +10,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""App interfaces.
-"""
+"""App interfaces."""
 
 from zope.interface import Attribute
 from zope.interface import Interface
 
 
 class INavigation(Interface):
-    """Basic navigation UI support"""
+    """Basic navigation UI support."""
 
     manage = Attribute(""" """)
     manage_menu = Attribute(""" """)
@@ -27,7 +26,7 @@ class INavigation(Interface):
     manage_form_title = Attribute("""Add Form""")
 
     def manage_zmi_logout(REQUEST, RESPONSE):
-        """Logout current user"""
+        """Logout current user."""
 
 
 class ICSSPaths(Interface):

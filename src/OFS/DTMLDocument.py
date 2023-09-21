@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""DTML Document objects.
-"""
+"""DTML Document objects."""
 
 from urllib.parse import quote
 
@@ -36,8 +35,7 @@ _marker = []  # Create a new marker object.
 
 
 class DTMLDocument(PropertyManager, DTMLMethod):
-    """ DocumentTemplate.HTML objects whose 'self' is the DTML object.
-    """
+    """DocumentTemplate.HTML objects whose 'self' is the DTML object."""
     meta_type = 'DTML Document'
     zmi_icon = 'far fa-file-alt'
     _locked_error_text = 'This document has been locked.'
@@ -57,7 +55,8 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document with the given client object.
 
-        o If supplied, use REQUEST mapping, Response, and key word arguments.
+        o If supplied, use REQUEST mapping, Response, and key word
+        arguments.
         """
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
@@ -134,8 +133,9 @@ addForm = DTMLFile('dtml/documentAdd', globals())
 
 
 def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
-    """Add a DTML Document object with the contents of file. If
-    'file' is empty, default document text is used.
+    """Add a DTML Document object with the contents of file.
+
+    If 'file' is empty, default document text is used.
     """
     data = safe_file_data(file)
     if not data:

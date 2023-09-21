@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Unit tests for OFS.userfolder
-"""
+"""Unit tests for OFS.userfolder."""
 
 import unittest
 

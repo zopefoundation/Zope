@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests for the registerClass directive.
-"""
+"""Unit tests for the registerClass directive."""
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -41,8 +40,7 @@ class SimpleContent(SimpleItem):
 
     @security.public
     def direct(self):
-        """Should be able to traverse directly to this as there is no view.
-        """
+        """Should be able to traverse directly to this as there is no view."""
         return "Direct traversal worked"
 
 
@@ -50,8 +48,7 @@ InitializeClass(SimpleContent)
 
 
 def test_registerClass():
-    """
-    Testing registerClass
+    """Testing registerClass.
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()

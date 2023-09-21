@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Signature module
+"""Signature module.
 
 This provides support for simulating function signatures
 """
@@ -44,6 +44,7 @@ class FuncCode:
         return ((self.co_argcount, self.co_varnames) <  # NOQA: W504
                 (other.co_argcount, other.co_varnames))
         # fmt: on
+
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):
     # This is meant to be imported directly into a class.

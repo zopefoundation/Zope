@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Abstract base test case for working with CMF-style portals
+"""Abstract base test case for working with CMF-style portals.
 
 This class maintains a fixture consisting of:
 
@@ -44,14 +44,15 @@ portal_name = 'portal'
 @implementer(interfaces.IPortalTestCase,
              interfaces.IPortalSecurity)
 class PortalTestCase(base.TestCase):
-    '''Base test case for testing CMF-style portals'''
+    """Base test case for testing CMF-style portals."""
 
     _configure_portal = 1
 
     def setUp(self):
-        '''Sets up the fixture. Do not override,
-           use the hooks instead.
-        '''
+        """Sets up the fixture.
+
+        Do not override, use the hooks instead.
+        """
         try:
             self.beforeSetUp()
             self.app = self._app()
@@ -63,13 +64,14 @@ class PortalTestCase(base.TestCase):
             raise
 
     def _portal(self):
-        '''Returns the portal object for a test.'''
+        """Returns the portal object for a test."""
         return self.getPortal()
 
     def _setup(self):
-        '''Configures the portal. Framework authors may
-           override.
-        '''
+        """Configures the portal.
+
+        Framework authors may override.
+        """
         if self._configure_portal:
             self._setupUserFolder()
             self._setupUser()
@@ -77,23 +79,23 @@ class PortalTestCase(base.TestCase):
             self._setupHomeFolder()
 
     def _setupUserFolder(self):
-        '''Creates the user folder if missing.'''
+        """Creates the user folder if missing."""
         if not hasattr(aq_base(self.portal), 'acl_users'):
             self.portal.manage_addUserFolder()
 
     def _setupUser(self):
-        '''Creates the default user.'''
+        """Creates the default user."""
         uf = self.portal.acl_users
         uf.userFolderAddUser(user_name, user_password, ['Member'], [])
 
     def _setupHomeFolder(self):
-        '''Creates the default user's home folder.'''
+        """Creates the default user's home folder."""
         self.createMemberarea(user_name)
         pm = self.portal.portal_membership
         self.folder = pm.getHomeFolder(user_name)
 
     def _refreshSkinData(self):
-        '''Refreshes the skin cache.'''
+        """Refreshes the skin cache."""
         if hasattr(aq_base(self.portal), 'clearCurrentSkin'):
             self.portal.clearCurrentSkin()
         else:  # CMF 1.4
@@ -106,19 +108,19 @@ class PortalTestCase(base.TestCase):
     # Portal interface
 
     def getPortal(self):
-        '''Returns the portal object to the setup code.
-           Will typically be overridden by subclasses
-           to return the object serving as the "portal".
+        """Returns the portal object to the setup code. Will typically be
+        overridden by subclasses to return the object serving as the "portal".
 
-           Note: This method should not be called by tests!
-        '''
+        Note: This method should not be called by tests!
+        """
         return getattr(self.app, portal_name)
 
     def createMemberarea(self, name):
-        '''Creates a memberarea for the specified user.
-           Subclasses may override to provide a customized
-           or more lightweight version of the memberarea.
-        '''
+        """Creates a memberarea for the specified user.
+
+        Subclasses may override to provide a customized or more
+        lightweight version of the memberarea.
+        """
         pm = self.portal.portal_membership
         if hasattr(aq_base(pm), 'createMemberArea'):
             pm.createMemberArea(name)
@@ -128,18 +130,18 @@ class PortalTestCase(base.TestCase):
     # Security interface
 
     def setRoles(self, roles, name=user_name):
-        '''Changes the user's roles.'''
+        """Changes the user's roles."""
         uf = self.portal.acl_users
         uf.userFolderEditUser(name, None, utils.makelist(roles), [])
         if name == getSecurityManager().getUser().getId():
             self.login(name)
 
     def setPermissions(self, permissions, role='Member'):
-        '''Changes the permissions assigned to role.'''
+        """Changes the permissions assigned to role."""
         self.portal.manage_role(role, utils.makelist(permissions))
 
     def login(self, name=user_name):
-        '''Logs in.'''
+        """Logs in."""
         uf = self.portal.acl_users
         user = uf.getUserById(name)
         if not hasattr(user, 'aq_base'):
@@ -147,5 +149,5 @@ class PortalTestCase(base.TestCase):
         newSecurityManager(None, user)
 
     def logout(self):
-        '''Logs out.'''
+        """Logs out."""
         noSecurityManager()

@@ -22,8 +22,7 @@ class ToBreak(SimpleItem):
 
 
 class TestsOfBroken(unittest.TestCase):
-    """Tests for the factory for "broken" classes.
-    """
+    """Tests for the factory for "broken" classes."""
 
     def setUp(self):
         from OFS.Uninstalled import broken_klasses

@@ -10,10 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-Facilitates unit tests which requires an acquirable REQUEST from
-ZODB objects
-"""
+"""Facilitates unit tests which requires an acquirable REQUEST from ZODB
+objects."""
 
 from io import BytesIO
 
@@ -23,10 +21,8 @@ from ZPublisher.HTTPResponse import HTTPResponse
 
 
 def makerequest(app, stdout=None, environ=None):
-    """
-    Adds an HTTPRequest at app.REQUEST, and returns
-    app.__of__(app.REQUEST). Useful for tests that need to acquire
-    REQUEST.
+    """Adds an HTTPRequest at app.REQUEST, and returns app.__of__(app.REQUEST).
+    Useful for tests that need to acquire REQUEST.
 
     Usage:
       import makerequest

@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Basic ZPublisher request management.
-"""
+"""Basic ZPublisher request management."""
 
 import types
 from urllib.parse import quote as urllib_quote
@@ -169,16 +168,16 @@ class DefaultPublishTraverse:
 
 
 class BaseRequest:
-    """Provide basic ZPublisher request management
+    """Provide basic ZPublisher request management.
 
-    This object provides access to request data. Request data may
-    vary depending on the protocol used.
+    This object provides access to request data. Request data may vary
+    depending on the protocol used.
 
     Request objects are created by the object publisher and will be
     passed to published objects through the argument name, REQUEST.
 
-    The request object is a mapping object that represents a
-    collection of variable to value mappings.
+    The request object is a mapping object that represents a collection
+    of variable to value mappings.
     """
 
     maybe_webdav_client = 1
@@ -197,8 +196,7 @@ class BaseRequest:
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, other=None, **kw):
-        """The constructor is not allowed to raise errors
-        """
+        """The constructor is not allowed to raise errors."""
         self.__doc__ = None  # Make BaseRequest objects unpublishable
         if other is None:
             other = kw
@@ -219,14 +217,13 @@ class BaseRequest:
             self.clear()
 
     def processInputs(self):
-        """Do any input processing that could raise errors
-        """
+        """Do any input processing that could raise errors."""
 
     def __len__(self):
         return 1
 
     def __setitem__(self, key, value):
-        """Set application variables
+        """Set application variables.
 
         This method is used to set a variable in the requests "other"
         category.
@@ -236,13 +233,12 @@ class BaseRequest:
     set = __setitem__
 
     def get(self, key, default=None):
-        """Get a variable value
+        """Get a variable value.
 
-        Return a value for the required variable name.
-        The value will be looked up from one of the request data
-        categories. The search order is environment variables,
-        other variables, form data, and then cookies.
-
+        Return a value for the required variable name. The value will be
+        looked up from one of the request data categories. The search
+        order is environment variables, other variables, form data, and
+        then cookies.
         """
         if key == 'REQUEST':
             return self
@@ -312,8 +308,7 @@ class BaseRequest:
         return result
 
     def __str__(self):
-        L1 = list(self.items())
-        L1.sort()
+        L1 = sorted(self.items())
         return '\n'.join("%s:\t%s" % item for item in L1)
 
     __repr__ = __str__
@@ -351,7 +346,7 @@ class BaseRequest:
     traverseName__roles__ = ()
 
     def traverse(self, path, response=None, validated_hook=None):
-        """Traverse the object space
+        """Traverse the object space.
 
         The REQUEST must already have a PARENTS item with at least one
         object in it.  This is typically the root object.
@@ -440,7 +435,7 @@ class BaseRequest:
         try:
             # We build parents in the wrong order, so we
             # need to make sure we reverse it when we're done.
-            while 1:
+            while True:
                 bpth = getattr(object, '__before_publishing_traverse__', None)
                 if bpth is not None:
                     bpth(object, self)
@@ -661,10 +656,10 @@ class BaseRequest:
         """Add a callable object and argument tuple to be post-traversed.
 
         If traversal and authentication succeed, each post-traversal
-        pair is processed in the order in which they were added.
-        Each argument tuple is passed to its callable.  If a callable
-        returns a value other than None, no more pairs are processed,
-        and the return value replaces the traversal result.
+        pair is processed in the order in which they were added. Each
+        argument tuple is passed to its callable.  If a callable returns
+        a value other than None, no more pairs are processed, and the
+        return value replaces the traversal result.
         """
         try:
             pairs = self._post_traverse
@@ -680,8 +675,8 @@ class BaseRequest:
         return 0
 
     def _hold(self, object):
-        """Hold a reference to an object to delay it's destruction until mine
-        """
+        """Hold a reference to an object to delay it's destruction until
+        mine."""
         if self._held is not None:
             self._held = self._held + (object, )
 

@@ -6,15 +6,14 @@ from zope.security.zcml import Permission
 
 
 class IDeprecatedManageAddDeleteDirective(Interface):
-    """Call manage_afterAdd & co for these contained content classes.
-    """
+    """Call manage_afterAdd & co for these contained content classes."""
     class_ = GlobalObject(
         title="Class",
         required=True)
 
 
 class IRegisterClassDirective(Interface):
-    """registerClass directive schema.
+    """RegisterClass directive schema.
 
     Register content with Zope 2.
     """
@@ -57,8 +56,7 @@ class IRegisterClassDirective(Interface):
 
 class IRegisterPackageDirective(Interface):
     """Registers the given Python package which at a minimum fools zope2 into
-    thinking of it as a zope2 product.
-    """
+    thinking of it as a zope2 product."""
 
     package = GlobalObject(
         title='Target package',

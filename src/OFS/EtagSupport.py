@@ -20,24 +20,23 @@ from zope.interface import implementer
 
 
 class EtagBaseInterface(Interface):
-    """\
-    Basic Etag support interface, meaning the object supports generating
-    an Etag that can be used by certain HTTP and WebDAV Requests.
-    """
+    """\\ Basic Etag support interface, meaning the object supports generating
+    an Etag that can be used by certain HTTP and WebDAV Requests."""
     def http__etag():
-        """\
-        Entity tags are used for comparing two or more entities from
-        the same requested resource.  Predominantly used for Caching,
-        Etags can also be used to deal with the 'Lost Updates Problem'.
-        An HTTP Client such as Amaya that supports PUT for editing can
-        use the Etag value returned in the head of a GET response in the
-        'if-match' header submitted with a PUT request.  If the Etag
-        for the requested resource in the PUT request's 'if-match' header
-        is different from the current Etag value returned by this method,
-        the PUT will fail (it means that the state of the resource has
-        changed since the last copy the Client recieved) because the
-        precondition (the 'if-match') fails (the submitted Etag does not
-        match the current Etag).
+        """\\ Entity tags are used for comparing two or more entities from the
+        same requested resource.
+
+        Predominantly used for Caching, Etags can also be used to deal
+        with the 'Lost Updates Problem'. An HTTP Client such as Amaya
+        that supports PUT for editing can use the Etag value returned in
+        the head of a GET response in the 'if-match' header submitted
+        with a PUT request.  If the Etag for the requested resource in
+        the PUT request's 'if-match' header is different from the
+        current Etag value returned by this method, the PUT will fail
+        (it means that the state of the resource has changed since the
+        last copy the Client recieved) because the precondition (the
+        'if-match') fails (the submitted Etag does not match the current
+        Etag).
         """
 
     def http__refreshEtag():
@@ -58,16 +57,15 @@ class EtagBaseInterface(Interface):
 
 @implementer(EtagBaseInterface)
 class EtagSupport:
-    """
-    This class is the basis for supporting Etags in Zope.  It's main
-    function right now is to support the *Lost Updates Problem* by
-    allowing Etags and If-Match headers to be checked on PUT calls to
-    provide a *Seatbelt* style functionality.  The Etags is based on
-    the databaes mtime, and thus is updated whenever the
-    object is updated.  If a PUT request, or other HTTP or Dav request
-    comes in with an Etag different than the current one, that request
-    can be rejected according to the type of header (If-Match,
-    If-None-Match).
+    """This class is the basis for supporting Etags in Zope.
+
+    It's main function right now is to support the *Lost Updates
+    Problem* by allowing Etags and If-Match headers to be checked on PUT
+    calls to provide a *Seatbelt* style functionality.  The Etags is
+    based on the databaes mtime, and thus is updated whenever the object
+    is updated.  If a PUT request, or other HTTP or Dav request comes in
+    with an Etag different than the current one, that request can be
+    rejected according to the type of header (If-Match, If-None-Match).
     """
 
     def http__etag(self, readonly=0):

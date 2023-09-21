@@ -1,4 +1,4 @@
-"""VirtualHostMonster module
+"""VirtualHostMonster module.
 
 Defines the VirtualHostMonster class
 """
@@ -19,8 +19,7 @@ from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
 
 class VirtualHostMonster(Persistent, Item, Implicit):
-    """Provide a simple drop-in solution for virtual hosting.
-    """
+    """Provide a simple drop-in solution for virtual hosting."""
 
     meta_type = 'Virtual Host Monster'
     zmi_icon = 'fa fa-code-branch'
@@ -139,11 +138,11 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 container, hook, self.meta_type, self.priority)
 
     def __call__(self, client, request, response=None):
-        '''Traversing at home'''
+        """Traversing at home."""
         vh_used = 0
         stack = request['TraversalRequestNameStack']
         path = None
-        while 1:
+        while True:
             if stack and stack[-1] == 'VirtualHostBase':
                 vh_used = 1
                 stack.pop()
@@ -238,7 +237,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 stack.extend(pp)
 
     def __bobo_traverse__(self, request, name):
-        '''Traversing away'''
+        """Traversing away."""
         if name[:1] != '/':
             return getattr(self, name)
         parents = request.PARENTS
@@ -255,7 +254,7 @@ InitializeClass(VirtualHostMonster)
 
 
 def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
-    """ """
+    """"""
     container = self.this()
     vhm = VirtualHostMonster()
     container._setObject(vhm.getId(), vhm)

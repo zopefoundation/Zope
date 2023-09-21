@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test browser pages
-"""
+"""Test browser pages."""
 
 
 def test_suite():

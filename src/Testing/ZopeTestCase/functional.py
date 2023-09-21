@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Support for functional unit testing in ZTC
+"""Support for functional unit testing in ZTC.
 
 After Marius Gedminas' functional.py module for Zope3.
 """
@@ -28,9 +28,8 @@ from ZPublisher.utils import basic_auth_encode
 
 
 def savestate(func):
-    '''Decorator saving thread local state before executing func
-       and restoring it afterwards.
-    '''
+    """Decorator saving thread local state before executing func and restoring
+    it afterwards."""
     from AccessControl.SecurityManagement import getSecurityManager
     from AccessControl.SecurityManagement import setSecurityManager
     from zope.component.hooks import getSite
@@ -58,7 +57,7 @@ class Functional(sandbox.Sandboxed):
     @savestate
     def publish(self, path, basic=None, env=None, extra=None,
                 request_method='GET', stdin=None, handle_errors=True):
-        '''Publishes the object at 'path' returning a response object.'''
+        """Publishes the object at 'path' returning a response object."""
 
         from io import BytesIO
 
@@ -137,7 +136,7 @@ class Functional(sandbox.Sandboxed):
 
 
 class ResponseWrapper:
-    '''Decorates a response object with additional introspective methods.'''
+    """Decorates a response object with additional introspective methods."""
 
     def __init__(self, response, outstream, path,
                  wsgi_result=(), wsgi_headers=''):
@@ -161,23 +160,23 @@ class ResponseWrapper:
         return self._decode(self.getOutput())
 
     def getOutput(self):
-        '''Returns the complete output, headers and all.'''
+        """Returns the complete output, headers and all."""
         return self._wsgi_headers.getvalue() + self.getBody()
 
     def getBody(self):
-        '''Returns the page body, i.e. the output par headers.'''
+        """Returns the page body, i.e. the output par headers."""
         return b''.join(self._wsgi_result)
 
     def getPath(self):
-        '''Returns the path used by the request.'''
+        """Returns the path used by the request."""
         return self._path
 
     def getHeader(self, name):
-        '''Returns the value of a response header.'''
+        """Returns the value of a response header."""
         return self.headers.get(name.lower())
 
     def getCookie(self, name):
-        '''Returns a response cookie.'''
+        """Returns a response cookie."""
         return self.cookies.get(name)
 
     def _decode(self, data):

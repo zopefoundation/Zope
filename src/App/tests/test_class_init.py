@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests class initialization.
-"""
+"""Tests class initialization."""
 
 import unittest
 

@@ -25,7 +25,7 @@ opened = []
 
 
 def startup_wsgi():
-    """Initialize the Zope Package and provide a published module"""
+    """Initialize the Zope Package and provide a published module."""
     global _began_startup
     if _began_startup:
         # Already began (and maybe finished) startup, so don't run again
@@ -37,13 +37,13 @@ def startup_wsgi():
 
 
 def app(*args, **kw):
-    """Utility for scripts to open a connection to the database"""
+    """Utility for scripts to open a connection to the database."""
     startup_wsgi()
     return bobo_application(*args, **kw)
 
 
 def debug(*args, **kw):
-    """Utility to try a Zope request using the interactive interpreter"""
+    """Utility to try a Zope request using the interactive interpreter."""
     startup_wsgi()
     import ZPublisher
     return ZPublisher.test('Zope2', *args, **kw)

@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope Page Template module (wrapper for the zope.pagetemplate implementation)
-"""
+"""Zope Page Template module (wrapper for the zope.pagetemplate
+implementation)"""
 
 import os
 
@@ -47,7 +47,7 @@ if 'ZPT_PREFERRED_ENCODING' in os.environ:
 
 
 class Src(Explicit):
-    """ I am scary code """
+    """I am scary code."""
     security = ClassSecurityInfo()
     security.declareObjectProtected(view_management_screens)
 
@@ -174,7 +174,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self._setPropValue('title', title)
 
     def _setPropValue(self, id, value):
-        """ set a property and invalidate the cache """
+        """Set a property and invalidate the cache."""
         PropertyManager._setPropValue(self, id, value)
         self.ZCacheable_invalidate()
 
@@ -247,7 +247,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         ZopePageTemplate.inheritedAttribute('write')(self, text)
 
     def _exec(self, bound_names, args, kw):
-        """Call a Page Template"""
+        """Call a Page Template."""
         if 'args' not in kw:
             kw['args'] = args
         bound_names['options'] = kw
@@ -346,7 +346,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     @security.protected(change_page_templates)
     def PUT(self, REQUEST, RESPONSE):
-        """ Handle HTTP PUT requests """
+        """Handle HTTP PUT requests."""
 
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)

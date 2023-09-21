@@ -22,8 +22,7 @@ FILE_META_TYPES = ({
 
 
 class UnitTestSecurityPolicy:
-    """Stub out the existing security policy for unit testing purposes.
-    """
+    """Stub out the existing security policy for unit testing purposes."""
 
     #   Standard SecurityPolicy interface
     def validate(
@@ -44,8 +43,7 @@ class UnitTestSecurityPolicy:
 
 
 class UnitTestUser(Implicit):
-    """Stubbed out manager for unit testing purposes.
-    """
+    """Stubbed out manager for unit testing purposes."""
 
     def getId(self):
         return 'unit_tester'

@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test for auth_header
-"""
+"""Test for auth_header."""
 
 import unittest
 

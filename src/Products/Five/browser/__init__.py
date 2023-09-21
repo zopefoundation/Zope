@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Provide basic browser functionality
-"""
+"""Provide basic browser functionality."""
 
 from zope.publisher import browser
 

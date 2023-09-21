@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" CGI Response Output formatter
-"""
+"""CGI Response Output formatter."""
 import html
 import os
 import re
@@ -153,7 +152,7 @@ def make_content_disposition(disposition, file_name):
 
 
 class HTTPBaseResponse(BaseResponse):
-    """ An object representation of an HTTP response.
+    """An object representation of an HTTP response.
 
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
@@ -192,8 +191,7 @@ class HTTPBaseResponse(BaseResponse):
                  headers=None,
                  stdout=None,
                  stderr=None):
-        """ Create a new response using the given values.
-        """
+        """Create a new response using the given values."""
         self.accumulated_headers = []
         self.cookies = {}
         self.headers = {}
@@ -224,7 +222,7 @@ class HTTPBaseResponse(BaseResponse):
         self.body = value.encode(self.charset)
 
     def redirect(self, location, status=302, lock=0):
-        """Cause a redirection without raising an error"""
+        """Cause a redirection without raising an error."""
         if isinstance(location, HTTPRedirection):
             status = location.getStatus()
             location = location.headers['Location']
@@ -260,19 +258,18 @@ class HTTPBaseResponse(BaseResponse):
         return location
 
     def retry(self):
-        """ Return a cloned response object to be used in a retry attempt.
-        """
+        """Return a cloned response object to be used in a retry attempt."""
         # This implementation is a bit lame, because it assumes that
         # only stdout stderr were passed to the constructor. OTOH, I
         # think that that's all that is ever passed.
         return self.__class__(stdout=self.stdout, stderr=self.stderr)
 
     def setStatus(self, status, reason=None, lock=None):
-        """ Set the HTTP status code of the response
+        """Set the HTTP status code of the response.
 
         o The argument may either be an integer or a string from the
-          'status_reasons' dict values:  status messages will be converted
-          to the correct integer value.
+        'status_reasons' dict values:  status messages will be converted
+        to the correct integer value.
         """
         if self._locked_status:
             # Don't change the response status.
@@ -304,7 +301,7 @@ class HTTPBaseResponse(BaseResponse):
             self._locked_status = 1
 
     def setCookie(self, name, value, quoted=True, **kw):
-        """ Set an HTTP cookie.
+        """Set an HTTP cookie.
 
         The response will include an HTTP header that sets a cookie on
         cookie-enabled browsers with a key "name" and value
@@ -335,7 +332,7 @@ class HTTPBaseResponse(BaseResponse):
             cookies[name] = cookie
 
     def appendCookie(self, name, value):
-        """ Set an HTTP cookie.
+        """Set an HTTP cookie.
 
         Returns an HTTP header that sets a cookie on cookie-enabled
         browsers with a key "name" and value "value". If a value for the
@@ -358,7 +355,7 @@ class HTTPBaseResponse(BaseResponse):
             cookie['value'] = value
 
     def expireCookie(self, name, **kw):
-        """ Clear an HTTP cookie.
+        """Clear an HTTP cookie.
 
         The response will include an HTTP header that will remove the cookie
         corresponding to "name" on the client, if one exists. This is
@@ -379,25 +376,25 @@ class HTTPBaseResponse(BaseResponse):
         self.setCookie(name, value='deleted', **d)
 
     def getHeader(self, name, literal=0):
-        """ Get a previously set header value.
+        """Get a previously set header value.
 
-        Return the value associated with a HTTP return header, or
-        None if no such header has been set in the response
-        yet.
+        Return the value associated with a HTTP return header, or None
+        if no such header has been set in the response yet.
 
-        If the 'literal' flag is true, preserve the case of the header name;
-        otherwise lower-case the header name before looking up the value.
+        If the 'literal' flag is true, preserve the case of the header
+        name; otherwise lower-case the header name before looking up the
+        value.
         """
         key = literal and name or name.lower()
         return self.headers.get(key, None)
 
     def setHeader(self, name, value, literal=0, scrubbed=False):
-        """ Set an HTTP return header on the response.
+        """Set an HTTP return header on the response.
 
         Replay any existing value set for the header.
 
-        If the 'literal' flag is true, preserve the case of the header name;
-        otherwise the header name will be lowercased.
+        If the 'literal' flag is true, preserve the case of the header
+        name; otherwise the header name will be lowercased.
 
         'scrubbed' is for internal use, to indicate that another API has
         already removed any CRLF from the name and value.
@@ -421,11 +418,11 @@ class HTTPBaseResponse(BaseResponse):
         self.headers[name] = value
 
     def appendHeader(self, name, value, delimiter=", "):
-        """ Append a value to an HTTP return header.
+        """Append a value to an HTTP return header.
 
-        Set an HTTP return header "name" with value "value",
-        appending it following a comma if there was a previous value
-        set for the header.
+        Set an HTTP return header "name" with value "value", appending
+        it following a comma if there was a previous value set for the
+        header.
 
         'name' is always lowercased before use.
         """
@@ -441,12 +438,12 @@ class HTTPBaseResponse(BaseResponse):
         self.setHeader(name, h, scrubbed=True)
 
     def addHeader(self, name, value):
-        """ Set a new HTTP return header with the given value,
+        """Set a new HTTP return header with the given value,
 
         Retain any previously set headers with the same name.
 
-        Note that this API appends to the 'accumulated_headers' attribute;
-        it does not update the 'headers' mapping.
+        Note that this API appends to the 'accumulated_headers'
+        attribute; it does not update the 'headers' mapping.
         """
         name, value = _scrubHeader(name, value)
         self.accumulated_headers.append((name, value))
@@ -503,13 +500,13 @@ class HTTPBaseResponse(BaseResponse):
         return False
 
     def setBody(self, body, title='', is_error=False, lock=None):
-        """ Set the body of the response
+        """Set the body of the response.
 
         Sets the return body equal to the (string) argument "body". Also
         updates the "content-length" return header.
 
-        If the body is already locked via a previous call, do nothing and
-        return None.
+        If the body is already locked via a previous call, do nothing
+        and return None.
 
         You can also specify a title, in which case the title and body
         will be wrapped up in html, head, title, and body tags.
@@ -517,13 +514,13 @@ class HTTPBaseResponse(BaseResponse):
         If body has an 'asHTML' method, replace it by the result of that
         method.
 
-        If body is now bytes, bytearray or memoryview, convert it to bytes.
-        Else, either try to convert it to bytes or use an intermediate string
-        representation which is then converted to bytes, depending on the
-        content type.
+        If body is now bytes, bytearray or memoryview, convert it to
+        bytes. Else, either try to convert it to bytes or use an
+        intermediate string representation which is then converted to
+        bytes, depending on the content type.
 
-        If is_error is true, format the HTML as a Zope error message instead
-        of a generic HTML page.
+        If is_error is true, format the HTML as a Zope error message
+        instead of a generic HTML page.
 
         Return 'self' (XXX as a true value?).
         """
@@ -620,39 +617,39 @@ class HTTPBaseResponse(BaseResponse):
         return self
 
     def enableHTTPCompression(self, REQUEST={}, force=0, disable=0, query=0):
-        """Enable HTTP Content Encoding with gzip compression if possible
+        """Enable HTTP Content Encoding with gzip compression if possible.
 
-           REQUEST -- used to check if client can accept compression
-           force   -- set true to ignore REQUEST headers
-           disable -- set true to disable compression
-           query   -- just return if compression has been previously requested
+        REQUEST -- used to check if client can accept compression
+        force   -- set true to ignore REQUEST headers
+        disable -- set true to disable compression
+        query   -- just return if compression has been previously requested
 
-           returns -- 1 if compression will be attempted, 2 if compression
-                      is forced, 0 if no compression
+        returns -- 1 if compression will be attempted, 2 if compression
+                   is forced, 0 if no compression
 
-           The HTTP specification allows for transfer encoding and content
-           encoding. Unfortunately many web browsers still do not support
-           transfer encoding, but they all seem to support content encoding.
+        The HTTP specification allows for transfer encoding and content
+        encoding. Unfortunately many web browsers still do not support
+        transfer encoding, but they all seem to support content encoding.
 
-           This function is designed to be called on each request to specify
-           on a request-by-request basis that the response content should
-           be compressed.
+        This function is designed to be called on each request to specify
+        on a request-by-request basis that the response content should
+        be compressed.
 
-           The REQUEST headers are used to determine if the client accepts
-           gzip content encoding. The force parameter can force the use
-           of gzip encoding regardless of REQUEST, and the disable parameter
-           can be used to "turn off" previously enabled encoding (but note
-           that any existing content-encoding header will not be changed).
-           The query parameter can be used to determine the if compression
-           has been previously requested.
+        The REQUEST headers are used to determine if the client accepts
+        gzip content encoding. The force parameter can force the use
+        of gzip encoding regardless of REQUEST, and the disable parameter
+        can be used to "turn off" previously enabled encoding (but note
+        that any existing content-encoding header will not be changed).
+        The query parameter can be used to determine the if compression
+        has been previously requested.
 
-           In setBody, the major mime type is used to determine if content
-           encoding should actually be performed.
+        In setBody, the major mime type is used to determine if content
+        encoding should actually be performed.
 
-           By default, image types are not compressed.
-           Additional major mime types can be specified by setting the
-           environment variable DONT_GZIP_MAJOR_MIME_TYPES to a comma-seperated
-           list of major mime types that should also not be gzip compressed.
+        By default, image types are not compressed.
+        Additional major mime types can be specified by setting the
+        environment variable DONT_GZIP_MAJOR_MIME_TYPES to a comma-seperated
+        list of major mime types that should also not be gzip compressed.
         """
         if query:
             return self.use_HTTP_content_compression
@@ -700,7 +697,7 @@ class HTTPBaseResponse(BaseResponse):
         return cookie_list
 
     def listHeaders(self):
-        """ Return a list of (key, value) pairs for our headers.
+        """Return a list of (key, value) pairs for our headers.
 
         o Do appropriate case normalization.
 
@@ -921,8 +918,7 @@ class HTTPResponse(HTTPBaseResponse):
         return body
 
     def finalize(self):
-        """ Set headers required by various parts of protocol.
-        """
+        """Set headers required by various parts of protocol."""
         body = self.body
         if 'content-length' not in self.headers and \
            'transfer-encoding' not in self.headers:
@@ -930,8 +926,7 @@ class HTTPResponse(HTTPBaseResponse):
         return "%d %s" % (self.status, self.errmsg), self.listHeaders()
 
     def write(self, data):
-        """
-        Return data as a stream
+        """Return data as a stream.
 
         HTML data may be returned using a stream-oriented interface.
         This allows the browser to display partial results while
@@ -940,8 +935,8 @@ class HTTPResponse(HTTPBaseResponse):
         The published object should first set any output headers or
         cookies on the response object.
 
-        Note that published objects must not generate any errors
-        after beginning stream-oriented output.
+        Note that published objects must not generate any errors after
+        beginning stream-oriented output.
         """
         if not self._wrote:
             notify(pubevents.PubBeforeStreaming(self))
@@ -954,8 +949,7 @@ class HTTPResponse(HTTPBaseResponse):
 
 
 class WSGIResponse(HTTPBaseResponse):
-    """A response object for WSGI
-    """
+    """A response object for WSGI."""
     _streaming = 0
     _http_version = None
     _server_version = None
@@ -1127,7 +1121,7 @@ class HeaderEncodingRegistry(dict):
     """
 
     def register(self, header, encoder, **kw):
-        """register *encoder* as encoder for header *header*.
+        """Register *encoder* as encoder for header *header*.
 
         If *encoder* is `None`, this indicates that *header* should not
         get encoded.
@@ -1143,7 +1137,7 @@ class HeaderEncodingRegistry(dict):
         self[header] = encoder, kw
 
     def unregister(self, header):
-        """remove any registration for *header*.
+        """Remove any registration for *header*.
 
         *header* can be either a header name or `None`.
         In the latter case, a default registration is removed.
@@ -1154,9 +1148,10 @@ class HeaderEncodingRegistry(dict):
             del self[header]
 
     def encode(self, header, value):
-        """encode *value* as specified for *header*.
+        """Encode *value* as specified for *header*.
 
-        encoding takes only place if *value* contains non ISO-8859-1 chars.
+        encoding takes only place if *value* contains non ISO-8859-1
+        chars.
         """
         if not isinstance(value, str):
             return value
@@ -1184,16 +1179,15 @@ def encode_words(value):
 def encode_params(value):
     """RFC 5987(8187) (specialized from RFC 2231) parameter encoding.
 
-    This encodes parameters as specified by RFC 5987 using
-    fixed `UTF-8` encoding (as required by RFC 8187).
-    However, all parameters with non latin-1 values are
-    automatically transformed and a `*` suffixed parameter is added
-    (RFC 8187 allows this only for parameters explicitly specified
-    to have this behavior).
+    This encodes parameters as specified by RFC 5987 using fixed `UTF-8`
+    encoding (as required by RFC 8187). However, all parameters with non
+    latin-1 values are automatically transformed and a `*` suffixed
+    parameter is added (RFC 8187 allows this only for parameters
+    explicitly specified to have this behavior).
 
-    Many HTTP headers use `,` separated lists. For simplicity,
-    such headers are not supported (we would need to recognize
-    `,` inside quoted strings as special).
+    Many HTTP headers use `,` separated lists. For simplicity, such
+    headers are not supported (we would need to recognize `,` inside
+    quoted strings as special).
     """
     params = []
     for p in _parseparam(";" + value):

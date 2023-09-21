@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""User folders
-"""
+"""User folders."""
 
 import os
 
@@ -41,7 +40,7 @@ class BasicUserFolder(
     RoleManager,
     accesscontrol_userfolder.BasicUserFolder
 ):
-    """Base class for UserFolder-like objects"""
+    """Base class for UserFolder-like objects."""
 
     security = ClassSecurityInfo()
 
@@ -57,9 +56,11 @@ class BasicUserFolder(
     @requestmethod('POST')
     def userFolderAddUser(self, name, password, roles, domains,
                           REQUEST=None, **kw):
-        """API method for creating a new user object. Note that not all
-           user folder implementations support dynamic creation of user
-           objects."""
+        """API method for creating a new user object.
+
+        Note that not all user folder implementations support dynamic
+        creation of user objects.
+        """
         if hasattr(self, '_doAddUser'):
             return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplementedError
@@ -75,9 +76,11 @@ class BasicUserFolder(
         REQUEST=None,
         **kw
     ):
-        """API method for changing user object attributes. Note that not
-           all user folder implementations support changing of user object
-           attributes."""
+        """API method for changing user object attributes.
+
+        Note that not all user folder implementations support changing
+        of user object attributes.
+        """
         if hasattr(self, '_doChangeUser'):
             return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplementedError
@@ -85,8 +88,11 @@ class BasicUserFolder(
     @security.protected(ManageUsers)
     @requestmethod('POST')
     def userFolderDelUsers(self, names, REQUEST=None):
-        """API method for deleting one or more user objects. Note that not
-           all user folder implementations support deletion of user objects."""
+        """API method for deleting one or more user objects.
+
+        Note that not all user folder implementations support deletion
+        of user objects.
+        """
         if hasattr(self, '_doDelUsers'):
             return self._doDelUsers(names)
         raise NotImplementedError
@@ -106,8 +112,7 @@ class BasicUserFolder(
         REQUEST=None,
         manage_tabs_message=None
     ):
-        """
-        """
+        """"""
         return self._userFolderProperties(
             self,
             REQUEST,
@@ -123,9 +128,7 @@ class BasicUserFolder(
         maxlistusers=DEFAULTMAXLISTUSERS,
         REQUEST=None
     ):
-        """
-        Sets the properties of the user folder.
-        """
+        """Sets the properties of the user folder."""
         self.encrypt_passwords = not not encrypt_passwords
         try:
             self.maxlistusers = int(maxlistusers)
@@ -215,10 +218,13 @@ class BasicUserFolder(
 
     @security.protected(ManageUsers)
     def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
-        """This method handles operations on users for the web based forms
-           of the ZMI. Application code (code that is outside of the forms
-           that implement the UI of a user folder) are encouraged to use
-           manage_std_addUser"""
+        """This method handles operations on users for the web based forms of
+        the ZMI.
+
+        Application code (code that is outside of the forms that
+        implement the UI of a user folder) are encouraged to use
+        manage_std_addUser
+        """
         if submit == 'Add...':
             return self._add_User(self, REQUEST)
 
@@ -274,12 +280,13 @@ InitializeClass(BasicUserFolder)
 
 
 class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
-    """Standard UserFolder object
+    """Standard UserFolder object.
 
-    A UserFolder holds User objects which contain information
-    about users including name, password domain, and roles.
-    UserFolders function chiefly to control access by authenticating
-    users and binding them to a collection of roles."""
+    A UserFolder holds User objects which contain information about
+    users including name, password domain, and roles. UserFolders
+    function chiefly to control access by authenticating users and
+    binding them to a collection of roles.
+    """
 
     _ofs_migrated = False
 
@@ -288,14 +295,13 @@ class UserFolder(accesscontrol_userfolder.UserFolder, BasicUserFolder):
         self._ofs_migrated = True
 
     def _createInitialUser(self):
-        """
-        If there are no users or only one user in this user folder,
+        """If there are no users or only one user in this user folder,
         populates from the 'inituser' file in the instance home.
-        We have to do this even when there is already a user
-        just in case the initial user ignored the setup messages.
-        We don't do it for more than one user to avoid
-        abuse of this mechanism.
-        Called only by OFS.Application.initialize().
+
+        We have to do this even when there is already a user just in
+        case the initial user ignored the setup messages. We don't do it
+        for more than one user to avoid abuse of this mechanism. Called
+        only by OFS.Application.initialize().
         """
         if len(self.data) <= 1:
             info = readUserAccessFile('inituser')
@@ -315,7 +321,7 @@ InitializeClass(UserFolder)
 
 
 def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
-    """ """
+    """"""
     f = UserFolder()
     self = self.this()
     try:

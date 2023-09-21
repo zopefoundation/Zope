@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests for the testbrowser module.
-"""
+"""Tests for the testbrowser module."""
 
 import unittest
 from urllib.error import HTTPError
@@ -137,7 +136,8 @@ class TestTestbrowser(FunctionalTestCase):
     def test_handle_errors_false_HTTPExceptionHandler_in_app(self):
         """HTTPExceptionHandler does not handle errors if requested via WSGI.
 
-        This is needed when HTTPExceptionHandler is part of the WSGI pipeline.
+        This is needed when HTTPExceptionHandler is part of the WSGI
+        pipeline.
         """
         class WSGITestAppWithHTTPExceptionHandler:
             """Minimized testbrowser.WSGITestApp with HTTPExceptionHandler."""

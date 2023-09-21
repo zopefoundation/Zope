@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests for the CacheManager.
-"""
+"""Tests for the CacheManager."""
 
 import unittest
 

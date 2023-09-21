@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Batch class, for iterating over a sequence in batches
-"""
+"""Batch class, for iterating over a sequence in batches."""
 
 from ExtensionClass import Base
 
@@ -41,7 +40,7 @@ class LazySequenceLength(Base):
 
 
 class Batch(Base):
-    """Create a sequence batch"""
+    """Create a sequence batch."""
     __allow_access_to_unprotected_subobjects__ = 1
 
     previous = LazyPrevBatch()
@@ -50,7 +49,7 @@ class Batch(Base):
 
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=0, overlap=0):
-        '''Encapsulate "sequence" in batches of "size".
+        """Encapsulate "sequence" in batches of "size".
 
         Arguments: "start" and "end" are 0-based indexes into the
         sequence.  If the next batch would contain no more than
@@ -65,7 +64,7 @@ class Batch(Base):
         the batch.
 
         "sequence_length" is the length of the original, unbatched, sequence
-        '''
+        """
 
         start = start + 1
 

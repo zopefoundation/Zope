@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope-specific Python Expression Handler
+"""Zope-specific Python Expression Handler.
 
 Handler for Python expressions that uses the RestrictedPython package.
 """

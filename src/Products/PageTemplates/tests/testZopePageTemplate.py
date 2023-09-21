@@ -1,5 +1,4 @@
-"""
-ZopePageTemplate regression tests.
+"""ZopePageTemplate regression tests.
 
 Ensures that adding a page template works correctly.
 """
@@ -548,7 +547,7 @@ class SrcTests(unittest.TestCase):
 
 
 class ZPTBrowserTests(FunctionalTestCase):
-    """Browser testing ZopePageTemplate"""
+    """Browser testing ZopePageTemplate."""
 
     def afterSetUp(self):
         useChameleonEngine()

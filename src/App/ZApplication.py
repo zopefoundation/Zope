@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Implement an bobo_application object that is BoboPOS3 aware
+"""Implement an bobo_application object that is BoboPOS3 aware.
 
-This module provides a wrapper that causes a database connection to be created
-and used when bobo publishes a bobo_application object.
+This module provides a wrapper that causes a database connection to be
+created and used when bobo publishes a bobo_application object.
 """
 
 

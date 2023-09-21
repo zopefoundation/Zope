@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test runner that works with zope.testrunner
-"""
+"""Test runner that works with zope.testrunner."""
 
 import os
 import unittest

@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Placeless setup tests
-"""
+"""Placeless setup tests."""
 
 import unittest
 
@@ -34,20 +33,16 @@ def setupZCML():
 
 
 class IAdaptable(Interface):
-    """This is a Zope interface.
-    """
+    """This is a Zope interface."""
     def method():
-        """This method will be adapted
-        """
+        """This method will be adapted."""
 
 
 class IAdapted(Interface):
-    """The interface we adapt to.
-    """
+    """The interface we adapt to."""
 
     def adaptedMethod():
-        """A method to adapt.
-        """
+        """A method to adapt."""
 
 
 @implementer(IAdaptable)
@@ -69,7 +64,7 @@ class Adapter:
 
 
 class TestPlacelessSetUp(ZopeTestCase.ZopeTestCase):
-    '''Tests ZopeTestCase with placeless setup'''
+    """Tests ZopeTestCase with placeless setup."""
 
     def afterSetUp(self):
         tearDown()

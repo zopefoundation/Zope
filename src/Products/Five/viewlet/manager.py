@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Viewlet manager.
-"""
+"""Viewlet manager."""
 
 from operator import itemgetter
 
@@ -25,12 +24,12 @@ from zope.viewlet.manager import ViewletManagerBase as origManagerBase
 
 
 class ViewletManagerBase(origManagerBase):
-    """A base class for Viewlet managers to work in Zope2"""
+    """A base class for Viewlet managers to work in Zope2."""
 
     template = None
 
     def __getitem__(self, name):
-        """See zope.interface.common.mapping.IReadMapping"""
+        """See zope.interface.common.mapping.IReadMapping."""
         # Find the viewlet
         viewlet = zope.component.queryMultiAdapter(
             (self.context, self.request, self.__parent__, self),
@@ -52,7 +51,7 @@ class ViewletManagerBase(origManagerBase):
         return viewlet
 
     def filter(self, viewlets):
-        """Sort out all content providers
+        """Sort out all content providers.
 
         ``viewlets`` is a list of tuples of the form (name, viewlet).
         """

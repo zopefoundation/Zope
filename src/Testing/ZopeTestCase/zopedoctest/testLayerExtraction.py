@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test layer extraction feature
-"""
+"""Test layer extraction feature."""
 
 from unittest import TestSuite
 
@@ -23,9 +22,8 @@ from Testing.ZopeTestCase import transaction
 
 
 class TestLayer(layer.ZopeLite):
-    """
-    If the layer is extracted properly, we should see the following
-    variable
+    """If the layer is extracted properly, we should see the following
+    variable.
 
     >>> getattr(self.app, 'LAYER_EXTRACTED', False)  # NOQA: F821
     True

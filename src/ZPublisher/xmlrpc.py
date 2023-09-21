@@ -10,12 +10,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""XML-RPC support module
+"""XML-RPC support module.
 
-Written by Eric Kidd at UserLand software, with much help from Jim Fulton
-at DC. This code hooks Zope up to Fredrik Lundh's Python XML-RPC library.
+Written by Eric Kidd at UserLand software, with much help from Jim
+Fulton at DC. This code hooks Zope up to Fredrik Lundh's Python XML-RPC
+library.
 
-See http://www.xmlrpc.com/ and http://linux.userland.com/ for more
+See
+http://www.xmlrpc.com/
+and http://linux.userland.com/ for more
 information about XML-RPC and Zope.
 """
 
@@ -69,7 +72,7 @@ xmlrpc.client.Marshaller.dispatch[DateTime] = dump_instance
 
 
 def parse_input(data):
-    """Parse input data and return a method path and argument tuple
+    """Parse input data and return a method path and argument tuple.
 
     The data is a string.
     """
@@ -119,15 +122,15 @@ def is_xmlrpc_response(response):
 class Response:
     """Customized Response that handles XML-RPC-specific details.
 
-    We override setBody to marshall Python objects into XML-RPC. We
-    also override exception to convert errors to XML-RPC faults.
+    We override setBody to marshall Python objects into XML-RPC. We also
+    override exception to convert errors to XML-RPC faults.
 
     If these methods stop getting called, make sure that ZPublisher is
     using the xmlrpc.Response object created above and not the original
     HTTPResponse object from which it was cloned.
 
-    It's probably possible to improve the 'exception' method quite a bit.
-    The current implementation, however, should suffice for now.
+    It's probably possible to improve the 'exception' method quite a
+    bit. The current implementation, however, should suffice for now.
     """
 
     _error_format = 'text/plain'  # No html in error values

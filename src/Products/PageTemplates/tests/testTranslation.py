@@ -28,7 +28,7 @@ def translate(*args, **kw):
 
 
 class TranslationLayer:
-    """set up our translation function."""
+    """Set up our translation function."""
     @classmethod
     def setUp(cls):
         cls._saved_translate = pagetemplate.fast_translate

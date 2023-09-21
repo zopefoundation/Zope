@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""BeforeTraverse interface and helper classes"""
+"""BeforeTraverse interface and helper classes."""
 
 from logging import getLogger
 
@@ -24,11 +24,11 @@ def registerBeforeTraverse(container, object, app_handle, priority=99):
     """Register an object to be called before a container is traversed.
 
     'app_handle' should be a string or other hashable value that
-    distinguishes the application of this object, and which must
-    be used in order to unregister the object.
+    distinguishes the application of this object, and which must be used
+    in order to unregister the object.
 
-    If the container will be pickled, the object must be a callable class
-    instance, not a function or method.
+    If the container will be pickled, the object must be a callable
+    class instance, not a function or method.
 
     'priority' is optional, and determines the relative order in which
     registered objects will be called.
@@ -41,7 +41,8 @@ def registerBeforeTraverse(container, object, app_handle, priority=99):
 def unregisterBeforeTraverse(container, app_handle):
     """Unregister a __before_traverse__ hook object, given its 'app_handle'.
 
-    Returns a list of unregistered objects."""
+    Returns a list of unregistered objects.
+    """
     btr = getattr(container, '__before_traverse__', {})
     objects = []
     for k in list(btr.keys()):
@@ -56,7 +57,8 @@ def unregisterBeforeTraverse(container, app_handle):
 def queryBeforeTraverse(container, app_handle):
     """Find __before_traverse__ hook objects, given an 'app_handle'.
 
-    Returns a list of (priority, object) pairs."""
+    Returns a list of (priority, object) pairs.
+    """
     btr = getattr(container, '__before_traverse__', {})
     objects = []
     for k in btr.keys():
@@ -66,7 +68,7 @@ def queryBeforeTraverse(container, app_handle):
 
 
 def rewriteBeforeTraverse(container, btr):
-    """Rewrite the list of __before_traverse__ hook objects"""
+    """Rewrite the list of __before_traverse__ hook objects."""
     container.__before_traverse__ = btr
     hookname = '__before_publishing_traverse__'
     dic = hasattr(container.__class__, hookname)
@@ -76,8 +78,7 @@ def rewriteBeforeTraverse(container, btr):
     bpth = MultiHook(hookname, bpth, dic)
     setattr(container, hookname, bpth)
 
-    keys = list(btr.keys())
-    keys.sort()
+    keys = sorted(btr.keys())
     for key in keys:
         bpth.add(btr[key])
 
@@ -88,6 +89,7 @@ class MultiHook:
     MultiHook calls the named hook from the class of the container, then
     the prior hook, then all the hooks in its list.
     """
+
     def __init__(self, hookname='<undefined hookname>', prior=None,
                  defined_in_class=False):
         # The default values are needed for unpickling instances of this class

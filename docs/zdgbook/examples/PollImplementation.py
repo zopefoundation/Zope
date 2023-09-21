@@ -2,12 +2,11 @@ from Poll import Poll
 
 
 class PollImplementation:
-    """
-    A multiple choice poll, implements the Poll interface.
+    """A multiple choice poll, implements the Poll interface.
 
-    The poll has a question and a sequence of responses. Votes
-    are stored in a dictionary which maps response indexes to a
-    number of votes.
+    The poll has a question and a sequence of responses. Votes are
+    stored in a dictionary which maps response indexes to a number of
+    votes.
     """
 
     __implements__ = Poll

@@ -52,7 +52,7 @@ class DTMLDocumentTests(unittest.TestCase):
         self.assertIsInstance(doc.read(), str)
 
     def test__call__missing_encoding_old_instances(self):
-        """ Existing DTML documents have no "encoding" attribute """
+        """Existing DTML documents have no "encoding" attribute."""
         from OFS.Folder import Folder
         client = makerequest(Folder('client'))
         response = client.REQUEST['RESPONSE']

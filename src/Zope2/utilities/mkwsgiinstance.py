@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """%(program)s:  Create a Zope WSGI instance home.
 
 usage:  %(program)s [options]
@@ -157,7 +156,7 @@ def get_skeltarget():
     print('Please choose a directory in which you\'d like to install')
     print('Zope "instance home" files such as database files, configuration')
     print('files, etc.\n')
-    while 1:
+    while True:
         skeltarget = input("Directory: ").strip()
         if skeltarget == '':
             print('You must specify a directory')
@@ -175,7 +174,7 @@ def get_inituser():
     user = input("Username: ").strip()
     if user == '':
         return None, None
-    while 1:
+    while True:
         passwd = getpass.getpass("Password: ")
         verify = getpass.getpass("Verify password: ")
         if verify == passwd:
@@ -201,8 +200,7 @@ def write_inituser(fn, user, password):
 
 
 def check_buildout(script_path):
-    """ Are we running from within a buildout which supplies 'zopepy'?
-    """
+    """Are we running from within a buildout which supplies 'zopepy'?"""
     buildout_cfg = os.path.join(os.path.dirname(script_path), 'buildout.cfg')
     if os.path.exists(buildout_cfg):
         parser = RawConfigParser()
@@ -221,8 +219,7 @@ def check_buildout(script_path):
 
 
 def get_zope2path(python):
-    """ Get Zope2 path from selected Python interpreter.
-    """
+    """Get Zope2 path from selected Python interpreter."""
     zope2file = ''
     try:
         output = subprocess.check_output(

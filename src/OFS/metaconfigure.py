@@ -87,8 +87,7 @@ def package_initialized(module, init_func):
 
 
 def _registerPackage(module_, init_func=None):
-    """Registers the given python package as a Zope 2 style product
-    """
+    """Registers the given python package as a Zope 2 style product."""
     if not hasattr(module_, '__path__'):
         raise ValueError("Must be a package and the "
                          "package must be filesystem based")
@@ -105,8 +104,7 @@ def _registerPackage(module_, init_func=None):
 
 
 def registerPackage(_context, package, initialize=None):
-    """ZCML directive function for registering a python package product
-    """
+    """ZCML directive function for registering a python package product."""
 
     _context.action(
         discriminator=('registerPackage', package),

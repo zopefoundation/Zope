@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests ZODB behavior in ZopeTestCase
+"""Tests ZODB behavior in ZopeTestCase.
 
-Demonstrates that cut/copy/paste/clone/rename and import/export
-work if a savepoint is made before performing the respective operation.
+Demonstrates that cut/copy/paste/clone/rename and import/export work if
+a savepoint is made before performing the respective operation.
 """
 
 import os
@@ -130,7 +130,8 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
     def testExportNonLatinFileNames(self):
         """Test compatibility of the export with unicode characters.
 
-        Since Zope 4 also unicode ids can be used."""
+        Since Zope 4 also unicode ids can be used.
+        """
         _, response = make_request_response()
         # please note the usage of a turkish `i`
         self.folder.manage_exportObject(
@@ -188,24 +189,26 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
 
 
 class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
-    '''This testcase shows that _v_ and _p_ attributes are NOT bothered
-       by transaction boundaries, if the respective object is otherwise
-       left untouched (clean). This means that such variables will keep
-       their values across tests.
+    """This testcase shows that _v_ and _p_ attributes are NOT bothered by
+    transaction boundaries, if the respective object is otherwise left
+    untouched (clean). This means that such variables will keep their values
+    across tests.
 
-       The only use case yet encountered in the wild is portal_memberdata's
-       _v_temps attribute. Test authors are cautioned to watch out for
-       occurrences of _v_ and _p_ attributes of objects that are not recreated
-       for every test method execution, but preexist in the test ZODB.
+    The only use case yet encountered in the wild is portal_memberdata's
+    _v_temps attribute. Test authors are cautioned to watch out for
+    occurrences of _v_ and _p_ attributes of objects that are not
+    recreated for every test method execution, but preexist in the test
+    ZODB.
 
-       It is therefore deemed essential to initialize any _v_ and _p_
-       attributes of such objects in afterSetup(), as otherwise test results
-       will be distorted!
+    It is therefore deemed essential to initialize any _v_ and _p_
+    attributes of such objects in afterSetup(), as otherwise test
+    results will be distorted!
 
-       Note that _v_ attributes used to be transactional in Zope < 2.6.
+    Note that _v_ attributes used to be transactional in Zope < 2.6.
 
-       This testcase exploits the fact that test methods are sorted by name.
-    '''
+    This testcase exploits the fact that test methods are sorted by
+    name.
+    """
 
     layer = ZODBCompatLayer
 
@@ -264,11 +267,12 @@ class TestAttributesOfCleanObjects(ZopeTestCase.ZopeTestCase):
 
 
 class TestAttributesOfDirtyObjects(ZopeTestCase.ZopeTestCase):
-    '''This testcase shows that _v_ and _p_ attributes of dirty objects
-       ARE removed on abort.
+    """This testcase shows that _v_ and _p_ attributes of dirty objects ARE
+    removed on abort.
 
-       This testcase exploits the fact that test methods are sorted by name.
-    '''
+    This testcase exploits the fact that test methods are sorted by
+    name.
+    """
 
     layer = ZODBCompatLayer
 

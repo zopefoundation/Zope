@@ -4,7 +4,7 @@ from OFS.FindSupport import FindSupport
 
 
 class DummyItem(FindSupport):
-    """ """
+    """"""
 
     def __init__(self, id, text=''):
         self.id = id

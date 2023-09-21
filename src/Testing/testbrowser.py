@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Support for using zope.testbrowser from Zope2.
-"""
+"""Support for using zope.testbrowser from Zope2."""
 
 import codecs
 
@@ -66,7 +65,7 @@ class Browser(browser.Browser):
         super().__init__(url=url, wsgi_app=wsgi_app)
 
     def login(self, username, password):
-        """Set up a correct HTTP Basic Auth Authorization header"""
+        """Set up a correct HTTP Basic Auth Authorization header."""
         if not isinstance(username, bytes):
             username = username.encode('UTF-8')
         if not isinstance(password, bytes):

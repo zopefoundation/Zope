@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests of makequest.
-"""
+"""Unit tests of makequest."""
 
 import unittest
 

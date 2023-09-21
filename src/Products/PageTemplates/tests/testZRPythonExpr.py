@@ -1,5 +1,4 @@
-""" Unit tests for Products.PageTemplates.ZRPythonExpr
-"""
+"""Unit tests for Products.PageTemplates.ZRPythonExpr."""
 
 import unittest
 

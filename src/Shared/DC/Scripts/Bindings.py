@@ -221,10 +221,11 @@ class Bindings:
 
     @security.protected('Change bindings')
     def ZBindings_setClient(self, clientname):
-        '''Name the binding to be used as the "client".
+        """Name the binding to be used as the "client".
 
-        This is used by classes such as DTMLFile that want to
-        choose an object on which to operate by default.'''
+        This is used by classes such as DTMLFile that want to choose an
+        object on which to operate by default.
+        """
         self._Bindings_client = str(clientname)
 
     def _editedBindings(self):
@@ -281,7 +282,7 @@ class Bindings:
 
     def _getContext(self):
         # Utility for bindcode.
-        while 1:
+        while True:
             self = aq_parent(self)
             if not getattr(self, '_is_wrapperish', None):
                 parent = aq_parent(self)
@@ -295,7 +296,7 @@ class Bindings:
 
     def _getContainer(self):
         # Utility for bindcode.
-        while 1:
+        while True:
             self = aq_parent(aq_inner(self))
             if not getattr(self, '_is_wrapperish', None):
                 parent = aq_parent(self)
@@ -329,11 +330,11 @@ class Bindings:
         return caller_namespace
 
     def __call__(self, *args, **kw):
-        '''Calls the script.'''
+        """Calls the script."""
         return self._bindAndExec(args, kw, None)
 
     def __render_with_namespace__(self, namespace):
-        '''Calls the script with the specified namespace.'''
+        """Calls the script with the specified namespace."""
         namevals = {}
         # Try to find unbound parameters in the namespace, if the
         # namespace is bound.
@@ -349,9 +350,8 @@ class Bindings:
     render = __call__
 
     def _bindAndExec(self, args, kw, caller_namespace):
-        '''Prepares the bound information and calls _exec(), possibly
-        with a namespace.
-        '''
+        """Prepares the bound information and calls _exec(), possibly with a
+        namespace."""
         bindcode = getattr(self, '_v_bindcode', _marker)
         if bindcode is _marker:
             bindcode = self._prepareBindCode()

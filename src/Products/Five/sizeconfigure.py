@@ -11,9 +11,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Use structured monkey-patching to enable ``ISized`` adapters for
-Zope 2 objects.
-"""
+"""Use structured monkey-patching to enable ``ISized`` adapters for Zope 2
+objects."""
 
 from Products.Five import fivemethod
 from Products.Five import isFiveMethod
@@ -38,7 +37,7 @@ def get_size(self):
 
 
 def classSizable(class_):
-    """Monkey the class to be sizable through Five"""
+    """Monkey the class to be sizable through Five."""
     # tuck away the original method if necessary
     if hasattr(class_, "get_size") and not isFiveMethod(class_.get_size):
         class_.__five_original_get_size = class_.get_size
@@ -78,7 +77,7 @@ def killMonkey(class_, name, fallback, attr=None):
 
 
 def unsizable(class_):
-    """Restore class's initial state with respect to being sizable"""
+    """Restore class's initial state with respect to being sizable."""
     killMonkey(class_, 'get_size', '__five_original_get_size')
 
 

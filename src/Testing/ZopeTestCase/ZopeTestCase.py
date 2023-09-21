@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Default test case & fixture for Zope testing
+"""Default test case & fixture for Zope testing.
 
 The fixture consists of:
 
@@ -46,14 +46,15 @@ standard_permissions = [access_contents_information, view]
 
 @implementer(interfaces.IZopeSecurity)
 class ZopeTestCase(base.TestCase):
-    '''Base test case for Zope testing'''
+    """Base test case for Zope testing."""
 
     _setup_fixture = 1
 
     def _setup(self):
-        '''Sets up the fixture. Framework authors may
-           override.
-        '''
+        """Sets up the fixture.
+
+        Framework authors may override.
+        """
         if self._setup_fixture:
             self._setupFolder()
             self._setupUserFolder()
@@ -61,7 +62,7 @@ class ZopeTestCase(base.TestCase):
             self.login()
 
     def _setupFolder(self):
-        '''Creates and configures the folder.'''
+        """Creates and configures the folder."""
         from OFS.Folder import manage_addFolder
         manage_addFolder(self.app, folder_name)
         self.folder = getattr(self.app, folder_name)
@@ -69,17 +70,17 @@ class ZopeTestCase(base.TestCase):
         self.folder.manage_role(user_role, standard_permissions)
 
     def _setupUserFolder(self):
-        '''Creates the user folder.'''
+        """Creates the user folder."""
         from OFS.userfolder import manage_addUserFolder
         manage_addUserFolder(self.folder)
 
     def _setupUser(self):
-        '''Creates the default user.'''
+        """Creates the default user."""
         uf = self.folder.acl_users
         uf.userFolderAddUser(user_name, user_password, [user_role], [])
 
     def _clear(self, call_close_hook=0):
-        '''Clears the fixture.'''
+        """Clears the fixture."""
         # This code is a wart from the olden days.
         try:
             if connections.contains(self.app):
@@ -91,18 +92,18 @@ class ZopeTestCase(base.TestCase):
     # Security interface
 
     def setRoles(self, roles, name=user_name):
-        '''Changes the user's roles.'''
+        """Changes the user's roles."""
         uf = self.folder.acl_users
         uf.userFolderEditUser(name, None, utils.makelist(roles), [])
         if name == getSecurityManager().getUser().getId():
             self.login(name)
 
     def setPermissions(self, permissions, role=user_role):
-        '''Changes the user's permissions.'''
+        """Changes the user's permissions."""
         self.folder.manage_role(role, utils.makelist(permissions))
 
     def login(self, name=user_name):
-        '''Logs in.'''
+        """Logs in."""
         uf = self.folder.acl_users
         user = uf.getUserById(name)
         if not hasattr(user, 'aq_base'):
@@ -110,13 +111,13 @@ class ZopeTestCase(base.TestCase):
         newSecurityManager(None, user)
 
     def logout(self):
-        '''Logs out.'''
+        """Logs out."""
         noSecurityManager()
 
 
 class FunctionalTestCase(functional.Functional, ZopeTestCase):
-    '''Convenience base class for functional Zope tests
+    """Convenience base class for functional Zope tests.
 
-       You can mix-in Functional with every xTestCase
-       to turn it into a functional test case.
-    '''
+    You can mix-in Functional with every xTestCase to turn it into a
+    functional test case.
+    """

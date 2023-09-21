@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Property sheets
-"""
+"""Property sheets."""
 
 import html
 
@@ -44,23 +43,21 @@ class Virtual:
 
 
 class View(Tabs, Base):
-    """A view of an object, typically used for management purposes
+    """A view of an object, typically used for management purposes.
 
-    This class provides bits of management framework needed by propertysheets
-    to be used as a view on an object.
+    This class provides bits of management framework needed by
+    propertysheets to be used as a view on an object.
     """
 
     def manage_workspace(self, URL1, RESPONSE):
-        '''Implement a "management" interface
-        '''
+        """Implement a "management" interface."""
         RESPONSE.redirect(URL1 + '/manage')
 
     def tpURL(self):
         return self.getId()
 
     def manage_options(self):
-        """Return a manage option data structure for me instance
-        """
+        """Return a manage option data structure for me instance."""
         try:
             request = self.REQUEST
         except Exception:
@@ -107,8 +104,11 @@ class View(Tabs, Base):
 
 class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
     """A PropertySheet is a container for a set of related properties and
-       metadata describing those properties. PropertySheets may or may not
-       provide a web interface for managing its properties."""
+    metadata describing those properties.
+
+    PropertySheets may or may not provide a web interface for managing
+    its properties.
+    """
 
     _properties = ()
     _extensible = 1
@@ -143,8 +143,8 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
     @security.protected(access_contents_information)
     def xml_namespace(self):
-        """Return a namespace string usable as an xml namespace
-        for this property set."""
+        """Return a namespace string usable as an xml namespace for this
+        property set."""
         return self._md.get('xmlns', '')
 
     def v_self(self):
@@ -329,8 +329,10 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
     @security.protected(manage_properties)
     def manage_addProperty(self, id, value, type, REQUEST=None):
-        """Add a new property via the web. Sets a new property with
-        the given id, type, and value."""
+        """Add a new property via the web.
+
+        Sets a new property with the given id, type, and value.
+        """
         if type in type_converters:
             value = type_converters[type](value)
         self._setProperty(id, value, type)
@@ -408,8 +410,8 @@ from webdav.PropertySheets import DAVProperties  # NOQA: E402 isort:skip
 
 
 class PropertySheets(Traversable, Implicit, Tabs):
-    """A tricky container to keep property sets from polluting
-       an object's direct attribute namespace."""
+    """A tricky container to keep property sets from polluting an object's
+    direct attribute namespace."""
 
     id = 'propertysheets'
 
@@ -468,7 +470,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
 
     @security.protected(manage_properties)
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
-        """ """
+        """"""
         md = {'xmlns': ns}
         ps = self.PropertySheetClass(id, md)
         self.addPropertySheet(ps)
@@ -492,9 +494,12 @@ class PropertySheets(Traversable, Implicit, Tabs):
         aq_parent(self).__propsets__ = tuple(result)
 
     def isDeletable(self, name):
-        '''currently, we say that *name* is deletable when it is not a
-        default sheet. Later, we may further restrict deletability
-        based on an instance attribute.'''
+        """Currently, we say that *name* is deletable when it is not a default
+        sheet.
+
+        Later, we may further restrict deletability based on an instance
+        attribute.
+        """
         ps = self.get(name)
         if ps is None:
             return 0
@@ -503,7 +508,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
         return 1
 
     def manage_delPropertySheets(self, ids=(), REQUEST=None):
-        '''delete all sheets identified by *ids*.'''
+        """Delete all sheets identified by *ids*."""
         for id in ids:
             if not self.isDeletable(id):
                 raise BadRequest(
@@ -522,8 +527,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
     manage = DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
-        """Return a manage option data structure for me instance
-        """
+        """Return a manage option data structure for me instance."""
         try:
             request = self.REQUEST
         except Exception:
@@ -555,9 +559,9 @@ InitializeClass(PropertySheets)
 
 
 class DefaultPropertySheets(PropertySheets):
-    """A PropertySheets container that contains a default property
-       sheet for compatibility with the arbitrary property mgmt
-       design of Zope PropertyManagers."""
+    """A PropertySheets container that contains a default property sheet for
+    compatibility with the arbitrary property mgmt design of Zope
+    PropertyManagers."""
 
     default = DefaultProperties()
     webdav = DAVProperties()
@@ -570,7 +574,7 @@ InitializeClass(DefaultPropertySheets)
 
 
 class vps(Base):
-    """Virtual Propertysheets
+    """Virtual Propertysheets.
 
     The vps object implements a "computed attribute" - it ensures
     that a PropertySheets instance is returned when the propertysheets

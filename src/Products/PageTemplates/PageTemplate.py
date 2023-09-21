@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Page Template module
-"""
+"""Page Template module."""
 
 import sys
 

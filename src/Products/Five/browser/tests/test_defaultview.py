@@ -11,13 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test Default View functionality
-"""
+"""Test Default View functionality."""
 
 
 def test_default_view():
-    """
-    Test default view functionality
+    """Test default view functionality.
 
     Let's register a couple of default views and make our stub classes
     default viewable:
@@ -90,9 +88,8 @@ def test_default_view():
 
 
 def test_default_method_args_marshalling():
-    """\
-    Test the default call method of a view, with respect to possible
-    breakage of argument marshalling from other components
+    """\\ Test the default call method of a view, with respect to possible
+    breakage of argument marshalling from other components.
 
     This is not directly a bug in Five, just a change that enables
     components have simpler code to imitate ZPublisher's arguments

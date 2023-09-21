@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Script module
+"""Script module.
 
 This provides generic script support
 """
@@ -30,8 +30,7 @@ from zExceptions import Redirect
 
 
 class Script(SimpleItem, BindingsUI):
-    """Web-callable script mixin
-    """
+    """Web-callable script mixin."""
 
     security = ClassSecurityInfo()
 
@@ -46,8 +45,7 @@ class Script(SimpleItem, BindingsUI):
     ZScriptHTML_tryForm = DTMLFile('dtml/scriptTry', globals())
 
     def ZScriptHTML_tryAction(self, REQUEST, argvars):
-        """Apply the test parameters.
-        """
+        """Apply the test parameters."""
         vv = []
         for argvar in argvars:
             if argvar.value:

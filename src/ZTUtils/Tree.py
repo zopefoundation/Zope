@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Tree manipulation classes
-"""
+"""Tree manipulation classes."""
 
 import base64
 import zlib
@@ -66,7 +65,7 @@ _marker = []
 
 
 class TreeMaker:
-    '''Class for mapping a hierarchy of objects into a tree of nodes.'''
+    """Class for mapping a hierarchy of objects into a tree of nodes."""
 
     __allow_access_to_unprotected_subobjects__ = 1
 
@@ -88,17 +87,17 @@ class TreeMaker:
         as a string using Tree.encodeExpansion(). The returned id should
         be unique and stable across Zope requests.
 
-        If the attribute or method isn't found on an object, either
-        the objects persistence Id or the result of id() on the object
-        is used instead.
+        If the attribute or method isn't found on an object, either the
+        objects persistence Id or the result of id() on the object is
+        used instead.
         """
         self._id = id
 
     def setExpandRoot(self, expand):
         """Set wether or not to expand the root node by default.
 
-        When no expanded flag or mapping is passed to .tree(), assume the root
-        node is expanded, and leave all subnodes closed.
+        When no expanded flag or mapping is passed to .tree(), assume
+        the root node is expanded, and leave all subnodes closed.
 
         The default is to expand the root node.
         """
@@ -108,8 +107,8 @@ class TreeMaker:
         """Set wether or not to assume nodes have children.
 
         When a node is not expanded, when assume children is set, don't
-        determine if it is a leaf node, but assume it can be opened. Use this
-        when determining the children for a node is expensive.
+        determine if it is a leaf node, but assume it can be opened. Use
+        this when determining the children for a node is expensive.
 
         The default is to not assume there are children.
         """
@@ -117,12 +116,12 @@ class TreeMaker:
 
     def setChildAccess(self, attrname=_marker, filter=_marker,
                        function=_marker):
-        '''Set the criteria for fetching child nodes.
+        """Set the criteria for fetching child nodes.
 
-        Child nodes can be accessed through either an attribute name
-        or callback function.  Children fetched by attribute name can
-        be filtered through a callback function.
-        '''
+        Child nodes can be accessed through either an attribute name or
+        callback function.  Children fetched by attribute name can be
+        filtered through a callback function.
+        """
         if function is _marker:
             self._values_function = None
             if attrname is not _marker:
@@ -196,13 +195,12 @@ class TreeMaker:
         return self.filterChildren(children)
 
     def tree(self, root, expanded=None, subtree=0):
-        '''Create a tree from root, with specified nodes expanded.
+        """Create a tree from root, with specified nodes expanded.
 
-        "expanded" must be false, true, or a mapping.
-        Each key of the mapping is the id of a top-level expanded
-        node, and each value is the "expanded" value for the
-        children of that node.
-        '''
+        "expanded" must be false, true, or a mapping. Each key of the
+        mapping is the id of a top-level expanded node, and each value
+        is the "expanded" value for the children of that node.
+        """
         node = self.node(root)
         child_exp = expanded
         if not simple_type(expanded):
@@ -233,10 +231,10 @@ def simple_type(ob):
 
 
 def b2a(s):
-    '''Encode a bytes/string as a cookie- and url-safe string.
+    """Encode a bytes/string as a cookie- and url-safe string.
 
     Encoded string use only alphanumeric characters, and "._-".
-    '''
+    """
     if not isinstance(s, bytes):
         s = str(s)
         if isinstance(s, str):
@@ -245,7 +243,7 @@ def b2a(s):
 
 
 def a2b(s):
-    '''Decode a b2a-encoded value to bytes.'''
+    """Decode a b2a-encoded value to bytes."""
     if not isinstance(s, bytes):
         if isinstance(s, str):
             s = s.encode('ascii')
@@ -253,13 +251,13 @@ def a2b(s):
 
 
 def encodeExpansion(nodes, compress=1):
-    '''Encode the expanded node ids of a tree into bytes.
+    """Encode the expanded node ids of a tree into bytes.
 
-    Accepts a list of nodes, such as that produced by root.flat().
-    Marks each expanded node with an expansion_number attribute.
-    Since node ids are encoded, the resulting string is safe for
-    use in cookies and URLs.
-    '''
+    Accepts a list of nodes, such as that produced by root.flat(). Marks
+    each expanded node with an expansion_number attribute. Since node
+    ids are encoded, the resulting string is safe for use in cookies and
+    URLs.
+    """
     steps = []
     last_depth = -1
     for n, node in enumerate(nodes):
@@ -280,10 +278,11 @@ def encodeExpansion(nodes, compress=1):
 
 
 def decodeExpansion(s, nth=None, maxsize=8192):
-    '''Decode an expanded node map from bytes.
+    """Decode an expanded node map from bytes.
 
-    If nth is an integer, also return the (map, key) pair for the nth entry.
-    '''
+    If nth is an integer, also return the (map, key) pair for the nth
+    entry.
+    """
     if len(s) > maxsize:  # Set limit to avoid DoS attacks.
         raise ValueError('Encoded node map too large')
 

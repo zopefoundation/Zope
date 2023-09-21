@@ -21,13 +21,11 @@ from zope.schema.vocabulary import setVocabularyRegistry
 
 @implementer(IVocabularyRegistry)
 class Zope2VocabularyRegistry:
-    """IVocabularyRegistry that supports global and local utilities.
-    """
+    """IVocabularyRegistry that supports global and local utilities."""
     __slots__ = ()
 
     def get(self, context, name):
-        """See zope.schema.interfaces.IVocabularyRegistry.
-        """
+        """See zope.schema.interfaces.IVocabularyRegistry."""
         factory = getUtility(IVocabularyFactory, name)
         return factory(context)
 

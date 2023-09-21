@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Package of template utility classes and functions.
-"""
+"""Package of template utility classes and functions."""
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 
 from .Tree import a2b  # NOQA: F401

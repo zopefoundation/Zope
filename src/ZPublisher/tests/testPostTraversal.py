@@ -35,22 +35,19 @@ def pt_chain_test(request, string):
 
 
 class DummyObjectBasic(Implicit):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     def _setObject(self, id, object):
         setattr(self, id, object)
         return getattr(self, id)
 
     def view(self):
-        """ Attribute with docstring.
-        """
+        """Attribute with docstring."""
         return 'view content'
 
 
 class DummyObjectWithPTHook(DummyObjectBasic):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     traversal = []
 

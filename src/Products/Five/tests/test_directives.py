@@ -11,13 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test the basic ZCML directives
-"""
+"""Test the basic ZCML directives."""
 
 
 def test_directives():
-    """
-    Test ZCML directives
+    """Test ZCML directives.
 
     There isn't much to test here since the actual directive handlers are
     either tested in other, more specific tests, or they're already tested in

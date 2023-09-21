@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example functional ZopeTestCase
+"""Example functional ZopeTestCase.
 
-Demonstrates how to use the publish() API to execute GET, POST, PUT, etc.
-requests against the ZPublisher and how to examine the response.
+Demonstrates how to use the publish() API to execute GET, POST, PUT,
+etc. requests against the ZPublisher and how to examine the response.
 """
 
 from io import BytesIO

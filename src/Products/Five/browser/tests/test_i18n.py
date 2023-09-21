@@ -11,13 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests for the i18n framework
-"""
+"""Unit tests for the i18n framework."""
 
 
 def test_zpt_i18n():
-    """
-    Test i18n functionality in ZPTs
+    """Test i18n functionality in ZPTs.
 
       >>> configure_zcml = '''
       ... <configure

@@ -11,15 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Marker interfaces adapter views.
-"""
+"""Marker interfaces adapter views."""
 
 from Products.Five.utilities.interfaces import IMarkerInterfaces
 
 
 class EditView:
-    """Marker interface edit view.
-    """
+    """Marker interface edit view."""
 
     def __init__(self, context, request):
         self.context = context

@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Simple content class(es) for browser tests
-"""
+"""Simple content class(es) for browser tests."""
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -49,8 +48,7 @@ class SimpleContent(SimpleItem):
 
     @security.public
     def direct(self):
-        """Should be able to traverse directly to this as there is no view.
-        """
+        """Should be able to traverse directly to this as there is no view."""
         return "Direct traversal worked"
 
 
@@ -59,12 +57,12 @@ InitializeClass(SimpleContent)
 
 @implementer(ICallableSimpleContent)
 class CallableSimpleContent(SimpleItem):
-    """A Viewable piece of content"""
+    """A Viewable piece of content."""
 
     meta_type = "Five CallableSimpleContent"
 
     def __call__(self, *args, **kw):
-        """ """
+        """"""
         return "Default __call__ called"
 
 
@@ -73,12 +71,12 @@ InitializeClass(CallableSimpleContent)
 
 @implementer(IIndexSimpleContent)
 class IndexSimpleContent(SimpleItem):
-    """A Viewable piece of content"""
+    """A Viewable piece of content."""
 
     meta_type = 'Five IndexSimpleContent'
 
     def index_html(self, *args, **kw):
-        """ """
+        """"""
         return "Default index_html called"
 
 

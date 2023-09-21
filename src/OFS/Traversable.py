@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""This module implements a mix-in for traversable objects.
-"""
+"""This module implements a mix-in for traversable objects."""
 
 from urllib.parse import quote
 
@@ -51,18 +50,18 @@ class Traversable:
     def absolute_url(self, relative=0):
         """Return the absolute URL of the object.
 
-        This a canonical URL based on the object's physical
-        containment path.  It is affected by the virtual host
-        configuration, if any, and can be used by external
-        agents, such as a browser, to address the object.
+        This a canonical URL based on the object's physical containment
+        path.  It is affected by the virtual host configuration, if any,
+        and can be used by external agents, such as a browser, to
+        address the object.
 
         If the relative argument is provided, with a true value, then
         the value of virtual_url_path() is returned.
 
         Some Products incorrectly use '/'+absolute_url(1) as an
-        absolute-path reference.  This breaks in certain virtual
-        hosting situations, and should be changed to use
-        absolute_url_path() instead.
+        absolute-path reference.  This breaks in certain virtual hosting
+        situations, and should be changed to use absolute_url_path()
+        instead.
         """
         if relative:
             return self.virtual_url_path()

@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Support for (functional) doc tests
-"""
+"""Support for (functional) doc tests."""
 
 import doctest
 import email.parser
@@ -81,8 +80,7 @@ class HTTPHeaderOutput:
 
 
 class DocResponseWrapper(ResponseWrapper):
-    """Response Wrapper for use in doctests
-    """
+    """Response Wrapper for use in doctests."""
 
     def __init__(self, response, outstream, path, header_output,
                  wsgi_result=(), wsgi_headers=''):
@@ -127,7 +125,7 @@ def sync():
 
 @savestate
 def http(request_string, handle_errors=True):
-    """Execute an HTTP request string via the publisher
+    """Execute an HTTP request string via the publisher.
 
     This is used for HTTP doc tests.
     """

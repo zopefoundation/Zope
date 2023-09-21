@@ -45,7 +45,7 @@ def getApp():
 
 
 class TestInitialization(unittest.TestCase):
-    """ Test the application initializer object """
+    """Test the application initializer object."""
 
     def setUp(self):
         global original_config

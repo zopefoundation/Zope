@@ -125,7 +125,7 @@ class TagList:
 def IfParser(hdr):
     out = []
     i = 0
-    while 1:
+    while True:
         m = IfHdr.search(hdr[i:])
         if not m:
             break
@@ -146,7 +146,7 @@ def ListParser(listitem):
     out = []
     NOTTED = 0
     i = 0
-    while 1:
+    while True:
         m = ListItem.search(listitem[i:])
         if not m:
             break

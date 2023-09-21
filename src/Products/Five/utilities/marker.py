@@ -86,8 +86,7 @@ class MarkerInterfacesAdapter:
         return tuple(results)
 
     def getAvailableInterfaceNames(self):
-        names = self._getInterfaceNames(self.getAvailableInterfaces())
-        names.sort()
+        names = sorted(self._getInterfaceNames(self.getAvailableInterfaces()))
         return names
 
     def getInterfaces(self):
@@ -103,8 +102,7 @@ class MarkerInterfacesAdapter:
         return self._getInterfaceNames(self.getProvided())
 
     def update(self, add=(), remove=()):
-        """Currently update adds and then removes, rendering duplicate null.
-        """
+        """Currently update adds and then removes, rendering duplicate null."""
         marker_ifaces = self.getAvailableInterfaces()
         if len(add):
             [mark(self.context, interface)
@@ -119,8 +117,7 @@ class MarkerInterfacesAdapter:
         return [interfaceToName(self, iface) for iface in interfaces]
 
     def _getDirectMarkersOf(self, base):
-        """Get empty interfaces directly inheriting from the given one.
-        """
+        """Get empty interfaces directly inheriting from the given one."""
         results = []
         interfaces = searchInterface(None, base=base)
         for interface in interfaces:

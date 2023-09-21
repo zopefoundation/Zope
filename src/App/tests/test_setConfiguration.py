@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests for App.config.setConfiguration()
-"""
+"""Tests for App.config.setConfiguration()"""
 import unittest
 
 from Testing.ZopeTestCase.layer import ZopeLite

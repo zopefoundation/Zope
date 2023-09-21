@@ -10,17 +10,16 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Lightweight Zope startup
+"""Lightweight Zope startup.
 
-Fast Zope startup is achieved by not installing (m)any
-products. If your tests require a product you must
-install it yourself using installProduct().
+Fast Zope startup is achieved by not installing (m)any products. If your
+tests require a product you must install it yourself using
+installProduct().
 
 Typically used as in
 
-  import ZopeLite as Zope2
-  Zope2.installProduct('SomeProduct')
-  app = Zope2.app()
+import ZopeLite as Zope2 Zope2.installProduct('SomeProduct') app =
+Zope2.app()
 """
 
 import os
@@ -55,19 +54,19 @@ _quiet = True
 
 
 def _print(msg):
-    '''Writes 'msg' to stderr and flushes the stream.'''
+    """Writes 'msg' to stderr and flushes the stream."""
     sys.stderr.write(msg)
     sys.stderr.flush()
 
 
 def _write(msg):
-    '''Writes 'msg' to stderr if not _quiet.'''
+    """Writes 'msg' to stderr if not _quiet."""
     if not _quiet:
         _print(msg)
 
 
 def _exec(cmd):
-    '''Prints the time it takes to execute 'cmd'.'''
+    """Prints the time it takes to execute 'cmd'."""
     if os.environ.get('X', None):
         start = time.time()
         exec(cmd)
@@ -173,19 +172,19 @@ _installedPackages = {}
 
 
 def hasProduct(name):
-    '''Checks if a product can be found along Products.__path__'''
+    """Checks if a product can be found along Products.__path__"""
     return name in [n[1] for n in get_products()]
 
 
 @layer.onsetup
 def installProduct(name, quiet=0):
-    '''Installs a Zope product at layer setup time.'''
+    """Installs a Zope product at layer setup time."""
     quiet = 1  # Ignore argument
     _installProduct(name, quiet)
 
 
 def _installProduct(name, quiet=0):
-    '''Installs a Zope product.'''
+    """Installs a Zope product."""
     from AccessControl.class_init import InitializeClass
     start = time.time()
     meta_types = []
@@ -209,19 +208,19 @@ def _installProduct(name, quiet=0):
 
 
 def hasPackage(name):
-    '''Checks if a package has been registered with five:registerPackage.'''
+    """Checks if a package has been registered with five:registerPackage."""
     from OFS.metaconfigure import has_package
     return has_package(name)
 
 
 def installPackage(name, quiet=0):
-    '''Installs a registered Python package.'''
+    """Installs a registered Python package."""
     quiet = 1  # Ignore argument
     _installPackage(name, quiet)
 
 
 def _installPackage(name, quiet=0):
-    '''Installs a registered Python package.'''
+    """Installs a registered Python package."""
     from OFS.metaconfigure import get_packages_to_initialize
     start = time.time()
     if _patched and name not in _installedPackages:
@@ -257,7 +256,7 @@ active = _patched
 
 
 def sandbox(base=None):
-    '''Returns a sandbox copy of the base ZODB.'''
+    """Returns a sandbox copy of the base ZODB."""
     if base is None:
         base = Zope2.DB
     storage = DemoStorage(base=base._storage)

@@ -10,9 +10,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""This module implements a simple item mix-in for objects that have a
-very simple (e.g. one-screen) management interface, like documents,
-Aqueduct database adapters, etc.
+"""This module implements a simple item mix-in for objects that have a very
+simple (e.g. one-screen) management interface, like documents, Aqueduct
+database adapters, etc.
 
 This module can also be used as a simple template for implementing new
 item types.
@@ -132,8 +132,8 @@ class Item(
     def getId(self):
         """Return the id of the object as a string.
 
-        This method should be used in preference to accessing an id attribute
-        of an object directly. The getId method is public.
+        This method should be used in preference to accessing an id
+        attribute of an object directly. The getId method is public.
         """
         name = self.id
         if name is not None:
@@ -159,8 +159,7 @@ class Item(
     __allow_access_to_unprotected_subobjects__ = 1
 
     def title_or_id(self):
-        """Return the title if it is not blank and the id otherwise.
-        """
+        """Return the title if it is not blank and the id otherwise."""
         title = self.title
         if callable(title):
             title = title()
@@ -178,7 +177,7 @@ class Item(
             title = title()
         id = self.getId()
         # Make sure we don't blindly concatenate encoded and unencoded data
-        if title and type(id) is not type(title):
+        if title and not isinstance(id, type(title)):
             if isinstance(id, bytes):
                 id = id.decode(default_encoding)
             if isinstance(title, bytes):
@@ -304,8 +303,7 @@ class Item(
             tb = None
 
     def manage(self, URL1):
-        """
-        """
+        """"""
         raise Redirect("%s/manage_main" % URL1)
 
     # This keeps simple items from acquiring their parents
@@ -319,8 +317,11 @@ class Item(
 
     @security.protected(access_contents_information)
     def getParentNode(self):
-        """The parent of this node.  All nodes except Document
-        DocumentFragment and Attr may have a parent"""
+        """The parent of this node.
+
+        All nodes except Document DocumentFragment and Attr may have a
+        parent
+        """
         return getattr(self, '__parent__', None)
 
 
@@ -329,11 +330,10 @@ InitializeClass(Item)
 
 @implementer(IItemWithName)
 class Item_w__name__(Item):
-    """Mixin class to support common name/id functions"""
+    """Mixin class to support common name/id functions."""
 
     def getId(self):
-        """Return the id of the object as a string.
-        """
+        """Return the id of the object as a string."""
         return self.__name__
 
     # Alias (deprecated) `id` to `getId()` (but avoid recursion)
@@ -341,8 +341,7 @@ class Item_w__name__(Item):
         lambda self: self.getId() if "__name__" in self.__dict__ else "")
 
     def title_or_id(self):
-        """Return the title if it is not blank and the id otherwise.
-        """
+        """Return the title if it is not blank and the id otherwise."""
         return self.title or self.__name__
 
     def title_and_id(self):
@@ -384,8 +383,7 @@ class SimpleItem(
     Implicit,
     RoleManager,
 ):
-    """Mix-in class combining the most common set of basic mix-ins
-    """
+    """Mix-in class combining the most common set of basic mix-ins."""
 
     security = ClassSecurityInfo()
     security.setPermissionDefault(View, ('Manager',))

@@ -15,7 +15,7 @@ import transaction
 
 
 def appcall(func, *args, **kw):
-    '''Calls a function passing 'app' as first argument.'''
+    """Calls a function passing 'app' as first argument."""
     from .base import app
     from .base import close
     app = app()
@@ -28,9 +28,10 @@ def appcall(func, *args, **kw):
 
 
 def makelist(arg):
-    '''Turns arg into a list. Where arg may be
-       list, tuple, or string.
-    '''
+    """Turns arg into a list.
+
+    Where arg may be list, tuple, or string.
+    """
     if isinstance(arg, list):
         return arg
     if isinstance(arg, tuple):
