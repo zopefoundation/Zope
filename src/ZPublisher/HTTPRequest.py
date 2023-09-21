@@ -465,16 +465,16 @@ class HTTPRequest(BaseRequest):
             hasattr=hasattr,
             getattr=getattr,
             setattr=setattr):
-        """Process request inputs
+        """Process request inputs.
 
-        See the `Zope Developer Guide Object Publishing chapter
-        <https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
+        See the
+        `Zope Developer Guide Object Publishing chapter <https://zope.readthedocs.io/en/latest/zdgbook/ObjectPublishing.html>`_
         for a detailed explanation in the section `Marshalling Arguments from
         the Request`.
 
         We need to delay input parsing so that it is done under
         publisher control for error handling purposes.
-        """
+        """  # noqa: E501
         response = self.response
         environ = self.environ
         method = environ.get('REQUEST_METHOD', 'GET')
