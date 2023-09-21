@@ -326,8 +326,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         Fails if the lists are not found equal.
         """
         lhs = sorted(list(permissions)[:])
-        rhs = self.getPermissionsOfRole(role, context)
-        rhs.sort()
+        rhs = sorted(self.getPermissionsOfRole(role, context))
         self.assertEqual(lhs, rhs)
 
     def assertRolesOfUser(self, roles, user):
