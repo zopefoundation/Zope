@@ -1,5 +1,2 @@
-Sphinx>4.3
-sphinx-rtd-theme>=1
+Sphinx
 ZConfig
-Zope
-tempstorage
