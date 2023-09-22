@@ -112,7 +112,7 @@ class BasicUserFolder(
         REQUEST=None,
         manage_tabs_message=None
     ):
-        """"""
+        """Manage user folder properties."""
         return self._userFolderProperties(
             self,
             REQUEST,
@@ -321,7 +321,7 @@ InitializeClass(UserFolder)
 
 
 def manage_addUserFolder(self, dtself=None, REQUEST=None, **ignored):
-    """"""
+    """Add a user folder."""
     f = UserFolder()
     self = self.this()
     try:

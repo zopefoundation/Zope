@@ -20,10 +20,10 @@ from zope.interface import implementer
 
 
 class EtagBaseInterface(Interface):
-    """\\ Basic Etag support interface, meaning the object supports generating
+    """Basic Etag support interface, meaning the object supports generating
     an Etag that can be used by certain HTTP and WebDAV Requests."""
     def http__etag():
-        """\\ Entity tags are used for comparing two or more entities from the
+        """Entity tags are used for comparing two or more entities from the
         same requested resource.
 
         Predominantly used for Caching, Etags can also be used to deal

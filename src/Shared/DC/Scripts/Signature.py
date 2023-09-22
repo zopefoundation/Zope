@@ -32,18 +32,14 @@ class FuncCode:
     def __eq__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        # fmt: off
-        return ((self.co_argcount, self.co_varnames) ==  # NOQA: W504
+        return ((self.co_argcount, self.co_varnames) ==
                 (other.co_argcount, other.co_varnames))
-        # fmt: on
 
     def __lt__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        # fmt: off
-        return ((self.co_argcount, self.co_varnames) <  # NOQA: W504
+        return ((self.co_argcount, self.co_varnames) <
                 (other.co_argcount, other.co_varnames))
-        # fmt: on
 
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):

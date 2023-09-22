@@ -977,8 +977,7 @@ class HTTPResponseTests(unittest.TestCase):
         except Unauthorized as raised:
             self.assertEqual(response.status, 200)  # publisher sets 401 later
             self.assertIn(
-                "You are not authorized "
-                "to access this resource.",
+                "You are not authorized to access this resource.",
                 str(raised)
             )
         else:

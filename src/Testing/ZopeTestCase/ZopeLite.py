@@ -18,8 +18,9 @@ installProduct().
 
 Typically used as in
 
-import ZopeLite as Zope2 Zope2.installProduct('SomeProduct') app =
-Zope2.app()
+    >>> import ZopeLite as Zope2
+    >>> Zope2.installProduct('SomeProduct')
+    >>> app = Zope2.app()
 """
 
 import os

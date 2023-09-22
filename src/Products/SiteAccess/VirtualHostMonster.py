@@ -254,7 +254,7 @@ InitializeClass(VirtualHostMonster)
 
 
 def manage_addVirtualHostMonster(self, id=None, REQUEST=None, **ignored):
-    """"""
+    """Add a virtual host monster."""
     container = self.this()
     vhm = VirtualHostMonster()
     container._setObject(vhm.getId(), vhm)

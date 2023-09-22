@@ -470,7 +470,6 @@ class PropertySheets(Traversable, Implicit, Tabs):
 
     @security.protected(manage_properties)
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
-        """"""
         md = {'xmlns': ns}
         ps = self.PropertySheetClass(id, md)
         self.addPropertySheet(ps)

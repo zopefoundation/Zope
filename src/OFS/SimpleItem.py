@@ -303,7 +303,7 @@ class Item(
             tb = None
 
     def manage(self, URL1):
-        """"""
+        """Redirect to manage_main."""
         raise Redirect("%s/manage_main" % URL1)
 
     # This keeps simple items from acquiring their parents

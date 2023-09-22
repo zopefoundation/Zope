@@ -394,7 +394,7 @@ class ILockItem(Interface):
     # XXX:  WAAAA!  What is a ctor doing in the interface?
     def __init__(creator, owner, depth=0, timeout='Infinity',
                  locktype='write', lockscope='exclusive', token=None):
-        """\\ If any of the  following are untrue, a **ValueError** exception
+        """If any of the  following are untrue, a **ValueError** exception
         will be raised.
 
          - **creator** MUST be a Zope user object or string to find a

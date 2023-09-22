@@ -88,7 +88,7 @@ def test_default_view():
 
 
 def test_default_method_args_marshalling():
-    """\\ Test the default call method of a view, with respect to possible
+    """Test the default call method of a view, with respect to possible
     breakage of argument marshalling from other components.
 
     This is not directly a bug in Five, just a change that enables
