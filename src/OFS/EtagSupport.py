@@ -20,8 +20,8 @@ from zope.interface import implementer
 
 
 class EtagBaseInterface(Interface):
-    """Basic Etag support interface, meaning the object supports generating
-    an Etag that can be used by certain HTTP and WebDAV Requests."""
+    """Basic Etag support interface, meaning the object supports generating an
+    Etag that can be used by certain HTTP and WebDAV Requests."""
     def http__etag():
         """Entity tags are used for comparing two or more entities from the
         same requested resource.

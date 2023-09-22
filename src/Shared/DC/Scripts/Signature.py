@@ -32,14 +32,14 @@ class FuncCode:
     def __eq__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) ==
-                (other.co_argcount, other.co_varnames))
+        return ((self.co_argcount, self.co_varnames)
+                == (other.co_argcount, other.co_varnames))
 
     def __lt__(self, other):
         if not isinstance(other, FuncCode):
             return False
-        return ((self.co_argcount, self.co_varnames) <
-                (other.co_argcount, other.co_varnames))
+        return ((self.co_argcount, self.co_varnames)
+                < (other.co_argcount, other.co_varnames))
 
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=-1):

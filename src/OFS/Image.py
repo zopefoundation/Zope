@@ -1084,12 +1084,12 @@ class Image(File):
         the 'scale', 'xscale', and 'yscale' keyword arguments will be
         used to automatically adjust the output height and width values
         of the image tag.
-        
-        Since 'class' is a Python reserved word, it
-        cannot be passed in directly in keyword arguments which is a
-        problem if you are trying to use 'tag()' to include a CSS class.
-        The tag() method will accept a 'css_class' argument that will be
-        converted to 'class' in the output tag to work around this.
+
+        Since 'class' is a Python reserved word, it cannot be passed in
+        directly in keyword arguments which is a problem if you are
+        trying to use 'tag()' to include a CSS class. The tag() method
+        will accept a 'css_class' argument that will be converted to
+        'class' in the output tag to work around this.
         """
         if height is None:
             height = self.height
