@@ -13,6 +13,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Base the inline/attachment logic developped for CVE-2023-42458
+  on the media type proper (ignoring parameters and leading/trailing
+  whitespace).
+
 
 5.8.5 (2023-09-21)
 ------------------

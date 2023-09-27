@@ -474,7 +474,7 @@ class File(
     def _should_force_download(self):
         # If this returns True, the caller should set a
         # Content-Disposition header with filename.
-        mimetype = self.content_type
+        mimetype = extract_media_type(self.content_type)
         if not mimetype:
             return False
         if self.use_denylist:
@@ -1170,3 +1170,11 @@ class Pdata(Persistent, Implicit):
             _next = self.next
 
         return b''.join(r)
+
+
+def extract_media_type(content_type):
+    """extract the proper media type from *content_type*.
+
+    Ignore parameters and leading/trailing whitespace.
+    """
+    return content_type and content_type.split(";", 1)[0].strip()
