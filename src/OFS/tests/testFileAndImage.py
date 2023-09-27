@@ -458,6 +458,8 @@ class SVGTests(ImageTests):
         extract = OFS.Image.extract_media_type
         self.assertIsNone(extract(None))
         self.assertEqual(extract("text/plain"), "text/plain")
+        self.assertEqual(extract("TEXT/PLAIN"), "text/plain")
+        self.assertEqual(extract("text / plain"), "text/plain")
         self.assertEqual(extract(" text/plain ; charset=utf-8"), "text/plain")
 
 

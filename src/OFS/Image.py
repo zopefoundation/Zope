@@ -1175,6 +1175,13 @@ class Pdata(Persistent, Implicit):
 def extract_media_type(content_type):
     """extract the proper media type from *content_type*.
 
-    Ignore parameters and leading/trailing whitespace.
+    Ignore parameters and whitespace and normalize to lower case.
     """
-    return content_type and content_type.split(";", 1)[0].strip()
+    if not content_type:
+        return content_type
+    # ignore parameters
+    content_type = content_type.split(";", 1)[0]
+    # ignore whitespace
+    content_type = "".join(content_type.split())
+    # normalize to lowercase
+    return content_type.lower()
