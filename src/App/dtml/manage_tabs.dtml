@@ -40,52 +40,52 @@
 	</dtml-unless>
 </dtml-comment>
 
-		<nav aria-label="breadcrumb">
-		<dtml-let breadcrumb_length="tabs_path_length(REQUEST)">
-			<ol class="breadcrumb <dtml-var "'zmi-' + title_or_id().replace(' ','')">"
-				data-length="<dtml-var breadcrumb_length>">
-				<li class="breadcrumb-item meta_type">
-					<dtml-if meta_type>
-						<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
-						<dtml-var "breadcrumb_length==1 and 'Root Folder' or meta_type">
-					<dtml-else>
-						Object
+	<nav aria-label="breadcrumb">
+	<dtml-let breadcrumb_length="tabs_path_length(REQUEST)">
+		<ol class="breadcrumb <dtml-var "'zmi-' + title_or_id().replace(' ','')" html_quote>"
+			data-length="<dtml-var breadcrumb_length>">
+			<li class="breadcrumb-item meta_type">
+				<dtml-if meta_type>
+					<i class="&dtml-zmi_icon;" title="&dtml-meta_type;"></i>
+					<dtml-var "breadcrumb_length==1 and 'Root Folder' or meta_type">
+				<dtml-else>
+					Object
+				</dtml-if>
+			</li>
+			<dtml-in expr="tabs_path_default(REQUEST)" mapping>
+				<li class="breadcrumb-item<dtml-if last> active</dtml-if>"
+					<dtml-if last>
+						aria-current="page"
+						title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
+					</dtml-if>
+					><a href="&dtml-url;">
+						<dtml-if "_['sequence-index']==0">
+							<strong title="Root Folder">&nbsp;/&nbsp;</strong>
+						<dtml-else>
+							<dtml-var title html_quote>
+						</dtml-if>
+					</a>
+					<dtml-if "_['sequence-index']!=0 and last==False">
+						&nbsp;/&nbsp;
+					</dtml-if>
+					<dtml-if last>
+						<dtml-if wl_isLocked
+							><span class="badge badge-warning"
+								title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
+						</dtml-if>
 					</dtml-if>
 				</li>
-				<dtml-in expr="tabs_path_default(REQUEST)" mapping>
-					<li class="breadcrumb-item<dtml-if last> active</dtml-if>"
-						<dtml-if last>
-							aria-current="page"
-							title="<dtml-if meta_type>&dtml-meta_type;<dtml-else>Object</dtml-if>"
-						</dtml-if>
-						><a href="&dtml-url;">
-							<dtml-if "_['sequence-index']==0">
-								<strong title="Root Folder">&nbsp;/&nbsp;</strong>
-							<dtml-else>
-								&dtml-title;
-							</dtml-if>
-						</a>
-						<dtml-if "_['sequence-index']!=0 and last==False">
-							&nbsp;/&nbsp;
-						</dtml-if>
-						<dtml-if last>
-						    <dtml-if wl_isLocked
-						    	><span class="badge badge-warning"
-						    		title="This item has been locked by WebDAV"><i class="fa fa-lock"></i></span>
-						    </dtml-if>
-						</dtml-if>
-					</li>
-				</dtml-in>
-			</ol>
-			</dtml-let>
-		</nav>
+			</dtml-in>
+		</ol>
+		</dtml-let>
+	</nav>
 
 
 	<dtml-if manage_tabs_message>
-			<div class="alert alert-<dtml-var manage_tabs_type missing=success html_quote>" role="alert">
-				<dtml-var manage_tabs_message newline_to_br html_quote
-				> (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
-			</div>
+		<div class="alert alert-<dtml-var manage_tabs_type missing=success html_quote>" role="alert">
+			<dtml-var manage_tabs_message newline_to_br html_quote
+			> (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
+		</div>
 	</dtml-if>
 
 </dtml-with>
