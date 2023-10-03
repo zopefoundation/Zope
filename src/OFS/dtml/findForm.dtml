@@ -11,7 +11,7 @@
 	></dtml-else
 ></dtml-in>
 <dtml-call "REQUEST.set('obj_metatypes',
-                        [x for x in (REQUEST.get('obj_metatypes', []) or [])])">
+	[x for x in (REQUEST.get('obj_metatypes', []) or [])])">
 
 <dtml-if btn_submit>
 <dtml-with "_.namespace(
@@ -79,12 +79,12 @@
 
 <ul class="zmi-find-results list-group mb-5">
 <dtml-in results size="batch_size" start="query_start" sort_expr="skey"
-         reverse_expr="rkey">
+	reverse_expr="rkey">
 	<li class="list-group-item">
 		<a href="&dtml.url_quote-sequence-key;/manage_workspace">
-            <i title="&dtml-meta_type;"
-               class="&dtml-zmi_icon;">&nbsp;</i>
-            &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
+			<i title="&dtml-meta_type;"
+				class="&dtml-zmi_icon;">&nbsp;</i>
+			&dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
 		</a>
 	</li>
 </dtml-in>
@@ -101,128 +101,128 @@
 		<label for="type" class="form-label">Find objects of type:</label>
 	</td>
 	<td style="width:*">
-	<div class="form-element">
-		<select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
-		<option value="all" 
-			<dtml-if "not obj_metatypes">
-				selected="selected"
-			<dtml-else>
-				<dtml-var "('all' in obj_metatypes) and 'selected=\042selected\042' or ''">
-			</dtml-if>
-		>All types</option>
-		<dtml-let sorted_meta_types="[]"
-			><dtml-in all_meta_types mapping
-				><dtml-call "sorted_meta_types.append(name)"
-			></dtml-in><dtml-call "sorted_meta_types.sort()"
-			><dtml-in sorted_meta_types
-				><option value="&dtml-sequence-item;"
+		<div class="form-element">
+			<select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
+			<option value="all" 
 				<dtml-if "not obj_metatypes">
+					selected="selected"
 				<dtml-else>
-					<dtml-var "(_['sequence-item'] in obj_metatypes) and 'selected=\042selected\042' or ''">
+					<dtml-var "('all' in obj_metatypes) and 'selected=\042selected\042' or ''">
 				</dtml-if>
-				>&dtml-sequence-item;</option>
-			</dtml-in
-		></dtml-let>
-		</select>
-	</div>
-	</td>
-</tr>
-
-<tr class="simple-search">
-	<td>
-	<label for="ids" class="form-label">With ids:</label>
-	</td>
-	<td>
-	<input id="ids" class="form-control" type="text" name="obj_ids:tokens" value="<dtml-var "' '.join(obj_ids or [])" html_quote>" />
-	</td>
-</tr>
-
-<tr class="simple-search">
-	<td>
-	<label for="contain" class="form-label">Containing:</label>
-	</td>
-	<td>
-	<input id="contain" class="form-control" type="text" name="obj_searchterm" 
-		value="<dtml-var "obj_searchterm and obj_searchterm or ''" html_quote>" />
-	</td>
-</tr>
-
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
-	<td>
-	<label for="expr" class="form-label">Expr:</label>
-	</td>
-	<td>
-	<textarea id="expr" class="form-control" name="obj_expr" rows="4" cols="30"
-		><dtml-var "obj_expr and obj_expr or ''"></textarea>
-	</td>
-</tr>
-
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
-	<td>
-	<label for="roles" class="form-label">Where the roles:</label>
-	</td>
-	<td>
-	<div class="form-element">
-		<select id="roles" class="form-control" name="obj_roles:list" size="3" multiple="multiple">
-		<dtml-in valid_roles>
-			<dtml-if obj_roles>
-				<option value="&dtml-sequence-item;"<dtml-if "_['sequence-item'] in obj_roles"> selected="selected"</dtml-if>>&dtml-sequence-item;</option>
-			<dtml-else>
-			 <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-			</dtml-if>
-		</dtml-in>
-		</select>
-	</div>
-	</td>
-</tr>
-
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
-	<td>
-	<label for="perm" class="form-label">Have permission:</label>
-	</td>
-	<td>
-	<div class="form-element">
-		<select id="perm" class="form-control" name="obj_permission">
-		<dtml-in permission_settings mapping>
-			<option value="&dtml-name;"> &dtml-name;</option>
-		</dtml-in>
-		</select>
-	</div>
-	</td>
-</tr>
-
-<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
-	<td>
-	<label for="skey" class="form-label">Sort results by:</label>
-	</td>
-	<td>
-	<div class="form-group">
-		<select name="skey" id="skey" class="form-control">
-			<option value="meta_type">Type</option>
-			<option value="id">Id</option>
-		</select>
-		<div class="form-check px-4 mt-2">
-			<input id="rkey" class="form-check-input" type="checkbox" name="rkey" value="reverse" />
-			<label for="rkey" class="form-check-label">Reverse?</label>
-		</div>
-	</div>
-	</td>
-</tr>
-
-<tr class="simple-search">
-	<td>
-	<label for="mod" class="form-label">Modified:</label>
-	</td>
-	<td>
-	<div class="form-inline">
-		<div class="input-group px-0 col-12">
-			<select id="mod" name="obj_mspec" class="input-group-prepend form-control col-4 col-md-3">
-				<option value="&lt;"> before</option>
-				<option value="&gt;"> after</option>
+			>All types</option>
+			<dtml-let sorted_meta_types="[]"
+				><dtml-in all_meta_types mapping
+					><dtml-call "sorted_meta_types.append(name)"
+				></dtml-in><dtml-call "sorted_meta_types.sort()"
+				><dtml-in sorted_meta_types
+					><option value="&dtml-sequence-item;"
+					<dtml-if "not obj_metatypes">
+					<dtml-else>
+						<dtml-var "(_['sequence-item'] in obj_metatypes) and 'selected=\042selected\042' or ''">
+					</dtml-if>
+					>&dtml-sequence-item;</option>
+				</dtml-in
+			></dtml-let>
 			</select>
-			<input class="form-control col-8 col-md-9 px-0" type="text" name="obj_mtime" />
 		</div>
-	</div>
+	</td>
+</tr>
+
+<tr class="simple-search">
+	<td>
+		<label for="ids" class="form-label">With ids:</label>
+	</td>
+	<td>
+		<input id="ids" class="form-control" type="text" name="obj_ids:tokens" value="<dtml-var "' '.join(obj_ids or [])" html_quote>" />
+	</td>
+</tr>
+
+<tr class="simple-search">
+	<td>
+		<label for="contain" class="form-label">Containing:</label>
+	</td>
+	<td>
+		<input id="contain" class="form-control" type="text" name="obj_searchterm" 
+			value="<dtml-var "obj_searchterm and obj_searchterm or ''" html_quote>" />
+	</td>
+</tr>
+
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
+	<td>
+		<label for="expr" class="form-label">Expr:</label>
+	</td>
+	<td>
+		<textarea id="expr" class="form-control" name="obj_expr" rows="4" cols="30"
+			><dtml-var "obj_expr and obj_expr or ''"></textarea>
+	</td>
+</tr>
+
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
+	<td>
+		<label for="roles" class="form-label">Where the roles:</label>
+	</td>
+	<td>
+		<div class="form-element">
+			<select id="roles" class="form-control" name="obj_roles:list" size="3" multiple="multiple">
+			<dtml-in valid_roles>
+				<dtml-if obj_roles>
+					<option value="&dtml-sequence-item;"<dtml-if "_['sequence-item'] in obj_roles"> selected="selected"</dtml-if>>&dtml-sequence-item;</option>
+				<dtml-else>
+				<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+				</dtml-if>
+			</dtml-in>
+			</select>
+		</div>
+	</td>
+</tr>
+
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
+	<td>
+		<label for="perm" class="form-label">Have permission:</label>
+	</td>
+	<td>
+		<div class="form-element">
+			<select id="perm" class="form-control" name="obj_permission">
+			<dtml-in permission_settings mapping>
+				<option value="&dtml-name;"> &dtml-name;</option>
+			</dtml-in>
+			</select>
+		</div>
+	</td>
+</tr>
+
+<tr class="advanced-search-only" <dtml-if "searchtype!='advanced'">style="display:none;"</dtml-if>>
+	<td>
+		<label for="skey" class="form-label">Sort results by:</label>
+	</td>
+	<td>
+		<div class="form-group">
+			<select name="skey" id="skey" class="form-control">
+				<option value="meta_type">Type</option>
+				<option value="id">Id</option>
+			</select>
+			<div class="form-check px-4 mt-2">
+				<input id="rkey" class="form-check-input" type="checkbox" name="rkey" value="reverse" />
+				<label for="rkey" class="form-check-label">Reverse?</label>
+			</div>
+		</div>
+	</td>
+</tr>
+
+<tr class="simple-search">
+	<td>
+		<label for="mod" class="form-label">Modified:</label>
+	</td>
+	<td>
+		<div class="form-inline">
+			<div class="input-group px-0 col-12">
+				<select id="mod" name="obj_mspec" class="input-group-prepend form-control col-4 col-md-3">
+					<option value="&lt;"> before</option>
+					<option value="&gt;"> after</option>
+				</select>
+				<input class="form-control col-8 col-md-9 px-0" type="text" name="obj_mtime" />
+			</div>
+		</div>
 	</td>
 </tr>
 

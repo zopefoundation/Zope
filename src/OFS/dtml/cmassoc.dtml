@@ -17,7 +17,7 @@
 				<table class="table table-sm table-striped">
 					<dtml-in results mapping sort=sortkey>
 						<tr>
-							<td class="text-right>
+							<td class="text-right">
 								<input type="checkbox" name="associate_&dtml-path;:int" value="1"<dtml-if associated> checked="checked"</dtml-if> />
 								<input type="hidden" name="associate_&dtml-path;:int:default" value="0" />
 							</td>
@@ -58,7 +58,7 @@
 		<div class="form-group row">
 			<label for="meta_types" class="form-label col-sm-3 col-md-2">Of the type(s)</label>
 			<div class=" col-sm-9 col-md-10">
-				<select class="form-control" multiple="multiple" id=meta_types" name="meta_types:list" size="5">
+				<select class="form-control" multiple="multiple" id="meta_types" name="meta_types:list" size="5">
 					<option value="" selected>All</option>
 					<dtml-in all_meta_types mapping sort=name>
 						<option value="&dtml-name;">&dtml-name;</option>
