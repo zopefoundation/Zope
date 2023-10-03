@@ -433,6 +433,18 @@ class SVGTests(ImageTests):
             "attachment; filename*=UTF-8''file.svg",
         )
 
+    def testViewImageOrFile_with_denylist_and_ct_param(self):
+        request = self.app.REQUEST
+        response = request.RESPONSE
+        self.file.use_denylist = True
+        self.file.content_type += ";charset=utf-8"
+        result = self.file.index_html(request, response)
+        self.assertEqual(result, self.data)
+        self.assertEqual(
+            response.getHeader("Content-Disposition"),
+            "attachment; filename*=UTF-8''file.svg",
+        )
+
     def testViewImageOrFile_with_empty_denylist(self):
         request = self.app.REQUEST
         response = request.RESPONSE
@@ -441,6 +453,14 @@ class SVGTests(ImageTests):
         result = self.file.index_html(request, response)
         self.assertEqual(result, self.data)
         self.assertIsNone(response.getHeader("Content-Disposition"))
+
+    def test_extract_media_type(self):
+        extract = OFS.Image.extract_media_type
+        self.assertIsNone(extract(None))
+        self.assertEqual(extract("text/plain"), "text/plain")
+        self.assertEqual(extract("TEXT/PLAIN"), "text/plain")
+        self.assertEqual(extract("text / plain"), "text/plain")
+        self.assertEqual(extract(" text/plain ; charset=utf-8"), "text/plain")
 
 
 class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
