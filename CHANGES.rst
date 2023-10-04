@@ -7,10 +7,11 @@ The change log for the previous version, Zope 2.13, is at
 https://zope.readthedocs.io/en/2.13/CHANGES.html
 
 
-4.8.11 (unreleased)
+4.8.11 (2023-10-04)
 -------------------
 
-- Nothing changed yet.
+- Make sure the object title in the ZMI breadcrumbs is quoted
+  to prevent a cross-site scripting issue.
 
 
 4.8.10 (2023-09-21)
