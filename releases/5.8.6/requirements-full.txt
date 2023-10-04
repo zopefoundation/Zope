@@ -1,14 +1,14 @@
--e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
+Zope==5.8.6
 AccessControl==6.2
 Acquisition==5.0
 AuthEncoding==5.0
 BTrees==5.0
-Chameleon==4.2.0
+Chameleon==4.1.0
 DateTime==5.2
 DocumentTemplate==4.5
 ExtensionClass==5.0
 MultiMapping==5.0
-Paste==3.6.0
+Paste==3.5.3
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.0.1; python_version > '3.7'
 Persistence==4.0.post1
@@ -25,8 +25,7 @@ ZConfig==4.0
 ZODB==5.8.1
 Zope2==4.0
 beautifulsoup4==4.12.2
-cffi==1.15.1; python_version == '3.7'
-cffi==1.16.0; python_version > '3.7'
+cffi==1.15.1
 multipart==0.2.4
 persistent==5.0
 pycparser==2.21
