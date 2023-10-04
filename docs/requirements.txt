@@ -1,3 +1,6 @@
 Zope
 ZConfig==3.5.0
 tempstorage
+docutils<0.19
+Sphinx>5
+sphinx_rtd_theme>1
