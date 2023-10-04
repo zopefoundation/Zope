@@ -29,7 +29,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.8.6'
+version = '5.8.7.dev0'
 
 setup(
     name='Zope',
