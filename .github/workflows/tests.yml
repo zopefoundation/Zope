@@ -41,7 +41,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: MatteoH2O1999/setup-python@v1
+      uses: MatteoH2O1999/setup-python@v2
       with:
         python-version: ${{ matrix.config[0] }}
     - name: Pip cache
