@@ -939,9 +939,9 @@ def getImageInfo(data):
             xmldoc = minidom.parseString(data)
         except Exception:
             return content_type, width, height
+        w = width
+        h = height
         for svg in xmldoc.getElementsByTagName('svg'):
-            w = width
-            h = height
             content_type = 'image/svg+xml'
             if 'height' in svg.attributes and 'width' in svg.attributes:
                 w = svg.attributes['width'].value
@@ -965,8 +965,8 @@ def getImageInfo(data):
                 viewBox = [int(float(x)) for x in viewBox.split(' ')]
                 w = viewBox[2] - viewBox[0]
                 h = viewBox[3] - viewBox[1]
-            width = int(w)
-            height = int(h)
+        width = int(w)
+        height = int(h)
 
     return content_type, width, height
 
