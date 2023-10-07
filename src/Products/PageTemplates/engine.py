@@ -42,7 +42,7 @@ from .interfaces import IZopeAwareEngine
 
 
 class _PseudoContext:
-    """auxiliary context object.
+    """Auxiliary context object.
 
     Used to bridge between ``chameleon`` and ``zope.tales`` iterators.
     """
@@ -69,8 +69,8 @@ class RepeatDictWrapper(RepeatDict):
 
     # Logic (mostly) from ``chameleon.tal.RepeatDict``
     def __call__(self, key, iterable):
-        """We coerce the iterable to a tuple and return an iterator
-        after registering it in the repeat dictionary."""
+        """We coerce the iterable to a tuple and return an iterator after
+        registering it in the repeat dictionary."""
         iterable = list(iterable) if iterable is not None else ()
 
         length = len(iterable)
@@ -86,6 +86,7 @@ InitializeClass(RepeatDictWrapper)
 
 class RepeatItem(PathIterator):
     """Iterator compatible with ``chameleon`` and ``zope.tales``."""
+
     def __iter__(self):
         return self
 
@@ -124,7 +125,7 @@ _zt_expr_registry = {}
 
 
 def _compile_zt_expr(type, expression, engine=None, econtext=None):
-    """compile *expression* of type *type*.
+    """Compile *expression* of type *type*.
 
     The engine is derived either directly from *engine* or the
     execution content *econtext*. One of them must be given.
@@ -151,7 +152,7 @@ _context_class_registry = {}
 
 
 def _with_vars_from_chameleon(context):
-    """prepare *context* to get its ``vars`` from ``chameleon``."""
+    """Prepare *context* to get its ``vars`` from ``chameleon``."""
     cc = context.__class__
     wc = _context_class_registry.get(cc)
     if wc is None:
@@ -209,7 +210,7 @@ class _C2ZContextWrapperBase:
 
     # unsupported methods
     def beginScope(self, *args, **kw):
-        """will not work as the scope is controlled by ``chameleon``."""
+        """Will not work as the scope is controlled by ``chameleon``."""
         raise NotImplementedError()
 
     endScope = beginScope
@@ -241,6 +242,7 @@ contains_bad_path_chars = re.compile("[%s]" % BAD_PATH_CHARS).search
 
 class MappedExpr:
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
+
     def __init__(self, type, expression, zt_engine):
         self.type = type
         # At this place, *expression* is a `chameleon.tokenize.Token`
@@ -315,6 +317,7 @@ class MappedExpr:
 
 class MappedExprType:
     """map expression type: ``zope.tales`` --> ``chameleon.tales``."""
+
     def __init__(self, engine, type):
         self.engine = engine
         self.type = type

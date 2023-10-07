@@ -134,10 +134,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         DTMLFile.inheritedAttribute('__init__')(self, name, _prefix, **kw)
 
     def getOwner(self, info=0):
-        '''
-        This method is required of all objects that go into
-        the security context stack.
-        '''
+        """This method is required of all objects that go into the security
+        context stack."""
         return None
 
     def _exec(self, bound_data, args, kw):

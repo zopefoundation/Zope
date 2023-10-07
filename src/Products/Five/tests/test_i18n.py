@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests for the i18n framework
-"""
+"""Unit tests for the i18n framework."""
 
 from zope.component.testing import setUp
 from zope.component.testing import tearDown

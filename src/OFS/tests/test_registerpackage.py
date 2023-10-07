@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Unit tests for the registerPackage directive.
-"""
+"""Unit tests for the registerPackage directive."""
 
 import sys
 
@@ -25,8 +24,7 @@ sys.path.append(testing.__path__[0])
 
 
 def test_registerPackage():
-    """
-    Testing registerPackage
+    """Testing registerPackage.
 
       >>> from zope.component.testing import setUp, tearDown
       >>> setUp()

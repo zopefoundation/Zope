@@ -1,5 +1,4 @@
-""" Unit tests for Products.PageTemplates.ZRPythonExpr
-"""
+"""Unit tests for Products.PageTemplates.ZRPythonExpr."""
 
 import unittest
 
@@ -13,14 +12,14 @@ class ZRPPythonExprTest(unittest.TestCase):
         request = {'request': 1}
         names = {'context': context, 'here': here, 'request': request}
         result = call_with_ns(lambda td: td.this, names)
-        self.assertTrue(result is context, result)
+        self.assertIs(result, context, result)
 
     def test_call_with_ns_no_context_or_here(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns
         request = {'request': 1}
         names = {'request': request}
         result = call_with_ns(lambda td: td.this, names)
-        self.assertTrue(result is None, result)
+        self.assertIsNone(result, result)
 
     def test_call_with_ns_no_request(self):
         from Products.PageTemplates.ZRPythonExpr import call_with_ns

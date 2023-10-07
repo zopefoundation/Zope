@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Role manager
-"""
+"""Role manager."""
 
 import html
 
@@ -28,7 +27,7 @@ from zExceptions import BadRequest
 
 
 class RoleManager(BaseRoleManager):
-    """An object that has configurable permissions"""
+    """An object that has configurable permissions."""
 
     security = ClassSecurityInfo()
 
@@ -49,8 +48,7 @@ class RoleManager(BaseRoleManager):
     @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
-        """Change the permissions given to the given role.
-        """
+        """Change the permissions given to the given role."""
         BaseRoleManager.manage_role(
             self, role_to_manage, permissions=permissions)
         if REQUEST is not None:
@@ -66,8 +64,7 @@ class RoleManager(BaseRoleManager):
     @security.protected(change_permissions)
     @requestmethod('POST')
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
-        """Change the permissions that acquire.
-        """
+        """Change the permissions that acquire."""
         BaseRoleManager.manage_acquiredPermissions(
             self, permissions=permissions)
         if REQUEST is not None:
@@ -91,9 +88,10 @@ class RoleManager(BaseRoleManager):
     ):
         """Change the settings for the given permission.
 
-        If optional arg acquire is true, then the roles for the permission
-        are acquired, in addition to the ones specified, otherwise the
-        permissions are restricted to only the designated roles.
+        If optional arg acquire is true, then the roles for the
+        permission are acquired, in addition to the ones specified,
+        otherwise the permissions are restricted to only the designated
+        roles.
         """
         BaseRoleManager.manage_permission(
             self, permission_to_manage, roles=roles, acquire=acquire)

@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example doctest
-"""
+"""Example doctest."""
 
 from unittest import TestSuite
 

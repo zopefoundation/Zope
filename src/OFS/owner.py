@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Support for owned objects
-"""
+"""Support for owned objects."""
 
 from urllib import parse
 
@@ -51,7 +50,8 @@ class Owned(BaseOwned):
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
 
-        If 'recursive' is true, then also take ownership of all sub-objects.
+        If 'recursive' is true, then also take ownership of all sub-
+        objects.
         """
         security = getSecurityManager()
         want_referer = REQUEST['URL1'] + '/manage_owner'

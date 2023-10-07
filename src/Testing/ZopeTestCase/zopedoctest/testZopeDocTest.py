@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example Zope doctest
-"""
+"""Example Zope doctest."""
 
 from unittest import TestSuite
 
@@ -20,14 +19,14 @@ from Testing.ZopeTestCase import ZopeDocTestSuite
 
 
 def setUp(self):
-    '''This method will run after the test_class' setUp.
+    """This method will run after the test_class' setUp.
 
     >>> 'object' in self.folder.objectIds()  # NOQA: F821
     True
 
     >>> foo  # NOQA: F821
     1
-    '''
+    """
     self.folder.manage_addFolder('object', '')
     self.globs['foo'] = 1
 

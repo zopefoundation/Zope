@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Image object that is stored in a file"""
+"""Image object that is stored in a file."""
 
 import os.path
 import stat
@@ -87,7 +87,7 @@ class ImageFile(Explicit):
         self.lmh = rfc1123_date(self.lmt)
 
     def index_html(self, REQUEST, RESPONSE):
-        """Default document"""
+        """Default document."""
         # HTTP If-Modified-Since header handling. This is duplicated
         # from OFS.Image.Image - it really should be consolidated
         # somewhere...
@@ -122,7 +122,7 @@ class ImageFile(Explicit):
 
     @security.public
     def HEAD(self, REQUEST, RESPONSE):
-        """ """
+        """"""
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Last-Modified', self.lmh)
         return ''

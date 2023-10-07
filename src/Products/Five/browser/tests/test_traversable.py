@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test Five-traversable classes
-"""
+"""Test Five-traversable classes."""
 
 
 class SimpleClass:
@@ -20,8 +19,7 @@ class SimpleClass:
 
 
 def test_traversable():
-    """
-    Test the behaviour of Five-traversable classes.
+    """Test the behaviour of Five-traversable classes.
 
       >>> import Products.Five
       >>> from Zope2.App import zcml
@@ -188,8 +186,7 @@ def test_traversable():
 
 
 def test_view_doesnt_shadow_attribute():
-    """
-    Test that views don't shadow attributes, e.g. items in a folder.
+    """Test that views don't shadow attributes, e.g. items in a folder.
 
     Let's first define a browser page for object managers called
     ``eagle``:

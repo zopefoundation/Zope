@@ -11,9 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-OFS event definitions.
-"""
+"""OFS event definitions."""
 
 import OFS.interfaces
 from zope.interface import implementer
@@ -22,7 +20,6 @@ from zope.interface.interfaces import ObjectEvent
 
 @implementer(OFS.interfaces.IObjectWillBeMovedEvent)
 class ObjectWillBeMovedEvent(ObjectEvent):
-
     """An object will be moved."""
 
     def __init__(self, object, oldParent, oldName, newParent, newName):
@@ -35,7 +32,6 @@ class ObjectWillBeMovedEvent(ObjectEvent):
 
 @implementer(OFS.interfaces.IObjectWillBeAddedEvent)
 class ObjectWillBeAddedEvent(ObjectWillBeMovedEvent):
-
     """An object will be added to a container."""
 
     def __init__(self, object, newParent=None, newName=None):
@@ -45,7 +41,6 @@ class ObjectWillBeAddedEvent(ObjectWillBeMovedEvent):
 
 @implementer(OFS.interfaces.IObjectWillBeRemovedEvent)
 class ObjectWillBeRemovedEvent(ObjectWillBeMovedEvent):
-
     """An object will be removed from a container."""
 
     def __init__(self, object, oldParent=None, oldName=None):
@@ -55,5 +50,4 @@ class ObjectWillBeRemovedEvent(ObjectWillBeMovedEvent):
 
 @implementer(OFS.interfaces.IObjectClonedEvent)
 class ObjectClonedEvent(ObjectEvent):
-
     """An object has been cloned into a container."""

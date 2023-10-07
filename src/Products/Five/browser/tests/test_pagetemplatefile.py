@@ -68,17 +68,17 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request)
-        self.assertTrue(namespace['context'] is context)
-        self.assertTrue(namespace['request'] is request)
+        self.assertIs(namespace['context'], context)
+        self.assertIs(namespace['request'], request)
         views = namespace['views']
         self.assertIsInstance(views, ViewMapper)
         self.assertEqual(views.ob, context)
         self.assertEqual(views.request, request)
-        self.assertTrue(namespace['here'] is context)
-        self.assertTrue(namespace['container'] is context)
-        self.assertTrue(namespace['root'] is None)
+        self.assertIs(namespace['here'], context)
+        self.assertIs(namespace['container'], context)
+        self.assertIsNone(namespace['root'])
         modules = namespace['modules']
-        self.assertTrue(modules is SecureModuleImporter)
+        self.assertIs(modules, SecureModuleImporter)
         self.assertEqual(namespace['traverse_subpath'], [])
         self.assertEqual(namespace['user'].getId(), 'a_user')
 
@@ -92,7 +92,7 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request)
-        self.assertTrue(namespace['root'] is root)
+        self.assertIs(namespace['root'], root)
 
     def test_pt_getContext_w_ignored_kw(self):
         from AccessControl.SecurityManagement import newSecurityManager
@@ -102,8 +102,8 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         view = self._makeView(context, request)
         vptf = self._makeOne('seagull.pt')
         namespace = vptf.pt_getContext(view, request, foo='bar')
-        self.assertFalse('foo' in namespace)
-        self.assertFalse('foo' in namespace['options'])
+        self.assertNotIn('foo', namespace)
+        self.assertNotIn('foo', namespace['options'])
 
     def test_pt_getContext_w_args_kw(self):
         from AccessControl.SecurityManagement import newSecurityManager
@@ -160,8 +160,8 @@ class ViewPageTemplateFileTests(unittest.TestCase):
         foo = Foo(context, request)
         bound = foo.bar
         self.assertIsInstance(bound, BoundPageTemplate)
-        self.assertTrue(bound.__func__ is template)
-        self.assertTrue(bound.__self__ is foo)
+        self.assertIs(bound.__func__, template)
+        self.assertIs(bound.__self__, foo)
 
 
 class ViewMapperTests(unittest.TestCase):
@@ -199,7 +199,7 @@ class ViewMapperTests(unittest.TestCase):
 
         provideAdapter(_adapt, (None, None), Interface, name='test')
         mapper = self._makeOne()
-        self.assertTrue(mapper['test'] is self)
+        self.assertIs(mapper['test'], self)
 
 
 _marker = object()
@@ -222,9 +222,9 @@ class BoundPageTemplateTests(unittest.TestCase):
         pt = DummyTemplate({'foo': 'bar'})
         ob = DummyContext()
         bpt = self._makeOne(pt, ob)
-        self.assertTrue(bpt.__func__ is pt)
-        self.assertTrue(bpt.__self__ is ob)
-        self.assertTrue(bpt.__parent__ is ob)
+        self.assertIs(bpt.__func__, pt)
+        self.assertIs(bpt.__self__, ob)
+        self.assertIs(bpt.__parent__, ob)
         self.assertEqual(bpt.macros['foo'], 'bar')
         self.assertEqual(bpt.filename, 'dummy.pt')
 

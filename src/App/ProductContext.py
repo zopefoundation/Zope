@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Objects providing context for product initialization
-"""
+"""Objects providing context for product initialization."""
 
 import os
 from logging import getLogger
@@ -47,7 +46,7 @@ class ProductContext:
                       icon=None, permissions=None, legacy=(),
                       visibility="Global", interfaces=_marker,
                       container_filter=None):
-        """Register a constructor
+        """Register a constructor.
 
         Keyword arguments are used to provide meta data:
 
@@ -92,7 +91,6 @@ class ProductContext:
            filter is called before showing ObjectManager's Add list,
            and before pasting (after object copy or cut), but not
            before calling an object's constructor.
-
         """
         pack = self.__pack
         initial = constructors[0]

@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Browser directives
+"""Browser directives.
 
 Directives to emulate the 'http://namespaces.zope.org/browser'
 namespace in ZCML known from zope.app.

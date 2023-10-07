@@ -21,10 +21,11 @@ from ZConfig.schema import SchemaParser
 
 
 class ConditionalSchemaParser(SchemaParser):
-    """
-    A SchemaParser with support for conditionally executing import
-    directives based on a Python import condition. This is similar to
-    ZCML's condition="installed foo" support, shortened to condition="foo".
+    """A SchemaParser with support for conditionally executing import
+    directives based on a Python import condition.
+
+    This is similar to ZCML's condition="installed foo" support,
+    shortened to condition="foo".
     """
 
     def start_import(self, attrs):
@@ -41,8 +42,7 @@ class ConditionalSchemaParser(SchemaParser):
 
 
 class ZopeWSGIOptions:
-    """ZopeWSGIOptions parses a ZConfig schema and config file.
-    """
+    """ZopeWSGIOptions parses a ZConfig schema and config file."""
     configfile = None
     confighandlers = None
     configroot = None

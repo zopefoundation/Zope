@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Support for ZODB sandboxes in ZTC
-"""
+"""Support for ZODB sandboxes in ZTC."""
 
 import contextlib
 
@@ -31,7 +30,7 @@ class Sandboxed:
     '''
 
     def _app(self):
-        '''Returns the app object for a test.'''
+        """Returns the app object for a test."""
         app = Zope2.app(Zope2.sandbox().open())
         AppZapper().set(app)
         app = makerequest(app)
@@ -39,14 +38,14 @@ class Sandboxed:
         return app
 
     def _close(self):
-        '''Clears the transaction and the AppZapper.'''
+        """Clears the transaction and the AppZapper."""
         AppZapper().clear()
         transaction.abort()
         connections.closeAll()
 
 
 class AppZapper:
-    '''Application object share point'''
+    """Application object share point."""
 
     __shared_state = {'_app': None}
 

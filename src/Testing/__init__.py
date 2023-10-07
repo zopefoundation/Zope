@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-Set up testing environment
-"""
+"""Set up testing environment."""
 
 import os
 

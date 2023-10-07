@@ -26,8 +26,7 @@ from zope.interface import implementer
 
 @implementer(IWriteLock)
 class LockableItem(EtagSupport):
-    """Implements the WriteLock interface.
-    """
+    """Implements the WriteLock interface."""
 
     # Protect methods using declarative security
     security = ClassSecurityInfo()
@@ -39,8 +38,8 @@ class LockableItem(EtagSupport):
 
     @security.private
     def wl_lockmapping(self, killinvalids=0, create=0):
-        """ if 'killinvalids' is 1, locks who are no longer valid
-        will be deleted """
+        """If 'killinvalids' is 1, locks who are no longer valid will be
+        deleted."""
 
         try:
             locks = getattr(self, '_dav_writelocks', None)
@@ -144,8 +143,8 @@ InitializeClass(LockableItem)
 
 
 def wl_isLocked(ob):
-    """ Returns true if the object is locked, returns 0 if the object
-    is not locked or does not implement the WriteLockInterface """
+    """Returns true if the object is locked, returns 0 if the object is not
+    locked or does not implement the WriteLockInterface."""
     return wl_isLockable(ob) and ob.wl_isLocked()
 
 

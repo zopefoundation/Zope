@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests for the testbrowser module.
-"""
+"""Tests for the testbrowser module."""
 
 import unittest
 from urllib.error import HTTPError
@@ -123,7 +122,7 @@ class TestTestbrowser(FunctionalTestCase):
         # Even errors which can be handled by Zope go to the client:
         with self.assertRaises(NotFound):
             browser.open('http://localhost/nothing-is-here')
-        self.assertTrue(browser.contents is None)
+        self.assertIsNone(browser.contents)
 
     def test_handle_errors_false_redirect(self):
         self.folder._setObject('redirect', RedirectStub())
@@ -132,12 +131,13 @@ class TestTestbrowser(FunctionalTestCase):
 
         with self.assertRaises(NotFound):
             browser.open('http://localhost/test_folder_1_/redirect')
-        self.assertTrue(browser.contents is None)
+        self.assertIsNone(browser.contents)
 
     def test_handle_errors_false_HTTPExceptionHandler_in_app(self):
         """HTTPExceptionHandler does not handle errors if requested via WSGI.
 
-        This is needed when HTTPExceptionHandler is part of the WSGI pipeline.
+        This is needed when HTTPExceptionHandler is part of the WSGI
+        pipeline.
         """
         class WSGITestAppWithHTTPExceptionHandler:
             """Minimized testbrowser.WSGITestApp with HTTPExceptionHandler."""
@@ -188,8 +188,8 @@ class TestTestbrowser(FunctionalTestCase):
         browser = Browser()
         browser.open('http://localhost/test_folder_1_/stub')
         header_text = str(browser.headers)
-        self.assertTrue('Content-Length: ' in header_text)
-        self.assertTrue('Content-Type: ' in header_text)
+        self.assertIn('Content-Length: ', header_text)
+        self.assertIn('Content-Type: ', header_text)
 
 
 def test_suite():

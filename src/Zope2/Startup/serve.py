@@ -29,8 +29,8 @@ from App.config import getConfiguration
 
 
 def parse_vars(args):
-    """
-    Given variables like ``['a=b', 'c=d']`` turns it into ``{'a':
+    """Given variables like ``['a=b', 'c=d']`` turns it into ``{'a':
+
     'b', 'c': 'd'}``
     """
     result = {}
@@ -57,10 +57,10 @@ def _getpathsec(config_uri, name):
 def setup_logging(config_uri, global_conf=None,  # NOQA
                   fileConfig=fileConfig,
                   configparser=configparser):
-    """
-    Set up logging via :func:`logging.config.fileConfig` with the filename
+    """Set up logging via :func:`logging.config.fileConfig` with the filename
     specified via ``config_uri`` (a string in the form
     ``filename#sectionname``).
+
     ConfigParser defaults are specified for the special ``__file__``
     and ``here`` variables, similar to PasteDeploy config loading.
     Extra defaults can optionally be specified as a dict in ``global_conf``.

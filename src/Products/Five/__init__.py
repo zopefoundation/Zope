@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Initialize the Five product
-"""
+"""Initialize the Five product."""
 
 from Products.Five.browser import BrowserView  # NOQA
 from Products.Five.skin.standardmacros import StandardMacros  # NOQA

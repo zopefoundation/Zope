@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Viewlet ZCML directives.
-"""
+"""Viewlet ZCML directives."""
 
 import os
 

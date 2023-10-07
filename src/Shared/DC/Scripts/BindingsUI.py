@@ -32,8 +32,7 @@ class BindingsUI(Bindings):
 
     @security.protected('Change bindings')
     def ZBindingsHTML_editAction(self, REQUEST):
-        '''Changes binding names.
-        '''
+        """Changes binding names."""
         self.ZBindings_edit(REQUEST)
         message = "Bindings changed."
         return self.manage_main(self, REQUEST, manage_tabs_message=message)

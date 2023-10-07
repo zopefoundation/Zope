@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test helpers
-"""
+"""Test helpers."""
 
 from .folder import FiveTraversableFolder  # NOQA: F401
 from .folder import NoVerifyPasteFolder  # NOQA: F401

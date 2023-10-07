@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests the base.TestCase class
+"""Tests the base.TestCase class.
 
 NOTE: This is *not* an example TestCase. Do not
 use this file as a blueprint for your own tests!
@@ -232,7 +232,7 @@ class TestTearDownRaises(HookTest):
 
 
 class TestConnectionRegistry(base.TestCase):
-    '''Test the registry with Connection-like objects'''
+    """Test the registry with Connection-like objects."""
 
     class Conn:
         _closed = 0
@@ -313,7 +313,7 @@ class TestConnectionRegistry(base.TestCase):
 
 
 class TestApplicationRegistry(TestConnectionRegistry):
-    '''Test the registry with Application-like objects'''
+    """Test the registry with Application-like objects."""
 
     class App:
         class Conn:
@@ -338,7 +338,7 @@ class TestApplicationRegistry(TestConnectionRegistry):
 
 
 class TestListConverter(base.TestCase):
-    '''Test utils.makelist'''
+    """Test utils.makelist."""
 
     def testList0(self):
         self.assertEqual(utils.makelist([]), [])
@@ -377,7 +377,7 @@ class TestListConverter(base.TestCase):
 
 
 class TestRequestVariables(base.TestCase):
-    '''Makes sure the REQUEST contains required variables'''
+    """Makes sure the REQUEST contains required variables."""
 
     def testRequestVariables(self):
         request = self.app.REQUEST
@@ -400,7 +400,7 @@ _sentinel3 = []
 
 
 class TestRequestGarbage1(base.TestCase):
-    '''Make sure base.app + base.close does not leak REQUEST._held'''
+    """Make sure base.app + base.close does not leak REQUEST._held."""
 
     class Held:
         def __del__(self):
@@ -418,7 +418,7 @@ class TestRequestGarbage1(base.TestCase):
 
 
 class TestRequestGarbage2(base.TestCase):
-    '''Make sure self._app + self._clear does not leak REQUEST._held'''
+    """Make sure self._app + self._clear does not leak REQUEST._held."""
 
     class Held:
         def __del__(self):
@@ -435,7 +435,7 @@ class TestRequestGarbage2(base.TestCase):
 
 
 class TestRequestGarbage3(sandbox.Sandboxed, base.TestCase):
-    '''Make sure self._app + self._clear does not leak REQUEST._held'''
+    """Make sure self._app + self._clear does not leak REQUEST._held."""
 
     class Held:
         def __del__(self):

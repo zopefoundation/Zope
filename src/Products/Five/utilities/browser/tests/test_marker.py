@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Tests for the marker interface edit views
-"""
+"""Tests for the marker interface edit views."""
 import AccessControl
 import Products.Five
 import Products.Five.utilities
@@ -53,7 +52,7 @@ class MarkerViewTests(ZopeTestCase):
         view = EditView(obj, {})
 
         # Test state before making any changes
-        self.assertTrue(view.context.aq_inner is obj)
+        self.assertIs(view.context.aq_inner, obj)
         self.assertEqual(view.request, {})
         self.assertEqual(view.getAvailableInterfaceNames(), [])
         self.assertEqual(view.getDirectlyProvidedNames(), [])

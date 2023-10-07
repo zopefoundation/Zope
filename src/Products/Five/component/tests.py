@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Component tests
-"""
+"""Component tests."""
 
 import unittest
 from doctest import DocFileSuite

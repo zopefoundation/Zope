@@ -24,8 +24,10 @@ def checkRestricted(folder, path, method=''):
 
 
 def checkUnauthorized(folder, path, method=''):
-    """Perform a check by running restricted Python code.  Expect to
-    encounter an Unauthorized exception."""
+    """Perform a check by running restricted Python code.
+
+    Expect to encounter an Unauthorized exception.
+    """
     traverse = "_.this.restrictedTraverse('%s')" % path
     if not method:
         body = '<dtml-call "%s()">' % traverse
@@ -114,8 +116,7 @@ def test_resource_restricted_code():
 
 
 def test_view_restricted_code():
-    """
-    Let's register a quite large amount of test pages:
+    """Let's register a quite large amount of test pages:
 
       >>> import Products.Five.browser.tests
       >>> from Zope2.App import zcml

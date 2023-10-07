@@ -34,47 +34,47 @@ class ViewMixinForTemplatesTests(unittest.TestCase):
         request = DummyRequest()
         view = self._makeOne(request=request)
         index = view.index = DummyTemplate()
-        self.assertTrue(view.publishTraverse(request, 'index.html') is index)
+        self.assertIs(view.publishTraverse(request, 'index.html'), index)
 
     def test___getitem___uses_index_macros(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         index.macros = {}
         index.macros['aaa'] = aaa = object()
-        self.assertTrue(view['aaa'] is aaa)
+        self.assertIs(view['aaa'], aaa)
 
     def test__getitem__gives_shortcut_to_index_macros(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         index.macros = {}
-        self.assertTrue(view['macros'] is index.macros)
+        self.assertIs(view['macros'], index.macros)
 
     def test___call___no_args_no_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view()
-        self.assertTrue(result is index)
+        self.assertIs(result, index)
         self.assertEqual(index._called_with, ((), {}))
 
     def test___call___w_args_no_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view('abc')
-        self.assertTrue(result is index)
+        self.assertIs(result, index)
         self.assertEqual(index._called_with, (('abc',), {}))
 
     def test___call___no_args_w_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view(foo='bar')
-        self.assertTrue(result is index)
+        self.assertIs(result, index)
         self.assertEqual(index._called_with, ((), {'foo': 'bar'}))
 
     def test___call___w_args_w_kw(self):
         view = self._makeOne()
         view.index = index = DummyTemplate()
         result = view('abc', foo='bar')
-        self.assertTrue(result is index)
+        self.assertIs(result, index)
         self.assertEqual(index._called_with, (('abc',), {'foo': 'bar'}))
 
 

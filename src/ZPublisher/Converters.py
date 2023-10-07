@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-"""Converters
+"""Converters.
 
 Used by `ZPublisher.HTTPRequest` and `OFS.PropertyManager`.
 

@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Parrot directive and support classes
-"""
+"""Parrot directive and support classes."""
 
 from zope.configuration.fields import GlobalObject
 from zope.interface import Interface
@@ -20,8 +19,7 @@ from zope.schema import TextLine
 
 
 class IParrotDirective(Interface):
-    """State that a class implements something.
-    """
+    """State that a class implements something."""
     class_ = GlobalObject(
         title="Class",
         required=True,

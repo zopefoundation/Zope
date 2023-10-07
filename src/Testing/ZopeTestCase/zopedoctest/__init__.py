@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""ZopeTestCase doctest support
-"""
+"""ZopeTestCase doctest support."""
 
 from doctest import *  # NOQA
 

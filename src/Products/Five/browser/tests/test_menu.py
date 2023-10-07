@@ -11,13 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test browser menus
-"""
+"""Test browser menus."""
 
 
 def test_menu():
-    """
-    Test menus
+    """Test menus.
 
     Before we can start we need to set up a few things.  For menu
     configuration, we have to start a new interaction:

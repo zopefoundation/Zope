@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Mimick the zope.app.basicskin skinning system.
-"""
+"""Mimick the zope.app.basicskin skinning system."""
 
 import zope.component
 import zope.interface

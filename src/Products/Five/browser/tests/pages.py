@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test browser pages
-"""
+"""Test browser pages."""
 
 import zope.interface
 from AccessControl.class_init import InitializeClass
@@ -23,25 +22,26 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class SimpleView(BrowserView):
+    """More docstring.
 
-    """More docstring. Please Zope"""
+    Please Zope
+    """
 
     def eagle(self):
-        """Docstring"""
+        """Docstring."""
         return "The eagle has landed"
 
     def eagle2(self):
-        """Docstring"""
+        """Docstring."""
         return "The eagle has landed:\n%s" % self.context.absolute_url()
 
     def mouse(self):
-        """Docstring"""
+        """Docstring."""
         return "The mouse has been eaten by the eagle"
 
 
 class FancyView(BrowserView):
-
-    """Fancy, fancy stuff"""
+    """Fancy, fancy stuff."""
 
     def view(self):
         return "Fancy, fancy"
@@ -85,19 +85,16 @@ class NoDocstringView(BrowserView):
 
 
 class NewStyleClass:
-
-    """
-    This is a testclass to verify that new style classes work
-    in browser:page
-    """
+    """This is a testclass to verify that new style classes work in
+    browser:page."""
 
     def __init__(self, context, request):
-        """Docstring"""
+        """Docstring."""
         self.context = context
         self.request = request
 
     def method(self):
-        """Docstring"""
+        """Docstring."""
         return
 
 
@@ -107,17 +104,17 @@ class ProtectedView:
 
     @security.public
     def public_method(self):
-        """Docstring"""
+        """Docstring."""
         return 'PUBLIC'
 
     @security.protected('View')
     def protected_method(self):
-        """Docstring"""
+        """Docstring."""
         return 'PROTECTED'
 
     @security.private
     def private_method(self):
-        """Docstring"""
+        """Docstring."""
         return 'PRIVATE'
 
 

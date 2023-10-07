@@ -30,7 +30,7 @@ class QueryTests(unittest.TestCase):
         self.assertEqual(simple_marshal('unic\xF3de'), arg_type)
 
     def testMarshallLists(self):
-        '''Test marshalling lists'''
+        """Test marshalling lists."""
         test_date = DateTime()
         list_ = [1, test_date, 'str', 'unic\xF3de']
         result = complex_marshal([('list', list_), ])
@@ -42,7 +42,7 @@ class QueryTests(unittest.TestCase):
                           ('list', arg4_type, 'unic\xF3de')])
 
     def testMarshallRecords(self):
-        '''Test marshalling records'''
+        """Test marshalling records."""
         test_date = DateTime()
         record = {
             'arg1': 1, 'arg2': test_date,
@@ -58,7 +58,7 @@ class QueryTests(unittest.TestCase):
              ('record.arg4', arg4_type, 'unic\xF3de')})
 
     def testMarshallListsInRecords(self):
-        '''Test marshalling lists inside of records'''
+        """Test marshalling lists inside of records."""
         test_date = DateTime()
         record = {'arg1': [1, test_date, 'str', 'unic\xF3de'], 'arg2': 1}
         result = complex_marshal([('record', record), ])
@@ -72,7 +72,7 @@ class QueryTests(unittest.TestCase):
              ('record.arg2', ':int:record', 1)})
 
     def testMakeComplexQuery(self):
-        '''Test that make_query returns sane results'''
+        """Test that make_query returns sane results."""
         test_date = DateTime()
         quote_date = quote(str(test_date))
         record = {'arg1': [1, test_date, 'str'], 'arg2': 1}

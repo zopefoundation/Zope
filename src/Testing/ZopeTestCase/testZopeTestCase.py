@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests the ZopeTestCase, eating its own dogfood
+"""Tests the ZopeTestCase, eating its own dogfood.
 
 NOTE: This is *not* an example TestCase. Do not
 use this file as a blueprint for your own tests!
@@ -38,7 +38,7 @@ def hasattr_(ob, attr):
 
 
 class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
-    '''Incrementally exercise the ZopeTestCase API.'''
+    """Incrementally exercise the ZopeTestCase API."""
 
     _setUp = ZopeTestCase.ZopeTestCase.setUp
     _tearDown = ZopeTestCase.ZopeTestCase.tearDown
@@ -71,7 +71,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupFolder()
         self.assertTrue(hasattr_(self.app, folder_name))
         self.assertTrue(hasattr_(self, 'folder'))
-        self.assertTrue(user_role in self.folder.userdefined_roles())
+        self.assertIn(user_role, self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
 
     def test_setupUserFolder(self):
@@ -234,7 +234,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupUser()
         self.login()
         self._clear(1)
-        self.assertFalse(folder_name in self.app.__dict__)
+        self.assertNotIn(folder_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -246,7 +246,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self.assertTrue(hasattr_(self.app, folder_name))
         self.assertTrue(hasattr_(self, 'folder'))
-        self.assertTrue(user_role in self.folder.userdefined_roles())
+        self.assertIn(user_role, self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
         self.assertTrue(hasattr_(self.folder, 'acl_users'))
         acl_user = self.folder.acl_users.getUserById(user_name)
@@ -262,7 +262,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.assertFalse(folder_name in self.app.__dict__)
+        self.assertNotIn(folder_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(
@@ -312,31 +312,29 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
     # Helpers
 
     def getPermissionsOfRole(self, role, context=None):
-        '''Returns sorted list of permission names of the
-           given role in the given context.
-        '''
+        """Returns sorted list of permission names of the given role in the
+        given context."""
         if context is None:
             context = self.folder
         perms = context.permissionsOfRole(role)
         return [p['name'] for p in perms if p['selected']]
 
     def assertPermissionsOfRole(self, permissions, role, context=None):
-        '''Compares list of permission names to permissions of the
-           given role in the given context. Fails if the lists are not
-           found equal.
-        '''
-        lhs = list(permissions)[:]
-        lhs.sort()
-        rhs = self.getPermissionsOfRole(role, context)
-        rhs.sort()
+        """Compares list of permission names to permissions of the given role
+        in the given context.
+
+        Fails if the lists are not found equal.
+        """
+        lhs = sorted(list(permissions)[:])
+        rhs = sorted(self.getPermissionsOfRole(role, context))
         self.assertEqual(lhs, rhs)
 
     def assertRolesOfUser(self, roles, user):
-        '''Compares list of role names to roles of user. Fails if the
-           lists are not found equal.
-        '''
-        lhs = list(roles)[:]
-        lhs.sort()
+        """Compares list of role names to roles of user.
+
+        Fails if the lists are not found equal.
+        """
+        lhs = sorted(list(roles)[:])
         rhs = list(user.getRoles())[:]
         rhs.remove('Authenticated')
         rhs.sort()
@@ -344,19 +342,19 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
 
 
 class WrappingUserFolder(UserFolder):
-    '''User folder returning wrapped user objects'''
+    """User folder returning wrapped user objects."""
 
     def getUser(self, name):
         return UserFolder.getUser(self, name).__of__(self)
 
 
 class TestPlainUserFolder(ZopeTestCase.ZopeTestCase):
-    '''Tests whether user objects are properly wrapped'''
+    """Tests whether user objects are properly wrapped."""
 
     def testGetUserDoesNotWrapUser(self):
         user = self.folder.acl_users.getUserById(user_name)
         self.assertFalse(hasattr(user, 'aq_base'))
-        self.assertTrue(user is aq_base(user))
+        self.assertIs(user, aq_base(user))
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
@@ -369,7 +367,7 @@ class TestPlainUserFolder(ZopeTestCase.ZopeTestCase):
 
 
 class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
-    '''Tests whether user objects are properly wrapped'''
+    """Tests whether user objects are properly wrapped."""
 
     def _setupUserFolder(self):
         self.folder._setObject('acl_users', WrappingUserFolder())
@@ -377,7 +375,7 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
     def testGetUserWrapsUser(self):
         user = self.folder.acl_users.getUserById(user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
-        self.assertFalse(user is aq_base(user))
+        self.assertIsNot(user, aq_base(user))
         self.assertTrue(
             user.__parent__.__class__.__name__, 'WrappingUserFolder')
 

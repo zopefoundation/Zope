@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test folders
-"""
+"""Test folders."""
 
 from OFS.Folder import Folder
 from OFS.interfaces import IFolder
@@ -21,8 +20,10 @@ from zope.interface import implementer
 
 class NoVerifyPasteFolder(Folder):
     """Folder that does not perform paste verification.
+
     Used by test_events
     """
+
     def _verifyObjectPaste(self, object, validate_src=1):
         pass
 
@@ -36,8 +37,7 @@ def manage_addNoVerifyPasteFolder(container, id, title=''):
 
 @implementer(IFolder)
 class FiveTraversableFolder(Folder):
-    """Folder that is five-traversable
-    """
+    """Folder that is five-traversable."""
 
 
 def manage_addFiveTraversableFolder(container, id, title=''):

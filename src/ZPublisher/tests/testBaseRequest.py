@@ -116,6 +116,7 @@ class BaseRequest_factory:
     def _makeObjectWithBD(self):
         class DummyObjectWithBD(self._makeBasicObjectClass()):
             """Dummy class with __browser_default__."""
+
             def __browser_default__(self, REQUEST):
                 if REQUEST['_test_counter'] < 100:
                     REQUEST['_test_counter'] += 1
@@ -128,13 +129,13 @@ class BaseRequest_factory:
         from ZPublisher.interfaces import UseTraversalDefault
 
         class _DummyResult:
-            ''' '''
+            """."""  # We need some content to be traversable.
+
             def __init__(self, tag):
                 self.tag = tag
 
         class DummyObjectWithBBT(self._makeBasicObjectClass()):
-            """ Dummy class with __bobo_traverse__
-            """
+            """Dummy class with __bobo_traverse__"""
             default = _DummyResult('Default')
 
             def __bobo_traverse__(self, REQUEST, name):
@@ -167,6 +168,7 @@ class BaseRequest_factory:
 
         class DummyObjectWithEmptyDocstring(Implicit):
             ""
+
             def view(self):
                 """Attribute with docstring."""
                 return 'view content'
@@ -191,7 +193,7 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
     def test_no_docstring_on_instance(self):
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
-        self.assertTrue(r.__doc__ is None)
+        self.assertIsNone(r.__doc__)
 
     def test___bobo_traverse___raises(self):
         root, folder = self._makeRootAndFolder()
@@ -508,7 +510,7 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
             return self._dummy_interface
 
         class IDummy(Interface):
-            """IDummy"""
+            """IDummy."""
 
         self._dummy_interface = IDummy
         return IDummy
@@ -534,11 +536,11 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
                 self.name = name
 
             def meth(self):
-                """doc"""
+                """doc."""
                 return 'meth on %s' % self.name
 
             def methonly(self):
-                """doc"""
+                """doc."""
                 return 'methonly on %s' % self.name
 
         return DummyObjectZ3WithAttr(name)

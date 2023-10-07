@@ -270,7 +270,7 @@ class TreeTests(unittest.TestCase):
         self.assertEqual(treeroot.height, 2)
         self.assertEqual(treeroot.depth, 0)
         self.assertEqual(treeroot.state, 1)
-        self.assertTrue(treeroot.object is self.root)
+        self.assertIs(treeroot.object, self.root)
 
         i = 'b'
         for subnode in treeroot:
@@ -279,7 +279,7 @@ class TreeTests(unittest.TestCase):
             self.assertEqual(subnode.height, 1)
             self.assertEqual(subnode.depth, 1)
             self.assertEqual(subnode.state, -1)
-            self.assertTrue(subnode.object is self.items[i])
+            self.assertIs(subnode.object, self.items[i])
             i = chr(ord(i) + 1)
 
         expected_set = [self.items['a'], self.items['b'], self.items['c']]
@@ -305,7 +305,7 @@ class TreeTests(unittest.TestCase):
         self.assertEqual(treeroot.height, 4)
         self.assertEqual(treeroot.depth, 0)
         self.assertEqual(treeroot.state, 1)
-        self.assertTrue(treeroot.object is self.root)
+        self.assertIs(treeroot.object, self.root)
 
         items = self.items
         expected_set = [
@@ -420,7 +420,7 @@ class TreeTests(unittest.TestCase):
         treeroot1 = self.tm.tree(self.root, self.expansionmap)
 
         encoded = Tree.encodeExpansion(treeroot1.flat())
-        self.assertFalse(encoded.find(b'\n') != -1)
+        self.assertEqual(encoded.find(b'\n'), -1)
         decodedmap = Tree.decodeExpansion(encoded)
 
         treeroot2 = self.tm.tree(self.root, decodedmap)
@@ -451,6 +451,6 @@ class TreeTests(unittest.TestCase):
 
         from ZTUtils.Tree import b2a
         big = b2a(zlib.compress(b'x' * (1024 * 1100)))
-        self.assertTrue(len(big) < 8192)  # Must be under the input size limit
+        self.assertLess(len(big), 8192)  # Must be under the input size limit
         with self.assertRaises(ValueError):
             Tree.decodeExpansion(b':' + big)

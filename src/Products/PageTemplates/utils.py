@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Some helper methods
-"""
+"""Some helper methods."""
 
 import re
 
@@ -27,10 +26,10 @@ http_equiv_reg2 = re.compile(
 
 
 def encodingFromXMLPreamble(xml, default=DEFAULT_ENCODING):
-    """ Extract the encoding from a xml preamble.
-        Expects XML content is binary (encoded), otherwise a previous
-        transport encoding is meaningless.
-        Return 'utf-8' if not available
+    """Extract the encoding from a xml preamble.
+
+    Expects XML content is binary (encoded), otherwise a previous
+    transport encoding is meaningless. Return 'utf-8' if not available
     """
 
     match = xml_preamble_reg.match(xml)
@@ -42,11 +41,11 @@ def encodingFromXMLPreamble(xml, default=DEFAULT_ENCODING):
 
 
 def charsetFromMetaEquiv(html):
-    """ Return the value of the 'charset' from a html document containing
-        <meta http-equiv="content-type" content="text/html; charset=utf8>.
-        Expects HTML content is binary (encoded), otherwise a previous
-        transport encoding is meaningless.
-        Returns None, if not available.
+    """Return the value of the 'charset' from a html document containing <meta
+    http-equiv="content-type" content="text/html; charset=utf8>.
+
+    Expects HTML content is binary (encoded), otherwise a previous
+    transport encoding is meaningless. Returns None, if not available.
     """
 
     meta_tag_match = http_equiv_reg.search(html)
@@ -62,10 +61,11 @@ def charsetFromMetaEquiv(html):
 
 
 def convertToUnicode(source, content_type, preferred_encodings):
-    """ Convert a binary 'source' to the unicode (text) type.
-        Attempts to detect transport encoding from XML and html
-        documents, falling back to preferred_encodings.
-        Returns (unicode_str, source_encoding).
+    """Convert a binary 'source' to the unicode (text) type.
+
+    Attempts to detect transport encoding from XML and html documents,
+    falling back to preferred_encodings. Returns (unicode_str,
+    source_encoding).
     """
 
     if content_type.startswith('text/xml'):

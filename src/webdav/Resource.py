@@ -68,12 +68,13 @@ ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
 @implementer(IDAVResource)
 class Resource(Base, LockableItem):
+    """The Resource mixin class provides basic WebDAV support for non-
+    collection objects.
 
-    """The Resource mixin class provides basic WebDAV support for
-    non-collection objects. It provides default implementations
-    for most supported WebDAV HTTP methods, however certain methods
-    such as PUT should be overridden to ensure correct behavior in
-    the context of the object type."""
+    It provides default implementations for most supported WebDAV HTTP
+    methods, however certain methods such as PUT should be overridden to
+    ensure correct behavior in the context of the object type.
+    """
 
     __dav_resource__ = 1
 
@@ -232,10 +233,12 @@ class Resource(Base, LockableItem):
 
     def PUT(self, REQUEST, RESPONSE):
         """Replace the GET response entity of an existing resource.
-        Because this is often object-dependent, objects which handle
-        PUT should override the default PUT implementation with an
-        object-specific implementation. By default, PUT requests
-        fail with a 405 (Method Not Allowed)."""
+
+        Because this is often object-dependent, objects which handle PUT
+        should override the default PUT implementation with an object-
+        specific implementation. By default, PUT requests fail with a
+        405 (Method Not Allowed).
+        """
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
@@ -258,19 +261,24 @@ class Resource(Base, LockableItem):
 
     @security.public
     def TRACE(self, REQUEST, RESPONSE):
-        """Return the HTTP message received back to the client as the
-        entity-body of a 200 (OK) response. This will often usually
-        be intercepted by the web server in use. If not, the TRACE
-        request will fail with a 405 (Method Not Allowed), since it
-        is not often possible to reproduce the HTTP request verbatim
-        from within the Zope environment."""
+        """Return the HTTP message received back to the client as the entity-
+        body of a 200 (OK) response.
+
+        This will often usually be intercepted by the web server in use.
+        If not, the TRACE request will fail with a 405 (Method Not
+        Allowed), since it is not often possible to reproduce the HTTP
+        request verbatim from within the Zope environment.
+        """
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
     @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
-        """Delete a resource. For non-collection resources, DELETE may
-        return either 200 or 204 (No Content) to indicate success."""
+        """Delete a resource.
+
+        For non-collection resources, DELETE may return either 200 or
+        204 (No Content) to indicate success.
+        """
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
@@ -346,18 +354,23 @@ class Resource(Base, LockableItem):
         return RESPONSE
 
     def MKCOL(self, REQUEST, RESPONSE):
-        """Create a new collection resource. If called on an existing
-        resource, MKCOL must fail with 405 (Method Not Allowed)."""
+        """Create a new collection resource.
+
+        If called on an existing resource, MKCOL must fail with 405
+        (Method Not Allowed).
+        """
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('The resource already exists.')
 
     @security.public
     def COPY(self, REQUEST, RESPONSE):
-        """Create a duplicate of the source resource whose state
-        and behavior match that of the source resource as closely
-        as possible. Though we may later try to make a copy appear
-        seamless across namespaces (e.g. from Zope to Apache), COPY
-        is currently only supported within the Zope namespace."""
+        """Create a duplicate of the source resource whose state and behavior
+        match that of the source resource as closely as possible.
+
+        Though we may later try to make a copy appear seamless across
+        namespaces (e.g. from Zope to Apache), COPY is currently only
+        supported within the Zope namespace.
+        """
         self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
            not self.cb_isCopyable():
@@ -465,10 +478,12 @@ class Resource(Base, LockableItem):
 
     @security.public
     def MOVE(self, REQUEST, RESPONSE):
-        """Move a resource to a new location. Though we may later try to
-        make a move appear seamless across namespaces (e.g. from Zope
-        to Apache), MOVE is currently only supported within the Zope
-        namespace."""
+        """Move a resource to a new location.
+
+        Though we may later try to make a move appear seamless across
+        namespaces (e.g. from Zope to Apache), MOVE is currently only
+        supported within the Zope namespace.
+        """
         self.dav__init(REQUEST, RESPONSE)
         self.dav__validate(self, 'DELETE', REQUEST)
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
@@ -593,7 +608,7 @@ class Resource(Base, LockableItem):
 
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
-        """Lock a resource"""
+        """Lock a resource."""
         from webdav.davcmds import Lock
         self.dav__init(REQUEST, RESPONSE)
         security = getSecurityManager()
@@ -677,11 +692,12 @@ class Resource(Base, LockableItem):
     def manage_DAVget(self):
         """Gets the document source or file data.
 
-        This implementation is a last resort fallback. The subclass should
-        override this method to provide a more appropriate implementation.
+        This implementation is a last resort fallback. The subclass
+        should override this method to provide a more appropriate
+        implementation.
 
-        Using PrincipiaSearchSource, if it exists. It is one of the few shared
-        interfaces still around in common Zope content objects.
+        Using PrincipiaSearchSource, if it exists. It is one of the few
+        shared interfaces still around in common Zope content objects.
         """
         if getattr(aq_base(self), 'PrincipiaSearchSource', None) is not None:
             return self.PrincipiaSearchSource()

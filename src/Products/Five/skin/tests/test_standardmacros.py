@@ -11,12 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test standard macros
-"""
+"""Test standard macros."""
 
 
 def test_standard_macros():
-    """Test standard macros
+    """Test standard macros.
 
       >>> folder = self.folder  # NOQA: F821
       >>> uf = folder.acl_users

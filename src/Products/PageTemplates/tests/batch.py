@@ -22,7 +22,7 @@ __roles__ = None
 
 
 class batch(util.Base):
-    """Create a sequence batch"""
+    """Create a sequence batch."""
 
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=3, overlap=0):

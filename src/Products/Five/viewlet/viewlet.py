@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Viewlet.
-"""
+"""Viewlet."""
 
 import os
 
@@ -35,8 +34,7 @@ class simple(zope.viewlet.viewlet.simple):
 
 def SimpleViewletClass(template, bases=(), attributes=None, name=''):
     """A function that can be used to generate a viewlet from a set of
-    information.
-    """
+    information."""
 
     # Create the base class hierarchy
     bases += (simple, ViewletBase)

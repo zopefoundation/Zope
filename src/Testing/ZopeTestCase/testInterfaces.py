@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Interface tests
-"""
+"""Interface tests."""
 
 import unittest
 

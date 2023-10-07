@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Tests the PortalTestCase
+"""Tests the PortalTestCase.
 
 NOTE: This is *not* an example TestCase. Do not
 use this file as a blueprint for your own tests!
@@ -80,7 +80,7 @@ class NewMembershipTool(DummyMembershipTool):
 
 
 class TestPortalTestCase(ZopeTestCase.PortalTestCase):
-    '''Incrementally exercise the PortalTestCase API.'''
+    """Incrementally exercise the PortalTestCase API."""
 
     _setUp = ZopeTestCase.PortalTestCase.setUp
     _tearDown = ZopeTestCase.PortalTestCase.tearDown
@@ -119,7 +119,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertTrue(hasattr_(self.app, portal_name))
         self.assertTrue(hasattr_(self.portal, 'Members'))
         self.assertTrue(hasattr_(self.portal, 'portal_membership'))
-        self.assertTrue('Member' in self.portal.userdefined_roles())
+        self.assertIn('Member', self.portal.userdefined_roles())
 
     def test_setupUserFolder(self):
         # User folder should be set up.
@@ -151,7 +151,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.login()
         self._setupHomeFolder()
         self.assertTrue(hasattr_(self.portal.Members, user_name))
-        self.assertFalse(self.folder is None)
+        self.assertIsNotNone(self.folder)
         # Shut up deprecation warnings
         try:
             owner_info = self.folder.getOwnerTuple()
@@ -307,7 +307,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUser()
         self._setupHomeFolder()
         self._clear(1)
-        self.assertFalse(portal_name in self.app.__dict__)
+        self.assertNotIn(portal_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -321,7 +321,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertTrue(hasattr_(self.portal, 'acl_users'))
         self.assertTrue(hasattr_(self.portal, 'Members'))
         self.assertTrue(hasattr_(self.portal, 'portal_membership'))
-        self.assertTrue('Member' in self.portal.userdefined_roles())
+        self.assertIn('Member', self.portal.userdefined_roles())
         self.assertTrue(hasattr_(self.portal.Members, user_name))
         acl_user = self.portal.acl_users.getUserById(user_name)
         self.assertTrue(acl_user)
@@ -336,7 +336,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.assertFalse(portal_name in self.app.__dict__)
+        self.assertNotIn(portal_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(
@@ -381,31 +381,29 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     # Helpers
 
     def getPermissionsOfRole(self, role, context=None):
-        '''Returns sorted list of permission names of the
-           given role in the given context.
-        '''
+        """Returns sorted list of permission names of the given role in the
+        given context."""
         if context is None:
             context = self.portal
         perms = context.permissionsOfRole(role)
         return [p['name'] for p in perms if p['selected']]
 
     def assertPermissionsOfRole(self, permissions, role, context=None):
-        '''Compares list of permission names to permissions of the
-           given role in the given context. Fails if the lists are not
-           found equal.
-        '''
-        lhs = list(permissions)[:]
-        lhs.sort()
-        rhs = self.getPermissionsOfRole(role, context)
-        rhs.sort()
+        """Compares list of permission names to permissions of the given role
+        in the given context.
+
+        Fails if the lists are not found equal.
+        """
+        lhs = sorted(list(permissions)[:])
+        rhs = sorted(self.getPermissionsOfRole(role, context))
         self.assertEqual(lhs, rhs)
 
     def assertRolesOfUser(self, roles, user):
-        '''Compares list of role names to roles of user. Fails if the
-           lists are not found equal.
-        '''
-        lhs = list(roles)[:]
-        lhs.sort()
+        """Compares list of role names to roles of user.
+
+        Fails if the lists are not found equal.
+        """
+        lhs = sorted(list(roles)[:])
         rhs = list(user.getRoles())[:]
         rhs.remove('Authenticated')
         rhs.sort()
@@ -413,14 +411,14 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
 
 
 class WrappingUserFolder(UserFolder):
-    '''User folder returning wrapped user objects'''
+    """User folder returning wrapped user objects."""
 
     def getUser(self, name):
         return UserFolder.getUser(self, name).__of__(self)
 
 
 class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
-    '''Tests whether user objects are properly wrapped'''
+    """Tests whether user objects are properly wrapped."""
 
     def getPortal(self):
         self.app._setObject(portal_name, DummyPortal(portal_name))
@@ -429,7 +427,7 @@ class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
     def testGetUserDoesNotWrapUser(self):
         user = self.portal.acl_users.getUserById(user_name)
         self.assertFalse(hasattr(user, 'aq_base'))
-        self.assertTrue(user is aq_base(user))
+        self.assertIs(user, aq_base(user))
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
@@ -442,7 +440,7 @@ class TestPlainUserFolder(ZopeTestCase.PortalTestCase):
 
 
 class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
-    '''Tests whether user objects are properly wrapped'''
+    """Tests whether user objects are properly wrapped."""
 
     def getPortal(self):
         self.app._setObject(portal_name, DummyPortal(portal_name))
@@ -454,7 +452,7 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
     def testGetUserWrapsUser(self):
         user = self.portal.acl_users.getUserById(user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
-        self.assertFalse(user is aq_base(user))
+        self.assertIsNot(user, aq_base(user))
         self.assertTrue(
             user.__parent__.__class__.__name__, 'WrappingUserFolder')
 

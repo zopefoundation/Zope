@@ -88,7 +88,7 @@ def version_txt():
 
 
 def getZopeVersion():
-    """return information about the Zope version as a named tuple.
+    """Return information about the Zope version as a named tuple.
 
     Format of zope_version tuple:
     (major <int>, minor <int>, micro <int>, status <string>, release <int>)

@@ -29,7 +29,7 @@ from ..cookie import wdmap
 
 
 def assertRfc1123(self, s):
-    """check *s* is an RFC1123 date."""
+    """Check *s* is an RFC1123 date."""
     m = match(r"(.{3}), \d{2} (.{3}) \d{4} \d{2}:\d{2}:\d{2} GMT$", s)
     self.assertIsNotNone(m)
     self.assertIn(m.group(1), tuple(wdmap.values()))
@@ -175,7 +175,7 @@ class CookieParameterRegistryTests(TestCase):
         # test true
         n, v = convertCookieParameter("Http_Only", True)
         self.assertEqual(n, "HttpOnly")
-        self.assertIs(v, True)
+        self.assertTrue(v)
         # test false
         _, v = convertCookieParameter("http_only", False)
         self.assertIsNone(v)
@@ -183,7 +183,7 @@ class CookieParameterRegistryTests(TestCase):
     def test_secure(self):
         n, v = convertCookieParameter("secure", True)
         self.assertEqual(n, "Secure")
-        self.assertIs(v, True)
+        self.assertTrue(v)
 
     def test_samesite(self):
         for t in "None Lax Strict".split():

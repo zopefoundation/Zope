@@ -72,8 +72,8 @@ class TestPropPatch(unittest.TestCase):
         return self._getTargetClass()(*args, **kw)
 
     def test_parse_xml_property_values_with_namespaces(self):
-        """
-        Before Zope 2.11, litmus props tests 19: propvalnspace and 20:
+        """Before Zope 2.11, litmus props tests 19: propvalnspace and 20:
+
         propwformed were failing because Zope did not strip off the
         xmlns: attribute attached to XML property values.  We now strip
         off all attributes that look like xmlns declarations.

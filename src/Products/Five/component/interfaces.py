@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Component interfaces
-"""
+"""Component interfaces."""
 
 from OFS.interfaces import IObjectManager
 from zope.component.interfaces import ISite

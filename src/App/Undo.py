@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Undo support.
-"""
+"""Undo support."""
 
 import binascii
 
@@ -99,8 +98,7 @@ class UndoSupport(Tabs, Implicit):
 
     @security.protected(undo_changes)
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
-        """
-        """
+        """"""
         tids = []
         descriptions = []
         for tid in transaction_info:
@@ -120,7 +118,7 @@ class UndoSupport(Tabs, Implicit):
                     raise
 
                 ts.abort()
-                error = '{}: {}'.format(exc.__class__.__name__, str(exc))
+                error = f'{exc.__class__.__name__}: {str(exc)}'
                 return self.manage_UndoForm(self, REQUEST,
                                             manage_tabs_message=error,
                                             manage_tabs_type='danger')

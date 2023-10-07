@@ -127,8 +127,8 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne(stdout=STDOUT, stderr=STDERR)
         cloned = response.retry()
         self.assertIsInstance(cloned, self._getTargetClass())
-        self.assertTrue(cloned.stdout is STDOUT)
-        self.assertTrue(cloned.stderr is STDERR)
+        self.assertIs(cloned.stdout, STDOUT)
+        self.assertIs(cloned.stderr, STDERR)
 
     def test_setStatus_code(self):
         response = self._makeOne()
@@ -261,7 +261,7 @@ class HTTPResponseTests(unittest.TestCase):
         cookie = response.cookies.get('foo', None)
         self.assertEqual(len(cookie), 2)
         self.assertEqual(cookie.get('value'), 'bar')
-        self.assertIs(cookie.get('Secure'), True)
+        self.assertTrue(cookie.get('Secure'))
 
         cookies = response._cookie_list()
         self.assertEqual(len(cookies), 1)
@@ -564,10 +564,10 @@ class HTTPResponseTests(unittest.TestCase):
         response.body = b'BEFORE'
         result = response.setBody(b'BODY', 'TITLE', is_error=True)
         self.assertTrue(result)
-        self.assertFalse(b'BEFORE' in response.body)
-        self.assertTrue(b'<h2>Site Error</h2>' in response.body)
-        self.assertTrue(b'TITLE' in response.body)
-        self.assertTrue(b'BODY' in response.body)
+        self.assertNotIn(b'BEFORE', response.body)
+        self.assertIn(b'<h2>Site Error</h2>', response.body)
+        self.assertIn(b'TITLE', response.body)
+        self.assertIn(b'BODY', response.body)
         self.assertEqual(response.getHeader('Content-Type'),
                          'text/html; charset=utf-8')
 
@@ -628,9 +628,8 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(resp.body, str(body).encode('ascii'))
 
     def test_setBody_io(self):
-        """
-        Test that BytesIO.getbuffer() can be used to write a binary response.
-        """
+        """Test that BytesIO.getbuffer() can be used to write a binary
+        response."""
         from io import BytesIO
         resp = self._makeOne()
         value = b'\x00\x01'
@@ -639,10 +638,8 @@ class HTTPResponseTests(unittest.TestCase):
         self.assertEqual(resp.body, value)
 
     def test_setBody_by_content_type(self):
-        """
-        Check that a list as response is treated differently depending on the
-        content type.
-        """
+        """Check that a list as response is treated differently depending on
+        the content type."""
         resp = self._makeOne()
         body = [1, 2, 3]
 
@@ -716,7 +713,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody(b'foo' * 100)  # body must get smaller on compression
-        self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
+        self.assertIn('Accept-Encoding', response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_wo_encoding(self):
         # Vary header should be added here
@@ -724,7 +721,7 @@ class HTTPResponseTests(unittest.TestCase):
         response.setHeader('Vary', 'Cookie')
         response.enableHTTPCompression({'HTTP_ACCEPT_ENCODING': 'gzip'})
         response.setBody(b'foo' * 100)  # body must get smaller on compression
-        self.assertTrue('Accept-Encoding' in response.getHeader('Vary'))
+        self.assertIn('Accept-Encoding', response.getHeader('Vary'))
 
     def test_setBody_compression_w_prior_vary_header_incl_encoding(self):
         # Vary header already had Accept-Ecoding', do'nt munge
@@ -857,7 +854,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.notFoundError()
         except NotFound as raised:
             self.assertEqual(response.status, 404)
-            self.assertTrue("<p><b>Resource:</b> Unknown</p>" in str(raised))
+            self.assertIn("<p><b>Resource:</b> Unknown</p>", str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -867,7 +864,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.notFoundError('ENTRY')
         except NotFound as raised:
             self.assertEqual(response.status, 404)
-            self.assertTrue("<p><b>Resource:</b> ENTRY</p>" in str(raised))
+            self.assertIn("<p><b>Resource:</b> ENTRY</p>", str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -877,7 +874,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.forbiddenError()
         except NotFound as raised:
             self.assertEqual(response.status, 404)
-            self.assertTrue("<p><b>Resource:</b> Unknown</p>" in str(raised))
+            self.assertIn("<p><b>Resource:</b> Unknown</p>", str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -887,7 +884,7 @@ class HTTPResponseTests(unittest.TestCase):
             response.forbiddenError('ENTRY')
         except NotFound as raised:
             self.assertEqual(response.status, 404)
-            self.assertTrue("<p><b>Resource:</b> ENTRY</p>" in str(raised))
+            self.assertIn("<p><b>Resource:</b> ENTRY</p>", str(raised))
         else:
             self.fail("Didn't raise NotFound")
 
@@ -930,8 +927,11 @@ class HTTPResponseTests(unittest.TestCase):
             response.badRequestError('some_parameter')
         except BadRequest as raised:
             self.assertEqual(response.status, 400)
-            self.assertTrue("The parameter, <em>some_parameter</em>, "
-                            "was omitted from the request." in str(raised))
+            self.assertIn(
+                "The parameter, <em>some_parameter</em>, "
+                "was omitted from the request.",
+                str(raised)
+            )
         else:
             self.fail("Didn't raise BadRequest")
 
@@ -941,8 +941,11 @@ class HTTPResponseTests(unittest.TestCase):
             response.badRequestError('URL1')
         except InternalError as raised:
             self.assertEqual(response.status, 400)
-            self.assertTrue("Sorry, an internal error occurred in this "
-                            "resource." in str(raised))
+            self.assertIn(
+                "Sorry, an internal error occurred in this "
+                "resource.",
+                str(raised)
+            )
         else:
             self.fail("Didn't raise InternalError")
 
@@ -950,12 +953,12 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.realm = ''
         response._unauthorized()
-        self.assertFalse('WWW-Authenticate' in response.headers)
+        self.assertNotIn('WWW-Authenticate', response.headers)
 
     def test__unauthorized_w_default_realm(self):
         response = self._makeOne()
         response._unauthorized()
-        self.assertTrue('WWW-Authenticate' in response.headers)  # literal
+        self.assertIn('WWW-Authenticate', response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Zope", charset="UTF-8"')
 
@@ -963,7 +966,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.realm = 'Folly'
         response._unauthorized()
-        self.assertTrue('WWW-Authenticate' in response.headers)  # literal
+        self.assertIn('WWW-Authenticate', response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Folly", charset="UTF-8"')
 
@@ -973,8 +976,10 @@ class HTTPResponseTests(unittest.TestCase):
             response.unauthorized()
         except Unauthorized as raised:
             self.assertEqual(response.status, 200)  # publisher sets 401 later
-            self.assertTrue("You are not authorized "
-                            "to access this resource." in str(raised))
+            self.assertIn(
+                "You are not authorized to access this resource.",
+                str(raised)
+            )
         else:
             self.fail("Didn't raise Unauthorized")
 
@@ -984,8 +989,10 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized as raised:
-            self.assertTrue("\nNo Authorization header found."
-                            in str(raised))
+            self.assertIn(
+                "\nNo Authorization header found.",
+                str(raised)
+            )
         else:
             self.fail("Didn't raise Unauthorized")
 
@@ -996,8 +1003,10 @@ class HTTPResponseTests(unittest.TestCase):
         try:
             response.unauthorized()
         except Unauthorized as raised:
-            self.assertTrue("\nUsername and password are not correct."
-                            in str(raised))
+            self.assertIn(
+                "\nUsername and password are not correct.",
+                str(raised)
+            )
         else:
             self.fail("Didn't raise Unauthorized")
 
@@ -1377,7 +1386,7 @@ class HTTPResponseTests(unittest.TestCase):
             raise AttributeError('ERROR VALUE')
         except AttributeError:
             body = response.exception()
-            self.assertTrue(b'ERROR VALUE' in bytes(body))
+            self.assertIn(b'ERROR VALUE', bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
 
@@ -1391,7 +1400,7 @@ class HTTPResponseTests(unittest.TestCase):
             raise exc
         except AttributeError:
             body = response.exception()
-            self.assertTrue(expected in bytes(body))
+            self.assertIn(expected, bytes(body))
             self.assertEqual(response.status, 500)
             self.assertEqual(response.errmsg, 'Internal Server Error')
 
@@ -1433,11 +1442,12 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         )
 
     def test_unicode(self):
-        """HTTP headers need to be latin-1 compatible
+        """HTTP headers need to be latin-1 compatible.
 
-        In order to offer file downloads which contain unicode file names,
-        the file name has to be treated in a special way, see
-        https://stackoverflow.com/questions/1361604 .
+        In order to offer file downloads which contain unicode file
+        names, the file name has to be treated in a special way, see
+        https://stackoverflow.com/questions/1361604
+        .
         """
         self.assertEqual(
             make_content_disposition('inline', 'ıq.png'),

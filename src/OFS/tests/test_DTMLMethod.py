@@ -101,7 +101,7 @@ class DTMLMethodTests(unittest.TestCase):
             str(err.exception))
 
     def test__call__missing_encoding_old_instances(self):
-        """ Existing DTML methods have no "encoding" attribute """
+        """Existing DTML methods have no "encoding" attribute."""
         from OFS.Folder import Folder
         client = makerequest(Folder('client'))
         response = client.REQUEST['RESPONSE']
@@ -115,7 +115,7 @@ class DTMLMethodTests(unittest.TestCase):
 
 
 class DTMLMethodBrowserTests(Testing.ZopeTestCase.FunctionalTestCase):
-    """Browser testing ..OFS.DTMLMethod"""
+    """Browser testing ..OFS.DTMLMethod."""
 
     def setUp(self):
         from OFS.DTMLMethod import addDTMLMethod
@@ -268,8 +268,8 @@ class FactoryTests(unittest.TestCase):
         addDTMLMethod(dispatcher, 'id')
         method = dispatcher._set['id']
         self.assertIsInstance(method, DTMLMethod)
-        self.assertFalse('standard_html_header' in method.read())
-        self.assertFalse('standard_html_footer' in method.read())
+        self.assertNotIn('standard_html_header', method.read())
+        self.assertNotIn('standard_html_footer', method.read())
 
 
 class DummyDispatcher:

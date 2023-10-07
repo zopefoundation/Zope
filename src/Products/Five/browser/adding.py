@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Adding View
+"""Adding View.
 
-The Adding View is used to add new objects to a container. It is sort of a
-factory screen.
+The Adding View is used to add new objects to a container. It is sort of
+a factory screen.
 
 (original: zope.app.container.browser.adding)
 """
@@ -49,8 +49,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 class Adding(BrowserView):
 
     def add(self, content):
-        """See zope.browser.interfaces.IAdding
-        """
+        """See zope.browser.interfaces.IAdding."""
         container = self.context
         name = self.contentName
         chooser = INameChooser(container)
@@ -84,7 +83,7 @@ class Adding(BrowserView):
     contentName = None  # usually set by Adding traverser
 
     def nextURL(self):
-        """See zope.browser.interfaces.IAdding"""
+        """See zope.browser.interfaces.IAdding."""
         # XXX this is definitely not right for all or even most uses
         # of Five, but can be overridden by an AddView subclass
         return absoluteURL(self.context, self.request) + '/manage_main'
@@ -94,7 +93,7 @@ class Adding(BrowserView):
     context = None
 
     def publishTraverse(self, request, name):
-        """See zope.publisher.interfaces.IPublishTraverse"""
+        """See zope.publisher.interfaces.IPublishTraverse."""
         if '=' in name:
             view_name, content_name = name.split("=", 1)
             self.contentName = content_name
@@ -199,8 +198,7 @@ class ContentAdding(Adding, SimpleItem):
 
 @implementer(INameChooser)
 class ObjectManagerNameChooser:
-    """A name chooser for a Zope object manager.
-    """
+    """A name chooser for a Zope object manager."""
 
     def __init__(self, context):
         self.context = context

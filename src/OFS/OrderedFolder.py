@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" 'Folder' with order support.
-"""
+"""'Folder' with order support."""
 
 from App.special_dtml import DTMLFile
 from OFS.Folder import Folder
@@ -25,8 +24,7 @@ manage_addOrderedFolderForm = DTMLFile('dtml/addOrderedFolder', globals())
 
 def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
                             REQUEST=None):
-    """Add a new ordered Folder object with id *id*.
-    """
+    """Add a new ordered Folder object with id *id*."""
     ob = OrderedFolder(id)
     ob.title = title
     self._setObject(id, ob)
@@ -37,9 +35,7 @@ def manage_addOrderedFolder(self, id, title='', createPublic=0, createUserF=0,
 
 @implementer(IOrderedFolder)
 class OrderedFolder(OrderSupport, Folder):
-
-    """ Extends the default Folder by order support.
-    """
+    """Extends the default Folder by order support."""
     meta_type = 'Folder (Ordered)'
     zmi_icon = 'far fa-folder zmi-icon-folder-ordered'
 

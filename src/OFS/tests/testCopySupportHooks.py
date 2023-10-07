@@ -102,7 +102,7 @@ class HookTest(unittest.TestCase):
 
 
 class TestCopySupport(HookTest):
-    '''Tests the order in which add/clone/del hooks are called'''
+    """Tests the order in which add/clone/del hooks are called."""
 
     def setUp(self):
         HookTest.setUp(self)
@@ -159,7 +159,7 @@ class TestCopySupport(HookTest):
 
 
 class TestCopySupportSublocation(HookTest):
-    '''Tests the order in which add/clone/del hooks are called'''
+    """Tests the order in which add/clone/del hooks are called."""
 
     def setUp(self):
         HookTest.setUp(self)

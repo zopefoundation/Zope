@@ -10,17 +10,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Traverse unit tests.
-"""
+"""Traverse unit tests."""
 
 import unittest
 
 
 class UnitTestSecurityPolicy:
-    """
-        Stub out the existing security policy for unit testing purposes.
-    """
+    """Stub out the existing security policy for unit testing purposes."""
     #   Standard SecurityPolicy interface
+
     def validate(self, accessed=None, container=None, name=None, value=None,
                  context=None, roles=None, *args, **kw):
         return 1
@@ -30,9 +28,9 @@ class UnitTestSecurityPolicy:
 
 
 class CruelSecurityPolicy:
-    """Denies everything
-    """
+    """Denies everything."""
     #   Standard SecurityPolicy interface
+
     def validate(self, accessed, container, name, value, *args):
         from AccessControl import Unauthorized
         raise Unauthorized(name)
@@ -42,8 +40,8 @@ class CruelSecurityPolicy:
 
 
 class ProtectedMethodSecurityPolicy:
-    """Check security strictly on bound methods.
-    """
+    """Check security strictly on bound methods."""
+
     def validate(self, accessed, container, name, value, *args):
         from AccessControl import Unauthorized
         from Acquisition import aq_base
@@ -132,9 +130,8 @@ class TestTraverse(unittest.TestCase):
         from Acquisition import Implicit
 
         class UnitTestUser(Implicit):
-            """
-                Stubbed out manager for unit testing purposes.
-            """
+            """Stubbed out manager for unit testing purposes."""
+
             def getId(self):
                 return 'unit_tester'
             getUserName = getId
@@ -163,7 +160,7 @@ class TestTraverse(unittest.TestCase):
                     raise KeyError
 
             def bb_method(self):
-                """Test Method"""
+                """Test Method."""
                 pass
 
             bb_status = 'screechy'
@@ -174,7 +171,7 @@ class TestTraverse(unittest.TestCase):
         from OFS.SimpleItem import SimpleItem
 
         class BoboTraversableWithAcquisition(SimpleItem):
-            """ A BoboTraversable which may use acquisition to find objects.
+            """A BoboTraversable which may use acquisition to find objects.
 
             This is similar to how the __bobo_traverse__ behaves).
             """
@@ -192,10 +189,12 @@ class TestTraverse(unittest.TestCase):
             """Instance we'll check with ProtectedMethodSecurityPolicy."""
 
             getId__roles__ = None  # ACCESS_PUBLIC
+
             def getId(self):  # NOQA: E306  # pseudo decorator
                 return self.id
 
             private__roles__ = ()  # ACCESS_PRIVATE
+
             def private(self):  # NOQA: E306  # pseudo decorator
                 return 'private!'
 
@@ -221,18 +220,18 @@ class TestTraverse(unittest.TestCase):
         verifyClass(ITraversable, Traversable)
 
     def testTraversePath(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(
             self.folder1.unrestrictedTraverse(('', 'folder1', 'file')))
         self.assertTrue(self.folder1.unrestrictedTraverse(('', 'folder1')))
 
     def testTraverseURLNoSlash(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file'))
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1'))
 
     def testTraverseURLSlash(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file/'))
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/'))
 
@@ -268,8 +267,10 @@ class TestTraverse(unittest.TestCase):
         # Verify it's possible to use __bobo_traverse__ to a method.
         self._setupSecurity()
         bb = self._makeBoboTraversable()
-        self.assertTrue(
-            bb.restrictedTraverse('bb_method') is not bb.bb_method)
+        self.assertIsNot(
+            bb.restrictedTraverse('bb_method'),
+            bb.bb_method
+        )
 
     def testBoboTraverseToSimpleAttrValue(self):
         # Verify it's possible to use __bobo_traverse__ to a simple
@@ -285,8 +286,10 @@ class TestTraverse(unittest.TestCase):
         # is fine, but to test the code branch we sub in the forgiving one
         self._setupSecurity(UnitTestSecurityPolicy())
         bb = self._makeBoboTraversable()
-        self.assertTrue(
-            bb.restrictedTraverse('manufactured') == 42)
+        self.assertEqual(
+            bb.restrictedTraverse('manufactured'),
+            42
+        )
 
     def testBoboTraverseToAcquiredObject(self):
         # Verify it's possible to use a __bobo_traverse__ which retrieves
@@ -346,11 +349,9 @@ class TestTraverse(unittest.TestCase):
         from ZPublisher.interfaces import UseTraversalDefault
 
         class BoboTraversableUseTraversalDefault(SimpleItem):
-            """
-              A BoboTraversable class which may use "UseTraversalDefault"
-              (dependent on "name") to indicate that standard traversal should
-              be used.
-            """
+            """A BoboTraversable class which may use "UseTraversalDefault"
+            (dependent on "name") to indicate that standard traversal should be
+            used."""
             default = 'Default'
 
             def __bobo_traverse__(self, request, name):
@@ -418,14 +419,17 @@ class TestTraverse(unittest.TestCase):
     def testTraverseUp(self):
         # Test that we can traverse upwards
         from Acquisition import aq_base
-        self.assertTrue(
-            aq_base(self.root.folder1.file.restrictedTraverse('../..')) is
-            aq_base(self.root))
+        self.assertIs(
+            aq_base(self.root.folder1.file.restrictedTraverse('../..')),
+            aq_base(self.root)
+        )
 
     def testTraverseToNameStartingWithPlus(self):
         # Verify it's possible to traverse to a name such as +something
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse('+something') == 'plus')
+        self.assertEqual(
+            self.folder1.unrestrictedTraverse('+something'),
+            'plus'
+        )
 
     def testTraverseWrongType(self):
         with self.assertRaises(TypeError):
@@ -451,8 +455,7 @@ class SimpleClass:
 
 
 def test_traversable():
-    """
-    Test the behaviour of unrestrictedTraverse and views. The tests don't
+    """Test the behaviour of unrestrictedTraverse and views. The tests don't
     use publishing but do unrestrictedTraverse instead.
 
       >>> import Products.Five
@@ -609,8 +612,7 @@ def test_traversable():
 
 
 def test_view_doesnt_shadow_attribute():
-    """
-    Test that views don't shadow attributes, e.g. items in a folder.
+    """Test that views don't shadow attributes, e.g. items in a folder.
 
     Let's first define a browser page for object managers called
     ``eagle``:

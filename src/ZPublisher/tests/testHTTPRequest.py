@@ -56,8 +56,8 @@ class RecordTests(unittest.TestCase):
     def test_dict_special_methods(self):
         rec = self._makeOne()
         rec.a = 1
-        self.assertTrue('a' in rec)
-        self.assertFalse('b' in rec)
+        self.assertIn('a', rec)
+        self.assertNotIn('b', rec)
         self.assertEqual(len(rec), 1)
         self.assertEqual(list(iter(rec)), ['a'])
 
@@ -206,14 +206,18 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _noFormValuesInOther(self, req):
         for key in list(req.taintedform.keys()):
-            self.assertFalse(
-                key in req.other,
-                'REQUEST.other should not hold tainted values at first!')
+            self.assertNotIn(
+                key,
+                req.other,
+                'REQUEST.other should not hold tainted values at first!'
+            )
 
         for key in list(req.form.keys()):
-            self.assertFalse(
-                key in req.other,
-                'REQUEST.other should not hold form values at first!')
+            self.assertNotIn(
+                key,
+                req.other,
+                'REQUEST.other should not hold form values at first!'
+            )
 
     def _onlyTaintedformHoldsTaintedStrings(self, req):
         for key, val in list(req.taintedform.items()):
@@ -232,9 +236,11 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
     def _taintedKeysAlsoInForm(self, req):
         for key in list(req.taintedform.keys()):
-            self.assertTrue(
-                key in req.form,
-                "Found tainted %s not in form" % key)
+            self.assertIn(
+                key,
+                req.form,
+                "Found tainted %s not in form" % key
+            )
             self.assertEqual(
                 req.form[key], req.taintedform[key],
                 "Key %s not correctly reproduced in tainted; expected %r, "
@@ -250,7 +256,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
     def test_no_docstring_on_instance(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
         req = self._makeOne(environ=env)
-        self.assertTrue(req.__doc__ is None)
+        self.assertIsNone(req.__doc__)
 
     def test___bobo_traverse___raises(self):
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
@@ -275,8 +281,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('multi', '1'), ('multi', '2'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['foo', 'key', 'multi', 'number', 'spacey key', 'spam'])
@@ -299,8 +304,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('morewords:text', 'one\ntwo\n'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['2tokens', 'accountedfor', 'aday', 'bign',
@@ -336,8 +340,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             warnings.simplefilter('ignore')
             req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['nouconverter', 'ulines', 'ustring', 'utext', 'utokens'])
@@ -364,8 +367,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('setrec.foo:records', 'spam'), ('setrec.bar:records', 'eggs'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys,
             ['alist', 'atuple', 'oneitem', 'oneitemtuple', 'onerec', 'setrec'])
@@ -394,8 +396,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tlist:tokens:list', 'one two'), ('tlist:list:tokens', '3 4'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['ftuple', 'ilist', 'tlist'])
 
         self.assertEqual(req['ilist'], [1, 2, 3])
@@ -424,8 +425,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('setrec.ituple:tuple:int:records', '2'))
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['onerec', 'setrec'])
 
         self.assertEqual(req['onerec'].name, 'foo')
@@ -471,8 +471,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         )
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(
             formkeys, ['alist', 'bar', 'explicitlist', 'foo', 'setrec'])
 
@@ -504,8 +503,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tallmulti', '<1>'), ('tallmulti', '<2>'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<tainted key>', 'tainted',
@@ -526,8 +524,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tmorewords:text', '<one\ntwo>\n'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<taday>', '<tbign>', '<tfract>',
@@ -557,8 +554,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             warnings.simplefilter('ignore')
             req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferulines', 'tdeferutokens',
@@ -605,8 +601,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('tdeferdefersetrec.bar:records', '<eggs>'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['<tkeyoneitem>', 'tdeferalist',
@@ -657,8 +652,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         )
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferfirstsetrec', 'tdeferonerec',
@@ -711,8 +705,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('srdoesnotapply.foo:records', 'ham'))
         req = self._processInputs(inputs)
 
-        taintedformkeys = list(req.taintedform.keys())
-        taintedformkeys.sort()
+        taintedformkeys = sorted(req.taintedform.keys())
         self.assertEqual(
             taintedformkeys,
             ['tdeferbar', 'tdeferlist',
@@ -739,13 +732,17 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                     warnings.simplefilter('ignore')
                     convert('<html garbage>')
             except Exception as e:
-                self.assertFalse(
-                    '<' in e.args,
-                    '%s converter does not quote unsafe value!' % type)
+                self.assertNotIn(
+                    '<',
+                    e.args,
+                    '%s converter does not quote unsafe value!' % type
+                )
             except SyntaxError as e:
-                self.assertFalse(
-                    '<' in e,
-                    '%s converter does not quote unsafe value!' % type)
+                self.assertNotIn(
+                    '<',
+                    e,
+                    '%s converter does not quote unsafe value!' % type
+                )
 
     def test_processInputs_w_dotted_name_as_tuple(self):
         # Collector #500
@@ -753,8 +750,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
             ('name.:tuple', 'name with dot as tuple'),)
         req = self._processInputs(inputs)
 
-        formkeys = list(req.form.keys())
-        formkeys.sort()
+        formkeys = sorted(req.form.keys())
         self.assertEqual(formkeys, ['name.'])
 
         self.assertEqual(req['name.'], ('name with dot as tuple',))
@@ -1002,7 +998,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         request = self._makeOne()
         self.assertIsInstance(request.debug, DebugFlags)
         # It won't be available through dictonary lookup, though
-        self.assertTrue(request.get('debug') is None)
+        self.assertIsNone(request.get('debug'))
 
     def test_debug_in_qs_gets_form_var(self):
         env = {'QUERY_STRING': 'debug=1'}
@@ -1036,16 +1032,16 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         # before accessing request.locale for the first time, request._locale
         # is still a marker
-        self.assertTrue(request._locale is _marker)
+        self.assertIs(request._locale, _marker)
 
         # when accessing request.locale we will see an ILocale
         self.assertTrue(ILocale.providedBy(request.locale))
 
         # and request._locale has been set
-        self.assertTrue(request._locale is request.locale)
+        self.assertIs(request._locale, request.locale)
 
         # It won't be available through dictonary lookup, though
-        self.assertTrue(request.get('locale') is None)
+        self.assertIsNone(request.get('locale'))
 
     def test_locale_in_qs(self):
         provideAdapter(BrowserLanguages, [IHTTPRequest],
@@ -1112,9 +1108,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         locale = request.locale
 
         self.assertTrue(ILocale.providedBy(locale))
-        self.assertTrue(locale.id.language is None)
-        self.assertTrue(locale.id.territory is None)
-        self.assertTrue(locale.id.variant is None)
+        self.assertIsNone(locale.id.language)
+        self.assertIsNone(locale.id.territory)
+        self.assertIsNone(locale.id.variant)
 
     def test_method_GET(self):
         env = {'REQUEST_METHOD': 'GET'}
@@ -1547,6 +1543,7 @@ class TestSearchType(unittest.TestCase):
 
     see "https://github.com/zopefoundation/Zope/pull/512"
     """
+
     def check(self, val, expect):
         mo = search_type(val)
         if expect is None:
@@ -1571,7 +1568,8 @@ class TestSearchType(unittest.TestCase):
 
 
 class _Unseekable:
-    """Auxiliary class emulating an unseekable file like object"""
+    """Auxiliary class emulating an unseekable file like object."""
+
     def __init__(self, file):
         for m in ("read", "readline", "close", "__del__"):
             setattr(self, m, getattr(file, m))

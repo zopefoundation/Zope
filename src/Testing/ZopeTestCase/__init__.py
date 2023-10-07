@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Names exported by the ZopeTestCase package
-"""
+"""Names exported by the ZopeTestCase package."""
 
 # flake8: NOQA: E401
 

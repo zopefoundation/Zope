@@ -130,8 +130,8 @@ def root_wsgi_config(section):
 
 
 class ZopeDatabase(ZODBDatabase):
-    """ A ZODB database datatype that can handle an extended set of
-    attributes for use by DBTab """
+    """A ZODB database datatype that can handle an extended set of attributes
+    for use by DBTab."""
 
     def createDB(self, database_name, databases):
         self.config.database_name = database_name
@@ -170,9 +170,8 @@ class ZopeDatabase(ZODBDatabase):
         return [item[0] for item in self.computeMountPaths()]
 
     def getMountParams(self, mount_path):
-        """Returns (real_root, real_path, container_class) for a virtual
-        mount path.
-        """
+        """Returns (real_root, real_path, container_class) for a virtual mount
+        path."""
         for (virtual_path, real_root, real_path) in self.computeMountPaths():
             if virtual_path == mount_path:
                 container_class = self.config.container_class
@@ -202,8 +201,7 @@ def default_zpublisher_encoding(value):
 
 
 class DBTab:
-    """A Zope database configuration, similar in purpose to /etc/fstab.
-    """
+    """A Zope database configuration, similar in purpose to /etc/fstab."""
 
     def __init__(self, db_factories, mount_paths):
         self.db_factories = db_factories  # { name -> DatabaseFactory }
@@ -211,13 +209,11 @@ class DBTab:
         self.databases = {}               # { name -> DB instance }
 
     def listMountPaths(self):
-        """Returns a sequence of (virtual_mount_path, database_name).
-        """
+        """Returns a sequence of (virtual_mount_path, database_name)."""
         return list(self.mount_paths.items())
 
     def listDatabaseNames(self):
-        """Returns a sequence of names.
-        """
+        """Returns a sequence of names."""
         return list(self.db_factories.keys())
 
     def hasDatabase(self, name):
@@ -235,7 +231,9 @@ class DBTab:
                 % mount_path)
 
     def getDatabase(self, mount_path=None, name=None, is_root=0):
-        """Returns an opened database.  Requires either mount_path or name.
+        """Returns an opened database.
+
+        Requires either mount_path or name.
         """
         if name is None:
             name = self.getName(mount_path)
@@ -260,7 +258,6 @@ class DBTab:
 
 
 def simpleClassFactory(jar, module, name, _silly=('__doc__',), _globals={}):
-    """Class factory.
-    """
+    """Class factory."""
     m = __import__(module, _globals, _globals, _silly)
     return getattr(m, name)

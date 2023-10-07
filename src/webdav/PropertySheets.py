@@ -36,7 +36,7 @@ def xml_escape(value):
 
 
 class DAVProperties(Virtual, PropertySheet, View):
-    """WebDAV properties"""
+    """WebDAV properties."""
 
     id = 'webdav'
     _md = {'xmlns': 'DAV:'}

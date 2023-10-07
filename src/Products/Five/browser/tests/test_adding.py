@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test adding views
-"""
+"""Test adding views."""
 
 
 def test_suite():

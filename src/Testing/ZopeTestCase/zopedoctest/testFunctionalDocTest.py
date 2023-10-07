@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Example functional doctest
-"""
+"""Example functional doctest."""
 import unittest
 
 from Testing.ZopeTestCase import FunctionalDocFileSuite

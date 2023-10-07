@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Properties unit tests.
-"""
+"""Properties unit tests."""
 
 import unittest
 

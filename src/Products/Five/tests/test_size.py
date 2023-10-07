@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Size adapters for testing
-"""
+"""Size adapters for testing."""
 from zope.interface import implementer
 from zope.size.interfaces import ISized
 
@@ -46,8 +45,7 @@ class FancyContentSize:
 
 
 def test_size():
-    """
-    Test size adapters
+    """Test size adapters.
 
     Set up:
 

@@ -11,13 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test default view recursion
-"""
+"""Test default view recursion."""
 
 
 def test_recursion():
-    """
-    Test recursion
+    """Test recursion.
 
     This test makes sure that recursion is avoided for view lookup.
     First, we need to set up a stub interface...

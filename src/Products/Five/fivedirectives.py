@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Five ZCML directive schemas
-"""
+"""Five ZCML directive schemas."""
 
 from zope.browserresource.metadirectives import IBasicResourceInformation
 from zope.configuration.fields import GlobalObject
@@ -21,8 +20,7 @@ from zope.schema import TextLine
 
 
 class ISizableDirective(Interface):
-    """Attach sizable adapters to classes.
-    """
+    """Attach sizable adapters to classes."""
 
     class_ = GlobalObject(
         title="Class",
@@ -31,8 +29,7 @@ class ISizableDirective(Interface):
 
 
 class IPagesFromDirectoryDirective(IBasicResourceInformation):
-    """Register each file in a skin directory as a page resource
-    """
+    """Register each file in a skin directory as a page resource."""
 
     for_ = GlobalObject(
         title="The interface this view is for.",

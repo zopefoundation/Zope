@@ -60,9 +60,8 @@ LARGE_FILE_THRESHOLD = 524288
 
 
 class NullResource(Persistent, Implicit, Resource):
-
-    """Null resources are used to handle HTTP method calls on
-    objects which do not yet exist in the url namespace."""
+    """Null resources are used to handle HTTP method calls on objects which do
+    not yet exist in the url namespace."""
 
     __null_resource__ = 1
     zmi_icon = 'fas fa-edit'
@@ -124,8 +123,7 @@ class NullResource(Persistent, Implicit, Resource):
 
     @security.public
     def PUT(self, REQUEST, RESPONSE):
-        """Create a new non-collection resource.
-        """
+        """Create a new non-collection resource."""
         self.dav__init(REQUEST, RESPONSE)
 
         name = self.__name__
@@ -239,7 +237,7 @@ class NullResource(Persistent, Implicit, Resource):
 
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
-        """ LOCK on a Null Resource makes a LockNullResource instance """
+        """LOCK on a Null Resource makes a LockNullResource instance."""
         self.dav__init(REQUEST, RESPONSE)
         security = getSecurityManager()
         creator = security.getUser()
@@ -303,10 +301,12 @@ InitializeClass(NullResource)
 
 
 class LockNullResource(NullResource, Item_w__name__):
-    """ A Lock-Null Resource is created when a LOCK command is succesfully
-    executed on a NullResource, essentially locking the Name.  A PUT or
-    MKCOL deletes the LockNull resource from its container and replaces it
-    with the target object.  An UNLOCK deletes it. """
+    """A Lock-Null Resource is created when a LOCK command is succesfully
+    executed on a NullResource, essentially locking the Name.
+
+    A PUT or MKCOL deletes the LockNull resource from its container and
+    replaces it with the target object.  An UNLOCK deletes it.
+    """
 
     __locknull_resource__ = 1
     meta_type = 'WebDAV LockNull Resource'
@@ -345,8 +345,8 @@ class LockNullResource(NullResource, Item_w__name__):
 
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
-        """ A Lock command on a LockNull resource should only be a
-        refresh request (one without a body) """
+        """A Lock command on a LockNull resource should only be a refresh
+        request (one without a body)"""
         self.dav__init(REQUEST, RESPONSE)
         body = REQUEST.get('BODY', '')
         ifhdr = REQUEST.get_header('If', '')
@@ -383,7 +383,7 @@ class LockNullResource(NullResource, Item_w__name__):
 
     @security.protected(webdav_unlock_items)
     def UNLOCK(self, REQUEST, RESPONSE):
-        """ Unlocking a Null Resource removes it from its parent """
+        """Unlocking a Null Resource removes it from its parent."""
         self.dav__init(REQUEST, RESPONSE)
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
@@ -408,8 +408,8 @@ class LockNullResource(NullResource, Item_w__name__):
 
     @security.public
     def PUT(self, REQUEST, RESPONSE):
-        """ Create a new non-collection resource, deleting the LockNull
-        object from the container before putting the new object in. """
+        """Create a new non-collection resource, deleting the LockNull object
+        from the container before putting the new object in."""
 
         self.dav__init(REQUEST, RESPONSE)
         name = self.__name__
@@ -480,9 +480,12 @@ class LockNullResource(NullResource, Item_w__name__):
 
     @security.protected(add_folders)
     def MKCOL(self, REQUEST, RESPONSE):
-        """ Create a new Collection (folder) resource.  Since this is being
-        done on a LockNull resource, this also involves removing the LockNull
-        object and transferring its locks to the newly created Folder """
+        """Create a new Collection (folder) resource.
+
+        Since this is being done on a LockNull resource, this also
+        involves removing the LockNull object and transferring its locks
+        to the newly created Folder
+        """
         self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
             raise UnsupportedMediaType('Unknown request body.')

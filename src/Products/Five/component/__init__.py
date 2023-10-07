@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Five local component look-up support
-"""
+"""Five local component look-up support."""
 
 import ExtensionClass
 import zope.component
@@ -36,8 +35,8 @@ setHooks()
 
 
 def findSite(obj, iface=ISite):
-    """Find a site by walking up the object hierarchy, supporting both
-    the ``ILocation`` API and Zope 2 Acquisition."""
+    """Find a site by walking up the object hierarchy, supporting both the
+    ``ILocation`` API and Zope 2 Acquisition."""
     while obj is not None and not iface.providedBy(obj):
         obj = aq_parent(aq_inner(obj))
     return obj
@@ -46,8 +45,9 @@ def findSite(obj, iface=ISite):
 @zope.component.adapter(zope.interface.Interface)
 @zope.interface.implementer(IComponentLookup)
 def siteManagerAdapter(ob):
-    """Look-up a site manager/component registry for local component
-    lookup.  This is registered in place of the one in zope.site so that
+    """Look-up a site manager/component registry for local component lookup.
+
+    This is registered in place of the one in zope.site so that
     we lookup using acquisition in addition to the ``ILocation`` API.
     """
     site = findSite(ob)
@@ -66,8 +66,7 @@ HOOK_NAME = '__local_site_hook__'
 
 
 def enableSite(obj, iface=ISite):
-    """Install __before_traverse__ hook for Local Site
-    """
+    """Install __before_traverse__ hook for Local Site."""
     # We want the original object, not stuff in between, and no acquisition
     obj = aq_base(obj)
     if not IPossibleSite.providedBy(obj):
@@ -82,8 +81,7 @@ def enableSite(obj, iface=ISite):
 
 
 def disableSite(obj, iface=ISite):
-    """Remove __before_traverse__ hook for Local Site
-    """
+    """Remove __before_traverse__ hook for Local Site."""
     # We want the original object, not stuff in between, and no acquisition
     obj = aq_base(obj)
     if not iface.providedBy(obj):

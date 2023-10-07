@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""WebDAV xml request objects.
-"""
+"""WebDAV xml request objects."""
 
 import sys
 from io import StringIO
@@ -47,10 +46,12 @@ def safe_quote(url, mark=r'%'):
 
 
 class DAVProps(DAVProperties):
-    """Emulate required DAV properties for objects which do
-       not themselves support properties. This is mainly so
-       that non-PropertyManagers can appear to support DAV
-       PROPFIND requests."""
+    """Emulate required DAV properties for objects which do not themselves
+    support properties.
+
+    This is mainly so that non-PropertyManagers can appear to support
+    DAV PROPFIND requests.
+    """
 
     def __init__(self, obj):
         self.__obj__ = obj
@@ -350,8 +351,8 @@ class Lock:
 
     def apply(self, obj, creator=None, depth='infinity', token=None,
               result=None, url=None, top=1):
-        """ Apply, built for recursion (so that we may lock subitems
-        of a collection if requested """
+        """Apply, built for recursion (so that we may lock subitems of a
+        collection if requested."""
 
         if result is None:
             result = StringIO()
@@ -434,7 +435,7 @@ class Lock:
 
 
 class Unlock:
-    """ Model an Unlock request """
+    """Model an Unlock request."""
 
     def apply(self, obj, token, url=None, result=None, top=1):
         if result is None:
@@ -500,9 +501,9 @@ class Unlock:
 
 
 class DeleteCollection:
-    """ With WriteLocks in the picture, deleting a collection involves
-    checking *all* descendents (deletes on collections are always of depth
-    infinite) for locks and if the locks match. """
+    """With WriteLocks in the picture, deleting a collection involves checking
+    *all* descendents (deletes on collections are always of depth infinite) for
+    locks and if the locks match."""
 
     def apply(self, obj, token, sm, url=None, result=None, top=1):
         if result is None:

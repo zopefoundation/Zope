@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Simple Tree classes
-"""
+"""Simple Tree classes."""
 
 from Acquisition import aq_acquire
 
@@ -41,7 +40,7 @@ class SimpleTreeNode(TreeNode):
 
 
 class SimpleTreeMaker(TreeMaker):
-    '''Generate Simple Trees'''
+    """Generate Simple Trees."""
 
     def __init__(self, tree_pre="tree"):
         self.tree_pre = tree_pre

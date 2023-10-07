@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Copy interface
-"""
+"""Copy interface."""
 
 import base64
 import logging
@@ -64,8 +63,7 @@ _marker = []
 
 @implementer(ICopyContainer)
 class CopyContainer(Base):
-
-    """Interface for containerish objects which allow cut/copy/paste"""
+    """Interface for containerish objects which allow cut/copy/paste."""
 
     security = ClassSecurityInfo()
 
@@ -92,7 +90,7 @@ class CopyContainer(Base):
 
     @security.protected(delete_objects)
     def manage_cutObjects(self, ids=None, REQUEST=None):
-        """Put a reference to the objects named in ids in the clip board"""
+        """Put a reference to the objects named in ids in the clip board."""
         if ids is None and REQUEST is not None:
             raise BadRequest('No items specified')
         elif ids is None:
@@ -122,7 +120,7 @@ class CopyContainer(Base):
 
     @security.protected(view_management_screens)
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
-        """Put a reference to the objects named in ids in the clip board"""
+        """Put a reference to the objects named in ids in the clip board."""
         if ids is None and REQUEST is not None:
             raise BadRequest('No items specified')
         elif ids is None:
@@ -157,7 +155,7 @@ class CopyContainer(Base):
         else:
             n = 0
             orig_id = id
-        while 1:
+        while True:
             if self._getOb(id, None) is None:
                 return id
             id = 'copy{}_of_{}'.format(n and n + 1 or '', orig_id)
@@ -335,7 +333,7 @@ class CopyContainer(Base):
 
     @security.protected(view_management_screens)
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
-        """Rename several sub-objects"""
+        """Rename several sub-objects."""
         if len(ids) != len(new_ids):
             raise BadRequest('Please rename each listed object.')
         for i in range(len(ids)):
@@ -346,8 +344,7 @@ class CopyContainer(Base):
 
     @security.protected(view_management_screens)
     def manage_renameObject(self, id, new_id, REQUEST=None):
-        """Rename a particular sub-object.
-        """
+        """Rename a particular sub-object."""
         try:
             self._checkId(new_id)
         except Exception:
@@ -401,8 +398,7 @@ class CopyContainer(Base):
 
     @security.public
     def manage_clone(self, ob, id, REQUEST=None):
-        """Clone an object, creating a new object with the given id.
-        """
+        """Clone an object, creating a new object with the given id."""
         if not ob.cb_isCopyable():
             raise CopyError('Not Supported')
         try:
@@ -517,7 +513,6 @@ InitializeClass(CopyContainer)
 
 @implementer(ICopySource)
 class CopySource(Base):
-
     """Interface for objects which allow themselves to be copied."""
 
     # declare a dummy permission for Copy or Move here that we check
@@ -535,8 +530,8 @@ class CopySource(Base):
     def _notifyOfCopyTo(self, container, op=0):
         """Overide this to be pickly about where you go!
 
-        If you dont want to go there, raise an exception. The op variable is 0
-        for a copy, 1 for a move.
+        If you dont want to go there, raise an exception. The op
+        variable is 0 for a copy, 1 for a move.
         """
         pass
 
@@ -643,7 +638,7 @@ def sanity_check(c, ob):
     # an object is not cut and pasted into itself or one of its
     # subobjects, which is an undefined situation.
     ob = aq_base(ob)
-    while 1:
+    while True:
         if aq_base(c) is ob:
             return 0
         inner = aq_inner(c)

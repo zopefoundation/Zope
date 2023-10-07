@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test browser pages
-"""
+"""Test browser pages."""
 import unittest
 
 import Products.Five.browser.tests
@@ -25,9 +24,8 @@ from zope.testbrowser.browser import HTTPError
 
 
 def test_view_with_unwrapped_context():
-    """
-    It may be desirable when writing tests for views themselves to
-    provide dummy contexts which are not wrapped.
+    """It may be desirable when writing tests for views themselves to provide
+    dummy contexts which are not wrapped.
 
     >>> import Products.Five.browser.tests
     >>> from Zope2.App import zcml

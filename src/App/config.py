@@ -33,9 +33,8 @@ def getConfiguration():
 def setConfiguration(cfg):
     """Set the global configuration object.
 
-    Legacy sources of common configuration values are updated to
-    reflect the new configuration; this may be removed in some future
-    version.
+    Legacy sources of common configuration values are updated to reflect
+    the new configuration; this may be removed in some future version.
     """
     global _config
     _config = cfg
@@ -52,9 +51,8 @@ def setConfiguration(cfg):
 
 
 class DefaultConfiguration:
-    """
-    This configuration should be used effectively only during unit tests
-    """
+    """This configuration should be used effectively only during unit tests."""
+
     def __init__(self):
         from App import FindHomes
         self.clienthome = FindHomes.CLIENT_HOME

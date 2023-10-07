@@ -39,7 +39,7 @@ class Lazy:
         if self._len is not _marker:
             return self._len
         dl = len(self._data)
-        while 1:
+        while True:
             try:
                 self[dl]
                 dl += 1
@@ -70,8 +70,9 @@ class Lazy:
 
 
 class LazyCat(Lazy):
-    """Lazy concatenation of one or more sequences. Should be handy
-    for accessing small parts of big searches.
+    """Lazy concatenation of one or more sequences.
+
+    Should be handy for accessing small parts of big searches.
     """
 
     def __init__(self, sequences, length=None, actual_result_count=None):
@@ -171,6 +172,7 @@ class LazyCat(Lazy):
 
 class LazyMap(Lazy):
     """Act like a sequence, but get data from a filtering process.
+
     Don't access data until necessary
     """
 
@@ -200,6 +202,7 @@ class LazyMap(Lazy):
 
 class LazyFilter(Lazy):
     """Act like a sequence, but get data from a filtering process.
+
     Don't access data until necessary. Only data for which test(data)
     returns true will be considered part of the set.
     """
@@ -251,6 +254,7 @@ class LazyFilter(Lazy):
 
 class LazyMop(Lazy):
     """Act like a sequence, but get data from a filtering process.
+
     Don't access data until necessary. If the filter raises an exception
     for a given item, then that item isn't included in the sequence.
     """
@@ -304,8 +308,8 @@ class LazyMop(Lazy):
 
 
 class LazyValues(Lazy):
-    """Given a sequence of two tuples typically (key, value) act as
-    though we are just a list of the values lazily"""
+    """Given a sequence of two tuples typically (key, value) act as though we
+    are just a list of the values lazily."""
 
     def __init__(self, seq):
         self._seq = seq

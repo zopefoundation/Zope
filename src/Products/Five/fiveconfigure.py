@@ -11,9 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Five-specific directive handlers
+"""Five-specific directive handlers.
 
-These directives are specific to Five and have no equivalents outside of it.
+These directives are specific to Five and have no equivalents outside of
+it.
 """
 
 import glob

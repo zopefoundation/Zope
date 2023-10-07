@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Component browser views
-"""
+"""Component browser views."""
 
 from Products.Five.browser import BrowserView
 from Products.Five.component import disableSite

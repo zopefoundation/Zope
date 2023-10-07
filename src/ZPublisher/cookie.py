@@ -53,7 +53,7 @@ class DefaultCookieParamPolicy:
 
     @staticmethod
     def parameters(name, attrs):
-        """adds ``Expires`` if not present and ``Max-Age`` is set."""
+        """Adds ``Expires`` if not present and ``Max-Age`` is set."""
         for pn, pv in attrs.items():
             if pn != "value":
                 yield (pn, pv)
@@ -77,12 +77,12 @@ class DefaultCookieValuePolicy:
 
     @staticmethod
     def dump(name, value):
-        """simply quote *value*."""
+        """Simply quote *value*."""
         return quote(value)
 
     @staticmethod
     def load(name, value):
-        """simply unquote *value*."""
+        """Simply unquote *value*."""
         return unquote(value)
 
 
@@ -107,12 +107,13 @@ class CookieParameterRegistry:
     It maintains 2 maps: one to normalize parameter names
     and one to check and convert parameter values.
     """
+
     def __init__(self):
         self._normalize = {}
         self._convert = {}
 
     def register(self, name, converter, aliases=()):
-        """register cookie parameter *name* with *converter* and *aliases*.
+        """Register cookie parameter *name* with *converter* and *aliases*.
 
         *converter* is a function which will be applied to
         parameter values and which is expected to either
@@ -136,7 +137,7 @@ class CookieParameterRegistry:
                     self._normalize[a] = name
 
     def convert(self, name, value):
-        """check and convert *name* and *value* for parameter *name*.
+        """Check and convert *name* and *value* for parameter *name*.
 
         Raises an exception in case of errors; otherwise,
         returns *normalized name*, *converted value*.
@@ -186,7 +187,7 @@ mmap = {i + 1: m for (i, m) in enumerate(
 
 
 def rfc1123_converter(value):
-    """convert *value* into an RFC1123 date.
+    """Convert *value* into an RFC1123 date.
 
     *value* can be a string (assumed already in the required form),
     a Python `datetime` (assumed to be in the UTC time zone, if naive),
@@ -216,7 +217,7 @@ registerCookieParameter("Expires", rfc1123_converter)
 
 # ``Max-Age``
 def int_converter(value):
-    """check for *int* value."""
+    """Check for *int* value."""
     int(value)
     return str(value)
 
@@ -226,7 +227,7 @@ registerCookieParameter("Max-Age", int_converter)
 
 # ``Domain``
 def domain_converter(value):
-    """convert *value* into an internationalized domain name.
+    """Convert *value* into an internationalized domain name.
 
     Note: The Python infrastructure supports IDNA2003, but
     RFC6265 calls for IDNA2008. IDNA2008 is implemented by
@@ -259,7 +260,7 @@ path_safe = compile("["
 
 
 def path_converter(value):
-    """convert *value* to a cookie path.
+    """Convert *value* to a cookie path.
 
     The convertion is based on ``absolute_url_path``.
     If *value* lacks this method, it is assumed to be a string.
@@ -344,7 +345,7 @@ registerCookieParameter("Comment", str_converter)
 ###########################################################################
 # Auxiliaries
 def to_str(s):
-    """convert bytes to ``str``."""
+    """Convert bytes to ``str``."""
     if not isinstance(s, str):
         s = s.decode("utf-8")
     return s

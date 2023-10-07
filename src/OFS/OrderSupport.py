@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Order support for 'Object Manager'.
-"""
+"""Order support for 'Object Manager'."""
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import access_contents_information
@@ -26,13 +25,12 @@ from zope.sequencesort.ssort import sort
 
 @implementer(IOrderedContainer)
 class OrderSupport:
+    """Ordered container mixin class.
 
-    """ Ordered container mixin class.
-
-    This is an extension to the regular ObjectManager. It saves the objects in
-    order and lets you change the order of the contained objects. This is
-    particular helpful, if the order does not depend on object attributes, but
-    is totally user-specific.
+    This is an extension to the regular ObjectManager. It saves the
+    objects in order and lets you change the order of the contained
+    objects. This is particular helpful, if the order does not depend on
+    object attributes, but is totally user-specific.
     """
     security = ClassSecurityInfo()
 
@@ -49,8 +47,7 @@ class OrderSupport:
 
     @security.protected(manage_properties)
     def manage_move_objects_up(self, REQUEST, ids=None, delta=1):
-        """ Move specified sub-objects up by delta in container.
-        """
+        """Move specified sub-objects up by delta in container."""
         if ids:
             try:
                 attempt = self.moveObjectsUp(ids, delta)
@@ -68,8 +65,7 @@ class OrderSupport:
 
     @security.protected(manage_properties)
     def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
-        """ Move specified sub-objects down by delta in container.
-        """
+        """Move specified sub-objects down by delta in container."""
         if ids:
             try:
                 attempt = self.moveObjectsDown(ids, delta)
@@ -87,8 +83,7 @@ class OrderSupport:
 
     @security.protected(manage_properties)
     def manage_move_objects_to_top(self, REQUEST, ids=None):
-        """ Move specified sub-objects to top of container.
-        """
+        """Move specified sub-objects to top of container."""
         if ids:
             try:
                 attempt = self.moveObjectsToTop(ids)
@@ -103,8 +98,7 @@ class OrderSupport:
 
     @security.protected(manage_properties)
     def manage_move_objects_to_bottom(self, REQUEST, ids=None):
-        """ Move specified sub-objects to bottom of container.
-        """
+        """Move specified sub-objects to bottom of container."""
         if ids:
             try:
                 attempt = self.moveObjectsToBottom(ids)
@@ -119,7 +113,7 @@ class OrderSupport:
 
     @security.protected(manage_properties)
     def manage_set_default_sorting(self, REQUEST, key, reverse):
-        """ Set default sorting key and direction."""
+        """Set default sorting key and direction."""
         self.setDefaultSorting(key, reverse)
         return self.manage_main(self, REQUEST)
 
@@ -238,8 +232,7 @@ class OrderSupport:
         self._default_sort_reverse = reverse and 1 or 0
 
     def manage_renameObject(self, id, new_id, REQUEST=None):
-        """ Rename a particular sub-object without changing its position.
-        """
+        """Rename a particular sub-object without changing its position."""
         old_position = self.getObjectPosition(id)
         result = super().manage_renameObject(id, new_id, REQUEST)
         self.moveObjectToPosition(

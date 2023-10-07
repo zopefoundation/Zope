@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Find support
-"""
+"""Find support."""
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permission import getPermissionIdentifier
@@ -208,16 +207,16 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
     pr = []
     fn = pr.append
 
-    while 1:
+    while True:
         if hasattr(ob, permission):
             p = getattr(ob, permission)
-            if type(p) is lt:
+            if isinstance(p, lt):
                 list(map(fn, p))
                 if hasattr(ob, '__parent__'):
                     ob = aq_parent(ob)
                     continue
                 break
-            if type(p) is tt:
+            if isinstance(p, tt):
                 list(map(fn, p))
                 break
             if p is None:

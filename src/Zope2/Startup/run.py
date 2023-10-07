@@ -14,8 +14,10 @@
 
 
 def configure_wsgi(configfile):
-    """ Provide an API which allows scripts to configure Zope
-    before attempting to do 'app = Zope2.app(). Should be used as
+    """Provide an API which allows scripts to configure Zope before attempting
+    to do 'app = Zope2.app().
+
+    Should be used as
     follows: from Zope2.Startup.run import configure_wsgi;
     configure_wsgi('/path/to/configfile');
     import Zope2; app = Zope2.app()
@@ -29,9 +31,11 @@ def configure_wsgi(configfile):
 
 
 def _set_wsgi_config(configfile=None):
-    """ Configure a Zope instance based on ZopeWSGIOptions.
-    Optionally accept a configfile argument (string path) in order
-    to specify where the configuration file exists. """
+    """Configure a Zope instance based on ZopeWSGIOptions.
+
+    Optionally accept a configfile argument (string path) in order to
+    specify where the configuration file exists.
+    """
     from Zope2.Startup import handlers
     from Zope2.Startup import options
     opts = options.ZopeWSGIOptions(configfile=configfile)()

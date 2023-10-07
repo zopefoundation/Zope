@@ -63,7 +63,7 @@ def _getPath(home, prefix, name, suffixes):
 
 
 def getPath(prefix, name, checkProduct=1, suffixes=('',), cfg=None):
-    """Find a file in one of several relative locations
+    """Find a file in one of several relative locations.
 
     Arguments:
 

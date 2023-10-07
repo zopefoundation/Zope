@@ -26,12 +26,12 @@ from zope.traversing.browser.interfaces import IAbsoluteURL
 
 @implementer(IAbsoluteURL)
 class AbsoluteURL(BrowserView):
-    """An absolute_url adapter for generic objects in Zope 2 that
-    aren't OFS.Traversable (e.g. views, resources, etc.).
+    """An absolute_url adapter for generic objects in Zope 2 that aren't
+    OFS.Traversable (e.g. views, resources, etc.).
 
     This is very close to the generic implementation from
-    zope.traversing.browser, but the Zope 2 request doesn't support
-    all the methods that it uses yet.
+    zope.traversing.browser, but the Zope 2 request doesn't support all
+    the methods that it uses yet.
     """
 
     def __str__(self):
@@ -86,8 +86,7 @@ class AbsoluteURL(BrowserView):
 
 @implementer(IAbsoluteURL)
 class OFSTraversableAbsoluteURL(BrowserView):
-    """An absolute_url adapter for OFS.Traversable subclasses
-    """
+    """An absolute_url adapter for OFS.Traversable subclasses."""
 
     def __str__(self):
         return self.context.absolute_url()
@@ -122,8 +121,8 @@ class OFSTraversableAbsoluteURL(BrowserView):
 
 
 class RootAbsoluteURL(OFSTraversableAbsoluteURL):
-    """An absolute_url adapter for the root object (OFS.Application)
-    """
+    """An absolute_url adapter for the root object (OFS.Application)"""
+
     def breadcrumbs(self):
         context = self.context
 

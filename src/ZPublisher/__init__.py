@@ -13,8 +13,7 @@
 
 
 class Retry(Exception):
-    """Raise this to retry a request
-    """
+    """Raise this to retry a request."""
 
     def __init__(self, t=None, v=None, tb=None):
         self._args = t, v, tb

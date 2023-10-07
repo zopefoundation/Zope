@@ -215,6 +215,7 @@ class ChameleonEngine(ExpressionEngine):
 
     Only partially implemented: its ``compile`` is currently unusable
     """
+
     def compile(self, expression):
         raise NotImplementedError()
 

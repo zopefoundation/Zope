@@ -10,9 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-WebDAV XML request parsing tool using xml.minidom as xml parser.
-Code contributed by Simon Eisenmann, struktur AG, Stuttgart, Germany
+"""WebDAV XML request parsing tool using xml.minidom as xml parser. Code
+contributed by Simon Eisenmann, struktur AG, Stuttgart, Germany.
 
 TODO:
 
@@ -28,7 +27,6 @@ TODO:
    strings. While this is suboptimal, it does match the expected
    encoding from OFS.PropertySheet. We need to find a the encoding
    somehow, maybe use the same encoding as the ZMI is using?
-
 """
 
 from io import BytesIO
@@ -72,8 +70,7 @@ zope_encoding = 'utf-8'
 
 
 class Node:
-    """ Our nodes no matter what type
-    """
+    """Our nodes no matter what type."""
 
     node = None
 
@@ -189,6 +186,7 @@ class Element(Node):
 class ProtectedExpatParser(ExpatParser):
     """ See https://bugs.launchpad.net/zope2/+bug/1114688
     """
+
     def __init__(self, forbid_dtd=True, forbid_entities=True,
                  *args, **kwargs):
         # Python 2.x old style class
@@ -217,9 +215,8 @@ class ProtectedExpatParser(ExpatParser):
 
 
 class XmlParser:
-    """ Simple wrapper around minidom to support the required
-    interfaces for zope.webdav
-    """
+    """Simple wrapper around minidom to support the required interfaces for
+    zope.webdav."""
 
     dom = None
 

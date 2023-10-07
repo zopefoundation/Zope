@@ -6,11 +6,12 @@ LOG = logging.getLogger('Testing')
 
 
 def getStorage():
-    """ Return a storage instance for running ZopeTestCase based
-        tests. By default a DemoStorage is used. Setting
-        $TEST_ZEO_HOST/TEST_ZEO_PORT environment variables allows you
-        to use a ZEO server instead. A file storage can be configured
-        by settting the $TEST_FILESTORAGE environment variable.
+    """Return a storage instance for running ZopeTestCase based tests.
+
+    By default a DemoStorage is used. Setting
+    $TEST_ZEO_HOST/TEST_ZEO_PORT environment variables allows you to use
+    a ZEO server instead. A file storage can be configured by settting
+    the $TEST_FILESTORAGE environment variable.
     """
 
     get = os.environ.get

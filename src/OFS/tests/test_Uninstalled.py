@@ -22,8 +22,7 @@ class ToBreak(SimpleItem):
 
 
 class TestsOfBroken(unittest.TestCase):
-    """Tests for the factory for "broken" classes.
-    """
+    """Tests for the factory for "broken" classes."""
 
     def setUp(self):
         from OFS.Uninstalled import broken_klasses
@@ -76,7 +75,7 @@ class TestsOfBroken(unittest.TestCase):
         inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
 
         self.assertIsInstance(inst, BrokenClass)
-        self.assertTrue(inst._p_jar is self)
+        self.assertIs(inst._p_jar, self)
         self.assertEqual(inst._p_oid, OID)
 
         klass = inst.__class__
@@ -137,7 +136,7 @@ class TestsIntegratedBroken(base.TestCase):
         transaction.commit()
         # check that object is not left over
         app = base.app()
-        self.assertFalse('tr' in app.objectIds())
+        self.assertNotIn('tr', app.objectIds())
 
 
 def test_suite():

@@ -95,7 +95,7 @@ class EventTest(unittest.TestCase):
 
 
 class TestCopySupport(EventTest):
-    '''Tests the order in which events are fired'''
+    """Tests the order in which events are fired."""
 
     def setUp(self):
         EventTest.setUp(self)
@@ -157,7 +157,7 @@ class TestCopySupport(EventTest):
 
 
 class TestCopySupportSublocation(EventTest):
-    '''Tests the order in which events are fired'''
+    """Tests the order in which events are fired."""
 
     def setUp(self):
         EventTest.setUp(self)

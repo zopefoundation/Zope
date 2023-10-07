@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test events
-"""
+"""Test events."""
 from OFS.Folder import Folder
 from OFS.OrderedFolder import OrderedFolder
 from OFS.SimpleItem import SimpleItem

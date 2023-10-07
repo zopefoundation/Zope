@@ -39,8 +39,8 @@ class SafeUnicodeTests(unittest.TestCase):
 class NoUpdatePropertyManager:
     """PropertyManager without _updateProperty method.
 
-    This is a simplified version of the original PropertyManager,
-    with only the methods we need.
+    This is a simplified version of the original PropertyManager, with
+    only the methods we need.
     """
     _properties = ()
 

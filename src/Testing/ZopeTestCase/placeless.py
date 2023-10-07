@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Placeless setup
-"""
+"""Placeless setup."""
 
 from AccessControl.security import newInteraction
 # For convenience
@@ -66,9 +65,8 @@ def callZCML(zcml_callback):
 
 def temporaryPlacelessSetUp(orig_func, placeless_available=True,
                             required_zcml=[]):
-    '''A wrapper for test functions that require CA to be available and/or
-       some ZCML to be run during test fixture creation.
-    '''
+    """A wrapper for test functions that require CA to be available and/or some
+    ZCML to be run during test fixture creation."""
     if not placeless_available:
         return orig_func
 

@@ -19,8 +19,7 @@ def makeBaseRequest(root):
 
 
 class DummyObjectBasic(Implicit):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
     pass
 
 
@@ -32,11 +31,10 @@ class BrokenHook:
 
 
 def testBeforeTraverse(self):
-    """
-    Zope supports a 'before traverse' hook that is used for several
-    features, including 'Site Access Rules'. It is implemented using a
-    special API for registering hooks, and the hooks themselves are
-    called during traversal by ZPublisher.
+    """Zope supports a 'before traverse' hook that is used for several
+    features, including 'Site Access Rules'. It is implemented using a special
+    API for registering hooks, and the hooks themselves are called during
+    traversal by ZPublisher.
 
     >>> import sys
     >>> import logging
@@ -136,7 +134,6 @@ def testBeforeTraverse(self):
 
     >>> logger.setLevel(level)
     >>> logger.handlers = handlers[:]
-
     """
 
 

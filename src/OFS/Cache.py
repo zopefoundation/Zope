@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Cacheable object and cache management base classes.
-"""
+"""Cacheable object and cache management base classes."""
 
 import sys
 import time
@@ -53,10 +52,10 @@ def filterCacheTab(ob):
 
 
 def filterCacheManagers(orig, container, name, value, extra):
-    """
-    This is a filter method for aq_acquire.
-    It causes objects to be found only if they are
-    in the list of cache managers.
+    """This is a filter method for aq_acquire.
+
+    It causes objects to be found only if they are in the list of cache
+    managers.
     """
     if hasattr(aq_base(container), ZCM_MANAGERS) and \
        name in getattr(container, ZCM_MANAGERS):
@@ -123,8 +122,7 @@ class Cacheable:
 
     @security.private
     def ZCacheable_getCache(self):
-        """Gets the cache associated with this object.
-        """
+        """Gets the cache associated with this object."""
         if self.__manager_id is None:
             return None
         c = self._v_ZCacheable_cache
@@ -144,10 +142,8 @@ class Cacheable:
 
     @security.private
     def ZCacheable_isCachingEnabled(self):
-        """
-        Returns true only if associated with a cache manager and
-        caching of this method is enabled.
-        """
+        """Returns true only if associated with a cache manager and caching of
+        this method is enabled."""
         return self.__enabled and self.ZCacheable_getCache()
 
     @security.private
@@ -163,9 +159,10 @@ class Cacheable:
         mtime_func=None,
         default=None
     ):
-        """Retrieves the cached view for the object under the
-        conditions specified by keywords. If the value is
-        not yet cached, returns the default.
+        """Retrieves the cached view for the object under the conditions
+        specified by keywords.
+
+        If the value is not yet cached, returns the default.
         """
         c = self.ZCacheable_getCache()
         if c is not None and self.__enabled:
@@ -187,8 +184,10 @@ class Cacheable:
         keywords=None,
         mtime_func=None
     ):
-        """Cacheable views should call this method after generating
-        cacheable results. The data argument can be of any Python type.
+        """Cacheable views should call this method after generating cacheable
+        results.
+
+        The data argument can be of any Python type.
         """
         c = self.ZCacheable_getCache()
         if c is not None and self.__enabled:
@@ -201,9 +200,10 @@ class Cacheable:
 
     @security.protected(ViewManagementScreensPermission)
     def ZCacheable_invalidate(self, view_name='', REQUEST=None):
-        """Called after a cacheable object is edited. Causes all
-        cache entries that apply to the view_name to be removed.
-        Returns a status message.
+        """Called after a cacheable object is edited.
+
+        Causes all cache entries that apply to the view_name to be
+        removed. Returns a status message.
         """
         c = self.ZCacheable_getCache()
         if c is not None:
@@ -263,8 +263,8 @@ class Cacheable:
 
     @security.protected(ViewManagementScreensPermission)
     def ZCacheable_getManagerIds(self):
-        """Returns a list of mappings containing the id and title
-        of the available ZCacheManagers."""
+        """Returns a list of mappings containing the id and title of the
+        available ZCacheManagers."""
         rval = []
         ob = self
         used_ids = {}
@@ -320,9 +320,8 @@ class Cacheable:
 
     @security.protected(ViewManagementScreensPermission)
     def ZCacheable_configHTML(self):
-        """Override to provide configuration of caching
-        behavior that can only be specific to the cacheable object.
-        """
+        """Override to provide configuration of caching behavior that can only
+        be specific to the cacheable object."""
         return ''
 
 
@@ -338,9 +337,10 @@ def findCacheables(
     rval,
     path
 ):
-    """
-    Used by the CacheManager UI.  Recursive.  Similar to the Zope
-    "Find" function.  Finds all Cacheable objects in a hierarchy.
+    """Used by the CacheManager UI.
+
+    Recursive.  Similar to the Zope "Find" function.  Finds all
+    Cacheable objects in a hierarchy.
     """
     try:
         if meta_types:
@@ -387,10 +387,10 @@ def findCacheables(
 
 
 class Cache:
-    """
-    A base class (and interface description) for caches.
-    Note that Cache objects are not intended to be visible by
-    restricted code.
+    """A base class (and interface description) for caches.
+
+    Note that Cache objects are not intended to be visible by restricted
+    code.
     """
 
     def ZCache_invalidate(self, ob):
@@ -421,8 +421,9 @@ class Cache:
 
 
 class CacheManager:
-    """
-    A base class for cache managers.  Implement ZCacheManager_getCache().
+    """A base class for cache managers.
+
+    Implement ZCacheManager_getCache().
     """
 
     security = ClassSecurityInfo()
@@ -476,8 +477,7 @@ class CacheManager:
         meta_types=[],
         REQUEST=None
     ):
-        """Locates cacheable objects.
-        """
+        """Locates cacheable objects."""
         ob = aq_parent(aq_inner(self))
         rval = []
         manager_id = self.getId()
@@ -506,9 +506,8 @@ class CacheManager:
 
     @security.protected(ChangeCacheSettingsPermission)
     def ZCacheManager_setAssociations(self, props=None, REQUEST=None):
-        """Associates and un-associates cacheable objects with this
-        cache manager.
-        """
+        """Associates and un-associates cacheable objects with this cache
+        manager."""
         addcount = 0
         remcount = 0
         parent = aq_parent(aq_inner(self))

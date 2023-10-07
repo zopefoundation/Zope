@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-""" Add a Zope management user to the root Zope user folder """
+"""Add a Zope management user to the root Zope user folder."""
 
 import argparse
 import sys

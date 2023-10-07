@@ -10,17 +10,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""ZODB connection registry
-"""
+"""ZODB connection registry."""
 
 
 class ConnectionRegistry:
-    '''ZODB connection registry
+    """ZODB connection registry.
 
-    This registry can hold either ZODB.Connection objects or OFS.Application
-    objects. In the latter case, a close operation will close the REQUEST as
-    well as the Connection referenced by the Application's _p_jar attribute.
-    '''
+    This registry can hold either ZODB.Connection objects or
+    OFS.Application objects. In the latter case, a close operation will
+    close the REQUEST as well as the Connection referenced by the
+    Application's _p_jar attribute.
+    """
 
     def __init__(self):
         self._conns = []

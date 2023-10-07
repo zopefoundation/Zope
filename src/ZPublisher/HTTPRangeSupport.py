@@ -12,9 +12,10 @@
 ##############################################################################
 """HTTP Range support utilities.
 
-The RFC 2616 specification defines the 'Range' and 'If-Range' headers for
-enabeling partial download of published resources. This module provides a
-flag-interface and some support functions for implementing this functionality.
+The RFC 2616 specification defines the 'Range' and 'If-Range' headers
+for enabeling partial download of published resources. This module
+provides a flag-interface and some support functions for implementing
+this functionality.
 
 For an implementation example, see the File class in OFS/Image.py.
 """
@@ -31,11 +32,12 @@ WHITESPACE = re.compile(r'\s*', re.MULTILINE)
 def parseRange(header):
     """RFC 2616 (HTTP 1.1) Range header parsing.
 
-    Convert a range header to a list of slice indexes, returned as (start, end)
-    tuples. If no end was given, end is None. Note that the RFC specifies the
-    end offset to be inclusive, we return python convention indexes, where the
-    end is exclusive. Syntactically incorrect headers are to be ignored, so if
-    we encounter one we return None.
+    Convert a range header to a list of slice indexes, returned as
+    (start, end) tuples. If no end was given, end is None. Note that the
+    RFC specifies the end offset to be inclusive, we return python
+    convention indexes, where the end is exclusive. Syntactically
+    incorrect headers are to be ignored, so if we encounter one we
+    return None.
     """
 
     ranges = []
@@ -131,11 +133,12 @@ def expandRanges(ranges, size):
 class HTTPRangeInterface(Interface):
     """Objects implementing this Interface support the HTTP Range header.
 
-    Objects implementing support for the HTTP Range header will return partial
-    content as specified in RFC 2616. Note that the'If-Range' header must
-    either be implemented correctly or result in a normal '200 OK' response at
-    all times.
+    Objects implementing support for the HTTP Range header will return
+    partial content as specified in RFC 2616. Note that the'If-Range'
+    header must either be implemented correctly or result in a normal
+    '200 OK' response at all times.
 
-    This interface specifies no methods, as this functionality can either be
-    implemented in the index_html or __call__ methods of a published object.
+    This interface specifies no methods, as this functionality can
+    either be implemented in the index_html or __call__ methods of a
+    published object.
     """

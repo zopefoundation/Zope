@@ -120,7 +120,7 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
         return c
 
     def _exec(self, bound_names, args, kw):
-        """Call a Page Template"""
+        """Call a Page Template."""
         self._cook_check()
         if 'args' not in kw:
             kw['args'] = args
@@ -225,9 +225,9 @@ class PageTemplateFile(SimpleItem, Script, PageTemplate, Traversable):
     def getOwner(self, info=0):
         """Gets the owner of the executable object.
 
-        This method is required of all objects that go into
-        the security context stack.  Since this object came from the
-        filesystem, it is owned by no one managed by Zope.
+        This method is required of all objects that go into the security
+        context stack.  Since this object came from the filesystem, it
+        is owned by no one managed by Zope.
         """
         return None
 

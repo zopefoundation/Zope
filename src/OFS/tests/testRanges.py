@@ -128,11 +128,11 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.assertTrue(rsp.getStatus() == 416)
+        self.assertEqual(rsp.getStatus(), 416)
 
         expect_content_range = 'bytes */%d' % len(self.data)
         content_range = rsp.getHeader('content-range')
-        self.assertFalse(content_range is None)
+        self.assertIsNotNone(content_range)
         self.assertEqual(content_range, expect_content_range)
         self.assertEqual(body, b'')
 
@@ -163,7 +163,7 @@ class TestRequestRange(unittest.TestCase):
         expect_content_range = 'bytes %d-%d/%d' % (
             start, end - 1, len(self.data))
         content_range = rsp.getHeader('content-range')
-        self.assertFalse(content_range is None)
+        self.assertIsNotNone(content_range)
         self.assertEqual(content_range, expect_content_range)
         self.assertEqual(rsp.getHeader('content-length'), str(len(body)))
         self.assertEqual(body, self.data[start:end])
@@ -184,7 +184,7 @@ class TestRequestRange(unittest.TestCase):
 
         body = self.doGET(req, rsp)
 
-        self.assertTrue(rsp.getStatus() == 206)
+        self.assertEqual(rsp.getStatus(), 206)
         self.assertFalse(rsp.getHeader('content-range'))
 
         ct = rsp.getHeader('content-type').split(';')[0]

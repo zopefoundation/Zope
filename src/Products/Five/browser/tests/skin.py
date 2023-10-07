@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test skins
-"""
+"""Test skins."""
 
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 

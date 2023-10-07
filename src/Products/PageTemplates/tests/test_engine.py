@@ -23,13 +23,13 @@ class TestPatches(Sandboxed, ZopeTestCase):
         with open(os.path.join(path, "simple.pt")) as fd:
             data = fd.read()
         template.write(data)
-        self.assertTrue('world' in template())
+        self.assertIn('world', template())
 
         # test arguments
         with open(os.path.join(path, "options.pt")) as fd:
             data = fd.read()
         template.write(data)
-        self.assertTrue('Hello world' in template(greeting='Hello world'))
+        self.assertIn('Hello world', template(greeting='Hello world'))
 
     def test_pagetemplatefile(self):
         from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -37,7 +37,7 @@ class TestPatches(Sandboxed, ZopeTestCase):
         # test rendering engine
         template = PageTemplateFile(os.path.join(path, "simple.pt"))
         template = template.__of__(self.folder)
-        self.assertTrue('world' in template())
+        self.assertIn('world', template())
 
     def test_pagetemplatefile_processing_instruction_skipped(self):
         from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -59,14 +59,17 @@ class TestPatches(Sandboxed, ZopeTestCase):
         with open(os.path.join(path, "simple.pt")) as fd:
             data = fd.read()
         template.write(data)
-        self.assertTrue('world' in template())
+        self.assertIn('world', template())
 
         # test arguments
         with open(os.path.join(path, "options.pt")) as fd:
             data = fd.read()
         template.write(data)
-        self.assertTrue('Hello world' in template(
-            greeting='Hello world'))
+        self.assertIn(
+            'Hello world',
+            template(
+                greeting='Hello world')
+        )
 
         # test commit
         import transaction

@@ -115,21 +115,21 @@ class TestResource(unittest.TestCase):
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assertTrue('public' not in resp.headers)
+            self.assertNotIn('public', resp.headers)
 
             Resource.enable_ms_public_header = True
             req, resp = make_request_response()
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assertTrue('public' not in resp.headers)
-            self.assertTrue('allow' in resp.headers)
+            self.assertNotIn('public', resp.headers)
+            self.assertIn('allow', resp.headers)
 
             req, resp = make_request_response(
                 environ={'USER_AGENT': MS_DAV_AGENT})
             resource = self._makeOne()
             resource.OPTIONS(req, resp)
-            self.assertTrue('public' in resp.headers)
-            self.assertTrue('allow' in resp.headers)
+            self.assertIn('public', resp.headers)
+            self.assertIn('allow', resp.headers)
             self.assertEqual(resp.headers['public'], resp.headers['allow'])
 
         finally:

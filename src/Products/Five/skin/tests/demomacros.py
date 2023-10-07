@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Demo StandardMacros
-"""
+"""Demo StandardMacros."""
 
 from Products.Five import StandardMacros as BaseMacros
 

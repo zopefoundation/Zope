@@ -72,8 +72,8 @@ def _name_to_ips(host):
     """Map a name *host* to the sequence of its IP addresses.
 
     Use *host* itself (as sequence) if it already is an IP address.
-    Thus, if only a specific interface on a host is trusted,
-    identify it by its IP (and not the host name).
+    Thus, if only a specific interface on a host is trusted, identify it
+    by its IP (and not the host name).
     """
     if isinstance(host, bytes):
         host = host.decode('utf-8')

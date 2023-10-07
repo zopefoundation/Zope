@@ -12,7 +12,8 @@
 ##############################################################################
 """Cache management support.
 
-This class is mixed into the application manager in App.ApplicationManager.
+This class is mixed into the application manager in
+App.ApplicationManager.
 """
 
 from AccessControl.class_init import InitializeClass
@@ -20,8 +21,7 @@ from Acquisition import aq_parent
 
 
 class CacheManager:
-    """Cache management mix-in
-    """
+    """Cache management mix-in."""
 
     def _getDB(self):
         try:
@@ -34,10 +34,8 @@ class CacheManager:
         return db.getCacheSize()
 
     def cache_detail(self, REQUEST=None):
-        """
-        Returns the name of the classes of the objects in the cache
-        and the number of objects in the cache for each class.
-        """
+        """Returns the name of the classes of the objects in the cache and the
+        number of objects in the cache for each class."""
         detail = self._getDB().cacheDetail()
         if REQUEST is not None:
             # format as text
@@ -48,9 +46,7 @@ class CacheManager:
         return detail
 
     def cache_extreme_detail(self, REQUEST=None):
-        """
-        Returns information about each object in the cache.
-        """
+        """Returns information about each object in the cache."""
         detail = self._getDB().cacheExtremeDetail()
         if REQUEST is not None:
             # sort the list.

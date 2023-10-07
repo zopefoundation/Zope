@@ -1,7 +1,9 @@
 import os
-from typing import Optional, Tuple, List
 from configparser import NoSectionError
 from configparser import RawConfigParser
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

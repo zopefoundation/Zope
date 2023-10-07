@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Initialize the Zope2 Package and provide a published module
-"""
+"""Initialize the Zope2 Package and provide a published module."""
 
 import os
 import sys

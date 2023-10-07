@@ -11,8 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test i18n.
-"""
+"""Test i18n."""
 
 from Products.Five import BrowserView
 from zope.i18nmessageid import MessageFactory

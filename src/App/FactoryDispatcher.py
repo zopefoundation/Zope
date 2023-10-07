@@ -28,9 +28,8 @@ from OFS.metaconfigure import get_registered_packages
 
 
 def _product_packages():
-    """Returns all product packages including the regularly defined
-    zope2 packages and those without the Products namespace package.
-    """
+    """Returns all product packages including the regularly defined zope2
+    packages and those without the Products namespace package."""
     import Products
 
     _packages = {}
@@ -46,8 +45,7 @@ def _product_packages():
 
 
 class Product(Base):
-    """Model a non-persistent product wrapper.
-    """
+    """Model a non-persistent product wrapper."""
 
     security = ClassSecurityInfo()
 
@@ -96,8 +94,7 @@ class ProductDispatcher(Implicit):
 
 
 class FactoryDispatcher(Implicit):
-    """Provide a namespace for product "methods"
-    """
+    """Provide a namespace for product "methods"."""
 
     security = ClassSecurityInfo()
 
@@ -158,8 +155,7 @@ class FactoryDispatcher(Implicit):
 
     # Provide a replacement for manage_main that does a redirection:
     def manage_main(trueself, self, REQUEST, update_menu=0):
-        """Implement a contents view by redirecting to the true view
-        """
+        """Implement a contents view by redirecting to the true view."""
         REQUEST.RESPONSE.redirect(self.DestinationURL() + '/manage_main')
 
 

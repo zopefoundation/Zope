@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Standard management interface support
-"""
+"""Standard management interface support."""
 
 import html
 import itertools
@@ -69,8 +68,7 @@ class Tabs(Base):
     manage_workspace__roles__ = ('Authenticated',)
 
     def manage_workspace(self, REQUEST):
-        """Dispatch to first interface in manage_options
-        """
+        """Dispatch to first interface in manage_options."""
         options = self.filtered_manage_options(REQUEST)
         try:
             m = options[0]['action']
@@ -138,7 +136,7 @@ InitializeClass(Tabs)
 
 @implementer(INavigation)
 class Navigation(Base):
-    """Basic navigation UI support"""
+    """Basic navigation UI support."""
 
     security = ClassSecurityInfo()
 
@@ -183,7 +181,7 @@ class Navigation(Base):
 
     @security.public
     def manage_zmi_logout(self, REQUEST, RESPONSE):
-        """Logout current user"""
+        """Logout current user."""
         p = getattr(REQUEST, '_logout_path', None)
         if p is not None:
             return self.restrictedTraverse(*p)
