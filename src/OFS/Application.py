@@ -519,35 +519,32 @@ def pgetattr(product, name, default=install_products, __init__=0):
 DEFAULT_ROOT_TEMPLATE = """\
 <!DOCTYPE html>
 <html>
-  <head>
-    <title tal:content="template/title">The title</title>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" type="image/x-icon"
-          href="/++resource++logo/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180"
-          href="/++resource++logo/favicon/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32"
-          href="/++resource++logo/favicon/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16"
-          href="/++resource++logo/favicon/favicon-16x16.png" />
-  </head>
-  <body>
-    <a href="https://www.zope.dev">
-      <img width="300" src="/++resource++logo/Zope.svg" alt="Zope logo" />
-    </a>
-
-    <h2><span tal:replace="context/title_or_id">content title or id</span>
-        <span tal:condition="template/title"
-              tal:replace="template/title">optional template title</span></h2>
-
-    <p>
-      This is Page Template <em tal:content="template/id">template id</em>.
-    </p>
-
-    <p>
-      For documentation, please visit
-      <a href="https://zope.readthedocs.io">https://zope.readthedocs.io</a>.
-    </p>
-  </body>
+    <head>
+        <title tal:content="template/title">The title</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="shortcut icon" type="image/x-icon" href="/++resource++logo/favicon/favicon.svg" />
+        <link rel="stylesheet" type="text/css" href="/++resource++logo/default.css" />
+    </head>
+    <body>
+        <a href="https://www.zope.dev" target="_blank">
+            <img src="/++resource++logo/Zope.svg" id="logo" alt="Zope logo" />
+        </a>
+        <h1>
+            <span tal:condition="template/title" tal:replace="context/title_or_id">
+                content title or id
+            </span>:
+            <span tal:condition="template/title" tal:replace="template/title">
+                optional template title
+            </span>
+        </h1>
+        <p>
+            This is Page Template <em tal:content="template/id">template id</em>.
+        </p>
+        <p>
+            For documentation, please visit
+            <a href="https://zope.readthedocs.io">https://zope.readthedocs.io</a>.
+        </p>
+    </body>
 </html>
 """
