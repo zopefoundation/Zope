@@ -16,7 +16,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
-- Honor a request's `Content-Length`
+- Honor a request's ``Content-Length``
   (`#1171 <https://github.com/zopefoundation/Zope/issues/1171>`_).
 
 
