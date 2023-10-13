@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.7 (unreleased)
 ------------------
 
+- Update the Ace editor in the ZMI.
+
+- Restrict access to static ZMI resources.
+
 - Update to newest compatible versions of dependencies.
 
 

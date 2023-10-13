@@ -351,7 +351,8 @@ class AppInitializer:
         if 'index_html' not in app:
             from Products.PageTemplates.ZopePageTemplate import \
                 ZopePageTemplate
-            root_pt = ZopePageTemplate('index_html')
+            root_pt = ZopePageTemplate('index_html',
+                                       text=DEFAULT_ROOT_TEMPLATE)
             root_pt.pt_setTitle('Auto-generated default page')
             app._setObject('index_html', root_pt)
             self.commit('Added default view for root object')
@@ -513,3 +514,40 @@ def pgetattr(product, name, default=install_products, __init__=0):
         return default
 
     raise AttributeError(name)
+
+
+DEFAULT_ROOT_TEMPLATE = """\
+<!DOCTYPE html>
+<html>
+  <head>
+    <title tal:content="template/title">The title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" type="image/x-icon"
+          href="/++resource++logo/favicon/favicon.svg" />
+    <link rel="stylesheet" type="text/css"
+          href="/++resource++logo/default.css" />
+  </head>
+  <body>
+    <a href="https://www.zope.dev" target="_blank">
+      <img src="/++resource++logo/Zope.svg" id="logo" alt="Zope logo" />
+    </a>
+    <h1>
+      <span tal:condition="template/title" tal:replace="context/title_or_id">
+        content title or id
+      </span>:
+      <span tal:condition="template/title" tal:replace="template/title">
+        optional template title
+      </span>
+    </h1>
+    <p>
+      This is Page Template <em tal:content="template/id">template id</em>.
+    </p>
+    <p>
+      For documentation, please visit
+      <a href="https://zope.readthedocs.io">https://zope.readthedocs.io</a>.
+    </p>
+  </body>
+</html>
+"""

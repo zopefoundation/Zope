@@ -6,7 +6,13 @@
 
     <browser:resourceDirectory
         name="zmi"
-        directory="resources" />
+        directory="resources"
+        permission="zope2.ViewManagementScreens" />
+
+    <browser:resourceDirectory
+        name="logo"
+        directory="resources/logo"
+        permission="zope.Public" />
 
     <subscriber
         provides="App.interfaces.ICSSPaths"
