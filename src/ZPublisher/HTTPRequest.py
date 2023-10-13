@@ -1539,9 +1539,6 @@ class LimitedFileReader:
             raise StopIteration()
         return data
 
-    def __del__(self):
-        return self.fp.__del__()
-
     def __getattr__(self, attr):
         if attr not in self.DELEGATE:
             raise AttributeError(attr)
