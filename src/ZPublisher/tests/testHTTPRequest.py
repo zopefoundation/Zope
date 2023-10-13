@@ -31,6 +31,7 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
 from ZPublisher.HTTPRequest import BadRequest
 from ZPublisher.HTTPRequest import FileUpload
+from ZPublisher.HTTPRequest import LimitedFileReader
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.tests.testBaseRequest import TestRequestViewsBase
@@ -1514,6 +1515,15 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req["x"], "äöü")
         self.assertEqual(req["y"], "äöü")
 
+    def test_content_length_limitation(self):
+        body = b"123abc"
+        env = self._makePostEnviron(body)
+        env["CONTENT_TYPE"] = "application/octed-stream"
+        env["CONTENT_LENGTH"] = "3"
+        req = self._makeOne(_Unseekable(BytesIO(body)), env)
+        req.processInputs()
+        self.assertEqual(req["BODY"], b"123")
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
@@ -1568,6 +1578,48 @@ class TestSearchType(unittest.TestCase):
 
     def test_special(self):
         self.check("abc:a-_0b", ":a-_0b")
+
+
+class TestLimitedFileReader(unittest.TestCase):
+    def test_enforce_limit(self):
+        f = LimitedFileReader(BytesIO(), 10)
+        enforce = f._enforce_limit
+        self.assertEqual(enforce(None), 10)
+        self.assertEqual(enforce(-1), 10)
+        self.assertEqual(enforce(20), 10)
+        self.assertEqual(enforce(5), 5)
+
+    def test_read(self):
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        self.assertEqual(len(f.read()), 10)
+        self.assertEqual(len(f.read()), 0)
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        self.assertEqual(len(f.read(8)), 8)
+        self.assertEqual(len(f.read(3)), 2)
+        self.assertEqual(len(f.read(3)), 0)
+
+    def test_readline(self):
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        self.assertEqual(f.readline(), b"123\n")
+        self.assertEqual(f.readline(), b"567\n")
+        self.assertEqual(f.readline(), b"90")
+        self.assertEqual(f.readline(), b"")
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        self.assertEqual(f.readline(1), b"1")
+
+    def test_iteration(self):
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        self.assertEqual(list(f), [b"123\n", b"567\n", b"90"])
+
+    def test_del(self):
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        del f
+
+    def test_delegation(self):
+        f = LimitedFileReader(BytesIO(b"123\n567\n901\n"), 10)
+        with self.assertRaises(AttributeError):
+            f.write
+        f.close()
 
 
 class _Unseekable:
