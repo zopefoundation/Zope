@@ -1427,9 +1427,17 @@ class ZopeFieldStorage(ValueAccessor):
     VALUE_LIMIT = Global("FORM_MEMORY_LIMIT")
 
     def __init__(self, fp, environ):
-        self.file = fp
         method = environ.get("REQUEST_METHOD", "GET").upper()
         url_qs = environ.get("QUERY_STRING", "")
+        content_length = environ.get("CONTENT_LENGTH")
+        if content_length:
+            try:
+                fp.tell()
+            except Exception:
+                # potentially not preprocessed by the WSGI server
+                # enforce ``Content-Length`` specified body length limit
+                fp = LimitedFileReader(fp, int(content_length))
+        self.file = fp
         post_qs = ""
         hl = []
         content_type = environ.get("CONTENT_TYPE",
@@ -1491,6 +1499,53 @@ class ZopeFieldStorage(ValueAccessor):
                     name=part.name, value=part.raw,
                     value_charset=_mp_charset(part))
             add_field(field)
+
+
+class LimitedFileReader:
+    """File wrapper emulating EOF."""
+
+    # attributes to be delegated to the file
+    DELEGATE = set(["close", "closed", "fileno", "mode", "name"])
+
+    def __init__(self, fp, limit):
+        """emulate EOF after *limit* bytes have been read.
+
+        *fp* is a binary file like object without ``seek`` support.
+        """
+        self.fp = fp
+        assert limit >= 0
+        self.limit = limit
+
+    def _enforce_limit(self, size):
+        limit = self.limit
+        return limit if size is None or size < 0 else min(size, limit)
+
+    def read(self, size=-1):
+        data = self.fp.read(self._enforce_limit(size))
+        self.limit -= len(data)
+        return data
+
+    def readline(self, size=-1):
+        data = self.fp.readline(self._enforce_limit(size))
+        self.limit -= len(data)
+        return data
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        data = self.readline()
+        if not data:
+            raise StopIteration()
+        return data
+
+    def __del__(self):
+        return self.fp.__del__()
+
+    def __getattr__(self, attr):
+        if attr not in self.DELEGATE:
+            raise AttributeError(attr)
+        return getattr(self.fp, attr)
 
 
 def _mp_charset(part):
