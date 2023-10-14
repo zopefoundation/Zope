@@ -1505,7 +1505,7 @@ class LimitedFileReader:
     """File wrapper emulating EOF."""
 
     # attributes to be delegated to the file
-    DELEGATE = set(["close", "closed", "fileno", "mode", "name"])
+    DELEGATE = {"close", "closed", "fileno", "mode", "name"}
 
     def __init__(self, fp, limit):
         """emulate EOF after *limit* bytes have been read.
