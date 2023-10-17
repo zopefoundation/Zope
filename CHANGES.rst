@@ -21,7 +21,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   WSGI servers which do not follow the PEP 3333 recommendation
   regarding input handling for requests with
   ``Content-Length`` header.
-  Allows integrators to fix
+  Allows administrators to fix
   `#1171 <https://github.com/zopefoundation/Zope/pull/1171>`_.
 
 
