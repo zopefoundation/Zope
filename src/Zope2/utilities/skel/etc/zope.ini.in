@@ -15,6 +15,11 @@ setup_console_handler = False
 pipeline =
     egg:Zope#httpexceptions
     translogger
+# uncomment the following line when your WSGI server does
+# not honor the recommendation of note 1
+# regarding the WSGI input stream of PEP 3333
+# or violates section 6.3 of RFC 7230
+#   egg:Zope#content_length
     zope
 
 [loggers]

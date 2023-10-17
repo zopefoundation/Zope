@@ -142,6 +142,7 @@ setup(
         ],
         'paste.filter_app_factory': [
             'httpexceptions=ZPublisher.httpexceptions:main',
+            'content_length=ZPublisher.pastefilter:filter_content_length',
         ],
         'console_scripts': [
             'addzopeuser=Zope2.utilities.adduser:main',

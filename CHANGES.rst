@@ -16,6 +16,14 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- New ``paste.filter_app_factory`` entry point ``content_length``.
+  This WSGI middleware component can be used with
+  WSGI servers which do not follow the PEP 3333 recommendation
+  regarding input handling for requests with
+  ``Content-Length`` header.
+  Allows integrators to fix
+  `#1171 <https://github.com/zopefoundation/Zope/pull/1171>`_.
+
 
 5.8.6 (2023-10-04)
 ------------------
