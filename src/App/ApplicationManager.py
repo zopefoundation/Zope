@@ -238,8 +238,7 @@ class DebugManager(Tabs, Traversable, Implicit):
 InitializeClass(DebugManager)
 
 
-class ApplicationManager(CacheManager,
-                         Persistent,
+class ApplicationManager(Persistent,
                          Tabs,
                          Traversable,
                          Implicit):
@@ -316,7 +315,7 @@ class ApplicationManager(CacheManager,
         return getConfiguration().clienthome
 
 
-class AltDatabaseManager(Traversable, UndoSupport):
+class AltDatabaseManager(CacheManager, Traversable, UndoSupport):
     """ Database management DBTab-style
     """
     id = 'DatabaseManagement'
