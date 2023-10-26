@@ -28,7 +28,7 @@
             <details>
               <dtml-if request_info>
                 <summary>
-                  <b><dtml-var "request_info.get('REQUEST_METHOD')"> <dtml-var "request_info.get('REQUEST_URI')"></b>
+                  <b><dtml-var "request_info.get('REQUEST_METHOD')"> <dtml-var "request_info.get('REQUEST_URI') or request_info.get('PATH_INFO')"></b>
                 </summary>
                 <pre style="font-size:smaller"><dtml-var request_formatted html_quote></pre>
               <dtml-else>
