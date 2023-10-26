@@ -18,7 +18,7 @@
   </p>
 
   <h3>Top 100 reference counts</h3>
-  <select name="foo" size="10" class="form-control">
+  <select name="foo" size="10" class="form-control my-3">
     <dtml-in "refcount(100)">
       <option>&dtml-sequence-item;: &dtml-sequence-key;</option>
     </dtml-in>
@@ -28,14 +28,14 @@
     <dtml-if delta_info>
       <h3 class="mt-4">Changes since last refresh</h3>
 
-      <table class="table table-bordered table-sm mb-2">
+      <table class="table table-sm table-striped my-3">
       <dtml-in rcdeltas mapping>
       <dtml-if sequence-start>
       <tr>
-      <th>Class</th>
-      <th><dtml-var rcdate fmt="%Y/%m/%d - %H:%M:%S" null=""></th>
-      <th><dtml-var ZopeTime fmt="%Y/%m/%d - %H:%M:%S"></th>
-      <th>Delta</th>
+      <th class="text-muted">Class</th>
+      <th class="text-muted"><dtml-var rcdate fmt="%Y/%m/%d - %H:%M:%S" null=""></th>
+      <th class="text-muted"><dtml-var ZopeTime fmt="%Y/%m/%d - %H:%M:%S"></th>
+      <th class="text-muted">Delta</th>
       </tr>
       </dtml-if>
       <tr>
