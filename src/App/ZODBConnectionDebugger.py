@@ -64,6 +64,7 @@ class ZODBConnectionDebugger(Item, Implicit):
                     request_info_formatted = pprint.pformat(request_info)
 
             if opened is not None:
+                # output UTC time with the standard Z time zone indicator
                 open_since = "{}".format(
                     time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(opened)))
                 open_for = "{:.2f}s".format(now - opened)
@@ -71,7 +72,6 @@ class ZODBConnectionDebugger(Item, Implicit):
                 open_since = '(closed)'
                 open_for = ''
 
-            # output UTC time with the standard Z time zone indicator
             result.append({
                 'open_since': open_since,
                 'open_for': open_for,

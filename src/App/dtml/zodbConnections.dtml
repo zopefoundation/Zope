@@ -1,8 +1,4 @@
 <dtml-var manage_page_header>
-<dtml-if debug_auto_reload>
-<meta HTTP-EQUIV="Refresh"
-  CONTENT="&dtml-debug_auto_reload;;URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
-</dtml-if>
 <dtml-with "_(management_view='ZODB Connections')">
   <dtml-var manage_tabs>
 </dtml-with>
