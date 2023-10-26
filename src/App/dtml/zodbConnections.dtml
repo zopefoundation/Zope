@@ -13,7 +13,7 @@
   </p>
  
   <h3>ZODB database connections</h3>
-  <table class="table table-sm table-striped mt-3 mb-5">
+  <table class="table table-striped mt-3 mb-5">
     <tr>
       <th class="text-muted pr-3">Opened at</th>
       <th class="text-muted pr-3">Duration</th>
