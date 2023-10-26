@@ -338,6 +338,9 @@ class AltDatabaseManager(Traversable, UndoSupport):
     def cache_length(self):
         return self._getDB().cacheSize()
 
+    def cache_active_and_inactive_count(self):
+        return sum([x['size'] for x in self._getDB().cacheDetailSize()])
+
     def cache_length_bytes(self):
         return self._getDB().getCacheSizeBytes()
 

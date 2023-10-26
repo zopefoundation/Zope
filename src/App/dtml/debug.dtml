@@ -49,33 +49,26 @@
     </dtml-if>
   </dtml-let>
   
-  <p class="form-help">
-    <a href="../Database/cache_detail" class="mr-3" target="blank">
-      <i class="fas fa-microchip" title="Cache detail"></i> 
-      Cache detail
-    </a>
-    <a href="../Database/cache_extreme_detail" target="blank">
-      <i class="fas fa-microchip" title="Cache extreme detail"></i> 
-      Cache extreme detail
-    </a>
-  </p>
-
   <div class="zmi-controls row border-top border-bottom p-3 bg-light">
     <form action="&dtml-URL;" method="GET" class="form-group form-inline p-0 m-0">
       <button class="btn btn-primary mr-3" 
         onclick="window.location.href='&dtml-URL;?update_snapshot=1';"
       >Update Snapshot</button>
       <dtml-if debug_auto_reload>
-        <button class="btn btn-primary mr-3"
-          onclick="window.location.href='&dtml-URL;';"
-        >Stop auto refresh</button>
+          <button class="btn btn-primary mr-3"
+            onclick="window.location.href='&dtml-URL;';"
+          >Stop auto refresh</button>
+        </form>
       <dtml-else>
-        <button class="btn btn-primary mr-3"
-          onclick="window.location.href='&dtml-URL;';"
-        >Refresh</button>
-        <label for="debug_auto_reload" class="mx-3">Auto refresh interval (seconds):</label>
-        <input class="form-control mr-3" type="text" id="debug_auto_reload" name="debug_auto_reload" size="3" value="10" />
-        <input class="btn btn-primary" type="submit" value="Start auto refresh" />
+          <button class="btn btn-primary mr-3"
+            onclick="window.location.href='&dtml-URL;';"
+          >Refresh</button>
+        </form>
+        <form action="&dtml-URL;" method="GET" class="form-group form-inline p-0 m-0">
+          <label for="debug_auto_reload" class="mx-3">Auto refresh interval (seconds):</label>
+          <input class="form-control mr-3" type="text" id="debug_auto_reload" name="debug_auto_reload" size="3" value="10" />
+          <input class="btn btn-primary" type="submit" value="Start auto refresh" />
+        </form>
       </dtml-if>
     </form>
   </div>

@@ -91,10 +91,21 @@
       <tr>
           <th>Total</th>
           <th>&dtml-cache_length;</th>
-          <th>&nbsp;</th>
+          <th>&dtml-cache_active_and_inactive_count;</th>
       </tr>
     </tbody>
   </table>
+
+  <p class="form-help">
+    <a href="cache_detail" class="mr-3" target="blank">
+      <i class="fas fa-microchip" title="Cache detail"></i>
+      Cache detail
+    </a>
+    <a href="cache_extreme_detail" target="blank">
+      <i class="fas fa-microchip" title="Cache extreme detail"></i>
+      Cache extreme detail
+    </a>
+  </p>
 
   <div class="zmi-controls mb-5">
     <form action="&dtml-URL1;/manage_minimize" method="post">
