@@ -13,29 +13,29 @@
   </p>
  
   <h3>ZODB database connections</h3>
-  <table class="table-sm table-bordered mb-5">
+  <table class="table table-sm table-striped mt-3 mb-5">
     <tr>
-      <th>Opened at</th>
-      <th>Duration</th>
-      <th>Info</th>
+      <th class="text-muted pr-3">Opened at</th>
+      <th class="text-muted pr-3">Duration</th>
+      <th class="text-muted w-100">Info</th>
     </tr>
     <dtml-in dbconnections mapping>
       <tr>
-        <td class="text-nowrap" valign="top">&dtml-open_since;</td>
-        <td class="text-nowrap" valign="top"><dtml-var "open_for or '-'"></td>
-        <td>
+        <td class="text-nowrap pr-3" valign="top">&dtml-open_since;</td>
+        <td class="text-nowrap pr-3" valign="top"><dtml-var "open_for or '-'"></td>
+        <td class="text-nowrap text-primary">
           <dtml-if open_for>
             <details>
               <dtml-if request_info>
                 <summary>
-                  <b><dtml-var "request_info['REQUEST_METHOD']"> <dtml-var "request_info['REQUEST_URI']"></b>
+                  <b><dtml-var "request_info.get('REQUEST_METHOD')"> <dtml-var "request_info.get('REQUEST_URI')"></b>
                 </summary>
-                <pre><dtml-var request_formatted html_quote></pre>
+                <pre style="font-size:smaller"><dtml-var request_formatted html_quote></pre>
               <dtml-else>
                 <summary>
                   No request information available
                 </summary>
-                <pre><dtml-var info_formatted html_quote></pre>
+                <pre style="font-size:smaller"><dtml-var info_formatted html_quote></pre>
               </dtml-if>
             </details>
           <dtml-else>
