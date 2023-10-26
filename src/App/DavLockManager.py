@@ -39,7 +39,9 @@ class DavLockManager(Item, Implicit):
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': 'manage_main'},
-        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
+        {'label': 'Reference Counts', 'action': '../DebugInfo/manage_main'},
+        {'label': 'ZODB Connections',
+         'action': '../ZODBConnections/manage_main'},
     )
 
     @security.protected(webdav_manage_locks)

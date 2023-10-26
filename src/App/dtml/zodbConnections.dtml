@@ -1,0 +1,55 @@
+<dtml-var manage_page_header>
+<dtml-if debug_auto_reload>
+<meta HTTP-EQUIV="Refresh"
+  CONTENT="&dtml-debug_auto_reload;;URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
+</dtml-if>
+<dtml-with "_(management_view='ZODB Connections')">
+  <dtml-var manage_tabs>
+</dtml-with>
+
+<main class="container-fluid">
+
+  <p class="form-help mt-4">
+    This page shows ZODB database connections and their current state. The
+    Duration column tells you how long an open database connection has been
+    held by the request shown in the Info column next to it. You can use this
+    view to diagnose long-running requests.
+  </p>
+ 
+  <h3>ZODB database connections</h3>
+  <table class="table-sm table-bordered mb-5">
+    <tr>
+      <th>Opened at</th>
+      <th>Duration</th>
+      <th>Info</th>
+    </tr>
+    <dtml-in dbconnections mapping>
+      <tr>
+        <td class="text-nowrap" valign="top">&dtml-open_since;</td>
+        <td class="text-nowrap" valign="top"><dtml-var "open_for or '-'"></td>
+        <td>
+          <dtml-if open_for>
+            <details>
+              <dtml-if request_info>
+                <summary>
+                  <b><dtml-var "request_info['REQUEST_METHOD']"> <dtml-var "request_info['REQUEST_URI']"></b>
+                </summary>
+                <pre><dtml-var request_formatted html_quote></pre>
+              <dtml-else>
+                <summary>
+                  No request information available
+                </summary>
+                <pre><dtml-var info_formatted html_quote></pre>
+              </dtml-if>
+            </details>
+          <dtml-else>
+            -
+          </dtml-if>
+        </td>
+      </tr>
+    </dtml-in>
+  </table>
+
+</main>
+
+<dtml-var manage_page_footer>

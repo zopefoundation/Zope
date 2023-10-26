@@ -3,7 +3,7 @@
 <meta HTTP-EQUIV="Refresh"
   CONTENT="&dtml-debug_auto_reload;;URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
 </dtml-if>
-<dtml-with "_(management_view='Debug Information')">
+<dtml-with "_(management_view='Reference Counts')">
   <dtml-var manage_tabs>
 </dtml-with>
 
@@ -14,7 +14,7 @@
 <main class="container-fluid">
 
   <p class="form-help mt-4">
-    Reference count and database connection information
+    Python reference count information
   </p>
 
   <h3>Top 100 reference counts</h3>
@@ -80,20 +80,6 @@
     </form>
   </div>
   
-  <h3>ZODB database connections</h3>
-  <table class="table table-sm table-bordered mb-5">
-    <tr>
-      <th>Opened</th>
-      <th>Info</th>
-    </tr>
-    <dtml-in dbconnections mapping>
-      <tr>
-        <td class="text-nowrap">&dtml-opened;</td>
-        <td><samp>&dtml-info;</samp></td>
-      </tr>
-    </dtml-in>
-  </table>
-
 </main>
 
 <dtml-var manage_page_footer>
