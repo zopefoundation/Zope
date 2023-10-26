@@ -28,6 +28,7 @@ from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from App.Undo import UndoSupport
 from App.version_txt import version_txt
+from App.ZODBConnectionDebugger import ZODBConnectionDebugger
 from DateTime.DateTime import DateTime
 from OFS.Traversable import Traversable
 from Persistence import Persistent
@@ -63,7 +64,9 @@ class DatabaseChooser(Tabs, Traversable, Implicit):
         {'label': 'Databases', 'action': 'manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
-        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
+        {'label': 'Reference Counts', 'action': '../DebugInfo/manage_main'},
+        {'label': 'ZODB Connections',
+         'action': '../ZODBConnections/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -108,7 +111,9 @@ class ConfigurationViewer(Tabs, Traversable, Implicit):
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': 'manage_main'},
         {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
-        {'label': 'Debug Information', 'action': '../DebugInfo/manage_main'},
+        {'label': 'Reference Counts', 'action': '../DebugInfo/manage_main'},
+        {'label': 'ZODB Connections',
+         'action': '../ZODBConnections/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -150,7 +155,7 @@ class DebugManager(Tabs, Traversable, Implicit):
     manage = manage_main = manage_workspace = DTMLFile('dtml/debug', globals())
     manage_main._setName('manage_main')
     id = 'DebugInfo'
-    name = title = 'Debug Information'
+    name = title = 'Reference Counts'
     meta_type = name
     zmi_icon = 'fas fa-bug'
 
@@ -159,7 +164,9 @@ class DebugManager(Tabs, Traversable, Implicit):
         {'label': 'Databases', 'action': '../Database/manage_main'},
         {'label': 'Configuration', 'action': '../Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': '../DavLocks/manage_main'},
-        {'label': 'Debug Information', 'action': 'manage_main'},
+        {'label': 'Reference Counts', 'action': 'manage_main'},
+        {'label': 'ZODB Connections',
+         'action': '../ZODBConnections/manage_main'},
     )
 
     def refcount(self, n=None, t=(type(Implicit), type(object))):
@@ -224,10 +231,6 @@ class DebugManager(Tabs, Traversable, Implicit):
                  'rc': n[1][0],
                  } for n in rd]
 
-    def dbconnections(self):
-        import Zope2  # for data
-        return Zope2.DB.connectionDebugInfo()
-
     def manage_getSysPath(self):
         return list(sys.path)
 
@@ -235,8 +238,7 @@ class DebugManager(Tabs, Traversable, Implicit):
 InitializeClass(DebugManager)
 
 
-class ApplicationManager(CacheManager,
-                         Persistent,
+class ApplicationManager(Persistent,
                          Tabs,
                          Traversable,
                          Implicit):
@@ -255,6 +257,7 @@ class ApplicationManager(CacheManager,
     Configuration = ConfigurationViewer()
     DavLocks = DavLockManager()
     DebugInfo = DebugManager()
+    ZODBConnections = ZODBConnectionDebugger()
 
     manage = manage_main = DTMLFile('dtml/cpContents', globals())
     manage_main._setName('manage_main')
@@ -263,7 +266,8 @@ class ApplicationManager(CacheManager,
         {'label': 'Databases', 'action': 'Database/manage_main'},
         {'label': 'Configuration', 'action': 'Configuration/manage_main'},
         {'label': 'DAV Locks', 'action': 'DavLocks/manage_main'},
-        {'label': 'Debug Information', 'action': 'DebugInfo/manage_main'},
+        {'label': 'Reference Counts', 'action': 'DebugInfo/manage_main'},
+        {'label': 'ZODB Connections', 'action': 'ZODBConnections/manage_main'},
     )
     MANAGE_TABS_NO_BANNER = True
 
@@ -311,7 +315,7 @@ class ApplicationManager(CacheManager,
         return getConfiguration().clienthome
 
 
-class AltDatabaseManager(Traversable, UndoSupport):
+class AltDatabaseManager(CacheManager, Traversable, UndoSupport):
     """ Database management DBTab-style
     """
     id = 'DatabaseManagement'
@@ -332,6 +336,9 @@ class AltDatabaseManager(Traversable, UndoSupport):
 
     def cache_length(self):
         return self._getDB().cacheSize()
+
+    def cache_active_and_inactive_count(self):
+        return sum([x['size'] for x in self._getDB().cacheDetailSize()])
 
     def cache_length_bytes(self):
         return self._getDB().getCacheSizeBytes()

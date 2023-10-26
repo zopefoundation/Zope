@@ -10,6 +10,12 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.7 (unreleased)
 ------------------
 
+- Separate ZODB connection information into new ZODB Connections view.
+
+- Move the cache detail links to the individual database pages.
+
+- Fix the auto refresh functionality on the Reference Count page
+
 - Update the Ace editor in the ZMI.
 
 - Restrict access to static ZMI resources.

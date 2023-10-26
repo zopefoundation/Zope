@@ -969,6 +969,18 @@ header.navbar select.form-control-sm,
 	box-sizing: border-box;
 }
 
+.zmi-connection_info {
+    display: none;
+}
+
+#request_uri {
+    margin-bottom: 0;
+}
+
+#conn_info {
+    margin-top: 1rem;
+}
+
 /* EXAMPLE: IMPLANT YOUR LOGO */
 /*
 	.zmi-manage_menu {

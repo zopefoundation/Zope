@@ -3,7 +3,7 @@
 <meta HTTP-EQUIV="Refresh"
   CONTENT="&dtml-debug_auto_reload;;URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
 </dtml-if>
-<dtml-with "_(management_view='Debug Information')">
+<dtml-with "_(management_view='Reference Counts')">
   <dtml-var manage_tabs>
 </dtml-with>
 
@@ -14,11 +14,11 @@
 <main class="container-fluid">
 
   <p class="form-help mt-4">
-    Reference count and database connection information
+    Python reference count information
   </p>
 
   <h3>Top 100 reference counts</h3>
-  <select name="foo" size="10" class="form-control">
+  <select name="foo" size="10" class="form-control my-3">
     <dtml-in "refcount(100)">
       <option>&dtml-sequence-item;: &dtml-sequence-key;</option>
     </dtml-in>
@@ -28,14 +28,14 @@
     <dtml-if delta_info>
       <h3 class="mt-4">Changes since last refresh</h3>
 
-      <table class="table table-bordered table-sm mb-2">
+      <table class="table table-sm table-striped my-3">
       <dtml-in rcdeltas mapping>
       <dtml-if sequence-start>
       <tr>
-      <th>Class</th>
-      <th><dtml-var rcdate fmt="%Y/%m/%d - %H:%M:%S" null=""></th>
-      <th><dtml-var ZopeTime fmt="%Y/%m/%d - %H:%M:%S"></th>
-      <th>Delta</th>
+      <th class="text-muted">Class</th>
+      <th class="text-muted"><dtml-var rcdate fmt="%Y/%m/%d - %H:%M:%S" null=""></th>
+      <th class="text-muted"><dtml-var ZopeTime fmt="%Y/%m/%d - %H:%M:%S"></th>
+      <th class="text-muted">Delta</th>
       </tr>
       </dtml-if>
       <tr>
@@ -49,51 +49,30 @@
     </dtml-if>
   </dtml-let>
   
-  <p class="form-help">
-    <a href="../Database/cache_detail" class="mr-3" target="blank">
-      <i class="fas fa-microchip" title="Cache detail"></i> 
-      Cache detail
-    </a>
-    <a href="../Database/cache_extreme_detail" target="blank">
-      <i class="fas fa-microchip" title="Cache extreme detail"></i> 
-      Cache extreme detail
-    </a>
-  </p>
-
   <div class="zmi-controls row border-top border-bottom p-3 bg-light">
     <form action="&dtml-URL;" method="GET" class="form-group form-inline p-0 m-0">
       <button class="btn btn-primary mr-3" 
         onclick="window.location.href='&dtml-URL;?update_snapshot=1';"
       >Update Snapshot</button>
       <dtml-if debug_auto_reload>
-        <button class="btn btn-primary mr-3"
-          onclick="window.location.href='&dtml-URL;';"
-        >Stop auto refresh</button>
+          <button class="btn btn-primary mr-3"
+            onclick="window.location.href='&dtml-URL;';"
+          >Stop auto refresh</button>
+        </form>
       <dtml-else>
-        <button class="btn btn-primary mr-3"
-          onclick="window.location.href='&dtml-URL;';"
-        >Refresh</button>
-        <label for="debug_auto_reload" class="mx-3">Auto refresh interval (seconds):</label>
-        <input class="form-control mr-3" type="text" id="debug_auto_reload" name="debug_auto_reload" size="3" value="10" />
-        <input class="btn btn-primary" type="submit" value="Start auto refresh" />
+          <button class="btn btn-primary mr-3"
+            onclick="window.location.href='&dtml-URL;';"
+          >Refresh</button>
+        </form>
+        <form action="&dtml-URL;" method="GET" class="form-group form-inline p-0 m-0">
+          <label for="debug_auto_reload" class="mx-3">Auto refresh interval (seconds):</label>
+          <input class="form-control mr-3" type="text" id="debug_auto_reload" name="debug_auto_reload" size="3" value="10" />
+          <input class="btn btn-primary" type="submit" value="Start auto refresh" />
+        </form>
       </dtml-if>
     </form>
   </div>
   
-  <h3>ZODB database connections</h3>
-  <table class="table table-sm table-bordered mb-5">
-    <tr>
-      <th>Opened</th>
-      <th>Info</th>
-    </tr>
-    <dtml-in dbconnections mapping>
-      <tr>
-        <td class="text-nowrap">&dtml-opened;</td>
-        <td><samp>&dtml-info;</samp></td>
-      </tr>
-    </dtml-in>
-  </table>
-
 </main>
 
 <dtml-var manage_page_footer>
