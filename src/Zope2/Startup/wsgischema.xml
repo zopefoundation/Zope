@@ -121,7 +121,7 @@
        provides access via a file API and is not limited.
     </description>
 
-    <key name="form-memory-limit" datatype="byte-size" default="1MB">
+    <key name="form-memory-limit" datatype="byte-size" default="8MB">
       <description>
        Limits the total amount of memory for all parameter values held in
        memory.
