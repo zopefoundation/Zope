@@ -82,27 +82,65 @@
 
   <sectiontype name="dos_protection">
 
-    <description>Defines parameters for DOS attack protection</description>
+    <description>Options for DOS attack protection.
+
+       These options limit the amount of memory and disk resources for
+       the request processing by Zope itself
+       (in contrast to that by the application or the frontend WSGI server).
+
+       Note that the WSGI server (or WSGI middleware) may already have 
+       consumed similar resources. Those resources, too, should
+       likely get limited by corresponding configuration options.
+
+       Zope's own request processing consists of the determination
+       of the request parameters and access to the request body.
+
+       Request parameters can come from a query string and
+       the body of POST requests with content type
+       "application/x-www-form-urlencoded" or "multipart/form-data".
+       The options limit essentially the resources used
+       for parameter values from those POST requests.
+       form-urlencoded requests are assumed to contain only
+       small parameter values; for them, the complete body size is limited.
+       "multipart/form-data" requests are typically used
+       to upload (potentially) large files. For them,
+       small values are held in memory while large values
+       are stored on disk. An option controls when to switch
+       from memory to disk storage. Other options limit
+       the total memory and disk amount for the parameter values.
+
+       The protection options limit the resources used
+       for the raw request parameter values. For non file values
+       Zope maintains in addition preprocessed values;
+       they usually need memory resources in the same order
+       as the corresponding raw parameter values.
+
+       Zope provides access to the request body via
+       `request["BODY"]` and `request["BODYFILE"]`. The former
+       accesses the body as bytes and is limited; the latter
+       provides access via a file API and is not limited.
+    </description>
 
     <key name="form-memory-limit" datatype="byte-size" default="1MB">
       <description>
-       The maximum size for each part in a multipart post request,
-       for the complete body in an urlencoded post request
-       and for the complete request body when accessed as bytes
-       (rather than a file).
+       Limits the total amount of memory for all parameter values held in
+       memory.
+       Limits the size of form-urlencoded request bodies.
+       Limits the size of request bodies accessed via `request["BODY"]`.
       </description>
     </key>
 
     <key name="form-disk-limit" datatype="byte-size" default="1GB">
       <description>
-       The maximum size of a POST request body
+       Limits the total amount of disk space used for parameter values
+       stored on disk.
       </description>
     </key>
 
     <key name="form-memfile-limit" datatype="byte-size" default="4KB">
       <description>
-       The value of form variables of type file with larger size 
-       are stored on disk rather than in memory.
+       Specifies the parameter value size at which its storage
+       switches from memory to disk.
       </description>
     </key>
   </sectiontype>
