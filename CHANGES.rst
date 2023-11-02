@@ -10,11 +10,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.7 (unreleased)
 ------------------
 
-- Increase default value for ``form-memory-limit`` from 1MB to 8MB
-  to avoid the need for ``Plone`` to configure this option.
-  See
-  `#1180 <https://github.com/zopefoundation/Zope/pull/1180>`_.
-
 - Separate ZODB connection information into new ZODB Connections view.
 
 - Move the cache detail links to the individual database pages.
