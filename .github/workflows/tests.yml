@@ -22,6 +22,7 @@ jobs:
         - ["macos", "macos-11"]
         config:
         # [Python version, tox env]
+        - ["3.9",   "release-check"]
         - ["3.9",   "lint"]
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
@@ -32,9 +33,11 @@ jobs:
         - ["3.9",   "docs"]
         - ["3.9",   "coverage"]
         exclude:
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "release-check"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "lint"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "docs"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-11"], config: ["3.9",   "release-check"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "lint"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "docs"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
