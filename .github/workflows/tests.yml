@@ -22,6 +22,7 @@ jobs:
         - ["macos", "macos-11"]
         config:
         # [Python version, tox env]
+        - ["3.9",   "release-check"]
         - ["3.9",   "lint"]
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
@@ -29,12 +30,15 @@ jobs:
         - ["3.10",  "py310"]
         - ["3.11",  "py311"]
         - ["3.12",  "py312"]
+        - ["3.13.0-alpha - 3.13.0",  "py313"]
         - ["3.9",   "docs"]
         - ["3.9",   "coverage"]
         exclude:
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "release-check"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "lint"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "docs"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-11"], config: ["3.9",   "release-check"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "lint"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "docs"] }
           - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
@@ -42,6 +46,7 @@ jobs:
           # which causes build and package selection issues.
           - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
           - { os: ["macos", "macos-11"], config: ["3.12",  "py312"] }
+          - { os: ["macos", "macos-11"], config: ["3.13.0-alpha - 3.13.0",  "py313"] }
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
