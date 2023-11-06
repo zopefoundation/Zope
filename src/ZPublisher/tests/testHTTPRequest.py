@@ -1514,6 +1514,23 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req["x"], "äöü")
         self.assertEqual(req["y"], "äöü")
 
+    def test_put_with_form(self):
+        req_factory = self._getTargetClass()
+        body = b"foo=foo"
+        req = req_factory(
+            BytesIO(body),
+            {
+                "SERVER_NAME": "localhost",
+                "SERVER_PORT": "8080",
+                "REQUEST_METHOD": "PUT",
+                "CONTENT_TYPE": "application/x-www-form-urlencoded",
+                "CONTENT_LENGTH" : len(body),
+            },
+            None,
+        )
+        req.processInputs()
+        self.assertEqual(req.form["foo"], "foo")
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
