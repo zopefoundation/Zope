@@ -1450,7 +1450,12 @@ class ZopeFieldStorage(ValueAccessor):
         if method in ("POST", "PUT") \
            and content_type in (
            "multipart/form-data", "application/x-www-form-urlencoded",
-           "application/x-url-encoded"):
+           "application/x-url-encoded",
+           # ``Testing`` assumes "application/x-www-form-urlencoded"
+           # as default content type
+           # We have mapped a missing content type to ``""``.
+           "",
+           ):
             try:
                 fpos = fp.tell()
             except Exception:
@@ -1462,7 +1467,7 @@ class ZopeFieldStorage(ValueAccessor):
                     disk_limit=FORM_DISK_LIMIT,
                     memfile_limit=FORM_MEMFILE_LIMIT,
                     charset="latin-1").parts()
-            elif content_type == "application/x-www-form-urlencoded":
+            else:
                 post_qs = fp.read(FORM_MEMORY_LIMIT).decode("latin-1")
                 if fp.read(1):
                     raise BadRequest("form data processing "

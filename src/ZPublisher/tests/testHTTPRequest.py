@@ -1468,6 +1468,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 "SERVER_NAME": "localhost",
                 "SERVER_PORT": "8080",
                 "REQUEST_METHOD": "PUT",
+                "CONTENT_TYPE": "application",
             },
             None,
         )
@@ -1524,7 +1525,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
                 "SERVER_PORT": "8080",
                 "REQUEST_METHOD": "PUT",
                 "CONTENT_TYPE": "application/x-www-form-urlencoded",
-                "CONTENT_LENGTH" : len(body),
+                "CONTENT_LENGTH": len(body),
             },
             None,
         )
