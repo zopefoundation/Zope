@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.8.7 (unreleased)
 ------------------
 
+- Support form data in ``PUT`` requests (following the ``multipart`` example).
+  Fixes `#1182 <https://github.com/zopefoundation/Zope/issues/1182>`_.
+
 - Separate ZODB connection information into new ZODB Connections view.
 
 - Move the cache detail links to the individual database pages.

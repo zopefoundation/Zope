@@ -1432,19 +1432,30 @@ class ZopeFieldStorage(ValueAccessor):
         url_qs = environ.get("QUERY_STRING", "")
         post_qs = ""
         hl = []
-        content_type = environ.get("CONTENT_TYPE",
-                                   "application/x-www-form-urlencoded")
-        hl.append(("content-type", content_type))
+        content_type = environ.get("CONTENT_TYPE")
+        if content_type is not None:
+            hl.append(("content-type", content_type))
+        else:
+            content_type = ""
         content_type, options = parse_options_header(content_type)
         content_type = content_type.lower()
         content_disposition = environ.get("CONTENT_DISPOSITION")
         if content_disposition is not None:
             hl.append(("content-disposition", content_disposition))
+        # Note: ``headers`` does not reflect the complete headers.
+        #  Likely, it should get removed altogether and accesses be replaced
+        #  by a lookup of the corresponding CGI environment keys.
         self.headers = Headers(hl)
         parts = ()
-        if method == "POST" \
-           and content_type in \
-           ("multipart/form-data", "application/x-www-form-urlencoded"):
+        if method in ("POST", "PUT") \
+           and content_type in (
+           "multipart/form-data", "application/x-www-form-urlencoded",
+           "application/x-url-encoded",
+           # ``Testing`` assumes "application/x-www-form-urlencoded"
+           # as default content type
+           # We have mapped a missing content type to ``""``.
+           "",
+           ):
             try:
                 fpos = fp.tell()
             except Exception:
@@ -1456,7 +1467,7 @@ class ZopeFieldStorage(ValueAccessor):
                     disk_limit=FORM_DISK_LIMIT,
                     memfile_limit=FORM_MEMFILE_LIMIT,
                     charset="latin-1").parts()
-            elif content_type == "application/x-www-form-urlencoded":
+            else:
                 post_qs = fp.read(FORM_MEMORY_LIMIT).decode("latin-1")
                 if fp.read(1):
                     raise BadRequest("form data processing "
