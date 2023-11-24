@@ -7,8 +7,8 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.8.7 (unreleased)
-------------------
+5.9 (2023-11-24)
+----------------
 
 - Support form data in ``PUT`` requests (following the ``multipart`` example).
   Fixes `#1182 <https://github.com/zopefoundation/Zope/issues/1182>`_.
@@ -25,7 +25,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
-- New ``paste.filter_app_factory`` entry point ``content_length``.
+- Add ``paste.filter_app_factory`` entry point ``content_length``.
   This WSGI middleware component can be used with
   WSGI servers which do not follow the PEP 3333 recommendation
   regarding input handling for requests with
