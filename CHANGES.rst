@@ -33,6 +33,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   Allows administrators to fix
   `#1171 <https://github.com/zopefoundation/Zope/pull/1171>`_.
 
+- Officially support Python 3.12.
+
 
 5.8.6 (2023-10-04)
 ------------------
