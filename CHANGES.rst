@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.9.1 (unreleased)
 ------------------
 
+- Officially support Python 3.12.1.
+  (`#1188 <https://github.com/zopefoundation/Zope/issues/1188>`_)
+
 
 5.9 (2023-11-24)
 ----------------
