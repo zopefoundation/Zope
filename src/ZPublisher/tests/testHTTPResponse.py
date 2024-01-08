@@ -802,13 +802,17 @@ class HTTPResponseTests(unittest.TestCase):
         self._redirectURLCheck(ENC_URL)
 
     def test_redirect_unreserved_chars(self):
-        # RFC 2396 section 2.3, characters that should not be encoded
+        # RFC 3986 section 2.3, characters that should not be encoded
         url = "http://example.com/-_.!~*'()"
         self._redirectURLCheck(url)
 
     def test_redirect_reserved_chars(self):
-        # RFC 2396 section 3.3, characters with reserved meaning in a path
+        # RFC 3986 section 3.3, characters with reserved meaning in a path
         url = 'http://example.com/+/$/;/,/=/?/&/@@index.html'
+        self._redirectURLCheck(url)
+
+    def test_redirect_ipv6(self):
+        url = "http://[fe80::1ff:fe23:4567:890a]:1234"
         self._redirectURLCheck(url)
 
     def test__encode_unicode_no_content_type_uses_default_encoding(self):

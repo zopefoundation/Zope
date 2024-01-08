@@ -235,24 +235,24 @@ class HTTPBaseResponse(BaseResponse):
         # To be entirely correct, we must make sure that all non-ASCII
         # characters are quoted correctly.
         parsed = list(urlparse(location))
-        rfc2396_unreserved = "-_.!~*'()"  # RFC 2396 section 2.3
+        rfc3986_unreserved = "-_.!~*'()"  # RFC 3986 section 2.3
         for idx, idx_safe in (
                 # authority
-                (1, ";:@?/&=+$,"),  # RFC 2396 section 3.2, 3.2.1, 3.2.3
+                (1, "[];:@?/&=+$,"),  # RFC 3986 section 3.2, 3.2.1, 3.2.3
                 # path
-                (2, "/;:@&=+$,"),  # RFC 2396 section 3.3
+                (2, "/;:@&=+$,"),  # RFC 3986 section 3.3
                 # params - actually part of path; empty in Python 3
-                (3, "/;:@&=+$,"),  # RFC 2396 section 3.3
+                (3, "/;:@&=+$,"),  # RFC 3986 section 3.3
                 # query
-                (4, ";/?:@&=+,$"),  # RFC 2396 section 3.4
+                (4, ";/?:@&=+,$"),  # RFC 3986 section 3.4
                 # fragment
-                (5, ";/?:@&=+$,"),  # RFC 2396 section 4
+                (5, ";/?:@&=+$,"),  # RFC 3986 section 4
         ):
             # Make a hacky guess whether the component is already
             # URL-encoded by checking for %. If it is, we don't touch it.
             if '%' not in parsed[idx]:
                 parsed[idx] = quote(parsed[idx],
-                                    safe=rfc2396_unreserved + idx_safe)
+                                    safe=rfc3986_unreserved + idx_safe)
         location = urlunparse(parsed)
 
         self.setStatus(status, lock=lock)

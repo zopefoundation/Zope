@@ -13,6 +13,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Officially support Python 3.12.1.
   (`#1188 <https://github.com/zopefoundation/Zope/issues/1188>`_)
 
+- Fix redirections to URLs with host given as IP-literal with brackets.
+  Fixes `#1191 <https://github.com/zopefoundation/Zope/issues/1191>`_.
+
 
 5.9 (2023-11-24)
 ----------------
