@@ -171,7 +171,7 @@ version you find on https://zopefoundation.github.io/Zope/:
   $ python3.7 -m venv zope
   $ cd zope
   $ bin/pip install -U pip wheel
-  $ bin/pip install Zope[wsgi]==5.0 \
+  $ bin/pip install Zope[wsgi] \
     -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt
 
 You can also install Zope using a single requirements file. **Note that this

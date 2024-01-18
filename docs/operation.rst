@@ -26,8 +26,8 @@ Zope server process.  The instance home is created using the
 
   $ bin/mkwsgiinstance -d .
 
-The `-d .` argument specifies the directory to create the instance
-home in.
+The `-d` argument specifies the directory to create the instance
+home in, where the dot (``.``) means the current folder.
 
 You will be asked to provide a user name and password for an
 administrator's account during ``mkwsgiinstance``.  To see all available
@@ -168,7 +168,7 @@ Now you are able to log in using a browser, as described in
 
 Running Zope as a Daemon
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Zope itself has no built-in support for running as a daemon any more.
+Zope itself has no built-in support for running as a daemon anymore.
 
 If you create your Zope instance using ``plone.recipe.zope2instance`` you can
 use its start/stop script to daemonize Zope. See the next section for how to do
