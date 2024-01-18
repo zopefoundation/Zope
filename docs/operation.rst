@@ -505,37 +505,23 @@ A simple contrived load test was done with the following parameters:
 - 100 concurrent clients accessing Zope
 - 100 seconds run time
 - the clients just fetch "/"
-- standard Zope 4 instances, one with ZEO and one without
-- Python 2.7.16 on macOS Mojave/10.14.4
+- standard Zope 5.9 instances, one with ZEO and one without
+- Python 3.11.7 on macOS Sonoma/14.2.1
 - standard WSGI server configurations, the only changes are to number of
   threads and/or number of workers where available.
 
 This load test uncovered several issues:
 
-- ``cheroot`` (tested version: 6.5.5) was magnitudes slower than all others.
-  Unlike the others, it did not max out CPU. It is unclear where the slowdown
-  originates. Others reached 500-750 requests/second. ``cheroot`` only served
-  12 requests/second per configured thread.
-- ``gunicorn`` (tested version: 19.9.0) showed very strange behavior against
-  the non-ZEO Zope instance. It serves around 500 requests/second, but then
-  hangs and serves no requests for several seconds, before picking up again.
-- ``gunicorn`` (tested version: 19.9.0) does not like the ZEO instance at all.
-  No matter what configuration in terms of threads or workers was chosen
-  ``gunicorn`` just hung so badly that even CTRL-C would not kill it.
-  Switching to an asynchronous type of worker (tested with ``gevent``)
-  did not make a difference.
-- ``werkzeug`` (tested version: 0.15.2) does not let you specify the number
-  of threads, you only tell it to use threads or not. In threaded mode it
-  spawns too many threads and immedialy runs up agains the ZODB connection
-  pool limits, so with Zope only the unthreaded mode is suitable. Even in
-  unthreaded mode, the service speed was inconsistent. Just like ``gunicorn``
-  it had intermittent hangs before recovering.
-- ``bjoern`` (tested version: 3.0.0) is the clear speed winner with 740
-  requests/second against both the ZEO and non-ZEO Zope instance, even though
-  it is single-threaded.
-- ``waitress`` (tested version: 1.3.0) is the all-around best choice. It's
-  just 10-15% slower than ``bjoern``, but both the built-in WSGI tools as well
-  as ``plone.recipe.zope2instance`` use it as the default and make it very
+- ``cheroot`` (tested version: 10.0.0) seemed overwhelmed by the load. It kept
+  resetting connections to the test client with an error rate of about 1.5%.
+- ``gunicorn`` (tested version: 19.9.0) does not work at all with ZEO. Without
+  ZEO it only works if a single worker is configured. Even with a single thread
+  client connections timed out, the failure rate was about 0.25%.
+- ``bjoern`` (tested version: 3.2.2) is the clear speed winner with 3,870
+  requests/second against both the ZEO and non-ZEO Zope instance.
+- ``waitress`` (tested version: 2.1.12) is the all-around best choice. It's
+  just about 15% slower than ``bjoern``, but both the built-in WSGI tools as
+  well as ``plone.recipe.zope2instance`` use it as the default and make it very
   convenient to use.
 
 
@@ -590,117 +576,6 @@ section will pull in the correct dependencies:
    user = admin:password
    http-address = 8080
    wsgi = ${buildout:directory}/etc/bjoern.ini
-
-
-Problematic WSGI servers
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-werkzeug
-++++++++
-`werkzeug <https://palletsprojects.com/p/werkzeug/>`_ is a WSGI library that
-contains not just a WSGI server, but also a powerful debugger. It can
-easily integrate with Zope using a shim package called `dataflake.wsgi.werkzeug
-<https://dataflakewsgiwerkzeug.readthedocs.io/>`_. See the `Using this package`
-section for how to integrate `werkzeug` using Zope's own ``runwsgi`` script and
-how to create a suitable WSGI configuration.
-
-If you use ``plone.recipe.zope2instance``, the following section will pull in
-the correct dependencies, after you have created a WSGI configuration file:
-
-.. code-block:: ini
-
-   [zopeinstance]
-   recipe = plone.recipe.zope2instance
-   eggs =
-       dataflake.wsgi.werkzeug
-   zodb-temporary-storage = off
-   user = admin:password
-   http-address = 8080
-   wsgi = ${buildout:directory}/etc/werkzeug.ini
-
-
-gunicorn
-++++++++
-The `gunicorn WSGI server <https://gunicorn.org/>`_ has a built-in
-`PasteDeploy` entry point and integrates easily. The following example buildout
-configuration section will create a ``bin/runwsgi`` script that uses
-`gunicorn`.
-
-.. code-block:: ini
-
-   [gunicorn]
-   recipe = zc.recipe.egg
-   eggs =
-       Zope
-       gunicorn
-   scripts =
-       runwsgi
-
-You can use this script with a WSGI configuration file that you have to create
-yourself. Please see the `gunicorn documentation
-<https://docs.gunicorn.org/>`_, especially the `Configuration File` section on
-`Configuration Overview`, for Paster Application configuration information. A
-very simple server configuration looks like this:
-
-.. code-block:: ini
-
-   [server:main]
-   use = egg:gunicorn#main
-   host = 192.168.0.1
-   port = 8080
-   proc_name = zope
-
-You can then run the server using ``runwsgi``:
-
-.. code-block:: console
-
-   $ bin/runwsgi etc/gunicorn.ini
-   2019-04-22 11:45:39 INFO [Zope:45][MainThread] Ready to handle requests
-   Starting server in PID 84983.
-
-.. note::
-   gunicorn version 19.9.0 or less will print an ominous warning message on the
-   console upon startup that seems to suggest their WSGI entry point is
-   deprecated in favor of using their own built-in scripts. This is misleading.
-   Future versions will not show this message.
-
-If you use ``plone.recipe.zope2instance``, you can make it use `gunicorn` by
-adding its egg to the buildout section and setting the WSGI configuration file
-path to the path of the configuration file you created yourself:
-
-.. code-block:: ini
-
-   [zopeinstance]
-   recipe = plone.recipe.zope2instance
-   eggs =
-       gunicorn
-   zodb-temporary-storage = off
-   user = admin:password
-   http-address = 8080
-   wsgi = ${buildout:directory}/etc/gunicorn.ini
-
-
-cheroot
-+++++++
-The `cheroot WSGI server <https://cheroot.cherrypy.org>`_ can be integrated
-using a shim package called `dataflake.wsgi.cheroot
-<https://dataflakewsgicheroot.readthedocs.io/>`_. See the `Using this package`
-section for details on how to integrate `cheroot` using Zope's own
-``runwsgi`` script and how to create a suitable WSGI configuration.
-
-If you use ``plone.recipe.zope2instance``, the following
-section will pull in the correct dependencies:
-
-.. code-block:: ini
-
-   [zopeinstance]
-   recipe = plone.recipe.zope2instance
-   eggs =
-       dataflake.wsgi.cheroot
-   zodb-temporary-storage = off
-   user = admin:password
-   http-address = 8080
-   wsgi = ${buildout:directory}/etc/cheroot.ini
 
 
 Debugging Zope applications under WSGI
