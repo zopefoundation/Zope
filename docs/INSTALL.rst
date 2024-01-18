@@ -33,70 +33,47 @@ available:
     $ sudo apt-get install python3-dev
 
 
+Choice of installation methods
+------------------------------
+Zope can be installed using either straight ``pip`` or the ``zc.buildout``
+buildout and deployment tool.
+
+You can use ``pip`` and the built-in script ``mkwsgiinstance`` for testing or
+very simple setups that don't require much customization or scripting. It will
+create a basic set of configurations and a simple start/stop script.
+
+If you need customization and if you don't want to maintain configurations and
+scripts by hand you should use ``zc.buildout`` in conjunction with the buildout
+add-on ``plone.recipe.zope2instance`` instead. This is a powerful combination
+for creating repeatable builds for a given configuration and environment.
+The Zope developers use ``zc.buildout`` to develop Zope itself as well as the
+dependency packages it uses. **This is the recommended way of installing Zope**.
+
 Installing Zope with ``zc.buildout``
 ------------------------------------
-`zc.buildout <https://pypi.org/project/zc.buildout/>`_ is a powerful
-tool for creating repeatable builds of a given software configuration
-and environment.  The Zope developers use ``zc.buildout`` to develop
-Zope itself, as well as the underlying packages it uses. **This is the
-recommended way of installing Zope**.
-
 Installing the Zope software using ``zc.buildout`` involves the following
 steps:
 
-- Download and uncompress the Zope source distribution from `PyPI`__ if you
-  are using the built-in standard buildout configuration
-
-  __ https://pypi.org/project/Zope/
-
 - Create a virtual environment
-
 - Install ``zc.buildout`` into the virtual environment
-
+- Create a buildout configuration file ``buildout.cfg``
 - Run the buildout
 
 The following examples are from Linux and use Zope version 5.0. Just replace
 that version number with your desired version.
 
-Built-in standard buildout configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    The standard buildout configuration is designed to create scripts needed
-    for developing and testing Zope, it is not for production use. Please use
-    a custom buildout configuration, a minimal example is shown below.
-
 .. code-block:: console
 
-  $ wget https://pypi.org/packages/source/Z/Zope/Zope-5.0.tar.gz
-  $ tar xfvz Zope-5.0.tar.gz
-  $ cd Zope-5.0
-  $ python3.7 -m venv .
-  $ bin/pip install -U pip wheel zc.buildout
-  $ bin/buildout
+    $ python3.10 -m venv zope
+    $ cd zope
+    <create buildout.cfg in this folder, see examples below>
+    $ bin/pip install -U pip wheel zc.buildout
+    $ bin/buildout
 
-
-Custom buildout configurations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Instead of using the buildout configuration shipping with Zope itself, you
-can also start with your own buildout configuration file.
-
-The installation with a custom buildout configuration does not require you
-to download Zope first:
-
-.. code-block:: console
-
-   $ python3.7 -m venv zope
-   $ cd zope
-   <create buildout.cfg in this folder>
-   $ bin/pip install -U pip wheel zc.buildout
-   $ bin/buildout
-
-
-Minimum configuration
-+++++++++++++++++++++
-Here's a minimum ``buildout.cfg`` configuration  example:
+Using the simplest possible configuration
++++++++++++++++++++++++++++++++++++++++++
+Here's a minimum ``buildout.cfg`` configuration example that will create the
+built-in ``bin/mkwsgiinstance`` script to create a Zope instance:
 
 .. code-block:: ini
 
@@ -168,7 +145,7 @@ version you find on https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
 
-  $ python3.7 -m venv zope
+  $ python3.10 -m venv zope
   $ cd zope
   $ bin/pip install -U pip wheel
   $ bin/pip install Zope[wsgi] \
@@ -184,11 +161,19 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
     -r https://zopefoundation.github.io/Zope/releases/5.0/requirements-full.txt
 
 
-Building the documentation with ``Sphinx``
-------------------------------------------
-If you have used ``zc.buildout`` for installation, you can build the HTML
-documentation locally:
+Building the documentation
+--------------------------
+You can build the documentation locally. Example steps on Linux. Replace the
+version number "5.0" with the latest version you find on
+https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
 
-   $ bin/make-docs
+    $ wget https://pypi.org/packages/source/Z/Zope/Zope-5.0.tar.gz
+    $ tar xfz Zope-5.0.tar.gz
+    $ cd Zope-5.0
+    $ python3.10 -m venv .
+    $ bin/pip install -U pip wheel
+    $ bin/pip install Zope[docs] -c ./constraints.txt
+    $ cd docs
+    $ make html
