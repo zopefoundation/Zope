@@ -8,7 +8,8 @@ Whichever method you used to install Zope and create a server instance (see
    If you have installed Zope using ``zc.buildout`` in conjunction with
    ``plone.recipe.zope2instance`` as outlined in :doc:`INSTALL`, many of
    the following tasks are already done for you and some others differ
-   slightly. You can immediately skip down to `Running Zope`.
+   slightly. You can immediately skip down to `Running Zope
+   (plone.recipe.zope2instance install)`.
 
 .. contents::
    :local:
