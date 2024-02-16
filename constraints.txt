@@ -1,5 +1,5 @@
 AccessControl==6.3
-Acquisition==5.1
+Acquisition==5.2
 AuthEncoding==5.0
 BTrees==5.1
 Chameleon==4.2.0
@@ -22,7 +22,7 @@ beautifulsoup4==4.12.2
 cffi==1.15.1; python_version == '3.7'
 cffi==1.16.0; python_version > '3.7'
 multipart==0.2.4
-persistent==5.1
+persistent==5.2
 pycparser==2.21
 python-gettext==5.0
 pytz==2023.3.post1
