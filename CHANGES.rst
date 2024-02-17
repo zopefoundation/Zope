@@ -18,6 +18,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix redirections to URLs with host given as IP-literal with brackets.
   Fixes `#1191 <https://github.com/zopefoundation/Zope/issues/1191>`_.
 
+- Fix authentication error viewing ZMI with a user defined outside of zope root.
+  Fixes `#1195 <https://github.com/zopefoundation/Zope/issues/1195>`_.
+
 
 5.9 (2023-11-24)
 ----------------

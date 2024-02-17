@@ -21,6 +21,8 @@ def setupZCML():
 class SubscriberTests(Testing.ZopeTestCase.FunctionalTestCase):
     """Testing .subscriber.*"""
 
+    base_path = f'/{Testing.ZopeTestCase.folder_name}'
+
     def call_manage_main(self):
         """Call /folder/manage_main and return the HTML text."""
         def _call_manage_main(self):
@@ -29,7 +31,7 @@ class SubscriberTests(Testing.ZopeTestCase.FunctionalTestCase):
             # which the WSGI publisher does not expect.
             endInteraction()
             response = self.publish(
-                f'/{Testing.ZopeTestCase.folder_name}/manage_main',
+                f'{self.base_path}/manage_main',
                 basic=basic_auth)
             return str(response)
         return temporaryPlacelessSetUp(
@@ -40,11 +42,11 @@ class SubscriberTests(Testing.ZopeTestCase.FunctionalTestCase):
         from .subscriber import css_paths
         body = self.call_manage_main()
         for path in css_paths(None):
-            self.assertIn(path, body)
+            self.assertIn(f'href="{self.base_path}{path}"', body)
 
     def test_subscriber__js_paths__1(self):
         """The paths it returns are rendered in the ZMI."""
         from .subscriber import js_paths
         body = self.call_manage_main()
         for path in js_paths(None):
-            self.assertIn(path, body)
+            self.assertIn(f'src="{self.base_path}{path}"', body)
