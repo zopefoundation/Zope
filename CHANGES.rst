@@ -18,6 +18,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix redirections to URLs with host given as IP-literal with brackets.
   Fixes `#1191 <https://github.com/zopefoundation/Zope/issues/1191>`_.
 
+- Introduce the decorator ``ZPublisher.zpublish` to explicitly
+  control publication by ``ZPublisher``.
+  For details see
+  `#1197 <https://github.com/zopefoundation/Zope/pull/1197>`_.
+
 
 5.9 (2023-11-24)
 ----------------
