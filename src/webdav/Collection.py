@@ -142,7 +142,6 @@ class Collection(Resource):
 
         return RESPONSE
 
-    @zpublish
     @security.protected(webdav_access)
     def listDAVObjects(self):
         objectValues = getattr(self, 'objectValues', None)

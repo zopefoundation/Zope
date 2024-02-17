@@ -704,7 +704,6 @@ class Resource(Base, LockableItem):
         # If it doesn't exist, give up.
         return ''
 
-    @zpublish
     @security.protected(webdav_access)
     def listDAVObjects(self):
         return []
