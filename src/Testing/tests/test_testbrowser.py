@@ -25,10 +25,12 @@ from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from zExceptions import NotFound
+from ZPublisher import zpublish
 from ZPublisher.httpexceptions import HTTPExceptionHandler
 from ZPublisher.WSGIPublisher import publish_module
 
 
+@zpublish
 class CookieStub(Item):
     """This is a cookie stub."""
 
@@ -37,6 +39,7 @@ class CookieStub(Item):
         return 'Stub'
 
 
+@zpublish
 class ExceptionStub(Item):
     """This is a stub, raising an exception."""
 
@@ -44,6 +47,7 @@ class ExceptionStub(Item):
         raise ValueError('dummy')
 
 
+@zpublish
 class RedirectStub(Item):
     """This is a stub, causing a redirect."""
 

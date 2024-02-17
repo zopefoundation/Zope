@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import Zope2
 from Acquisition import Implicit
+from ZPublisher import zpublish
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -34,6 +35,7 @@ def pt_chain_test(request, string):
     request.set('a', request.get('a', '') + string)
 
 
+@zpublish
 class DummyObjectBasic(Implicit):
     """ Dummy class with docstring.
     """
@@ -42,12 +44,14 @@ class DummyObjectBasic(Implicit):
         setattr(self, id, object)
         return getattr(self, id)
 
+    @zpublish
     def view(self):
         """ Attribute with docstring.
         """
         return 'view content'
 
 
+@zpublish
 class DummyObjectWithPTHook(DummyObjectBasic):
     """ Dummy class with docstring.
     """

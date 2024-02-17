@@ -22,6 +22,7 @@ from AccessControl.PermissionRole import PermissionRole
 from App.FactoryDispatcher import FactoryDispatcher
 from OFS.ObjectManager import ObjectManager
 from zope.interface import implementedBy
+from ZPublisher import zpublish
 
 
 if not hasattr(Products, 'meta_types'):
@@ -99,6 +100,9 @@ class ProductContext:
         productObject = self.__prod
         pid = productObject.id
 
+        if instance_class is not None:
+            zpublish(instance_class)
+
         if permissions:
             if isinstance(permissions, str):  # You goofed it!
                 raise TypeError(
@@ -130,19 +134,21 @@ class ProductContext:
         for method in legacy:
             if isinstance(method, tuple):
                 name, method = method
+                mname = method.__name__
                 aliased = 1
             else:
                 name = method.__name__
                 aliased = 0
             if name not in OM.__dict__:
+                method = zpublish(True, method)
                 setattr(OM, name, method)
                 setattr(OM, name + '__roles__', pr)
                 if aliased:
                     # Set the unaliased method name and its roles
                     # to avoid security holes.  XXX: All "legacy"
                     # methods need to be eliminated.
-                    setattr(OM, method.__name__, method)
-                    setattr(OM, method.__name__ + '__roles__', pr)
+                    setattr(OM, mname, method)
+                    setattr(OM, mname + '__roles__', pr)
 
         if isinstance(initial, tuple):
             name, initial = initial
@@ -195,7 +201,7 @@ class ProductContext:
             else:
                 name = os.path.split(method.__name__)[-1]
             if name not in productObject.__dict__:
-                m[name] = method
+                m[name] = zpublish(True, method)
                 m[name + '__roles__'] = pr
 
     def getApplication(self):

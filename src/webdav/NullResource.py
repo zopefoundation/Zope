@@ -52,6 +52,7 @@ from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.contenttype import guess_content_type
+from ZPublisher import zpublish
 
 
 # XXX Originall in ZServer.Zope2.Startup.config
@@ -122,6 +123,7 @@ class NullResource(Persistent, Implicit, Resource):
 
         return ob
 
+    @zpublish
     @security.public
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource.
@@ -203,6 +205,7 @@ class NullResource(Persistent, Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
+    @zpublish
     @security.protected(add_folders)
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource."""
@@ -237,6 +240,7 @@ class NullResource(Persistent, Implicit, Resource):
         RESPONSE.setBody('')
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """ LOCK on a Null Resource makes a LockNullResource instance """
@@ -338,11 +342,13 @@ class LockNullResource(NullResource, Item_w__name__):
     def title_or_id(self):
         return 'Foo'
 
+    @zpublish
     @security.protected(webdav_access)
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         return Resource.PROPFIND(self, REQUEST, RESPONSE)
 
+    @zpublish
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """ A Lock command on a LockNull resource should only be a
@@ -381,6 +387,7 @@ class LockNullResource(NullResource, Item_w__name__):
 
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_unlock_items)
     def UNLOCK(self, REQUEST, RESPONSE):
         """ Unlocking a Null Resource removes it from its parent """
@@ -406,6 +413,7 @@ class LockNullResource(NullResource, Item_w__name__):
             RESPONSE.setStatus(204)
         return RESPONSE
 
+    @zpublish
     @security.public
     def PUT(self, REQUEST, RESPONSE):
         """ Create a new non-collection resource, deleting the LockNull
@@ -478,6 +486,7 @@ class LockNullResource(NullResource, Item_w__name__):
         RESPONSE.setBody('')
         return RESPONSE
 
+    @zpublish
     @security.protected(add_folders)
     def MKCOL(self, REQUEST, RESPONSE):
         """ Create a new Collection (folder) resource.  Since this is being

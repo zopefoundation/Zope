@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Foundation and Contributors.
+# Copyright (c) 2002-2024 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +14,9 @@
 """
 
 import types
+from os import environ
 from urllib.parse import quote as urllib_quote
+from warnings import warn
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
@@ -35,6 +37,7 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
+from ZPublisher import _ZPUBLISH_ATTR
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 from ZPublisher.xmlrpc import is_xmlrpc_response
@@ -136,22 +139,7 @@ class DefaultPublishTraverse:
                     except TypeError:  # unsubscriptable
                         raise KeyError(name)
 
-        # Ensure that the object has a docstring, or that the parent
-        # object has a pseudo-docstring for the object. Objects that
-        # have an empty or missing docstring are not published.
-        doc = getattr(subobject, '__doc__', None)
-        if not doc:
-            raise Forbidden(
-                "The object at %s has an empty or missing "
-                "docstring. Objects must have a docstring to be "
-                "published." % URL
-            )
-
-        # Check that built-in types aren't publishable.
-        if not typeCheck(subobject):
-            raise Forbidden(
-                "The object at %s is not publishable." % URL)
-
+        ensure_publishable(subobject, URL)
         return subobject
 
     def browserDefault(self, request):
@@ -776,3 +764,37 @@ for name in ('BufferType', 'DictProxyType', 'EllipsisType',
 def typeCheck(obj, deny=itypes):
     # Return true if its ok to publish the type, false otherwise.
     return deny.get(type(obj), 1)
+
+
+deprecate_docstrings = environ.get("ZPUBLISHER_DEPRECATE_DOCSTRINGS")
+
+
+def ensure_publishable(obj, url):
+    """raise ``Forbidden`` unless *obj* at *url* is publishable."""
+    publishable = getattr(obj, _ZPUBLISH_ATTR, None)
+    if publishable:  # explicitely marked as publishable
+        return
+    if publishable is not None:  # explicitely marked as not publishable
+        raise Forbidden(
+            f"The object at {url} is marked as not publishable")
+    # Check that built-in types aren't publishable.
+    if not typeCheck(obj):
+        raise Forbidden(
+            "The object at %s is not publishable." % url)
+    # Ensure that the object has a docstring
+    doc = getattr(obj, '__doc__', None)
+    if not doc:
+        raise Forbidden(
+            f"The object at {url} has an empty or missing "
+            "docstring. Objects must either be marked via "
+            "to `ZPublisher.zpublish` decorator or have a docstring to be "
+            "published.")
+    if deprecate_docstrings:
+        warn(DocstringWarning(url))
+
+
+class DocstringWarning(DeprecationWarning):
+    def __str__(self):
+        return (f"The object at {self.args[0]} uses deprecated docstring "
+                "publication control. Use the `ZPublisher.zpublish` decorator "
+                "instead")

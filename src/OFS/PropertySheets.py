@@ -30,6 +30,7 @@ from OFS.Traversable import Traversable
 from Persistence import Persistent
 from webdav.PropertySheet import DAVPropertySheetMixin
 from zExceptions import BadRequest
+from ZPublisher import zpublish
 from ZPublisher.Converters import type_converters
 
 
@@ -50,6 +51,7 @@ class View(Tabs, Base):
     to be used as a view on an object.
     """
 
+    @zpublish
     def manage_workspace(self, URL1, RESPONSE):
         '''Implement a "management" interface
         '''
@@ -322,11 +324,13 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
 
     manage = DTMLFile('dtml/properties', globals())
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_propertiesForm(self, URL1, RESPONSE):
         " "
         RESPONSE.redirect(URL1 + '/manage')
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
@@ -337,6 +341,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
@@ -348,6 +353,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
@@ -372,6 +378,7 @@ class PropertySheet(Traversable, Persistent, Implicit, DAVPropertySheetMixin):
         message = 'Your changes have been saved.'
         return self.manage(self, REQUEST, manage_tabs_message=message)
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
@@ -466,6 +473,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
                 return propset.__of__(self)
         return default
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_addPropertySheet(self, id, ns, REQUEST=None):
         """ """
@@ -502,6 +510,7 @@ class PropertySheets(Traversable, Implicit, Tabs):
             return 0
         return 1
 
+    @zpublish
     def manage_delPropertySheets(self, ids=(), REQUEST=None):
         '''delete all sheets identified by *ids*.'''
         for id in ids:

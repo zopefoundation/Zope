@@ -39,6 +39,7 @@ from zExceptions import Forbidden
 from zExceptions import ResourceLockedError
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 from zope.contenttype import guess_content_type
+from ZPublisher import zpublish
 from ZPublisher.HTTPRequest import default_encoding
 from ZPublisher.Iterators import IStreamIterator
 
@@ -51,6 +52,7 @@ class Code:
     pass
 
 
+@zpublish
 class DTMLMethod(
     PathReprProvider,
     RestrictedDTML,
@@ -265,6 +267,7 @@ class DTMLMethod(
     security.declareProtected(change_proxy_roles, 'manage_proxyForm')  # NOQA: D001,E501
     manage_proxyForm = DTMLFile('dtml/documentProxy', globals())
 
+    @zpublish
     @security.protected(change_dtml_methods)
     def manage_edit(self, data, title, SUBMIT='Change', REQUEST=None):
         """ Replace contents with 'data', title with 'title'.
@@ -293,6 +296,7 @@ class DTMLMethod(
             message = "Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
+    @zpublish
     @security.protected(change_dtml_methods)
     def manage_upload(self, file='', REQUEST=None):
         """ Replace the contents of the document with the text in 'file'.
@@ -336,6 +340,7 @@ class DTMLMethod(
             'do not have proxy roles.\n<!--%s, %s-->' % (
                 self.__name__, user, roles))
 
+    @zpublish
     @security.protected(change_proxy_roles)
     @requestmethod('POST')
     def manage_proxy(self, roles=(), REQUEST=None):
@@ -363,6 +368,7 @@ class DTMLMethod(
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
+    @zpublish
     @security.protected(change_dtml_methods)
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests.

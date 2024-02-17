@@ -31,6 +31,7 @@ from zExceptions import MethodNotAllowed
 from zExceptions import NotFound
 from zope.datetime import rfc1123_date
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 
 @implementer(IDAVCollection)
@@ -59,6 +60,7 @@ class Collection(Resource):
         # Initialize ETag header
         self.http__etag()
 
+    @zpublish
     @security.protected(view)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
@@ -73,6 +75,7 @@ class Collection(Resource):
                 'Method not supported for this resource.')
         raise NotFound('The requested resource does not exist.')
 
+    @zpublish
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
         resources, though collections are not specifically forbidden
@@ -81,6 +84,7 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for collections.')
 
+    @zpublish
     @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a collection resource. For collection resources, DELETE
@@ -138,6 +142,7 @@ class Collection(Resource):
 
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_access)
     def listDAVObjects(self):
         objectValues = getattr(self, 'objectValues', None)

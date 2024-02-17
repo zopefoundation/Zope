@@ -11,6 +11,7 @@ from OFS.SimpleItem import Item
 from Persistence import Persistent
 from zExceptions import BadRequest
 from zope.publisher.http import splitport
+from ZPublisher import zpublish
 from ZPublisher.BaseRequest import quote
 from ZPublisher.BeforeTraverse import NameCaller
 from ZPublisher.BeforeTraverse import queryBeforeTraverse
@@ -18,6 +19,7 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse
 from ZPublisher.BeforeTraverse import unregisterBeforeTraverse
 
 
+@zpublish
 class VirtualHostMonster(Persistent, Item, Implicit):
     """Provide a simple drop-in solution for virtual hosting.
     """
@@ -46,6 +48,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     security.declareProtected('Add Site Roots', 'manage_edit')  # NOQA: D001
     manage_edit = DTMLFile('www/manage_edit', globals())
 
+    @zpublish
     @security.protected('Add Site Roots')
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."

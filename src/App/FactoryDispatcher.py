@@ -25,6 +25,7 @@ from Acquisition import Implicit
 from Acquisition import aq_base
 from ExtensionClass import Base
 from OFS.metaconfigure import get_registered_packages
+from ZPublisher import zpublish
 
 
 def _product_packages():
@@ -45,6 +46,7 @@ def _product_packages():
     return _packages
 
 
+@zpublish
 class Product(Base):
     """Model a non-persistent product wrapper.
     """
@@ -68,6 +70,7 @@ class Product(Base):
 InitializeClass(Product)
 
 
+@zpublish
 class ProductDispatcher(Implicit):
     " "
     # Allow access to factory dispatchers
@@ -95,6 +98,7 @@ class ProductDispatcher(Implicit):
         return dispatcher.__of__(self)
 
 
+@zpublish
 class FactoryDispatcher(Implicit):
     """Provide a namespace for product "methods"
     """
