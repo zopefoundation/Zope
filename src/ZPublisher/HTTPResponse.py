@@ -142,7 +142,8 @@ def make_content_disposition(disposition, file_name):
         #
         # a special header has to be crafted
         # also see https://tools.ietf.org/html/rfc6266#appendix-D
-        encoded_file_name = file_name.encode('us-ascii', errors='ignore')
+        encoded_file_name = file_name.encode(
+            'us-ascii', errors='ignore').decode()
         header += f'; filename="{encoded_file_name}"'
         quoted_file_name = quote(file_name)
         header += f'; filename*=UTF-8\'\'{quoted_file_name}'

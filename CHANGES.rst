@@ -23,6 +23,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   For details see
   `#1197 <https://github.com/zopefoundation/Zope/pull/1197>`_.
 
+- Fix ``Content-Disposition`` filename for clients without rfc6266 support.
+  (`#1198 <https://github.com/zopefoundation/Zope/pull/1198>`_)
+
 
 5.9 (2023-11-24)
 ----------------
