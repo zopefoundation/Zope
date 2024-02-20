@@ -91,7 +91,7 @@ def zpublish(publish=True, *, methods=None):
 
 
 def zpublish_mark(obj):
-    """the ``zpublis`` indication at *obj*."""
+    """the ``zpublish`` indication at *obj*."""
     return getattr(obj, _ZPUBLISH_ATTR, None)
 
 
