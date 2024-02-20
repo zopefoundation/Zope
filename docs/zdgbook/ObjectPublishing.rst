@@ -141,6 +141,11 @@ the future.
 If you decorate a method or class with ``zpublsh(False)``,
 you explicitly mark it or its instances, respectively, as not
 zpublishable.
+If you decorate a method with ``zpublish(methods=...)``
+where the `...` is either a single request method name
+or a sequence of request method names,
+you specify that the object is zpublishable only for the mentioned request
+methods.
 
 Another requirement is that a publishable object must not have a name
 that begins with an underscore. These two restrictions are designed to

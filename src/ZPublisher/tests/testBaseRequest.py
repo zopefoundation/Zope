@@ -1,10 +1,10 @@
 import unittest
 
+from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
-from ZPublisher import _ZPUBLISH_ATTR
 from ZPublisher import zpublish
 
 
@@ -468,24 +468,25 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         finally:
             BaseRequest.deprecate_docstrings = deprecate
 
-    def test_zpublish_false(self):
+    def test_zpublish___call__(self):
         root, folder = self._makeRootAndFolder(False)
+
+        @zpublish(methods="POST")
+        def __call__(self):
+            pass
+
+        folder.__class__.__call__ = __call__
+        # no request method
         r = self._makeOne(root)
-        # Note: ``zpublish`` should not get applied to a persistent object
-        zpublish(False)(folder)
-        self.assertRaises(NotFound, r.traverse, 'folder')
-
-    def test_zpublish_callable(self):
-        from inspect import signature
-
-        def f(x, a=1):
-            return x, a
-
-        w = zpublish(True, f)
-        self.assertIs(getattr(w, _ZPUBLISH_ATTR), True)
-        self.assertEqual(signature(w), signature(f))
-        self.assertEqual(w(0), (0, 1))
-        self.assertFalse(hasattr(f, "__zpublishable__"))
+        self.assertRaises(Forbidden, r.traverse, 'folder')
+        # wrong request method
+        r = self._makeOne(root)
+        r.environ = dict(REQUEST_METHOD="get")
+        self.assertRaises(Forbidden, r.traverse, 'folder')
+        # correct request method
+        r = self._makeOne(root)
+        r.environ = dict(REQUEST_METHOD="post")
+        r.traverse('folder')
 
     def test_traverse_simple_string(self):
         root, folder = self._makeRootAndFolder()

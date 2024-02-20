@@ -139,7 +139,7 @@ class DefaultPublishTraverse:
                     except TypeError:  # unsubscriptable
                         raise KeyError(name)
 
-        ensure_publishable(subobject, URL)
+        self.request.ensure_publishable(subobject)
         return subobject
 
     def browserDefault(self, request):
@@ -490,6 +490,7 @@ class BaseRequest:
                             self.roles = getRoles(
                                 object, '__call__',
                                 object.__call__, self.roles)
+                            self.ensure_publishable(object.__call__, True)
                         if request._hacked_path:
                             i = URL.rfind('/')
                             if i > 0:
@@ -673,6 +674,52 @@ class BaseRequest:
         if self._held is not None:
             self._held = self._held + (object, )
 
+    def ensure_publishable(self, obj, for_call=False):
+        """raise ``Forbidden`` unless *obj* is publishable.
+
+        *for_call* tells us whether we are called for the ``__call__``
+        method. In general, its publishablity is determined by
+        its ``__self__`` but it might have more restrictive prescriptions.
+        """
+        url, default = self["URL"], None
+        if for_call:
+            url += ".__call__"
+            default = True
+        publishable = getattr(obj, _ZPUBLISH_ATTR, default)
+        # ``publishable`` is either ``None``, ``True``, ``False`` or
+        # a tuple of allowed request methods.
+        if publishable is True:  # explicitely marked as publishable
+            return
+        elif publishable is False:  # explicitely marked as not publishable
+            raise Forbidden(
+                f"The object at {url} is marked as not publishable")
+        elif publishable is not None:
+            # a tuple of allowed request methods
+            request_method = (getattr(self, "environ", None)
+                              and self.environ.get("REQUEST_METHOD"))
+            if  (request_method is None  # noqa: E271
+                 or request_method.upper() not in publishable):
+                raise Forbidden(
+                    f"The object at {url} does not support "
+                    f"{request_method} requests")
+            return
+        # ``publishable`` is ``None``
+
+        # Check that built-in types aren't publishable.
+        if not typeCheck(obj):
+            raise Forbidden(
+                "The object at %s is not publishable." % url)
+        # Ensure that the object has a docstring
+        doc = getattr(obj, '__doc__', None)
+        if not doc:
+            raise Forbidden(
+                f"The object at {url} has an empty or missing "
+                "docstring. Objects must either be marked via "
+                "to `ZPublisher.zpublish` decorator or have a docstring to be "
+                "published.")
+        if deprecate_docstrings:
+            warn(DocstringWarning(url))
+
 
 def exec_callables(callables):
     result = None
@@ -767,30 +814,6 @@ def typeCheck(obj, deny=itypes):
 
 
 deprecate_docstrings = environ.get("ZPUBLISHER_DEPRECATE_DOCSTRINGS")
-
-
-def ensure_publishable(obj, url):
-    """raise ``Forbidden`` unless *obj* at *url* is publishable."""
-    publishable = getattr(obj, _ZPUBLISH_ATTR, None)
-    if publishable:  # explicitely marked as publishable
-        return
-    if publishable is not None:  # explicitely marked as not publishable
-        raise Forbidden(
-            f"The object at {url} is marked as not publishable")
-    # Check that built-in types aren't publishable.
-    if not typeCheck(obj):
-        raise Forbidden(
-            "The object at %s is not publishable." % url)
-    # Ensure that the object has a docstring
-    doc = getattr(obj, '__doc__', None)
-    if not doc:
-        raise Forbidden(
-            f"The object at {url} has an empty or missing "
-            "docstring. Objects must either be marked via "
-            "to `ZPublisher.zpublish` decorator or have a docstring to be "
-            "published.")
-    if deprecate_docstrings:
-        warn(DocstringWarning(url))
 
 
 class DocstringWarning(DeprecationWarning):

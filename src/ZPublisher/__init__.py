@@ -37,7 +37,7 @@ class Retry(Exception):
 _ZPUBLISH_ATTR = "__zpublishable__"
 
 
-def zpublish(publish=True, callable=None):
+def zpublish(publish=True, *, methods=None):
     """decorator signaling design for/not for publication.
 
     Usage:
@@ -54,32 +54,66 @@ def zpublish(publish=True, callable=None):
       def f(...): ...
         ``ZPublisher`` should not publish ``f``
 
+      @zpublish(methods="METHOD")
+      def f(...):
+          ``ZPublisher`` should publish ``f`` for request method *METHOD*
+
+      zpublish(methods=("M1", "M2", ...))
+      def f(...):
+          ``ZPublisher`` should publish ``f`` for all
+          request methods mentioned in *methods*.
+
+
       @zpublish...
       class C: ...
         instances of ``C`` can/can not be published by ``ZPublisher``.
 
-      zpublish(publish=..., callable=obj)
-        returns a wrapper for callable *obj* with the same signature;
-        *publish* determines its publishability.
 
-    ``Zpublish(f)`` is equivalent to ``zpublish(True)(f)`` if
+    ``zpublish(f)`` is equivalent to ``zpublish(True)(f)`` if
     ``f`` is not a boolean.
     """
-    if callable is not None:
-        assert isinstance(publish, bool), "publish must be a boolean"
-
-        @zpublish(publish)
-        @wraps(callable)
-        def wrapper(*args, **kw):
-            return callable(*args, **kw)
-        wrapper.__signature__ = signature(callable, follow_wrapped=False)
-        return wrapper
-
     if not isinstance(publish, bool):
         return zpublish(True)(publish)
 
+    if methods is not None:
+        assert publish
+        publish = ((methods.upper(),) if isinstance(methods, str)
+                   else tuple(m.upper() for m in methods) if methods
+                   else False)
+
     def wrap(f):
+        # *publish* is either ``True``, ``False`` or a tuple
+        # of allowed request methods
         setattr(f, _ZPUBLISH_ATTR, publish)
         return f
 
     return wrap
+
+
+def zpublish_mark(obj):
+    """the ``zpublis`` indication at *obj*."""
+    return getattr(obj, _ZPUBLISH_ATTR, None)
+
+
+def zpublish_marked(obj):
+    """true if *obj* carries a publication indication."""
+    return zpublish_mark(obj) is not None
+
+
+def zpublish_wrap(callable):
+    """wrap *callable* to provide a publication indication.
+
+    Return *callable* unchanged if it already carries a
+    publication indication;
+    otherwise, return a signature preserving wrapper
+    allowing publication.
+    """
+    if zpublish_marked(callable):
+        return callable
+
+    @zpublish
+    @wraps(callable)
+    def wrapper(*args, **kw):
+        return callable(*args, **kw)
+    wrapper.__signature__ = signature(callable)
+    return wrapper

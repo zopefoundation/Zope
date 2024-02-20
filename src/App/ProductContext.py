@@ -23,6 +23,8 @@ from App.FactoryDispatcher import FactoryDispatcher
 from OFS.ObjectManager import ObjectManager
 from zope.interface import implementedBy
 from ZPublisher import zpublish
+from ZPublisher import zpublish_marked
+from ZPublisher import zpublish_wrap
 
 
 if not hasattr(Products, 'meta_types'):
@@ -100,7 +102,7 @@ class ProductContext:
         productObject = self.__prod
         pid = productObject.id
 
-        if instance_class is not None:
+        if instance_class is not None and not zpublish_marked(instance_class):
             zpublish(instance_class)
 
         if permissions:
@@ -140,7 +142,7 @@ class ProductContext:
                 name = method.__name__
                 aliased = 0
             if name not in OM.__dict__:
-                method = zpublish(True, method)
+                method = zpublish_wrap(method)
                 setattr(OM, name, method)
                 setattr(OM, name + '__roles__', pr)
                 if aliased:
@@ -201,7 +203,7 @@ class ProductContext:
             else:
                 name = os.path.split(method.__name__)[-1]
             if name not in productObject.__dict__:
-                m[name] = zpublish(True, method)
+                m[name] = zpublish_wrap(method)
                 m[name + '__roles__'] = pr
 
     def getApplication(self):
