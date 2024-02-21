@@ -1433,7 +1433,7 @@ class MakeDispositionHeaderTests(unittest.TestCase):
     def test_latin_one(self):
         self.assertEqual(
             make_content_disposition('inline', 'Dänemark.png'),
-            'inline; filename="b\'Dnemark.png\'"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
+            'inline; filename="Dnemark.png"; filename*=UTF-8\'\'D%C3%A4nemark.png'  # noqa: E501
         )
 
     def test_unicode(self):
@@ -1445,7 +1445,7 @@ class MakeDispositionHeaderTests(unittest.TestCase):
         """
         self.assertEqual(
             make_content_disposition('inline', 'ıq.png'),
-            'inline; filename="b\'q.png\'"; filename*=UTF-8\'\'%C4%B1q.png'
+            'inline; filename="q.png"; filename*=UTF-8\'\'%C4%B1q.png'
         )
 
 

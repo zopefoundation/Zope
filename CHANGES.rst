@@ -21,6 +21,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix authentication error viewing ZMI with a user defined outside of zope root.
   Fixes `#1195 <https://github.com/zopefoundation/Zope/issues/1195>`_.
 
+- Fix ``Content-Disposition`` filename for clients without rfc6266 support.
+  (`#1198 <https://github.com/zopefoundation/Zope/pull/1198>`_)
+
 
 5.9 (2023-11-24)
 ----------------
