@@ -37,7 +37,7 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
-from ZPublisher import _ZPUBLISH_ATTR
+from ZPublisher import zpublish_mark
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 from ZPublisher.xmlrpc import is_xmlrpc_response
@@ -683,9 +683,20 @@ class BaseRequest:
         """
         url, default = self["URL"], None
         if for_call:
-            url += ".__call__"
+            # We are called to check the publication
+            # of the ``__call__`` method.
+            # Usually, its publication indication comes from its
+            # ``__self__`` and this has already been checked.
+            # It can however carry a stricter publication indication
+            # which we want to check here.
+            # We achieve this by changing *default* from
+            # ``None`` to ``True``. In this way, we get the publication
+            # indication of ``__call__`` if it carries one
+            # or ``True`` otherwise which in this case
+            # indicates "already checked".
+            url += "[__call__]"
             default = True
-        publishable = getattr(obj, _ZPUBLISH_ATTR, default)
+        publishable = zpublish_mark(obj, default)
         # ``publishable`` is either ``None``, ``True``, ``False`` or
         # a tuple of allowed request methods.
         if publishable is True:  # explicitely marked as publishable

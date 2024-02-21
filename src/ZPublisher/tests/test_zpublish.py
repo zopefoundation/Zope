@@ -54,6 +54,15 @@ class ZpublishTests(TestCase):
         self.assertEqual(zpublish_mark(f), ("M1", "M2"))
         self.assertTrue(zpublish_marked(f))
 
+    def test_zpublish_mark(self):
+        def f():
+            pass
+
+        self.assertIsNone(zpublish_mark(f))
+        self.assertIs(zpublish_mark(f, True), True)
+        zpublish(f)
+        self.assertIs(zpublish_mark(f), True)
+
     def test_zpublish_marked(self):
         def f():
             pass

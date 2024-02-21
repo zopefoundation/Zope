@@ -90,21 +90,30 @@ def zpublish(publish=True, *, methods=None):
     return wrap
 
 
-def zpublish_mark(obj):
-    """the ``zpublish`` indication at *obj*."""
-    return getattr(obj, _ZPUBLISH_ATTR, None)
+def zpublish_mark(obj, default=None):
+    """the publication indication effective at *obj* or *default*.
+
+    For an instance, the indication usually comes from its class
+    or a base class; a function/method typically carries the
+    indication itself.
+
+    The publication indication is either ``True`` (publication allowed),
+    ``False`` (publication disallowed) or a tuple
+    of request method names for which publication is allowed.
+    """
+    return getattr(obj, _ZPUBLISH_ATTR, default)
 
 
 def zpublish_marked(obj):
-    """true if *obj* carries a publication indication."""
+    """true if a publication indication is effective at *obj*."""
     return zpublish_mark(obj) is not None
 
 
 def zpublish_wrap(callable):
     """wrap *callable* to provide a publication indication.
 
-    Return *callable* unchanged if it already carries a
-    publication indication;
+    Return *callable* unchanged if a publication indication
+    is already effective at *callable*;
     otherwise, return a signature preserving wrapper
     allowing publication.
     """
