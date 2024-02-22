@@ -15,6 +15,8 @@
 from inspect import signature
 from unittest import TestCase
 
+from Shared.DC.Scripts.Signature import FuncCode
+
 from .. import zpublish
 from .. import zpublish_mark
 from .. import zpublish_marked
@@ -81,3 +83,22 @@ class ZpublishTests(TestCase):
         self.assertIs(zpublish_mark(wrapper), True)
         self.assertEqual(signature(wrapper), signature(f))
         self.assertIs(wrapper, zpublish_wrap(wrapper))
+        wrapper2 = zpublish_wrap(wrapper, conditional=False, methods="put")
+        self.assertIsNot(wrapper2, wrapper)
+        self.assertEqual(zpublish_mark(wrapper2), ("PUT",))
+
+        # test ``mapply`` signature
+
+        class WithMapplySignature:
+            __code__ = FuncCode(("a", "b", "c"), 2)
+            __defaults__ = None
+
+            def __call__(self, *args, **kw):
+                pass
+
+        f = WithMapplySignature()
+        wrapper = zpublish_wrap(f)
+        self.assertEqual(str(wrapper.__signature__), "(a, b)")
+        WithMapplySignature.__defaults__ = 2,
+        wrapper = zpublish_wrap(f)
+        self.assertEqual(str(wrapper.__signature__), "(a, b=2)")

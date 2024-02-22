@@ -12,7 +12,11 @@
 ##############################################################################
 
 from functools import wraps
+from inspect import Parameter
+from inspect import Signature
 from inspect import signature
+from itertools import chain
+from types import FunctionType
 
 
 class Retry(Exception):
@@ -109,20 +113,42 @@ def zpublish_marked(obj):
     return zpublish_mark(obj) is not None
 
 
-def zpublish_wrap(callable):
+def zpublish_wrap(callable, *, conditional=True, publish=True, methods=None):
     """wrap *callable* to provide a publication indication.
 
-    Return *callable* unchanged if a publication indication
+    Return *callable* unchanged if *conditional* and a publication indication
     is already effective at *callable*;
     otherwise, return a signature preserving wrapper
-    allowing publication.
+    with publication control given by *publish* and *methods*.
     """
-    if zpublish_marked(callable):
+    if conditional and zpublish_marked(callable):
         return callable
 
-    @zpublish
+    @zpublish(publish, methods=methods)
     @wraps(callable)
     def wrapper(*args, **kw):
         return callable(*args, **kw)
-    wrapper.__signature__ = signature(callable)
+    # Signature preservation is particularly important for ``mapply``.
+    # It allows an instance to specify the signature to be used for
+    # its ``__call__`` method via attributes ``__code__`` and
+    # ``__defaults__``.
+    # We must respect such specifications
+    cls = callable.__class__
+    if isinstance(getattr(cls, "__call__", None), FunctionType) \
+       and getattr(callable, "__code__", cls) is not cls \
+       and getattr(callable, "__defaults__", cls) is not cls:
+        # Signature specification via ``__code__`` and ``__defaults__``.
+        code = callable.__code__
+        varnames = code.co_varnames
+        argcount = code.co_argcount
+        defaults = callable.__defaults__ or ()
+        pos = argcount - len(defaults)
+        sig = Signature(tuple(
+            Parameter(z[0], Parameter.POSITIONAL_OR_KEYWORD, default=z[1])
+            for z in chain(
+                ((n, Parameter.empty) for n in varnames[:pos]),
+                zip(varnames[pos:], defaults))))
+    else:
+        sig = signature(callable)
+    wrapper.__signature__ = sig
     return wrapper
