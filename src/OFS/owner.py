@@ -21,13 +21,13 @@ from AccessControl.owner import UnownableOwner
 from AccessControl.owner import ownableFilter
 from AccessControl.Permissions import take_ownership
 from AccessControl.Permissions import view_management_screens
-from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.unauthorized import Unauthorized
 from Acquisition import aq_get
 from Acquisition import aq_parent
 from App.special_dtml import DTMLFile
+from ZPublisher import zpublish
 
 
 class Owned(BaseOwned):
@@ -47,7 +47,7 @@ class Owned(BaseOwned):
     manage_owner = DTMLFile('dtml/owner', globals())
 
     @security.protected(take_ownership)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
         """Take ownership (responsibility) for an object.
 
@@ -68,7 +68,7 @@ class Owned(BaseOwned):
             RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
     @security.protected(take_ownership)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_changeOwnershipType(
         self,
         explicit=1,

@@ -200,7 +200,6 @@ class Item(
 
     _manage_editedDialog = DTMLFile('dtml/editedDialog', globals())
 
-    @zpublish
     def manage_editedDialog(self, REQUEST, **args):
         return self._manage_editedDialog(self, REQUEST, **args)
 

@@ -22,6 +22,7 @@ from OFS.interfaces import IOrderedContainer as IOrderedContainer
 from zope.container.contained import notifyContainerModified
 from zope.interface import implementer
 from zope.sequencesort.ssort import sort
+from ZPublisher import zpublish
 
 
 @implementer(IOrderedContainer)
@@ -48,6 +49,7 @@ class OrderSupport:
     )
 
     @security.protected(manage_properties)
+    @zpublish
     def manage_move_objects_up(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects up by delta in container.
         """
@@ -67,6 +69,7 @@ class OrderSupport:
         )
 
     @security.protected(manage_properties)
+    @zpublish
     def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects down by delta in container.
         """
@@ -86,6 +89,7 @@ class OrderSupport:
         )
 
     @security.protected(manage_properties)
+    @zpublish
     def manage_move_objects_to_top(self, REQUEST, ids=None):
         """ Move specified sub-objects to top of container.
         """
@@ -102,6 +106,7 @@ class OrderSupport:
                                 manage_tabs_message=message)
 
     @security.protected(manage_properties)
+    @zpublish
     def manage_move_objects_to_bottom(self, REQUEST, ids=None):
         """ Move specified sub-objects to bottom of container.
         """
@@ -118,6 +123,7 @@ class OrderSupport:
                                 manage_tabs_message=message)
 
     @security.protected(manage_properties)
+    @zpublish
     def manage_set_default_sorting(self, REQUEST, key, reverse):
         """ Set default sorting key and direction."""
         self.setDefaultSorting(key, reverse)
@@ -237,6 +243,7 @@ class OrderSupport:
         self._default_sort_key = key
         self._default_sort_reverse = reverse and 1 or 0
 
+    @zpublish
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """ Rename a particular sub-object without changing its position.
         """

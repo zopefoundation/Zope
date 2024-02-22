@@ -20,7 +20,6 @@ from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_proxy_roles  # NOQA
 from AccessControl.Permissions import view as View
 from AccessControl.Permissions import view_management_screens
-from AccessControl.requestmethod import requestmethod
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.tainted import TaintedString
 from Acquisition import Implicit
@@ -340,9 +339,8 @@ class DTMLMethod(
             'do not have proxy roles.\n<!--%s, %s-->' % (
                 self.__name__, user, roles))
 
-    @zpublish
+    @zpublish(methods="POST")
     @security.protected(change_proxy_roles)
-    @requestmethod('POST')
     def manage_proxy(self, roles=(), REQUEST=None):
         """Change Proxy Roles"""
         user = getSecurityManager().getUser()

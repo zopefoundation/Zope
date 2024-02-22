@@ -161,6 +161,7 @@ class FactoryDispatcher(Implicit):
     _owner = UnownableOwner
 
     # Provide a replacement for manage_main that does a redirection:
+    @zpublish
     def manage_main(trueself, self, REQUEST, update_menu=0):
         """Implement a contents view by redirecting to the true view
         """

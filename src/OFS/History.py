@@ -94,6 +94,7 @@ class Historian(Implicit):
 
         return rev.__of__(self.aq_parent)
 
+    @zpublish
     def manage_workspace(self, REQUEST):
         """ We aren't real, so we delegate to that that spawned us! """
         raise Redirect('/%s/manage_change_history_page' % REQUEST['URL2'])
