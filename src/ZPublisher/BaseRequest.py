@@ -729,7 +729,7 @@ class BaseRequest:
                 "to `ZPublisher.zpublish` decorator or have a docstring to be "
                 "published.")
         if deprecate_docstrings:
-            warn(DocstringWarning(url))
+            warn(DocstringWarning(obj, url))
 
 
 def exec_callables(callables):
@@ -828,7 +828,44 @@ deprecate_docstrings = environ.get("ZPUBLISHER_DEPRECATE_DOCSTRINGS")
 
 
 class DocstringWarning(DeprecationWarning):
+    def tag(self):
+        import inspect as i
+
+        def lineno(o, m=False):
+            """try to determine where *o* has been defined.
+
+            *o* is either a function or a class.
+            """
+            try:
+                _, lineno = i.getsourcelines(o)
+            except (OSError, TypeError):
+                return ""
+            return f"[{o.__module__}:{lineno}]" if m else f" at line {lineno}"
+
+        obj, url = self.args
+        desc = None
+        if i.ismethod(obj):
+            f = i.unwrap(obj.__func__)
+            c = obj.__self__.__class__
+            desc = f"'{c.__module__}.{c.__qualname__}' " \
+                   f"method '{obj.__qualname__}'{lineno(f, 1)}"
+        elif i.isfunction(obj):
+            f = i.unwrap(obj)
+            desc = f"function '{f.__module__}.{f.__qualname__}'" \
+                   f"{lineno(f)}"
+        else:
+            try:
+                cls_doc = "__doc__" not in obj.__dict__
+            except AttributeError:
+                cls_doc = True
+            if cls_doc:
+                c = obj.__class__
+                desc = f"'{c.__module__}.{c.__qualname__}'{lineno(c)}"
+        if desc is None:
+            desc = f"object at '{url}'"
+        return desc
+
     def __str__(self):
-        return (f"The object at {self.args[0]} uses deprecated docstring "
+        return (f"{self.tag()} uses deprecated docstring "
                 "publication control. Use the `ZPublisher.zpublish` decorator "
                 "instead")

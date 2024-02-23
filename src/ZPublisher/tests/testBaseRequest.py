@@ -6,6 +6,9 @@ from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
 from ZPublisher import zpublish
+from ZPublisher.BaseRequest import DocstringWarning
+
+from . import docstring
 
 
 @implementer(IPublishTraverse)
@@ -885,3 +888,37 @@ class TestBaseRequestViews(TestRequestViewsBase):
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
         self.assertIsInstance(str(r), str)
+
+
+class TestDocstringWarning(unittest.TestCase):
+    def test_method(self):
+        c = docstring.C()
+        ds = DocstringWarning(c.g, "URL")
+        self.assertEqual(ds.tag(),
+                         "'ZPublisher.tests.docstring.C' method "
+                         "'f'[ZPublisher.tests.docstring:7]")
+
+    def test_function(self):
+        f = docstring.f
+        ds = DocstringWarning(f, "URL")
+        self.assertEqual(ds.tag(),
+                         "function 'ZPublisher.tests.docstring.f' at line 7")
+
+    def test_instance_with_own_docstring(self):
+        c = docstring.C()
+        c.__doc__ = "c"
+        ds = DocstringWarning(c, "URL")
+        self.assertEqual(ds.tag(), "object at 'URL'")
+
+    def test_instance_with_inherited_docstring(self):
+        c = docstring.C()
+        ds = DocstringWarning(c, "URL")
+        self.assertEqual(ds.tag(), "'ZPublisher.tests.docstring.C' at line 11")
+
+    def test__str__(self):
+        ds = DocstringWarning("special", "URL")
+        self.assertEqual(
+            str(ds),
+            "'builtins.str' uses deprecated docstring "
+            "publication control. Use the `ZPublisher.zpublish` decorator "
+            "instead")
