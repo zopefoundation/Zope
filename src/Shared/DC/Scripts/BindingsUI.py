@@ -16,6 +16,7 @@ from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.special_dtml import DTMLFile
 from Shared.DC.Scripts.Bindings import Bindings
+from ZPublisher import zpublish
 
 
 class BindingsUI(Bindings):
@@ -30,6 +31,7 @@ class BindingsUI(Bindings):
                               'ZBindingsHTML_editForm')
     ZBindingsHTML_editForm = DTMLFile('dtml/scriptBindings', globals())
 
+    @zpublish
     @security.protected('Change bindings')
     def ZBindingsHTML_editAction(self, REQUEST):
         '''Changes binding names.

@@ -194,7 +194,7 @@ class ProductContext:
             'container_filter': container_filter
         },)
 
-        m[name] = initial
+        m[name] = zpublish_wrap(initial)
         m[name + '__roles__'] = pr
 
         for method in constructors[1:]:
