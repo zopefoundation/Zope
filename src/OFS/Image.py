@@ -48,6 +48,7 @@ from zope.interface import implementer
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
 from ZPublisher import HTTPRangeSupport
+from ZPublisher import zpublish
 from ZPublisher.HTTPRequest import FileUpload
 
 
@@ -157,6 +158,7 @@ def manage_addFile(
         REQUEST.RESPONSE.redirect(self.absolute_url() + '/manage_main')
 
 
+@zpublish
 @implementer(IWriteLock, HTTPRangeSupport.HTTPRangeInterface)
 class File(
     PathReprProvider,
@@ -484,6 +486,7 @@ class File(
         # We only explicitly allow a few mimetypes, and deny the rest.
         return mimetype not in self.allowed_inline_mimetypes
 
+    @zpublish
     @security.protected(View)
     def index_html(self, REQUEST, RESPONSE):
         """
@@ -560,6 +563,7 @@ class File(
 
         return b''
 
+    @zpublish
     @security.protected(View)
     def view_image_or_file(self, URL1):
         """The default view of the contents of the File or Image."""
@@ -592,6 +596,7 @@ class File(
         """Get the canonical encoding for ZMI."""
         return ZPublisher.HTTPRequest.default_encoding
 
+    @zpublish
     @security.protected(change_images_and_files)
     def manage_edit(
         self,
@@ -627,6 +632,7 @@ class File(
             return self.manage_main(
                 self, REQUEST, manage_tabs_message=message)
 
+    @zpublish
     @security.protected(change_images_and_files)
     def manage_upload(self, file='', REQUEST=None):
         """
@@ -735,6 +741,7 @@ class File(
 
         return (_next, size)
 
+    @zpublish
     @security.protected(change_images_and_files)
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
@@ -791,6 +798,7 @@ class File(
         data = bytes(self.data)
         return len(data)
 
+    @zpublish
     @security.protected(webdav_access)
     def manage_DAVget(self):
         """Return body for WebDAV."""

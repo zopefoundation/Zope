@@ -39,6 +39,7 @@ from Products.PageTemplates.utils import convertToUnicode
 from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from zExceptions import ResourceLockedError
+from ZPublisher import zpublish
 
 
 preferred_encodings = ['utf-8', 'iso-8859-15']
@@ -66,6 +67,7 @@ class Src(Explicit):
 InitializeClass(Src)
 
 
+@zpublish
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
@@ -145,6 +147,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
     source_dot_xml = Src()
 
+    @zpublish
     @security.protected(change_page_templates)
     def pt_editAction(self, REQUEST, title, text, content_type, expand=0):
         """Change the title and document."""
@@ -178,6 +181,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         PropertyManager._setPropValue(self, id, value)
         self.ZCacheable_invalidate()
 
+    @zpublish
     @security.protected(change_page_templates)
     def pt_upload(self, REQUEST, file='', encoding='utf-8'):
         """Replace the document with the text in file."""
@@ -344,6 +348,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         assert isinstance(result, str)
         return result
 
+    @zpublish
     @security.protected(change_page_templates)
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """

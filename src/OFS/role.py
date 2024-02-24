@@ -25,6 +25,7 @@ from AccessControl.rolemanager import _string_hash
 from AccessControl.rolemanager import reqattr
 from App.special_dtml import DTMLFile
 from zExceptions import BadRequest
+from ZPublisher import zpublish
 
 
 class RoleManager(BaseRoleManager):
@@ -47,7 +48,7 @@ class RoleManager(BaseRoleManager):
     )
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         """Change the permissions given to the given role.
         """
@@ -64,7 +65,7 @@ class RoleManager(BaseRoleManager):
     )
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         """Change the permissions that acquire.
         """
@@ -81,7 +82,7 @@ class RoleManager(BaseRoleManager):
     )
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_permission(
         self,
         permission_to_manage,
@@ -107,12 +108,13 @@ class RoleManager(BaseRoleManager):
     )
 
     @security.protected(change_permissions)
+    @zpublish
     def manage_access(self, REQUEST, **kw):
         """Return an interface for making permissions settings."""
         return self._normal_manage_access(**kw)
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_changePermissions(self, REQUEST):
         """Change all permissions settings, called by management screen."""
         valid_roles = self.valid_roles()
@@ -158,7 +160,7 @@ class RoleManager(BaseRoleManager):
     )
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
         BaseRoleManager.manage_addLocalRoles(self, userid, roles)
@@ -167,7 +169,7 @@ class RoleManager(BaseRoleManager):
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_setLocalRoles(self, userid, roles=[], REQUEST=None):
         """Set local roles for a user."""
         if roles:
@@ -179,7 +181,7 @@ class RoleManager(BaseRoleManager):
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     @security.protected(change_permissions)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
         BaseRoleManager.manage_delLocalRoles(self, userids)
@@ -188,6 +190,7 @@ class RoleManager(BaseRoleManager):
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     @security.protected(change_permissions)
+    @zpublish
     def manage_defined_roles(self, submit=None, REQUEST=None):
         """Called by management screen."""
         if submit == 'Add Role':

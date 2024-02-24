@@ -1,9 +1,14 @@
 import unittest
 
+from zExceptions import Forbidden
 from zExceptions import NotFound
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
+from ZPublisher import zpublish
+from ZPublisher.BaseRequest import DocstringWarning
+
+from . import docstring
 
 
 @implementer(IPublishTraverse)
@@ -52,40 +57,60 @@ class BaseRequest_factory:
         }
         return self._getTargetClass()(environment)
 
-    def _makeBasicObjectClass(self):
+    @staticmethod
+    def _use_docstring(ud):
+        if ud is not None:
+            return ud
+        from .. import BaseRequest
+        return not BaseRequest.deprecate_docstrings
+
+    def _makeBasicObjectClass(self, use_docstring=None):
         from Acquisition import Implicit
 
         class DummyObjectBasic(Implicit):
-            """Dummy class with docstring."""
 
             def _setObject(self, id, object):
                 setattr(self, id, object)
                 return getattr(self, id)
 
             def view(self):
-                """Attribute with docstring."""
+                # publishable
                 return 'view content'
 
             def noview(self):
-                # Attribute without docstring.
+                # not publishable
                 return 'unpublishable'
 
             def __contains__(self, name):
                 return False
 
+        if self._use_docstring(use_docstring):
+            DummyObjectBasic.__doc__ = "with docstring"
+            DummyObjectBasic.view.__doc__ = "with docstring"
+        else:
+            zpublish(DummyObjectBasic)
+            zpublish(DummyObjectBasic.view)
+
         return DummyObjectBasic
 
-    def _makeBasicObject(self):
-        return self._makeBasicObjectClass()()
+    def _makeBasicObject(self, use_docstring=None):
+        return self._makeBasicObjectClass(use_docstring)()
 
-    def _makeObjectWithDefault(self):
+    def _makeObjectWithDefault(self, use_docstring=None):
 
-        class DummyObjectWithDefault(self._makeBasicObjectClass()):
-            """Dummy class with docstring."""
+        base = self._makeBasicObjectClass(use_docstring)
 
+        class DummyObjectWithDefault(base):
             def index_html(self):
-                """Attribute with docstring."""
+                # publishable
                 return 'index_html content'
+
+        if self._use_docstring(use_docstring):
+            DummyObjectWithDefault.__doc__ = "with docstring"
+            DummyObjectWithDefault.index_html.__doc__ = "with docstring"
+        else:
+            zpublish(DummyObjectWithDefault)
+            zpublish(DummyObjectWithDefault.index_html)
 
         return DummyObjectWithDefault()
 
@@ -127,6 +152,7 @@ class BaseRequest_factory:
     def _makeObjectWithBBT(self):
         from ZPublisher.interfaces import UseTraversalDefault
 
+        @zpublish
         class _DummyResult:
             ''' '''
             def __init__(self, tag):
@@ -162,11 +188,10 @@ class BaseRequest_factory:
                 raise AttributeError(name)
         return DummyObjectWithBDBBT()
 
-    def _makeObjectWithEmptyDocstring(self):
+    def _makeObjectWithEmptyDocstring(self, use_docstring=None):
         from Acquisition import Implicit
 
         class DummyObjectWithEmptyDocstring(Implicit):
-            ""
             def view(self):
                 """Attribute with docstring."""
                 return 'view content'
@@ -174,6 +199,10 @@ class BaseRequest_factory:
             def noview(self):
                 # Attribute without docstring.
                 return 'unpublishable'
+        if self._use_docstring(use_docstring):
+            DummyObjectWithEmptyDocstring.__doc__ = ""
+        else:
+            zpublish(False)(DummyObjectWithEmptyDocstring)
         return DummyObjectWithEmptyDocstring()
 
 
@@ -183,9 +212,10 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         from ZPublisher.BaseRequest import BaseRequest
         return BaseRequest
 
-    def _makeRootAndFolder(self):
-        root = self._makeBasicObject()
-        folder = root._setObject('folder', self._makeBasicObject())
+    def _makeRootAndFolder(self, use_docstring=None):
+        root = self._makeBasicObject(use_docstring)
+        folder = root._setObject('folder',
+                                 self._makeBasicObject(use_docstring))
         return root, folder
 
     def test_no_docstring_on_instance(self):
@@ -343,9 +373,9 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertEqual(r.URL, '/index_html')
         self.assertEqual(r.response.base, '')
 
-    def test_traverse_attribute_with_docstring(self):
+    def test_traverse_attribute_with_docstring(self, use_docstring=None):
         root, folder = self._makeRootAndFolder()
-        folder._setObject('objBasic', self._makeBasicObject())
+        folder._setObject('objBasic', self._makeBasicObject(use_docstring))
         r = self._makeOne(root)
         r.traverse('folder/objBasic/view')
         self.assertEqual(r.URL, '/folder/objBasic/view')
@@ -386,6 +416,80 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
                           self._makeObjectWithEmptyDocstring())
         self.assertRaises(NotFound, r.traverse,
                           'folder/objWithoutDocstring/noview')
+
+    def test_traverse_attribute_with_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        folder._setObject('objBasic', self._makeBasicObject(False))
+        r = self._makeOne(root)
+        r.traverse('folder/objBasic/view')
+        self.assertEqual(r.URL, '/folder/objBasic/view')
+        self.assertEqual(r.response.base, '')
+
+    def test_traverse_attribute_without_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        folder._setObject('objBasic', self._makeBasicObject(False))
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, 'folder/objBasic/noview')
+
+    def test_traverse_acquired_attribute_without_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        root._setObject('objBasic',
+                        self._makeObjectWithEmptyDocstring())
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, 'folder/objBasic')
+
+    def test_traverse_class_without_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        folder._setObject('objWithoutDocstring',
+                          self._makeObjectWithEmptyDocstring(False))
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, 'folder/objWithoutDocstring')
+
+    def test_traverse_attribute_of_class_without_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        folder._setObject('objWithoutDocstring',
+                          self._makeObjectWithEmptyDocstring(False))
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse,
+                          'folder/objWithoutDocstring/view')
+
+    def test_traverse_attribute_and_class_without_zpublish(self):
+        root, folder = self._makeRootAndFolder(False)
+        r = self._makeOne(root)
+        folder._setObject('objWithoutDocstring',
+                          self._makeObjectWithEmptyDocstring(False))
+        self.assertRaises(NotFound, r.traverse,
+                          'folder/objWithoutDocstring/noview')
+
+    def test_docstring_deprecation(self):
+        from ZPublisher import BaseRequest
+        deprecate = BaseRequest.deprecate_docstrings
+        try:
+            BaseRequest.deprecate_docstrings = "1"
+            with self.assertWarns(BaseRequest.DocstringWarning):
+                self.test_traverse_attribute_with_docstring(True)
+        finally:
+            BaseRequest.deprecate_docstrings = deprecate
+
+    def test_zpublish___call__(self):
+        root, folder = self._makeRootAndFolder(False)
+
+        @zpublish(methods="POST")
+        def __call__(self):
+            pass
+
+        folder.__class__.__call__ = __call__
+        # no request method
+        r = self._makeOne(root)
+        self.assertRaises(Forbidden, r.traverse, 'folder')
+        # wrong request method
+        r = self._makeOne(root)
+        r.environ = dict(REQUEST_METHOD="get")
+        self.assertRaises(Forbidden, r.traverse, 'folder')
+        # correct request method
+        r = self._makeOne(root)
+        r.environ = dict(REQUEST_METHOD="post")
+        r.traverse('folder')
 
     def test_traverse_simple_string(self):
         root, folder = self._makeRootAndFolder()
@@ -540,6 +644,11 @@ class TestRequestViewsBase(unittest.TestCase, BaseRequest_factory):
             def methonly(self):
                 """doc"""
                 return 'methonly on %s' % self.name
+
+        if not self._use_docstring(None):
+            zpublish(DummyObjectZ3WithAttr)
+            zpublish(DummyObjectZ3WithAttr.meth)
+            zpublish(DummyObjectZ3WithAttr.methonly)
 
         return DummyObjectZ3WithAttr(name)
 
@@ -779,3 +888,37 @@ class TestBaseRequestViews(TestRequestViewsBase):
         root, folder = self._makeRootAndFolder()
         r = self._makeOne(root)
         self.assertIsInstance(str(r), str)
+
+
+class TestDocstringWarning(unittest.TestCase):
+    def test_method(self):
+        c = docstring.C()
+        ds = DocstringWarning(c.g, "URL")
+        self.assertEqual(ds.tag(),
+                         "'ZPublisher.tests.docstring.C' method "
+                         "'f'[ZPublisher.tests.docstring:7]")
+
+    def test_function(self):
+        f = docstring.f
+        ds = DocstringWarning(f, "URL")
+        self.assertEqual(ds.tag(),
+                         "function 'ZPublisher.tests.docstring.f' at line 7")
+
+    def test_instance_with_own_docstring(self):
+        c = docstring.C()
+        c.__doc__ = "c"
+        ds = DocstringWarning(c, "URL")
+        self.assertEqual(ds.tag(), "object at 'URL'")
+
+    def test_instance_with_inherited_docstring(self):
+        c = docstring.C()
+        ds = DocstringWarning(c, "URL")
+        self.assertEqual(ds.tag(), "'ZPublisher.tests.docstring.C' at line 11")
+
+    def test__str__(self):
+        ds = DocstringWarning("special", "URL")
+        self.assertEqual(
+            str(ds),
+            "'builtins.str' uses deprecated docstring "
+            "publication control. Use the `ZPublisher.zpublish` decorator "
+            "instead")

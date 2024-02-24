@@ -19,7 +19,6 @@ from _thread import get_ident
 from urllib import parse
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.requestmethod import requestmethod
 from Acquisition import Implicit
 from App.CacheManager import CacheManager
 from App.config import getConfiguration
@@ -33,6 +32,7 @@ from DateTime.DateTime import DateTime
 from OFS.Traversable import Traversable
 from Persistence import Persistent
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from ZPublisher import zpublish
 
 
 class FakeConnection:
@@ -365,7 +365,7 @@ class AltDatabaseManager(CacheManager, Traversable, UndoSupport):
             return '%.1fM' % (s / 1048576.0)
         return '%.1fK' % (s / 1024.0)
 
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_minimize(self, value=1, REQUEST=None):
         "Perform a full sweep through the cache"
         # XXX Add a deprecation warning about value?
@@ -376,7 +376,7 @@ class AltDatabaseManager(CacheManager, Traversable, UndoSupport):
             url = f'{REQUEST["URL1"]}/manage_main?manage_tabs_message={msg}'
             REQUEST.RESPONSE.redirect(url)
 
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
         if not isinstance(days, (int, float)):

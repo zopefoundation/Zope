@@ -19,6 +19,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from zope.interface import Interface
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 
 class ISimpleContent(Interface):
@@ -77,6 +78,7 @@ class IndexSimpleContent(SimpleItem):
 
     meta_type = 'Five IndexSimpleContent'
 
+    @zpublish
     def index_html(self, *args, **kw):
         """ """
         return "Default index_html called"

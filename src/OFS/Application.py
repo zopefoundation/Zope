@@ -39,6 +39,7 @@ from webdav.NullResource import NullResource
 from zExceptions import Forbidden
 from zExceptions import Redirect as RedirectException
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 from . import Folder
 from . import misc_
@@ -107,6 +108,7 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
 
     ZopeRedirect = Redirect
 
+    @zpublish
     @security.protected(view_management_screens)
     def getZMIMainFrameTarget(self, REQUEST):
         """Utility method to get the right hand side ZMI frame source URL
@@ -200,11 +202,13 @@ class Application(ApplicationDefaultPermissions, Folder.Folder, FindSupport):
 
             return version
 
+    @zpublish
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
         self.dav__init(REQUEST, RESPONSE)
         raise Forbidden('This resource cannot be deleted.')
 
+    @zpublish
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)

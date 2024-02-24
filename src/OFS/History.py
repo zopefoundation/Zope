@@ -26,6 +26,7 @@ from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from ExtensionClass import Base
 from zExceptions import Redirect
+from ZPublisher import zpublish
 
 
 view_history = 'View History'
@@ -93,6 +94,7 @@ class Historian(Implicit):
 
         return rev.__of__(self.aq_parent)
 
+    @zpublish
     def manage_workspace(self, REQUEST):
         """ We aren't real, so we delegate to that that spawned us! """
         raise Redirect('/%s/manage_change_history_page' % REQUEST['URL2'])
@@ -122,6 +124,7 @@ class Historical(Base):
         HistoryBatchSize=20,
         first_transaction=0, last_transaction=20)
 
+    @zpublish
     @security.protected(view_history)
     def manage_change_history(self):
         first = 0
@@ -146,6 +149,7 @@ class Historical(Base):
     def manage_beforeHistoryCopy(self):
         pass
 
+    @zpublish
     def manage_historyCopy(self, keys=[], RESPONSE=None, URL1=None):
         """ Copy a selected revision to the present """
         if not keys:
@@ -176,6 +180,7 @@ class Historical(Base):
     _manage_historyComparePage = DTMLFile(
         'dtml/historyCompare', globals(), management_view='History')
 
+    @zpublish
     @security.protected(view_history)
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
@@ -186,6 +191,7 @@ class Historical(Base):
             dt1=dt1, dt2=dt2,
             historyComparisonResults=historyComparisonResults)
 
+    @zpublish
     @security.protected(view_history)
     def manage_historicalComparison(self, REQUEST, keys=[]):
         """ Compare two selected revisions """
