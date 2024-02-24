@@ -14,9 +14,9 @@
 """
 
 import types
+import warnings
 from os import environ
 from urllib.parse import quote as urllib_quote
-from warnings import warn
 
 from AccessControl.ZopeSecurityPolicy import getRoles
 from Acquisition import aq_base
@@ -729,7 +729,7 @@ class BaseRequest:
                 "to `ZPublisher.zpublish` decorator or have a docstring to be "
                 "published.")
         if deprecate_docstrings:
-            warn(DocstringWarning(obj, url))
+            warnings.warn(DocstringWarning(obj, url))
 
 
 def exec_callables(callables):
@@ -869,3 +869,19 @@ class DocstringWarning(DeprecationWarning):
         return (f"{self.tag()} uses deprecated docstring "
                 "publication control. Use the `ZPublisher.zpublish` decorator "
                 "instead")
+
+
+if deprecate_docstrings:
+    # look whether there is already a ``DocstringWarning`` filter
+    for f in warnings.filters:
+        if f[2] is DocstringWarning:
+            break
+    else:
+        # provide a ``DocstringWarning`` filter
+        # if ``deprecate_docstrings`` specifies a sensefull action
+        # use it, otherwise ``"default"``.
+        warn_action = deprecate_docstrings \
+            if deprecate_docstrings \
+            in ("default", "error", "ignore", "always") \
+            else "default"
+        warnings.filterwarnings(warn_action, category=DocstringWarning)
