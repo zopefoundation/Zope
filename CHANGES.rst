@@ -26,6 +26,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix ``Content-Disposition`` filename for clients without rfc6266 support.
   (`#1198 <https://github.com/zopefoundation/Zope/pull/1198>`_)
 
+- Support ``Chameleon`` ``structure`` expression type.
+  Fixes `#1077 <https://github.com/zopefoundation/Zope/issues/1077>`_.
+
 
 5.9 (2023-11-24)
 ----------------
