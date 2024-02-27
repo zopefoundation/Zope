@@ -32,6 +32,7 @@ from App.special_dtml import DTMLFile
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from zExceptions import BadRequest
+from ZPublisher import zpublish
 
 
 class BasicUserFolder(
@@ -54,7 +55,7 @@ class BasicUserFolder(
     ) + RoleManager.manage_options + Item.manage_options)
 
     @security.protected(ManageUsers)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def userFolderAddUser(self, name, password, roles, domains,
                           REQUEST=None, **kw):
         """API method for creating a new user object. Note that not all
@@ -65,7 +66,7 @@ class BasicUserFolder(
         raise NotImplementedError
 
     @security.protected(ManageUsers)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def userFolderEditUser(
         self,
         name,
@@ -83,7 +84,7 @@ class BasicUserFolder(
         raise NotImplementedError
 
     @security.protected(ManageUsers)
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def userFolderDelUsers(self, names, REQUEST=None):
         """API method for deleting one or more user objects. Note that not
            all user folder implementations support deletion of user objects."""
@@ -101,6 +102,7 @@ class BasicUserFolder(
 
     _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
 
+    @zpublish
     def manage_userFolderProperties(
         self,
         REQUEST=None,
@@ -115,7 +117,7 @@ class BasicUserFolder(
             management_view='Properties',
         )
 
-    @requestmethod('POST')
+    @zpublish(methods='POST')
     def manage_setUserFolderProperties(
         self,
         encrypt_passwords=0,
@@ -214,6 +216,7 @@ class BasicUserFolder(
             return self._mainUser(self, REQUEST)
 
     @security.protected(ManageUsers)
+    @zpublish
     def manage_users(self, submit=None, REQUEST=None, RESPONSE=None):
         """This method handles operations on users for the web based forms
            of the ZMI. Application code (code that is outside of the forms

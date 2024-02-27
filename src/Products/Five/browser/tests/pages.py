@@ -20,20 +20,25 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from ZPublisher import zpublish
 
 
+@zpublish
 class SimpleView(BrowserView):
 
     """More docstring. Please Zope"""
 
+    @zpublish
     def eagle(self):
         """Docstring"""
         return "The eagle has landed"
 
+    @zpublish
     def eagle2(self):
         """Docstring"""
         return "The eagle has landed:\n%s" % self.context.absolute_url()
 
+    @zpublish
     def mouse(self):
         """Docstring"""
         return "The mouse has been eaten by the eagle"
@@ -105,16 +110,19 @@ class ProtectedView:
 
     security = ClassSecurityInfo()
 
+    @zpublish
     @security.public
     def public_method(self):
         """Docstring"""
         return 'PUBLIC'
 
+    @zpublish
     @security.protected('View')
     def protected_method(self):
         """Docstring"""
         return 'PROTECTED'
 
+    @zpublish
     @security.private
     def private_method(self):
         """Docstring"""
@@ -133,6 +141,7 @@ class IHamburger(zope.interface.Interface):
 class CheeseburgerView(BrowserView):
     """View those `meat` method gets allowed via `IHamburger`."""
 
+    @zpublish
     def meat(self):
         """Make meat publically available via a docstring."""
         return 'yummi'

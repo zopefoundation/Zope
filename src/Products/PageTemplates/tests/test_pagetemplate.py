@@ -3,6 +3,8 @@ import unittest
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Testing.ZopeTestCase import ZopeTestCase
+from zope.component import provideAdapter
+from zope.traversing.adapters import DefaultTraversable
 
 from .util import useChameleonEngine
 
@@ -14,6 +16,7 @@ class TestPageTemplateFile(ZopeTestCase):
 
     def afterSetUp(self):
         useChameleonEngine()
+        provideAdapter(DefaultTraversable, (None,))
 
     def _makeOne(self, name):
         return PageTemplateFile(os.path.join(path, name)).__of__(self.app)
@@ -80,6 +83,12 @@ class TestPageTemplateFile(ZopeTestCase):
         allow_module('html')
         result = template(soup=soup)
         self.assertTrue('&lt;foo&gt;&lt;/bar&gt;' in result)
+
+    def test_structure(self):
+        template = self._makeOne("structure.pt")
+        param = "<span>abc</span>"
+        result = template(param=param)
+        self.assertTrue(param in result)
 
 
 def test_suite():

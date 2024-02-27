@@ -20,12 +20,14 @@ from Acquisition import Explicit
 from OFS.SimpleItem import SimpleItem
 from zope.interface import Interface
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 
 class IFancyContent(Interface):
     pass
 
 
+@zpublish
 class FancyAttribute(Explicit):
     """Doc test fanatics"""
 
@@ -34,6 +36,7 @@ class FancyAttribute(Explicit):
 
     security = ClassSecurityInfo()
 
+    @zpublish
     @security.public
     def index_html(self, REQUEST):
         """Doc test fanatics"""

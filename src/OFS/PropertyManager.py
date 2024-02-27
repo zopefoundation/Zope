@@ -27,6 +27,7 @@ from OFS.PropertySheets import DefaultPropertySheets
 from OFS.PropertySheets import vps
 from zExceptions import BadRequest
 from zope.interface import implementer
+from ZPublisher import zpublish
 from ZPublisher.Converters import type_converters
 
 
@@ -275,6 +276,7 @@ class PropertyManager(Base):
             dict[p['id']] = p
         return dict
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web.
@@ -287,6 +289,7 @@ class PropertyManager(Base):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web.
@@ -312,6 +315,7 @@ class PropertyManager(Base):
                 manage_tabs_message=message,
             )
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
@@ -344,6 +348,7 @@ class PropertyManager(Base):
                 manage_tabs_message=message
             )
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
         """Replace one set of properties with another.
@@ -363,6 +368,7 @@ class PropertyManager(Base):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
+    @zpublish
     @security.protected(manage_properties)
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""

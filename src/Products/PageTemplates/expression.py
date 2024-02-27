@@ -9,6 +9,7 @@ from chameleon.astutil import Symbol
 from chameleon.codegen import template
 from chameleon.tales import NotExpr
 from chameleon.tales import StringExpr
+from chameleon.tales import StructureExpr
 
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.ZopeGuards import guarded_apply
@@ -226,7 +227,8 @@ types = dict(
     exists=ExistsExpr,
     path=PathExpr,
     provider=expressions.ProviderExpr,
-    nocall=NocallExpr)
+    nocall=NocallExpr,
+    structure=StructureExpr)
 
 
 def createChameleonEngine(types=types, untrusted=True, **overrides):

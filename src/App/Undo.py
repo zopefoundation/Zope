@@ -23,6 +23,7 @@ from Acquisition import Implicit
 from App.Management import Tabs
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
+from ZPublisher import zpublish
 
 
 class UndoSupport(Tabs, Implicit):
@@ -98,6 +99,7 @@ class UndoSupport(Tabs, Implicit):
         return r
 
     @security.protected(undo_changes)
+    @zpublish
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """

@@ -15,8 +15,10 @@
 """
 
 from zope.publisher import browser
+from ZPublisher import zpublish
 
 
+@zpublish
 class BrowserView(browser.BrowserView):
 
     # Use an explicit __init__ to work around problems with magically inserted

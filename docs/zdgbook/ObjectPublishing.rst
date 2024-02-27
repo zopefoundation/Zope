@@ -130,8 +130,22 @@ Publishable Object Requirements
 -------------------------------
 
 Zope has few restrictions on publishable objects. The basic rule is
-that the object must have a doc string. This requirement goes for
+that the object must have been marked as zpublishable. This requirement goes for
 methods, too.
+An object or method is marked as zpublishable by decorating
+its class (or a base class) or underlying function, respectively,
+with the ``Zpublisher.zpublish`` decorator.
+For backward compatibility, the existence of a docstring, too,
+marks an object or method as zpublishable; but this will be removed in
+the future.
+If you decorate a method or class with ``zpublsh(False)``,
+you explicitly mark it or its instances, respectively, as not
+zpublishable.
+If you decorate a method with ``zpublish(methods=...)``
+where the `...` is either a single request method name
+or a sequence of request method names,
+you specify that the object is zpublishable only for the mentioned request
+methods.
 
 Another requirement is that a publishable object must not have a name
 that begins with an underscore. These two restrictions are designed to
@@ -270,9 +284,13 @@ allow you to navigate between methods.
 
 Consider this example::
 
+  from ZPublisher import zpublish
+
+  @zpublish
   class Example:
       """example class"""
 
+      @zpublish
       def one(self):
           """render page one"""
           return """<html>
@@ -282,6 +300,7 @@ Consider this example::
                     </body>
                     </html>"""
 
+      @zpublish
       def two(self):
           """render page two"""
           return """<html>
@@ -298,9 +317,11 @@ the URL, relative links returned by ``index_html`` won't work right.
 
 For example::
 
+	    @zpublish
             class Example:
                 """example class""""
 
+		 @zpublish
                  def index_html(self):
                      """render default view"""
                     return """<html>
@@ -375,7 +396,9 @@ acquisition, you can use traversal to walk over acquired objects.
 Consider the the following object hierarchy::
 
         from Acquisition import Implicit
+	from ZPublisher import zpublish
 
+	@zpublish
         class Node(Implicit):
             ...
 
@@ -401,20 +424,27 @@ method that your acquire from outside your container.
 For example::
 
         from Acquisition import Implicit
+	from ZPublisher import zpublish
 
+	@zpublish
         class Basket(Implicit):
             ...
+	    @zpublish
             def number_of_items(self):
                 """Returns the number of contained items."""
                 ...
 
+	@zpublish
         class Vegetable(Implicit):
             ...
+	    @zpublish
             def texture(self):
                 """Returns the texture of the vegetable."""
 
+	@zpublish
         class Fruit(Implicit):
             ...
+	    @zpublish
             def color(self):
                 """Returns the color of the fruit."""
 
@@ -582,6 +612,7 @@ called from the web.
 
 Consider this function::
 
+      @zpublish
       def greet(name):
           """Greet someone by name."""
           return "Hello, %s!" % name
@@ -663,6 +694,7 @@ Argument Conversion
 The publisher supports argument conversion. For example consider this
 function::
 
+	@zpublish
         def one_third(number):
             """returns the number divided by three"""
             return number / 3.0

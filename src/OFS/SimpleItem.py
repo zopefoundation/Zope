@@ -53,6 +53,7 @@ from webdav.Resource import Resource
 from zExceptions import Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from zope.interface import implementer
+from ZPublisher import zpublish
 from ZPublisher.HTTPRequest import default_encoding
 
 
@@ -303,6 +304,7 @@ class Item(
                 del self._v_eek
             tb = None
 
+    @zpublish
     def manage(self, URL1):
         """
         """
@@ -377,6 +379,7 @@ def pretty_tb(t, v, tb, as_html=1):
     return tb
 
 
+@zpublish
 @implementer(ISimpleItem)
 class SimpleItem(
     Item,

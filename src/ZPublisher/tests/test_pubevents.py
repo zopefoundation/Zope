@@ -16,6 +16,7 @@ from zope.interface import Interface
 from zope.interface.verify import verifyObject
 from zope.publisher.interfaces import INotFound
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from ZPublisher import zpublish
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
@@ -279,6 +280,7 @@ class TestGlobalRequestPubEventsAndExceptionUpgrading(FunctionalTestCase):
     def test_exception_views_and_event_handlers_get_upgraded_exceptions(self):
         self.expected_exception_type = zExceptions.HTTPVersionNotSupported
 
+        @zpublish
         def raiser(*args, **kwargs):
             "Allow publishing"
             class HTTPVersionNotSupported(Exception):

@@ -24,6 +24,7 @@ from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from zope.component import queryMultiAdapter as qma
+from ZPublisher import zpublish
 
 
 defaultBindings = {'name_context': 'context',
@@ -207,6 +208,7 @@ class UnauthorizedBinding:
     __str__ = __call__ = index_html = __you_lose
 
 
+@zpublish
 class Bindings:
 
     security = ClassSecurityInfo()
