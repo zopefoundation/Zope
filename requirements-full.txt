@@ -1,6 +1,6 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
 AccessControl==6.3
-Acquisition==5.1
+Acquisition==5.2
 AuthEncoding==5.0
 BTrees==5.1
 Chameleon==4.2.0
@@ -12,7 +12,13 @@ Paste==3.7.1
 PasteDeploy==2.1.1; python_version == '3.7'
 PasteDeploy==3.1.0; python_version > '3.7'
 Persistence==4.1
-RestrictedPython==7.1
+RestrictedPython==7.1; python_version == '3.10'
+RestrictedPython==7.1; python_version == '3.11'
+RestrictedPython==7.1; python_version == '3.12'
+RestrictedPython==7.1; python_version == '3.7'
+RestrictedPython==7.1; python_version == '3.8'
+RestrictedPython==7.1; python_version == '3.9'
+RestrictedPython==7.2a1.dev0; python_version > '3.12'
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
@@ -23,7 +29,7 @@ beautifulsoup4==4.12.2
 cffi==1.15.1; python_version == '3.7'
 cffi==1.16.0; python_version > '3.7'
 multipart==0.2.4
-persistent==5.1
+persistent==5.2
 pycparser==2.21
 python-gettext==5.0
 pytz==2023.3.post1
