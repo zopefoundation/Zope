@@ -1,6 +1,7 @@
 import doctest
 
 from Acquisition import Implicit
+from ZPublisher import zpublish
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
@@ -18,6 +19,7 @@ def makeBaseRequest(root):
     return BaseRequest(environment)
 
 
+@zpublish
 class DummyObjectBasic(Implicit):
     """ Dummy class with docstring.
     """

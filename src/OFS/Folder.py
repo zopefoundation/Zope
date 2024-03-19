@@ -27,6 +27,7 @@ from OFS.SimpleItem import Item
 from OFS.SimpleItem import PathReprProvider
 from webdav.Collection import Collection
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 
 manage_addFolderForm = DTMLFile('dtml/folderAdd', globals())
@@ -50,6 +51,7 @@ def manage_addFolder(
         return self.manage_main(self, REQUEST)
 
 
+@zpublish
 @implementer(IFolder)
 class Folder(
     PathReprProvider,

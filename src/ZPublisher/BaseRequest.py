@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2002 Zope Foundation and Contributors.
+# Copyright (c) 2002-2024 Zope Foundation and Contributors.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,6 +14,8 @@
 """
 
 import types
+import warnings
+from os import environ
 from urllib.parse import quote as urllib_quote
 
 from AccessControl.ZopeSecurityPolicy import getRoles
@@ -35,6 +37,7 @@ from zope.publisher.interfaces import NotFound as ztkNotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
+from ZPublisher import zpublish_mark
 from ZPublisher.Converters import type_converters
 from ZPublisher.interfaces import UseTraversalDefault
 from ZPublisher.xmlrpc import is_xmlrpc_response
@@ -136,22 +139,7 @@ class DefaultPublishTraverse:
                     except TypeError:  # unsubscriptable
                         raise KeyError(name)
 
-        # Ensure that the object has a docstring, or that the parent
-        # object has a pseudo-docstring for the object. Objects that
-        # have an empty or missing docstring are not published.
-        doc = getattr(subobject, '__doc__', None)
-        if not doc:
-            raise Forbidden(
-                "The object at %s has an empty or missing "
-                "docstring. Objects must have a docstring to be "
-                "published." % URL
-            )
-
-        # Check that built-in types aren't publishable.
-        if not typeCheck(subobject):
-            raise Forbidden(
-                "The object at %s is not publishable." % URL)
-
+        self.request.ensure_publishable(subobject)
         return subobject
 
     def browserDefault(self, request):
@@ -502,6 +490,7 @@ class BaseRequest:
                             self.roles = getRoles(
                                 object, '__call__',
                                 object.__call__, self.roles)
+                            self.ensure_publishable(object.__call__, True)
                         if request._hacked_path:
                             i = URL.rfind('/')
                             if i > 0:
@@ -685,6 +674,63 @@ class BaseRequest:
         if self._held is not None:
             self._held = self._held + (object, )
 
+    def ensure_publishable(self, obj, for_call=False):
+        """raise ``Forbidden`` unless *obj* is publishable.
+
+        *for_call* tells us whether we are called for the ``__call__``
+        method. In general, its publishablity is determined by
+        its ``__self__`` but it might have more restrictive prescriptions.
+        """
+        url, default = self["URL"], None
+        if for_call:
+            # We are called to check the publication
+            # of the ``__call__`` method.
+            # Usually, its publication indication comes from its
+            # ``__self__`` and this has already been checked.
+            # It can however carry a stricter publication indication
+            # which we want to check here.
+            # We achieve this by changing *default* from
+            # ``None`` to ``True``. In this way, we get the publication
+            # indication of ``__call__`` if it carries one
+            # or ``True`` otherwise which in this case
+            # indicates "already checked".
+            url += "[__call__]"
+            default = True
+        publishable = zpublish_mark(obj, default)
+        # ``publishable`` is either ``None``, ``True``, ``False`` or
+        # a tuple of allowed request methods.
+        if publishable is True:  # explicitely marked as publishable
+            return
+        elif publishable is False:  # explicitely marked as not publishable
+            raise Forbidden(
+                f"The object at {url} is marked as not publishable")
+        elif publishable is not None:
+            # a tuple of allowed request methods
+            request_method = (getattr(self, "environ", None)
+                              and self.environ.get("REQUEST_METHOD"))
+            if  (request_method is None  # noqa: E271
+                 or request_method.upper() not in publishable):
+                raise Forbidden(
+                    f"The object at {url} does not support "
+                    f"{request_method} requests")
+            return
+        # ``publishable`` is ``None``
+
+        # Check that built-in types aren't publishable.
+        if not typeCheck(obj):
+            raise Forbidden(
+                "The object at %s is not publishable." % url)
+        # Ensure that the object has a docstring
+        doc = getattr(obj, '__doc__', None)
+        if not doc:
+            raise Forbidden(
+                f"The object at {url} has an empty or missing "
+                "docstring. Objects must either be marked via "
+                "to `ZPublisher.zpublish` decorator or have a docstring to be "
+                "published.")
+        if deprecate_docstrings:
+            warnings.warn(DocstringWarning(obj, url))
+
 
 def exec_callables(callables):
     result = None
@@ -776,3 +822,66 @@ for name in ('BufferType', 'DictProxyType', 'EllipsisType',
 def typeCheck(obj, deny=itypes):
     # Return true if its ok to publish the type, false otherwise.
     return deny.get(type(obj), 1)
+
+
+deprecate_docstrings = environ.get("ZPUBLISHER_DEPRECATE_DOCSTRINGS")
+
+
+class DocstringWarning(DeprecationWarning):
+    def tag(self):
+        import inspect as i
+
+        def lineno(o, m=False):
+            """try to determine where *o* has been defined.
+
+            *o* is either a function or a class.
+            """
+            try:
+                _, lineno = i.getsourcelines(o)
+            except (OSError, TypeError):
+                return ""
+            return f"[{o.__module__}:{lineno}]" if m else f" at line {lineno}"
+
+        obj, url = self.args
+        desc = None
+        if i.ismethod(obj):
+            f = i.unwrap(obj.__func__)
+            c = obj.__self__.__class__
+            desc = f"'{c.__module__}.{c.__qualname__}' " \
+                   f"method '{obj.__qualname__}'{lineno(f, 1)}"
+        elif i.isfunction(obj):
+            f = i.unwrap(obj)
+            desc = f"function '{f.__module__}.{f.__qualname__}'" \
+                   f"{lineno(f)}"
+        else:
+            try:
+                cls_doc = "__doc__" not in obj.__dict__
+            except AttributeError:
+                cls_doc = True
+            if cls_doc:
+                c = obj.__class__
+                desc = f"'{c.__module__}.{c.__qualname__}'{lineno(c)}"
+        if desc is None:
+            desc = f"object at '{url}'"
+        return desc
+
+    def __str__(self):
+        return (f"{self.tag()} uses deprecated docstring "
+                "publication control. Use the `ZPublisher.zpublish` decorator "
+                "instead")
+
+
+if deprecate_docstrings:
+    # look whether there is already a ``DocstringWarning`` filter
+    for f in warnings.filters:
+        if f[2] is DocstringWarning:
+            break
+    else:
+        # provide a ``DocstringWarning`` filter
+        # if ``deprecate_docstrings`` specifies a sensefull action
+        # use it, otherwise ``"default"``.
+        warn_action = deprecate_docstrings \
+            if deprecate_docstrings \
+            in ("default", "error", "ignore", "always") \
+            else "default"
+        warnings.filterwarnings(warn_action, category=DocstringWarning)

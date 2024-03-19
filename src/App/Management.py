@@ -29,8 +29,10 @@ from App.interfaces import INavigation
 from App.special_dtml import DTMLFile
 from ExtensionClass import Base
 from zope.interface import implementer
+from ZPublisher import zpublish
 
 
+@zpublish
 class Tabs(Base):
     """Mix-in provides management folder tab support."""
 
@@ -68,6 +70,7 @@ class Tabs(Base):
 
     manage_workspace__roles__ = ('Authenticated',)
 
+    @zpublish
     def manage_workspace(self, REQUEST):
         """Dispatch to first interface in manage_options
         """
@@ -181,6 +184,7 @@ class Navigation(Base):
     security.declarePublic('zope_copyright')  # NOQA: D001
     zope_copyright = DTMLFile('dtml/copyright', globals())
 
+    @zpublish
     @security.public
     def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""

@@ -61,6 +61,7 @@ from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+from ZPublisher import zpublish
 from ZPublisher.HTTPResponse import make_content_disposition
 
 
@@ -524,6 +525,7 @@ class ObjectManager(
 
     manage_addProduct = ProductDispatcher()
 
+    @zpublish
     @security.protected(delete_objects)
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
@@ -585,6 +587,7 @@ class ObjectManager(
                     r.append(o)
         return r
 
+    @zpublish
     @security.protected(import_export_objects)
     def manage_exportObject(
         self,
@@ -632,6 +635,7 @@ class ObjectManager(
     security.declareProtected(import_export_objects, 'manage_importExportForm')  # NOQA: D001,E501
     manage_importExportForm = DTMLFile('dtml/importExport', globals())
 
+    @zpublish
     @security.protected(import_export_objects)
     def manage_importObject(self, file, REQUEST=None, set_owner=1,
                             suppress_events=False):

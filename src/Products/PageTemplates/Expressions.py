@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Page Template Expression Engine
+"""Page Template Expression Engine based on ``zope.tales``.
 
 Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
@@ -18,6 +18,8 @@ for Python expressions, string literals, and paths.
 
 import logging
 import warnings
+
+from chameleon.tales import Markup
 
 import OFS.interfaces
 from AccessControl import safe_builtins
@@ -39,6 +41,7 @@ from zope.tales.expressions import PathExpr
 from zope.tales.expressions import StringExpr
 from zope.tales.expressions import SubPathExpr
 from zope.tales.expressions import Undefs
+from zope.tales.interfaces import ITALESExpression
 from zope.tales.pythonexpr import PythonExpr
 from zope.tales.tales import Context
 from zope.tales.tales import ErrorInfo as BaseErrorInfo
@@ -236,6 +239,26 @@ class ZopePathExpr(PathExpr):
 class TrustedZopePathExpr(ZopePathExpr):
     _TRAVERSER = staticmethod(trustedBoboAwareZopeTraverse)
     SUBEXPR_FACTORY = TrustedSubPathExpr
+
+
+@implementer(ITALESExpression)
+class StructureExpr:
+    """
+    An expression that tells the template engine to
+    render the value as structure (i.e. with markup).
+
+    Note: will only work with ``chameleon`` template engine.
+    """
+
+    def __init__(self, name, expr, engine):
+        self._s = expr = expr.lstrip()
+        self._c = engine.compile(expr)
+
+    def __call__(self, econtext):
+        return Markup(econtext.evaluate(self._c))
+
+    def __repr__(self):
+        return '<StructureExpr %s>' % repr(self._s)
 
 
 class SafeMapping(MultiMapping):
@@ -482,6 +505,7 @@ def createZopeEngine(zpe=ZopePathExpr, untrusted=True):
     e.registerType('defer', DeferExpr)
     e.registerType('lazy', LazyExpr)
     e.registerType('provider', TALESProviderExpression)
+    e.registerType('structure', StructureExpr)
     e.registerBaseName('modules', SecureModuleImporter)
     e.untrusted = untrusted
     return e

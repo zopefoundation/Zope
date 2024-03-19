@@ -60,12 +60,14 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
+from ZPublisher import zpublish
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 
 ms_dav_agent = re.compile("Microsoft.*Internet Publishing.*")
 
 
+@zpublish
 @implementer(IDAVResource)
 class Resource(Base, LockableItem):
 
@@ -199,6 +201,7 @@ class Resource(Base, LockableItem):
             return 0
 
     # WebDAV class 1 support
+    @zpublish
     @security.protected(view)
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
@@ -230,6 +233,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setStatus(200)
         return RESPONSE
 
+    @zpublish
     def PUT(self, REQUEST, RESPONSE):
         """Replace the GET response entity of an existing resource.
         Because this is often object-dependent, objects which handle
@@ -239,6 +243,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
+    @zpublish
     @security.public
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
@@ -256,6 +261,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setStatus(200)
         return RESPONSE
 
+    @zpublish
     @security.public
     def TRACE(self, REQUEST, RESPONSE):
         """Return the HTTP message received back to the client as the
@@ -267,6 +273,7 @@ class Resource(Base, LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('Method not supported for this resource.')
 
+    @zpublish
     @security.protected(delete_objects)
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource. For non-collection resources, DELETE may
@@ -303,6 +310,7 @@ class Resource(Base, LockableItem):
 
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_access)
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
@@ -322,6 +330,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setBody(result)
         return RESPONSE
 
+    @zpublish
     @security.protected(manage_properties)
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
@@ -345,12 +354,14 @@ class Resource(Base, LockableItem):
         RESPONSE.setBody(result)
         return RESPONSE
 
+    @zpublish
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource. If called on an existing
         resource, MKCOL must fail with 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
         raise MethodNotAllowed('The resource already exists.')
 
+    @zpublish
     @security.public
     def COPY(self, REQUEST, RESPONSE):
         """Create a duplicate of the source resource whose state
@@ -463,6 +474,7 @@ class Resource(Base, LockableItem):
         RESPONSE.setBody('')
         return RESPONSE
 
+    @zpublish
     @security.public
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location. Though we may later try to
@@ -591,6 +603,7 @@ class Resource(Base, LockableItem):
 
     # WebDAV Class 2, Lock and Unlock
 
+    @zpublish
     @security.protected(webdav_lock_items)
     def LOCK(self, REQUEST, RESPONSE):
         """Lock a resource"""
@@ -653,6 +666,7 @@ class Resource(Base, LockableItem):
 
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_unlock_items)
     def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
@@ -673,6 +687,7 @@ class Resource(Base, LockableItem):
             RESPONSE.setStatus(204)     # No Content response code
         return RESPONSE
 
+    @zpublish
     @security.protected(webdav_access)
     def manage_DAVget(self):
         """Gets the document source or file data.

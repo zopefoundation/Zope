@@ -28,6 +28,7 @@ from DocumentTemplate.security import RestrictedDTML
 from ExtensionClass import Base
 from OFS.interfaces import IFindSupport
 from zope.interface import implementer
+from ZPublisher import zpublish
 from ZPublisher.HTTPRequest import default_encoding
 
 
@@ -52,6 +53,7 @@ class FindSupport(Base):
         },
     )
 
+    @zpublish
     @security.protected(view_management_screens)
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
@@ -69,6 +71,7 @@ class FindSupport(Base):
             pre=pre, apply_func=None, apply_path=''
         )
 
+    @zpublish
     @security.protected(view_management_screens)
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,

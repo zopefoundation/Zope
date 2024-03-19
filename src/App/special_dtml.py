@@ -33,6 +33,7 @@ from DocumentTemplate._DocumentTemplate import render_blocks
 from DocumentTemplate.DT_String import DTReturn
 from DocumentTemplate.DT_String import _marker
 from Shared.DC.Scripts.Bindings import Bindings
+from ZPublisher import zpublish
 
 
 LOG = getLogger('special_dtml')
@@ -46,10 +47,12 @@ class Code:
     pass
 
 
+@zpublish
 class HTML(DocumentTemplate.HTML, Persistence.Persistent):
     "Persistent HTML Document Templates"
 
 
+@zpublish
 class ClassicHTMLFile(DocumentTemplate.HTMLFile, MethodObject.Method):
     "Persistent HTML Document Templates read from files"
 

@@ -51,6 +51,7 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectCopiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
+from ZPublisher import zpublish
 
 
 class CopyError(Exception):
@@ -91,6 +92,7 @@ class CopyContainer(Base):
         return [self._getOb(i) for i in REQUEST['ids']]
 
     @security.protected(delete_objects)
+    @zpublish
     def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -121,6 +123,7 @@ class CopyContainer(Base):
         return cp
 
     @security.protected(view_management_screens)
+    @zpublish
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -298,6 +301,7 @@ class CopyContainer(Base):
         return op, result
 
     @security.protected(view_management_screens)
+    @zpublish
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
 
@@ -334,6 +338,7 @@ class CopyContainer(Base):
     manage_renameForm = DTMLFile('dtml/renameForm', globals())
 
     @security.protected(view_management_screens)
+    @zpublish
     def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
@@ -345,6 +350,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
 
     @security.protected(view_management_screens)
+    @zpublish
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object.
         """
@@ -400,6 +406,7 @@ class CopyContainer(Base):
             return self.manage_main(self, REQUEST)
 
     @security.public
+    @zpublish
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id.
         """

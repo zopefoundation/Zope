@@ -19,6 +19,7 @@ from Acquisition import aq_base
 from App.special_dtml import DTMLFile
 from OFS.Lockable import wl_isLocked
 from OFS.SimpleItem import Item
+from ZPublisher import zpublish
 
 
 class DavLockManager(Item, Implicit):
@@ -73,6 +74,7 @@ class DavLockManager(Item, Implicit):
             ob.wl_clearLocks()
 
     @security.protected(webdav_manage_locks)
+    @zpublish
     def manage_unlockObjects(self, paths=[], REQUEST=None):
         " Management screen action to unlock objects. "
         if paths:
