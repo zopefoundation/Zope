@@ -30,7 +30,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   Fixes `#1077 <https://github.com/zopefoundation/Zope/issues/1077>`_.
 
 - Fix authentication error viewing ZMI with a user defined outside of zope root.
-  Fixes `#1195 <https://github.com/zopefoundation/Zope/issues/1195>`_.
+  Fixes `#1195 <https://github.com/zopefoundation/Zope/issues/1195>`_ and
+  `#1203 <https://github.com/zopefoundation/Zope/issues/1195>`_.
 
 
 5.9 (2023-11-24)
