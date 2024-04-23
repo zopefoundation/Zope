@@ -32,6 +32,11 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix authentication error viewing ZMI with a user defined outside of zope root.
   Fixes `#1195 <https://github.com/zopefoundation/Zope/issues/1195>`_.
 
+- Work around ``Products.CMFCore`` and ``Products.CMFPlone`` design bug
+  (registering non callable constructors).
+  For details, see
+  `#1202 <https://github.com/zopefoundation/Zope/issues/1202>`_.
+
 
 5.9 (2023-11-24)
 ----------------

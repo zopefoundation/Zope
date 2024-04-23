@@ -49,15 +49,12 @@ class ProductContext:
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
                       visibility="Global", interfaces=_marker,
-                      container_filter=None):
+                      container_filter=None, resources=()):
         """Register a constructor
 
         Keyword arguments are used to provide meta data:
 
         instance_class -- The class of the object that will be created.
-
-          This is not currently used, but may be used in the future to
-          increase object mobility.
 
         meta_type -- The kind of object being created
            This appears in add lists.  If not specified, then the class
@@ -71,7 +68,7 @@ class ProductContext:
           A method can be a callable object with a __name__
           attribute giving the name the method should have in the
           product, or the method may be a tuple consisting of a
-          name and a callable object.  The method must be picklable.
+          name and a callable object.
 
           The first method will be used as the initial method called
           when creating an object.
@@ -95,6 +92,13 @@ class ProductContext:
            filter is called before showing ObjectManager's Add list,
            and before pasting (after object copy or cut), but not
            before calling an object's constructor.
+
+        resources -- a sequence of resource specifications
+           A resource specification is either an object with
+           a __name__ attribute or a pair consisting of the resource
+           name and an object.
+           The resources are put into the ProductFactoryDispather's
+           namespace under the specified name.
 
         """
         pack = self.__pack
@@ -203,7 +207,31 @@ class ProductContext:
             else:
                 name = os.path.split(method.__name__)[-1]
             if name not in productObject.__dict__:
-                m[name] = zpublish_wrap(method)
+                if not callable(method):
+                    # This code is here because ``Products.CMFCore`` and
+                    # ``Products.CMFPlone`` abuse the ``constructors``
+                    # parameter to register resources violating the explicit
+                    # condition that constructors must be callable.
+                    # It should go away once those components have been fixed.
+                    from warnings import warn
+                    warn("Constructors must be callable; "
+                         "please use `resources` "
+                         "(rather than `constructors`) to register "
+                         "non callable objects",
+                         DeprecationWarning,
+                         2)
+                    m[name] = method
+                else:
+                    m[name] = zpublish_wrap(method)
+                m[name + '__roles__'] = pr
+
+        for resource in resources:
+            if isinstance(resource, tuple):
+                name, resource = resource
+            else:
+                name = resource.__name__
+            if name not in productObject.__dict__:
+                m[name] = resource
                 m[name + '__roles__'] = pr
 
     def getApplication(self):
