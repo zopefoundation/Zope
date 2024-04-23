@@ -139,7 +139,8 @@ class DefaultPublishTraverse:
                     except TypeError:  # unsubscriptable
                         raise KeyError(name)
 
-        self.request.ensure_publishable(subobject)
+        if hasattr(self.request, "ensure_publishable"):
+            self.request.ensure_publishable(subobject)
         return subobject
 
     def browserDefault(self, request):
