@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <title>Zope Public License (ZPL) Version 2.1</title>
-  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.1.1/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/bootstrap-4.6.0/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="&dtml-BASEPATH1;/++resource++zmi/zmi_base.css" />
 
   <link rel="shortcut icon" type="image/x-icon" href="&dtml-BASEPATH1;/++resource++logo/favicon/favicon.ico" />
