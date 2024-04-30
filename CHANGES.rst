@@ -38,7 +38,6 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   For details, see
   `#1202 <https://github.com/zopefoundation/Zope/issues/1202>`_.
 
-- Small optimization when encoding the response body.
 
 5.9 (2023-11-24)
 ----------------
