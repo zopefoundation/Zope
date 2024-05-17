@@ -15,6 +15,10 @@
 This wrapper allows the Page Template modules to be segregated in a
 separate package.
 """
+import os
+
+from zope.contenttype import add_files
+
 
 # Placeholder for Zope Product data
 misc_ = {}
@@ -29,3 +33,8 @@ def initialize(context):
     # Import lazily, and defer initialization to the module
     from . import ZopePageTemplate
     ZopePageTemplate.initialize(context)
+
+    # Add the custom MIME type information for Page Templates
+    # to the Python mimetypes module so they are recognized correctly
+    here = os.path.dirname(os.path.abspath(__file__))
+    add_files([os.path.join(here, 'mime.types')])

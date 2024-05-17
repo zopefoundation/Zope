@@ -104,6 +104,7 @@ additional-rules = [
     "recursive-include src *.svg",
     "recursive-include src *.ttf",
     "recursive-include src *.txt",
+    "recursive-include src *.types",
     "recursive-include src *.webmanifest",
     "recursive-include src *.woff",
     "recursive-include src *.woff2",
