@@ -7,8 +7,8 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.9.1 (unreleased)
-------------------
+5.10 (2024-05-18)
+-----------------
 
 - Recognize Page Templates by file extension for WebDAV.
   (`#1212 <https://github.com/zopefoundation/Zope/issues/1212>`_)

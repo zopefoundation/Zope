@@ -25,7 +25,7 @@ The following persons have access to the ``Zope`` package on PyPI
 Steps for creating a new Zope release
 +++++++++++++++++++++++++++++++++++++
 
-- Make sure you have the necessary tools around and install the manually if
+- Make sure you have the necessary tools around and install them manually if
   needed::
 
   $ bin/pip install -U wheel tox twine
@@ -40,9 +40,7 @@ Steps for creating a new Zope release
 
 - Check the future PyPI long description for ReST errors::
 
-    $ cat README.rst <(echo) CHANGES.rst | bin/rst2html.py >/tmp/test.html && open /tmp/test.html
-
-- Check in the changes.
+    $ cat README.rst <(echo) CHANGES.rst | bin/rst2html >/tmp/test.html && open /tmp/test.html
 
 - Update version information in change log and ``setup.py`` and specify today’s
   date as release date in the change log::
