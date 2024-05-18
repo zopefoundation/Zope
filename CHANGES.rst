@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.9.1 (unreleased)
 ------------------
 
+- Recognize Page Templates by file extension for WebDAV.
+  (`#1212 <https://github.com/zopefoundation/Zope/issues/1212>`_)
+
 - Clean up and fix installation documentation.
 
 - Officially support Python 3.12.1.
