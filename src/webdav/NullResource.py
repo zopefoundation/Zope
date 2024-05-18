@@ -114,9 +114,7 @@ class NullResource(Persistent, Implicit, Resource):
 
         if ext == '.dtml':
             ob = DTMLDocument('', __name__=name)
-        elif typ in ('text/html',
-                     'text/xml',
-                     'application/vnd.zopefoundation.pagetemplate'):
+        elif ext in ('.pt', '.zpt') or typ in ('text/html', 'text/xml'):
             ob = ZopePageTemplate(name, body, content_type=typ)
         elif typ.startswith('image/'):
             ob = Image(name, '', body, content_type=typ)
