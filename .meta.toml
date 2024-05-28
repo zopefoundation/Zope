@@ -43,7 +43,6 @@ testenv-commands = [
     "# which occasionally fails on GITHUB",
     "{envdir}/bin/alltests --layer '!Products.PluginIndexes' {posargs:-vc}",
     ]
-coverage-basepython = "python3.8"
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
     "allowlist_externals = *",
