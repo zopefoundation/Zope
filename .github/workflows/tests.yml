@@ -51,9 +51,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
+      if: matrix.os[0] != 'macos'
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
+    - name: Set up Python (macOS)
+      if: matrix.os[0] == 'macos'
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.config[0] }}
+        architecture: x64
     - name: Pip cache
       uses: actions/cache@v4
       with:
