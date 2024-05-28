@@ -60,7 +60,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
-        architecture: x64
+        architecture: x86_64
     - name: Pip cache
       uses: actions/cache@v4
       with:
