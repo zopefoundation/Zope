@@ -227,7 +227,7 @@ def get_zope2path(python):
     try:
         output = subprocess.check_output(
             [python, '-c', 'import Zope2; print(Zope2.__file__)'],
-            text=True,  # makes Python 3 return text, not bytes
+            text=True,
             stderr=subprocess.PIPE)
         zope2file = output.strip()
     except subprocess.CalledProcessError:
