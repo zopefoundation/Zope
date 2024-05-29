@@ -3,7 +3,8 @@ AccessControl==6.3
 Acquisition==5.2
 AuthEncoding==5.0
 BTrees==5.2
-Chameleon==4.4.4
+Chameleon==4.4.4; python_version == '3.8'
+Chameleon==4.4.4; python_version > '3.8'
 DateTime==5.5
 DocumentTemplate==4.6
 ExtensionClass==5.1
