@@ -67,7 +67,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox
     - name: Test
+      if: ${{ !startsWith(runner.os, 'Mac') }}
       run: tox -e ${{ matrix.config[1] }}
+    - name: Test (macOS)
+      if: ${{ startsWith(runner.os, 'Mac') }}
+      run: tox -e ${{ matrix.config[1] }}-universal2
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
