@@ -43,7 +43,7 @@ zope.browserresource==5.1
 zope.cachedescriptors==5.0
 zope.component==6.0
 zope.configuration==5.0.1
-zope.container==5.2
+zope.container==6.0
 zope.contentprovider==5.0
 zope.contenttype==5.1
 zope.datetime==5.0.0
