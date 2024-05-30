@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "cb0568c7"
+commit-id = "8d837c89"
 
 [python]
 with-pypy = false
@@ -31,6 +31,21 @@ additional-config = [
 [tox]
 testenv-deps = [
     "cffi",
+    "# The universal2 environment is for Python on macOS built with",
+    "# universal2 mode instead of architecture-specific. These dependencies",
+    "# must be installed separately, zc.buildout is incompatible with the",
+    "# universal2 mode and cannot install them itself.",
+    "universal2: -c {toxinidir}/constraints.txt",
+    "universal2: zope.interface",
+    "universal2: zope.security",
+    "universal2: zope.container",
+    "universal2: Persistence",
+    "universal2: Acquisition",
+    "universal2: AccessControl",
+    "universal2: zodbpickle",
+    "universal2: charset_normalizer",
+    "universal2: MarkupSafe",
+    "universal2: zope.testrunner",
     ]
 additional-envlist = [
     "pre-commit",
@@ -39,11 +54,13 @@ testenv-commands-pre = [
     "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} buildout:root-directory={toxinidir}",
     ]
 testenv-commands = [
+    "# The universal2 environment only runs Zope's own tests",
+    "universal2: {envdir}/bin/test {posargs:-vc}",
+    "# All other environments run the expanded alltests script",
     "# the `layer` argument below suppresses a `ZCatalog` performance test",
     "# which occasionally fails on GITHUB",
-    "{envdir}/bin/alltests --layer '!Products.PluginIndexes' {posargs:-vc}",
+    "!universal2: {envdir}/bin/alltests --layer '!Products.PluginIndexes' {posargs:-vc}",
     ]
-coverage-basepython = "python3.8"
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
     "allowlist_externals = *",

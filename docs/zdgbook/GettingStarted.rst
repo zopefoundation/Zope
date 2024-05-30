@@ -13,7 +13,7 @@ application.
 Prerequisites
 =============
 
-Make sure you have Python version 3.7 or higher installed.
+Make sure you have Python version 3.8 or higher installed.
 
 Creating and activating a `VirtualEnv <https://pypi.org/project/virtualenv/>`_
 is recommended.

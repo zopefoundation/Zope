@@ -67,7 +67,7 @@ class ZODBConnectionDebugger(Item, Implicit):
                 # output UTC time with the standard Z time zone indicator
                 open_since = "{}".format(
                     time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(opened)))
-                open_for = "{:.2f}s".format(now - opened)
+                open_for = f"{now - opened:.2f}s"
             else:
                 open_since = '(closed)'
                 open_for = ''

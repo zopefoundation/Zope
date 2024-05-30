@@ -122,7 +122,7 @@ class UndoSupport(Tabs, Implicit):
                     raise
 
                 ts.abort()
-                error = '{}: {}'.format(exc.__class__.__name__, str(exc))
+                error = f'{exc.__class__.__name__}: {str(exc)}'
                 return self.manage_UndoForm(self, REQUEST,
                                             manage_tabs_message=error,
                                             manage_tabs_type='danger')

@@ -990,7 +990,7 @@ all argument type converts, such as follows::
 
     For a full list of supported encodings, please have a look at:
 
-    https://docs.python.org/3.7/library/codecs.html#standard-encodings
+    https://docs.python.org/3/library/codecs.html#standard-encodings
 
 If your pages all use a character encoding which has ASCII as a subset,
 such as Latin-1, UTF-8, etc., then you do not need to specify any

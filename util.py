@@ -27,7 +27,7 @@ def generate(in_, requirements_file, constraints_file):
         '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
 
     # Try to include sections for all currently supported Python versions
-    for py_version in ('3.7', '3.8', '3.9', '3.10', '3.11', '3.12'):
+    for py_version in ('3.8', '3.9', '3.10', '3.11', '3.12'):
         short_version = py_version.replace('.', '')
         try:
             zope_requirement = _generate(
