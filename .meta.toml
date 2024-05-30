@@ -35,6 +35,7 @@ testenv-deps = [
     "# universal2 mode instead of architecture-specific. These dependencies",
     "# must be installed separately, zc.buildout is incompatible with the",
     "# universal2 mode and cannot install them itself.",
+    "universal2: -c {toxinidir}/constraints.txt",
     "universal2: zope.interface",
     "universal2: zope.security",
     "universal2: zope.container",
