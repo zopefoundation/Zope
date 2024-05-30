@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "8d837c89"
+commit-id = "6cd77955"
 
 [python]
 with-pypy = false
@@ -10,7 +10,7 @@ with-docs = true
 with-sphinx-doctests = false
 with-windows = true
 with-macos = true
-with-future-python = false
+with-future-python = true
 
 [coverage]
 fail-under = 80
@@ -30,7 +30,7 @@ additional-config = [
 
 [tox]
 testenv-deps = [
-    "cffi",
+    "cffi >= 1.17.0rc1",
     "# The universal2 environment is for Python on macOS built with",
     "# universal2 mode instead of architecture-specific. These dependencies",
     "# must be installed separately, zc.buildout is incompatible with the",

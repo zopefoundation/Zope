@@ -29,6 +29,7 @@ jobs:
         - ["3.10",  "py310"]
         - ["3.11",  "py311"]
         - ["3.12",  "py312"]
+        - ["3.13",  "py313"]
         - ["3.9",   "docs"]
         - ["3.9",   "coverage"]
         exclude:
@@ -40,6 +41,7 @@ jobs:
           - { os: ["macos", "macos-latest"], config: ["3.9",   "lint"] }
           - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
           - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-latest"], config: ["3.13",  "py313"] }
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -50,6 +52,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
+        allow-prereleases: true
     - name: Pip cache
       uses: actions/cache@v4
       with:

@@ -12,7 +12,12 @@ MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.0
-RestrictedPython==7.1
+RestrictedPython==7.1; python_version == '3.10'
+RestrictedPython==7.1; python_version == '3.11'
+RestrictedPython==7.1; python_version == '3.12'
+RestrictedPython==7.1; python_version == '3.8'
+RestrictedPython==7.1; python_version == '3.9'
+RestrictedPython==7.2a1.dev0; python_version > '3.12'
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
@@ -20,7 +25,7 @@ ZConfig==4.1
 ZODB==6.0
 Zope2==4.0
 beautifulsoup4==4.12.3
-cffi==1.16.0
+cffi==1.17.0rc1
 multipart==0.2.4
 persistent==6.0
 pycparser==2.22
