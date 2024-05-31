@@ -41,7 +41,6 @@ jobs:
           - { os: ["macos", "macos-latest"], config: ["3.9",   "lint"] }
           - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
           - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
-          - { os: ["macos", "macos-latest"], config: ["3.13",  "py313"] }
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
