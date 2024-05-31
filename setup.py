@@ -122,7 +122,6 @@ setup(
         'zope.traversing',
         'zope.viewlet',
         'multipart',
-        'legacy-cgi; python_version > "3.12"',
     ],
     include_package_data=True,
     zip_safe=False,

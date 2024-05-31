@@ -78,7 +78,7 @@ zope.size==5.0
 zope.structuredtext==5.0
 zope.tal==5.0.1
 zope.tales==6.0
-zope.testbrowser==6.0
+zope.testbrowser==7.0
 zope.testing==5.0.1
 zope.traversing==5.0
 zope.viewlet==5.0
