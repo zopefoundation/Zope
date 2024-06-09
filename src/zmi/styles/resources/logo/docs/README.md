@@ -45,3 +45,9 @@ The primary color is a vivid blue. If no color is avaliable (e.g. laser printer)
 1. RGB #00AAD4, CMYK: C100 M20 Y0 K0
 2. black variant for b/w laser printer
 3. white/inverted variant for dark/colorful backgrounds
+
+## Logo Usage CC-BY-4.0
+
+The use of the Zope logo is subject to the Zope Public License (ZPL) policy. The logo may be used for the purpose of promoting Zope and its related products and services. The logo may not be used in a way that implies endorsement by the Zope Foundation or the Zope community. The logo may not be used in a way that implies that the Zope Foundation or the Zope community is responsible for the actions of the third party using the logo. The logo may be applied according the Creative Commons Attribution 4.0 International License (CC-BY-4.0):
+https://creativecommons.org/licenses/by/4.0/
+
