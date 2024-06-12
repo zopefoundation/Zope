@@ -366,6 +366,8 @@ class BaseRequest:
             if not item or item == '.':
                 continue
             elif item == '..':
+                if not len(clean):
+                    return response.notFoundError(path)
                 del clean[-1]
             else:
                 clean.append(item)

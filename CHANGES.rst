@@ -14,7 +14,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
-- Added CC-BY 4.0 license to the Zope logo. 
+- Added CC-BY 4.0 license to the Zope logo.
+
+- Fix ``IndexError`` on traversal past the root using `..`.
+  (`#1218 <https://github.com/zopefoundation/Zope/issues/1218>`_)
 
 
 5.10 (2024-05-18)
