@@ -373,6 +373,18 @@ class TestBaseRequest(unittest.TestCase, BaseRequest_factory):
         self.assertEqual(r.URL, '/index_html')
         self.assertEqual(r.response.base, '')
 
+    def test_traverse_special_names(self):
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, 'REQUEST')
+        self.assertRaises(NotFound, r.traverse, 'aq_self')
+        self.assertRaises(NotFound, r.traverse, 'aq_base')
+
+    def test_traverse_past_root(self):
+        root, folder = self._makeRootAndFolder()
+        r = self._makeOne(root)
+        self.assertRaises(NotFound, r.traverse, '..')
+
     def test_traverse_attribute_with_docstring(self, use_docstring=None):
         root, folder = self._makeRootAndFolder()
         folder._setObject('objBasic', self._makeBasicObject(use_docstring))
