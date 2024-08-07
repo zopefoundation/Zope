@@ -11,11 +11,11 @@ MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.0
-RestrictedPython==7.1; python_version == '3.10'
-RestrictedPython==7.1; python_version == '3.11'
-RestrictedPython==7.1; python_version == '3.12'
-RestrictedPython==7.1; python_version == '3.8'
-RestrictedPython==7.1; python_version == '3.9'
+RestrictedPython==7.2; python_version == '3.10'
+RestrictedPython==7.2; python_version == '3.11'
+RestrictedPython==7.2; python_version == '3.12'
+RestrictedPython==7.2; python_version == '3.8'
+RestrictedPython==7.2; python_version == '3.9'
 RestrictedPython==7.2a1.dev0; python_version > '3.12'
 WSGIProxy2==0.5.1
 WebOb==1.8.7
@@ -24,8 +24,8 @@ ZConfig==4.1
 ZODB==6.0
 Zope2==4.0
 beautifulsoup4==4.12.3
-cffi==1.17.0rc1
-multipart==0.2.4
+cffi==1.17.0
+multipart==0.2.5
 persistent==6.0
 pycparser==2.22
 python-gettext==5.0
@@ -35,7 +35,7 @@ six==1.16.0
 soupsieve==2.5
 transaction==4.0
 waitress==3.0.0
-z3c.pt==4.3
+z3c.pt==4.4
 zExceptions==5.0
 zc.lockfile==3.0.post1
 zc.recipe.egg==2.0.7
