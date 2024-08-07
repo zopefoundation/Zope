@@ -15,10 +15,6 @@ supported and for how long.
     :ref:`zope4migration` documentation
 
 
-.. contents::
-   :local:
-
-
 What's new in Zope 5
 --------------------
 

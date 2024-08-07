@@ -11,9 +11,6 @@ Whichever method you used to install Zope and create a server instance (see
    slightly. You can immediately skip down to `Running Zope
    (plone.recipe.zope2instance install)`.
 
-.. contents::
-   :local:
-
 
 Creating a Zope instance
 ------------------------
