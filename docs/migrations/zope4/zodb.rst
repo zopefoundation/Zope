@@ -14,9 +14,6 @@ into a Zope 4 environment. The migration example steps have been tested on a
    on a copy of your ZODB so you retain a working copy for Zope 2 if you need
    to go back.
 
-.. contents::
-   :local:
-
 
 Pre-migration steps on Zope 2
 -----------------------------

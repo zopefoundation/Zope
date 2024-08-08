@@ -4,9 +4,6 @@ This document describes installing Zope with
 `zc.buildout <https://pypi.org/project/zc.buildout/>`_
 (the **recommended** method) or via ``pip``.
 
-.. contents::
-   :local:
-
 
 Prerequisites
 -------------

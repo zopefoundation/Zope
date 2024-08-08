@@ -5,9 +5,6 @@ Migrating Zope product code
 The following list shows a few common migration issues independent of the
 Python version used.
 
-.. contents::
-   :local:
-
 
 Changed import paths
 --------------------

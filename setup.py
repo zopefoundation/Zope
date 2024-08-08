@@ -128,7 +128,7 @@ setup(
     extras_require={
         'docs': [
             'Sphinx',
-            'sphinx_rtd_theme',
+            'furo',
             'tempstorage',
         ],
         'wsgi': [

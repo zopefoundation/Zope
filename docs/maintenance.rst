@@ -6,7 +6,6 @@ Maintainer information
   This is internal documentation, mostly for Zope maintainers who manage
   software releases and the documentation
 
-.. contents::
 
 Release process
 ---------------
