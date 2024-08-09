@@ -95,6 +95,20 @@ html_theme = 'furo'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Project logo data. The logo color is a light blue (#00AAD4).
+html_theme_options = {
+    "light_logo": "Zope.svg",
+    "dark_logo": "Zope.svg",
+    "light_css_variables": {
+#        "color-brand-content": "#00AAD4",  # Too light for white background
+    },
+    "dark_css_variables": {
+        "color-brand-content": "#00AAD4",
+        "color-sidebar-link-text": "#00AAD4",
+        "color-sidebar-link-text--top-level": "#00AAD4",
+    },
+}
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
