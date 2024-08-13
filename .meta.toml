@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "6cd77955"
+commit-id = "994c74d7"
 
 [python]
 with-pypy = false
@@ -100,6 +100,7 @@ additional-rules = [
     "recursive-include docs *.jpg",
     "recursive-include docs *.png",
     "recursive-include docs *.po",
+    "recursive-include docs *.svg",
     "recursive-include docs *.tgz",
     "recursive-include src *.css",
     "recursive-include src *.dtml",
@@ -140,6 +141,7 @@ additional-ignores = [
     "docs/_build/html/_sources/zopebook/includes/*",
     "docs/_build/html/_static/*",
     "docs/_build/html/_static/css/*",
+    "docs/_build/html/_static/css/*/*",
     "docs/_build/html/_static/scripts/*",
     "docs/_build/html/_static/styles/*",
     ]
