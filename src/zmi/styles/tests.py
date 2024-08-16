@@ -35,6 +35,7 @@ class SubscriberTests(Testing.ZopeTestCase.FunctionalTestCase):
 
     def call_manage_main(self):
         """Call /folder/manage_main and return the HTML text."""
+
         def _call_manage_main(self):
             self.setRoles(['Manager'])
             # temporaryPlacelessSetUp insists in creating an interaction

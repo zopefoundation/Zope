@@ -33,6 +33,7 @@ class UnitTestSecurityPolicy:
         Stub out the existing security policy for unit testing purposes.
     """
     # Standard SecurityPolicy interface
+
     def validate(self,
                  accessed=None,
                  container=None,

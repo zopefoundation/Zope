@@ -23,6 +23,7 @@ class NoVerifyPasteFolder(Folder):
     """Folder that does not perform paste verification.
     Used by test_events
     """
+
     def _verifyObjectPaste(self, object, validate_src=1):
         pass
 

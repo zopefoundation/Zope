@@ -141,6 +141,7 @@ class BaseRequest_factory:
     def _makeObjectWithBD(self):
         class DummyObjectWithBD(self._makeBasicObjectClass()):
             """Dummy class with __browser_default__."""
+
             def __browser_default__(self, REQUEST):
                 if REQUEST['_test_counter'] < 100:
                     REQUEST['_test_counter'] += 1
@@ -155,6 +156,7 @@ class BaseRequest_factory:
         @zpublish
         class _DummyResult:
             ''' '''
+
             def __init__(self, tag):
                 self.tag = tag
 

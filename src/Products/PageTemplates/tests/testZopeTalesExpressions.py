@@ -9,6 +9,7 @@ class ZopeTalesExpressionTests(testHTMLTests.HTMLTests):
     The tests in this class ensure that the ``_zt_expr_registry``
     is cleared at the start and end of each test.
     """
+
     def setUp(self):
         super().setUp()
         _zt_expr_registry.clear()

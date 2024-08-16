@@ -134,6 +134,7 @@ class ProductContextTests(TestCase):
 
 class _Product:
     """Product mockup."""
+
     def __init__(self):
         self.id = "pid"
 

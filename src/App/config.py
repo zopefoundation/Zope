@@ -55,6 +55,7 @@ class DefaultConfiguration:
     """
     This configuration should be used effectively only during unit tests
     """
+
     def __init__(self):
         from App import FindHomes
         self.clienthome = FindHomes.CLIENT_HOME

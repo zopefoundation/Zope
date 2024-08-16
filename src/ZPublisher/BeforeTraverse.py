@@ -88,6 +88,7 @@ class MultiHook:
     MultiHook calls the named hook from the class of the container, then
     the prior hook, then all the hooks in its list.
     """
+
     def __init__(self, hookname='<undefined hookname>', prior=None,
                  defined_in_class=False):
         # The default values are needed for unpickling instances of this class

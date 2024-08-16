@@ -35,6 +35,7 @@ def getEngine():
 class ViewPageTemplateFile(TrustedAppPT, PageTemplateFile):
     """Page Template used as class variable of views defined as Python classes.
     """
+
     def __init__(self, filename, _prefix=None, content_type=None):
         _prefix = self.get_path_from_prefix(_prefix)
         super().__init__(filename, _prefix)

@@ -124,6 +124,7 @@ class OFSTraversableAbsoluteURL(BrowserView):
 class RootAbsoluteURL(OFSTraversableAbsoluteURL):
     """An absolute_url adapter for the root object (OFS.Application)
     """
+
     def breadcrumbs(self):
         context = self.context
 
