@@ -710,11 +710,10 @@ class BaseRequest:
             # a tuple of allowed request methods
             request_method = (getattr(self, "environ", None)
                               and self.environ.get("REQUEST_METHOD"))
-            if  (request_method is None  # noqa: E271
-                 or request_method.upper() not in publishable):
-                raise Forbidden(
-                    f"The object at {url} does not support "
-                    f"{request_method} requests")
+            if (request_method is None  # noqa: E271
+                    or request_method.upper() not in publishable):
+                raise Forbidden(f"The object at {url} does not support "
+                                f"{request_method} requests")
             return
         # ``publishable`` is ``None``
 

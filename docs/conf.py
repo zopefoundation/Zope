@@ -100,7 +100,7 @@ html_theme_options = {
     "light_logo": "Zope.svg",
     "dark_logo": "Zope.svg",
     "light_css_variables": {
-#        "color-brand-content": "#00AAD4",  # Too light for white background
+        # "color-brand-content": "#00AAD4",  # Too light for white background
     },
     "dark_css_variables": {
         "color-brand-content": "#00AAD4",
