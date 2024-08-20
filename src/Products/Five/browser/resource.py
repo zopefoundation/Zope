@@ -43,6 +43,7 @@ class Resource:
     thus making this mixin (and probably the other classes in this
     module) obsolete.
     """
+
     def __call__(self):
         name = self.__name__
         container = self.__parent__

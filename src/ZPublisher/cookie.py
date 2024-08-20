@@ -107,6 +107,7 @@ class CookieParameterRegistry:
     It maintains 2 maps: one to normalize parameter names
     and one to check and convert parameter values.
     """
+
     def __init__(self):
         self._normalize = {}
         self._convert = {}

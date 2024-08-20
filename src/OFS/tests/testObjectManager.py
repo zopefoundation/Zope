@@ -615,6 +615,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
 class _CallResult:
     """Auxiliary class to provide defined call results."""
+
     def __init__(self, result):
         self.result = result
 

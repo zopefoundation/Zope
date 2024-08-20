@@ -1565,6 +1565,7 @@ class TestSearchType(unittest.TestCase):
 
     see "https://github.com/zopefoundation/Zope/pull/512"
     """
+
     def check(self, val, expect):
         mo = search_type(val)
         if expect is None:
@@ -1590,6 +1591,7 @@ class TestSearchType(unittest.TestCase):
 
 class _Unseekable:
     """Auxiliary class emulating an unseekable file like object"""
+
     def __init__(self, file):
         for m in ("read", "readline", "close", "__del__"):
             setattr(self, m, getattr(file, m))

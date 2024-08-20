@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "994c74d7"
+commit-id = "da0ad14b"
 
 [python]
 with-pypy = false
@@ -47,9 +47,6 @@ testenv-deps = [
     "universal2: MarkupSafe",
     "universal2: zope.testrunner",
     ]
-additional-envlist = [
-    "pre-commit",
-    ]
 testenv-commands-pre = [
     "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} buildout:root-directory={toxinidir}",
     ]
@@ -64,27 +61,6 @@ testenv-commands = [
 coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
     "allowlist_externals = *",
-    "",
-    "[testenv:pre-commit]",
-    "basepython = python3",
-    "description = This env runs all linters configured in .pre-commit-config.yaml",
-    "skip_install = true",
-    "deps =",
-    "    pre-commit",
-    "commands_pre =",
-    "commands =",
-    "    pre-commit run --all-files --show-diff-on-failure",
-    "",
-    "[testenv:autopep8]",
-    "basepython = python3.8",
-    "skip_install = true",
-    "deps =",
-    "    -cconstraints.txt",
-    "    autopep8",
-    "    docformatter",
-    "commands =",
-    "    autopep8 --verbose --in-place --recursive --aggressive --aggressive {toxinidir}/src setup.py",
-    "    docformatter --in-place --recursive {toxinidir}/src setup.py",
     ]
 use-flake8 = true
 

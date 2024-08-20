@@ -163,6 +163,7 @@ class _CombinedMapping:
 
     Earlier mappings take precedence.
     """
+
     def __init__(self, *ms):
         self.mappings = ms
 

@@ -710,11 +710,10 @@ class BaseRequest:
             # a tuple of allowed request methods
             request_method = (getattr(self, "environ", None)
                               and self.environ.get("REQUEST_METHOD"))
-            if  (request_method is None  # noqa: E271
-                 or request_method.upper() not in publishable):
-                raise Forbidden(
-                    f"The object at {url} does not support "
-                    f"{request_method} requests")
+            if (request_method is None  # noqa: E271
+                    or request_method.upper() not in publishable):
+                raise Forbidden(f"The object at {url} does not support "
+                                f"{request_method} requests")
             return
         # ``publishable`` is ``None``
 
@@ -850,11 +849,11 @@ class DocstringWarning(DeprecationWarning):
             f = i.unwrap(obj.__func__)
             c = obj.__self__.__class__
             desc = f"'{c.__module__}.{c.__qualname__}' " \
-                   f"method '{obj.__qualname__}'{lineno(f, 1)}"
+                f"method '{obj.__qualname__}'{lineno(f, 1)}"
         elif i.isfunction(obj):
             f = i.unwrap(obj)
             desc = f"function '{f.__module__}.{f.__qualname__}'" \
-                   f"{lineno(f)}"
+                f"{lineno(f)}"
         else:
             try:
                 cls_doc = "__doc__" not in obj.__dict__

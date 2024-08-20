@@ -48,8 +48,8 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
     # Replace change_dtml_methods by change_dtml_documents
     __ac_permissions__ = tuple([
-        (perms[0] == change_dtml_methods) and  # NOQA: W504
-        (change_dtml_documents, perms[1]) or perms
+        (perms[0] == change_dtml_methods)  # NOQA: W504
+        and (change_dtml_documents, perms[1]) or perms
         for perms in DTMLMethod.__ac_permissions__])
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):

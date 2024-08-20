@@ -40,6 +40,7 @@ class UnitTestSecurityPolicy:
     #
     #   Standard SecurityPolicy interface
     #
+
     def validate(self,
                  accessed=None,
                  container=None,

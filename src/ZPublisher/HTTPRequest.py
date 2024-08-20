@@ -611,7 +611,7 @@ class HTTPRequest(BaseRequest):
                         elif has_codec(type_name):
                             # recode:
                             assert not isinstance(item, FileUpload), \
-                                   "cannot recode files"
+                                "cannot recode files"
                             item = item.encode(
                                 character_encoding, "surrogateescape")
                             character_encoding = type_name
@@ -1354,6 +1354,7 @@ def sane_environment(env):
 
 class ValueDescriptor:
     """(non data) descriptor to compute `value` from `file`."""
+
     def __get__(self, inst, owner=None):
         if inst is None:
             return self
@@ -1381,6 +1382,7 @@ class ValueDescriptor:
 
 class Global:
     """(non data) descriptor to access a (modul) global attribute."""
+
     def __init__(self, name):
         """access global *name*."""
         self.name = name

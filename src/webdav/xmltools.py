@@ -189,6 +189,7 @@ class Element(Node):
 class ProtectedExpatParser(ExpatParser):
     """ See https://bugs.launchpad.net/zope2/+bug/1114688
     """
+
     def __init__(self, forbid_dtd=True, forbid_entities=True,
                  *args, **kwargs):
         # Python 2.x old style class

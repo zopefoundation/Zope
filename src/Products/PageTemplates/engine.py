@@ -86,6 +86,7 @@ InitializeClass(RepeatDictWrapper)
 
 class RepeatItem(PathIterator):
     """Iterator compatible with ``chameleon`` and ``zope.tales``."""
+
     def __iter__(self):
         return self
 
@@ -241,6 +242,7 @@ contains_bad_path_chars = re.compile("[%s]" % BAD_PATH_CHARS).search
 
 class MappedExpr:
     """map expression: ``zope.tales`` --> ``chameleon.tales``."""
+
     def __init__(self, type, expression, zt_engine):
         self.type = type
         # At this place, *expression* is a `chameleon.tokenize.Token`
@@ -315,6 +317,7 @@ class MappedExpr:
 
 class MappedExprType:
     """map expression type: ``zope.tales`` --> ``chameleon.tales``."""
+
     def __init__(self, engine, type):
         self.engine = engine
         self.type = type
