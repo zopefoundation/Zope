@@ -1,3 +1,5 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
 minimum_pre_commit_version: '3.6'
 repos:
   - repo: https://github.com/pycqa/isort
