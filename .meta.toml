@@ -130,3 +130,6 @@ ignore-bad-ideas = [
 ignore = [
     "docs/locale/*/LC_MESSAGES/*.mo",
     ]
+
+[pre-commit]
+teyit-exclude = "App/tests/fixtures/error\\.py"

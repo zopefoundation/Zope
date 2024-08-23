@@ -20,6 +20,7 @@ repos:
     rev: 0.4.3
     hooks:
     - id: teyit
+      exclude: App/tests/fixtures/error\.py
   - repo: https://github.com/PyCQA/flake8
     rev: "7.1.1"
     hooks:
