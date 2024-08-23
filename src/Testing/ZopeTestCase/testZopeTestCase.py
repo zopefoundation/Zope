@@ -71,7 +71,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupFolder()
         self.assertTrue(hasattr_(self.app, folder_name))
         self.assertTrue(hasattr_(self, 'folder'))
-        self.assertTrue(user_role in self.folder.userdefined_roles())
+        self.assertIn(user_role, self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
 
     def test_setupUserFolder(self):
@@ -234,7 +234,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setupUser()
         self.login()
         self._clear(1)
-        self.assertFalse(folder_name in self.app.__dict__)
+        self.assertNotIn(folder_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
@@ -246,7 +246,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self.assertTrue(hasattr_(self.app, folder_name))
         self.assertTrue(hasattr_(self, 'folder'))
-        self.assertTrue(user_role in self.folder.userdefined_roles())
+        self.assertIn(user_role, self.folder.userdefined_roles())
         self.assertPermissionsOfRole(standard_permissions, user_role)
         self.assertTrue(hasattr_(self.folder, 'acl_users'))
         acl_user = self.folder.acl_users.getUserById(user_name)
@@ -262,7 +262,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self._setUp()
         self._called = []
         self._tearDown()
-        self.assertFalse(folder_name in self.app.__dict__)
+        self.assertNotIn(folder_name, self.app.__dict__)
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(
@@ -356,7 +356,7 @@ class TestPlainUserFolder(ZopeTestCase.ZopeTestCase):
     def testGetUserDoesNotWrapUser(self):
         user = self.folder.acl_users.getUserById(user_name)
         self.assertFalse(hasattr(user, 'aq_base'))
-        self.assertTrue(user is aq_base(user))
+        self.assertIs(user, aq_base(user))
 
     def testLoggedInUserIsWrapped(self):
         user = getSecurityManager().getUser()
@@ -377,7 +377,7 @@ class TestWrappingUserFolder(ZopeTestCase.ZopeTestCase):
     def testGetUserWrapsUser(self):
         user = self.folder.acl_users.getUserById(user_name)
         self.assertTrue(hasattr(user, 'aq_base'))
-        self.assertFalse(user is aq_base(user))
+        self.assertIsNot(user, aq_base(user))
         self.assertTrue(
             user.__parent__.__class__.__name__, 'WrappingUserFolder')
 

@@ -76,7 +76,7 @@ class TestsOfBroken(unittest.TestCase):
         inst = Broken(self, OID, ('Products.MyProduct.MyClass', 'MyClass'))
 
         self.assertIsInstance(inst, BrokenClass)
-        self.assertTrue(inst._p_jar is self)
+        self.assertIs(inst._p_jar, self)
         self.assertEqual(inst._p_oid, OID)
 
         klass = inst.__class__
@@ -137,7 +137,7 @@ class TestsIntegratedBroken(base.TestCase):
         transaction.commit()
         # check that object is not left over
         app = base.app()
-        self.assertFalse('tr' in app.objectIds())
+        self.assertNotIn('tr', app.objectIds())
 
 
 def test_suite():

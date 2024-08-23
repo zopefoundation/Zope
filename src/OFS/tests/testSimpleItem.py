@@ -42,7 +42,7 @@ class TestItem(unittest.TestCase):
             self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
             self.assertTrue(value.message.startswith("'simple'"))
-            self.assertTrue('full details: testing' in value.message)
+            self.assertIn('full details: testing', value.message)
 
     def test_raise_StandardErrorMessage_TaintedString_errorValue(self):
         from AccessControl.tainted import TaintedString
@@ -65,7 +65,7 @@ class TestItem(unittest.TestCase):
             import sys
             self.assertEqual(sys.exc_info()[0], OverflowError)
             value = sys.exc_info()[1]
-            self.assertFalse('<' in value.message)
+            self.assertNotIn('<', value.message)
 
 
 class TestItem_w__name__(unittest.TestCase):

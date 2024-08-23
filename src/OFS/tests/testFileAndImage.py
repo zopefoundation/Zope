@@ -152,12 +152,16 @@ class FileTests(unittest.TestCase):
 
         # Since we do the create here, let's test the events here too
         self.assertEqual(1, len(self.eventCatcher.created))
-        self.assertTrue(
-            aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        self.assertIs(
+            aq_base(self.eventCatcher.created[0].object),
+            aq_base(self.file)
+        )
 
         self.assertEqual(1, len(self.eventCatcher.modified))
-        self.assertTrue(
-            aq_base(self.eventCatcher.created[0].object) is aq_base(self.file))
+        self.assertIs(
+            aq_base(self.eventCatcher.created[0].object),
+            aq_base(self.file)
+        )
 
         self.eventCatcher.reset()
 
@@ -207,7 +211,7 @@ class FileTests(unittest.TestCase):
         self.assertTrue(ADummyCache.invalidated)
         self.assertTrue(ADummyCache.set)
         self.assertEqual(1, len(self.eventCatcher.modified))
-        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
+        self.assertIs(self.eventCatcher.modified[0].object, self.file)
 
     def testManageEditWithoutFileData(self):
         self.file.manage_edit('foobar', 'text/plain')
@@ -215,7 +219,7 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.content_type, 'text/plain')
         self.assertTrue(ADummyCache.invalidated)
         self.assertEqual(1, len(self.eventCatcher.modified))
-        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
+        self.assertIs(self.eventCatcher.modified[0].object, self.file)
 
     def testManageUpload(self):
         f = BytesIO(b'jammyjohnson')
@@ -223,7 +227,7 @@ class FileTests(unittest.TestCase):
         self.assertEqual(self.file.data, b'jammyjohnson')
         self.assertEqual(self.file.content_type, 'application/octet-stream')
         self.assertEqual(1, len(self.eventCatcher.modified))
-        self.assertTrue(self.eventCatcher.modified[0].object is self.file)
+        self.assertIs(self.eventCatcher.modified[0].object, self.file)
 
     def testManageUploadWithoutFileData(self):
         self.file.manage_upload()
@@ -297,7 +301,7 @@ class FileTests(unittest.TestCase):
         self.file.manage_edit('foobar', 'text/plain',
                               filedata=b'Now is the time for all good men to '
                                        b'come to the aid of the Party.')
-        self.assertTrue(b'Party' in self.file.PrincipiaSearchSource())
+        self.assertIn(b'Party', self.file.PrincipiaSearchSource())
 
     def test_manage_DAVget_binary(self):
         self.assertEqual(self.file.manage_DAVget(), self.data)

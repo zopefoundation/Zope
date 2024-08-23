@@ -138,56 +138,56 @@ class TestCopySupport(CopySupportTestBase):
         verifyClass(ICopySource, CopySource)
 
     def testRename(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.folder1.manage_renameObject(id='file', new_id='filex')
-        self.assertFalse('file' in self.folder1.objectIds())
-        self.assertTrue('filex' in self.folder1.objectIds())
+        self.assertNotIn('file', self.folder1.objectIds())
+        self.assertIn('filex', self.folder1.objectIds())
 
     def testCopy(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
         cookie = self.folder1.manage_copyObjects(ids=('file',))
         self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
 
     def testCut(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
         cookie = self.folder1.manage_cutObjects(ids=('file',))
         self.folder2.manage_pasteObjects(cookie)
-        self.assertFalse('file' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
+        self.assertNotIn('file', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
 
     def testCopyNewObject(self):
-        self.assertFalse('newfile' in self.folder1.objectIds())
+        self.assertNotIn('newfile', self.folder1.objectIds())
         manage_addFile(self.folder1, 'newfile',
                        file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(ids=('newfile',))
         self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('newfile' in self.folder1.objectIds())
-        self.assertTrue('newfile' in self.folder2.objectIds())
+        self.assertIn('newfile', self.folder1.objectIds())
+        self.assertIn('newfile', self.folder2.objectIds())
 
     def testPasteSingleNotSameID(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
         cookie = self.folder1.manage_copyObjects(ids=('file',))
         result = self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
-        self.assertTrue(result == [{'id': 'file', 'new_id': 'file'}])
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
+        self.assertEqual(result, [{'id': 'file', 'new_id': 'file'}])
 
     def testPasteSingleSameID(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
         manage_addFile(self.folder2, 'file',
                        file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(ids=('file',))
         result = self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
-        self.assertTrue('copy_of_file' in self.folder2.objectIds())
-        self.assertTrue(result == [{'id': 'file', 'new_id': 'copy_of_file'}])
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
+        self.assertIn('copy_of_file', self.folder2.objectIds())
+        self.assertEqual(result, [{'id': 'file', 'new_id': 'copy_of_file'}])
 
     def testPasteSingleSameIDMultipleTimes(self):
         cookie = self.folder1.manage_copyObjects(ids=('file',))
@@ -227,25 +227,25 @@ class TestCopySupport(CopySupportTestBase):
         self.assertEqual(result, [{'id': 'copy_of_', 'new_id': 'copy2_of_'}])
 
     def testPasteMultiNotSameID(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file1' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file1', self.folder1.objectIds())
         manage_addFile(self.folder1, 'file1',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file2' in self.folder1.objectIds())
+        self.assertNotIn('file2', self.folder1.objectIds())
         manage_addFile(self.folder1, 'file2',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file' in self.folder2.objectIds())
-        self.assertFalse('file1' in self.folder2.objectIds())
-        self.assertFalse('file2' in self.folder2.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
+        self.assertNotIn('file1', self.folder2.objectIds())
+        self.assertNotIn('file2', self.folder2.objectIds())
         cookie = self.folder1.manage_copyObjects(
             ids=('file', 'file1', 'file2',))
         result = self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue('file1' in self.folder1.objectIds())
-        self.assertTrue('file2' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
-        self.assertTrue('file1' in self.folder2.objectIds())
-        self.assertTrue('file2' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertIn('file1', self.folder1.objectIds())
+        self.assertIn('file2', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
+        self.assertIn('file1', self.folder2.objectIds())
+        self.assertIn('file2', self.folder2.objectIds())
         self.assertEqual(result, [
             {'id': 'file', 'new_id': 'file'},
             {'id': 'file1', 'new_id': 'file1'},
@@ -253,34 +253,34 @@ class TestCopySupport(CopySupportTestBase):
         ])
 
     def testPasteMultiSameID(self):
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertFalse('file1' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertNotIn('file1', self.folder1.objectIds())
         manage_addFile(self.folder1, 'file1',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file2' in self.folder1.objectIds())
+        self.assertNotIn('file2', self.folder1.objectIds())
         manage_addFile(self.folder1, 'file2',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file' in self.folder2.objectIds())
+        self.assertNotIn('file', self.folder2.objectIds())
         manage_addFile(self.folder2, 'file',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file1' in self.folder2.objectIds())
+        self.assertNotIn('file1', self.folder2.objectIds())
         manage_addFile(self.folder2, 'file1',
                        file=b'', content_type='text/plain')
-        self.assertFalse('file2' in self.folder2.objectIds())
+        self.assertNotIn('file2', self.folder2.objectIds())
         manage_addFile(self.folder2, 'file2',
                        file=b'', content_type='text/plain')
         cookie = self.folder1.manage_copyObjects(
             ids=('file', 'file1', 'file2',))
         result = self.folder2.manage_pasteObjects(cookie)
-        self.assertTrue('file' in self.folder1.objectIds())
-        self.assertTrue('file1' in self.folder1.objectIds())
-        self.assertTrue('file2' in self.folder1.objectIds())
-        self.assertTrue('file' in self.folder2.objectIds())
-        self.assertTrue('file1' in self.folder2.objectIds())
-        self.assertTrue('file2' in self.folder2.objectIds())
-        self.assertTrue('copy_of_file' in self.folder2.objectIds())
-        self.assertTrue('copy_of_file1' in self.folder2.objectIds())
-        self.assertTrue('copy_of_file2' in self.folder2.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
+        self.assertIn('file1', self.folder1.objectIds())
+        self.assertIn('file2', self.folder1.objectIds())
+        self.assertIn('file', self.folder2.objectIds())
+        self.assertIn('file1', self.folder2.objectIds())
+        self.assertIn('file2', self.folder2.objectIds())
+        self.assertIn('copy_of_file', self.folder2.objectIds())
+        self.assertIn('copy_of_file1', self.folder2.objectIds())
+        self.assertIn('copy_of_file2', self.folder2.objectIds())
         self.assertEqual(result, [
             {'id': 'file', 'new_id': 'copy_of_file'},
             {'id': 'file1', 'new_id': 'copy_of_file1'},
@@ -408,14 +408,14 @@ class TestCopySupportSecurity(CopySupportTestBase):
 
         self._initPolicyAndUser()
 
-        self.assertTrue('file' in folder1.objectIds())
-        self.assertFalse('file' in folder2.objectIds())
+        self.assertIn('file', folder1.objectIds())
+        self.assertNotIn('file', folder2.objectIds())
 
         cookie = folder1.manage_copyObjects(ids=('file', ))
         folder2.manage_pasteObjects(cookie)
 
-        self.assertTrue('file' in folder1.objectIds())
-        self.assertTrue('file' in folder2.objectIds())
+        self.assertIn('file', folder1.objectIds())
+        self.assertIn('file', folder2.objectIds())
 
     def test_copy_cant_read_source(self):
         folder1, folder2 = self._initFolders()
@@ -472,24 +472,24 @@ class TestCopySupportSecurity(CopySupportTestBase):
         new_id = copy_info[0]['new_id']
         new_folder = folder2[new_id]
         # The private item should not be in the copy.
-        self.assertTrue('private' not in new_folder.objectIds())
+        self.assertNotIn('private', new_folder.objectIds())
         # There is nothing wrong with copying the public item.
-        self.assertTrue('public' in new_folder.objectIds())
+        self.assertIn('public', new_folder.objectIds())
 
     def test_move_baseline(self):
         folder1, folder2 = self._initFolders()
         folder2.all_meta_types = FILE_META_TYPES
 
-        self.assertTrue('file' in folder1.objectIds())
-        self.assertFalse('file' in folder2.objectIds())
+        self.assertIn('file', folder1.objectIds())
+        self.assertNotIn('file', folder2.objectIds())
 
         self._initPolicyAndUser()
 
         cookie = folder1.manage_cutObjects(ids=('file', ))
         folder2.manage_pasteObjects(cookie)
 
-        self.assertFalse('file' in folder1.objectIds())
-        self.assertTrue('file' in folder2.objectIds())
+        self.assertNotIn('file', folder1.objectIds())
+        self.assertIn('file', folder2.objectIds())
 
     def test_move_cant_read_source(self):
         folder1, folder2 = self._initFolders()

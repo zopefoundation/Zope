@@ -33,19 +33,19 @@ class TestPageTemplateFile(ZopeTestCase):
 
         template = self._makeOne('rr.pt')
         result = template(refs=[Prioritized(1), Prioritized(2)])
-        self.assertTrue('P1' in result)
-        self.assertTrue(result.index('P1') < result.index('P2'))
+        self.assertIn('P1', result)
+        self.assertLess(result.index('P1'), result.index('P2'))
 
     def test_locals(self):
         template = self._makeOne('locals.pt')
         result = template()
-        self.assertTrue('function test' in result)
-        self.assertTrue('function same_type' in result)
+        self.assertIn('function test', result)
+        self.assertIn('function same_type', result)
 
     def test_locals_base(self):
         template = self._makeOne('locals_base.pt')
         result = template()
-        self.assertTrue('Application' in result)
+        self.assertIn('Application', result)
 
     def test_nocall(self):
         template = self._makeOne("nocall.pt")
@@ -53,7 +53,7 @@ class TestPageTemplateFile(ZopeTestCase):
         def dont_call():
             raise RuntimeError()
         result = template(callable=dont_call)
-        self.assertTrue(repr(dont_call) in result)
+        self.assertIn(repr(dont_call), result)
 
     def test_exists(self):
         template = self._makeOne("exists.pt")
@@ -61,12 +61,12 @@ class TestPageTemplateFile(ZopeTestCase):
         def dont_call():
             raise RuntimeError()
         result = template(callable=dont_call)
-        self.assertTrue('ok' in result)
+        self.assertIn('ok', result)
 
     def test_simple(self):
         template = self._makeOne("simple.pt")
         result = template()
-        self.assertTrue('Hello world!' in result)
+        self.assertIn('Hello world!', result)
 
     def test_secure(self):
         soup = '<foo></bar>'
@@ -82,13 +82,13 @@ class TestPageTemplateFile(ZopeTestCase):
         from AccessControl.SecurityInfo import allow_module
         allow_module('html')
         result = template(soup=soup)
-        self.assertTrue('&lt;foo&gt;&lt;/bar&gt;' in result)
+        self.assertIn('&lt;foo&gt;&lt;/bar&gt;', result)
 
     def test_structure(self):
         template = self._makeOne("structure.pt")
         param = "<span>abc</span>"
         result = template(param=param)
-        self.assertTrue(param in result)
+        self.assertIn(param, result)
 
 
 def test_suite():

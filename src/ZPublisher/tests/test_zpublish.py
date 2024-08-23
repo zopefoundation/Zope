@@ -29,7 +29,7 @@ class ZpublishTests(TestCase):
         def f():
             pass
 
-        self.assertIs(zpublish_mark(f), True)
+        self.assertTrue(zpublish_mark(f))
         self.assertTrue(zpublish_marked(f))
 
     def test_zpublish_false(self):
@@ -37,7 +37,7 @@ class ZpublishTests(TestCase):
         def f():
             pass
 
-        self.assertIs(zpublish_mark(f), False)
+        self.assertFalse(zpublish_mark(f))
         self.assertTrue(zpublish_marked(f))
 
     def test_zpublish_method(self):
@@ -61,9 +61,9 @@ class ZpublishTests(TestCase):
             pass
 
         self.assertIsNone(zpublish_mark(f))
-        self.assertIs(zpublish_mark(f, True), True)
+        self.assertTrue(zpublish_mark(f, True))
         zpublish(f)
-        self.assertIs(zpublish_mark(f), True)
+        self.assertTrue(zpublish_mark(f))
 
     def test_zpublish_marked(self):
         def f():
@@ -80,7 +80,7 @@ class ZpublishTests(TestCase):
         self.assertFalse(zpublish_marked(f))
         wrapper = zpublish_wrap(f)
         self.assertFalse(zpublish_marked(f))
-        self.assertIs(zpublish_mark(wrapper), True)
+        self.assertTrue(zpublish_mark(wrapper))
         self.assertEqual(signature(wrapper), signature(f))
         self.assertIs(wrapper, zpublish_wrap(wrapper))
         wrapper2 = zpublish_wrap(wrapper, conditional=False, methods="put")

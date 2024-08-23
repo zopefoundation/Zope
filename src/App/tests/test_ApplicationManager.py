@@ -131,7 +131,7 @@ class FakeConnectionTests(unittest.TestCase):
         db = object()
         parent_jar = object()
         fc = self._makeOne(db, parent_jar)
-        self.assertTrue(fc.db() is db)
+        self.assertIs(fc.db(), db)
 
 
 class ConfigurationViewerTests(ConfigTestBase, unittest.TestCase):
@@ -204,10 +204,10 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         found = dc['foo']
         self.assertIsInstance(found, AltDatabaseManager)
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.__parent__ is dc)
+        self.assertIs(found.__parent__, dc)
         conn = found._p_jar
         self.assertIsInstance(conn, FakeConnection)
-        self.assertTrue(conn.db() is foo)
+        self.assertIs(conn.db(), foo)
 
     def test___bobo_traverse___miss(self):
         self._makeConfig(foo=object(), bar=object(), qux=object())
@@ -227,10 +227,10 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         found = dc.__bobo_traverse__(None, 'foo')
         self.assertIsInstance(found, AltDatabaseManager)
         self.assertEqual(found.id, 'foo')
-        self.assertTrue(found.__parent__ is dc)
+        self.assertIs(found.__parent__, dc)
         conn = found._p_jar
         self.assertIsInstance(conn, FakeConnection)
-        self.assertTrue(conn.db() is foo)
+        self.assertIs(conn.db(), foo)
 
     def test___bobo_traverse___miss_db_hit_attr(self):
         foo = object()
@@ -241,7 +241,7 @@ class DatabaseChooserTests(ConfigTestBase, unittest.TestCase):
         dc = self._makeOne().__of__(root)
         dc.spam = spam = object()
         found = dc.__bobo_traverse__(None, 'spam')
-        self.assertTrue(found is spam)
+        self.assertIs(found, spam)
 
 
 class ApplicationManagerTests(ConfigTestBase, unittest.TestCase):
@@ -493,11 +493,11 @@ class DebugManagerTests(unittest.TestCase):
         pairs = dm.refcount()
         # XXX : Ugly empiricism here:  I don't know why the count is up 1.
         foo_count = sys.getrefcount(Foo)
-        self.assertTrue((foo_count + 1, 'foo.Foo') in pairs)
+        self.assertIn((foo_count + 1, 'foo.Foo'), pairs)
         bar_count = sys.getrefcount(Bar)
-        self.assertTrue((bar_count + 1, 'foo.Bar') in pairs)
+        self.assertIn((bar_count + 1, 'foo.Bar'), pairs)
         baz_count = sys.getrefcount(Baz)
-        self.assertTrue((baz_count + 1, 'qux.Baz') in pairs)
+        self.assertIn((baz_count + 1, 'qux.Baz'), pairs)
 
     def test_refdict(self):
         import sys
@@ -539,7 +539,7 @@ class DebugManagerTests(unittest.TestCase):
         dm = self._makeOne('test')
         found = dm.rcdate()
         App.ApplicationManager._v_rst = None
-        self.assertTrue(found is dummy)
+        self.assertIs(found, dummy)
 
     def test_rcdeltas(self):
         dm = self._makeOne('test')
@@ -548,8 +548,8 @@ class DebugManagerTests(unittest.TestCase):
         mappings = dm.rcdeltas()
         self.assertTrue(len(mappings))
         mapping = mappings[0]
-        self.assertTrue('rc' in mapping)
-        self.assertTrue('pc' in mapping)
+        self.assertIn('rc', mapping)
+        self.assertIn('pc', mapping)
         self.assertEqual(mapping['delta'], mapping['rc'] - mapping['pc'])
 
     # def test_dbconnections(self):  XXX -- TOO UGLY TO TEST
