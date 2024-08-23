@@ -936,7 +936,7 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(response.status, 400)
             self.assertIn(
                 "The parameter, <em>some_parameter</em>, "
-                            "was omitted from the request.",
+                "was omitted from the request.",
                 str(raised)
             )
         else:
@@ -950,7 +950,7 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(response.status, 400)
             self.assertIn(
                 "Sorry, an internal error occurred in this "
-                            "resource.",
+                "resource.",
                 str(raised)
             )
         else:
@@ -965,7 +965,7 @@ class HTTPResponseTests(unittest.TestCase):
     def test__unauthorized_w_default_realm(self):
         response = self._makeOne()
         response._unauthorized()
-        self.assertIn('WWW-Authenticate', response.headers) # literal
+        self.assertIn('WWW-Authenticate', response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Zope", charset="UTF-8"')
 
@@ -973,7 +973,7 @@ class HTTPResponseTests(unittest.TestCase):
         response = self._makeOne()
         response.realm = 'Folly'
         response._unauthorized()
-        self.assertIn('WWW-Authenticate', response.headers) # literal
+        self.assertIn('WWW-Authenticate', response.headers)  # literal
         self.assertEqual(response.headers['WWW-Authenticate'],
                          'basic realm="Folly", charset="UTF-8"')
 
@@ -985,7 +985,7 @@ class HTTPResponseTests(unittest.TestCase):
             self.assertEqual(response.status, 200)  # publisher sets 401 later
             self.assertIn(
                 "You are not authorized "
-                            "to access this resource.",
+                "to access this resource.",
                 str(raised)
             )
         else:
