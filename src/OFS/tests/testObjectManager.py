@@ -328,15 +328,15 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         ob = ItemForDeletion()
         om._setObject('stuff', ob)
         om.manage_delObjects('stuff')
-        self.assertFalse('stuff' in om)
+        self.assertNotIn('stuff', om)
 
         om._setObject('stuff', ob)
         om.manage_delObjects(['stuff'])
-        self.assertFalse('stuff' in om)
+        self.assertNotIn('stuff', om)
 
         om._setObject('stuff', ob)
         om.manage_delObjects('stuff')
-        self.assertFalse('stuff' in om)
+        self.assertNotIn('stuff', om)
 
     def test_hasObject(self):
         om = self._makeOne()
@@ -401,13 +401,13 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         si2 = SimpleItem('2')
         om['1'] = si1
-        self.assertTrue('1' in om)
-        self.assertTrue(si1 in om.objectValues())
-        self.assertTrue('1' in om.objectIds())
+        self.assertIn('1', om)
+        self.assertIn(si1, om.objectValues())
+        self.assertIn('1', om.objectIds())
         om['2'] = si2
-        self.assertTrue('2' in om)
-        self.assertTrue(si2 in om.objectValues())
-        self.assertTrue('2' in om.objectIds())
+        self.assertIn('2', om)
+        self.assertIn(si2, om.objectValues())
+        self.assertIn('2', om.objectIds())
         self.assertRaises(BadRequest, om._setObject, '1', si2)
         self.assertRaises(BadRequest, om.__setitem__, '1', si2)
 
@@ -417,13 +417,13 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si2 = SimpleItem('2')
         om['1'] = si1
         om['2'] = si2
-        self.assertTrue('1' in om)
-        self.assertTrue('2' in om)
+        self.assertIn('1', om)
+        self.assertIn('2', om)
         del om['1']
-        self.assertFalse('1' in om)
-        self.assertTrue('2' in om)
+        self.assertNotIn('1', om)
+        self.assertIn('2', om)
         om._delObject('2')
-        self.assertFalse('2' in om)
+        self.assertNotIn('2', om)
 
     def test_iterator(self):
         om = self._makeOne()
@@ -435,8 +435,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         self.assertTrue(hasattr(iterator, '__iter__'))
         self.assertTrue(hasattr(iterator, '__next__'))
         result = [i for i in iterator]
-        self.assertTrue('1' in result)
-        self.assertTrue('2' in result)
+        self.assertIn('1', result)
+        self.assertIn('2', result)
 
     def test_len(self):
         om = self._makeOne()
@@ -444,7 +444,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si2 = SimpleItem('2')
         om['1'] = si1
         om['2'] = si2
-        self.assertTrue(len(om) == 2)
+        self.assertEqual(len(om), 2)
 
     def test_nonzero(self):
         om = self._makeOne()
@@ -463,8 +463,8 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         got = om['1']
-        self.assertTrue(aq_self(got) is si1)
-        self.assertTrue(got.__parent__ is om)
+        self.assertIs(aq_self(got), si1)
+        self.assertIs(got.__parent__, om)
 
     def test_get_miss_wo_default(self):
         om = self._makeOne()
@@ -473,7 +473,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
     def test_get_miss_w_default(self):
         om = self._makeOne()
         obj = object()
-        self.assertTrue(om.get('nonesuch', obj) is obj)
+        self.assertIs(om.get('nonesuch', obj), obj)
 
     def test_get_miss_w_non_instance_attr(self):
         om = self._makeOne()
@@ -484,26 +484,26 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         si1 = SimpleItem('1')
         om['1'] = si1
         got = om.get('1')
-        self.assertTrue(aq_self(got) is si1)
-        self.assertTrue(got.__parent__ is om)
+        self.assertIs(aq_self(got), si1)
+        self.assertIs(got.__parent__, om)
 
     def test_items(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue(('1', si1) in list(om.items()))
+        self.assertIn(('1', si1), list(om.items()))
 
     def test_keys(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue('1' in list(om.keys()))
+        self.assertIn('1', list(om.keys()))
 
     def test_values(self):
         om = self._makeOne()
         si1 = SimpleItem('1')
         om['1'] = si1
-        self.assertTrue(si1 in list(om.values()))
+        self.assertIn(si1, list(om.values()))
 
     def test_list_imports(self):
         om = self._makeOne()
@@ -512,7 +512,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         # in skel/import. Tolerate both cases.
         self.assertIsInstance(om.list_imports(), list)
         for filename in om.list_imports():
-            self.assertTrue(os.path.splitext(filename)[1] in ('.zexp', '.xml'))
+            self.assertIn(os.path.splitext(filename)[1], ('.zexp', '.xml'))
 
     def test_manage_get_sortedObjects_quote_id(self):
         # manage_get_sortedObjects now returns a urlquoted version

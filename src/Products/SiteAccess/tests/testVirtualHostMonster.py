@@ -267,7 +267,7 @@ class VHMAddingTests(unittest.TestCase):
         vhm1 = self._makeOne()
         vhm1.manage_addToContainer(self.root)
 
-        self.assertTrue(vhm1.getId() in self.root.objectIds())
+        self.assertIn(vhm1.getId(), self.root.objectIds())
         self.assertTrue(queryBeforeTraverse(self.root, vhm1.meta_type))
 
     def test_add_manage_addVirtualHostMonster(self):
@@ -277,6 +277,6 @@ class VHMAddingTests(unittest.TestCase):
         from ZPublisher.BeforeTraverse import queryBeforeTraverse
         manage_addVirtualHostMonster(self.root)
 
-        self.assertTrue(VirtualHostMonster.id in self.root.objectIds())
+        self.assertIn(VirtualHostMonster.id, self.root.objectIds())
         hook = queryBeforeTraverse(self.root, VirtualHostMonster.meta_type)
         self.assertTrue(hook)

@@ -227,18 +227,18 @@ class TestTraverse(unittest.TestCase):
         verifyClass(ITraversable, Traversable)
 
     def testTraversePath(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(
             self.folder1.unrestrictedTraverse(('', 'folder1', 'file')))
         self.assertTrue(self.folder1.unrestrictedTraverse(('', 'folder1')))
 
     def testTraverseURLNoSlash(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file'))
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1'))
 
     def testTraverseURLSlash(self):
-        self.assertTrue('file' in self.folder1.objectIds())
+        self.assertIn('file', self.folder1.objectIds())
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/file/'))
         self.assertTrue(self.folder1.unrestrictedTraverse('/folder1/'))
 
@@ -274,8 +274,10 @@ class TestTraverse(unittest.TestCase):
         # Verify it's possible to use __bobo_traverse__ to a method.
         self._setupSecurity()
         bb = self._makeBoboTraversable()
-        self.assertTrue(
-            bb.restrictedTraverse('bb_method') is not bb.bb_method)
+        self.assertIsNot(
+            bb.restrictedTraverse('bb_method'),
+            bb.bb_method
+        )
 
     def testBoboTraverseToSimpleAttrValue(self):
         # Verify it's possible to use __bobo_traverse__ to a simple
@@ -291,8 +293,10 @@ class TestTraverse(unittest.TestCase):
         # is fine, but to test the code branch we sub in the forgiving one
         self._setupSecurity(UnitTestSecurityPolicy())
         bb = self._makeBoboTraversable()
-        self.assertTrue(
-            bb.restrictedTraverse('manufactured') == 42)
+        self.assertEqual(
+            bb.restrictedTraverse('manufactured'),
+            42
+        )
 
     def testBoboTraverseToAcquiredObject(self):
         # Verify it's possible to use a __bobo_traverse__ which retrieves
@@ -424,14 +428,17 @@ class TestTraverse(unittest.TestCase):
     def testTraverseUp(self):
         # Test that we can traverse upwards
         from Acquisition import aq_base
-        self.assertTrue(
-            aq_base(self.root.folder1.file.restrictedTraverse('../..')) is
-            aq_base(self.root))
+        self.assertIs(
+            aq_base(self.root.folder1.file.restrictedTraverse('../..')),
+            aq_base(self.root)
+        )
 
     def testTraverseToNameStartingWithPlus(self):
         # Verify it's possible to traverse to a name such as +something
-        self.assertTrue(
-            self.folder1.unrestrictedTraverse('+something') == 'plus')
+        self.assertEqual(
+            self.folder1.unrestrictedTraverse('+something'),
+            'plus'
+        )
 
     def testTraverseWrongType(self):
         with self.assertRaises(TypeError):

@@ -53,7 +53,7 @@ class MarkerViewTests(ZopeTestCase):
         view = EditView(obj, {})
 
         # Test state before making any changes
-        self.assertTrue(view.context.aq_inner is obj)
+        self.assertIs(view.context.aq_inner, obj)
         self.assertEqual(view.request, {})
         self.assertEqual(view.getAvailableInterfaceNames(), [])
         self.assertEqual(view.getDirectlyProvidedNames(), [])

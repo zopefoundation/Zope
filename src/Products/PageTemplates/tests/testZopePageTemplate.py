@@ -523,7 +523,7 @@ class SrcTests(unittest.TestCase):
         src = self._makeOne()
         request = DummyRequest()
         src.__before_publishing_traverse__(None, request)
-        self.assertFalse('_hacked_path' in request.__dict__)
+        self.assertNotIn('_hacked_path', request.__dict__)
 
     def test___before_publishing_traverse___w__hacked_path_false(self):
         src = self._makeOne()

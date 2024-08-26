@@ -169,7 +169,7 @@ class TestPubEvents(TestCase):
         self.assertIsInstance(events[0], PubBeforeStreaming)
         self.assertEqual(events[0].response, response)
 
-        self.assertTrue(b'datachunk1datachunk2' in out.getvalue())
+        self.assertIn(b'datachunk1datachunk2', out.getvalue())
 
 
 class ExceptionView:

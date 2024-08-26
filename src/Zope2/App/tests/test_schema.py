@@ -51,4 +51,4 @@ class Zope2VocabularyRegistryTests(unittest.TestCase, CleanUp):
         registry = self._makeOne()
         context = object()
         found = registry.get(context, 'foundit')
-        self.assertTrue(found is _marker)
+        self.assertIs(found, _marker)
