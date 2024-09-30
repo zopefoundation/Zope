@@ -16,7 +16,7 @@ RestrictedPython==7.2; python_version == '3.11'
 RestrictedPython==7.2; python_version == '3.12'
 RestrictedPython==7.2; python_version == '3.8'
 RestrictedPython==7.2; python_version == '3.9'
-RestrictedPython==7.2a1.dev0; python_version > '3.12'
+RestrictedPython==7.3; python_version > '3.12'
 WSGIProxy2==0.5.1
 WebOb==1.8.7
 WebTest==3.0.0
