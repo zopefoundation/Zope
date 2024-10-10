@@ -22,22 +22,22 @@ jobs:
         - ["macos", "macos-latest"]
         config:
         # [Python version, tox env]
-        - ["3.11",  "release-check"]
-        - ["3.8",   "py38"]
-        - ["3.9",   "py39"]
-        - ["3.10",  "py310"]
-        - ["3.11",  "py311"]
-        - ["3.12",  "py312"]
-        - ["3.13",  "py313"]
-        - ["3.11",   "docs"]
-        - ["3.11",   "coverage"]
+        - ["3.11", "release-check"]
+        - ["3.8", "py38"]
+        - ["3.9", "py39"]
+        - ["3.10", "py310"]
+        - ["3.11", "py311"]
+        - ["3.12", "py312"]
+        - ["3.13", "py313"]
+        - ["3.11", "docs"]
+        - ["3.11", "coverage"]
         exclude:
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "release-check"] }
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "docs"] }
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "coverage"] }
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "release-check"] }
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "docs"] }
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "coverage"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "release-check"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "docs"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "coverage"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "release-check"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "docs"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "coverage"] }
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name

@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11 (unreleased)
 -----------------
 
+- Upgrade all dependencies to versions supporting Python 3.13.
+
+- Add support for Python 3.13.
+
 - Drop support for Python 3.7.
 
 - Update to newest compatible versions of dependencies.

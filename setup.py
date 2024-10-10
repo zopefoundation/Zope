@@ -45,6 +45,7 @@ setup(
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.dev',
     long_description="\n\n".join([README, CHANGES]),
+    long_description_content_type='text/x-rst',
     classifiers=[
         "Development Status :: 6 - Mature",
         "Environment :: Web Environment",
@@ -58,6 +59,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
