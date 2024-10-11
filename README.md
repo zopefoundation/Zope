@@ -13,10 +13,13 @@
 
 (files created from the 4.x branch but not necessarily in sync with it)
 
-* [versions.cfg](releases/4.x/versions.cfg)
-* [versions-prod.cfg](releases/4.x/versions-prod.cfg)
-* [requirements-full.txt](releases/4.x/requirements-full.txt)
-* [constraints.txt](releases/4.x/constraints.txt)
+
+## 5.11
+
+* [versions.cfg](releases/5.11/versions.cfg)
+* [versions-prod.cfg](releases/5.11/versions-prod.cfg)
+* [requirements-full.txt](releases/5.11/requirements-full.txt)
+* [constraints.txt](releases/5.11/constraints.txt)
 
 ## 5.10
 
@@ -213,6 +216,13 @@
 * [versions-prod.cfg](releases/4.8.11/versions-prod.cfg)
 * [requirements-full.txt](releases/4.8.11/requirements-full.txt)
 * [constraints.txt](releases/4.8.11/constraints.txt)
+
+## 4.8.10
+
+* [versions.cfg](releases/4.8.10/versions.cfg)
+* [versions-prod.cfg](releases/4.8.10/versions-prod.cfg)
+* [requirements-full.txt](releases/4.8.10/requirements-full.txt)
+* [constraints.txt](releases/4.8.10/constraints.txt)
 
 ## 4.8.9
 
