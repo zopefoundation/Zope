@@ -16,51 +16,48 @@ class CaseSensitiveParser(RawConfigParser):
         return value
 
 
-def generate(in_, requirements_file, constraints_file):
-    in_file = os.path.join(HERE, in_)
+def generate(
+        buildout_file: str,
+        requirements_file: str,
+        zope_requirement: str):
     out_file_requirements = os.path.join(HERE, requirements_file)
-    out_file_constraints = os.path.join(HERE, constraints_file)
     parser = CaseSensitiveParser()
-    parser.read(in_file)
+    parser.read(os.path.join(HERE, buildout_file))
+    for extend in parser.get('buildout', 'extends', fallback='').splitlines():
+        extend = extend.strip()
+        if extend:
+            parser.read(os.path.join(HERE, extend))
 
     requirements = []
-    constraints = []
-    zope_requirement = (
-        '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n')
 
     # Try to include sections for all currently supported Python versions
-    for py_version in ('3.8', '3.9', '3.10', '3.11', '3.12'):
+    for py_version in ('3.8', '3.9', '3.10', '3.11', '3.12', '3.13'):
         short_version = py_version.replace('.', '')
         try:
             zope_requirement = _generate(
                 parser.items(f'versions:python{short_version}'), py_version,
-                requirements, constraints, zope_requirement)
+                requirements, zope_requirement)
         except NoSectionError:
             continue
 
     # "Unversioned" pins must come last, how they are handled depends on
     # Python version qualifiers for dependencies of the same name.
     zope_requirement = _generate(
-        parser.items('versions'), None, requirements, constraints,
-        zope_requirement)
+        parser.items('versions'), None, requirements, zope_requirement)
 
     with open(out_file_requirements, 'w') as fd:
         fd.write(zope_requirement)
         for req in sorted(requirements):
             fd.write(req)
-    with open(out_file_constraints, 'w') as fcon:
-        for con in sorted(constraints):
-            fcon.write(con)
 
 
 def _generate(
     versions: List[Tuple[str, str]],
     python_version: Optional[str],
     requirements: List[str],
-    constraints: List[str],
     zope_requirement: str
 ) -> str:
-    """Generate requirements and constraints for a specific Python version.
+    """Generate requirements or constraints file for a specific Python version.
 
     If ``python_version`` is false, generate for all python versions.
     Returns a probably changed ``zope_requirement``.
@@ -90,12 +87,16 @@ def _generate(
                 spec = f"{spec}; python_version > '{versions[-1]}'"
 
         requirements.append(spec + '\n')
-        constraints.append(spec + '\n')
     return zope_requirement
 
 
 def main():
-    generate('versions-prod.cfg', 'requirements-full.txt', 'constraints.txt')
+    generate(
+        'versions-prod.cfg',
+        'requirements-full.txt',
+        '-e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope\n',
+    )
+    generate('versions.cfg', 'constraints.txt', '')
 
 
 if __name__ == '__main__':

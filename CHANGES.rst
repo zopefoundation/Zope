@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11.1 (unreleased)
 -------------------
 
+- Include versions constraints for non-production dependencies in
+  ``constraints.txt``.
+  (`#1234 <https://github.com/zopefoundation/Zope/pull/1234>`_)
+
 
 5.11 (2024-10-11)
 -----------------

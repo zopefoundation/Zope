@@ -2,38 +2,90 @@ AccessControl==7.1
 Acquisition==6.1
 AuthEncoding==5.0
 BTrees==6.1
+Babel==2.16.0
 Chameleon==4.4.4; python_version == '3.8'
 Chameleon==4.4.4; python_version > '3.8'
 DateTime==5.5
 DocumentTemplate==4.6
 ExtensionClass==6.0
+Jinja2==3.1.4
+MarkupSafe==2.1.5; python_version == '3.8'
+MarkupSafe==3.0.1; python_version > '3.8'
+Missing==5.0
 MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.1
+Products.BTreeFolder2==5.1
+Products.ZCatalog==7.1
+Pygments==2.18.0
+Record==4.1
 RestrictedPython==7.4
+Sphinx==7.1.2; python_version == '3.8'
+Sphinx==7.4.7; python_version == '3.9'
+Sphinx==8.0.2; python_version > '3.9'
 WSGIProxy2==0.5.1
 WebOb==1.8.8
 WebTest==3.0.1
 ZConfig==4.1
 ZODB==6.0
 Zope2==4.0
+alabaster==0.7.13; python_version == '3.8'
+alabaster==0.7.14; python_version == '3.9'
+alabaster==1.0.0; python_version > '3.9'
 beautifulsoup4==4.12.3
+certifi==2024.8.30
 cffi==1.17.1
+charset-normalizer==3.4.0
+collective.recipe.template==2.2
+colorama==0.4.6
+docutils==0.20.1; python_version == '3.8'
+docutils==0.20.1; python_version == '3.9'
+docutils==0.21.2; python_version > '3.9'
+five.localsitemanager==4.0
+furo==2024.8.6
+idna==3.10
+imagesize==1.4.1
+importlib-metadata==8.5.0
+importlib-resources==6.4.0; python_version == '3.8'
+legacy-cgi==2.6.1
+mr.developer==2.0.2
 multipart==0.2.5
+packaging==24.1
 persistent==6.1
+plone.recipe.command==1.1
 pycparser==2.22
 python-gettext==5.0
 pytz==2024.2
+requests==2.32.3
 roman==4.2
 six==1.16.0
+snowballstemmer==2.2.0
 soupsieve==2.6
+sphinx-basic-ng==1.0.0b2
+sphinxcontrib-applehelp==1.0.4; python_version == '3.8'
+sphinxcontrib-applehelp==2.0.0; python_version > '3.8'
+sphinxcontrib-devhelp==1.0.2; python_version == '3.8'
+sphinxcontrib-devhelp==2.0.0; python_version > '3.8'
+sphinxcontrib-htmlhelp==2.0.1; python_version == '3.8'
+sphinxcontrib-htmlhelp==2.1.0; python_version > '3.8'
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.3; python_version == '3.8'
+sphinxcontrib-qthelp==2.0.0; python_version > '3.8'
+sphinxcontrib-serializinghtml==1.1.5; python_version == '3.8'
+sphinxcontrib-serializinghtml==2.0.0; python_version > '3.8'
+tempstorage==6.0
+tomli==2.0.2
 transaction==5.0
+urllib3==2.2.3
 waitress==3.0.0
+z3c.checkversions==2.1
 z3c.pt==4.4
 zExceptions==5.0
 zc.lockfile==3.0.post1
 zc.recipe.egg==2.0.7
+zc.recipe.testrunner==3.1
+zipp==3.20.2
 zodbpickle==4.1.1
 zope.annotation==5.0
 zope.browser==3.0
@@ -75,5 +127,6 @@ zope.tal==5.0.1
 zope.tales==6.0
 zope.testbrowser==7.0
 zope.testing==5.0.1
+zope.testrunner==6.5
 zope.traversing==5.0
 zope.viewlet==5.0
