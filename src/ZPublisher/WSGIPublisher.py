@@ -247,6 +247,7 @@ def transaction_pubevents(request, response, tm=transaction.manager):
 
 def publish(request, module_info):
     obj, realm, debug_mode = module_info
+    request['PARENTS'] = [obj]
 
     request.processInputs()
     response = request.response
@@ -264,8 +265,6 @@ def publish(request, module_info):
     # Get the path list.
     # According to RFC1738 a trailing space in the path is valid.
     path = request.get('PATH_INFO')
-    request['PARENTS'] = [obj]
-
     obj = request.traverse(path, validated_hook=validate_user)
 
     # Set debug information from the active request on the open connection
