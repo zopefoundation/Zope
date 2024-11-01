@@ -16,9 +16,13 @@ class CaseSensitiveParser(RawConfigParser):
         return value
 
 
-def generate(in_, requirements_file, constraints_file):
+def generate(
+        in_: str,
+        requirements_file: Optional[str],
+        constraints_file: str):
     in_file = os.path.join(HERE, in_)
-    out_file_requirements = os.path.join(HERE, requirements_file)
+    if requirements_file:
+        out_file_requirements = os.path.join(HERE, requirements_file)
     out_file_constraints = os.path.join(HERE, constraints_file)
     parser = CaseSensitiveParser()
     parser.read(in_file)
@@ -44,10 +48,11 @@ def generate(in_, requirements_file, constraints_file):
         parser.items('versions'), None, requirements, constraints,
         zope_requirement)
 
-    with open(out_file_requirements, 'w') as fd:
-        fd.write(zope_requirement)
-        for req in sorted(requirements):
-            fd.write(req)
+    if requirements_file:
+        with open(out_file_requirements, 'w') as fd:
+            fd.write(zope_requirement)
+            for req in sorted(requirements):
+                fd.write(req)
     with open(out_file_constraints, 'w') as fcon:
         for con in sorted(constraints):
             fcon.write(con)
@@ -96,6 +101,7 @@ def _generate(
 
 def main():
     generate('versions-prod.cfg', 'requirements-full.txt', 'constraints.txt')
+    generate('versions.cfg', None, 'constraints-tests.txt')
 
 
 if __name__ == '__main__':
