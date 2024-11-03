@@ -29,7 +29,7 @@ roman==4.2
 six==1.16.0
 soupsieve==2.6
 transaction==5.0
-waitress==3.0.0; python_version == '3.8'
+waitress==3.0.1; python_version == '3.8'
 waitress==3.0.1; python_version > '3.8'
 z3c.pt==4.4
 zExceptions==5.0
