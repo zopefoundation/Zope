@@ -1,4 +1,4 @@
-AccessControl==7.1
+AccessControl==7.2
 Acquisition==6.1
 AuthEncoding==5.0
 BTrees==6.1
