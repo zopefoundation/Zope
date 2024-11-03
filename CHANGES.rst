@@ -14,6 +14,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11.1 (2024-11-03)
 -------------------
 
+- Include versions constraints for production and non-production dependencies
+  in ``constraints.txt``.
+  (`#1234 <https://github.com/zopefoundation/Zope/pull/1234>`_)
+
 - Update to newest compatible versions of dependencies.
 
 - Define ``request["PARENTS"]`` before request parameter processing
@@ -21,7 +25,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   ``Products.SiteErrorLog``) can determine the error context
   for exceptions raised during request parameter processing
   (see `#1235 <https://github.com/zopefoundation/Zope/issues/1235>`_).
-   
+
 
 5.11 (2024-10-11)
 -----------------
