@@ -25,7 +25,7 @@ Sphinx==7.1.2; python_version == '3.8'
 Sphinx==7.4.7; python_version == '3.9'
 Sphinx==8.0.2; python_version > '3.9'
 WSGIProxy2==0.5.1
-WebOb==1.8.8
+WebOb==1.8.9
 WebTest==3.0.1
 ZConfig==4.1
 ZODB==6.0
@@ -78,7 +78,8 @@ tempstorage==6.0
 tomli==2.0.2
 transaction==5.0
 urllib3==2.2.3
-waitress==3.0.0
+waitress==3.0.0; python_version == '3.8'
+waitress==3.0.1; python_version > '3.8'
 z3c.checkversions==2.1
 z3c.pt==4.4
 zExceptions==5.0
@@ -103,13 +104,13 @@ zope.deferredimport==5.0
 zope.deprecation==5.0
 zope.dottedname==6.0
 zope.event==5.0
-zope.exceptions==5.1
+zope.exceptions==5.2
 zope.filerepresentation==6.0
 zope.globalrequest==2.0
 zope.hookable==7.0
 zope.i18n==5.2
 zope.i18nmessageid==7.0
-zope.interface==7.1.0
+zope.interface==7.1.1
 zope.lifecycleevent==5.0
 zope.location==5.0
 zope.pagetemplate==5.1
