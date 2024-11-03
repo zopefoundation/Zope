@@ -14,7 +14,7 @@ PasteDeploy==3.1.0
 Persistence==5.1
 RestrictedPython==7.4
 WSGIProxy2==0.5.1
-WebOb==1.8.8
+WebOb==1.8.9
 WebTest==3.0.1
 ZConfig==4.1
 ZODB==6.0
@@ -30,7 +30,8 @@ roman==4.2
 six==1.16.0
 soupsieve==2.6
 transaction==5.0
-waitress==3.0.0
+waitress==3.0.0; python_version == '3.8'
+waitress==3.0.1; python_version > '3.8'
 z3c.pt==4.4
 zExceptions==5.0
 zc.lockfile==3.0.post1
@@ -52,13 +53,13 @@ zope.deferredimport==5.0
 zope.deprecation==5.0
 zope.dottedname==6.0
 zope.event==5.0
-zope.exceptions==5.1
+zope.exceptions==5.2
 zope.filerepresentation==6.0
 zope.globalrequest==2.0
 zope.hookable==7.0
 zope.i18n==5.2
 zope.i18nmessageid==7.0
-zope.interface==7.1.0
+zope.interface==7.1.1
 zope.lifecycleevent==5.0
 zope.location==5.0
 zope.pagetemplate==5.1
