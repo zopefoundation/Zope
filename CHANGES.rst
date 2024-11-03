@@ -10,13 +10,15 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11.2 (unreleased)
 -------------------
 
-
-5.11.1 (2024-11-03)
--------------------
+- OFS/cachable: fix *Cache this object using* label in ZMI.
 
 - Include versions constraints for production and non-production dependencies
   in ``constraints.txt``.
   (`#1234 <https://github.com/zopefoundation/Zope/pull/1234>`_)
+
+
+5.11.1 (2024-11-03)
+-------------------
 
 - Update to newest compatible versions of dependencies.
 
