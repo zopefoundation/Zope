@@ -901,7 +901,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         f = req.form.get('largefile')
         self.assertTrue(f.name)
-        self.assertEqual(4006, len(f.file.read()))
+        self.assertEqual(40006, len(f.file.read()))
+        self.assertTrue(f.file.fileno())
         f.file.close()
 
     def test_processInputs_with_file_upload_gets_iterator(self):
@@ -1640,7 +1641,7 @@ Content-Type: application/octet-stream
 test %s
 
 --12345--
-''' % (b'test' * 1000)
+''' % (b'test' * 10000)
 
 TEST_ISSUE_1095_DATA = b'''
 --12345
