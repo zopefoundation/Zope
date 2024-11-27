@@ -16,6 +16,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
   in ``constraints.txt``.
   (`#1234 <https://github.com/zopefoundation/Zope/pull/1234>`_)
 
+- Use modern Python import features for product enumeration
+  (`#1239 <https://github.com/zopefoundation/Zope/issues/1239>`_).
+
 
 5.11.1 (2024-11-03)
 -------------------

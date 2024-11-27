@@ -13,7 +13,7 @@
 """Application support
 """
 
-import os
+import pkgutil
 import sys
 from logging import getLogger
 from urllib.parse import urlparse
@@ -378,7 +378,7 @@ def install_products(app=None):
     folder_permissions = get_folder_permissions()
     meta_types = []
     done = {}
-    for priority, product_name, index, product_dir in get_products():
+    for priority, product_name, index, finder in get_products():
         # For each product, we will import it and try to call the
         # intialize() method in the product __init__ module. If
         # the method doesnt exist, we put the old-style information
@@ -386,7 +386,7 @@ def install_products(app=None):
         if product_name in done:
             continue
         done[product_name] = 1
-        install_product(app, product_dir, product_name, meta_types,
+        install_product(app, finder, product_name, meta_types,
                         folder_permissions)
 
     # Delayed install of packages-as-products
@@ -397,55 +397,34 @@ def install_products(app=None):
     InitializeClass(Folder.Folder)
 
 
-def _is_package(product_dir, product_name):
-    package_dir = os.path.join(product_dir, product_name)
-    if not os.path.isdir(package_dir):
-        return False
-
-    init_py = os.path.join(package_dir, '__init__.py')
-    if not os.path.exists(init_py) and \
-       not os.path.exists(init_py + 'c') and \
-       not os.path.exists(init_py + 'o'):
-        return False
-    return True
-
-
 def get_products():
     """ Return a list of tuples in the form:
-    [(priority, dir_name, index, base_dir), ...] for each Product directory
+    [(priority, product_name, index, finder), ...] for each Product directory
     found, sort before returning """
     products = []
-    for index, product_dir in enumerate(Products.__path__):
-        product_names = os.listdir(product_dir)
-        for product_name in product_names:
-            if _is_package(product_dir, product_name):
-                # i is used as sort ordering in case a conflict exists
-                # between Product names.  Products will be found as
-                # per the ordering of Products.__path__
-                products.append((0, product_name, index, product_dir))
+    for index, modinfo in enumerate(pkgutil.iter_modules(Products.__path__)):
+        if modinfo.ispkg:
+            products.append((0, modinfo.name, index, modinfo.module_finder))
     products.sort()
     return products
 
 
 def import_products():
     done = {}
-    for priority, product_name, index, product_dir in get_products():
+    for priority, product_name, index, finder in get_products():
         if product_name in done:
             LOG.warning(
                 'Duplicate Product name: '
-                'After loading Product %r from %r, '
-                'I skipped the one in %r.' % (
-                    product_name, done[product_name], product_dir))
+                'After loading Product %s from %s, '
+                'I skipped the one in %s.' % (
+                    product_name, done[product_name], finder))
             continue
-        done[product_name] = product_dir
-        import_product(product_dir, product_name)
+        done[product_name] = finder
+        import_product(finder, product_name)
     return list(done.keys())
 
 
-def import_product(product_dir, product_name, raise_exc=None):
-    if not _is_package(product_dir, product_name):
-        return
-
+def import_product(finder, product_name, raise_exc=None):
     global_dict = globals()
     product = __import__("Products.%s" % product_name,
                          global_dict, global_dict, ('__doc__', ))
@@ -465,11 +444,8 @@ def get_folder_permissions():
     return folder_permissions
 
 
-def install_product(app, product_dir, product_name, meta_types,
+def install_product(app, finder, product_name, meta_types,
                     folder_permissions, raise_exc=None):
-    if not _is_package(product_dir, product_name):
-        return
-
     __traceback_info__ = product_name
     global_dict = globals()
     product = __import__("Products.%s" % product_name,
