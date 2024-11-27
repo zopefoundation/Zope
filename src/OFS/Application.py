@@ -13,8 +13,8 @@
 """Application support
 """
 
-import pkgutil
 import os
+import pkgutil
 import sys
 from logging import getLogger
 from urllib.parse import urlparse
