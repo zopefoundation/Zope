@@ -19,6 +19,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Use modern Python import features for product enumeration
   (`#1239 <https://github.com/zopefoundation/Zope/issues/1239>`_).
 
+- Update to ``zope.interface = 7.2``.
 
 5.11.1 (2024-11-03)
 -------------------
