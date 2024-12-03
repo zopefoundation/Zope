@@ -110,7 +110,7 @@ zope.globalrequest==2.0
 zope.hookable==7.0
 zope.i18n==5.2
 zope.i18nmessageid==7.0
-zope.interface==7.1.1
+zope.interface==7.2
 zope.lifecycleevent==5.0
 zope.location==5.0
 zope.pagetemplate==5.1
