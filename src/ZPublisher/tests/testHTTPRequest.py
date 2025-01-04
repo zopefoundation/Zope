@@ -903,7 +903,8 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertTrue(f.name)
         self.assertEqual(40006, len(f.file.read()))
         self.assertTrue(f.file.fileno())
-        f.file.close()
+        req.clear()
+        self.assertTrue(f.file.closed)
 
     def test_processInputs_with_file_upload_gets_iterator(self):
         # checks fileupload object supports the iterator protocol
