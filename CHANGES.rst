@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11.2 (unreleased)
 -------------------
 
+- Fix a ``ResourceWarning`` emitted when uploading large files.
+  (`#1242 <https://github.com/zopefoundation/Zope/issues/1242>`_)
+
 - OFS/cachable: fix *Cache this object using* label in ZMI.
 
 - Include versions constraints for production and non-production dependencies

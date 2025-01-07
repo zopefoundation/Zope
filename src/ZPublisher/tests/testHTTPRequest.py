@@ -901,8 +901,10 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         f = req.form.get('largefile')
         self.assertTrue(f.name)
-        self.assertEqual(4006, len(f.file.read()))
-        f.file.close()
+        self.assertEqual(40006, len(f.file.read()))
+        self.assertTrue(f.file.fileno())
+        req.clear()
+        self.assertTrue(f.file.closed)
 
     def test_processInputs_with_file_upload_gets_iterator(self):
         # checks fileupload object supports the iterator protocol
@@ -1640,7 +1642,7 @@ Content-Type: application/octet-stream
 test %s
 
 --12345--
-''' % (b'test' * 1000)
+''' % (b'test' * 10000)
 
 TEST_ISSUE_1095_DATA = b'''
 --12345

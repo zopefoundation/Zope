@@ -192,6 +192,9 @@ class HTTPRequest(BaseRequest):
         self.stdin = None
         self._file = None
         self._fs = None
+        for f in self.form.values():
+            if isinstance(f, FileUpload):
+                f.close()
         self.form.clear()
         # we want to clear the lazy dict here because BaseRequests don't have
         # one.  Without this, there's the possibility of memory leaking
