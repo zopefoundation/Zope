@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from urllib.parse import parse_qsl
 from urllib.parse import unquote
 from urllib.parse import urlparse
+from xmlrpc.client import ResponseError
 
 from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
@@ -47,7 +48,6 @@ from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
-from xmlrpc.client import ResponseError
 
 from .cookie import getCookieValuePolicy
 
