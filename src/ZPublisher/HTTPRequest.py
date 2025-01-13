@@ -47,6 +47,7 @@ from ZPublisher.BaseRequest import quote
 from ZPublisher.Converters import get_converter
 from ZPublisher.interfaces import IXmlrpcChecker
 from ZPublisher.utils import basic_auth_decode
+from xmlrpc.client import ResponseError
 
 from .cookie import getCookieValuePolicy
 
@@ -872,7 +873,10 @@ class HTTPRequest(BaseRequest):
             if meth is not None:
                 raise BadRequest('method directive not supported for '
                                  'xmlrpc request')
-            meth, self.args = xmlrpc.parse_input(fs.value)
+            try:
+                meth, self.args = xmlrpc.parse_input(fs.value)
+            except ResponseError as e:
+                raise BadRequest(e)
             response = xmlrpc.response(response)
             other['RESPONSE'] = self.response = response
             self.maybe_webdav_client = 0
