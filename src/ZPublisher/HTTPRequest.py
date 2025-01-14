@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from urllib.parse import parse_qsl
 from urllib.parse import unquote
 from urllib.parse import urlparse
+from xmlrpc.client import ResponseError
 
 from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
@@ -872,7 +873,10 @@ class HTTPRequest(BaseRequest):
             if meth is not None:
                 raise BadRequest('method directive not supported for '
                                  'xmlrpc request')
-            meth, self.args = xmlrpc.parse_input(fs.value)
+            try:
+                meth, self.args = xmlrpc.parse_input(fs.value)
+            except ResponseError as e:
+                raise BadRequest(e)
             response = xmlrpc.response(response)
             other['RESPONSE'] = self.response = response
             self.maybe_webdav_client = 0
