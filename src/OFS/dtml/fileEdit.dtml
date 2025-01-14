@@ -38,28 +38,26 @@
 			</div>
 		</div>
 
-		<dtml-let ct=getContentType>
-			<dtml-if "(ct.startswith('text') or ct.endswith('javascript')) and this().get_size() < 65536">
-				<div class="form-group">
-					<dtml-try>
-						<textarea id="content" <dtml-if content_type>data-contenttype="&dtml-content_type;"</dtml-if>
-							class="form-control zmi-file zmi-code col-sm-12"
-							name="filedata:text" wrap="off" rows="20"><dtml-var __str__ html_quote></textarea>
-					<dtml-except UnicodeDecodeError>
-						<div class="alert alert-warning" role="alert">
-							The file could not be decoded with '<dtml-var "error_value.encoding">'.
-						</div>
-					</dtml-try>
-				</div>
-			<dtml-else>
-				<div class="form-group row">
-					<label for="size" class="form-label	col-sm-3 col-md-2">File Size</label>
-					<div class="form-text col-sm-9 col-md-10">
-						<dtml-var size thousands_commas> bytes
+		<dtml-if manage_is_editable_inline>
+			<div class="form-group">
+				<dtml-try>
+					<textarea id="content" <dtml-if content_type>data-contenttype="&dtml-content_type;"</dtml-if>
+						class="form-control zmi-file zmi-code col-sm-12"
+						name="filedata:text" wrap="off" rows="20"><dtml-var __str__ html_quote></textarea>
+				<dtml-except UnicodeDecodeError>
+					<div class="alert alert-warning" role="alert">
+						The file could not be decoded with '<dtml-var "error_value.encoding">'.
 					</div>
+				</dtml-try>
+			</div>
+		<dtml-else>
+			<div class="form-group row">
+				<label for="size" class="form-label	col-sm-3 col-md-2">File Size</label>
+				<div class="form-text col-sm-9 col-md-10">
+					<dtml-var size thousands_commas> bytes
 				</div>
-			</dtml-if>
-		</dtml-let>
+			</div>
+		</dtml-if>
 
 		<div class="zmi-controls">
 			<dtml-if wl_isLocked>

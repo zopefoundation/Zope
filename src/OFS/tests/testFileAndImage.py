@@ -517,3 +517,16 @@ class FileEditTests(Testing.ZopeTestCase.FunctionalTestCase):
         self.assertIn('Saved changes', self.browser.contents)
         text_2 = self.browser.getControl(name='filedata:text').value
         self.assertEqual(text_2, 'hällo')
+
+    def test_File__manage_history(self):
+        self.app.file.update_data('beföre'.encode())
+        transaction.commit()
+        self.app.file.update_data('àftér'.encode())
+        transaction.commit()
+        self.browser.open('http://localhost/file/manage_main')
+        self.browser.getLink('History').click()
+        keys = self.browser.getControl(name='keys:list')
+        keys.value = [keys.options[0], keys.options[1]]
+        self.browser.getControl('Compare').click()
+        self.assertIn('beföre', self.browser.contents)
+        self.assertIn('àftér', self.browser.contents)

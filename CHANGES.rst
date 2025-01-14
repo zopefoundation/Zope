@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.11.2 (unreleased)
 -------------------
 
+- Enable ZMI History tab for ``OFS.Image.File``.
+  (`#396 <https://github.com/zopefoundation/Zope/pull/396>`_)
+
 - Fix error messages from spam/pen test requests.
 
 - Fix a ``ResourceWarning`` emitted when uploading large files.
