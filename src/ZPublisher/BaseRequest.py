@@ -34,6 +34,7 @@ from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
+from zope.publisher.interfaces import ViewNotCallableError
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
