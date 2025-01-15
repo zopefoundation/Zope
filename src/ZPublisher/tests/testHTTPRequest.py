@@ -844,6 +844,20 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         with self.assertRaises(BadRequest):
             req.processInputs()
 
+    def test_processInputs_xmlrpc_ResponseError(self):
+        # xmlrpc ResponseErrors should be caught and converted to
+        # zExceptions.BadRequest to prevent error messages from spam or pen
+        # test requests.
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<unknown><foo>test</foo></unknown>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+        with self.assertRaises(BadRequest):
+            req.processInputs()
+
     def test_processInputs_SOAP(self):
         # ZPublisher does not really have SOAP support
         # all it does is put the body into ``SOAPXML``
@@ -967,6 +981,22 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         f = req.form.get('smallfile')
         self.assertEqual(f.filename, "")
         self.assertEqual(list(f), [])
+
+    def test_processInputs_no_multipart_boundaries(self):
+        s = BytesIO(TEST_NO_BOUNDARIES)
+        environ = self._makePostEnviron(body=TEST_NO_BOUNDARIES)
+        req = self._makeOne(stdin=s, environ=environ)
+        with self.assertRaises(BadRequest):
+            req.processInputs()
+
+    def test_processInputs_invalid_field_name(self):
+        # Request fields with names that cannot be decoded should raise
+        # a BadRequest
+        s = BytesIO(TEST_FIELD_INVALID_NAME)
+        environ = self._makePostEnviron(body=TEST_FIELD_INVALID_NAME)
+        req = self._makeOne(stdin=s, environ=environ)
+        with self.assertRaises(BadRequest):
+            req.processInputs()
 
     def test__authUserPW_simple(self):
         user_id = 'user'
@@ -1668,3 +1698,19 @@ Content-Type: text/plain; charset=latin-1
 %s
 --12345--
 ''' % 'äöü'.encode("latin-1")
+
+TEST_NO_BOUNDARIES = b'''
+Content-Disposition: form-data; name="smallfile"; filename="smallfile"
+Content-Type: application/octet-stream
+
+test
+'''
+
+TEST_FIELD_INVALID_NAME = b'''
+--12345
+Content-Disposition: form-data; name="%sxxx"
+Content-Type: text/plain; charset=latin-1
+
+test
+--12345--
+''' % chr(173).encode("latin-1")

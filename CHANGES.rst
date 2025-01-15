@@ -13,7 +13,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Enable ZMI History tab for ``OFS.Image.File``.
   (`#396 <https://github.com/zopefoundation/Zope/pull/396>`_)
 
-- Fix requests from spam/pentests to return BadRequest/400 errors
+- Deny some spam/pentests requests with BadRequest/400 or NotFound/404 errors.
 
 - Fix a ``ResourceWarning`` emitted when uploading large files.
   (`#1242 <https://github.com/zopefoundation/Zope/issues/1242>`_)
