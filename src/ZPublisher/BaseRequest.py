@@ -472,9 +472,8 @@ class BaseRequest:
                     try:
                         object, default_path = adapter.browserDefault(self)
                     except NotImplementedError:
-                        return response.badRequestError(
-                            "View is not callable. Traverse more."
-                        )
+                        # Often from ViewNotCallableError
+                        return response.notFoundError(URL)
                     if default_path:
                         request._hacked_path = 1
                         if len(default_path) > 1:
