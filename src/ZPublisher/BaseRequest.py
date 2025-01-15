@@ -25,7 +25,6 @@ from Acquisition.interfaces import IAcquirer
 from ExtensionClass import Base
 from zExceptions import Forbidden
 from zExceptions import NotFound
-from zope.publisher.interfaces import ViewNotCallableError
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.interface import Interface
@@ -35,6 +34,7 @@ from zope.publisher.defaultview import queryDefaultViewName
 from zope.publisher.interfaces import EndRequestEvent
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound as ztkNotFound
+from zope.publisher.interfaces import ViewNotCallableError
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.traversing.namespace import namespaceLookup
 from zope.traversing.namespace import nsParse
@@ -473,7 +473,8 @@ class BaseRequest:
                     try:
                         object, default_path = adapter.browserDefault(self)
                     except ViewNotCallableError:
-                        return response.badRequestError("View is not callable so likely is missing additional path elements")
+                        return response.badRequestError(
+                            "View is not callable so likely is missing additional path elements")
                     if default_path:
                         request._hacked_path = 1
                         if len(default_path) > 1:
