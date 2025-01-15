@@ -33,6 +33,8 @@ from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
 from OFS.Cache import Cacheable
+from OFS.History import Historical
+from OFS.History import html_diff
 from OFS.interfaces import IWriteLock
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
@@ -167,6 +169,7 @@ class File(
     PropertyManager,
     RoleManager,
     Item_w__name__,
+    Historical,
     Cacheable
 ):
     """A File object is a content object for arbitrary files."""
@@ -201,7 +204,9 @@ class File(
                       + PropertyManager.manage_options
                       + RoleManager.manage_options
                       + Item_w__name__.manage_options
-                      + Cacheable.manage_options)
+                      + Cacheable.manage_options
+                      + Historical.manage_options
+                      )
 
     _properties = (
         {'id': 'title', 'type': 'string'},
@@ -656,6 +661,30 @@ class File(
         if REQUEST:
             return self.manage_main(
                 self, REQUEST, manage_tabs_message=msg)
+
+    @security.protected(change_images_and_files)
+    def manage_is_editable_inline(self):
+        return (
+            self.content_type
+            and (
+                self.content_type.startswith('text')
+                or self.content_type.endswith('javascript')
+                or self.content_type == 'application/json'
+            )
+            and self.get_size() < 2**17
+        )
+
+    def manage_historyCompare(self, rev1, rev2, REQUEST,
+                              historyComparisonResults=''):
+        if self.manage_is_editable_inline():
+            return File.inheritedAttribute('manage_historyCompare')(
+                self, rev1, rev2, REQUEST,
+                historyComparisonResults=html_diff(
+                    str(rev1), str(rev2)))
+        return File.inheritedAttribute('manage_historyCompare')(
+            self, rev1, rev2, REQUEST,
+            historyComparisonResults=historyComparisonResults
+        )
 
     def _get_content_type(self, file, body, id, content_type=None):
         headers = getattr(file, 'headers', None)
