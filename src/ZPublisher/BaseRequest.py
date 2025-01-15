@@ -469,8 +469,11 @@ class BaseRequest:
                             # Zope2 doesn't set up its own adapters in a lot
                             # of cases so we will just use a default adapter.
                             adapter = DefaultPublishTraverse(object, self)
-
-                    object, default_path = adapter.browserDefault(self)
+                    try:
+                        object, default_path = adapter.browserDefault(self)
+                    except NotImplementedError:
+                        # Often from ViewNotCallableError
+                        return response.notFoundError(URL)
                     if default_path:
                         request._hacked_path = 1
                         if len(default_path) > 1:
