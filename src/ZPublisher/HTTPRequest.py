@@ -29,6 +29,7 @@ from xmlrpc.client import ResponseError
 from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
 from multipart import Headers
+from multipart import MultipartError
 from multipart import MultipartParser
 from multipart import parse_options_header
 from zExceptions import BadRequest
@@ -499,7 +500,10 @@ class HTTPRequest(BaseRequest):
 
         meth = None
 
-        self._fs = fs = ZopeFieldStorage(fp, environ)
+        try:
+            self._fs = fs = ZopeFieldStorage(fp, environ)
+        except MultipartError as exc:
+            raise BadRequest(exc)
         self._file = fs.file
 
         if 'HTTP_SOAPACTION' in environ:
@@ -545,8 +549,15 @@ class HTTPRequest(BaseRequest):
                 if key is None:
                     continue
                 character_encoding = ""
-                key = item.name.encode("latin-1").decode(
-                    item.name_charset or self.charset)
+
+                try:
+                    key = item.name.encode("latin-1").decode(
+                        item.name_charset or self.charset)
+                except UnicodeDecodeError as exc:
+                    # Incoming request contains fields with names that cannot
+                    # be represented in the server character set. Potentially
+                    # malicious, so raise BadRequest.
+                    raise BadRequest(exc)
 
                 if hasattr(item, 'file') and \
                    hasattr(item, 'filename') and \
