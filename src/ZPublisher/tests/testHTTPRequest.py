@@ -915,7 +915,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         f = req.form.get('largefile')
         self.assertTrue(f.name)
-        self.assertEqual(40006, len(f.file.read()))
+        self.assertEqual(40007, len(f.file.read()))
         self.assertTrue(f.file.fileno())
         req.clear()
         self.assertTrue(f.file.closed)
@@ -929,9 +929,9 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         f = req.form.get('smallfile')
-        self.assertEqual(list(f), [b'test\n'])
+        self.assertEqual(list(f), [b'test\r\n'])
         f.seek(0)
-        self.assertEqual(next(f), b'test\n')
+        self.assertEqual(next(f), b'test\r\n')
 
     def test_processInputs_BODY(self):
         s = BytesIO(b"body")
@@ -957,7 +957,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         f = req.form.get('smallfile')
-        self.assertEqual(list(f), [b'test\n'])
+        self.assertEqual(list(f), [b'test\r\n'])
         self.assertEqual(req["BODY"], TEST_FILE_DATA)
         self.assertEqual(req["BODYFILE"].read(), TEST_FILE_DATA)
 
@@ -967,7 +967,7 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(stdin=s, environ=environ)
         req.processInputs()
         f = req.form.get('smallfile')
-        self.assertEqual(list(f), [b'test\n'])
+        self.assertEqual(list(f), [b'test\r\n'])
         # we cannot access ``BODY`` in this case
         # as the underlying file has been read
         with self.assertRaises(KeyError):
@@ -1654,15 +1654,16 @@ Content-Type: application/octet-stream
 test
 
 --12345--
-'''
+'''.replace(b'\n', b'\r\n')
 
 TEST_FILE_DATA_UNSPECIFIED = b'''
 --12345
 Content-Disposition: form-data; name="smallfile"; filename=""
 Content-Type: application/octet-stream
 
+
 --12345--
-'''
+'''.replace(b'\n', b'\r\n')
 
 TEST_LARGEFILE_DATA = b'''
 --12345
@@ -1672,7 +1673,7 @@ Content-Type: application/octet-stream
 test %s
 
 --12345--
-''' % (b'test' * 10000)
+'''.replace(b'\n', b'\r\n') % (b'test' * 10000)
 
 TEST_ISSUE_1095_DATA = b'''
 --12345
@@ -1688,7 +1689,7 @@ Content-Type: text/html
 <body>abc</body>
 
 --12345--
-'''
+'''.replace(b'\n', b'\r\n')
 
 TEST_FIELD_CHARSET_DATA = b'''
 --12345
@@ -1697,14 +1698,14 @@ Content-Type: text/plain; charset=latin-1
 
 %s
 --12345--
-''' % 'äöü'.encode("latin-1")
+'''.replace(b'\n', b'\r\n') % 'äöü'.encode("latin-1")
 
 TEST_NO_BOUNDARIES = b'''
 Content-Disposition: form-data; name="smallfile"; filename="smallfile"
 Content-Type: application/octet-stream
 
 test
-'''
+'''.replace(b'\n', b'\r\n')
 
 TEST_FIELD_INVALID_NAME = b'''
 --12345
@@ -1713,4 +1714,4 @@ Content-Type: text/plain; charset=latin-1
 
 test
 --12345--
-''' % chr(173).encode("latin-1")
+'''.replace(b'\n', b'\r\n') % chr(173).encode("latin-1")

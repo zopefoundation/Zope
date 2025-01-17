@@ -7,6 +7,14 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
+5.12.1 (unreleased)
+-------------------
+
+- Update to newest compatible versions of dependencies.
+
+- Fix Request test data for stricter ``multipart`` parser.
+
+
 5.12 (2024-01-17)
 -----------------
 
