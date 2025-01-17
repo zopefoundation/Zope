@@ -7,8 +7,8 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.11.2 (unreleased)
--------------------
+5.12 (2024-01-17)
+-----------------
 
 - Enable ZMI History tab for ``OFS.Image.File``.
   (`#396 <https://github.com/zopefoundation/Zope/pull/396>`_)
