@@ -126,7 +126,7 @@ Steps for creating a new Zope release
     easily assigned to the correct file.
 
 - Run the tests: ``bin/tox -pall``
-- Build the documentation: ``bin/make-docs``
+- Build the documentation: ``bin/tox -edocs``
 - Fix problems.
 - Commit and push the changes.
 
