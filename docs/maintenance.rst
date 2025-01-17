@@ -151,7 +151,7 @@ Use a reasonable line length (<80).
 Building the documentation
 ++++++++++++++++++++++++++
 After you have bootstrapped and run the buildout, you can build the
-documentation using the script ``bin/make-docs`` to create the documentation
+documentation using the script ``bin/tox -edocs`` to create the documentation
 HTML output. The script will tell you where it saves the output.
 
 The official documentation site on `Read the Docs`
