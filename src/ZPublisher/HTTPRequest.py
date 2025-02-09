@@ -55,6 +55,7 @@ from .cookie import getCookieValuePolicy
 
 # DOS attack protection -- limiting the amount of memory for forms
 # probably should become configurable
+FORM_PART_LIMIT = 2 ** 10     # limit for individual form parts
 FORM_MEMORY_LIMIT = 2 ** 20   # memory limit for forms
 FORM_DISK_LIMIT = 2 ** 30     # disk limit for forms
 FORM_MEMFILE_LIMIT = 2 ** 12  # limit for `BytesIO` -> temporary file switch
@@ -1483,6 +1484,7 @@ class ZopeFieldStorage(ValueAccessor):
             if content_type == "multipart/form-data":
                 parts = MultipartParser(
                     fp, options["boundary"],
+                    part_limit = FORM_PART_LIMIT,
                     mem_limit=FORM_MEMORY_LIMIT,
                     disk_limit=FORM_DISK_LIMIT,
                     memfile_limit=FORM_MEMFILE_LIMIT,
