@@ -1484,7 +1484,7 @@ class ZopeFieldStorage(ValueAccessor):
             if content_type == "multipart/form-data":
                 parts = MultipartParser(
                     fp, options["boundary"],
-                    part_limit = FORM_PART_LIMIT,
+                    part_limit=FORM_PART_LIMIT,
                     mem_limit=FORM_MEMORY_LIMIT,
                     disk_limit=FORM_DISK_LIMIT,
                     memfile_limit=FORM_MEMFILE_LIMIT,
