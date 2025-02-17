@@ -18,7 +18,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 - Fix Request test data for stricter ``multipart`` parser.
 
 
-5.12 (2024-01-17)
+5.12 (2025-01-17)
 -----------------
 
 - Enable ZMI History tab for ``OFS.Image.File``.
