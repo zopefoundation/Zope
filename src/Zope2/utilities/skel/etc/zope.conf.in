@@ -284,6 +284,6 @@ instancehome $INSTANCE
 #    The maximum number of form parameters / fields in a request.
 #    Larger forms are blocked by the underlying field parser.
 # Example:
-#    form-part-limit 128
+#    form-part-limit 1024
 
 </dos_protection>

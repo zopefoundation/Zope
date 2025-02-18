@@ -11,7 +11,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 -------------------
 
 - Add configuration switch for the maximum allowed number of form fields.
-  ``multipart`` version 1.2.1 introduced a default value of 128.
+  ``multipart`` version 1.2.1 introduced a default value of 128, Zope now
+  sets it to 1024.
 
 - Update to newest compatible versions of dependencies.
 
