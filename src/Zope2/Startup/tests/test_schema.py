@@ -195,7 +195,7 @@ class WSGIStartupTestCase(unittest.TestCase):
         from ZPublisher import HTTPRequest
 
         params = ["FORM_%s_LIMIT" % name
-                  for name in ("MEMORY", "DISK", "MEMFILE")]
+                  for name in ("MEMORY", "DISK", "MEMFILE", "PART")]
         defaults = {name: getattr(HTTPRequest, name) for name in params}
 
         try:
@@ -225,11 +225,15 @@ class WSGIStartupTestCase(unittest.TestCase):
                   form-memory-limit 1KB
                   form-disk-limit 1KB
                   form-memfile-limit 1KB
+                  form-part-limit 2048
                 </dos_protection>
                 """)
             handleWSGIConfig(None, handler)
             for name in params:
-                self.assertEqual(getattr(HTTPRequest, name), 1024)
+                if name == 'FORM_PART_LIMIT':
+                    self.assertEqual(getattr(HTTPRequest, name), 2048)
+                else:
+                    self.assertEqual(getattr(HTTPRequest, name), 1024)
         finally:
             for name in params:
                 setattr(HTTPRequest, name, defaults[name])
