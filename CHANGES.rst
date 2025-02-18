@@ -10,12 +10,16 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.12.1 (unreleased)
 -------------------
 
+- Add configuration switch for the maximum allowed number of form fields.
+  ``multipart`` version 1.2.1 introduced a default value of 128, Zope now
+  sets it to 1024.
+
 - Update to newest compatible versions of dependencies.
 
 - Fix Request test data for stricter ``multipart`` parser.
 
 
-5.12 (2024-01-17)
+5.12 (2025-01-17)
 -----------------
 
 - Enable ZMI History tab for ``OFS.Image.File``.

@@ -279,4 +279,11 @@ instancehome $INSTANCE
 # Example:
 #    form-memfile-limit 4KB
 
+# Parameter: form-part-limit
+# Description: 
+#    The maximum number of form parameters / fields in a request.
+#    Larger forms are blocked by the underlying field parser.
+# Example:
+#    form-part-limit 1024
+
 </dos_protection>

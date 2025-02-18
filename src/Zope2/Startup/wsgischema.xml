@@ -143,6 +143,13 @@
        switches from memory to disk.
       </description>
     </key>
+
+    <key name="form-part-limit" datatype="integer" default="1024">
+      <description>
+        Limits the maximum number of parameters or form fields. Larger
+        forms are blocked by the underlying field parser.
+      </description>
+    </key>
   </sectiontype>
 
 
