@@ -1,6 +1,7 @@
 AccessControl==7.2
 Acquisition==6.1
-AuthEncoding==5.0
+AuthEncoding==5.0; python_version == '3.8'
+AuthEncoding==6.0; python_version > '3.8'
 BTrees==6.1
 Babel==2.16.0
 Chameleon==4.4.4; python_version == '3.8'
