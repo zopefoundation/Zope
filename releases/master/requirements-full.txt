@@ -1,7 +1,8 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
 AccessControl==7.2
 Acquisition==6.1
-AuthEncoding==5.0
+AuthEncoding==5.0; python_version == '3.8'
+AuthEncoding==6.0; python_version > '3.8'
 BTrees==6.1
 Chameleon==4.4.4; python_version == '3.8'
 Chameleon==4.4.4; python_version > '3.8'
@@ -12,7 +13,8 @@ MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.1
-RestrictedPython==7.4
+RestrictedPython==7.4; python_version == '3.8'
+RestrictedPython==8.0; python_version > '3.8'
 WSGIProxy2==0.5.1
 WebOb==1.8.9
 WebTest==3.0.1; python_version == '3.8'
