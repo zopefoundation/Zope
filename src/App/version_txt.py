@@ -13,8 +13,7 @@
 import collections
 import re
 import sys
-
-import pkg_resources
+from importlib.metadata import distribution
 
 
 _version_string = None
@@ -60,7 +59,7 @@ def _prep_version_data():
     if _zope_version is None:
         v = sys.version_info
         pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
-        dist = pkg_resources.get_distribution('Zope')
+        dist = distribution("Zope")
         _version_string = f"{dist.version}, {pyver}"
         _zope_version = _parse_version_data(dist.version)
 
