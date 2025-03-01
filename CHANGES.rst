@@ -18,6 +18,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Fix Request test data for stricter ``multipart`` parser.
 
+- Replace ``pkg_resources`` usage with ``importlib.metadata``.
+
 
 5.12 (2025-01-17)
 -----------------
