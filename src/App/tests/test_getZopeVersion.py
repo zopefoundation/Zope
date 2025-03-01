@@ -14,7 +14,6 @@
 """Tests for the recreated `getZopeVersion`."""
 
 import unittest
-
 from importlib.metadata import distribution
 
 from App.version_txt import getZopeVersion

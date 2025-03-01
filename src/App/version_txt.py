@@ -13,7 +13,6 @@
 import collections
 import re
 import sys
-
 from importlib.metadata import distribution
 
 
