@@ -15,7 +15,7 @@
 
 import unittest
 
-from pkg_resources import get_distribution
+from importlib.metadata import distribution
 
 from App.version_txt import getZopeVersion
 
@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
     def test_major(self):
         self.assertEqual(
             getZopeVersion().major,
-            int(get_distribution("Zope").version.split(".")[0]))
+            int(distribution("Zope").version.split(".")[0]))
 
     def test_types(self):
         zv = getZopeVersion()
