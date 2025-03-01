@@ -83,7 +83,6 @@ setup(
         'RestrictedPython',
         'ZConfig >= 2.9.2',
         'ZODB',
-        'importlib-metadata',
         'multipart',
         'setuptools >= 36.2',
         'transaction >= 2.4',
