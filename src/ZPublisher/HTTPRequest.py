@@ -885,12 +885,12 @@ class HTTPRequest(BaseRequest):
            and 'text/xml' in fs.headers.get('content-type', '') \
            and use_builtin_xmlrpc(self):
             # Ye haaa, XML-RPC!
+            if not CONFIG.enable_xmlrpc:
+                raise BadRequest('Unsupported request type')
+
             if meth is not None:
                 raise BadRequest('method directive not supported for '
                                  'xmlrpc request')
-
-            if not CONFIG.enable_xmlrpc:
-                raise BadRequest('Unsupported request type')
 
             try:
                 meth, self.args = xmlrpc.parse_input(fs.value)
