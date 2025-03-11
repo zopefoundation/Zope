@@ -28,6 +28,7 @@ from xmlrpc.client import ResponseError
 
 from AccessControl.tainted import should_be_tainted as base_should_be_tainted
 from AccessControl.tainted import taint_string
+from App.config import getConfiguration
 from multipart import Headers
 from multipart import MultipartError
 from multipart import MultipartParser
@@ -108,6 +109,8 @@ _marker = []
 # if any trusted-proxies are defined in the configuration file.
 
 trusted_proxies = []
+
+CONFIG = getConfiguration()
 
 
 class NestedLoopExit(Exception):
@@ -885,6 +888,10 @@ class HTTPRequest(BaseRequest):
             if meth is not None:
                 raise BadRequest('method directive not supported for '
                                  'xmlrpc request')
+
+            if not CONFIG.enable_xmlrpc:
+                raise BadRequest('Unsupported request type')
+
             try:
                 meth, self.args = xmlrpc.parse_input(fs.value)
             except ResponseError as e:

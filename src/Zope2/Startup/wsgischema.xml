@@ -458,6 +458,22 @@
    <metadefault>off</metadefault>
   </key>
 
+  <key name="enable-xmlrpc" datatype="boolean" default="on">
+    <description>
+     Turn Zope's built-in XML-RPC support on or off.
+
+     Zope has built-in support for XML-RPC requests. It will attempt to use
+     XML-RPC for POST-requests with Content-Type header 'text/xml'. By
+     default the XML-RPC request support is enabled.
+
+     Due to the limited use of XML-RPC nowadays and its potential for abuse
+     by malicious actors you can set this directive to 'off' to turn off
+     support for XML-RPC. Incoming XML-RPC requests will be refused with
+     a BadRequest (HTTP status 400) response.
+    </description>
+    <metadefault>on</metadefault>
+  </key>
+
   <section type="dos_protection" handler="dos_protection"
            name="*" attribute="dos_protection" />
 

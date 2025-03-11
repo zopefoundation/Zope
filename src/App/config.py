@@ -63,6 +63,7 @@ class DefaultConfiguration:
         self.dbtab = None
         self.debug_mode = True
         self.locale = None
+        self.enable_xmlrpc = True
 
         # VerboseSecurity
         self.skip_ownership_checking = False
