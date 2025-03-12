@@ -191,6 +191,20 @@ class WSGIStartupTestCase(unittest.TestCase):
         finally:
             webdav.enable_ms_public_header = default_setting
 
+    def test_enable_xmlrpc(self):
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertTrue(conf.enable_xmlrpc)
+
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            enable-xmlrpc off
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertFalse(conf.enable_xmlrpc)
+
     def test_dos_protection(self):
         from ZPublisher import HTTPRequest
 

@@ -7,8 +7,10 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.12.1 (unreleased)
--------------------
+5.13 (unreleased)
+-----------------
+
+- Add configuration switch to turn off the built-in XML-RPC support.
 
 - Add configuration switch for the maximum allowed number of form fields.
   ``multipart`` version 1.2.1 introduced a default value of 128, Zope now
