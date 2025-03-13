@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.13 (unreleased)
 -----------------
 
+- Drop support for Python 3.8.
+
 - Add configuration switch to turn off the built-in XML-RPC support.
 
 - Add configuration switch for the maximum allowed number of form fields.
