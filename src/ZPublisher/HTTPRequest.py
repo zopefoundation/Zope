@@ -110,8 +110,6 @@ _marker = []
 
 trusted_proxies = []
 
-CONFIG = getConfiguration()
-
 
 class NestedLoopExit(Exception):
     pass
@@ -885,7 +883,7 @@ class HTTPRequest(BaseRequest):
            and 'text/xml' in fs.headers.get('content-type', '') \
            and use_builtin_xmlrpc(self):
             # Ye haaa, XML-RPC!
-            if not CONFIG.enable_xmlrpc:
+            if not getConfiguration().enable_xmlrpc:
                 raise BadRequest('Unsupported request type')
 
             if meth is not None:
