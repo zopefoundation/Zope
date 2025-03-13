@@ -138,6 +138,7 @@ zope.tal==5.0.1
 zope.tales==6.0
 zope.testbrowser==7.0
 zope.testing==5.0.1
-zope.testrunner==7.2
+zope.testrunner==6.6.1; python_version == '3.8'
+zope.testrunner==7.2; python_version > '3.8'
 zope.traversing==5.0
 zope.viewlet==5.0
