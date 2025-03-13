@@ -127,7 +127,7 @@ zope.processlifetime==3.0
 zope.proxy==6.1
 zope.ptresource==5.0
 zope.publisher==7.1; python_version == '3.8'
-zope.publisher==7.2; python_version > '3.8'
+zope.publisher==7.3; python_version > '3.8'
 zope.schema==7.0.1
 zope.security==7.3
 zope.sequencesort==5.0
@@ -138,6 +138,6 @@ zope.tal==5.0.1
 zope.tales==6.0
 zope.testbrowser==7.0
 zope.testing==5.0.1
-zope.testrunner==6.6.1
+zope.testrunner==7.2
 zope.traversing==5.0
 zope.viewlet==5.0
