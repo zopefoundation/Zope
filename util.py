@@ -1,9 +1,7 @@
 import os
 from configparser import NoSectionError
 from configparser import RawConfigParser
-from typing import List
 from typing import Optional
-from typing import Tuple
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -31,7 +29,7 @@ def generate(
     requirements = []
 
     # Try to include sections for all currently supported Python versions
-    for py_version in ('3.8', '3.9', '3.10', '3.11', '3.12', '3.13'):
+    for py_version in ('3.9', '3.10', '3.11', '3.12', '3.13'):
         short_version = py_version.replace('.', '')
         try:
             zope_requirement = _generate(
@@ -52,9 +50,9 @@ def generate(
 
 
 def _generate(
-    versions: List[Tuple[str, str]],
+    versions: list[tuple[str, str]],
     python_version: Optional[str],
-    requirements: List[str],
+    requirements: list[str],
     zope_requirement: str
 ) -> str:
     """Generate requirements or constraints file for a specific Python version.
