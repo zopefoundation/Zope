@@ -309,8 +309,8 @@ class MappedExpr:
             "(c2z_context(econtext, __zt_tmp))",
             target=target,
             compile_zt_expr=_compile_zt_expr_node,
-            type=ast.Str(self.type),
-            expression=ast.Str(self.expression),
+            type=ast.Constant(self.type),
+            expression=ast.Constant(self.expression),
             c2z_context=_c_context_2_z_context_node,
             attrs=ast.Name("attrs", ast.Load()))
 
