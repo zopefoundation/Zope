@@ -30,7 +30,7 @@ six==1.17.0
 soupsieve==2.6
 transaction==5.0
 waitress==3.0.2
-z3c.pt==4.4
+z3c.pt==5.0
 zExceptions==5.0
 zc.lockfile==3.0.post1
 zc.recipe.egg==2.0.7
