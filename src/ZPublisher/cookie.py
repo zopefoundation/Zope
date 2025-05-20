@@ -94,7 +94,7 @@ def getCookieParamPolicy():
 
 
 def getCookieValuePolicy():
-    # we look this utility up only in the global component registry
+    # we only look up this utility in the global component registry
     # as at the time of cookie parsing (when ``load`` is used),
     # it is the only component registry available
     return getGlobalSiteManager().queryUtility(
@@ -116,7 +116,7 @@ class CookieParameterRegistry:
         """register cookie parameter *name* with *converter* and *aliases*.
 
         *converter* is a function which will be applied to
-        parameter values and which is expected to either
+        parameter values and is expected to either
         raise an exception or convert the value into
         either ``None``, ``True``
         or an ASCII string without control characters and ``;``.
@@ -125,7 +125,7 @@ class CookieParameterRegistry:
         otherwise, the return value is used as value representation.
 
         Some aliases are automatically derived from *name*:
-        convertion to lower, ``-`` to ``_`` conversion.
+        conversion to lower, ``-`` to ``_`` conversion.
         Further aliases can be defined via *aliases*.
 
         It is not an error to override existing registrations.
@@ -263,7 +263,7 @@ path_safe = compile("["
 def path_converter(value):
     """convert *value* to a cookie path.
 
-    The convertion is based on ``absolute_url_path``.
+    The conversion is based on ``absolute_url_path``.
     If *value* lacks this method, it is assumed to be a string.
     If the string contains ``%``, it is used as is; otherwise,
     it may be quoted by Python's ``urllib.parse.quote``.
@@ -301,7 +301,7 @@ registerCookieParameter("HttpOnly", bool_converter, ("http_only",))
 registerCookieParameter("Secure", bool_converter)
 
 
-# selection paramters
+# selection parameters
 class SelectionConverter:
     def __init__(self, *valid):
         self.valid = valid
