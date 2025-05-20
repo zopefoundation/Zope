@@ -197,7 +197,8 @@ def rfc1123_converter(value):
     if isinstance(value, str):
         return value
     if isinstance(value, (int, float)):
-        value = datetime.datetime.utcfromtimestamp(value)
+        value = datetime.datetime.fromtimestamp(
+            value, datetime.timezone.utc)
     elif isinstance(value, DateTime):
         value = value.toZone("GMT").asdatetime()
     if not isinstance(value, datetime.datetime):
