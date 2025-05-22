@@ -198,7 +198,7 @@ def expr_match(ob, ed, c=InstanceDict, r=0):
         r = e.eval(md)
     finally:
         pop()
-        return r
+    return r
 
 
 def mtime_match(ob, t, q, fn=hasattr):
