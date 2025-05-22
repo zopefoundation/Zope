@@ -515,107 +515,58 @@ Unlike normal user accounts that are defined through the Zope
 Management Interface, the emergency user account is defined
 through a file in the filesystem. You can change the emergency
 user account by editing or generating the file named 'access'
-in the Zope home directory (the main Zope directory). Zope
-comes with a command line utility in the Zope home directory
-named 'zpasswd.py' to manage the emergency user account.  On
-UNIX, run 'zpasswd.py' by passing it the 'access' file path as
-its only argument::
+in the Zope home directory (the main Zope directory), 
+corresponding to the ``INSTANCEHOME`` variable in the Zope
+configuration file ``zope.conf``. Simply open the ``access``
+file in a text editor of your choice and enter a user name and
+password, separated by a colon (``:``) character. Save the file.
 
-  $ cd (... where your ZOPE_HOME is... )
-  $ python zpasswd.py access
-
-  Username: superuser
-  Password:
-  Verify password:
-
-  Please choose a format from:
-
-  SHA - SHA-1 hashed password
-  CRYPT - UNIX-style crypt password
-  CLEARTEXT - no protection.
-
-  Encoding: SHA
-  Domain restrictions:         
-
-Due to pathing differences, Windows users usually need to
-enter this into a command prompt to invoke zpasswd::
-
-  > cd (... where your ZOPE_HOME is ...)
-  > cd bin
-  > python ..\zpasswd.py ..\access
-
-The 'zpasswd.py' script steps you through the process of
-creating an emergency user account. Note that when you type in
-your password it is not echoed to the screen. You can also run
-'zpasswd.py' with no arguments to get a list of command line
-options.  When setting up or changing the emergency user's
+When setting up or changing the emergency user's
 details, you need to restart the Zope process for your changes
 to come into effect.
+
+.. warning::
+
+    You should only use the ``access`` file and emergency user
+    credentials to log in once and create a Manager-type user in
+    the root user folder, then remove the ``access`` file and
+    restart Zope. Leaving the file around is a security risk.
 
 Zope Initial Manager
 %%%%%%%%%%%%%%%%%%%%
 
 The initial manager account is created by the Zope installer
 so you can log into Zope the first time. When you first
-install Zope you should see a message like this::
+install Zope using the built-in ``mkwsgiinstance`` script you
+can provide a login and password to the script, otherwise it will ask you::
 
-  creating default inituser file
-  Note:
-          The initial user name and password are 'admin'
-          and 'IVX3kAwU'.
+    $ bin/mkwsgiinstance -d instance
+    Please choose a username and password for the initial user.
+    These will be the credentials you use to initially manage
+    your new Zope instance.
+    
+    Username: admin
+    Password:
+    Verify password:
 
-          You can change the name and password through the web
-          interface or using the 'zpasswd.py' script.
+In situations where you are replacing your database and there
+is either no known user account or no user account at all in
+the Zope root user folder you can use the built-in ``addzopeuser``
+script to create manager-level users::
 
-This lets you know the initial manager's name and
-password. You can use this information to log in to Zope for
-the first time as a manager. 
-
-Initial users are defined in a similar way to the emergency
-user; they are defined in a file on the filesystem named
-'inituser'.  On UNIX, the 'zpasswd.py' program can be used to
-edit or generate this file the same way it is used to edit or
-generate the emergency user 'access' file::
-
-  $ cd ( ... were your ZOPE_HOME is ... )
-  $ python zpasswd.py inituser
-
-  Username: bob
-  Password:
-  Verify password:
-
-  Please choose a format from:
-
-  SHA - SHA-1 hashed password
-  CRYPT - UNIX-style crypt password
-  CLEARTEXT - no protection.
-
-  Encoding: SHA
-  Domain restrictions:    
-
-This will create an 'inituser' file which contains a user
-named "bob" and will set its password.  The password is not
-echoed back to you when you type it in.  The effect of
-creating an 'inituser' file depends on the state of the
-existing Zope database.
-
-When Zope starts up, if there are *no* users in the root user
-folder (such as when you start Zope with a "fresh" ZODB
-database), and an 'inituser' file exists, the user defined
-within 'inituser' will be created within the root user folder.
-If any users already exist within the root user folder, the
-existence of the 'inituser' file has no effect.  Normally,
-initial users are created by the Zope installer for you, and
-you shouldn't have to worry about changing them.  Only in
-cases where you start a new Zope database (for example, if you
-delete the 'var/Data.fs' file) should you need to worry about
-creating an 'inituser' file.  Note that if Zope is being used
-in an INSTANCE_HOME setup, the created "inituser" file must be
-copied to the INSTANCE_HOME directory. Most Zope setups are
-not INSTANCE_HOME setups (unless you've explicitly made it
-so), so you typically don't need to worry about this.  The
-'inituser' feature is a convenience and is rarely used in
-practice except by the installer.
+    $ bin/addzopeuser -h
+    usage: addzopeuser [-h] [-c [CONFIGURATION]] user password
+    
+    Add a Zope management user to the root Zope user folder.
+    
+    positional arguments:
+      user                  name of user to be created
+      password              new password for the user
+    
+    options:
+      -h, --help            show this help message and exit
+      -c, --configuration [CONFIGURATION]
+                            Path to Zope configuration file
 
 Protecting Against Password Snooping
 ------------------------------------
