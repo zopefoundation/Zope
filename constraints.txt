@@ -44,7 +44,7 @@ idna==3.10
 imagesize==1.4.1
 importlib-metadata==8.6.1
 legacy-cgi==2.6.2
-mr.developer==2.0.2
+mr.developer==2.0.3
 multipart==1.2.1
 packaging==24.2
 persistent==6.1.1
