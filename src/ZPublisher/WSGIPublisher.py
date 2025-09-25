@@ -93,7 +93,6 @@ def set_webdav_source_port(port):
 
 
 def get_debug_exceptions():
-    global _DEFAULT_DEBUG_EXCEPTIONS
     return _DEFAULT_DEBUG_EXCEPTIONS
 
 
@@ -108,7 +107,6 @@ def set_default_authentication_realm(realm):
 
 
 def get_module_info(module_name='Zope2'):
-    global _MODULES
     info = _MODULES.get(module_name)
     if info is not None:
         return info
