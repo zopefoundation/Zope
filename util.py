@@ -60,7 +60,7 @@ def _generate(
     If ``python_version`` is false, generate for all python versions.
     Returns a probably changed ``zope_requirement``.
     """
-    global PYTHON_VERSIONED
+    global PYTHON_VERSIONED  # noqa: F824 name is never assigned in scope
 
     for name, pin in versions:
         if name == 'Zope':

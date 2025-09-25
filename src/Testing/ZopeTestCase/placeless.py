@@ -43,7 +43,7 @@ setUp = ps.setUp
 
 
 def tearDown():
-    global ps
+    global ps  # noqa: F824 name is never assigned in scope
     tearDown_ = ps.tearDown
 
     def tearDown(doctesttest=None):
