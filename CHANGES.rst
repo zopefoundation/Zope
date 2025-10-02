@@ -10,6 +10,10 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.13.1 (unreleased)
 -------------------
 
+- Switch from `z3c.checkversions` to `plone.versioncheck` to detect outdated
+  dependency pins as `z3c.checkversions` no longer works and seems abandoned.
+  See https://github.com/zopefoundation/z3c.checkversions/issues/32
+
 - Update to newest compatible versions of dependencies.
 
 

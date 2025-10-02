@@ -105,8 +105,7 @@ Steps for creating a new Zope release
 - Check the versions.cfg file for outdated or updated
   packages and update version information where necessary.::
 
-    $ bin/checkversions versions-prod.cfg
-    $ bin/checkversions versions.cfg
+    $ bin/versioncheck -pn versions.cfg
     $ bin/buildout
 
 .. note::
@@ -114,16 +113,14 @@ Steps for creating a new Zope release
     This step is done after the release to have time to fix problems which
     might get introduced by new versions of the dependencies.
 
-    There is no version pin for `zc.buildout` as it has to be installed
-    in the virtual environment but `checkversions` also prints its
-    version number.
+    There are no version pins in the buildout configuration for packages that
+    are directly installed into the virtual environment before zc.buildout is
+    run, such as `pip`, `wheel`, `setuptools` and `zc.buildout`. These will
+    show as unpinned, which is OK.
 
     There is no version pin for `zc.recipe.egg` in `versions-prod.cfg` as it is
     only needed for buildout install and not for pip, so we do not want to
     have it in `requirements.txt`.
-
-    The script is called two times so the rendered version updates can be
-    easily assigned to the correct file.
 
 - Run the tests: ``bin/tox -pall``
 - Build the documentation: ``bin/tox -edocs``
