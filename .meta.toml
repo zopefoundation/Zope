@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "b3663390"
+commit-id = "443bfc5f"
 
 [python]
 with-pypy = false
@@ -129,6 +129,7 @@ ignore-bad-ideas = [
 [git]
 ignore = [
     "docs/locale/*/LC_MESSAGES/*.mo",
+    ".plone.versioncheck.*",
     ]
 
 [pre-commit]

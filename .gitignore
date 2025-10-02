@@ -31,3 +31,4 @@ pyvenv.cfg
 testing.log
 var/
 docs/locale/*/LC_MESSAGES/*.mo
+.plone.versioncheck.*

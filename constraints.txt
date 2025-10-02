@@ -3,6 +3,7 @@ Acquisition==6.1
 AuthEncoding==6.0
 BTrees==6.1
 Babel==2.17.0
+CacheControl==0.14.3
 Chameleon==4.4.4
 DateTime==5.5
 DocumentTemplate==4.6
@@ -38,6 +39,7 @@ collective.recipe.template==2.2
 colorama==0.4.6
 docutils==0.20.1; python_version == '3.9'
 docutils==0.21.2; python_version > '3.9'
+filelock==3.19.1
 five.localsitemanager==5.0
 furo==2024.8.6
 idna==3.10
@@ -45,10 +47,12 @@ imagesize==1.4.1
 importlib-metadata==8.6.1
 legacy-cgi==2.6.2
 mr.developer==2.0.3
+msgpack==1.1.1
 multipart==1.2.1
 packaging==24.2
 persistent==6.1.1
 plone.recipe.command==1.1
+plone.versioncheck==1.8.2
 pycparser==2.22
 python-gettext==5.0
 pytz==2025.1
@@ -71,7 +75,6 @@ transaction==5.0
 typing-extensions==4.12.2
 urllib3==2.3.0
 waitress==3.0.2
-z3c.checkversions==3.0
 z3c.pt==5.0
 zExceptions==5.0
 zc.lockfile==3.0.post1
