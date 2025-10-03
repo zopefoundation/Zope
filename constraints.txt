@@ -45,7 +45,7 @@ five.localsitemanager==5.0
 furo==2025.9.25
 idna==3.10
 imagesize==1.4.1
-importlib-metadata==8.7.0
+importlib-metadata==8.7.0; python_version == '3.9'
 legacy-cgi==2.6.3
 mr.developer==2.0.4
 msgpack==1.1.1
@@ -71,18 +71,18 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==2.0.0
 sphinxcontrib-serializinghtml==2.0.0
 tempstorage==6.0
-tomli==2.2.1
+tomli==2.2.1; python_version == '3.10'
+tomli==2.2.1; python_version == '3.9'
 transaction==5.0
 typing-extensions==4.15.0
 urllib3==2.5.0
 waitress==3.0.2
-z3c.checkversions==3.0
 z3c.pt==5.1
 zExceptions==5.0
 zc.lockfile==4.0
 zc.recipe.egg==3.0.0
 zc.recipe.testrunner==3.2
-zipp==3.23.0
+zipp==3.23.0; python_version == '3.9'
 zodbpickle==4.2
 zope.annotation==6.0
 zope.browser==4.0
