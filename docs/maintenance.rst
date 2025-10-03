@@ -106,6 +106,13 @@ Steps for creating a new Zope release
   packages and update version information where necessary.::
 
     $ bin/versioncheck -pn versions.cfg
+
+  or to open a nicely-formatted web page instead::
+
+    $ bin/versioncheck -pnb versions.cfg >/tmp/test.html && open /tmp/test.html
+
+  When done, run the buildout again to regenerate requirements/constraints::
+
     $ bin/buildout
 
 .. note::
