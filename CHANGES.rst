@@ -7,8 +7,10 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.13.1 (unreleased)
--------------------
+5.14 (unreleased)
+-----------------
+
+- Drop support for Python 3.9.
 
 - Switch from `z3c.checkversions` to `plone.versioncheck` to detect outdated
   dependency pins as `z3c.checkversions` no longer works and seems abandoned.
