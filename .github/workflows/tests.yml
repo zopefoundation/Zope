@@ -26,7 +26,6 @@ jobs:
         config:
         # [Python version, tox env]
         - ["3.11", "release-check"]
-        - ["3.9", "py39"]
         - ["3.10", "py310"]
         - ["3.11", "py311"]
         - ["3.12", "py312"]
@@ -49,13 +48,14 @@ jobs:
       with:
         persist-credentials: false
     - name: Install uv + caching
-      uses: astral-sh/setup-uv@v6
+      # astral/setup-uv@7.1.1
+      uses: astral-sh/setup-uv@2ddd2b9cb38ad8efd50337e8ab201519a34c9f24
       with:
         enable-cache: true
         cache-dependency-glob: |
           setup.*
           tox.ini
-        python-version: ${{ matrix.matrix.config[0] }}
+        python-version: ${{ matrix.config[0] }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Test
       if: ${{ !startsWith(runner.os, 'Mac') }}

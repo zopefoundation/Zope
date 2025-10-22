@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
 [meta]
 template = "zope-product"
-commit-id = "443bfc5f"
+commit-id = "9d51a543"
 
 [python]
 with-pypy = false
@@ -62,7 +62,6 @@ coverage-command = "coverage run {envdir}/bin/alltests {posargs:-vc}"
 testenv-additional = [
     "allowlist_externals = *",
     ]
-use-flake8 = true
 
 [manifest]
 additional-rules = [
