@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 5.14 (unreleased)
 -----------------
 
+- Drop support for Python 3.9.
+
 - Switch from `z3c.checkversions` to `plone.versioncheck` to detect outdated
   dependency pins as `z3c.checkversions` no longer works and seems abandoned.
   See https://github.com/zopefoundation/z3c.checkversions/issues/32
