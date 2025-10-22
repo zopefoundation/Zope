@@ -1,7 +1,6 @@
 import os
 from configparser import NoSectionError
 from configparser import RawConfigParser
-from typing import Optional
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -51,7 +50,7 @@ def generate(
 
 def _generate(
     versions: list[tuple[str, str]],
-    python_version: Optional[str],
+    python_version: str | None,
     requirements: list[str],
     zope_requirement: str
 ) -> str:
