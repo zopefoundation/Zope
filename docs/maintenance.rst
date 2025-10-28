@@ -64,6 +64,11 @@ Steps for creating a new Zope release
 
 - If the tests succeed, commit the changes.
 
+- Clear out documentation build artifacts to prevent adding these files to
+  the package::
+
+   $ rm -rf docs/_build
+
 - Upload the tagged release to PyPI::
 
     $ bin/release  # if you use zest.releaser
@@ -72,7 +77,7 @@ Steps for creating a new Zope release
 
     $ git tag -as <TAG-NAME> -m "- tagging release <TAG-NAME>"
     $ git push --tags
-    $ bin/zopepy setup.py egg_info -Db '' sdist bdist_wheel
+    $ bin/buildout setup setup.py sdist bdist_wheel
     $ bin/twine upload dist/Zope-<TAG-NAME>*
 
 - Update version information in the change log and setup.py::
