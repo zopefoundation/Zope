@@ -10,7 +10,7 @@ with-docs = true
 with-sphinx-doctests = false
 with-windows = true
 with-macos = true
-with-future-python = true
+with-future-python = false
 
 [coverage]
 fail-under = 82
