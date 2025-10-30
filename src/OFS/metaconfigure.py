@@ -63,7 +63,6 @@ def loadProductsOverrides(_context, file=None, files=None, package=None):
 
 
 def get_registered_packages():
-    global _registered_packages
     return _registered_packages
 
 
@@ -77,12 +76,10 @@ def has_package(package):
 
 
 def get_packages_to_initialize():
-    global _packages_to_initialize
     return _packages_to_initialize
 
 
 def package_initialized(module, init_func):
-    global _packages_to_initialize
     _packages_to_initialize.remove((module, init_func))
 
 
