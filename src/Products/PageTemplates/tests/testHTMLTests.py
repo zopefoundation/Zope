@@ -233,6 +233,22 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         with self.assertRaises(NotFound):
             t()
 
+        # The `random` module used to have something like
+        # `import itertools as _itertools`
+        # I can't find for which Python versions that was.
+        # But in Python 3.9-3.14 the same is true for `tokenize`.
+        # But that is not available for direct use in templates.
+        # So let's recreate the old situation.
+        # Goal is still: test that you can't traverse to this
+        # module/attribute that starts with an underscore.
+        try:
+            from random import _itertools  # NOQA: F401
+        except ImportError:
+            import itertools
+            import random
+
+            random._itertools = itertools
+
         t.write('<p tal:define="p nocall: random/_itertools/repeat"/>')
         with self.assertRaises((NotFound, LocationError)):
             t()
@@ -251,22 +267,23 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
         noSecurityManager()
 
         # The getSecurityManager function is explicitly allowed
-        content = ('<p tal:define="a nocall:%s"'
-                   '   tal:content="python: a().getUser().getUserName()"/>')
-        t.write(content % 'modules/AccessControl/getSecurityManager')
+        t.write(
+            '''<p tal:define="a nocall:'''
+            '''modules/AccessControl/getSecurityManager"'''
+            '''   tal:content="python: a().getUser() or 'Anonymous User'"/>''')
         self.assertEqual(t(), '<p>Anonymous User</p>')
 
         # Anything else should be unreachable and raise NotFound:
         # Direct access through AccessControl
         t.write('<p tal:define="a nocall:modules/AccessControl/users"/>')
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             t()
 
         # Indirect access through an intermediary variable
         content = ('<p tal:define="mod nocall:modules/AccessControl;'
                    '               must_fail nocall:mod/users"/>')
         t.write(content)
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             t()
 
         # Indirect access through an intermediary variable and a dictionary
@@ -274,5 +291,5 @@ class HTMLTests(zope.component.testing.PlacelessSetup, unittest.TestCase):
                    '               a_dict python: {\'unsafe\': mod};'
                    '               must_fail nocall: a_dict/unsafe/users"/>')
         t.write(content)
-        with self.assertRaises(NotFound):
+        with self.assertRaises((NotFound, LocationError)):
             t()
