@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 6.0 (unreleased)
 ----------------
 
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
+
 - Drop support for Python 3.9.
 
 - Switch from `z3c.checkversions` to `plone.versioncheck` to detect outdated
