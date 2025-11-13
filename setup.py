@@ -14,7 +14,6 @@
 
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -63,9 +62,6 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
-    packages=find_packages('src'),
-    namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
-    package_dir={'': 'src'},
     python_requires='>= 3.10',
     install_requires=[
         'AccessControl >= 5.2',
