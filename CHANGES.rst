@@ -7,8 +7,10 @@ since the branch point at Zope 4.1.2.
 The change log for the previous version, Zope 4, is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.14 (unreleased)
------------------
+6.0 (unreleased)
+----------------
+
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
 
 - Drop support for Python 3.9.
 
