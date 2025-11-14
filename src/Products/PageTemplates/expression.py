@@ -194,7 +194,7 @@ class UntrustedPythonExpr(expressions.PythonExpr):
 
     def parse(self, string):
         encoded = string.encode('utf-8')
-        node = parse(encoded, mode='eval')
+        node = parse(encoded, mode='eval').body
 
         # Run Node Transformation from RestrictedPython:
         self.restricted_python_transformer.visit(node)
