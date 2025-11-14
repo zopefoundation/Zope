@@ -14,7 +14,6 @@
 
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -29,7 +28,7 @@ def _read_file(filename):
 README = _read_file('README.rst')
 CHANGES = _read_file('CHANGES.rst')
 
-version = '5.14.dev0'
+version = '6.0.dev0'
 
 setup(
     name='Zope',
@@ -63,9 +62,6 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
-    packages=find_packages('src'),
-    namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
-    package_dir={'': 'src'},
     python_requires='>= 3.10',
     install_requires=[
         'AccessControl >= 5.2',
