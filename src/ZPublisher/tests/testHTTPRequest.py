@@ -1574,6 +1574,35 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req.processInputs()
         self.assertEqual(req.form["foo"], "foo")
 
+    def test_patch_with_form(self):
+        req_factory = self._getTargetClass()
+        body = b"foo=foo"
+        req = req_factory(
+            BytesIO(body),
+            {
+                "SERVER_NAME": "localhost",
+                "SERVER_PORT": "8080",
+                "REQUEST_METHOD": "PATCH",
+                "CONTENT_TYPE": "application/x-www-form-urlencoded",
+                "CONTENT_LENGTH": len(body),
+            },
+            None,
+        )
+        req.processInputs()
+        self.assertEqual(req.form["foo"], "foo")
+
+    def test_patch_with_multipart(self):
+        s = BytesIO(TEST_FILE_DATA)
+        start_count = sys.getrefcount(s)
+        environ = self._makePostEnviron(body=TEST_FILE_DATA)
+        environ["REQUEST_METHOD"] = "PATCH"
+        req = self._makeOne(stdin=s, environ=environ)
+        req.processInputs()
+        self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
+        req.close()
+        self.assertEqual(start_count, sys.getrefcount(s))  # The test
+
+
 
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
