@@ -14,7 +14,7 @@ Missing==5.0
 MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
-Persistence==5.2
+Persistence==5.3
 Products.BTreeFolder2==5.1
 Products.ZCatalog==7.2.1
 Pygments==2.19.2
@@ -91,7 +91,7 @@ zope.browserresource==6.0
 zope.cachedescriptors==6.0
 zope.component==7.0
 zope.configuration==7.0
-zope.container==7.1
+zope.container==7.2
 zope.contentprovider==7.0
 zope.contenttype==6.0
 zope.datetime==6.0
@@ -105,7 +105,7 @@ zope.globalrequest==3.0
 zope.hookable==8.1
 zope.i18n==6.0
 zope.i18nmessageid==8.1
-zope.interface==8.1
+zope.interface==8.1.1
 zope.lifecycleevent==6.0
 zope.location==6.0
 zope.pagetemplate==6.0
