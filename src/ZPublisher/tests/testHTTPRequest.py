@@ -1603,7 +1603,6 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(start_count, sys.getrefcount(s))  # The test
 
 
-
 class TestHTTPRequestZope3Views(TestRequestViewsBase):
 
     def _makeOne(self, root):
