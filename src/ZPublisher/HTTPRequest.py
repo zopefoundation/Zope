@@ -1473,7 +1473,7 @@ class ZopeFieldStorage(ValueAccessor):
         #  by a lookup of the corresponding CGI environment keys.
         self.headers = Headers(hl)
         parts = ()
-        if method in ("POST", "PUT") \
+        if method in ("POST", "PUT", "PATCH") \
            and content_type in (
            "multipart/form-data", "application/x-www-form-urlencoded",
            "application/x-url-encoded",
