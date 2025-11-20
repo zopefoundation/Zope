@@ -20,6 +20,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Enable multipart/form-data and application/x-www-form-urlencoded support
+  for PATCH requests.
 
 5.13 (2025-03-18)
 -----------------
