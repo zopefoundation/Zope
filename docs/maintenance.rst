@@ -48,11 +48,7 @@ Steps for creating a new Zope release
 
     or
 
-    $ vi CHANGES.rst setup.py
-
-- Update the version information in the Sphinx documentation configuration::
-
-    $ vim docs/conf.py
+    $ vim CHANGES.rst setup.py
 
 - Pin the Zope version in ``versions-prod.cfg``.
 
@@ -86,11 +82,11 @@ Steps for creating a new Zope release
 
     or 
 
-    $ vi CHANGES.rst setup.py
+    $ vim CHANGES.rst setup.py
 
 - Remove the version pin for Zope::
 
-    $ vi versions-prod.cfg (remove Zope pin)
+    $ vim versions-prod.cfg (remove Zope pin)
     $ bin/buildout
 
 - Commit and push the changes.
