@@ -9,6 +9,129 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "Zope"
+version = "6.0.dev0"
+description = "Zope application server / web framework"
+readme = "README.rst"
+requires-python = ">=3.10"
+license = "ZPL-2.1"
+authors = [
+  { name = "Zope Foundation and contributors", email = "zope-dev@zope.dev" },
+]
+maintainers = [
+  { name = "Plone Foundation and contributors", email = "zope-dev@zope.dev" },
+]
+classifiers = [
+  "Development Status :: 6 - Mature",
+  "Environment :: Web Environment",
+  "Framework :: Zope",
+  "Framework :: Zope :: 5",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+  "AccessControl",
+  "Acquisition",
+  "BTrees",
+  "Chameleon",
+  "DateTime",
+  "DocumentTemplate",
+  "ExtensionClass",
+  "MultiMapping",
+  "PasteDeploy",
+  "Persistence",
+  "RestrictedPython",
+  "ZConfig",
+  "ZODB",
+  "multipart",
+  "transaction",
+  "waitress",
+  "zExceptions",
+  "z3c.pt",
+  "zope.browser",
+  "zope.browsermenu",
+  "zope.browserpage",
+  "zope.browserresource",
+  "zope.component",
+  "zope.configuration",
+  "zope.container",
+  "zope.contentprovider",
+  "zope.contenttype",
+  "zope.datetime",
+  "zope.deferredimport",
+  "zope.event",
+  "zope.exceptions",
+  "zope.globalrequest",
+  "zope.i18n [zcml]",
+  "zope.i18nmessageid",
+  "zope.interface",
+  "zope.lifecycleevent",
+  "zope.location",
+  "zope.pagetemplate",
+  "zope.processlifetime",
+  "zope.proxy",
+  "zope.ptresource",
+  "zope.publisher",
+  "zope.schema",
+  "zope.security",
+  "zope.sequencesort",
+  "zope.site",
+  "zope.size",
+  "zope.tal",
+  "zope.tales",
+  "zope.testbrowser",
+  "zope.testing",
+  "zope.traversing",
+  "zope.viewlet",
+]
+
+[project.entry-points."paste.app_factory"]
+main = "Zope2.Startup.run:make_wsgi_app"
+
+[project.entry-points."paste.filter_app_factory"]
+httpexceptions = "ZPublisher.httpexceptions:main"
+content_length = "ZPublisher.pastefilter:filter_content_length"
+
+[project.entry-points.scripts]
+addzopeuser = "Zope2.utilities.adduser:main"
+runwsgi = "Zope2.Startup.serve:main"
+mkwsgiinstance = "Zope2.utilities.mkwsgiinstance:main"
+zconsole = "Zope2.utilities.zconsole:main"
+
+[project.entry-points.zodbupdate]
+renames = "OFS:zodbupdate_rename_dict"
+
+[project.entry-points."zodbupdate.decode"]
+decodes = "OFS:zodbupdate_decode_dict"
+
+[project.optional-dependencies]
+docs = [
+  "Sphinx",
+  "furo",
+  "tempstorage",
+  "ZConfig",
+]
+wsgi = ["Paste"]
+
+[project.urls]
+Documentation = "https://zope.readthedocs.io"
+Issues = "https://github.com/zopefoundation/Zope/issues"
+Source = "https://github.com/zopefoundation/Zope"
+Changelog = "https://github.com/zopefoundation/Zope/blob/master/CHANGES.rst"
+
 [tool.coverage.run]
 branch = true
 source = ["src"]
