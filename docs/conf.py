@@ -15,19 +15,24 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import datetime
+import os
+import sys
+from importlib.metadata import distribution
 
 
 # -- Project information -----------------------------------------------------
 year = datetime.datetime.now().year
+sys.path.append(os.path.abspath('../src'))
+rqmt = distribution('Zope')
 
 project = 'Zope'
-copyright = '2009-%s, The Zope developer community' % year
+copyright = f'2009-{year}, The Zope developer community'
 author = 'The Zope developer community'
 
 # The short X.Y version
-version = '5.13'
+version = '%s.%s' % tuple(map(int, rqmt.version.split('.')[:2]))
 # The full version, including alpha/beta/rc tags
-release = '5.13'
+release = rqmt.version
 
 
 # -- General configuration ---------------------------------------------------

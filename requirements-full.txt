@@ -15,7 +15,7 @@ RestrictedPython==8.1
 WSGIProxy2==0.5.1
 WebOb==1.8.9
 WebTest==3.0.7
-ZConfig==4.2
+ZConfig==4.3
 ZODB==6.1
 Zope2==4.0
 beautifulsoup4==4.14.2
