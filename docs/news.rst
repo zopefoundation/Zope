@@ -15,11 +15,27 @@ supported and for how long.
     :ref:`zope4migration` documentation
 
 
+What's new in Zope 6
+--------------------
+
+Added support for newer Python versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Zope 6.0 and newer support Python 3.14.
+
+Packaging updates
+~~~~~~~~~~~~~~~~~
+
+Zope 6.0 and all dependencies that contain namespace packages have switched
+from the deprecated ``pkg_resources`` style to the newer PEP 420 style
+namespace package configuration.
+
+
 What's new in Zope 5
 --------------------
 
-Added support for Python 3.9
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Added support for newer Python versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Python 3.9 is now fully supported by Zope 5.
 
@@ -27,11 +43,14 @@ Added support for Python 3.9
 
 * Zope 5.7 and newer also supports Python 3.11.
 
+* Zope 5.9 and newer also supports Python 3.12.
+
+* Zope 5.11 and newer also supports Python 3.13.
+
 Dropped support for Python 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Zope 5 supports Python 3 only, versions 3.6 up through 3.11. All support code
-and special casing for Python 2, including the use of the ``six`` package, have
-been removed.
+Zope 5 supports Python 3 only. All support code and special casing for
+Python 2, including the use of the ``six`` package, have been removed.
 
 Dropped support for ``ZServer``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
