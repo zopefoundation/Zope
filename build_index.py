@@ -11,10 +11,21 @@ def create_master():
     path = get_dir("master")
     README.write("## latest\n\n")
     README.write(
-        "(files created from master but not necessarily in sync with it)\n\n"
+        "(files created from the master branch but not necessarilyi"
+        " in sync with it)\n\n"
     )
     copy_files("master", path)
 
+
+def create_5x_branch():
+    """Create the config files for the 5.x branch."""
+    path = get_dir("5.x")
+    README.write("\n## Zope 5 branch\n\n")
+    README.write(
+        "(files created from the 5.x branch but not necessarily "
+        "in sync with it)\n\n"
+    )
+    copy_files("5.x", path)
 
 def create_4x_branch():
     """Create the config files for the 4.x branch."""
@@ -102,6 +113,7 @@ def main():
     README.write("# Zope Releases\n\n")
 
     create_master()
+    # create_5x_branch()
     create_4x_branch()
 
     tags_6_x = subprocess.check_output(

@@ -2,7 +2,7 @@
 
 ## latest
 
-(files created from master but not necessarily in sync with it)
+(files created from the master branch but not necessarilyi in sync with it)
 
 * [versions.cfg](releases/master/versions.cfg)
 * [versions-prod.cfg](releases/master/versions-prod.cfg)
@@ -13,6 +13,10 @@
 
 (files created from the 4.x branch but not necessarily in sync with it)
 
+* [versions.cfg](releases/4.x/versions.cfg)
+* [versions-prod.cfg](releases/4.x/versions-prod.cfg)
+* [requirements-full.txt](releases/4.x/requirements-full.txt)
+* [constraints.txt](releases/4.x/constraints.txt)
 
 ## 6.0b1
 
