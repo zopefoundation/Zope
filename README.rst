@@ -32,11 +32,6 @@ links to other documents. The full documentation can be found at
 https://zope.readthedocs.io.
 
 
-.. contents::
-    :local:
-    :depth: 1
-
-
 Installation
 ============
 

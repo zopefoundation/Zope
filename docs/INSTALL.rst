@@ -12,7 +12,7 @@ available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include
-  **3.9** up to **3.13**.
+  **3.10** up to **3.14**.
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
@@ -46,6 +46,7 @@ for creating repeatable builds for a given configuration and environment.
 The Zope developers use ``zc.buildout`` to develop Zope itself as well as the
 dependency packages it uses. **This is the recommended way of installing Zope**.
 
+
 Installing Zope with ``zc.buildout``
 ------------------------------------
 Installing the Zope software using ``zc.buildout`` involves the following
@@ -56,12 +57,12 @@ steps:
 - Create a buildout configuration file ``buildout.cfg``
 - Run the buildout
 
-The following examples are from Linux and use Zope version 5.0. Just replace
+The following examples are from Linux and use Zope version 6.0. Just replace
 that version number with your desired version.
 
 .. code-block:: console
 
-    $ python3.10 -m venv zope
+    $ python3.13 -m venv zope
     $ cd zope
     <create buildout.cfg in this folder, see examples below>
     $ bin/pip install -U pip wheel zc.buildout
@@ -76,7 +77,7 @@ built-in ``bin/mkwsgiinstance`` script to create a Zope instance:
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/5.0/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/6.0/versions-prod.cfg
     parts =
         zopescripts
 
@@ -99,7 +100,7 @@ options, please see the
 
     [buildout]
     extends =
-        https://zopefoundation.github.io/Zope/releases/5.0/versions-prod.cfg
+        https://zopefoundation.github.io/Zope/releases/6.0/versions-prod.cfg
     parts =
         zopeinstance
 
@@ -128,6 +129,7 @@ include the WSGI server software egg in the ``eggs`` specification:
     zodb-temporary-storage = off
     wsgi = /path/to/zope.ini
 
+
 Installing Zope with ``pip``
 ----------------------------
 Installing the Zope software using ``pip`` involves the following
@@ -137,16 +139,16 @@ steps:
 
 - Install Zope and its dependencies
 
-Example steps on Linux. Replace the version number "5.0" with the latest
+Example steps on Linux. Replace the version number "6.0" with the latest
 version you find on https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
 
-  $ python3.10 -m venv zope
+  $ python3.13 -m venv zope
   $ cd zope
   $ bin/pip install -U pip wheel
   $ bin/pip install Zope[wsgi] \
-    -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt
+    -c https://zopefoundation.github.io/Zope/releases/6.0/constraints.txt
 
 You can also install Zope using a single requirements file. **Note that this
 installation method might install packages that are not actually needed** (i. e.
@@ -155,22 +157,21 @@ more than are listed in the ``install_requires`` section of ``setup.py``):
 .. code-block:: console
 
     $ bin/pip install \
-    -r https://zopefoundation.github.io/Zope/releases/5.0/requirements-full.txt
+    -r https://zopefoundation.github.io/Zope/releases/6.0/requirements-full.txt
 
 
 Building the documentation
 --------------------------
 You can build the documentation locally. Example steps on Linux. Replace the
-version number "5.0" with the latest version you find on
+version number "6.0" with the latest version you find on
 https://zopefoundation.github.io/Zope/:
 
 .. code-block:: console
 
-    $ wget https://pypi.org/packages/source/Z/Zope/Zope-5.0.tar.gz
-    $ tar xfz Zope-5.0.tar.gz
-    $ cd Zope-5.0
-    $ python3.10 -m venv .
-    $ bin/pip install -U pip wheel
-    $ bin/pip install Zope[docs] -c ./constraints.txt
-    $ cd docs
-    $ make html
+    $ git clone https://github.com/zopefoundation/Zope.git
+    $ cd Zope
+    $ python3.13 -m venv .
+    $ bin/pip install -U pip wheel zc.buildout tox
+    $ bin/tox -edocs
+
+The HTML output will be in ``docs/_build/html/``.
