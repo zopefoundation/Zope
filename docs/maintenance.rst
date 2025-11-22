@@ -41,14 +41,14 @@ Steps for creating a new Zope release
 
     $ cat README.rst <(echo) CHANGES.rst | bin/rst2html >/tmp/test.html && open /tmp/test.html
 
-- Update version information in change log and ``setup.py`` and specify today’s
-  date as release date in the change log::
+- Update version information in change log and ``pyproject.toml`` and specify
+  today’s date as release date in the change log::
 
     $ bin/prerelease  # if you use zest.releaser
 
     or
 
-    $ vim CHANGES.rst setup.py
+    $ vim CHANGES.rst pyproject.toml
 
 - Pin the Zope version in ``versions-prod.cfg``.
 
@@ -76,13 +76,13 @@ Steps for creating a new Zope release
     $ bin/buildout setup setup.py sdist bdist_wheel
     $ bin/twine upload dist/Zope-<TAG-NAME>*
 
-- Update version information in the change log and setup.py::
+- Update version information in the change log and ``pyproject.toml``::
 
     $ bin/postrelease  # if you use zest.releaser
 
     or 
 
-    $ vim CHANGES.rst setup.py
+    $ vim CHANGES.rst pyproject.toml
 
 - Remove the version pin for Zope::
 

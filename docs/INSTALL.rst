@@ -152,7 +152,7 @@ version you find on https://zopefoundation.github.io/Zope/:
 
 You can also install Zope using a single requirements file. **Note that this
 installation method might install packages that are not actually needed** (i. e.
-more than are listed in the ``install_requires`` section of ``setup.py``):
+more than are listed in the ``dependencies`` section of ``pyproject.toml``):
 
 .. code-block:: console
 
