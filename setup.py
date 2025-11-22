@@ -12,8 +12,12 @@
 #
 ##############################################################################
 
+from setuptools import find_packages
 from setuptools import setup
 
 
 # See pyproject.toml for package metadata
-setup()
+setup(packages=find_packages('src'),
+      namespace_packages=['Products', 'Shared', 'Shared.DC', 'zmi'],
+      package_dir={'': 'src'},
+      )

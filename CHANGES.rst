@@ -1,25 +1,14 @@
 Change log
 ==========
 
-These are all the changes for Zope since the first Zope 5 alpha release.
+These are all the changes for Zope 5 since the first Zope 5 alpha release.
 
 The change log for Zope 4 is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-6.0 (unreleased)
-----------------
-
-- Update to newest compatible versions of dependencies.
-
-
-6.0b1 (2025-11-22)
-------------------
-
-- Replace ``pkg_resources`` namespaces with PEP 420 native namespaces.
-  This change requires using ``zc.buildout`` version 5.
-
-- Drop support for Python 3.9.
+5.14 (unreleased)
+-----------------
 
 - Switch from `z3c.checkversions` to `plone.versioncheck` to detect outdated
   dependency pins as `z3c.checkversions` no longer works and seems abandoned.
@@ -29,6 +18,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Enable multipart/form-data and application/x-www-form-urlencoded support
   for PATCH requests.
+
+- Drop support for Python 3.9.
 
 
 5.13 (2025-03-18)

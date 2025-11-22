@@ -15,22 +15,6 @@ supported and for how long.
     :ref:`zope4migration` documentation
 
 
-What's new in Zope 6
---------------------
-
-Added support for newer Python versions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Zope 6.0 and newer support Python 3.14.
-
-Packaging updates
-~~~~~~~~~~~~~~~~~
-
-Zope 6.0 and all dependencies that contain namespace packages have switched
-from the deprecated ``pkg_resources`` style to the newer PEP 420 style
-namespace package configuration.
-
-
 What's new in Zope 5
 --------------------
 
