@@ -10,6 +10,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 6.0 (unreleased)
 ----------------
 
+- Update to newest compatible versions of dependencies.
+
 
 6.0b1 (2025-11-22)
 ------------------

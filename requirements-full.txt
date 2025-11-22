@@ -60,7 +60,7 @@ zope.i18nmessageid==8.2
 zope.interface==8.1.1
 zope.lifecycleevent==6.0
 zope.location==6.0
-zope.pagetemplate==6.0
+zope.pagetemplate==6.1
 zope.processlifetime==4.0
 zope.proxy==7.1
 zope.ptresource==6.0
