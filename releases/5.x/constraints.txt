@@ -15,7 +15,7 @@ MultiMapping==5.0
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.4
-Products.BTreeFolder2==6.0
+Products.BTreeFolder2==5.1
 Products.ZCatalog==7.2.1
 Pygments==2.19.2
 Record==4.1
@@ -79,9 +79,9 @@ urllib3==2.5.0
 waitress==3.0.2
 z3c.pt==5.1
 zExceptions==5.0
-zc.lockfile==4.0
-zc.recipe.egg==4.0.0
-zc.recipe.testrunner==4.0
+zc.lockfile==3.0.post1
+zc.recipe.egg==3.0.0
+zc.recipe.testrunner==3.2
 zodbpickle==4.3
 zope.annotation==6.0
 zope.browser==4.0

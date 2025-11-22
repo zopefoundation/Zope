@@ -113,7 +113,7 @@ def main():
     README.write("# Zope Releases\n\n")
 
     create_master()
-    # create_5x_branch()
+    create_5x_branch()
     create_4x_branch()
 
     tags_6_x = subprocess.check_output(
