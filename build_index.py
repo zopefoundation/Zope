@@ -104,6 +104,13 @@ def main():
     create_master()
     create_4x_branch()
 
+    tags_6_x = subprocess.check_output(
+        "git tag -l 6*".split(), encoding="ascii"
+    ).splitlines()
+    tags_6_x.sort(key=StrictVersion, reverse=True)
+    for tag in tags_6_x:
+        create_tag(tag)
+
     tags_5_x = subprocess.check_output(
         "git tag -l 5*".split(), encoding="ascii"
     ).splitlines()

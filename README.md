@@ -14,6 +14,13 @@
 (files created from the 4.x branch but not necessarily in sync with it)
 
 
+## 6.0b1
+
+* [versions.cfg](releases/6.0b1/versions.cfg)
+* [versions-prod.cfg](releases/6.0b1/versions-prod.cfg)
+* [requirements-full.txt](releases/6.0b1/requirements-full.txt)
+* [constraints.txt](releases/6.0b1/constraints.txt)
+
 ## 5.13
 
 * [versions.cfg](releases/5.13/versions.cfg)
