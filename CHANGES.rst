@@ -1,16 +1,17 @@
 Change log
 ==========
 
-These are all the changes for Zope 5, starting with the alpha releases,
-since the branch point at Zope 4.1.2.
+These are all the changes for Zope since the first Zope 5 alpha release.
 
-The change log for the previous version, Zope 4, is at
+The change log for Zope 4 is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-6.0 (unreleased)
-----------------
 
-- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
+6.0b1 (2025-11-22)
+------------------
+
+- Replace ``pkg_resources`` namespaces with PEP 420 native namespaces.
+  This change requires using ``zc.buildout`` version 5.
 
 - Drop support for Python 3.9.
 
@@ -22,6 +23,7 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Enable multipart/form-data and application/x-www-form-urlencoded support
   for PATCH requests.
+
 
 5.13 (2025-03-18)
 -----------------

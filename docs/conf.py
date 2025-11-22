@@ -30,7 +30,7 @@ copyright = f'2009-{year}, The Zope developer community'
 author = 'The Zope developer community'
 
 # The short X.Y version
-version = '%s.%s' % tuple(map(int, rqmt.version.split('.')[:2]))
+version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
 # The full version, including alpha/beta/rc tags
 release = rqmt.version
 
