@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 name = "Zope"
 version = "6.0.dev0"
 description = "Zope application server / web framework"
-readme = "README.rst"
+dynamic = ["readme"]
 requires-python = ">=3.10"
 license = "ZPL-2.1"
 authors = [
@@ -154,3 +154,6 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
