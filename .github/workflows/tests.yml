@@ -1,5 +1,5 @@
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 name: tests
 
 on:
@@ -45,12 +45,12 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: ${{ matrix.os[0] }}-${{ matrix.config[1] }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
     - name: Install uv + caching
-      # astral/setup-uv@7.1.3
-      uses: astral-sh/setup-uv@5a7eac68fb9809dea845d802897dc5c723910fa3
+      # astral/setup-uv@7.1.4
+      uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244
       with:
         enable-cache: true
         cache-dependency-glob: |

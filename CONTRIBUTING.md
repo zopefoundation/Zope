@@ -1,6 +1,6 @@
 <!--
-Generated from:
-https://github.com/zopefoundation/meta/tree/master/config/zope-product
+Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 -->
 # Contributing to zopefoundation projects
 

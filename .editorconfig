@@ -1,5 +1,5 @@
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 #
 # EditorConfig Configuration file, for more details see:
 # https://EditorConfig.org
@@ -12,7 +12,7 @@
 root = true
 
 
-[*]  # For All Files
+[*]
 # Unix-style newlines with a newline ending every file
 end_of_line = lf
 insert_final_newline = true
