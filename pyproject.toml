@@ -103,7 +103,7 @@ main = "Zope2.Startup.run:make_wsgi_app"
 httpexceptions = "ZPublisher.httpexceptions:main"
 content_length = "ZPublisher.pastefilter:filter_content_length"
 
-[project.entry-points.scripts]
+[project.scripts]
 addzopeuser = "Zope2.utilities.adduser:main"
 runwsgi = "Zope2.Startup.serve:main"
 mkwsgiinstance = "Zope2.utilities.mkwsgiinstance:main"
