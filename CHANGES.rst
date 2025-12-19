@@ -12,6 +12,8 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 - Update to newest compatible versions of dependencies.
 
+- Fix installation of console scripts.
+
 
 6.0b1 (2025-11-22)
 ------------------
