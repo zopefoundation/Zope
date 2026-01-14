@@ -448,7 +448,7 @@ Here is an example of a '_p_resolveConflict' in the 'Counter' class::
 
   class Counter(Persistent):
 
-      self.count = 0
+      count = 0
 
       def hit(self):
           self.count = self.count + 1
