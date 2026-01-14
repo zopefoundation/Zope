@@ -49,8 +49,8 @@ jobs:
       with:
         persist-credentials: false
     - name: Install uv + caching
-      # astral/setup-uv@7.1.4
-      uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244
+      # astral/setup-uv@7.2.0
+      uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b
       with:
         enable-cache: true
         cache-dependency-glob: |
@@ -59,11 +59,7 @@ jobs:
         python-version: ${{ matrix.config[0] }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Test
-      if: ${{ !startsWith(runner.os, 'Mac') }}
       run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}
-    - name: Test (macOS)
-      if: ${{ startsWith(runner.os, 'Mac') }}
-      run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}-universal2
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
