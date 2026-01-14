@@ -57,7 +57,7 @@ zope.globalrequest==3.0
 zope.hookable==8.2
 zope.i18n==6.0
 zope.i18nmessageid==8.2
-zope.interface==8.1.1
+zope.interface==8.2
 zope.lifecycleevent==6.0
 zope.location==6.0
 zope.pagetemplate==6.1
