@@ -7,8 +7,8 @@ The change log for Zope 4 is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-6.0 (unreleased)
-----------------
+6.0b2 (2026-01-15)
+------------------
 
 - Update to newest compatible versions of dependencies.
 
