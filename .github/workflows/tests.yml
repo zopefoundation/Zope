@@ -49,8 +49,8 @@ jobs:
       with:
         persist-credentials: false
     - name: Install uv + caching
-      # astral/setup-uv@7.2.0
-      uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b
+      # astral/setup-uv@7.3.0
+      uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b
       with:
         enable-cache: true
         cache-dependency-glob: |

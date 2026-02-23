@@ -28,6 +28,7 @@ lib64
 log/
 parts/
 pyvenv.cfg
+share/
 testing.log
 var/
 docs/locale/*/LC_MESSAGES/*.mo
