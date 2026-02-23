@@ -5,7 +5,7 @@ AuthEncoding==6.0
 BTrees==6.3
 Chameleon==4.6.0
 DateTime==6.0
-DocumentTemplate==5.1
+DocumentTemplate==5.2
 ExtensionClass==6.2
 MultiMapping==5.1
 Paste==3.10.1
@@ -31,7 +31,7 @@ soupsieve==2.8.3
 transaction==5.0
 waitress==3.0.2
 z3c.pt==5.1
-zExceptions==5.0
+zExceptions==6.0
 zc.lockfile==4.0
 zc.recipe.egg==4.0.0
 zodbpickle==4.3
@@ -41,13 +41,13 @@ zope.browsermenu==6.0
 zope.browserpage==6.0
 zope.browserresource==6.0
 zope.cachedescriptors==6.0
-zope.component==7.0
+zope.component==7.1
 zope.configuration==7.0
 zope.container==7.2
 zope.contentprovider==7.0
 zope.contenttype==6.0
 zope.datetime==6.0
-zope.deferredimport==6.0
+zope.deferredimport==6.1.1
 zope.deprecation==6.0
 zope.dottedname==7.0
 zope.event==6.1
