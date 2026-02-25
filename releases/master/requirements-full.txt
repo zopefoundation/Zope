@@ -5,7 +5,7 @@ AuthEncoding==6.0
 BTrees==6.3
 Chameleon==4.6.0
 DateTime==6.0
-DocumentTemplate==5.2
+DocumentTemplate==5.3
 ExtensionClass==6.2
 MultiMapping==5.1
 Paste==3.10.1
