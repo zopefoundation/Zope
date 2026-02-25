@@ -6,7 +6,7 @@ Babel==2.18.0
 CacheControl==0.14.4
 Chameleon==4.6.0
 DateTime==6.0
-DocumentTemplate==5.2
+DocumentTemplate==5.3
 ExtensionClass==6.2
 Jinja2==3.1.6
 MarkupSafe==3.0.3
