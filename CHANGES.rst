@@ -10,6 +10,9 @@ https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 6.0 (unreleased)
 ----------------
 
+- Fix bad calls to ``str`` in ZMI DTML templates to prevent name shadowing.
+  (`#1285 <https://github.com/zopefoundation/Zope/issues/1285>`_)
+
 
 6.0b2 (2026-01-15)
 ------------------

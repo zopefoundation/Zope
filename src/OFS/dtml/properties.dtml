@@ -55,7 +55,7 @@
 												value="<dtml-if "hasProperty(id)"><dtml-var "('%s' % getProperty(id))" html_quote></dtml-if>" />
 										<dtml-elif "type == 'date' and not _.same_type(getProperty(id), '') and getProperty(id).timezoneNaive()"
 											><input type="text" class="form-control" name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
-												value="<dtml-var "str(getProperty(id)).rsplit(' ', 1)[0]" html_quote>" />
+												value="<dtml-var "_.str(getProperty(id)).rsplit(' ', 1)[0]" html_quote>" />
 										<dtml-elif "type in ['date', 'float', 'string', 'ustring']"
 											><input type="text" class="form-control" name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
 												value="<dtml-var "getProperty(id)" html_quote>" />

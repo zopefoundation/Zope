@@ -17,8 +17,8 @@
 
     <dtml-let authuser="REQUEST.get('AUTHENTICATED_USER', 'not logged-in')">
     <li id="zmi-authenticated_user" class="form-inline zmi-authenticated_user"
-        title="Logged in as: <dtml-var "str(authuser)">">
-      <span class="zmi-label"><dtml-var "str(authuser)"></span>
+        title="Logged in as: <dtml-var "_.str(authuser)">">
+      <span class="zmi-label"><dtml-var "_.str(authuser)"></span>
     </li>
     </dtml-let>
 
