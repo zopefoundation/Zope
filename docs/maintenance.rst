@@ -91,7 +91,7 @@ Steps for creating a new Zope release
 
 - Commit and push the changes.
 
-- Check that the changes have been propagated to https://zope.readthedocs.io/en/latest/changes.html.
+- Check that the changes have been propagated to https://zope.readthedocs.io/en/5.x/changes.html.
   (This should be done automatically via web hooks defined in GitHub and RTD.)
 
 - Update https://zopefoundation.github.io/Zope/::
