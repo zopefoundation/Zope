@@ -1,7 +1,5 @@
-# 
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/zope-product
-
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 [build-system]
 requires = [
     "setuptools >= 78.1.1,< 81",
@@ -11,9 +9,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Zope"
-version = "5.15.dev0"
+version = "5.14.1"
 description = "Zope application server / web framework"
-readme = "README.rst"
+dynamic = ["readme"]
 requires-python = ">=3.10"
 license = "ZPL-2.1"
 authors = [
@@ -105,7 +103,7 @@ main = "Zope2.Startup.run:make_wsgi_app"
 httpexceptions = "ZPublisher.httpexceptions:main"
 content_length = "ZPublisher.pastefilter:filter_content_length"
 
-[project.entry-points.scripts]
+[project.scripts]
 addzopeuser = "Zope2.utilities.adduser:main"
 runwsgi = "Zope2.Startup.serve:main"
 mkwsgiinstance = "Zope2.utilities.mkwsgiinstance:main"
@@ -154,3 +152,6 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
