@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Zope"
-version = "5.14"
+version = "5.15.dev0"
 description = "Zope application server / web framework"
 readme = "README.rst"
 requires-python = ">=3.10"
