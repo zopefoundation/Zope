@@ -27,6 +27,13 @@
 * [requirements-full.txt](releases/4.x/requirements-full.txt)
 * [constraints.txt](releases/4.x/constraints.txt)
 
+## 6.0
+
+* [versions.cfg](releases/6.0/versions.cfg)
+* [versions-prod.cfg](releases/6.0/versions-prod.cfg)
+* [requirements-full.txt](releases/6.0/requirements-full.txt)
+* [constraints.txt](releases/6.0/constraints.txt)
+
 ## 6.0b2
 
 * [versions.cfg](releases/6.0b2/versions.cfg)

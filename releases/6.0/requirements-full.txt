@@ -1,4 +1,4 @@
--e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
+Zope==6.0
 AccessControl==7.3
 Acquisition==6.2
 AuthEncoding==6.0
@@ -32,8 +32,8 @@ transaction==5.0
 waitress==3.0.2
 z3c.pt==5.1
 zExceptions==6.0
-zc.lockfile==3.0.post1
-zc.recipe.egg==3.0.0
+zc.lockfile==4.0
+zc.recipe.egg==4.0.0
 zodbpickle==4.3
 zope.annotation==6.0
 zope.browser==4.0
