@@ -7,5 +7,6 @@ Zope.
 .. toctree::
    :maxdepth: 2
 
-   zope4/index
+   zope6
    zope5
+   zope4/index

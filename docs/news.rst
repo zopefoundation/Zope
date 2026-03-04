@@ -9,11 +9,6 @@ The `Zope release schedule <https://www.zope.dev/releases.html>`_
 on `www.zope.dev <https://www.zope.dev>`_ explains which versions are
 supported and for how long.
 
-.. attention::
-
-    If you are upgrading from Zope 2, make sure you study the
-    :ref:`zope4migration` documentation
-
 
 What's new in Zope 6
 --------------------
@@ -28,7 +23,8 @@ Packaging updates
 
 Zope 6.0 and all dependencies that contain namespace packages have switched
 from the deprecated ``pkg_resources`` style to the newer PEP 420 style
-namespace package configuration.
+namespace package configuration. See :doc:`migrations/zope6` for additional
+information.
 
 
 What's new in Zope 5

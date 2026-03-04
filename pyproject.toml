@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Zope"
-version = "6.0.dev0"
+version = "6.0"
 description = "Zope application server / web framework"
 dynamic = ["readme"]
 requires-python = ">=3.10"
@@ -24,7 +24,7 @@ classifiers = [
   "Development Status :: 6 - Mature",
   "Environment :: Web Environment",
   "Framework :: Zope",
-  "Framework :: Zope :: 5",
+  "Framework :: Zope :: 6",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",

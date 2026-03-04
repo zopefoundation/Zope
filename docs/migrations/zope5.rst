@@ -1,5 +1,5 @@
-Migration from Zope 4 to Zope 5.0
-=================================
+Migration from Zope 4 to Zope 5
+===============================
 
 Prerequisites
 -------------

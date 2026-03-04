@@ -7,11 +7,13 @@ The change log for Zope 4 is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
 
-6.0 (unreleased)
+6.0 (2026-03-04)
 ----------------
 
 - Fix bad calls to ``str`` in ZMI DTML templates to prevent name shadowing.
   (`#1285 <https://github.com/zopefoundation/Zope/issues/1285>`_)
+
+- Update to newest compatible versions of dependencies.
 
 
 6.0b2 (2026-01-15)
