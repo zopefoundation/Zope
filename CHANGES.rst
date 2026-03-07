@@ -6,8 +6,11 @@ These are all the changes for Zope 5 since the first Zope 5 alpha release.
 The change log for Zope 4 is at
 https://github.com/zopefoundation/Zope/blob/4.x/CHANGES.rst
 
-5.15 (unreleased)
------------------
+5.14.2 (2026-03-07)
+-------------------
+
+- Update version pin and documentation to use ``zc.buildout`` version 4.2.0.
+  This avoids issues with mixed namespaces, pre-PEP 420 and PEP 420.
 
 
 5.14.1 (2026-03-03)

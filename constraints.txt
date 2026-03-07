@@ -1,3 +1,4 @@
+Zope==5.14.2
 AccessControl==7.3
 Acquisition==6.2
 AuthEncoding==6.0
@@ -82,7 +83,7 @@ urllib3==2.6.3
 waitress==3.0.2
 z3c.pt==5.1
 zExceptions==6.0
-zc.buildout==4.1.12
+zc.buildout==4.2.0
 zc.lockfile==3.0.post1
 zc.recipe.egg==3.0.0
 zc.recipe.testrunner==3.2

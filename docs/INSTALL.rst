@@ -60,7 +60,8 @@ steps:
 
 .. note::
 
-    Zope 5 requires using ``zc.buildout`` version 4. Version 5 will not work.
+    Zope 5 requires using ``zc.buildout`` version 4.2.0 or higher, but not
+    version 5.
 
 The following examples are from Linux and use Zope version 5.0. Just replace
 that version number with your desired version.
@@ -70,7 +71,7 @@ that version number with your desired version.
     $ python3.13 -m venv zope
     $ cd zope
     <create buildout.cfg in this folder, see examples below>
-    $ bin/pip install -U pip wheel 'zc.buildout<5'
+    $ bin/pip install -U pip wheel 'zc.buildout>=4.2.0,<5'
     $ bin/buildout
 
 Using the simplest possible configuration
