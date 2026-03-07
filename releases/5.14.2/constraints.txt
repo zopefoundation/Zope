@@ -1,3 +1,4 @@
+Zope==5.14.2
 AccessControl==7.3
 Acquisition==6.2
 AuthEncoding==6.0
@@ -50,11 +51,12 @@ idna==3.11
 imagesize==1.5.0
 legacy-cgi==2.6.4
 mr.developer==2.0.4
+msgpack==1.1.2
 multipart==1.3.1
 packaging==26.0
 persistent==6.5
 plone.recipe.command==1.1
-plone.versioncheck==2.0.1
+plone.versioncheck==1.8.2
 pycparser==3.0
 python-gettext==5.0
 pytz==2026.1.post1

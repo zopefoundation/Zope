@@ -48,6 +48,13 @@
 * [requirements-full.txt](releases/6.0b1/requirements-full.txt)
 * [constraints.txt](releases/6.0b1/constraints.txt)
 
+## 5.14.2
+
+* [versions.cfg](releases/5.14.2/versions.cfg)
+* [versions-prod.cfg](releases/5.14.2/versions-prod.cfg)
+* [requirements-full.txt](releases/5.14.2/requirements-full.txt)
+* [constraints.txt](releases/5.14.2/constraints.txt)
+
 ## 5.14.1
 
 * [versions.cfg](releases/5.14.1/versions.cfg)
