@@ -1658,19 +1658,6 @@ msgid ""
 msgstr ""
 
 #: ../../Schema
-msgid ""
-"class-factory (Zope2.Startup.datatypes.importable_name)  (default: "
-"Zope2.Startup.datatypes.simpleClassFactory)"
-msgstr ""
-
-#: ../../description:1
-msgid ""
-"Change the class factory function a database uses on a per-database basis"
-" to support different class factory policy. Use a Python dotted-path name"
-" to specify the class factory function."
-msgstr ""
-
-#: ../../Schema
 msgid "container-class (string)"
 msgstr ""
 

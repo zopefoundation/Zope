@@ -61,15 +61,6 @@
       </description>
     </key>
 
-   <key name="class-factory" datatype=".importable_name"
-        default="Zope2.Startup.datatypes.simpleClassFactory">
-      <description>
-       Change the class factory function a database uses on a
-       per-database basis to support different class factory policy.
-       Use a Python dotted-path name to specify the class factory function.
-      </description>
-    </key>
-
     <key name="container-class" datatype="string">
       <description>
        Change the container class a (mounted) database uses on a

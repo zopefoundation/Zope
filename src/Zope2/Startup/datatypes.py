@@ -135,6 +135,9 @@ class ZopeDatabase(ZODBDatabase):
 
     def createDB(self, database_name, databases):
         self.config.database_name = database_name
+        if self.config.class_factory is None:
+            from Zope2.App.ClassFactory import ClassFactory
+            self.config.class_factory = ClassFactory
         return ZODBDatabase.open(self, databases)
 
     def open(self, database_name, databases):
@@ -142,8 +145,6 @@ class ZopeDatabase(ZODBDatabase):
         if self.config.connection_class:
             # set the connection class
             DB.klass = self.config.connection_class
-        if self.config.class_factory is not None:
-            DB.classFactory = self.config.class_factory
         return DB
 
     def getName(self):
@@ -257,10 +258,3 @@ class DBTab:
         if name is None:
             self._mountPathError(mount_path)
         return name
-
-
-def simpleClassFactory(jar, module, name, _silly=('__doc__',), _globals={}):
-    """Class factory.
-    """
-    m = __import__(module, _globals, _globals, _silly)
-    return getattr(m, name)

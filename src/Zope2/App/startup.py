@@ -79,6 +79,7 @@ def startup():
         getattr(configuration, 'testinghome', None),
         configuration.instancehome,
     ]
+    from .ClassFactory import ClassFactory
     for location in custom_locations:
         if not location:
             continue
@@ -91,8 +92,10 @@ def startup():
                 DB = module.DB
                 databases.update(getattr(DB, 'databases', {}))
                 DB.databases = databases
+                DB.classFactory = ClassFactory
             else:
-                DB = ZODB.DB(module.Storage, databases=databases)
+                DB = ZODB.DB(module.Storage, databases=databases,
+                             class_factory=ClassFactory)
 
             break
     else:
@@ -115,9 +118,6 @@ def startup():
 
     Zope2.DB = DB
     Zope2.opened.append(DB)
-
-    from . import ClassFactory
-    DB.classFactory = ClassFactory.ClassFactory
 
     # "Log on" as system user
     newSecurityManager(None, AccessControl.users.system)
