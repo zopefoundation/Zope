@@ -14,6 +14,10 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 
 - Update to newest compatible versions of dependencies.
 
+- Use ZODB new ``class_factory`` parameter to fix registration of ZODB class
+  factory sometimes not beeing effective.
+  See `ZODB issue #420 <https://github.com/zopefoundation/ZODB/issues/420>`_.
+
 
 6.0 (2026-03-04)
 ----------------
