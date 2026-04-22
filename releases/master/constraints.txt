@@ -27,7 +27,7 @@ WSGIProxy2==0.5.1
 WebOb==1.8.9
 WebTest==3.0.7
 ZConfig==4.3
-ZODB==6.2
+ZODB==6.3
 Zope2==4.0
 accessible-pygments==0.0.5
 alabaster==1.0.0
