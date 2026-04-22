@@ -9,6 +9,10 @@ The change log for Zope 5 is at
 https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 
 
+6.2 (unreleased)
+----------------
+
+
 6.1 (2026-04-22)
 ----------------
 
