@@ -197,7 +197,7 @@ might want to read files from disk, or access the network,
 or use some advanced libraries for things like regular
 expressions or image processing.  In these cases you can use
 *External Methods*.   We encountered External Methods briefly
-in the chapter entitled `Using Basic Zope Objects <BasicObjects.html>`_ .
+in the chapter entitled `Using Basic Zope Objects <BasicObject.html>`_ .
 Now we will explore them in more detail.
 
 To create and edit External Methods you need access
