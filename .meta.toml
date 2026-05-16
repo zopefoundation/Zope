@@ -55,6 +55,7 @@ additional-rules = [
     "recursive-include docs *.po",
     "recursive-include docs *.svg",
     "recursive-include docs *.tgz",
+    "recursive-include docs/_templates *.html",
     "recursive-include src *.css",
     "recursive-include src *.dtml",
     "recursive-include src *.eot",
