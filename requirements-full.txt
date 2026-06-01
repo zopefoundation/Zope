@@ -11,7 +11,11 @@ MultiMapping==5.1
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.4
-RestrictedPython==8.1
+RestrictedPython==8.1; python_version == '3.10'
+RestrictedPython==8.1; python_version == '3.11'
+RestrictedPython==8.1; python_version == '3.12'
+RestrictedPython==8.1; python_version == '3.13'
+RestrictedPython==8.3a1.dev0; python_version > '3.13'
 WSGIProxy2==0.5.1
 WebOb==1.8.9
 WebTest==3.0.7
