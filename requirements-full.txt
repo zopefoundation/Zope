@@ -13,7 +13,7 @@ PasteDeploy==3.1.0
 Persistence==5.4
 RestrictedPython==8.1
 WSGIProxy2==0.5.1
-WebOb==1.8.9
+WebOb==1.8.10
 WebTest==3.0.7
 ZConfig==4.3
 ZODB==6.3
