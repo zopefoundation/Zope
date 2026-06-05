@@ -14,6 +14,8 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 
 - Update to newest compatible versions of dependencies.
 
+- Switch to Trusted Publishing for publishing packages to PyPI.
+
 
 6.1 (2026-04-22)
 ----------------
