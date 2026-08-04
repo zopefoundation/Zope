@@ -12,6 +12,11 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.2 (unreleased)
 ----------------
 
+- Disable XML-RPC request support by default.
+  The protocol is rarely used and disabling it reduces the potential for
+  abuse. Set ``enable-xmlrpc`` to ``on`` in the Zope configuration if you
+  really need XML-RPC support.
+
 - Update to newest compatible versions of dependencies.
 
 - Switch to Trusted Publishing for publishing packages to PyPI.
