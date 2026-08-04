@@ -45,12 +45,12 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: ${{ matrix.os[0] }}-${{ matrix.config[1] }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         persist-credentials: false
     - name: Install uv + caching
-      # astral/setup-uv@8.1.0
-      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      # astral/setup-uv@9.0.0
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
       with:
         enable-cache: true
         cache-dependency-glob: |
