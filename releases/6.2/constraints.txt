@@ -1,3 +1,4 @@
+Zope==6.2
 AccessControl==7.4
 Acquisition==6.2
 AuthEncoding==6.0

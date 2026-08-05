@@ -13,19 +13,18 @@
 
 (files created from the 5.x branch but not necessarily in sync with it)
 
-* [versions.cfg](releases/5.x/versions.cfg)
-* [versions-prod.cfg](releases/5.x/versions-prod.cfg)
-* [requirements-full.txt](releases/5.x/requirements-full.txt)
-* [constraints.txt](releases/5.x/constraints.txt)
 
 ## Zope 4 branch
 
 (files created from the 4.x branch but not necessarily in sync with it)
 
-* [versions.cfg](releases/4.x/versions.cfg)
-* [versions-prod.cfg](releases/4.x/versions-prod.cfg)
-* [requirements-full.txt](releases/4.x/requirements-full.txt)
-* [constraints.txt](releases/4.x/constraints.txt)
+
+## 6.2
+
+* [versions.cfg](releases/6.2/versions.cfg)
+* [versions-prod.cfg](releases/6.2/versions-prod.cfg)
+* [requirements-full.txt](releases/6.2/requirements-full.txt)
+* [constraints.txt](releases/6.2/constraints.txt)
 
 ## 6.1
 
