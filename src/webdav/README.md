@@ -153,7 +153,7 @@ Litmus version 0.10.5, Zope version (probably) 2.9.7, web server ZServer.
   Zope does not support locking resources with lockscope 'shared'
   (only exclusive locks are supported for any kind of Zope
   resource).  Litmus could probably do a PROPFIND on the
-  /litmus/lockme resource and check the <supportedlock> lockscope
+  /litmus/lockme resource and check the `<supportedlock>` lockscope
   in the response before declaring this a failure (class 2 DAV
   servers are not required to support shared locks).
 
