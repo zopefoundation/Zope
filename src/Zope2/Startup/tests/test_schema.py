@@ -196,7 +196,7 @@ class WSGIStartupTestCase(unittest.TestCase):
             instancehome <<INSTANCE_HOME>>
             """)
         handleWSGIConfig(None, handler)
-        self.assertTrue(conf.enable_xmlrpc)
+        self.assertFalse(conf.enable_xmlrpc)
 
         conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
@@ -204,6 +204,13 @@ class WSGIStartupTestCase(unittest.TestCase):
             """)
         handleWSGIConfig(None, handler)
         self.assertFalse(conf.enable_xmlrpc)
+
+        conf, handler = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            enable-xmlrpc on
+            """)
+        handleWSGIConfig(None, handler)
+        self.assertTrue(conf.enable_xmlrpc)
 
     def test_dos_protection(self):
         from ZPublisher import HTTPRequest
