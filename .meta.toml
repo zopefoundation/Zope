@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 [meta]
 template = "zope-product"
-commit-id = "516c594a"
+commit-id = "bab2e429"
 
 [python]
 with-pypy = false
@@ -112,3 +112,6 @@ ignore = [
 
 [pre-commit]
 teyit-exclude = "App/tests/fixtures/error\\.py"
+
+[pypi]
+trusted-publishing = true

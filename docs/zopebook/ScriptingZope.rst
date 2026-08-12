@@ -1218,6 +1218,9 @@ many programs that let you you script HTTP from the command line.
 Using XML-RPC
 ~~~~~~~~~~~~~
 
+**NOTE:** Starting with Zope 6.2, XML-RPC is disabled by default. You can
+enable with the ``enable-xmlrpc`` Zope configuration setting.
+
 XML-RPC is a simple remote procedure call mechanism that works
 over HTTP and uses XML to encode information. XML-RPC clients
 have been implemented for many languages including Python,

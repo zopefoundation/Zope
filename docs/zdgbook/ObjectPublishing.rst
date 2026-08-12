@@ -8,7 +8,7 @@ Introduction
 Zope puts your objects on the web. This is called **object
 publishing**. One of Zope's unique characteristics is the way it
 allows you to walk up to your objects and call methods on them with
-simple URLs. In addition to HTTP, Zope makes your objects available
+simple URLs. In addition to HTTP, Zope can make your objects available
 via XML-RPC.
 
 In this chapter you'll find out exactly how Zope publishes objects.
@@ -1313,7 +1313,8 @@ XML-RPC
 
 **XML-RPC** is a light-weight remote procedure call (RPC) protocol
 that uses **XML** to encode its calls and **HTTP** as a transport
-mechanism.
+mechanism. Starting with Zope version 6.2 you must explicitly enable
+it with the ``enable-xmlrpc`` Zope configuration setting.
 
 All objects in Zope support XML-RPC publishing. Generally you will
 select a published object as the end-point and select one of its

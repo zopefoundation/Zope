@@ -9,8 +9,21 @@ The change log for Zope 5 is at
 https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 
 
-6.2 (unreleased)
+6.3 (unreleased)
 ----------------
+
+
+6.2 (2026-08-05)
+----------------
+
+- Disable XML-RPC request support by default.
+  The protocol is rarely used and disabling it reduces the potential for
+  abuse. Set ``enable-xmlrpc`` to ``on`` in the Zope configuration if you
+  really need XML-RPC support.
+
+- Update to newest compatible versions of dependencies.
+
+- Switch to Trusted Publishing for publishing packages to PyPI.
 
 
 6.1 (2026-04-22)

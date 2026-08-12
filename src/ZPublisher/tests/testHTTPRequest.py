@@ -21,6 +21,7 @@ from urllib.parse import quote_plus
 
 from AccessControl.tainted import TaintedString
 from AccessControl.tainted import should_be_tainted
+from zExceptions import BadRequest
 from zExceptions import NotFound
 from zope.component import getGlobalSiteManager
 from zope.component import provideAdapter
@@ -29,7 +30,6 @@ from zope.i18n.interfaces.locales import ILocale
 from zope.publisher.browser import BrowserLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.testing.cleanup import cleanUp
-from ZPublisher.HTTPRequest import BadRequest
 from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import search_type
 from ZPublisher.interfaces import IXmlrpcChecker
@@ -806,6 +806,19 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         self.assertEqual(req.cookies['multi2'],
                          'cookie data with unquoted spaces')
 
+    def test_processInputs_xmlrpc_disabled(self):
+        TEST_METHOD_CALL = (
+            b'<?xml version="1.0"?>'
+            b'<methodCall><methodName>test</methodName></methodCall>'
+        )
+        environ = self._makePostEnviron(body=TEST_METHOD_CALL)
+        environ['CONTENT_TYPE'] = 'text/xml'
+        req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+
+        # By default, XML-RPC is disabled.
+        with self.assertRaises(BadRequest):
+            req.processInputs()
+
     def test_processInputs_xmlrpc(self):
         TEST_METHOD_CALL = (
             b'<?xml version="1.0"?>'
@@ -814,7 +827,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         environ = self._makePostEnviron(body=TEST_METHOD_CALL)
         environ['CONTENT_TYPE'] = 'text/xml'
         req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         req.processInputs()
+        _config.enable_xmlrpc = False
+
         self.assertEqual(req.PATH_INFO, '/test')
         self.assertEqual(req.args, ())
 
@@ -827,7 +846,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         environ['CONTENT_TYPE'] = 'text/xml'
         environ['QUERY_STRING'] = 'x=1'
         req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         req.processInputs()
+        _config.enable_xmlrpc = False
+
         self.assertEqual(req.PATH_INFO, '/test')
         self.assertEqual(req.args, ())
         self.assertEqual(req.form["x"], '1')
@@ -841,8 +866,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         environ['CONTENT_TYPE'] = 'text/xml'
         environ['QUERY_STRING'] = ':method=method'
         req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         with self.assertRaises(BadRequest):
             req.processInputs()
+        _config.enable_xmlrpc = False
 
     def test_processInputs_xmlrpc_ResponseError(self):
         # xmlrpc ResponseErrors should be caught and converted to
@@ -855,8 +885,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         environ = self._makePostEnviron(body=TEST_METHOD_CALL)
         environ['CONTENT_TYPE'] = 'text/xml'
         req = self._makeOne(stdin=BytesIO(TEST_METHOD_CALL), environ=environ)
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         with self.assertRaises(BadRequest):
             req.processInputs()
+        _config.enable_xmlrpc = False
 
     def test_processInputs_SOAP(self):
         # ZPublisher does not really have SOAP support
@@ -1392,7 +1427,13 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(
             stdin=BytesIO(self._xmlrpc_call),
             environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         req.processInputs()
+        _config.enable_xmlrpc = False
+
         self.assertTrue(is_xmlrpc_response(req.response))
         self.assertEqual(req.args, (41,))
         self.assertEqual(req.other["PATH_INFO"], "/examples/getStateName")
@@ -1401,8 +1442,14 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
         req = self._makeOne(
             stdin=BytesIO(self._xmlrpc_call),
             environ=dict(REQUEST_METHOD="POST", CONTENT_TYPE="text/xml"))
+
+        # Force-enable XML-RPC
+        from App.config import _config
+        _config.enable_xmlrpc = True
         with self._xmlrpc_control(lambda request: True):
             req.processInputs()
+        _config.enable_xmlrpc = False
+
         self.assertTrue(is_xmlrpc_response(req.response))
 
     def test_processInputs_xmlrpc_controlled_disallowed(self):

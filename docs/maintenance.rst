@@ -60,21 +60,11 @@ Steps for creating a new Zope release
 
 - If the tests succeed, commit the changes.
 
-- Clear out documentation build artifacts to prevent adding these files to
-  the package::
-
-   $ rm -rf docs/_build
-
-- Upload the tagged release to PyPI::
-
-    $ bin/release  # if you use zest.releaser
-
-    or
+- Create and push the release tag. This will trigger the publishing workflow on
+  GitHub::
 
     $ git tag -as <TAG-NAME> -m "- tagging release <TAG-NAME>"
     $ git push --tags
-    $ bin/buildout setup setup.py sdist bdist_wheel
-    $ bin/twine upload dist/Zope-<TAG-NAME>*
 
 - Update version information in the change log and ``pyproject.toml``::
 
@@ -91,7 +81,12 @@ Steps for creating a new Zope release
 
 - Commit and push the changes.
 
-- Check that the changes have been propagated to https://zope.readthedocs.io/en/latest/changes.html.
+- Check that the package publishing workflow has succeeded at 
+  https://github.com/zopefoundation/Zope/actions and
+  https://pypi.org/project/Zope/#history
+
+- Check that the changes have been propagated to 
+  https://zope.readthedocs.io/en/latest/changes.html.
   (This should be done automatically via web hooks defined in GitHub and RTD.)
 
 - Update https://zopefoundation.github.io/Zope/::
