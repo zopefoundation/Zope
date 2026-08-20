@@ -158,4 +158,5 @@ readme = {file = ["README.rst", "CHANGES.rst"]}
 
 [tool.zest-releaser]
 create-wheel = false
+extra-message = ""
 upload-pypi = false
