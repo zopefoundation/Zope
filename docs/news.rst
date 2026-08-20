@@ -18,6 +18,9 @@ Added support for newer Python versions
 
 * Zope 6.0 and newer support Python 3.14.
 
+* Zope 6.3 and newer also supports Python 3.15.
+
+
 Packaging updates
 ~~~~~~~~~~~~~~~~~
 

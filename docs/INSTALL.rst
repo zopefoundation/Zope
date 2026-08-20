@@ -12,7 +12,7 @@ available:
 
 - A supported version of Python, including the development support if
   installed from system-level packages.  Supported versions include
-  **3.10** up to **3.14**.
+  **3.10** up to **3.15**.
 
 - Zope needs the Python ``zlib`` module to be importable.  If you are
   building your own Python from source, please be sure that you have the
