@@ -49,7 +49,7 @@ httpx==0.28.1
 idna==3.19
 imagesize==2.0.0
 legacy-cgi==2.6.4
-mr.developer==2.0.4
+mr.developer==3.0.0
 msgpack==1.2.1
 multipart==2.0.0
 packaging==26.3
@@ -83,7 +83,7 @@ z3c.pt==5.1
 zExceptions==6.0
 zc.lockfile==4.0
 zc.recipe.egg==4.0.0
-zc.recipe.testrunner==4.1.1
+zc.recipe.testrunner==4.2.post1
 zodbpickle==4.4
 zope.annotation==6.0
 zope.browser==4.0
