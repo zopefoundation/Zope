@@ -1,17 +1,17 @@
 -e git+https://github.com/zopefoundation/Zope.git@master#egg=Zope
-AccessControl==7.4
+AccessControl==7.5
 Acquisition==6.2
 AuthEncoding==6.0
 BTrees==6.4
 Chameleon==4.6.0
 DateTime==6.0
-DocumentTemplate==5.3
+DocumentTemplate==5.4
 ExtensionClass==6.3
 MultiMapping==5.1
 Paste==3.10.1
 PasteDeploy==3.1.0
 Persistence==5.4
-RestrictedPython==8.4
+RestrictedPython==8.5
 WSGIProxy2==0.5.1
 WebOb==1.8.11
 WebTest==3.0.7
@@ -27,7 +27,7 @@ python-gettext==5.0
 pytz==2026.3.post1
 roman==5.2
 six==1.17.0
-soupsieve==2.9.1
+soupsieve==2.9.2
 transaction==5.1
 waitress==3.0.2
 z3c.pt==5.1
