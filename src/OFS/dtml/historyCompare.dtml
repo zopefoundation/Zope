@@ -18,7 +18,7 @@
 		</table>
 
 		<dtml-var historyComparisonResults>
-		
+
 	<dtml-else>
 
 		<div class="alert alert-warning">This object does not provide comparison support.</div>

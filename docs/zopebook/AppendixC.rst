@@ -457,7 +457,7 @@ Examples
 
 Simple error message::
 
-  <b tal:on-error="string: Username is not defined!" 
+  <b tal:on-error="string: Username is not defined!"
      tal:content="context/getUsername">Ishmael</b>
 
 Removing elements with errors::
@@ -570,7 +570,7 @@ item is used for grouping, otherwise the value of the item is used. You can
 provide the path by passing it as a parameter, as in::
 
   python:repeat['item'].first(color)
-  
+
 or by appending it to the path from the repeat variable, as in
 ``repeat/item/first/color``.
 
@@ -599,8 +599,8 @@ Nested repeats::
   <table border="1">
     <tr tal:repeat="row python:range(10)">
       <td tal:repeat="column python:range(10)">
-        <span tal:define="x repeat/row/number; 
-                          y repeat/column/number; 
+        <span tal:define="x repeat/row/number;
+                          y repeat/column/number;
                           z python:x*y"
               tal:replace="string:$x * $y = $z">
             1 * 1 = 1
@@ -1453,4 +1453,3 @@ will render as::
   <input type="checkbox">
 
 This works correctly in all browsers in which it has been tested.
-

@@ -374,7 +374,7 @@ Syntax
 
 a commenting identifier at the end tag is allowed and will be ignored like::
 
-  </dtml-in my_short_sequ_name>
+  </dtml-in my_short_sequ_name>
 
 same for '</dtml-if>' and '</dtml-let>'
 
@@ -512,7 +512,7 @@ variable you must loop over objects (like database query results) that have
 numeric variables.
 
 total-*variable*
-  The total of all occurrences of an item variable. 
+  The total of all occurrences of an item variable.
 
 count-*variable*
   The number of occurrences of an item variable.
@@ -637,7 +637,7 @@ Looping over a list of '(key, value)' tuples::
 
   <dtml-in objectItems>
     id: <dtml-var sequence-key>, title: <dtml-var title><br>
-  </dtml-in> 
+  </dtml-in>
 
 Creating alternate colored table rows::
 
@@ -809,7 +809,7 @@ Sending a file attachment::
 
   Hi, please take a look at my resume.
 
-  <dtml-boundary type="application/octet-stream" disposition="attachment" 
+  <dtml-boundary type="application/octet-stream" disposition="attachment"
   encode="base64" filename_expr="resume_file.getId()"><dtml-var expr="resume_file.read()"></dtml-mime>
   </dtml-sendmail>
 
@@ -989,14 +989,14 @@ Examples
 
 Sample usage::
 
-  select * from employees 
+  select * from employees
   <dtml-sqlgroup where>
     <dtml-sqltest salary op="gt" type="float" optional>
   <dtml-and>
     <dtml-sqltest first type="nb" multiple optional>
   <dtml-and>
     <dtml-sqltest last type="nb" multiple optional>
-  </dtml-sqlgroup>  
+  </dtml-sqlgroup>
 
 If 'first' is 'Bob' and 'last' is 'Smith, McDonald' it renders::
 
@@ -1010,7 +1010,7 @@ If 'first' is 'Bob' and 'last' is 'Smith, McDonald' it renders::
 If 'salary' is 50000 and 'last' is 'Smith' it renders::
 
   select * from employees
-  where 
+  where
   (salary > 50000.0
    and
    last='Smith'
@@ -1089,7 +1089,7 @@ optional=boolean
   is empty or non-existent.
 
 op=string
-  The comparison operation. Valid comparisons include: 
+  The comparison operation. Valid comparisons include:
 
   eq
     equal to
@@ -1178,7 +1178,7 @@ Examples
 
 Basic usage::
 
-  select * from employees 
+  select * from employees
     where name=<dtml-sqlvar name type="nb">
 
 This SQL quotes the 'name' string variable.
@@ -1342,7 +1342,7 @@ The 'try' tag has two different syntaxes, 'try/except/else' and 'try/finally'.
 
   <dtml-try>
   <dtml-except [ExceptionName] [ExceptionName]...>
-  ... 
+  ...
   [<dtml-else>]
   </dtml-try>
 
@@ -1525,10 +1525,10 @@ null=string
   A default value to use if the variable is None.
 
 lower
-  Converts upper-case letters to lower case. 
+  Converts upper-case letters to lower case.
 
 upper
-  Converts lower-case letters to upper case. 
+  Converts lower-case letters to upper case.
 
 capitalize
   Capitalizes the first character of the inserted word.

@@ -70,7 +70,7 @@ Steps for creating a new Zope release
 
     $ bin/postrelease  # if you use zest.releaser
 
-    or 
+    or
 
     $ vim CHANGES.rst pyproject.toml
 
@@ -81,11 +81,11 @@ Steps for creating a new Zope release
 
 - Commit and push the changes.
 
-- Check that the package publishing workflow has succeeded at 
+- Check that the package publishing workflow has succeeded at
   https://github.com/zopefoundation/Zope/actions and
   https://pypi.org/project/Zope/#history
 
-- Check that the changes have been propagated to 
+- Check that the changes have been propagated to
   https://zope.readthedocs.io/en/latest/changes.html.
   (This should be done automatically via web hooks defined in GitHub and RTD.)
 
@@ -221,6 +221,3 @@ file ``maintenance.po`` from the Japanese translation:
     Please do not add any ``.po`` files to the repository that have no
     translations. Those will not do anything but increase the size of the
     released package.
-
-
-

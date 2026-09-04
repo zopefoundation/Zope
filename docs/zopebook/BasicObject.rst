@@ -77,7 +77,7 @@ Software, audio, video and documents are typically transported around the
 Internet and the world as files. A Zope File object is an analogue to these
 kinds of files.  You can use Files to hold any kind of information that
 Zope doesn't specifically support, such as Flash files, audio files,
-"tarballs", etc. 
+"tarballs", etc.
 
 Files do not consider their contents to be of any special format, textual
 or otherwise.  Files are good for holding any kind of *binary content*,
@@ -149,7 +149,7 @@ Viewing Files
 ~~~~~~~~~~~~~
 
 You can view a file in the Workspace frame by clicking the *View* tab in a
-File object's management screen. 
+File object's management screen.
 
 .. figure:: Figures/viewingfile.jpg
 
@@ -161,7 +161,7 @@ file in your web browser via the URL *http://localhost:8080/Reader.pdf*.
 Depending on the type of file and your web browser's configuration, your
 web browser may choose to display or download the file.
 
-Images 
+Images
 ------
 
 Image objects contain the data from image files, such as GIF, JPEG, and PNG
@@ -569,7 +569,7 @@ Minimize the browser you're using to access the ZMI.  In your Zope's
 INSTANCE_HOME (the place where your Zope instance lives; see the
 Installation chapter for details), locate the subfolder named 'Extensions'.
 Navigate into this folder and create a text file with the name
-'SalesEM.py'.  
+'SalesEM.py'.
 
 Within this file, save the following content::
 
@@ -677,12 +677,12 @@ Now, revisit the Contents view of the *Interest* folder and create a Script
 four parameters: 'principal', 'interest_rate', 'periods', and 'years'.
 Provide it with the following "body"::
 
-  """ 
+  """
   Calculate compounding interest.
   """
   i = interest_rate / periods
   n = periods * years
-  return ((1 + i) ** n) * principal 
+  return ((1 + i) ** n) * principal
 
 Remember: you enter the parameter names, separated by commas, into the
 *Parameters List* field, and the body into the body text area.  Remember
@@ -709,7 +709,7 @@ Page Template with the id *interestRateDisplay*.  This Page Template is
                       periods request/periods">
       <span tal:content="years">2</span> years is:<br><br>
       <b>$
-      <span tal:content="python: context.calculateCompoundingInterest(principal, 
+      <span tal:content="python: context.calculateCompoundingInterest(principal,
                                                        interest_rate,
                                                        periods,
                                                        years)" >1.00</span>

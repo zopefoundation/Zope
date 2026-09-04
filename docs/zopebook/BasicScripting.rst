@@ -16,7 +16,7 @@ Zope is through a web browser. Any URL your browser requests from the server is
 mapped to both an object and a method. The method is executed *on* the object,
 and a response is sent to your browser.
 
-As you might already know, visiting the URL :: 
+As you might already know, visiting the URL ::
 
   http://localhost:8080/
 
@@ -28,7 +28,7 @@ method defined for *Folders*: *index_html*. Visiting the URL::
 
 returns (almost) exactly the same page.
 
-You can also specify the root object as:: 
+You can also specify the root object as::
 
   http://localhost:8080/manage_main
 
@@ -41,14 +41,14 @@ The same method can be called *on* other objects: when you visit the URL::
 
 the *manage_main* method is called *on* the *Control Panel* object.
 
-Sometimes a query string is added to the URL, e.g.:: 
+Sometimes a query string is added to the URL, e.g.::
 
   http://localhost:8080/manage_main?skey=meta_type
 
 The query string is used for passing arguments to the method. In this case, the
 argument ``skey`` specifies the sort key with the value *meta_type*. Based on
 this argument, the *manage_main* method returns a modified version of the basic
-page: the sub-objects are sorted by *Type*, not by *Name* as they are without 
+page: the sub-objects are sorted by *Type*, not by *Name* as they are without
 that query string.
 
 While the *manage_main* method is defined in the class of the object,
@@ -105,12 +105,12 @@ the figure below.
 
   A collection of objects and methods
 
-To call the *feed* method on the *hippo* object, you would visit the URL:: 
+To call the *feed* method on the *hippo* object, you would visit the URL::
 
   Zoo/LargeAnimals/hippo/feed
 
 To call the *feed* method on the *kangarooMouse* object you would visit the
-URL:: 
+URL::
 
   Zoo/SmallAnimals/kangarooMouse/feed
 
@@ -119,7 +119,7 @@ These URLs place the *feed* method in the context of the *hippo* and
 
 Zope breaks apart the URL and compares it to the object hierarchy,
 working backwards until it finds a match for each part.  This process is
-called *URL traversal*.  For example, when you give Zope the URL:: 
+called *URL traversal*.  For example, when you give Zope the URL::
 
   Zoo/LargeAnimals/hippo/feed
 
@@ -152,7 +152,7 @@ objects. You can't call another method *in the context* of one of them. Given
   Zoo/LargeAnimals/hippo/wash/feed
 
 would also call the *wash* method on the *hippo* object. Instead of traversing
-to *feed*, everything after the method ``wash`` is cut off of the URL and 
+to *feed*, everything after the method ``wash`` is cut off of the URL and
 stored in the variable ``traverse_subpath``.
 
 
@@ -234,7 +234,7 @@ This screen allows you to control the parameters and body of your script. You
 can enter your script's parameters in the *parameter list* field. Type the body
 of your script in the text area at the bottom of the screen.
 
-Enter:: 
+Enter::
 
   name="World"
 
@@ -279,8 +279,8 @@ by Zope when you view the script outside the *Edit* tab of the ZMI, e.g., by
 clicking the *view or download* link at the bottom of the *Edit* tab. We'll use
 this format for our examples.
 
-The script calls ``context.objectIds()``, a method in the Zope API, to get a 
-list of the contained objects. *objectIds* is a method of *Folders*, so the 
+The script calls ``context.objectIds()``, a method in the Zope API, to get a
+list of the contained objects. *objectIds* is a method of *Folders*, so the
 context object should be a Folder-like object. The script then calls ``len()``
 to find the number of items in that list. When you call this script on a given
 Zope object, the *context* variable is bound to the context object. So, if you
@@ -504,7 +504,7 @@ Note that::
 
 works because there is no dot in the id of the template. In Python, dots are
 used to separate ids. This is the reason why Zope often uses ids like
-*index_html* instead of the more common ``index.html`` and why this example 
+*index_html* instead of the more common ``index.html`` and why this example
 uses *hello_world_pt* instead of ``hello_world.pt``.
 
 However, if desired, you can use dots within object ids. Using *getattr* to
@@ -599,7 +599,7 @@ The id is the "handle" to access an object, and is set at object creation::
 
 Note that there is no *setId()* method: you have to either use the ZMI to
 rename them, set their ``id`` attribute via security-unrestricted code, or use
-the `` manage_renameObject`` or ``manage_renameObjects`` API methods exposed
+the ``manage_renameObject`` or ``manage_renameObjects`` API methods exposed
 upon the container of the object you want to rename.
 
 Get the Zope root Folder

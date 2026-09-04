@@ -12,7 +12,7 @@
         <div class="controls">
           <input type="submit" value="Make site" name="MAKESITE"
                  i18n:attributes="value" tal:condition="not:view/isSite" />
-          <input type="submit" value="Unmake site" name="UNMAKESITE" 
+          <input type="submit" value="Unmake site" name="UNMAKESITE"
                  i18n:attributes="value" tal:condition="view/isSite" />
         </div>
       </div>

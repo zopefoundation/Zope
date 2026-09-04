@@ -66,7 +66,7 @@ it just fine.
 
    .. code-block:: html
 
-    <a href="" 
+    <a href=""
        tal:attributes="href python:context.myfunc(a=1, a=1)">
       ...
     </a>  <!-- BAD: Python syntax error>

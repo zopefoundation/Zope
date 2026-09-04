@@ -7,4 +7,3 @@ documentation.
 
 You can learn more about doc tests here:
 http://docs.python.org/lib/module-doctest.html
-

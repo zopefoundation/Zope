@@ -14,7 +14,7 @@ Introduction
 In this chapter we are looking at building Python packages that are
 **Zope Products**. Products most often provide new addable objects.
 
-.. note:: 
+.. note::
   In the early days of Zope development, it was quite common to
   develop "through the web". This is still possible but no longer
   recommended.

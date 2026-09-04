@@ -131,7 +131,7 @@ msgid ""
 "replace that version number with your desired version."
 msgstr ""
 "次の例は Linux で Zope バージョン 5.0 を使うものです。"
-"お望みのバージョンで読み替えてください。" 
+"お望みのバージョンで読み替えてください。"
 
 #: ../../INSTALL.rst:62
 msgid "Built-in standard buildout configuration"
@@ -247,4 +247,3 @@ msgid ""
 msgstr ""
 "``zc.buildout`` をインストールに使ったのであれば、"
 "HTML のドキュメントをローカルでビルドできます。"
-

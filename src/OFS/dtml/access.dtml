@@ -23,9 +23,9 @@
     <div class="form-group row form-inline">
       <label for="username" class="col-sm-3 col-md-2">Username:</label>
       <div class="col-sm-9 col-md-10">
-        <input class="form-control mr-3" type="text" id="username" name="user" 
+        <input class="form-control mr-3" type="text" id="username" name="user"
           required="required" placeholder="Enter name of user ..." />
-        <input type="submit" 
+        <input type="submit"
           class="btn btn-primary mr-sm-2"
           title="Show user permissions and roles in the context of the current object"
           value="Show permissions" />
@@ -89,7 +89,7 @@
               <th scope="col" colspan="2" class="zmi-table-head-permisions">
                 Permissions
               </th>
-              <th scope="col" colspan="<dtml-var expr="_.len(valid_roles)">" 
+              <th scope="col" colspan="<dtml-var expr="_.len(valid_roles)">"
                   class="zmi-table-head-roles">Roles</th>
               <th class="blank">&nbsp;</th>
             </tr>
@@ -128,9 +128,9 @@
                 </td>
                 <dtml-in roles mapping>
                   <td class="zmi-rolename-check"
-                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">Permission: &dtml-permission_title;" 
+                      title="Role: <dtml-var "valid_roles[_['sequence-index']]">Permission: &dtml-permission_title;"
                       onclick="$(this).children('input').trigger('click')">
-                    <label class="sr-only sr-only-focusable" 
+                    <label class="sr-only sr-only-focusable"
                            for="&dtml-name;">
                       Role: <dtml-var "valid_roles[_['sequence-index']]">,
                       Permission: <dtml-var "_['permission_title']">
@@ -176,7 +176,7 @@
           <input type="text" class="form-control col-sm-6 col-md-3 mr-2 mb-2"
                  id="role" name="role" placeholder="Define a new user role ..." />
           <input type="submit" class="btn btn-primary mb-2" name="submit"
-                 value="Add Role" /> 
+                 value="Add Role" />
         </div>
       </div>
       <dtml-if userdefined_roles>
@@ -189,7 +189,7 @@
               </dtml-in>
             </select>
             <input type="submit" class="btn btn-primary  mb-2" name="submit"
-                   value="Delete Role" /> 
+                   value="Delete Role" />
           </div>
         </div>
       </dtml-if>

@@ -5,7 +5,7 @@
 <main class="container-fluid">
 
 	<p class="form-help">
-		Enter variable values to pass to the script in the form below and 
+		Enter variable values to pass to the script in the form below and
 		click <em>run script</em> to view the result of the call.
 	</p>
 

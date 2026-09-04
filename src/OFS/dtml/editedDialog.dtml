@@ -3,7 +3,7 @@
 <main class="container-fluid">
 
 	<div class="alert alert-success">  &dtml-title_and_id; has been successfully edited.</div>
-	
+
 	<form action="manage_workspace" method="post">
 			<div class="zmi-controls">
 				<input class="btn btn-primary" type="submit" value="OK">

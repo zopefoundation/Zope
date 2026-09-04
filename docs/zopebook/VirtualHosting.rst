@@ -255,9 +255,9 @@ newly-created 'vhm_test' folder, create a DTML Method named
 View the DTML Method by clicking on its View tab, and you will
 see something like the following::
 
-  Absolute URL   http://localhost:8080/vhm_test 
+  Absolute URL   http://localhost:8080/vhm_test
   URL0           http://localhost:8080/vhm_test/index_html
-  URL1           http://localhost:8080/vhm_test 
+  URL1           http://localhost:8080/vhm_test
 
 Now visit the URL 'http://localhost:8080/vhm_test'.  You will be
 presented with something that looks almost exactly the same.
@@ -266,7 +266,7 @@ Now visit the URL
 'http://localhost:8080/VirtualHostBase/http/zope.com:80/vhm_test'.
 You will be presented with something that looks much like this::
 
-  Absolute URL   http://zope.com/vhm_test 
+  Absolute URL   http://zope.com/vhm_test
   URL0           http://zope.com/vhm_test/index_html
   URL1           http://zope.com/vhm_test
 
@@ -329,14 +329,14 @@ The lines entered into the *Mappings* tab are in the form::
 You can also match multiple subdomains by putting "\*." in front
 of the host name in the mapping rule.  For example::
 
-  *.example.com /folder 
-  
+  *.example.com /folder
+
 This example  will match "my.example.com",
 "zoom.example.com", etc. If an exact match exists, it is
 used instead of a wildcard match.
 
 The best way to explain how to use the *Mappings* tab is by
-more specific example.  Assuming you've added a Virtual Host 
+more specific example.  Assuming you've added a Virtual Host
 Monster object in your root folder on a Zope running on 'localhost'
 on port 8080, create an alias in your local system's 'hosts'
 file (in /etc/hosts on UNIX and in
@@ -382,7 +382,7 @@ works is straightforward: Apache listens on its "normal"
 port, typically port 80.  At the same time, Zope's web
 server (on the same host or on another host) listens on a
 different port (typically 8080).  Apache accepts requests on
-its listening port.  A virtual host declaration in Apache's 
+its listening port.  A virtual host declaration in Apache's
 configuration tells Apache to apply the contained
 directives to the specified virtual host.
 
@@ -423,7 +423,7 @@ local host) and this makes it possible.
 Note:  On MacOS X Server, the 'Server Admin.app' program
 simplifies adding virtual host definitions to your Apache.
 This application can make and maintain virtual host , access
-log, etc. 
+log, etc.
 
 Now, assuming you've got Apache running on port 80 and Zope
 running on port 8080 on your local machine, and assuming
@@ -502,4 +502,3 @@ generate URLs that start with /z.
 In our example, you would have the main server send requests
 for http://www.mycause.org/dynamic_stuff/anything to Zope,
 rewritten as /VirtualHostRoot/_vh_dynamic_stuff/anything.
-

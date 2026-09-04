@@ -37,7 +37,7 @@ a class, but contains no implementation::
 
       def trample(target):
           """Trample the target.
-          
+
           The anger level determines the rate of flattening of the target.
           """
 
@@ -130,7 +130,7 @@ object is the object being adapted. An example::
 
   @implementer(INewInterface)
   class MyAdapter:
- 
+
       def __init__(self, context):
           self.context = context
 
@@ -145,11 +145,11 @@ called ``classes.py`` and the interfaces in a module called
 
   <configure xmlns="http://namespaces.zope.org/zope">
 
-    <adapter 
+    <adapter
       for=".interfaces.IMyInterface"
       provides=".interfaces.INewInterface"
-      factory=".classes.MyAdapter" /> 
-    
+      factory=".classes.MyAdapter" />
+
   </configure>
 
 Zope will automatically pickup ``configure.zcml`` when it's placed in
@@ -189,7 +189,7 @@ an example, to make Zope's ``Folder`` (and all its subclasses)
 implement ``IFolder`` (an interface you defined), you can do the
 following in ZCML::
 
-  <class class="OFS.Folder.Folder" 
+  <class class="OFS.Folder.Folder"
     <implements interface=".interfaces.IFolder" />
   </class>
 
@@ -200,7 +200,7 @@ Views in Zope are simple classes. The only requirements for a view class are:
   ``BrowserView``.
 
 An example of a simple view::
- 
+
   from zope.publisher.browser import BrowserView
 
   class SimpleFolderView(BrowserView):
@@ -218,7 +218,7 @@ such as ``ViewPageTemplateFile``.
 
 Finally, we need to hook up the pages through ZCML::
 
-  <browser:page 
+  <browser:page
     for=".interfaces.IFolder"
     class=".browser.SimpleFolderView"
     attribute="eagle"

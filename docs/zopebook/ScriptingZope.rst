@@ -50,7 +50,7 @@ of acquisition apply. You do not necessarily have to know what
 language is used in the script you are calling; you only need to
 pass it any parameters that it requires, if any.
 
-Calling Scripts from Page Templates 
+Calling Scripts from Page Templates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Calling scripts from Page Templates is much like calling them
@@ -76,7 +76,7 @@ behaves much like the *context* variable in a Python-based
 Script.  In other words, *hippo* and *feed* will both be
 looked up by acquisition.
 
-If the script you call requires arguments, you must use a 
+If the script you call requires arguments, you must use a
 TALES python expression in your template, like so::
 
   <div tal:replace="python:context.hippo.feed(food='spam')">
@@ -84,7 +84,7 @@ TALES python expression in your template, like so::
   </div>
 
 Just as in Path Expressions, the 'context' variable refers to the
-acquisition context the Page Template is called in.  
+acquisition context the Page Template is called in.
 
 The python expression above is exactly like a line of
 code you might write in a Script (Python).
@@ -107,20 +107,20 @@ parentheses). For example, here is how you might call
 the *updateInfo* script from Python::
 
   new_color='brown'
-  context.updateInfo(color=new_color, 
+  context.updateInfo(color=new_color,
                      pattern="spotted")
 
 Note the use of the *context* variable to tell Zope to find
-updateInfo by acquisition. 
+updateInfo by acquisition.
 
 Zope locates the scripts you call by using acquisition the
 same way it does when calling scripts from the web.  Returning
 to our hippo feeding example of the last section, let's see
 how to vaccinate a hippo from Python. The figure
 below shows a slightly updated object hierarchy that contains
-a script named *vaccinateHippo.py*. 
+a script named *vaccinateHippo.py*.
 
-.. figure:: Figures/zoo-again.png 
+.. figure:: Figures/zoo-again.png
 
    A collection of objects and scripts
 
@@ -187,7 +187,7 @@ found. So in the next statement we just have to test whether
 the *updateInfo* variable is None, and if not, we know we can
 call it.
 
- 
+
 Using External Methods
 ----------------------
 
@@ -224,7 +224,7 @@ Zope *Extensions* directory on your server. In the file, enter the
 following code::
 
   def hello(name="World"):
-      return "Hello %s." % name 
+      return "Hello %s." % name
 
 You've created a Python function in a Python module. But you have
 not yet created an External Method from it. To do so, we must add
@@ -289,7 +289,7 @@ the body of an HTML Page (everything between the 'body' and
       matched = regexp.search(htmlpage)
       if matched is None: return "No match found"
       body = matched.group(1)
-      return body 
+      return body
 
 Note that we import the 're' module and define the regular
 expression at the module level, instead of in the function itself;
@@ -319,7 +319,7 @@ You could call this for example in a 'Script (Python)' called
 This is obviously not a complete example; you would want
 to get a real HTML page instead of a hardcoded one, and you would
 do something sensible with the value returned by your External
-Method. 
+Method.
 
 Creating Thumbnails from Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -340,27 +340,27 @@ object in a Folder.  Enter the following code in a file named
       object.
       """
 
-      import PIL 
+      import PIL
       from StringIO import StringIO
-      import os.path 
+      import os.path
       # none of the above imports would be allowed in Script (Python)!
 
       # Note that PIL.Image objects expect to get and save data
-      # from the filesystem; so do Zope Images. We can get around 
+      # from the filesystem; so do Zope Images. We can get around
       # this and do everything in memory by using StringIO.
 
       # Get the original image data in memory.
       original_image=getattr(self, original_id)
       original_file=StringIO(str(original_image.data))
 
-      # create the thumbnail data in a new PIL Image. 
+      # create the thumbnail data in a new PIL Image.
       image=PIL.Image.open(original_file)
       image=image.convert('RGB')
       image.thumbnail((size,size))
 
       # get the thumbnail data in memory.
       thumbnail_file=StringIO()
-      image.save(thumbnail_file, "JPEG") 
+      image.save(thumbnail_file, "JPEG")
       thumbnail_file.seek(0)
 
       # create an id for the thumbnail
@@ -376,16 +376,16 @@ object in a Folder.  Enter the following code in a file named
                                                      thumbnail_file,
                                                      'thumbnail image')
 
-      # now find the new zope object so we can modify 
+      # now find the new zope object so we can modify
       # its properties.
       thumbnail_image=getattr(self, thumbnail_id)
       thumbnail_image.manage_addProperty('original_id', original_id, 'string')
 
 Notice that the first parameter to the above function is called
-*self*. This parameter is optional. If *self* is the first parameter 
-to an External Method function definition, it will be assigned 
-the value of the calling context (in this case, a folder). 
-It can be used much like the *context* we have seen in 
+*self*. This parameter is optional. If *self* is the first parameter
+to an External Method function definition, it will be assigned
+the value of the calling context (in this case, a folder).
+It can be used much like the *context* we have seen in
 Scripts (Python).
 
 You must have `Pillow <https://pypi.org/project/Pillow/>`_ installed for
@@ -450,7 +450,7 @@ together. Create a DTML Method called *displayThumbnails*::
         <a href="&dtml-original_id;"><dtml-var sequence-item></a>
         <br />
         <dtml-var original_id>
-      </td> 
+      </td>
     </dtml-if>
   </dtml-in>
 
@@ -477,10 +477,10 @@ folder you can use this form to update your thumbnails.
 
 This example shows a good way to use scripts, External Methods and DTML
 together. Python takes care of the logic while the DTML handles
-presentation. Your External Methods handle external packages 
+presentation. Your External Methods handle external packages
 such as PIL while your scripts do simple processing of Zope objects.
 Note that you could just as easily use a Page Template instead of DTML.
-  
+
 Processing XML with External Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -614,7 +614,7 @@ scope of this book. You can learn more by reading the
 Guide <https://zope.readthedocs.io/en/latest/zdgbook/index.html>`_.
 
 
-Advanced Acquisition 
+Advanced Acquisition
 --------------------
 
 In the chapter entitled `Acquisition <Acquisition.html>`_ , we
@@ -633,7 +633,7 @@ rarely ever used in practice.
 
 Recall our Zoo example introduced earlier in this chapter.
 
-.. figure:: Figures/zoo.png 
+.. figure:: Figures/zoo.png
 
    Zope Zoo Example hierarchy
 
@@ -730,10 +730,10 @@ Now suppose that the *about_penguins* page contains a link to
 *Images/penguins.png*. Shouldn't this work? Won't
 */Images/penguins.png* succeed when
 */Content/Images/penguins.png* fails?  The answer is no. We
-always traverse from left to right, one item at a time. 
-First we find *Content*, then *Images* within it; *penguins.png* 
-appears in neither of those, and we haved searched all 
-parent containers of every element in the URL, so 
+always traverse from left to right, one item at a time.
+First we find *Content*, then *Images* within it; *penguins.png*
+appears in neither of those, and we haved searched all
+parent containers of every element in the URL, so
 there is nothing more to search in this URL.
 Zope stops there and raises an error. Zope never looks in */Images*
 because it has already found */Content/Images*.
@@ -765,7 +765,7 @@ a long and torturous path, you are assuming that the folder tree
 is not going to change. A maintenance decision to reorganize the
 folder hierarchy could require an audit of scripts in *every*
 part of the site to determine whether the reorganization will
-break anything. 
+break anything.
 
 Recall our Zoo example. There are several ways in which a zope
 maintainer could break the feed() script:
@@ -932,7 +932,7 @@ The *list* and *tuple* converters can be used in combination with other
 converters.  This allows you to apply additional converters to each
 element of the list or tuple.  Consider this form::
 
-  <form action="processTimes"> 
+  <form action="processTimes">
 
     <p>I would prefer not to be disturbed at the following
     times:</p>
@@ -1028,7 +1028,7 @@ an example form::
     </p>
 
     <input type="submit" />
-  </form>    
+  </form>
 
 This form will call the *processPeople* script with a variable
 called *people* that is a list of records. Each record will have
@@ -1176,12 +1176,12 @@ write packages on the file-system.
 
 For presentation, Python should *not* be used; instead you use ZPT.
 
-Just for the sake of comparison, here is a simple presentational script 
+Just for the sake of comparison, here is a simple presentational script
 suggested by Gisle Aas in ZPT and Python.
 
 In ZPT::
 
-  <div tal:repeat="item context/objectValues" 
+  <div tal:repeat="item context/objectValues"
        tal:replace="python:'%s: %s\n' % (item.getId(), str(item))" />
 
 In Python::
@@ -1342,7 +1342,7 @@ You can even control this behavior using Word's built-in Visual Basic
 scripting. For example, here's a fragment of Visual Basic that tells
 Word to open a new document using a Zope script URL::
 
-  Documents.Open FileName:="http://www.zopezoo.org/LionCages/wash?use_soap=1&water_temp=hot" 
+  Documents.Open FileName:="http://www.zopezoo.org/LionCages/wash?use_soap=1&water_temp=hot"
 
 You could use Visual Basic to call Zope script URLs in many different
 ways.

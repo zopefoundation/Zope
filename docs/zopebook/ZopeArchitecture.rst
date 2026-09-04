@@ -21,7 +21,7 @@ problem at hand.  It allows you to utilize the services it
 provides to build web applications more quickly than other
 languages or frameworks, and to write web
 application logic in the `Python <https://www.python.org/>`_
-language.  Zope also comes with one solution that allow you 
+language.  Zope also comes with one solution that allow you
 to "template" text, XML, and HTML: *Zope Page Templates* (ZPT).
 
 Object Orientation
@@ -30,11 +30,11 @@ Object Orientation
 Unlike common, file-based web template systems, such as ASP or
 PHP, Zope is a highly "object-oriented" web development
 platform.  Object orientation is a concept that is shared
-between many different programming languages, including 
+between many different programming languages, including
 Python.  The concept of
 object orientation may take a little "getting-used-to" if you're
 an old hand at procedural languages used for
-web scripting, such as Perl or PHP.  However, you will easily grasp its 
+web scripting, such as Perl or PHP.  However, you will easily grasp its
 main concepts by reading the `Object Orientation <ObjectOrientation.html>`_
 chapter, and by trying the hands-on examples in this book.
 
@@ -99,7 +99,7 @@ There could also be other Folders in the Uncles folder called
 similarly::
 
   /Uncles/Rick
-  /Uncles/Danny 
+  /Uncles/Danny
   /Uncles/Louis
 
 The URL of an object is most simply composed of its 'host',
@@ -185,7 +185,7 @@ Native Object Persistence and Transactions
 
 By default, Zope objects are stored in a high-performance, transactional
 object database known as the *Zope Object Database* (ZODB). Each
-web request is treated as a separate transaction by the ZODB. 
+web request is treated as a separate transaction by the ZODB.
 If an error occurs in your application during a
 request, any changes made during the request will be
 automatically rolled back. The ZODB also provides
@@ -220,7 +220,7 @@ from its parent or ancestor elements. Containment acquisition
 works in the same fashion: if a document X is contained in folder Y,
 document X can access the attributes of folder Y through acquisition.
 Note that some advanced aspects of acquisition may break
-this analogy; these are discussed in the 
+this analogy; these are discussed in the
 `Advanced Zope Scripting <ScriptingZope.html>`_ chapter.
 
 Acquisition is explained in further detail in the chapter on
@@ -300,4 +300,3 @@ Products
 Zope also allows site managers to add new, pre-built object types to Zope
 by installing add-ons on the Zope server file system. These are referred to
 as Products or Add-ons. Technically they are normal Python packages.
-

@@ -174,7 +174,7 @@ and search for all DTML Documents.  It will search the folder and
 then descend down into all of the sub-folders and their
 sub-folders.  For example, if your ZCatalog is located at
 ``/Zoo/AnimalCatalog``, then the ``/Zoo`` folder and all its
-subfolders will get searched. 
+subfolders will get searched.
 
 If you have lots and lots of objects, this may take a long time
 to complete, so be patient.
@@ -219,7 +219,7 @@ are just a user interface to search the animal documents in the
 report forms are not listed in the **Cataloged Objects** tab.
 
 To search the **AnimalCatalog**, select the ``SearchForm``
-template and click on its **Test** tab.  
+template and click on its **Test** tab.
 
 By typing words into the ``ZooTextIdx`` form element you can
 search all of the documents cataloged by the **AnimalCatalog**.
@@ -319,17 +319,17 @@ TopicIndex
   Searches among FilteredSets;  each set contains
   the document IDs of documents which match the set's filter
   expression.  Use this kind of index to optimize
-  frequently-accessed searches. 
+  frequently-accessed searches.
 
 DateIndex
   A subclass of FieldIndex, optimized for DateTime
   values.  Use this index for any field known to be a date or a
-  DateTime. 
+  DateTime.
 
 DateRangeIndex
   Searches objects based on a pair of
   DateTime objects.  Use this index to search for objects which are
-  **current** or **in effect** at a given time. 
+  **current** or **in effect** at a given time.
 
 
 We'll examine these different indexes more closely later in the
@@ -341,7 +341,7 @@ go to the **Advanced** view and click the the **Update Catalog**
 button.  Recataloging your content may take a while if you have
 lots of cataloged objects.  For a ZCTextIndex, you will also
 need a **ZCTextIndex Lexicon** object in your **ZCatalog** - see below
-for details. 
+for details.
 
 To remove an index from a **ZCatalog**, select the index and click
 on the **Delete** button.  This will delete the index and all of
@@ -381,7 +381,7 @@ from using too many.  As more meta data columns are added, the
 catalog itself becomes larger (and slower), and getting the
 result objects becomes more memory- and performance-intensive.
 Therefore, you should choose meta data columns only for those
-fields that you'll want to show on common search results. 
+fields that you'll want to show on common search results.
 Consider carefully before adding a field that returns a large
 result (like the full text of a document) to meta data.
 
@@ -541,7 +541,7 @@ the main Zope Zoo Page Template::
       </a>
     </li>
   </ul>
-  ...     
+  ...
 
 This template assumes that you have defined ``absolute_url`` and
 ``title`` as meta data columns in the ``NewsCatalog``. Now, when you
@@ -564,7 +564,7 @@ attribute for each item of your meta data, they also have
 several useful methods:
 
 has_key(key)
-  Returns true if the result object has a meta data element 
+  Returns true if the result object has a meta data element
   named key.
 
 getPath()
@@ -583,7 +583,7 @@ getObject()
   method of the object that isn't in the meta data. Once we have
   the actual object, we can get any normal attribute or method
   of it.  However, be careful not to use this instead of defining
-  meta data.  Meta data, being stored in the catalog, is 
+  meta data.  Meta data, being stored in the catalog, is
   pre-calculated and quickly accessed; getting the same type of
   information by using ``getObject().attribute_name`` requires
   actually pulling your real object from the ZODB and may be
@@ -665,7 +665,7 @@ Phrase search
 
   Double-quoted text implies phrase search,  for example::
 
-    "carpet python" OR frogs 
+    "carpet python" OR frogs
 
   will search for all occurrences of the phrase ``carpet python``
   or of the word ``frogs``
@@ -737,7 +737,7 @@ Split text into words
   On the other hand, if you are going to index plain text documents **about**
   HTML, you don't want to remove HTML tags - people might want to look them
   up.  Also, an eg. chinese language document has a different concept of
-  words and you might want to use a different splitter. 
+  words and you might want to use a different splitter.
 
 The **Lexicon** uses a pipeline architecture. This makes it possible
 to mix and match pipeline components.  For instance, you could
@@ -750,7 +750,7 @@ eg. ``Products.ZCTextIndex.Lexicon.py``.  A pipeline
 element should conform to the ``IPipelineElement`` interface.
 
 To create a **ZCTextIndex**, you first have to create a Lexicon
-object.  Multiple ZCTextIndexes can share the same lexicon. 
+object.  Multiple ZCTextIndexes can share the same lexicon.
 
 Searching Field Indexes
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -784,9 +784,9 @@ with something a little more useful::
   Enter query parameters:<br><table>
   <tr><th>Author</th>
   <td>
-    <select name="author:list" size="6" multiple>             
-      <option 
-        tal:repeat="item python:context.NewsCatalog.uniqueValuesFor('author')" 
+    <select name="author:list" size="6" multiple>
+      <option
+        tal:repeat="item python:context.NewsCatalog.uniqueValuesFor('author')"
         tal:content="item"
         value="opt value">
       </option>
@@ -805,9 +805,9 @@ with something a little more useful::
 
 The new, important bit of code added to the search form is::
 
-    <select name="author:list" size="6" multiple>             
-      <option 
-        tal:repeat="item python:context.NewsCatalog.uniqueValuesFor('author')" 
+    <select name="author:list" size="6" multiple>
+      <option
+        tal:repeat="item python:context.NewsCatalog.uniqueValuesFor('author')"
         tal:content="item"
         value="opt value">
       </option>
@@ -845,13 +845,13 @@ Suppose that you have a number of image objects that have a
 **keywords** property. The **keywords** property is a lines property
 that lists the relevant keywords for a given image, for example,
 ``Portraits``, ``19th Century``, and ``Women`` for a picture of Queen
-Victoria.  
+Victoria.
 
 The keywords provide a way of categorizing images. Each image can
 belong in one or more categories depending on its **keywords**
 property. For example, the portrait of Queen Victoria belongs to
 three categories and can thus be found by searching for any of the
-three terms. 
+three terms.
 
 You can use a **Keyword** index to search the **keywords** property. Define
 a **Keyword** index with the name ``keywords`` on your **ZCatalog**. Then
@@ -859,7 +859,7 @@ catalog your images. Now you should be able to find all the images
 that are portraits by creating a search form and searching for
 ``Portraits`` in the **keywords** field. You can also find all pictures
 that represent 19th Century subjects by searching for ``19th
-Century``. 
+Century``.
 
 It's important to realize that the same image can be in more
 than one category. This gives you much more flexibility in
@@ -875,7 +875,7 @@ Page Template that will create a multiple select box for all the
 values in the **keywords** index::
 
   <select name="keywords:list" multiple>
-    <option 
+    <option
       tal:repeat="item python:context.uniqueValuesFor('keywords')"
       tal:content="item">
         opt value goes here
@@ -904,12 +904,12 @@ use path indexes to quickly locate these objects. For example::
 
   <h2>Lizard Pictures</h2>
   <p tal:repeat="item
-      python:context.AnimalCatalog(pathindex='/Zoo/Lizards', 
+      python:context.AnimalCatalog(pathindex='/Zoo/Lizards',
       meta_type='Image')">
     <a href="url" tal:attributes="href item/getURL" tal:content="item/title">
       document title
     </a>
-  </p>    
+  </p>
 
 This query searches a **ZCatalog** for all images that are located
 within the ``/Zoo/Lizards`` folder and below. It creates a link to
@@ -943,7 +943,7 @@ DateTime values.  An example application would be NewsItems
 which have two DateTime attributes ``effective`` and ``expiration``,
 and which should only be published if the current date would
 fall somewhere in between these two date values.  Like
-DateIndexes, **DateRangeIndexes** have a resolution of one minute. 
+DateIndexes, **DateRangeIndexes** have a resolution of one minute.
 
 **DateRangeIndexes** are widely used in CMF and Plone, where
 content is compared to an effective date and an expiration
@@ -1001,7 +1001,7 @@ Python snippet like::
 
 Provided our **AnimalCatalog** contains a TopicIndex ``topicindex``,
 this would return all folderish objects in **AnimalCatalog** which
-had a non-empty title.  
+had a non-empty title.
 
 **TopicIndexes** also support the ``operator`` parameter with Records.
 More on Records below.
@@ -1039,7 +1039,7 @@ For example::
   results=ZCatalog(categories=['big', 'shiny'])
 
   # big and shiny
-  results=ZCatalog(categories={'query':['big','shiny'], 
+  results=ZCatalog(categories={'query':['big','shiny'],
                                        'operator':'and'})
 
 The second query matches objects that have both the keywords
@@ -1069,9 +1069,9 @@ range
     min:max
       Searches for all objects with values smaller than the maximum of the
       values passed in the ``query`` parameter and larger than the minimum of
-      the values passed in the ``query`` parameter. 
+      the values passed in the ``query`` parameter.
 
-For example, here is a PythonScript snippet using a range 
+For example, here is a PythonScript snippet using a range
 search::
 
   # animals with population count greater than 5
@@ -1109,7 +1109,7 @@ query
 level
   The path level to begin searching at.  Level defaults to ``0``, which means
   searching from the root.  A level of ``-1`` means start from anywhere in the
-  path. 
+  path.
 
 Suppose you have a collection of objects with these paths:
 
@@ -1145,7 +1145,7 @@ Here are some examples queries and their results to show how the
   - ``'/aa/bb/cc'``
 
 ``query="/bb/bb", level=0``
-  Again, this returns the default: 
+  Again, this returns the default:
 
   - ``'/bb/bb/aa'``
 
@@ -1213,13 +1213,13 @@ range
       Searches for all objects with values smaller
       than the maximum of the values passed in the ``query``
       parameter and larger than the minimum of the values passed
-      in the ``query`` parameter. 
+      in the ``query`` parameter.
 
 As an example, we go back to the NewsItems we created in the
 Section **Searching with Forms**.  For this example, we created
 news items with attributes ``content``, ``author``, and ``date``.
 Additionally, we created a search form and a report template for
-viewing search results.  
+viewing search results.
 
 Searching for dates of NewsItems was not very comfortable
 though - we had to type in exact dates to match a document.
@@ -1404,7 +1404,7 @@ sort_order
 
 sort_limit
   Since you're likely to only want to use the
-  first 20 or 50 or so items, we can give a hint to the 
+  first 20 or 50 or so items, we can give a hint to the
   **ZCatalog** not to bother to sort beyond this by passing along
   a ``sort_limit`` parameter, which is the number of records
   to sort.
@@ -1441,9 +1441,9 @@ by ``latin_name``, and doesn't bother to sort after the first
 
 Note that using **sort_limit** does not guarantee that we'll get
 exactly that number of records - we may get fewer if they're
-aren't that many matching or query, and we may get more. 
+aren't that many matching or query, and we may get more.
 **sort_limit** is merely a request for optimization. To
-ensure that we get no more than 20 records, we'll want to 
+ensure that we get no more than 20 records, we'll want to
 truncate our result set::
 
   zcat=context.AnimalCatalog
@@ -1585,11 +1585,11 @@ objects to Zope have a **PrincipiaSearchSource** attribute or
 method that returns a value that is meant to be used for general
 purpose searching.  Traditionally, **PrincipiaSearchSource**
 would include the text in an object's title, it's body, and
-anywhere else you'd want to be able to search. 
+anywhere else you'd want to be able to search.
 
 For example, if you downloaded a Zope product that managed
 our zoo, and it had an animal type that you could add to your
-site, this animal type would probably expose a 
+site, this animal type would probably expose a
 **PrincipiaSearchSource** that looked something like this::
 
   def PrincipiaSearchSource(self):

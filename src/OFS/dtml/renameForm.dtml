@@ -7,7 +7,7 @@
 	<dtml-if expr="REQUEST.has_key('ids')">
 
 		<form action="<dtml-var "REQUEST.URL1" html_quote>" method="post" class="zmi-rename">
-	
+
 			<dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
 				<div class="form-group row">
 					<dtml-if cb_isMoveable>
@@ -26,7 +26,7 @@
 				<input class="btn btn-primary" type="submit" name="manage_renameObjects:method" value=" Ok " />
 				<input class="btn btn-default" type="submit" name="manage_main:method" value="Cancel" />
 			</div>
-	
+
 		</form>
 
 	<dtml-else>

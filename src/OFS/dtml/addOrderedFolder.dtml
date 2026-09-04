@@ -28,7 +28,7 @@
 				<input id="type" class="form-control" type="text" name="title" />
 			</div>
 		</div>
-	
+
 		<div class="zmi-controls">
 			<input class="btn btn-primary" type="submit" name="submit" value="Add" />
 		</div>

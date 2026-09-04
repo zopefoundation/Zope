@@ -104,7 +104,7 @@ content, rather than always including it. For example::
   <p tal:content="python:context.getFood() or default">Spam</p>
 
 .. note:
-   
+
    Python expressions are explained later in the chapter. If the
    ``getFood`` method returns a true value then its result will be
    inserted into the paragraph, otherwise it's Spam for dinner.
@@ -254,7 +254,7 @@ semicolons. For example, the code below will generate an
 
 You can also define attributes with XML namespaces. For example::
 
-  <Description 
+  <Description
       dc:Creator="creator name"
       tal:attributes="dc:Creator context/owner/getUserName">
     Description</Description>
@@ -315,7 +315,7 @@ some element that encloses both the ``h4`` and the ``ul`` for example the
 You can define more than one variable using ``tal:define`` by separating them
 with semicolons. For example::
 
-  <p tal:define="ids container/objectIds; 
+  <p tal:define="ids container/objectIds;
                  title container/title">
 
 You can define as many variables as you wish. Each variable can
@@ -476,7 +476,7 @@ the same place. Omit-tag comes last since no other statements are
 likely to depend on it and since it should come after define and
 repeat.
 
-Here's an example element that includes several TAL 
+Here's an example element that includes several TAL
 statements::
 
   <p tal:define="x /root/a/long/path/x | nothing"
@@ -514,7 +514,7 @@ nine and skips three::
   <ul>
     <li tal:repeat="n python:range(10)"
         tal:condition="python:n != 3"
-        tal:content="n"> 
+        tal:content="n">
       1
     </li>
   </ul>
@@ -531,7 +531,7 @@ problem::
     <div tal:repeat="n python:range(10)"
          tal:omit-tag="">
       <li tal:condition="python:n != 3"
-          tal:content="n"> 
+          tal:content="n">
         1
       </li>
     </div>
@@ -646,7 +646,7 @@ matter what the user submits. You can use one of any number of
 hacks to call an input processing method without inserting its
 results. For example::
 
-  <span tal:define="unused context/processInputs" 
+  <span tal:define="unused context/processInputs"
         tal:omit-tag=""/>
 
 This sample calls the ``processInputs`` method and assigns the
@@ -899,7 +899,7 @@ is false.  For example here's one way to display an error
 message only if it is passed in the request::
 
   <h4 tal:define="err request/form/errmsg | nothing"
-      tal:condition="err" 
+      tal:condition="err"
       tal:content="err">Error!</h4>
 
 You can do the same thing more easily with an exists
@@ -1059,7 +1059,7 @@ instead of::
 
 and::
 
-  "request/form/x" 
+  "request/form/x"
 
 instead of::
 
@@ -1073,7 +1073,7 @@ variable named "get", you must write::
 
 since this path expression::
 
-  "request/form/get" 
+  "request/form/get"
 
 will evaluate to the "get" *method* of the form dictionary.
 
@@ -1289,7 +1289,7 @@ Here's a simple example, showing how to create a ``Batch``
 object::
 
   <ul tal:define="lots python:range(100);
-                  batch python:modules['ZTUtils'].Batch(lots, 
+                  batch python:modules['ZTUtils'].Batch(lots,
                                                         size=10,
                                                         start=0)">
     <li tal:repeat="num batch"
@@ -1306,7 +1306,7 @@ You can display a different batch of ten items by passing a
 different start number::
 
   <ul tal:define="lots python:range(100);
-                  batch python:modules['ZTUtils'].Batch(lots, 
+                  batch python:modules['ZTUtils'].Batch(lots,
                                                         size=10,
                                                         start=13)">
 
@@ -1316,7 +1316,7 @@ through 22. It's important to notice that the batch ``start``
 argument is the *index* of the first item. Indexes count from
 zero, rather than from one. So index 13 points to the fourteenth
 item in the sequence. Python uses indexes to refer to list
-items. 
+items.
 
 Normally when you use batches you'll want to include navigation
 elements on the page to allow users to go from batch to batch.
@@ -1329,8 +1329,8 @@ between batches::
     </head>
     <body tal:define="employees context/getEmployees;
            start python:int(path('request/start | nothing') or 0);
-           batch python:modules['ZTUtils'].Batch(employees, 
-                                                 size=3, 
+           batch python:modules['ZTUtils'].Batch(employees,
+                                                 size=3,
                                                  start=start);
            previous python:batch.previous;
            next python:batch.next">
@@ -1362,7 +1362,7 @@ folder with the following body (no parameters are necessary)::
             {'name': 'Guido van Rossum', 'salary': '10'},
             {'name': 'Casey Duncan', 'salary':'20' },
             {'name': 'Andrew Sawyers', 'salary':'30' },
-            {'name': 'Evan Simpson', 'salary':'35' }, 
+            {'name': 'Evan Simpson', 'salary':'35' },
             {'name': 'Stephanie Hand', 'salary':'40' }, ]
 
 This example iterates over batches of results from the

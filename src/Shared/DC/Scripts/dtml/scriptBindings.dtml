@@ -18,7 +18,7 @@
 			<div class="form-group row">
 				<label for="context" class="form-label col-sm-3 col-md-2">Context</label>
 				<div class="col-sm-9 col-md-10">
-					<input id="context" class="form-control code" type="text" name="name_context" placeholder="context" 
+					<input id="context" class="form-control code" type="text" name="name_context" placeholder="context"
 						value="<dtml-var expr="getAssignedName('name_context', '')" html_quote>"/>
 					<small class="form-text text-muted">Recommended value: context<br/>
 						<em>
@@ -34,7 +34,7 @@
 			<div class="form-group row">
 				<label for="container" class="form-label col-sm-3 col-md-2">Container</label>
 				<div class="col-sm-9 col-md-10">
-					<input id="container" class="form-control code" type="text" name="name_container" placeholder="container" 
+					<input id="container" class="form-control code" type="text" name="name_container" placeholder="container"
 						value="<dtml-var expr="getAssignedName('name_container', '')" html_quote>"/>
 					<small class="form-text text-muted">Recommended value: container<br/>
 						<em>
@@ -49,7 +49,7 @@
 			<div class="form-group row">
 				<label for="script" class="form-label col-sm-3 col-md-2">Script</label>
 				<div class="col-sm-9 col-md-10">
-					<input id="script" class="form-control code" type="text" name="name_m_self" placeholder="script" 
+					<input id="script" class="form-control code" type="text" name="name_m_self" placeholder="script"
 						value="<dtml-var expr="getAssignedName('name_m_self', '')" html_quote>"/>
 					<small class="form-text text-muted">Recommended value: script<br/>
 						<em>
@@ -62,11 +62,11 @@
 			<div class="form-group row">
 				<label for="namespace" class="form-label col-sm-3 col-md-2">Namespace</label>
 				<div class="col-sm-9 col-md-10">
-					<input id="namespace" class="form-control code" type="text" name="name_ns" placeholder="_" 
+					<input id="namespace" class="form-control code" type="text" name="name_ns" placeholder="_"
 						value="<dtml-var expr="getAssignedName('name_ns', '')" html_quote>"/>
 					<small class="form-text text-muted">Recommended value:  _ (underscore character)<br/>
 						<em>
-							When the script is called from DTML, this is the caller's 
+							When the script is called from DTML, this is the caller's
 							DTML namespace, otherwise it is an empty namespace.
 						</em>
 					</small>
@@ -78,7 +78,7 @@
 			<div class="form-group row">
 				<label for="subpath" class="form-label col-sm-3 col-md-2">Subpath</label>
 				<div class="col-sm-9 col-md-10">
-					<input id="subpath" class="form-control code" type="text" name="name_subpath" placeholder="traverse_subpath" 
+					<input id="subpath" class="form-control code" type="text" name="name_subpath" placeholder="traverse_subpath"
 						value="<dtml-var expr="getAssignedName('name_subpath', '')" html_quote>"/>
 					<small class="form-text text-muted">Recommended value: traverse_subpath<br/>
 						<em>

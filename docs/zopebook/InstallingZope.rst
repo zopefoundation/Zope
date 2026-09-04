@@ -588,7 +588,7 @@ Another resource is the Zope section on the Plone community discussion server
 at https://community.plone.org/c/zope because Plone is running on top of Zope,
 so you will find many knowledgeable people there.
 
-For even more immediate help, you may choose to visit the 
+For even more immediate help, you may choose to visit the
 `#zope <irc://irc.freenode.net/#zope>`_ channel on
 the  IRC (Internet Relay Chat) network.  See the `Freenode
 website <https://freenode.net>`_ for more information on how to connect

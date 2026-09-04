@@ -1,15 +1,15 @@
 Session Management
 ##################
 
-Sessions in Zope have historically been server side. They are simple to use, 
-and (usually) only rely on one cookie that contains the browser id. However, 
-server side sessions require additional work to scale in horizontal deployments 
+Sessions in Zope have historically been server side. They are simple to use,
+and (usually) only rely on one cookie that contains the browser id. However,
+server side sessions require additional work to scale in horizontal deployments
 where you are using ZEO, or have many Zope servers with read only ZODBs.
 
 If you need only very few small session values, consider using cookies as a
-replacement for a full session management system. The API for that would be 
-``REQUEST.cookies.get("cookie_name", "default_value_if_cookie_not_set")`` and 
-``RESPONSE.setCookie("cookie_name", "cookie_value")``. Plone has 
+replacement for a full session management system. The API for that would be
+``REQUEST.cookies.get("cookie_name", "default_value_if_cookie_not_set")`` and
+``RESPONSE.setCookie("cookie_name", "cookie_value")``. Plone has
 `a bit more documentation on how to work with cookies <https://docs.plone.org/develop/plone/sessions/cookies.html>`_.
 
 The simplest session management is offered by the Zope add-on products
@@ -242,7 +242,7 @@ Here's an example of how to work with a session using a Python Script::
       session['last view'] = now # reset last view to now
       return 'Seconds since last view %.2f' % ((now - then) * secs_per_day)
 
-  # The script hasn't been viewed before, since there's no 'last view' 
+  # The script hasn't been viewed before, since there's no 'last view'
   session['last view'] = context.ZopeTime()
   return 'This is your first view'
 
@@ -347,7 +347,7 @@ request. To inhibit this behavior, use the `create=0` flag to the
 
   <span tal:define="data python:context.session_data_manager.getSessionData(create=0)">
 
-.. note:: 
+.. note::
 
     ``create=0`` means return a reference to the session or None.
     ``create=1`` means return a reference if one exists or create a new
@@ -395,7 +395,7 @@ Here is an example using DTML::
 
   <!-- set a SESSION key and value -->
   <dtml-let data="REQUEST.SESSION">
-  <dtml-call "data.set('foo','bar')      
+  <dtml-call "data.set('foo','bar')
 
   <!-- Now invalidate the SESSION -->
   <dtml-call "data.invalidate()">
@@ -1227,9 +1227,9 @@ of a session object::
   request = container.REQUEST
   session = request.SESSION
   session.set('foo','bar')
-  session.invalidate() 
+  session.invalidate()
   # ............................................
-  # we expect that invalidate() flushes the session 
+  # we expect that invalidate() flushes the session
   # ............................................
   print('after invalidate()',session.get('foo')) # 'bar' still prints!
 
@@ -1329,38 +1329,38 @@ limitations imposed by conflict errors.
 Alternative Server Side Session Backends for Zope 4 and higher
 ==============================================================
 
-To use server side sessions on Zope 4 and up, you have two  ways to go about 
-it. You can use a separate session server, most likely using 
-`Memcached <https://memcached.org>`_, or place the session storage in either a 
+To use server side sessions on Zope 4 and up, you have two  ways to go about
+it. You can use a separate session server, most likely using
+`Memcached <https://memcached.org>`_, or place the session storage in either a
 ``<filestorage>``, ``<temporarystorage>`` or ``<mappingstorage>`` backed ZODB.
 
 Use of an alternative session server
 ++++++++++++++++++++++++++++++++++++
 
-There are two projects that enable you to use 
-`Memcached <https://memcached.org>`_ in Zope projects. This is the recommended 
+There are two projects that enable you to use
+`Memcached <https://memcached.org>`_ in Zope projects. This is the recommended
 way to use server side sessions.
 
-- `Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ is a drop 
-  in replacement for the Zope 2 session implementation, that allows storing 
-  session values in Memcached. This allows to retain all existing API calls to 
-  session objects and still works well in e.g. ZEO contexts where multiple Zope 
-  Servers need to share session data. Upgrading to it from existing session 
-  usage is 
-  `quite simple <https://mcdutils.readthedocs.io/en/latest/usage_zmi.html>`_. 
+- `Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ is a drop
+  in replacement for the Zope 2 session implementation, that allows storing
+  session values in Memcached. This allows to retain all existing API calls to
+  session objects and still works well in e.g. ZEO contexts where multiple Zope
+  Servers need to share session data. Upgrading to it from existing session
+  usage is
+  `quite simple <https://mcdutils.readthedocs.io/en/latest/usage_zmi.html>`_.
 
-- `collective.beaker <https://pypi.org/project/collective.beaker/>`_ is a 
-  plugin that makes makes `Beaker <https://pypi.org/project/Beaker/>`_ available 
-  in a Zope context. You can use Beaker for sessions, but of course it has lots 
-  of support for caching (with different cache reagions to support different 
-  cache timeouts) and support for different backends like 
-  `Redis <https://redis.io>`_ 
+- `collective.beaker <https://pypi.org/project/collective.beaker/>`_ is a
+  plugin that makes makes `Beaker <https://pypi.org/project/Beaker/>`_ available
+  in a Zope context. You can use Beaker for sessions, but of course it has lots
+  of support for caching (with different cache reagions to support different
+  cache timeouts) and support for different backends like
+  `Redis <https://redis.io>`_
 
 Use of an internal session server
 +++++++++++++++++++++++++++++++++
 
-For development environments or low traffic sites it is possible to just store 
-the sessions data in a ZODB. You have to use a different ZODB for this. Example 
+For development environments or low traffic sites it is possible to just store
+the sessions data in a ZODB. You have to use a different ZODB for this. Example
 config: ::
 
     <zodb_db temporary>
@@ -1371,13 +1371,13 @@ config: ::
         mount-point /temp_folder
         container-class Products.TemporaryFolder.TemporaryContainer
     </zodb_db>
-    
+
 This can also work in a ZEO environment where you serve up a shared temporary
 storage from a ZEO server. An example ZEO client configuration
 could look like this::
 
     %import ZEO
-    
+
     <zodb_db main>
         <clientstorage>
             server $INSTANCE/var/zeosocket
@@ -1386,7 +1386,7 @@ could look like this::
         </clientstorage>
         mount-point /
     </zodb_db>
-    
+
     <zodb_db temporary>
         <clientstorage>
             server $INSTANCE/var/zeosocket
@@ -1400,36 +1400,36 @@ could look like this::
 The ZEO server configuration could show this::
 
     %define INSTANCE /path/to/instance/dir
-    
+
     <zeo>
         address $INSTANCE/var/zeosocket
     </zeo>
-    
+
     <filestorage main>
         path $INSTANCE/var/Data.fs
     </filestorage>
-    
+
     <temporarystorage temporary>
       name temporary storage for sessioning
     </temporarystorage>
 
 
-Even though this works, there are some important caveats when going this route. 
-If you use a ZODB ``<filestorage>`` backend, even two parallel requests that 
-write to the session can overwrite each other silently, even if they write to 
-different session keys. I.e. only one of the writes will succeed - without 
-errors. ``<temporarystorage>`` based ZODBs are quite a bit more reliable in this 
-regard, but if you use a ``<temporarystorage>`` via ZEO, restarting the ZEO 
-server will drop all session data and the Zope frontends will block as they see 
-an older transaction number than what they last saw. That means you will need 
-to ensure that Zope frontends restart if ZEO backends restart, which is quite a 
+Even though this works, there are some important caveats when going this route.
+If you use a ZODB ``<filestorage>`` backend, even two parallel requests that
+write to the session can overwrite each other silently, even if they write to
+different session keys. I.e. only one of the writes will succeed - without
+errors. ``<temporarystorage>`` based ZODBs are quite a bit more reliable in this
+regard, but if you use a ``<temporarystorage>`` via ZEO, restarting the ZEO
+server will drop all session data and the Zope frontends will block as they see
+an older transaction number than what they last saw. That means you will need
+to ensure that Zope frontends restart if ZEO backends restart, which is quite a
 PITA.
 
-Given all of this: Production deployments with ZEO should avoid 
+Given all of this: Production deployments with ZEO should avoid
 ``<temporarystorage>``-based sessions. Since ZEO is usually used for performance
-``<filestorage>`` based sessions are probably too slow anyway. Also the problem 
-of silently dropped sessions writes with parallel requests remains. Use of 
-Memcached based sessions is much safer and with 
-`Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ just a drop 
+``<filestorage>`` based sessions are probably too slow anyway. Also the problem
+of silently dropped sessions writes with parallel requests remains. Use of
+Memcached based sessions is much safer and with
+`Products.mcdutils <https://pypi.org/project/Products.mcdutils/>`_ just a drop
 in replacement for native Zope sessions. For development environments, however,
 ``<temporarystorage>`` solutions are fine and allow a simpler setup.

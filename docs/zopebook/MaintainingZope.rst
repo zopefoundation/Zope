@@ -164,7 +164,7 @@ A simple generic startup script structure could be something like this::
   umask 077
   cd $ZOPE_HOME
 
-  case "$1" in 
+  case "$1" in
 
   start)
   # start service
@@ -182,7 +182,7 @@ A simple generic startup script structure could be something like this::
   # stop service and restart
   $0 stop
   $0 start
-  ;;            
+  ;;
   *)
   echo "Usage: $0 {start|stop|restart}"
   exit 1
@@ -212,7 +212,7 @@ want it started as a service, perform these steps from the command line to
 register Zope as a Windows service:::
 
   > cd c:\Program Files\zope
-  > bin\lib\win32\PythonService.exe /register 
+  > bin\lib\win32\PythonService.exe /register
   > bin\python.exe ZServer\ZService.py --startup auto install
 
 Replace::
@@ -463,11 +463,11 @@ Un*x-like operating system)::
   resp=`wget -O - -q -t 1 -T 1 $URL`
   if [ "$resp" != "$EXPECTED_ANSWER" ]; then
   $MAIL_BIN -s "$SUBJECT" $MAILTO <<EOF
-  The URL 
+  The URL
   ----------------------------------------------
-  $URL 
+  $URL
   ----------------------------------------------
-  did not respond with the expected value of $EXPECTED_ANSWER. 
+  did not respond with the expected value of $EXPECTED_ANSWER.
   EOF
   fi;
 
@@ -594,7 +594,7 @@ fsrecover.py has the following help output::
 
   -f -- force output even if output file exists
 
-  -v level -- Set the 
+  -v level -- Set the
   verbosity level:
 
   0 -- Show progress indicator (default)
@@ -610,4 +610,4 @@ fsrecover.py has the following help output::
   transaction with any bad data are skipped.
 
   -P t -- Pack data to t seconds in the past. Note that is the "-p"
-  option is used, then t should be 0.        
+  option is used, then t should be 0.

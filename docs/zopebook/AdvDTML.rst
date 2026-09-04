@@ -18,7 +18,7 @@ that will accomplish a number of complex tasks including:
 
 - Send email with or without MIME attachments
 
-- Handle exceptions within DTML    
+- Handle exceptions within DTML
 
 A few of caveats before getting started:
 
@@ -37,7 +37,7 @@ A few of caveats before getting started:
 
 It's no lie that DTML has a reputation for complexity.  While it is true
 that DTML is really simple if all you want to do is simple layout,
-using DTML for more advanced tasks requires an understanding of where 
+using DTML for more advanced tasks requires an understanding of where
 DTML variables come from.
 
 Here's a very tricky error that almost all newbies encounter.
@@ -57,13 +57,13 @@ document contains an HTML form like the following::
         <input type="submit" value="What is zooName?">
       </form>
 
-    </dtml-if>  
+    </dtml-if>
 
   <dtml-var standard_html_footer>
 
 This looks simple enough, the idea is, this is an HTML page that calls
 itself.  This is because the HTML action is the *URL* variable, which
-will become the URL of the DTML Document.  
+will become the URL of the DTML Document.
 
 If there is a 'zooName' variable, then the page will print it, if there
 isn't, it shows a form that asks for it.  When you click submit, the data
@@ -92,7 +92,7 @@ explicit about where you want the name to come from in the
 
 The DTML namespace is a collection of objects arranged in a *stack*.  A
 stack is a list of objects that can be manipulated by *pushing* and
-*popping* objects on to and off of the stack. 
+*popping* objects on to and off of the stack.
 
 When a DTML Document or DTML Method is executed, Zope creates a
 DTML namespace to resolve DTML variable names. It's important to
@@ -138,8 +138,8 @@ object and the request, as shown in the figure below.
    Initial DTML namespace stack
 
 The client object is the first object on the top of the DTML namespace
-stack when entering a transaction (note:  commands exist to push 
-additional parameters onto the namespace stack during a thread of 
+stack when entering a transaction (note:  commands exist to push
+additional parameters onto the namespace stack during a thread of
 execution).  What the client object is depends on whether you are
 executing a DTML Method or a DTML Document.  In our example above, this
 means that the client object is named *zooName*.  Which is why it
@@ -169,7 +169,7 @@ namespace we want.  We can do this with the DTML 'with' tag::
 Here, the with tag says to look in the 'REQUEST' namespace, and *only*
 the 'REQUEST' namespace, for the name "zooName".
 
-DTML Client Object  
+DTML Client Object
 ~~~~~~~~~~~~~~~~~~
 
 The client object in DTML depends on whether or not you are executing a
@@ -232,9 +232,9 @@ DTML Method vs. DTML Document
 
 One of the most potentially confusing choices to make for Zope
 newbies is the choice between a DTML Method and a DTML Document.
-Unfortunately, many Zope newbies develop entire sites using one 
-type of object only to discover that they should have used the 
-other type. In general, keep the following items in mind when 
+Unfortunately, many Zope newbies develop entire sites using one
+type of object only to discover that they should have used the
+other type. In general, keep the following items in mind when
 deciding upon which type to use:
 
 - **Does the object require properties of its own?** If so,
@@ -245,9 +245,9 @@ deciding upon which type to use:
     consider using a DTML Document since it will be easier
     to control such items as page title by using properties.
 
-- **Does the object need transparency to its context?** If so, 
+- **Does the object need transparency to its context?** If so,
     you should probably use a DTML Method since these objects
-    act as though they are directly attached to their calling, 
+    act as though they are directly attached to their calling,
     or containing object.
 
 DTML Request Object
@@ -349,7 +349,7 @@ item in the sequence onto the top of the namespace stack::
 
   <dtml-in objectValues>
 
-    <dtml-var getId> <!-- this is the id of the current item in the 
+    <dtml-var getId> <!-- this is the id of the current item in the
                        objectValues sequence -->
   </dtml-in>
 
@@ -377,7 +377,7 @@ object itself.  Some of those variables are:
 - sequence-end: True if the current item is the last item in
    the sequence.
 
-- sequence-length: The length of the sequence. 
+- sequence-length: The length of the sequence.
 
 - previous-sequence: True on the first iteration if the
   current batch is not the first one. Batch size is set with the
@@ -392,7 +392,7 @@ tag.  See `Appendix A <AppendixA.html>`_ for more detail.
 The *With* Tag
 ~~~~~~~~~~~~~~
 
-The *with* tag pushes an object that you specify onto 
+The *with* tag pushes an object that you specify onto
 the namespace stack for the duration of the with block. This
 allows you to specify where variables should be looked up first.
 When the with block closes, the object is popped off the
@@ -507,7 +507,7 @@ are looking for a name.  The 'with' and 'let' tags let you alter
 the namespace in order to obtain references to the objects you
 need.
 
-DTML Namespace Utility Functions 
+DTML Namespace Utility Functions
 --------------------------------
 
 Like all things in Zope, the DTML namespace is an object, and it can
@@ -554,7 +554,7 @@ philosophy can be thought of as having a large, complex array of
 built-in names.
 
 The under namespace can also be used to explicitly control variable
-look up.  There is a very common usage of this syntax.  As mentioned 
+look up.  There is a very common usage of this syntax.  As mentioned
 above the in tag defines a number of special variables, like
 *sequence-item* and *sequence-key* that you can use inside a loop to
 help you display and control it.  What if you wanted to use one of
@@ -565,11 +565,11 @@ these variables inside a Python expression?::
   <h1>The squares of the first three integers:</h1>
   <ul>
   <dtml-in expr="_.range(3)">
-    <li>The square of <dtml-var sequence-item> is: 
+    <li>The square of <dtml-var sequence-item> is:
       <dtml-var expr="sequence-item * sequence-item">
     </li>
-  </dtml-in>  
-  </ul>  
+  </dtml-in>
+  </ul>
 
   <dtml-var standard_html_footer>
 
@@ -592,13 +592,13 @@ attribute. For example::
   <h1>The squares of the first three integers:</h1>
   <ul>
   <dtml-in prefix="loop" expr="_.range(3)">
-    <li>The square of <dtml-var loop_item> is: 
+    <li>The square of <dtml-var loop_item> is:
       <dtml-var expr="loop_item * loop_item">
     </li>
-  </dtml-in>  
-  </ul>  
+  </dtml-in>
+  </ul>
 
-  <dtml-var standard_html_footer>   
+  <dtml-var standard_html_footer>
 
 The *prefix* attribute causes *in* tag variables to be renamed
 using the specified prefix and underscores, rather than using
@@ -611,7 +611,7 @@ expression is to use the *getitem* utility function to explicitly
 look up a variable::
 
   The square of <dtml-var sequence-item> is:
-  <dtml-var expr="_.getitem('sequence-item') * 
+  <dtml-var expr="_.getitem('sequence-item') *
                   _.getitem('sequence-item')">
 
 The *getitem* function takes the name to look up as its first
@@ -642,7 +642,7 @@ Notice in the above example that *selectedDoc* is not in
 quotes. We don't want to insert the text *selectedDoc*
 we want to insert the value of the variable named *selectedDoc*. For
 example, the value of *selectedDoc* might be 'chapterOne'. Using this
-method, you can look up an item using a dynamic value instead of 
+method, you can look up an item using a dynamic value instead of
 static text.
 
 If you are a python programmer and you begin using the more
@@ -762,7 +762,7 @@ change the page that gets redirected, change the value for the
 
   </dtml-let>
 
-  <dtml-var standard_html_footer>  
+  <dtml-var standard_html_footer>
 
 In short, the *call* tag works exactly like the *var* tag with the
 exception that it doesn't insert the results of calling the
@@ -799,7 +799,7 @@ DTML can be documented with comments using the *comment* tag::
 
   </dtml-comment>
 
-  <!-- 
+  <!--
 
     This is an HTML comment, this is NOT DTML and will be treated
     as HTML and like any other HTML code will get sent to the
@@ -810,7 +810,7 @@ DTML can be documented with comments using the *comment* tag::
 
   -->
 
-  <dtml-var standard_html_footer>        
+  <dtml-var standard_html_footer>
 
 The *comment* block is removed from DTML output.
 
@@ -1036,9 +1036,9 @@ Here's the upload form::
 
   <dtml-var standard_html_footer>
 
-Note:  The text *:list* added to the name of the input fields directs 
-Zope to treat the received information as a list type. For example if 
-the first two checkboxes were selected in the above upload form, the 
+Note:  The text *:list* added to the name of the input fields directs
+Zope to treat the received information as a list type. For example if
+the first two checkboxes were selected in the above upload form, the
 REQUEST variable send_to would have the value [jobs@yahoo.com, jobs@microsoft.com]
 
 Create another DTML Method called *sendresume* to process the form
@@ -1048,7 +1048,7 @@ and send the resume file::
 
   <dtml-if send_to>
 
-    <dtml-in send_to> 
+    <dtml-in send_to>
 
       <dtml-sendmail smtphost="my.mailserver.com">
       To: <dtml-var sequence-item>
@@ -1057,7 +1057,7 @@ and send the resume file::
 
       Hi, please take a look at my resume.
 
-      <dtml-boundary type=application/octet-stream disposition=attachment 
+      <dtml-boundary type=application/octet-stream disposition=attachment
       encode=base64><dtml-var expr="resume_file.read()"></dtml-mime>
       </dtml-sendmail>
 
@@ -1071,7 +1071,7 @@ and send the resume file::
 
   </dtml-if>
 
-  <dtml-var standard_html_footer>    
+  <dtml-var standard_html_footer>
 
 This method iterates over the *sendto* variable and sends one
 email for each item.
@@ -1265,14 +1265,14 @@ of presenting the the user page numbers from which to select::
 
    <dtml-in "_.range(1,101) "size=10 start=start>
              <dtml-if sequence-start>
-               <p>Pages: 
+               <p>Pages:
                <dtml-call "REQUEST.set('actual_page',1)">
-               <dtml-in previous-batches mapping>   
+               <dtml-in previous-batches mapping>
                  <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var "_['batch-start-index']+1">">
                  <dtml-var sequence-number></a>&nbsp;
-                 <dtml-call "REQUEST.set('actual_page',_['sequence-number']+1)">     
+                 <dtml-call "REQUEST.set('actual_page',_['sequence-number']+1)">
                </dtml-in>
-               <b><dtml-var "_['actual_page']"></b>  
+               <b><dtml-var "_['actual_page']"></b>
              </dtml-if>
              <dtml-if sequence-end>
                <dtml-in next-batches mapping>&nbsp;
@@ -1284,7 +1284,7 @@ of presenting the the user page numbers from which to select::
 
     <dtml-in "_.range(1,101) "size=10 start=start>
               <br><dtml-var sequence-item>
-    </dtml-in>      
+    </dtml-in>
 
 This quick and easy method to display pages is a nice navigational tool
 for larger batches.  It does present the drawback of having to utilize
@@ -1403,12 +1403,12 @@ object in question.
 
 Given the following structure::
 
- Folder 
+ Folder
    |
    |- Folder1 (desc='Folder one')
    |- Folder2 (desc='Folder two')
         |- Image1 (desc='Photo one')
-        |- Image2 
+        |- Image2
         |- Image3 (desc='Photo three')
 
 when the second image is asked for its *desc* property it will

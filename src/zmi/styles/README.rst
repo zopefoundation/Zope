@@ -4,7 +4,7 @@ zmi.styles
 Introduction
 ============
 
-This library packages the resources used to style the ZMI with 
+This library packages the resources used to style the ZMI with
 Bootstrap.
 
 It uses the `Font Awesome`_ font for the icons.

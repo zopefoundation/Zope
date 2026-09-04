@@ -14,7 +14,7 @@ When the skeleton test is run by typing 'python testSkeleton.py', it
                 - INSTANCE_HOME environment variable
                 - auto-detection
                 - optional custom_zodb.py
-    
+
     2. imports module Testing.ZopeTestCase
 
         2.1 imports module Testing.ZopeTestCase.ZopeLite
@@ -48,11 +48,11 @@ When a ZopeTestCase test method is run, it
         1.1 calls the beforeSetUp() hook
 
             1.1.1 by default begins a new transaction
-        
+
         1.2 opens a ZODB connection and retrieves the root application object
 
         1.3 sets up the default fixture
-        
+
             1.3.1 creates a Folder object in the root
             1.3.2 creates a UserFolder object in the folder
             1.3.3 creates a default user in the user folder
@@ -73,10 +73,9 @@ When a ZopeTestCase test method is run, it
         3.3 clears the fixture *)
 
             3.1.1 aborts all transactions
-            3.1.2 closes all ZODB connections 
+            3.1.2 closes all ZODB connections
             3.1.3 logs out
             3.1.4 calls the afterClear() hook
 
 
 *) Note: The fixture is also cleared if an error occurs during setUp()
-
