@@ -310,8 +310,8 @@ the SQL code that is executed when the Z SQL Method is called.  In
 this field, enter the following code::
 
   insert into employees (emp_id, first, last, salary) values
-  (<dtml-sqlvar emp_id type="int">, 
-   <dtml-sqlvar first type="string">, 
+  (<dtml-sqlvar emp_id type="int">,
+   <dtml-sqlvar first type="string">,
    <dtml-sqlvar last type="string">,
    <dtml-sqlvar salary type="float">
   )
@@ -383,7 +383,7 @@ testing this method.
 
 To verify that the information you added is being inserted into the
 table, select the *list_all_employees* Z SQL Method and click on its
-*Test* tab.  
+*Test* tab.
 
 This view says *This query requires no input*, indicating the
 *list_all_employees* does not have any argument and thus, requires
@@ -419,7 +419,7 @@ a Z SQL Method.  For example, add a new DTML Method to your site called
 
     <ul>
     <dtml-in list_all_employees>
-      <li><dtml-var emp_id>: <dtml-var last>, <dtml-var first> 
+      <li><dtml-var emp_id>: <dtml-var last>, <dtml-var first>
         makes <dtml-var salary> Euro a year.
       </li>
     </dtml-in>
@@ -432,7 +432,7 @@ and the ZPT version::
   <div>
     <ul>
       <li tal:repeat="row context/list_all_employees">
-        <span tal:content="string:${row/id}: ${row/last} ${row/first} 
+        <span tal:content="string:${row/id}: ${row/last} ${row/first}
               makes ${row/salary} Euro a year.
       </li>
     </ul>
@@ -455,13 +455,13 @@ return HTML that looks like this::
     <body>
 
     <ul>
-      <li>42: Roberts, Bob 
+      <li>42: Roberts, Bob
         makes $50,000 a year.
       </li>
-      <li>101: leCat, Cheeta 
+      <li>101: leCat, Cheeta
         makes $100,000 a year.
       </li>
-      <li>99: Junglewoman, Jane 
+      <li>99: Junglewoman, Jane
         makes $100,001 a year.
       </li>
     </ul>
@@ -600,7 +600,7 @@ how the *hire_employee* method is called from the DTML *call* tag.
 This is because we know there is no output from the *hire_employee*
 method. Since there are no results to iterate over, the method does not
 need to be called with the *in* tag. It can be called simply with the
-*call* tag.  
+*call* tag.
 
 You now have a complete user interface for hiring new employees.
 Using Zope's security system, you can now restrict access to this
@@ -636,7 +636,7 @@ databases have different quoting rules.
 In addition to avoiding errors, SQL quoting is important for security.
 Suppose you had a query that makes a select::
 
-  select * from employees 
+  select * from employees
     where emp_id=<dtml-var emp_id>
 
 This query is unsafe since someone could slip SQL code into your
@@ -645,7 +645,7 @@ an *emp_id*. To avoid this problem you need to make sure that your
 variables are properly quoted. The *sqlvar* tag does this for you. Here
 is a safe version of the above query that uses *sqlvar*::
 
-    select * from employees 
+    select * from employees
       where emp_id=<dtml-sqlvar emp_id type=int>
 
 The *sqlvar* tag operates similarly to the regular DTML *var* tag in
@@ -696,7 +696,7 @@ To see how this is done, create a new Z SQL Method named
 *employees_paid_more_than*.  Give it one argument, *salary*,
 and the following SQL template::
 
-  select * from employees 
+  select * from employees
     where <dtml-sqltest salary op=gt type=float>
 
 Now click *Add and Test*.  The *op* tag attribute is set to *gt*,
@@ -785,21 +785,21 @@ Here is an example of a SQL query qualified by salary::
 
 Here is an example of a SQL query qualified by salary and first name::
 
-  select * from employees 
+  select * from employees
   where(
     salary > 100000.00
     and
-    first in ('Jane', 'Cheetah', 'Guido')    
+    first in ('Jane', 'Cheetah', 'Guido')
   )
 
 Here is an example of a SQL query qualified by a first and a
 last name::
 
-  select * from employees 
+  select * from employees
   where(
     first = 'Old'
     and
-    last = 'McDonald'     
+    last = 'McDonald'
   )
 
 All three of these queries can be accomplished with one Z SQL
@@ -807,14 +807,14 @@ Method that creates more specific SQL queries as more arguments
 are specified.  The following SQL template can build all three
 of the above queries::
 
-  select * from employees 
+  select * from employees
   <dtml-sqlgroup where>
     <dtml-sqltest salary op=gt type=float optional>
   <dtml-and>
     <dtml-sqltest first op="eq" type="nb" multiple optional>
   <dtml-and>
     <dtml-sqltest last  op="eq" type="nb" multiple optional>
-  </dtml-sqlgroup>  
+  </dtml-sqlgroup>
 
 The *sqlgroup* tag renders the string *where* if the contents of
 the tag body contain any text and builds the qualifying
@@ -879,7 +879,7 @@ queries more closely with Zope and enhance performance. We'll start by
 looking at how to pass arguments to Z SQL Methods both explicitly and
 by acquisition.  Then you'll find out how you can call Z SQL Methods
 directly from URLs using traversal to result objects. Next you'll find
-out how to make results objects more powerful by binding them to 
+out how to make results objects more powerful by binding them to
 classes. Finally we'll look at caching to improve performance and how
 Zope handles database transactions.
 
@@ -887,9 +887,9 @@ Calling Z SQL Methods with Explicit Arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you call a Z SQL Method without argument from DTML, the arguments
-are automatically collected from the REQUEST. This is the technique 
+are automatically collected from the REQUEST. This is the technique
 that we have used so far in this chapter. It works well when you want
-to query a database from a search form, but sometimes you want to 
+to query a database from a search form, but sometimes you want to
 manually or programmatically query a database. Z SQL Methods can be
 called with explicit arguments from DTML or Python.  For example, to
 query the *employee_by_id* Z SQL Method manually, the following DTML
@@ -912,7 +912,7 @@ and the ZPT version::
     <tal:div  tal:repeat="row python: context.employee_by_id(emp_id=42)">
       <h1 tal:content="string: ${row/last}, ${row/first}" />
       <p>
-       <span tal:content="string:${row/first}s employee id is ${row/emp_id}. 
+       <span tal:content="string:${row/first}s employee id is ${row/emp_id}.
              ${row/first} makes ${row/salary} Euro per year.
     </tal:div>
   </div>
@@ -959,7 +959,7 @@ string properties and then create a Z SQL Method with the id
 arguments, *department_id*, *description*, *quantity*, and *unit_cost*. and the
 following query template::
 
-  INSERT INTO requisitions 
+  INSERT INTO requisitions
     (
       department_id, description, quantity, unit_cost
     )
@@ -1037,7 +1037,7 @@ of uniqueness guarantees.
 Zope provides a special URL syntax to access ZSQL Methods that always
 return a single result. The URL consists of the URL of the ZSQL Method
 followed by the argument name followed by the argument value. For
-example, *http://localhost:8080/employee_by_id/emp_id/42*. Note, this 
+example, *http://localhost:8080/employee_by_id/emp_id/42*. Note, this
 URL will return a single result object as if you queried the ZSQL
 Method from DTML and passed it a single argument it would return
 a list of results that happend to only have one item in it.
@@ -1248,7 +1248,7 @@ used so far. Suppose also that you have a *manager_by_id* Z SQL
 Method that returns a manager id manager given an *emp_id* argument::
 
   select manager_id from managers where
-    <dtml-sqltest emp_id type="int" op="eq">        
+    <dtml-sqltest emp_id type="int" op="eq">
 
 You could use this Z SQL Method in your brains class like so::
 
@@ -1285,7 +1285,7 @@ could add something like this to the *viewEmployee* DTML Method::
 As you can see brains can be both complex and powerful. When
 designing relational database applications you should try to
 keep things simple and add complexity slowly. It's important to make
-sure that your brains classes don't add lots of unneeded overhead. 
+sure that your brains classes don't add lots of unneeded overhead.
 
 Caching Results
 ~~~~~~~~~~~~~~~

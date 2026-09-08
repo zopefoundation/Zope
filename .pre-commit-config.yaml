@@ -2,6 +2,17 @@
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/zope-product
 minimum_pre_commit_version: '3.6'
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    - id: check-case-conflict
+    - id: check-merge-conflict
+    - id: check-toml
+    - id: check-yaml
+    - id: end-of-file-fixer
+      exclude: ^(src/Products/PageTemplates/tests/(input|output)|src/zmi/styles/resources)/
+    - id: trailing-whitespace
+      exclude: ^(src/Products/PageTemplates/tests/(input|output)|src/zmi/styles/resources)/
   - repo: https://github.com/pycqa/isort
     rev: "8.0.1"
     hooks:
@@ -28,3 +39,7 @@ repos:
     - id: flake8
       additional_dependencies:
         - flake8-debugger == 4.1.2
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v1.0.2
+    hooks:
+    - id: sphinx-lint

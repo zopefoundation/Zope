@@ -500,7 +500,7 @@ errors in your *TAL* statements.  For example::
     <!-- Page Template Diagnostics
      Compilation failed
      chameleon.exc.CompilationError: Bad attribute for namespace 'http://xml.zope.org/namespaces/tal'
-    
+
      - String:     "contents"
      - Filename:   /template_test/simple_page
      - Location:   (line 4: col 21)

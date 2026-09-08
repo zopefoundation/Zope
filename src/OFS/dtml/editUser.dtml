@@ -5,17 +5,17 @@
 <dtml-var "manage_form_title(this(), _, form_title='Change User')">
 
 	<form action="manage_users" method="post" class="zmi-user">
-		
+
 		<div class="form-group row">
 			<label for="name" class="form-label col-sm-3 col-md-2">Name</label>
 			<div class="col-sm-9 col-md-10">
-				<input class="form-control disabled text-muted" 
-					disabled="disabled" 
+				<input class="form-control disabled text-muted"
+					disabled="disabled"
 					value="<dtml-var expr="user.name" html_quote>" />
 			 </div>
 			<input type="hidden" name="name" value="<dtml-var expr="user.name" html_quote>" />
 		</div>
-		
+
 		<dtml-if remote_user_mode__>
 		  <input type="hidden" name="password" value="&dtml-password;" />
 		  <input type="hidden" name="confirm"  value="&dtml-password;" />
@@ -35,7 +35,7 @@
 			</div>
 		</div>
 		</dtml-if>
-		
+
 		<div class="form-group row">
 			<label for="domains" class="form-label col-sm-3 col-md-2">Domains</label>
 			<div class="col-sm-9 col-md-10">
@@ -43,11 +43,11 @@
 					value="<dtml-if expr="user.domains"><dtml-in expr="user.domains">&dtml-sequence-item; </dtml-in></dtml-if>" />
 			</div>
 		</div>
-		
+
 		<div class="form-group row">
 			<label for="roles" class="form-label col-sm-3 col-md-2">Roles</label>
 			<div class="col-sm-9 col-md-10">
-				<select id="roles" class="form-control col" 
+				<select id="roles" class="form-control col"
 					name="roles:list" size="5" multiple="multiple">
 					<dtml-in valid_roles>
 						<dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
@@ -65,7 +65,7 @@
 				</select>
 			</div>
 		</div>
-		
+
 		<div class="zmi-controls">
 			<input class="btn btn-primary" type="submit" name="submit" value="Change" />
 		</div>

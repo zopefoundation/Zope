@@ -33,10 +33,10 @@ registry:
   >>> from zope.interface.interfaces import IComponentLookup
   >>> IComponentLookup(site) is components
   True
- 
+
 In case the adapted object has an acquisition context, acquisition
 is used to retrieve the closest site:
-  
+
   >>> ob = ObjectManager()
   >>> ob2 = ObjectManager()
   >>> ob = ob.__of__(site)

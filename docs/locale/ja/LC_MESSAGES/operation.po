@@ -328,7 +328,7 @@ msgstr ""
 "使えます。例として、次の ``systemd`` のサービス設定は"
 " ``runwsgi`` スクリプトと一緒に動きます。"
 "buildout は ``/opt/zopeinstance`` に配置され、"
-"Zope インスタンスが走るユーザーアカウントは ``zope`` であると仮定します。" 
+"Zope インスタンスが走るユーザーアカウントは ``zope`` であると仮定します。"
 
 #: ../../operation.rst:201 ../../operation.rst:331
 msgid ""
@@ -547,7 +547,7 @@ msgstr ""
 "Zope が初めて起動したとき、Zope はルートユーザーフォルダの中に"
 "ユーザーが定義されていないことを検知します。"
 "Zope は 'inituser' ファイルを探して、もしあれば、そのファイル内に定義された"
-"ユーザーをルートフォルダに追加します。" 
+"ユーザーをルートフォルダに追加します。"
 
 #: ../../operation.rst:429
 msgid ""
@@ -645,7 +645,7 @@ msgstr ""
 "シム（訳者注：プログラム間の差異を埋めるもの）ソフトウェアによって提供"
 "されるエントリーポイントを持っています。"
 "それはサービスを起動/停止するデフォルトの Zope スクリプトと連動することを"
-"意味します。" 
+"意味します。"
 
 #: ../../operation.rst:479
 msgid "Things to watch out for"
@@ -680,7 +680,7 @@ msgstr ""
 "スレッド数は少ないがインスタンス数の多い Zope の構成なら、"
 "後者を選んでください。"
 "より多くの独立した Zope インスタンスを作り、WSGI サーバーのスレッドの値は、"
-"例えば 2 に設定してください。" 
+"例えば 2 に設定してください。"
 
 #: ../../operation.rst:494
 msgid ""
@@ -940,7 +940,7 @@ msgstr ""
 "`gunicorn WSGI サーバー <https://gunicorn.org/>`_ は組み込みの "
 "`PasteDeploy` エントリーポイントをもっており、簡単に統合できます。"
 "次の buildout コンフィグのセクションの例は、`gunicorn` を使う "
-"``bin/runwsgi`` スクリプトを作ります。" 
+"``bin/runwsgi`` スクリプトを作ります。"
 
 #: ../../operation.rst:638
 msgid ""
@@ -2050,4 +2050,3 @@ msgid ""
 " Folders after 2005 apparently require its presence, but most "
 "documentation links have expired."
 msgstr ""
-

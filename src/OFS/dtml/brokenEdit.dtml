@@ -3,16 +3,16 @@
 <main class="container-fluid">
 
 	<p class="form-help">
-		This object is <em class="text-danger">broken</em> because the 
-		<strong>&dtml-product_name;</strong> product that created it 
-		is no longer installed or is installed incorrectly.  Please contact 
+		This object is <em class="text-danger">broken</em> because the
+		<strong>&dtml-product_name;</strong> product that created it
+		is no longer installed or is installed incorrectly.  Please contact
 		the product maintainer for assistance.
 		<br />
-		Note that the data associated with this product has not been lost, 
+		Note that the data associated with this product has not been lost,
 		and will be accessible again if the product is reinstalled.
 	</p>
 
-<!-- 
+<!--
   &dtml-info;
 -->
 

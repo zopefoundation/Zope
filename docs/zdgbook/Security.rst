@@ -41,10 +41,10 @@ consulted by ``ZPublisher`` to determine whether the user has
 permission to view the ``index_html`` object itself.
 
 On top of that, the publisher also defines other rules to determine
-which objects can be published. The most important of these is that 
+which objects can be published. The most important of these is that
 objects which are published must have a docstring.
 
-For more information on this topic, see the chapter on 
+For more information on this topic, see the chapter on
 :doc:`ObjectPublishing`.
 
 
@@ -136,7 +136,7 @@ In short, the default Zope security policy ensures the following:
   in question, access is denied.
 
 - objects can only be published if they have a doc string. This
-  restriction exists outside the security policy itself. 
+  restriction exists outside the security policy itself.
 
 
 As we delve further into Zope security within this chapter, we'll see
@@ -276,7 +276,7 @@ you'll want to make on your objects are:
 
 - this object is **protected** by a specific permission
 
-There are a few other kinds of security assertions that are 
+There are a few other kinds of security assertions that are
 much less frequently used but may be needed in some cases:
 
 - asserting that access to subobjects that do not have explicit
@@ -366,8 +366,8 @@ For example::
   class Mailbox(ObjectManager):
     """A mailbox object that contains mail message objects."""
 
-    # Create a SecurityInfo for this class. We will use this 
-    # in the rest of our class definition to make security 
+    # Create a SecurityInfo for this class. We will use this
+    # in the rest of our class definition to make security
     # assertions.
     security = ClassSecurityInfo()
 

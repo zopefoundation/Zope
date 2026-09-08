@@ -6,7 +6,7 @@
   <metal:macro metal:define-macro="heading">
     <h1 i18n:translate="heading_edit_marker">Assign Marker Interfaces</h1>
   </metal:macro>
-  
+
   <metal:macro metal:define-macro="main">
     <p class="form-help formHelp" i18n:translate="">
       Change the behavior of this object by adding or removing marker
@@ -17,7 +17,7 @@
       content. This allows you to enable and disable views based on marker
       interfaces for example.
     </p>
-    
+
     <form action="." method="post"
           tal:attributes="action request/ACTUAL_URL">
 

@@ -33,14 +33,14 @@ Paul Winkler with help from Peter Sabaini expertly massaged the
 Advanced Scripting chapter into coherency for the 2.6 edition.
 
 Peter Sabaini greatly fleshed out and extended the "Maintaining Zope"
-and the "Searching and Categorizing Content" chapter for the 2.6 Edition. 
+and the "Searching and Categorizing Content" chapter for the 2.6 Edition.
 
 Andrew Veitch cheerfully performed the thankless task of
 editing and extending the Relational Database Connectivity chapter
 for the 2.6 edition.
 
 Kevin Carlson masterfully edited and expanded the Advanced DTML
-chapter. 
+chapter.
 
 Joel Burton rewrote the ZCatalog chapter late in the 2.6 book's
 lifetime.

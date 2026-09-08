@@ -68,9 +68,9 @@ Python package directory.  In either case, try the following set of
 commands::
 
   chrism@saints:/opt/zope/lib/python$ python
-  Python 2.1.1 (#1, Aug  8 2001, 21:17:50) 
+  Python 2.1.1 (#1, Aug  8 2001, 21:17:50)
   [GCC 2.95.2 20000220 (Debian GNU/Linux)] on linux2
-  Type "copyright", "credits" or "license" for more information. 
+  Type "copyright", "credits" or "license" for more information.
   >>> from ZODB import FileStorage, DB
   >>> storage = FileStorage.FileStorage('mydatabase.fs')
   >>> db = DB( storage )

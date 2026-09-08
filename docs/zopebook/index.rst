@@ -41,4 +41,3 @@ to `Zope`, an open-source web application server.
    AppendixD.rst
    AppendixE.rst
    Contributions.rst
-

@@ -40,7 +40,7 @@ A browser page that is a view class's attribute (method):
 A browser page that is a Page Template.
 
   >>> view = self.folder.unrestrictedTraverse('testoid/owl.html')
-  >>> view() == '<p>2</p>'
+  >>> view().strip() == '<p>2</p>'
   True
 
 A browser page that is a PageTemplate plus a view class:
@@ -48,7 +48,7 @@ A browser page that is a PageTemplate plus a view class:
   >>> view = self.folder.unrestrictedTraverse('testoid/falcon.html')
   >>> isinstance(view, SimpleView)
   True
-  >>> view() == '<p>The falcon has taken flight</p>'
+  >>> view().strip() == '<p>The falcon has taken flight</p>'
   True
 
 Test pages that have been registered through the cumulative

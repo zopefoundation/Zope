@@ -24,4 +24,3 @@ issues a warning.
 We have to uninstall the hook so that other warnings don't get lost.
 
   >>> hook.uninstall()
-

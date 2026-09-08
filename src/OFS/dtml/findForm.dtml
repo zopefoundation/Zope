@@ -35,16 +35,16 @@
 		Displaying items
 		<dtml-in name="results" size=batch_size start=query_start
 			><dtml-if sequence-start>&dtml-sequence-number;</dtml-if
-			><dtml-if sequence-end>-&dtml-sequence-number; of 
+			><dtml-if sequence-end>-&dtml-sequence-number; of
 				<dtml-var "_.len(results)"
 			></dtml-if
 		></dtml-in>
-		items matching your query. You can <a href="#zmi-search-form">revise</a> 
+		items matching your query. You can <a href="#zmi-search-form">revise</a>
 		your search terms below.
 	</div>
 <dtml-else>
 	<div class="alert alert-danger">
-		No items were found matching your query. You can 
+		No items were found matching your query. You can
 		<a href="#zmi-search-form">revise</a> your search terms below.
 	</div>
 </dtml-if>
@@ -59,7 +59,7 @@
 	<nav class="zmi-find-results nav row mb-2">
 	<div class="col-6">
 	<dtml-in name="results" previous size=batch_size start=query_start>
-		<a class="btn btn-primary float-left" 
+		<a class="btn btn-primary float-left"
 			href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">
 			<i class="fa fa-caret-left"></i>&nbsp;&nbsp;Previous
 		</a>
@@ -69,7 +69,7 @@
 	<dtml-in name="results" next size=batch_size start=query_start>
 		<a class="btn btn-primary"
 			href="<dtml-var "REQUEST.URL" html_quote>&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">
-			Next&nbsp;&nbsp;<i class="fa fa-caret-right"></i> 
+			Next&nbsp;&nbsp;<i class="fa fa-caret-right"></i>
 		</a>
 	</dtml-in>
 	</div>
@@ -103,7 +103,7 @@
 	<td style="width:*">
 		<div class="form-element">
 			<select id="type" class="form-control" name="obj_metatypes:list" size="8" multiple="multiple">
-			<option value="all" 
+			<option value="all"
 				<dtml-if "not obj_metatypes">
 					selected="selected"
 				<dtml-else>
@@ -142,7 +142,7 @@
 		<label for="contain" class="form-label">Containing:</label>
 	</td>
 	<td>
-		<input id="contain" class="form-control" type="text" name="obj_searchterm" 
+		<input id="contain" class="form-control" type="text" name="obj_searchterm"
 			value="<dtml-var "obj_searchterm and obj_searchterm or ''" html_quote>" />
 	</td>
 </tr>
@@ -246,7 +246,7 @@
 		<div class="zmi-controls">
 			<input class="btn btn-primary" type="submit" name="btn_submit" value="Find" />
 			<div class="btn ml-3" >
-				<input id="searchtype" 
+				<input id="searchtype"
 					onclick="$('.advanced-search-only').toggle()"
 					class="form-check-input" type="checkbox" name="searchtype" value="advanced" <dtml-if "searchtype=='advanced'"> checked="checked"</dtml-if> />
 				<label for="searchtype" class="form-check-label">Advanced Search</label>

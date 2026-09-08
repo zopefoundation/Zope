@@ -65,9 +65,9 @@
         <tr>
           <td class="pl-3">
           <dtml-try>
-            <input id="userid" name="userid" class="form-control" 
+            <input id="userid" name="userid" class="form-control"
                    placeholder="Enter User Name or Select from List"
-                   value="<dtml-var "REQUEST.get('username','')">" 
+                   value="<dtml-var "REQUEST.get('username','')">"
                    required="required" />
             <select name="userid_list" class="form-control bg-light" size="5"
                     onclick="$('#userid').val( $(this).val() );
@@ -79,7 +79,7 @@
               </dtml-in>
             </select>
           <dtml-except OverflowError>
-            <input id="userid" placeholder="Enter User Name" 
+            <input id="userid" placeholder="Enter User Name"
                    name="userid" class="form-control"
                    required="required" />
           </dtml-try>

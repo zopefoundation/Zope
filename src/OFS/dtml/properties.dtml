@@ -66,7 +66,7 @@
 											><input type="text" class="form-control" name="&dtml-id;:&dtml-charset_tag;&dtml-type;"
 												value="<dtml-in "getProperty(id)">&dtml-sequence-item; </dtml-in>" />
 										<dtml-elif "type in ['text','utext']"
-											><textarea name="&dtml-id;:&dtml-charset_tag;&dtml-type;" class="form-control" 
+											><textarea name="&dtml-id;:&dtml-charset_tag;&dtml-type;" class="form-control"
 												rows="6"><dtml-var "getProperty(id)" html_quote></textarea>
 										<dtml-elif "type in ['lines','ulines']"
 											><dtml-comment>
@@ -119,9 +119,9 @@
 									<dtml-else>
 										<dtml-var "getProperty(id)" html_quote>
 									</dtml-if>
-	
+
 									<dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')"
-										><small class="form-help text-danger"><strong>Warning:</strong> 
+										><small class="form-help text-danger"><strong>Warning:</strong>
 											be aware that removing <em>title</em> without re-adding it might be dangerous.
 										</small>
 									</dtml-if>
@@ -154,9 +154,9 @@
 
 			<p class="form-help">
 				Properties allow you to assign simple values to Zope objects. There are
-				currently no properties defined for this item. 
+				currently no properties defined for this item.
 				<dtml-if property_extensible_schema__>
-					To add a property, enter a name, type and value and click the 
+					To add a property, enter a name, type and value and click the
 					<em>Add</em> button.
 				</dtml-if>
 			</p>

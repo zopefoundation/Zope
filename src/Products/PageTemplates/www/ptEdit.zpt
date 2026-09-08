@@ -46,7 +46,7 @@
 		<pre tal:content="python:'\n'.join(errors)">errors</pre>
 	</div>
 
-	<textarea id="content" data-contenttype="html" 
+	<textarea id="content" data-contenttype="html"
 		class="form-control zmi-zpt zmi-code col-sm-12"
 		name="text:text" wrap="off" rows="20"
 		tal:content="body"

@@ -21,7 +21,7 @@ Other projects include the
 and many individual packages located in the
 `zopefoundation GitHub organization <https://github.com/zopefoundation>`_ as
 well as projects being based on or related to these packages. One of the more
-widely known applications based on top of Zope is the content management system 
+widely known applications based on top of Zope is the content management system
 `Plone <https://plone.org/>`_.
 
 Zope itself is a web framework that allows developers of varying skill
@@ -74,7 +74,7 @@ information in files on a web server. Each file then represents a
 complete page on the website. This may seem like a simple and
 efficient way of creating a website; however, *updating the
 information* within those pages becomes a problem when the site consists of
-more than a few pages, and the pages, or parts of the pages, need to be updated 
+more than a few pages, and the pages, or parts of the pages, need to be updated
 frequently.
 
 The layout of text and images that are displayed in a user's web browser
@@ -104,9 +104,9 @@ ads that have expired and create new pages for ads that have been
 recently sold.  He then needs to make sure that no hyperlinks on
 other pages point to any of these deleted pages.
 
-Obviously, this quickly becomes a lot of work.  With any more than a 
-few pages to update each day, this type of repetitive work 
-can become pretty dull.  In addition, being a human being, the webmaster 
+Obviously, this quickly becomes a lot of work.  With any more than a
+few pages to update each day, this type of repetitive work
+can become pretty dull.  In addition, being a human being, the webmaster
 may also make mistakes, such as forgetting to update or remove
 critical pages.  While updating a static website with only 10 to 20
 pages might be dull, it's perfectly manageable.  However, websites
@@ -119,7 +119,7 @@ themselves, "Wow, this is a lot of work.  It's tedious and
 complicated, and I seem to be making a lot of mistakes.  Computers
 are really good at doing tedious and complicated tasks, and they
 don't make very many mistakes.  I bet my web server computer could
-automatically do a lot of the work I now do manually."  And he would 
+automatically do a lot of the work I now do manually."  And he would
 be right.
 
 At this point, the webmaster is ready to be introduced to *web
@@ -136,8 +136,8 @@ and browsers are typically unaware of the difference between
 a web server that fronts a statically-built website
 and one that fronts a web application.  But unlike a
 static website, a web application creates its "pages"
-*dynamically*, or on-the-fly, upon request.  A website that is dynamically-
-constructed uses an a computer program to provide its content.
+*dynamically*, or on-the-fly, upon request.  A website that is
+dynamically-constructed uses an a computer program to provide its content.
 These kinds of dynamic applications can be written in any number of
 computer languages.
 
@@ -152,7 +152,7 @@ required to visit the site "page-by-page" in order to update its
 content or style.  Instead, he is able to instruct the web server
 to *generate the site's HTML pages dynamically*, where each page is
 made up of different bits of content. While each bit of content is
-unique, each can nevertheless appear in several pages if so 
+unique, each can nevertheless appear in several pages if so
 instructed by the web server. In this way, the webmaster is able to create
 a common "look and feel" for the set of pages that make up his
 site. The software on the web server that generates these
@@ -243,7 +243,7 @@ example, if you're building a news site, you may wish to share
 your news stories with another site; you can do this by making
 the news feed a network service.  Or perhaps you want to make
 products for sale on your site automatically searchable from a
-product comparison site.  Application servers 
+product comparison site.  Application servers
 offer methods for enabling these kinds of network services.
 
 Integrate Diverse Systems -- Your existing content may be
@@ -350,7 +350,7 @@ create, deploy, and manage a web application.
 Of the parties listed above, Zope is most useful for *component
 developers*, *integrators*, and *web designers*.  These three
 groups can collaborate to produce an application using
-Zope's native services and third-party Zope *Plugins*.  They 
+Zope's native services and third-party Zope *Plugins*.  They
 typically produce applications useful to *content managers* and
 *consumers* under the guide of the *information architect*.
 *Administrators* deploy the application and tend to the

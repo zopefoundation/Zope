@@ -48,7 +48,7 @@ Zope so the necessary ZODB objects for session support are created. This will
 not lose session data, but it has a high risk of producing ZODB conflict errors
 when storing data unless the session is used very carefully to minimize write
 activity.
-  
+
 For production deployments see, see `the Zope book chapter on sessioning
 for alternative session storage options
 <https://zope.readthedocs.io/en/latest/zopebook/Sessions.html#alternative-server-side-session-backends-for-zope-4>`_.

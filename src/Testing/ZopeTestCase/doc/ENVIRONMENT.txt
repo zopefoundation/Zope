@@ -9,14 +9,14 @@ b) none
 c) none
 
 d) The somewhat weak assumption is that ZTC can walk up the directory tree from
-   'tests', and find a 'Products' directory. This is how INSTANCE_HOME 
-   detection works. It regrettably fails on some filesystems when symbolic 
+   'tests', and find a 'Products' directory. This is how INSTANCE_HOME
+   detection works. It regrettably fails on some filesystems when symbolic
    links are involved (a solution is detailed below, so hang on).
 
 
 The non-trivial part is that INSTANCE_HOME has two distinct purposes:
 
-    1) INSTANCE_HOME/lib/python must be added to sys.path and 
+    1) INSTANCE_HOME/lib/python must be added to sys.path and
        INSTANCE_HOME/Products to Products.__path__.
 
     2) INSTANCE_HOME/custom_zodb.py must be used to set up a ZODB.
@@ -25,17 +25,17 @@ The non-trivial part is that INSTANCE_HOME has two distinct purposes:
 ZTC attempts to resolve this by detecting an INSTANCE_HOME but leaving
 the actual environment variable untouched
 
-As soon as I allow you to set INSTANCE_HOME yourself, I lose the ability to 
-distinguish whether you mean 1) or 2) or both. 
+As soon as I allow you to set INSTANCE_HOME yourself, I lose the ability to
+distinguish whether you mean 1) or 2) or both.
 
 Before ZTC 0.6.2 the code assumed "both" and did the magic ZEO dance. This was
 clearly too surprising.
 
-The behaviour has now been changed to 1). 
+The behaviour has now been changed to 1).
 
-That way, if your setup does not fit c) or you run into the symbolic link 
-problem d), you can solve it by setting INSTANCE_HOME prior to running the 
+That way, if your setup does not fit c) or you run into the symbolic link
+problem d), you can solve it by setting INSTANCE_HOME prior to running the
 tests.
 
-ZEO support ("both") is handled separately, through the new environment 
+ZEO support ("both") is handled separately, through the new environment
 variable ZEO_INSTANCE_HOME.

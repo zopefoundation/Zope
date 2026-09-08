@@ -38,7 +38,7 @@ Documents, Z SQL Methods and Page Templates. Typical issues include:
 - etc.
 
 Many of these and others will be familiar from changing filesystem code to be
-Python 3 compatible. 
+Python 3 compatible.
 
 
 Delete ZODB objects that no longer exist under Zope 4
@@ -105,7 +105,7 @@ sure your ZODB is packed before going on.
     ``mkwsgiinstance`` and under ``parts/<INSTANCE_NAME>/etc`` if you used
     ``plone.recipe.zope2instance``) reflect what was in your Zope 2
     configuration before the migration
-    
+
   - start the Application using ``bin/runwsgi etc/zope.ini`` or
     ``bin/<INSTANCE_NAME>``, depending on the mechanism you used to create the
     instance configuration. Test it intensively for incompatibilities and errors.
@@ -118,7 +118,7 @@ sure your ZODB is packed before going on.
 
 Now you have a ZODB that is ready to be opened under Python 3 for the remaining
 steps.
-  
+
 
 Going from Python 2 to Python 3
 +++++++++++++++++++++++++++++++

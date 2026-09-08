@@ -317,11 +317,11 @@ the URL, relative links returned by ``index_html`` won't work right.
 
 For example::
 
-	    @zpublish
+            @zpublish
             class Example:
                 """example class""""
 
-		 @zpublish
+                 @zpublish
                  def index_html(self):
                      """render default view"""
                     return """<html>
@@ -396,9 +396,9 @@ acquisition, you can use traversal to walk over acquired objects.
 Consider the the following object hierarchy::
 
         from Acquisition import Implicit
-	from ZPublisher import zpublish
+        from ZPublisher import zpublish
 
-	@zpublish
+        @zpublish
         class Node(Implicit):
             ...
 
@@ -424,27 +424,27 @@ method that your acquire from outside your container.
 For example::
 
         from Acquisition import Implicit
-	from ZPublisher import zpublish
+        from ZPublisher import zpublish
 
-	@zpublish
+        @zpublish
         class Basket(Implicit):
             ...
-	    @zpublish
+            @zpublish
             def number_of_items(self):
                 """Returns the number of contained items."""
                 ...
 
-	@zpublish
+        @zpublish
         class Vegetable(Implicit):
             ...
-	    @zpublish
+            @zpublish
             def texture(self):
                 """Returns the texture of the vegetable."""
 
-	@zpublish
+        @zpublish
         class Fruit(Implicit):
             ...
-	    @zpublish
+            @zpublish
             def color(self):
                 """Returns the color of the fruit."""
 
@@ -694,7 +694,7 @@ Argument Conversion
 The publisher supports argument conversion. For example consider this
 function::
 
-	@zpublish
+        @zpublish
         def one_third(number):
             """returns the number divided by three"""
             return number / 3.0

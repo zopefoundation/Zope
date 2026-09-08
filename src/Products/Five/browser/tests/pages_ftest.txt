@@ -61,14 +61,14 @@ those; we start by adding two users:
   >>> protected_view_names = [
   ...     'eagle.txt', 'falcon.html', 'owl.html', 'flamingo.html',
   ...     'condor.html']
-  >>> 
+  >>>
   >>> public_view_names = [
   ...     'public_attribute_page',
   ...     'public_template_page',
   ...     'public_template_class_page',
   ...     'nodoc-method', 'nodoc-function', 'nodoc-object',
   ...     'dirpage1', 'dirpage2']
-  >>> 
+  >>>
   >>> ViewManagementScreens = 'View management screens'
 
 As a normal user we shouldn't get to see those pages protected with

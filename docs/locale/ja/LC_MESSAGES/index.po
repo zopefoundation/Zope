@@ -28,4 +28,3 @@ msgstr "Zope ドキュメント"
 #: ../../index.rst:3
 msgid "This is the official home for all Zope documentation."
 msgstr "これは全ての Zope ドキュメントの公式ホームです。"
-

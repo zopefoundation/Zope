@@ -317,7 +317,7 @@ own user folder, which managers have by default.  It is often
 desirable to allow users to change their own passwords.  One
 problem is that by giving a user the *Manage Users* permission,
 they are also able to edit other user accounts and add/delete
-users.  This may or may not be what you want.  
+users.  This may or may not be what you want.
 
 To grant the capability for users to change their own passwords
 without being able to influence other users' information, set up
@@ -331,7 +331,7 @@ users in a user folder, and you can't create anything besides a
 user in a user folder.
 
 To delete an existing user from a user folder, select the user and
-click the *Delete* button. 
+click the *Delete* button.
 
 Defining a User's Location
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -349,7 +349,7 @@ right now is defined.  You can however, create user folders
 within any Zope folder.  If a user folder is defined in a
 subfolder, the user may only access protected resources within
 that subfolder and within subfolders of that subfolder, and so
-on.  
+on.
 
 Consider the case of a user folder at
 */BeautySchool/Hair/acl_users*. Suppose the user *Ralph
@@ -408,7 +408,7 @@ you can take the burden of site administration off of a small
 group of managers and spread that burden around to different
 specific groups of users.
 
-Working with Alternative User Folders  
+Working with Alternative User Folders
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It may be that you don't want to manage your user account through the web using
@@ -506,7 +506,7 @@ create a new object is shown below.
 The error above lets you know that the emergency user cannot
 create new objects. This is "by design", and the reasoning
 behind this policy may become clearer later in the chapter
-when we cover ownership.  
+when we cover ownership.
 
 Creating an Emergency User
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -515,7 +515,7 @@ Unlike normal user accounts that are defined through the Zope
 Management Interface, the emergency user account is defined
 through a file in the filesystem. You can change the emergency
 user account by editing or generating the file named 'access'
-in the Zope home directory (the main Zope directory), 
+in the Zope home directory (the main Zope directory),
 corresponding to the ``INSTANCEHOME`` variable in the Zope
 configuration file ``zope.conf``. Simply open the ``access``
 file in a text editor of your choice and enter a user name and
@@ -544,7 +544,7 @@ can provide a login and password to the script, otherwise it will ask you::
     Please choose a username and password for the initial user.
     These will be the credentials you use to initially manage
     your new Zope instance.
-    
+
     Username: admin
     Password:
     Verify password:
@@ -556,13 +556,13 @@ script to create manager-level users::
 
     $ bin/addzopeuser -h
     usage: addzopeuser [-h] [-c [CONFIGURATION]] user password
-    
+
     Add a Zope management user to the root Zope user folder.
-    
+
     positional arguments:
       user                  name of user to be created
       password              new password for the user
-    
+
     options:
       -h, --help            show this help message and exit
       -c, --configuration [CONFIGURATION]
@@ -687,7 +687,7 @@ to parts of your site, chances are there are better ways to
 accomplish the same thing. For example you could simply change
 the security settings for existing roles on the folder you want
 to protect, or you could define users deeper in the object
-hierarchy to limit their access. 
+hierarchy to limit their access.
 
 Understanding Local Roles
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -741,7 +741,7 @@ The default Zope permissions are described in `appendix A
 <https://zope.readthedocs.io/en/latest/zdgbook/AppendixA.html>`_
 of the Zope Developer's Guide.
 
-.. figure:: Figures/6-3.png     
+.. figure:: Figures/6-3.png
 
    Security settings for a mail host object
 
@@ -1042,7 +1042,7 @@ object hierarchy so that they have access to the
 
 When you create users at this higher level, you should not give them
 the *Manager* role, but instead give them Scientist or SalesPerson as
-appropriate. Then you should set the security policies using the 
+appropriate. Then you should set the security policies using the
 checkboxes in the Security panel.  On the
 *Science* folder the *Scientist* role should have the equivalent of
 *Manager* control. On the *Sales* folder, the *Salesperson* role
@@ -1092,7 +1092,7 @@ files. This action may be protected by the "Add Documents, Images,
 and Files" standard Zope permission. You can test to see if the
 current user has this permission in a Page Template::
 
-  <form action="upload" 
+  <form action="upload"
     tal:condition="python:
       modules['AccessControl'].getSecurityManager().checkPermission(
          'Add / Documents, Images, and Files', context)">
@@ -1134,7 +1134,7 @@ By passing the current object to 'checkPermission', we make sure
 that local roles are taken into account when testing whether the
 current user has a given permission.
 
-You can find out about the current user by accessing the user object. 
+You can find out about the current user by accessing the user object.
 The current user is a Zope object like any other and you can
 perform actions on it using methods defined in the API
 documentation.

@@ -79,7 +79,7 @@ can "call out" from DTML to Script (Python) objects as necessary
 and process the results of the call in DTML.  For example, it is
 `trivial in Python <https://docs.python.org/tutorial/introduction.html>`_
 (search for the word Fibonacci on this page) to implement a Fibonacci
-sequence generator, and trivial in DTML to create some dynamic 
+sequence generator, and trivial in DTML to create some dynamic
 output which shows these numbers in a readable format.  If you find
 yourself creating complex and hard-to-understand logic in DTML,
 it's likely time to explore the the Zope features which allow you
@@ -165,7 +165,7 @@ resolves the name 'id' to the string which is the value of
 its *own* id, not the id of its containing folder.
 
 .. important::
-   
+
    For this chapter, unless stated otherwise, use DTML Methods to
    hold the example DTML text, as opposed to DTML Documents!**
 
@@ -268,7 +268,7 @@ title "Bob's Fancy Feedbags". While inside the 'Feedbags' folder,
 create a DTML Method with an id of "pricelist". Note: an
 'id' is how you refer to an object such as a DTML Method
 or a Folder later on; titles are for informational
-purposes only. 
+purposes only.
 
 Change the contents of the DTML Method to the following::
 
@@ -355,7 +355,7 @@ that once DTML *finds* a property or variable, if it is callable
 Method, or a Script (Python) object), it is called and the results
 of the call are inserted into the page.
 
-Next DTML looks for the name "title". Here, the search is 
+Next DTML looks for the name "title". Here, the search is
 shorter.  On its first try, DTML finds the 'Feedbags' folder's
 'title' property and inserts it.  The 'title' property is not a
 method or a script, so DTML doesn't need to *call* it.  It just
@@ -402,7 +402,7 @@ Make sure that all of the lines of this script line up along the
 left-hand side of the textarea to avoid receiving an error when
 you attempt to save the script, since Python is sensitive to
 indentation.  Don't worry about the '##'s for now, we will
-explain these later.  
+explain these later.
 
 This Script (Python) object returns a Python data
 structure which is a *list* of *strings*.  A list is a kind of
@@ -906,7 +906,7 @@ and::
 These two examples if you are to put them in a DTML Method will
 end up giving you two completely different results. The first
 example of the DTML *var* tag will automatically *call* the
-object which is represented by *objectValues*. 
+object which is represented by *objectValues*.
 
 In an expression, you have complete control over the variable
 rendering.  In the case of our example, *objectValues* is a
@@ -1122,7 +1122,7 @@ its value. For example::
 
   <dtml-if monkey_house>
     <p>There <em>is</em> a monkey house, Mom!</p>
-  </dtml-if>  
+  </dtml-if>
 
 If the *monkey_house* variable does not exist, then this condition
 is false. If there is a *monkey_house* variable but it is false,
@@ -1204,7 +1204,7 @@ according to whether a user is new or a repeat visitor::
   <dtml-else>
     <p>Zoo admission for first time visitors
          <dtml-var expr="adult_rate/2" fmt="dollars-and-cents"></p>
-  </dtml-if>  
+  </dtml-if>
 
 This fragment tests for the *hasVisitedZoo* variable. If the user
 has visited the zoo before it displays the normal price for
@@ -1365,7 +1365,7 @@ bit to look like this::
       <tr bgcolor="grey">
     <dtml-else>
       <tr>
-    </dtml-if>    
+    </dtml-if>
     <td>
     <a href="&dtml-absolute_url;"><dtml-var title_or_id></a>
     </td></tr>

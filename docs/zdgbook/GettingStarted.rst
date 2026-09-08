@@ -234,36 +234,36 @@ Here is the code for ``app.py``...
 ::
 
   <h1 tal:replace="structure context/manage_page_header">Header</h1>
-  
+
   <main class="container-fluid">
-  
+
     <h2 tal:define="form_title string:Add POLL"
         tal:replace="structure here/manage_form_title">Form Title</h2>
-  
+
     <form action="addPollMain" method="post">
-  
+
       <div class="form-group row">
         <label for="id" class="form-label col-sm-3 col-md-2">Id</label>
         <div class="col-sm-9 col-md-10">
           <input id="id" name="id" class="form-control" type="text" />
         </div>
       </div>
-  
+
       <div class="form-group row form-optional">
         <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
         <div class="col-sm-9 col-md-10">
           <input id="title" name="title" class="form-control" type="text" />
         </div>
       </div>
-  
+
       <div class="zmi-controls">
         <input class="btn btn-primary" type="submit" name="submit" value="Add" />
       </div>
-  
+
     </form>
-  
+
   </main>
-  
+
   <h1 tal:replace="structure context/manage_page_footer">Footer</h1>
 
 Finally, we can register it within ``src/poll/main/__init__.py``::

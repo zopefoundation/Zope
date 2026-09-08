@@ -11,7 +11,7 @@
     held by the request shown in the Info column next to it. You can use this
     view to diagnose long-running requests.
   </p>
- 
+
   <h3>ZODB database connections</h3>
   <table class="table table-striped mt-3 mb-5">
     <tr>

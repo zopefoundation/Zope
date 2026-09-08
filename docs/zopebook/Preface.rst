@@ -108,7 +108,7 @@ This book is laid out in the following chapters:
     that let you insert dynamic content, and how to create and edit page
     templates.
 
-- Creating Basic Zope Applications  
+- Creating Basic Zope Applications
 
     This chapter presents several real-world examples of building a Zope
     application. You'll learn how to use basic Zope objects and how they can
@@ -213,4 +213,3 @@ This book is laid out in the following chapters:
 - Appendix E:
 
     DTML Name Lookup Rules Describes DTML's name lookup rules.
-

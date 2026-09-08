@@ -5,7 +5,7 @@
 <main class="container-fluid">
 
 	<dtml-var "manage_form_title(this(), _, form_title='Change Property Types')">
-	
+
 	<dtml-unless props
 		><dtml-if ids
 			><dtml-call expr="REQUEST.set('props', [])"
@@ -57,7 +57,7 @@
 								</td>
 								<td>
 									<dtml-if expr="new_type in ('int', 'long', 'float', 'date', 'string', 'tokens')"
-										><input type="text" class="form-control" name="&dtml-value_name;" 
+										><input type="text" class="form-control" name="&dtml-value_name;"
 										<dtml-if was_seq
 											>value="<dtml-in new_value>&dtml-sequence-item; </dtml-in>"
 										<dtml-elif expr="new_type=='long'"
@@ -67,7 +67,7 @@
 										</dtml-if>>
 									<dtml-elif "new_type=='boolean'"
 										><div class="form-check"><input class="form-check-input" type="checkbox" name="&dtml-value_name;"
-											<dtml-if new_value>checked="checked"</dtml-if> 
+											<dtml-if new_value>checked="checked"</dtml-if>
 										/></div>
 									<dtml-elif "new_type in ('text', 'lines')"
 										><textarea class="form-control" name="&dtml-value_name;" rows="6"

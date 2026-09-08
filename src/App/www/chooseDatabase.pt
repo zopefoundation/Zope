@@ -5,7 +5,7 @@
 <main class="container-fluid">
 
 <p class="form-help mt-4">
-	Mounted Zope Object Databases (ZODB): Please select a database name 
+	Mounted Zope Object Databases (ZODB): Please select a database name
 	to get into it's <em>Database Manager</em>.
 </p>
 

@@ -2,7 +2,7 @@ Creating Basic Zope Applications
 ================================
 
 .. todo:
-   
+
    - add new screen shots
 
 .. note::
@@ -276,7 +276,7 @@ subfolders in our context.  The 'tal:condition' statement checks if any
 subfolders exist.  If not, the complete 'ul' element is removed.  That
 means we have reached a *leaf* of the navigation tree and don't need a
 subfolder menu.
- 
+
 Otherwise, the same expression in the 'tal:repeat' statement of the 'li'
 element will return a list of subfolders.  The 'li' element will be
 repeated for each *item* of this list.  In step 3 we created three

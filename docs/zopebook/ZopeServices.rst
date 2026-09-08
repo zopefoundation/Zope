@@ -26,7 +26,7 @@ to explain by way of an example.
    an access rule. For the baffled among us, you can set an environmental
    variable 'SUPPRESS_ACCESSRULE' ( I add a line in my 'start' script to
    do this ) or include '_SUPPRESS_ACCESSRULE' to the URL at a point AFTER
-   the folder/container in question.
+   the folder/container in question.
    SITEROOT works the same way, just replace ACCESSRULE with SITEROOT in
    the above explanation.
 
@@ -363,7 +363,7 @@ Available options for the **Site Error Log** instance:
 - *Copy exceptions to the event log* - If this option is enabled, the
   **Site Error Log** object will copy the text of the received
   exceptions to Zope's event log.
-  
+
 - *Ignored exception types* - Here you can add **Exceptions** which you
   want to ignore.
   This means they will be neither shown in the ZMI, nor logged to

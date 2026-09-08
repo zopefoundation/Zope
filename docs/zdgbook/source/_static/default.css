@@ -505,7 +505,7 @@ div#suggest-changes-box textarea {
 
 
 /* :::: PREVIEW :::: */
-div.preview { 
+div.preview {
     background-image: url(style/preview.png);
     padding: 0 20px 20px 20px;
     margin-bottom: 30px;
@@ -877,8 +877,8 @@ form.comment textarea {
 
 /* :::: PRINT :::: */
 @media print {
-    div.document, 
-    div.documentwrapper, 
+    div.document,
+    div.documentwrapper,
     div.bodywrapper {
         margin: 0;
         width : 100%;

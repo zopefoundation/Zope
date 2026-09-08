@@ -11,8 +11,8 @@
 		<dtml-unless first_transaction><dtml-call "REQUEST.set('first_transaction', None)"></dtml-unless>
 
 		<p class="form-help mt-4">
-			This application's transactional feature allows you to easily undo changes 
-			made to the application's settings or data. You can revert the application 
+			This application's transactional feature allows you to easily undo changes
+			made to the application's settings or data. You can revert the application
 			to a <em>snapshot</em> of its state at a previous point in time.
 		</p>
 
@@ -32,7 +32,7 @@
 				</div>
 				<div class="col-6 text-right">
 					<dtml-if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize"
-						><a class="btn btn-primary" title="View earlier transactions" 
+						><a class="btn btn-primary" title="View earlier transactions"
 							href="manage_UndoForm?first_transaction:int=&dtml-last_transaction;&last_transaction:int=<dtml-var expr="last_transaction+PrincipiaUndoBatchSize"
 							>&PrincipiaUndoBatchSize:int=&dtml-PrincipiaUndoBatchSize;"
 							>Earlier Transactions&nbsp;&nbsp;<i class="fas fa-chevron-right"></i></a>
@@ -50,7 +50,7 @@
 								<div class="form-check text-right"><input class="form-check-input" type="checkbox" name="transaction_info:list" value="&dtml-id;" /></div>
 							</td>
 							<td>
-								<dtml-var description html_quote newline_to_br> 
+								<dtml-var description html_quote newline_to_br>
 								by <strong><dtml-if user_name>&dtml-user_name;<dtml-else><em>Zope</em></dtml-if></strong>
 							</td>
 							<td class="text-nowrap">

@@ -8,7 +8,7 @@
 		Proxy roles allow you to control the access that a DTML document or
 		method has. Proxy roles replace the roles of the user who is viewing
 		the document or method.  This can be used to both expand and limit
-		access to resources. Select the proxy roles for this object from 
+		access to resources. Select the proxy roles for this object from
 		the list below.
 	</p>
 
@@ -37,7 +37,3 @@
 </main>
 
 <dtml-var manage_page_footer>
-
-
-
-

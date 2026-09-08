@@ -1,4 +1,4 @@
-View is a view: <tal:block 
+View is a view: <tal:block
   content="python:hasattr(view,'context') and hasattr(view, 'request')" />
 Context is testoid: <tal:block content="python:context.id == 'testoid'" />
 Context.__parent__ is test_folder_1_: <tal:block

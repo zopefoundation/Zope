@@ -48,10 +48,10 @@
       </table>
     </dtml-if>
   </dtml-let>
-  
+
   <div class="zmi-controls row border-top border-bottom p-3 bg-light">
     <form action="&dtml-URL;" method="GET" class="form-group form-inline p-0 m-0">
-      <button class="btn btn-primary mr-3" 
+      <button class="btn btn-primary mr-3"
         onclick="window.location.href='&dtml-URL;?update_snapshot=1';"
       >Update Snapshot</button>
       <dtml-if debug_auto_reload>
@@ -72,7 +72,7 @@
       </dtml-if>
     </form>
   </div>
-  
+
 </main>
 
 <dtml-var manage_page_footer>

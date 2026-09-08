@@ -16,7 +16,7 @@
         :target: https://pypi.org/project/Zope/
         :alt: Supported Python versions
 
-.. |nbsp| unicode:: 0xA0 
+.. |nbsp| unicode:: 0xA0
         :trim:
 
 |nbsp|

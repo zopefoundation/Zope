@@ -54,7 +54,7 @@ The ZMI uses three browser frames:
   the one in Windows Explorer.
 
 - The right frame is called the *Workspace Frame*, which displays a
-  particular view of the object you're currently managing.    
+  particular view of the object you're currently managing.
 
 - The top frame is called the *Status Frame*, which displays your user name
   (when logged in), as well as a drop-down list that performs various
@@ -70,7 +70,7 @@ objects: almost everything meaningful in your Zope instance lives inside
 the root folder.
 
 .. figure:: Figures/navigator.jpg
-  
+
    The Navigator Frame
 
 Some of the folders in the Navigator are displayed with "plus mark" icons
@@ -143,7 +143,7 @@ current login name, along with a pull-down box that lets you select:
   log out.
 
 .. figure:: Figures/statusframe.jpg
- 
+
    The Status Frame
 
 Creating Objects
@@ -332,7 +332,7 @@ the same folder, pasting the first object cannot be undone, as both
 transactions affect the contents of a single object: the folder. The
 solution is to undo both transactions. You can undo more than one
 transaction at a time by selecting multiple transactions on the *Undo* tab
-and then clicking *Undo*.  
+and then clicking *Undo*.
 
 Only changes to objects stored in Zope's object database can be undone.  If
 you have integrated data into a relational database server, such as Oracle

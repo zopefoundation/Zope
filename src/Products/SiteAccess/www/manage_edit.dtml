@@ -15,7 +15,7 @@ probably need to manage Zope using its raw IP address to fix things.
 <form action="set_map" method="post">
 
 <small class="text-muted">
-  Each line represents a path mapping for a single host 
+  Each line represents a path mapping for a single host
   (<strong>host/path</strong>),
   or a set of hosts (<strong>*.host/path</strong>).
 </small>

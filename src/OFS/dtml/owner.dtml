@@ -11,7 +11,7 @@
 	</p>
 
 	<div class="alert alert-info">
-		This object is 
+		This object is
 		<dtml-if owner_info>
 			<dtml-with owner_info mapping>
 				owned by &dtml-id; (&dtml-path;).

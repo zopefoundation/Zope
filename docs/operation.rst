@@ -642,5 +642,3 @@ Zope configuration reference
 
 .. zconfig:: Zope2.Startup
     :file: wsgischema.xml
-
-

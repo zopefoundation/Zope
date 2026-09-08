@@ -12,7 +12,7 @@
 				those objects for which you have the "Change cache settings" permission
 				are shown.
 			</p>
-	
+
 			<form action="&dtml-URL1;" name="objectItems" method="post">
 				<table class="table table-sm table-striped">
 					<dtml-in results mapping sort=sortkey>
@@ -29,17 +29,17 @@
 						</tr>
 					</dtml-in>
 				</table>
-	
+
 				<div class="zmi-controls">
 					<input class="btn btn-primary" type="submit" name="ZCacheManager_setAssociations:method" value="Save Changes" />
 				</div>
 
 			</form>
-	
+
 		<dtml-else>
-	
+
 			<div class="alert alert-warning">No objects matched your query.</div>
-	
+
 		</dtml-if>
 	</dtml-if>
 

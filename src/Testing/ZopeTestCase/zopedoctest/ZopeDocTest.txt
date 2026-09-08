@@ -85,4 +85,3 @@ Now let's manipulate our test objects a bit:
   >>> self.folder.manage_delObjects('object')
   >>> 'object' in self.folder.objectIds()
   False
-
