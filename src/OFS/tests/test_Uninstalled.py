@@ -21,6 +21,18 @@ class ToBreak(SimpleItem):
     pass
 
 
+class BrokenNonPersistent:
+    def __init__(self, x):
+        self.exception = x
+
+    def __setstate__(self, st):
+        raise st['exception']
+
+
+class UserError(Exception):
+    pass
+
+
 class TestsOfBroken(unittest.TestCase):
     """Tests for the factory for "broken" classes.
     """
@@ -138,6 +150,30 @@ class TestsIntegratedBroken(base.TestCase):
         # check that object is not left over
         app = base.app()
         self.assertNotIn('tr', app.objectIds())
+
+    def test_Broken_attribute__setstate__(self):
+        import transaction
+        from OFS.SimpleItem import SimpleItem
+        from ZODB.POSException import StateLoadError
+
+        tr = SimpleItem()
+        tr.id = 'tr'
+        for exception_class in (UserError, RuntimeError, AttributeError):
+            tr.broken = BrokenNonPersistent(exception_class())
+            self.app._setObject('tr', tr)
+            transaction.commit()
+
+            app = base.app()
+            with self.assertRaises(StateLoadError) as exc:
+                getattr(app.tr, 'id')
+            self.assertIsInstance(exc.exception.__cause__, exception_class)
+
+            # cleanup
+            self.app.manage_delObjects('tr')
+            transaction.commit()
+            # check that object is not left over
+            app = base.app()
+            self.assertNotIn('tr', app.objectIds())
 
 
 def test_suite():

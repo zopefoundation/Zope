@@ -54,7 +54,7 @@ dependencies = [
   "Persistence",
   "RestrictedPython",
   "ZConfig",
-  "ZODB",
+  "ZODB >= 6.4.dev0",
   "multipart",
   "transaction",
   "waitress",
