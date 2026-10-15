@@ -203,7 +203,7 @@ class TestRequestRange(unittest.TestCase):
 
         # This needs text, hence the forced latin-1 decoding.
         msg = email.message_from_file(bodyfile)
-        partmessages = [part for part in msg.walk()]
+        partmessages = [*msg.walk()]
 
         # Check the different parts
         returnedRanges = []
