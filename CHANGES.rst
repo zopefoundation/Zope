@@ -12,10 +12,14 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.3 (unreleased)
 ----------------
 
+- Update to newest compatible versions of dependencies.
+  This includes dependency updates to mitigate the eMudhra Intermediate CA
+  compromise (see https://emudhra.we-have-a-problem.com/)
 
 - Add support for Python 3.15.
 
 - Drop support for Python 3.10.
+
 
 6.2 (2026-08-05)
 ----------------
