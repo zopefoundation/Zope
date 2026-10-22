@@ -434,7 +434,7 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
         iterator = iter(om)
         self.assertTrue(hasattr(iterator, '__iter__'))
         self.assertTrue(hasattr(iterator, '__next__'))
-        result = [i for i in iterator]
+        result = [*iterator]
         self.assertIn('1', result)
         self.assertIn('2', result)
 
