@@ -739,6 +739,21 @@ class TestPublishModule(ZopeTestCase):
         self.assertIn(b'Exception View: BadRequest', body)
         unregisterExceptionView(IException)
 
+    def testPathInfoNotUTF8IsBadRequest(self):
+        # The server hands PATH_INFO over latin-1 decoded (PEP 3333), so a
+        # request for /win.ini%C0%80.jsp arrives with the bytes C0 80, which
+        # are not UTF-8. That is the request's fault: a 400, not an error.
+        registerExceptionView(IException)
+        environ = self._makeEnviron(PATH_INFO='/win.ini\xc0\x80.jsp')
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        app_iter = self._callFUT(environ, start_response, _publish)
+        body = b''.join(app_iter)
+        self.assertEqual(start_response._called_with[0][0], '400 Bad Request')
+        self.assertIn(b'Exception View: BadRequest', body)
+        self.assertIsNone(_publish._called_with)
+        unregisterExceptionView(IException)
+
     def testCustomExceptionViewInternalError(self):
         from zExceptions import InternalError
         registerExceptionView(IException)
