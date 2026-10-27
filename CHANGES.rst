@@ -12,6 +12,10 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.4 (unreleased)
 ----------------
 
+- Answer a request whose path is not valid UTF-8 with BadRequest/400 instead
+  of an unhandled ``UnicodeDecodeError``.
+  (`#1249 <https://github.com/zopefoundation/Zope/issues/1249>`_)
+
 
 6.3 (2026-10-22)
 ----------------
