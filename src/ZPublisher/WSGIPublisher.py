@@ -25,6 +25,7 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
 from transaction.interfaces import TransientError
+from zExceptions import BadRequest
 from zExceptions import Unauthorized
 from zExceptions import upgradeException
 from zope.component import queryMultiAdapter
@@ -319,6 +320,7 @@ def publish_module(environ, start_response,
                    _module_name='Zope2'):
     module_info = get_module_info(_module_name)
     result = ()
+    bad_request = None
 
     path_info = environ.get('PATH_INFO')
     if path_info:
@@ -344,9 +346,15 @@ def publish_module(environ, start_response,
         # of the way PEP-3333 restricts the type of string allowable for
         # request and response metadata. The allowed characters match up in
         # both latin-1 and utf-8.
-        path_info = path_info.decode('utf-8')
-
-        environ['PATH_INFO'] = path_info
+        # A path whose bytes are not UTF-8 names nothing that can be
+        # traversed: answer it with BadRequest, raised where publishing would
+        # raise it, so it is handled (and logged) like any other 400.
+        try:
+            path_info = path_info.decode('utf-8')
+        except UnicodeDecodeError as exc:
+            bad_request = BadRequest(exc)
+        else:
+            environ['PATH_INFO'] = path_info
 
     # See if this should be be marked up as WebDAV request.
     try:
@@ -385,6 +393,8 @@ def publish_module(environ, start_response,
                 with load_app(module_info) as new_mod_info:
                     with transaction_pubevents(request, response):
                         try:
+                            if bad_request is not None:
+                                raise bad_request
                             response = _publish(request, new_mod_info)
                         finally:
                             user = getSecurityManager().getUser()
