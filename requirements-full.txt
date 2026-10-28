@@ -21,8 +21,8 @@ Zope2==4.0
 beautifulsoup4==4.15.0
 cffi==2.1.1
 multipart==2.0.1
-persistent==6.8
-pycparser==3.11
+persistent==6.9
+pycparser==3.12
 python-gettext==5.0
 pytz==2026.5
 roman==5.2
@@ -45,7 +45,7 @@ zope.cachedescriptors==6.0
 zope.component==7.1
 zope.configuration==7.1
 zope.container==7.3
-zope.contentprovider==7.0
+zope.contentprovider==7.1
 zope.contenttype==6.0
 zope.datetime==6.0
 zope.deferredimport==6.1.1
@@ -67,7 +67,7 @@ zope.proxy==7.3
 zope.ptresource==6.0
 zope.publisher==8.1
 zope.schema==8.1
-zope.security==8.4
+zope.security==8.5
 zope.sequencesort==6.0
 zope.site==6.0
 zope.size==6.0
