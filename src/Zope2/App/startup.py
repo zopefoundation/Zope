@@ -143,3 +143,17 @@ def startup():
     startup_time = asctime()
 
     notify(DatabaseOpenedWithRoot(DB))
+
+
+def freeze_security_declarations(event):
+    """Refuse changes to security declarations once Zope has started.
+
+    After this, no code can make more modules, classes or types accessible
+    from restricted code, for example with allow_module or allow_class.
+    """
+    try:
+        from AccessControl.SecurityInfo import freeze_security_declarations
+    except ImportError:
+        # AccessControl is too old.
+        return
+    freeze_security_declarations()

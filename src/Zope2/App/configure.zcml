@@ -17,6 +17,11 @@
   <securityPolicy
       component="AccessControl.security.SecurityPolicy" />
 
+  <subscriber
+      for="zope.processlifetime.IProcessStarting"
+      handler=".startup.freeze_security_declarations"
+      />
+
   <include package="zmi.styles" />
 
 </configure>
