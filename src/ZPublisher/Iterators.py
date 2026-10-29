@@ -38,6 +38,27 @@ class IStreamIterator(IUnboundStreamIterator):
         """
 
 
+class IZODBStreamIterator(IUnboundStreamIterator):
+    """
+    An iterator that can be published and that loads objects from the
+    object database while the WSGI server iterates on it.
+
+    The publisher keeps the ZODB connection of the request open until the
+    WSGI server calls the ``close`` method of the iterable that the
+    publisher returns. The iterator can provide ``IStreamIterator`` too,
+    to give its length.
+
+    The transaction of the request is finished, and the request is closed,
+    before the iteration starts. So the iterator must not modify persistent
+    objects, and it must not use the request.
+
+    The publisher does not give such an iterator to ``wsgi.file_wrapper``,
+    because the WSGI server can read from a file wrapper in another thread.
+    For a ``HEAD`` request, the publisher closes the iterator and sends an
+    empty body.
+    """
+
+
 @implementer(IStreamIterator)
 class filestream_iterator(io.FileIO):
     """

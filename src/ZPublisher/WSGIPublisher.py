@@ -14,6 +14,7 @@
 """
 import sys
 from _thread import allocate_lock
+from contextlib import ExitStack
 from contextlib import closing
 from contextlib import contextmanager
 from io import BytesIO
@@ -39,6 +40,7 @@ from ZPublisher import pubevents
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
 from ZPublisher.Iterators import IUnboundStreamIterator
+from ZPublisher.Iterators import IZODBStreamIterator
 from ZPublisher.mapply import mapply
 from ZPublisher.utils import recordMetaData
 
@@ -295,6 +297,36 @@ def publish(request, module_info):
     return response
 
 
+class _ZODBStreamIterator:
+    """Iterate on an ``IZODBStreamIterator`` and then close the application.
+
+    ``app_closer`` exits the ``load_app`` context of the request. This
+    closes the ZODB connection that the iterator uses.
+    """
+
+    def __init__(self, body, app_closer):
+        self._body = body
+        self._iterator = iter(body)
+        self._app_closer = app_closer
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self._iterator)
+
+    def close(self):
+        app_closer = self._app_closer
+        if app_closer is not None:
+            self._app_closer = None
+            try:
+                close = getattr(self._body, 'close', None)
+                if close is not None:
+                    close()
+            finally:
+                app_closer.close()
+
+
 @contextmanager
 def load_app(module_info):
     app_wrapper, realm, debug_mode = module_info
@@ -385,12 +417,17 @@ def publish_module(environ, start_response,
                                   environ,
                                   new_response))
 
+        # Exits the load_app context when the body is an
+        # IZODBStreamIterator, which loads objects from the ZODB connection
+        # of the request after the publication.
+        app_closer = None
         for i in range(getattr(new_request, 'retry_max_count', 3) + 1):
             request = new_request
             response = new_response
             setRequest(request)
             try:
-                with load_app(module_info) as new_mod_info:
+                with ExitStack() as stack:
+                    new_mod_info = stack.enter_context(load_app(module_info))
                     with transaction_pubevents(request, response):
                         try:
                             if bad_request is not None:
@@ -401,6 +438,8 @@ def publish_module(environ, start_response,
                             if user is not None and \
                                user.getUserName() != 'Anonymous User':
                                 environ['REMOTE_USER'] = user.getUserName()
+                    if IZODBStreamIterator.providedBy(response.body):
+                        app_closer = stack.pop_all()
                 break
             except TransientError:
                 if request.supports_retry():
@@ -413,24 +452,39 @@ def publish_module(environ, start_response,
                 request.close()
                 clearRequest()
 
-        # Start the WSGI server response
-        status, headers = response.finalize()
-        start_response(status, headers)
-
-        if isinstance(response.body, _FILE_TYPES) or \
-           IUnboundStreamIterator.providedBy(response.body):
-            if hasattr(response.body, 'read') and \
-               'wsgi.file_wrapper' in environ:
-                result = environ['wsgi.file_wrapper'](response.body)
-            else:
-                result = response.body
+        if app_closer is None:
+            body_closer = None
         else:
-            # If somebody used response.write, that data will be in the
-            # response.stdout BytesIO, so we put that before the body.
-            result = (response.stdout.getvalue(), response.body)
+            body_closer = _ZODBStreamIterator(response.body, app_closer)
+        try:
+            # Start the WSGI server response
+            status, headers = response.finalize()
+            start_response(status, headers)
 
-        for func in response.after_list:
-            func()
+            if body_closer is not None:
+                if environ['REQUEST_METHOD'] == 'HEAD':
+                    body_closer.close()
+                    result = ()
+                else:
+                    result = body_closer
+            elif isinstance(response.body, _FILE_TYPES) or \
+                    IUnboundStreamIterator.providedBy(response.body):
+                if hasattr(response.body, 'read') and \
+                   'wsgi.file_wrapper' in environ:
+                    result = environ['wsgi.file_wrapper'](response.body)
+                else:
+                    result = response.body
+            else:
+                # If somebody used response.write, that data will be in the
+                # response.stdout BytesIO, so we put that before the body.
+                result = (response.stdout.getvalue(), response.body)
+
+            for func in response.after_list:
+                func()
+        except BaseException:
+            if body_closer is not None:
+                body_closer.close()
+            raise
 
     # Return the result body iterable.
     return result

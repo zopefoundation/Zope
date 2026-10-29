@@ -16,6 +16,7 @@ from urllib.parse import quote
 
 import Testing.testbrowser
 import transaction
+from persistent import Persistent
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import user_name
@@ -584,6 +585,210 @@ class TestPublishModule(ZopeTestCase):
             _response.headers['content-type'].startswith('text/plain'))
         self.assertEqual(_response.status, 200)
 
+    def _makeZODBStreamIterator(self, data=(b'hello', b' world')):
+        from zope.interface import implementer
+        from ZPublisher.Iterators import IStreamIterator
+        from ZPublisher.Iterators import IZODBStreamIterator
+
+        @implementer(IStreamIterator, IZODBStreamIterator)
+        class TestZODBStreamIterator:
+            closed = 0
+
+            def __init__(self):
+                self._iterator = iter(data)
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                return next(self._iterator)
+
+            def __len__(self):
+                return sum(map(len, data))
+
+            def read(self, size=-1):
+                raise AssertionError('must not be read by a file wrapper')
+
+            def close(self):
+                self.closed += 1
+
+        return TestZODBStreamIterator()
+
+    def _patchLoadApp(self, app_wrapper=None):
+        # Call the real load_app with an application that records when
+        # load_app opens it, and when load_app closes its ZODB connection.
+        from ZPublisher import WSGIPublisher
+        events = []
+
+        class DummyConnection:
+            def close(self):
+                events.append('close')
+
+        class DummyApp:
+            _p_jar = DummyConnection()
+
+        def dummy_app_wrapper():
+            events.append('open')
+            return DummyApp()
+
+        if app_wrapper is None:
+            app_wrapper = dummy_app_wrapper
+        # Testing.ZopeTestCase.sandbox replaces load_app.
+        load_app = getattr(WSGIPublisher, '__old_load_app__',
+                           WSGIPublisher.load_app)
+        self.addCleanup(setattr, WSGIPublisher, 'load_app',
+                        WSGIPublisher.load_app)
+        WSGIPublisher.load_app = lambda module_info: load_app(
+            (app_wrapper, 'Zope', False))
+        return events
+
+    def _publishZODBStreamIterator(self, body, **environ):
+        from ZPublisher.HTTPResponse import WSGIResponse
+        _response = WSGIResponse()
+        _response.setHeader('Content-Type', 'text/plain')
+        _response.setBody(body)
+        environ = self._makeEnviron(
+            **{'wsgi.file_wrapper': DummyCallable()}, **environ)
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        return app_iter, _response, start_response
+
+    def test_response_is_zodb_stream(self):
+        events = self._patchLoadApp()
+        body = self._makeZODBStreamIterator()
+        app_iter, _response, start_response = \
+            self._publishZODBStreamIterator(body)
+        self.assertIsNotNone(start_response._called_with)
+        self.assertEqual(int(_response.headers['content-length']), 11)
+        # The application stays open while the WSGI server iterates.
+        self.assertEqual(events, ['open'])
+        self.assertIsNot(app_iter, body)
+        self.assertEqual(b''.join(app_iter), b'hello world')
+        self.assertEqual(events, ['open'])
+        self.assertEqual(body.closed, 0)
+        app_iter.close()
+        self.assertEqual(events, ['open', 'close'])
+        self.assertEqual(body.closed, 1)
+        # A second close does nothing.
+        app_iter.close()
+        self.assertEqual(events, ['open', 'close'])
+        self.assertEqual(body.closed, 1)
+
+    def test_response_is_zodb_stream_close_before_end(self):
+        # The WSGI server calls close when the client goes away.
+        events = self._patchLoadApp()
+        body = self._makeZODBStreamIterator()
+        app_iter, _response, start_response = \
+            self._publishZODBStreamIterator(body)
+        self.assertEqual(next(app_iter), b'hello')
+        app_iter.close()
+        self.assertEqual(events, ['open', 'close'])
+        self.assertEqual(body.closed, 1)
+
+    def test_response_is_zodb_stream_head(self):
+        events = self._patchLoadApp()
+        body = self._makeZODBStreamIterator()
+        app_iter, _response, start_response = \
+            self._publishZODBStreamIterator(body, REQUEST_METHOD='HEAD')
+        self.assertEqual(int(_response.headers['content-length']), 11)
+        self.assertEqual(list(app_iter), [])
+        self.assertEqual(events, ['open', 'close'])
+        self.assertEqual(body.closed, 1)
+
+    def test_response_is_zodb_stream_start_response_error(self):
+        events = self._patchLoadApp()
+        body = self._makeZODBStreamIterator()
+        from ZPublisher.HTTPResponse import WSGIResponse
+        _response = WSGIResponse()
+        _response.setBody(body)
+        start_response = DummyCallable()
+        start_response._raise = RuntimeError('start_response failed')
+        _publish = DummyCallable()
+        _publish._result = _response
+        with self.assertRaises(RuntimeError):
+            self._callFUT(self._makeEnviron(), start_response, _publish)
+        self.assertEqual(events, ['open', 'close'])
+        self.assertEqual(body.closed, 1)
+
+    def test_response_is_zodb_stream_loads_objects(self):
+        import ZODB
+        from persistent.list import PersistentList
+        from ZODB.DemoStorage import DemoStorage
+        from zope.interface import implementer
+        from ZPublisher.Iterators import IZODBStreamIterator
+
+        db = ZODB.DB(DemoStorage())
+        self.addCleanup(db.close)
+        # Do not commit the transaction of the test fixture.
+        transaction_manager = transaction.TransactionManager()
+        connection = db.open(transaction_manager)
+        app = connection.root()['app'] = DummyPersistentApp()
+        app.chunk_list = PersistentList(
+            DummyPersistentChunk(b'%d' % i) for i in range(10))
+        transaction_manager.commit()
+        connection.close()
+
+        self._patchLoadApp(lambda: db.open().root()['app'])
+
+        loaded = []
+
+        @implementer(IZODBStreamIterator)
+        class ChunkIterator:
+            def __init__(self, app):
+                self.app = app
+
+            def __iter__(self):
+                for chunk in self.app.chunk_list:
+                    loaded.append(chunk.data)
+                    yield chunk.data
+                    chunk._p_deactivate()
+
+        def _publish(request, module_info):
+            app = module_info[0]
+            # Only the publication loads the application.
+            app._p_deactivate()
+            request.response.setBody(ChunkIterator(app))
+            return request.response
+
+        app_iter = self._callFUT(
+            self._makeEnviron(), DummyCallable(), _publish)
+        self.assertEqual(loaded, [])
+        self.assertEqual(len(db.pool.available), 0)
+        self.assertEqual(b''.join(app_iter), b'0123456789')
+        self.assertEqual(loaded, [b'%d' % i for i in range(10)])
+        self.assertEqual(len(db.pool.available), 0)
+        app_iter.close()
+        # The connection is back in the pool of the database.
+        self.assertEqual(len(db.pool.available), 1)
+
+    def test_response_is_stream_closes_app_before_iteration(self):
+        from zope.interface import implementer
+        from ZPublisher.HTTPResponse import WSGIResponse
+        from ZPublisher.Iterators import IStreamIterator
+
+        @implementer(IStreamIterator)
+        class TestStreamIterator:
+            data = b'hello'
+
+            def __next__(self):
+                raise StopIteration
+
+            def __len__(self):
+                return len(self.data)
+
+        events = self._patchLoadApp()
+        _response = WSGIResponse()
+        body = TestStreamIterator()
+        _response.setBody(body)
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(
+            self._makeEnviron(), DummyCallable(), _publish)
+        self.assertIs(app_iter, body)
+        self.assertEqual(events, ['open', 'close'])
+
     def test_request_closed(self):
         environ = self._makeEnviron()
         start_response = DummyCallable()
@@ -1127,6 +1332,16 @@ class DummyResponse:
         headers = dict(self._headers)
         headers[header] = value
         self._headers = tuple(headers.items())
+
+
+class DummyPersistentApp(Persistent):
+    pass
+
+
+class DummyPersistentChunk(Persistent):
+
+    def __init__(self, data):
+        self.data = data
 
 
 class DummyCallable:
