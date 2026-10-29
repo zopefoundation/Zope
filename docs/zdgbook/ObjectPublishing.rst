@@ -1288,6 +1288,51 @@ can do this with the ``write`` method::
           break
       RESPONSE.write(data)
 
+You can also return an iterator. The WSGI server then sends the data
+of the iterator a bit at a time, after the publication. A response body
+that provides ``ZPublisher.Iterators.IStreamIterator`` must not load
+objects from the ZODB, because the publisher closes the ZODB connection
+of the request before the iteration. To send big data from the ZODB
+without loading all of it in memory, return an iterator that provides
+``ZPublisher.Iterators.IZODBStreamIterator``. The publisher keeps the
+ZODB connection open until the WSGI server calls the ``close`` method of
+the iterable::
+
+  from zope.interface import implementer
+  from ZPublisher.Iterators import IStreamIterator
+  from ZPublisher.Iterators import IZODBStreamIterator
+
+  @implementer(IZODBStreamIterator, IStreamIterator)
+  class ChunkIterator:
+
+      def __init__(self, chunk_list, size):
+          self._iterator = self._iterate(chunk_list)
+          self._size = size
+
+      def _iterate(self, chunk_list):
+          for chunk in chunk_list:
+              yield chunk.data
+              chunk._p_deactivate() # remove the data from memory
+
+      def __iter__(self):
+          return self
+
+      def __next__(self):
+          return next(self._iterator)
+
+      def __len__(self):
+          return self._size
+
+  def download(self, REQUEST):
+      RESPONSE = REQUEST.RESPONSE
+      RESPONSE.setHeader('Content-Type', 'application/octet-stream')
+      RESPONSE.setHeader('Content-Length', str(self.size))
+      return ChunkIterator(self.chunk_list, self.size)
+
+The iterator must not modify persistent objects and must not use the
+request, because the transaction and the request are finished before the
+iteration starts.
+
 Here's a final example that shows how to detect if your method is
 being called from the web. Consider this function::
 

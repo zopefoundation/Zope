@@ -18,6 +18,14 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
   of an unhandled ``UnicodeDecodeError``.
   (`#1249 <https://github.com/zopefoundation/Zope/issues/1249>`_)
 
+- Add ``ZPublisher.Iterators.IZODBStreamIterator``. The WSGI publisher keeps
+  the ZODB connection of the request open while the WSGI server iterates on
+  such a response body, and closes it when the server calls ``close``. This
+  lets an application send big data from the ZODB a bit at a time, without
+  loading all of it in memory.
+  (`#662 <https://github.com/zopefoundation/Zope/issues/662>`_,
+  `#1306 <https://github.com/zopefoundation/Zope/pull/1306>`_)
+
 
 6.3 (2026-10-22)
 ----------------
