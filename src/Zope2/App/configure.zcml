@@ -19,7 +19,7 @@
 
   <subscriber
       for="zope.processlifetime.IProcessStarting"
-      handler=".startup.freeze_security_declarations"
+      handler=".startup.freeze_security_declarations_after_startup"
       />
 
   <include package="zmi.styles" />

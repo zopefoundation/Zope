@@ -145,7 +145,7 @@ def startup():
     notify(DatabaseOpenedWithRoot(DB))
 
 
-def freeze_security_declarations(event):
+def freeze_security_declarations_after_startup(event):
     """Refuse changes to security declarations once Zope has started.
 
     After this, no code can make more modules, classes or types accessible
