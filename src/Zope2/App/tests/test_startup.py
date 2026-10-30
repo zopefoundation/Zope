@@ -76,10 +76,7 @@ class StartupTests(ZopeTestCase):
 class FreezeSecurityDeclarationsTests(unittest.TestCase):
 
     def setUp(self):
-        try:
-            from AccessControl import frozen
-        except ImportError:
-            self.skipTest('AccessControl cannot freeze security declarations')
+        from AccessControl import frozen
         self.frozen = frozen
         self._orig_frozen = frozen._frozen
         frozen._frozen = False
