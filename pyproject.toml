@@ -40,7 +40,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
 dependencies = [
-  "AccessControl",
+  "AccessControl >= 7.6",
   "Acquisition",
   "BTrees",
   "Chameleon",

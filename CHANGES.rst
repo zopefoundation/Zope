@@ -12,6 +12,12 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.4 (unreleased)
 ----------------
 
+- Freeze security declarations when Zope has started.
+  After this, no code can make more modules, classes or types
+  accessible from restricted code, for example with ``allow_module`` or
+  ``allow_class``.  Dangerous modules like ``os`` and ``subprocess`` that are
+  fully accessible from restricted code are logged as a warning.
+
 - Update to newest compatible versions of dependencies.
 
 - Answer a request whose path is not valid UTF-8 with BadRequest/400 instead

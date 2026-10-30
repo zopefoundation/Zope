@@ -73,5 +73,45 @@ class StartupTests(ZopeTestCase):
         self.assertFalse(Interface.setTaggedValue.__doc__)
 
 
+class FreezeSecurityDeclarationsTests(unittest.TestCase):
+
+    def setUp(self):
+        from AccessControl import frozen
+        self.frozen = frozen
+        self._orig_frozen = frozen._frozen
+        frozen._frozen = False
+
+    def tearDown(self):
+        self.frozen._frozen = self._orig_frozen
+
+    def test_freeze_on_process_starting(self):
+        from AccessControl import allow_module
+        from zExceptions import Forbidden
+        from Zope2.App.startup import \
+            freeze_security_declarations_after_startup
+        from zope.component import getGlobalSiteManager
+        from zope.event import notify
+        from zope.processlifetime import IProcessStarting
+        from zope.processlifetime import ProcessStarting
+
+        gsm = getGlobalSiteManager()
+        gsm.registerHandler(
+            freeze_security_declarations_after_startup,
+            [IProcessStarting])
+        self.addCleanup(
+            gsm.unregisterHandler,
+            freeze_security_declarations_after_startup,
+            [IProcessStarting])
+        self.assertFalse(self.frozen.is_frozen())
+        notify(ProcessStarting())
+        self.assertTrue(self.frozen.is_frozen())
+        with self.assertRaises(Forbidden):
+            allow_module('Zope2.App.tests.nonesuch')
+
+
 def test_suite():
-    return unittest.defaultTestLoader.loadTestsFromTestCase(StartupTests)
+    loader = unittest.defaultTestLoader
+    return unittest.TestSuite((
+        loader.loadTestsFromTestCase(StartupTests),
+        loader.loadTestsFromTestCase(FreezeSecurityDeclarationsTests),
+    ))
