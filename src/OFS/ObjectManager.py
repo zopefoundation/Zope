@@ -16,6 +16,7 @@
 import html
 import os
 import re
+import warnings
 from io import BytesIO
 from logging import getLogger
 from operator import itemgetter
@@ -71,7 +72,19 @@ REPLACEABLE = 1
 UNIQUE = 2
 
 LOG = getLogger('ObjectManager')
-CONFIG = getConfiguration()
+
+
+def __getattr__(name):
+    # ``CONFIG`` used to be read once at import time and kept the default
+    # configuration if this module was imported before Zope set its own.
+    if name == 'CONFIG':
+        warnings.warn(
+            'OFS.ObjectManager.CONFIG is deprecated, '
+            'use App.config.getConfiguration() instead.',
+            DeprecationWarning, stacklevel=2)
+        return getConfiguration()
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
+
 
 # the name BadRequestException is relied upon by 3rd-party code
 BadRequestException = BadRequest
@@ -621,7 +634,7 @@ class ObjectManager(
                 )
             return result
 
-        f = os.path.join(CONFIG.clienthome, f'{id}.{suffix}')
+        f = os.path.join(getConfiguration().clienthome, f'{id}.{suffix}')
         with open(f, 'w+b') as fd:
             ob._p_jar.exportFile(ob._p_oid, fd)
 
@@ -697,11 +710,12 @@ class ObjectManager(
         return ob
 
     def _getImportPaths(self):
+        cfg = getConfiguration()
         paths = []
-        if CONFIG.instancehome not in paths:
-            paths.append(CONFIG.instancehome)
-        if CONFIG.clienthome not in paths:
-            paths.append(CONFIG.clienthome)
+        if cfg.instancehome not in paths:
+            paths.append(cfg.instancehome)
+        if cfg.clienthome not in paths:
+            paths.append(cfg.clienthome)
         return paths
 
     def list_imports(self):
@@ -853,7 +867,7 @@ class ObjectManager(
     @security.protected(view_management_screens)
     def getBookmarkableURLs(self):
         """ Helper method to expose a configuration flag """
-        return getattr(CONFIG, 'zmi_bookmarkable_urls', True)
+        return getattr(getConfiguration(), 'zmi_bookmarkable_urls', True)
 
 # Don't InitializeClass, there is a specific __class_init__ on ObjectManager
 # InitializeClass(ObjectManager)
