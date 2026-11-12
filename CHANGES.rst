@@ -12,6 +12,16 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.4 (unreleased)
 ----------------
 
+- Fix ZMI Import/Export using default directories instead of the ones from
+  ``zope.conf`` when ``OFS.ObjectManager`` is imported before Zope reads its
+  configuration, for example by a WSGI filter in the PasteDeploy pipeline.
+  The import did not find ``.zexp`` files in the instance's ``import``
+  directory, the export wrote to the default ``clienthome``, and
+  ``zmi-bookmarkable-urls`` had no effect.
+  ``OFS.ObjectManager.CONFIG`` is deprecated, use
+  ``App.config.getConfiguration()`` instead.
+  (`#1308 <https://github.com/zopefoundation/Zope/issues/1308>`_)
+
 - Freeze security declarations when Zope has started.
   After this, no code can make more modules, classes or types
   accessible from restricted code, for example with ``allow_module`` or
