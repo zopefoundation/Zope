@@ -1,3 +1,4 @@
+import copy
 import os
 import unittest
 from logging import getLogger
@@ -14,6 +15,7 @@ from AccessControl.users import system
 from Acquisition import Implicit
 from Acquisition import aq_self
 from App.config import getConfiguration
+from App.config import setConfiguration
 from OFS.interfaces import IItem
 from OFS.metaconfigure import setDeprecatedManageAddDelete
 from OFS.ObjectManager import ObjectManager
@@ -542,6 +544,60 @@ class ObjectManagerTests(PlacelessSetup, unittest.TestCase):
 
         # Cleanup
         getConfiguration().zmi_bookmarkable_urls = saved_state
+
+    def _setConfiguration(self, **kw):
+        # Zope sets its configuration after OFS.ObjectManager may have been
+        # imported, see https://github.com/zopefoundation/Zope/issues/1308
+        saved = getConfiguration()
+        self.addCleanup(setConfiguration, saved)
+        cfg = copy.copy(saved)
+        for name, value in kw.items():
+            setattr(cfg, name, value)
+        setConfiguration(cfg)
+
+    def test_getBookmarkableURLs_uses_current_configuration(self):
+        self._setConfiguration(zmi_bookmarkable_urls=False)
+        self.assertFalse(self._makeOne().getBookmarkableURLs())
+
+    def test_getImportPaths_uses_current_configuration(self):
+        self._setConfiguration(instancehome='/instance', clienthome='/client')
+        self.assertEqual(self._makeOne()._getImportPaths(),
+                         ['/instance', '/client'])
+
+    def test_module_CONFIG_is_current_configuration(self):
+        # kept, deprecated, for code that still reads OFS.ObjectManager.CONFIG
+        import OFS.ObjectManager
+        self._setConfiguration(instancehome='/instance')
+        with self.assertWarns(DeprecationWarning):
+            from OFS.ObjectManager import CONFIG
+        self.assertIs(CONFIG, getConfiguration())
+        with self.assertWarns(DeprecationWarning):
+            self.assertIs(OFS.ObjectManager.CONFIG, getConfiguration())
+
+    def test_manage_exportObject_uses_current_configuration(self):
+        import tempfile
+
+        from OFS.Folder import Folder
+        from OFS.Image import File
+        from transaction import commit
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
+
+        with tempfile.TemporaryDirectory() as clienthome:
+            self._setConfiguration(clienthome=clienthome)
+            db = DB(DemoStorage())
+            c = db.open()
+            try:
+                top = Folder("top")
+                top._setObject("f", File("f", "", b""))
+                c.root()["top"] = top
+                commit()
+                top.manage_exportObject("f")
+                self.assertTrue(
+                    os.path.exists(os.path.join(clienthome, "f.zexp")))
+            finally:
+                c.close()
+                db.close()
 
     def test_findChildren(self):
         from OFS.Folder import Folder
