@@ -130,10 +130,23 @@ class Functional(sandbox.Sandboxed):
         if handle_errors:
             publish = HTTPExceptionHandler(publish)
 
-        wsgi_result = publish(env, start_response)
+        wsgi_result = (read_wsgi_result(publish(env, start_response)),)
 
         return ResponseWrapper(response, outstream, path,
                                wsgi_result, wsgi_headers)
+
+
+def read_wsgi_result(wsgi_result):
+    '''Reads all the WSGI result, and then closes it like a WSGI server.
+
+    The close releases the ZODB connection of an IZODBStreamIterator.
+    '''
+    try:
+        return b''.join(wsgi_result)
+    finally:
+        close = getattr(wsgi_result, 'close', None)
+        if close is not None:
+            close()
 
 
 class ResponseWrapper:

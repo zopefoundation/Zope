@@ -23,9 +23,12 @@ from AccessControl import getSecurityManager
 from AccessControl.Permissions import manage_properties
 from AccessControl.Permissions import view
 from DocumentTemplate.permissions import change_dtml_documents
+from OFS.SimpleItem import SimpleItem
 from Testing import ZopeTestCase
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
+from zope.interface import implementer
+from ZPublisher.Iterators import IZODBStreamIterator
 
 
 SET_COOKIE_DTML = '''\
@@ -33,6 +36,33 @@ SET_COOKIE_DTML = '''\
 
 CHANGE_TITLE_DTML = '''\
 <dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
+
+
+@implementer(IZODBStreamIterator)
+class ZODBStreamIterator:
+
+    closed = []
+
+    def __init__(self, data):
+        self._iterator = iter(data)
+
+    def __next__(self):
+        return next(self._iterator)
+
+    def close(self):
+        self.closed.append(self)
+
+
+class ZODBStream(SimpleItem):
+    """An object that streams its data from the ZODB."""
+
+    data = (b'hello', b' world')
+    index_html__roles__ = None
+
+    def index_html(self, REQUEST):
+        """Return the data."""
+        REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
+        return ZODBStreamIterator(self.data)
 
 
 class TestFunctional(ZopeTestCase.FunctionalTestCase):
@@ -62,6 +92,11 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
         # A method with a non-ascii path
         self.folder.addDTMLMethod('täst', file=b'test')
+
+        # An object that streams its data from the ZODB
+        stream = ZODBStream()
+        stream.id = 'stream'
+        self.folder._setObject('stream', stream)
 
     def testPublishFolder(self):
         response = self.publish(self.folder_path)
@@ -148,6 +183,14 @@ class TestFunctional(ZopeTestCase.FunctionalTestCase):
                                 request_method='HEAD')
 
         self.assertEqual(response.getStatus(), 200)
+
+    def testZODBStream(self):
+        del ZODBStreamIterator.closed[:]
+        response = self.publish(self.folder_path + '/stream')
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response.getBody(), b'hello world')
+        # publish closes the result, like a WSGI server.
+        self.assertEqual(len(ZODBStreamIterator.closed), 1)
 
     def testSecurityContext(self):
         # The authenticated user should not change as a result of publish

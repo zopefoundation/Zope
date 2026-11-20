@@ -14,6 +14,7 @@
 """
 import sys
 from _thread import allocate_lock
+from contextlib import ExitStack
 from contextlib import closing
 from contextlib import contextmanager
 from io import BytesIO
@@ -39,6 +40,7 @@ from ZPublisher import pubevents
 from ZPublisher.HTTPRequest import WSGIRequest
 from ZPublisher.HTTPResponse import WSGIResponse
 from ZPublisher.Iterators import IUnboundStreamIterator
+from ZPublisher.Iterators import IZODBStreamIterator
 from ZPublisher.mapply import mapply
 from ZPublisher.utils import recordMetaData
 
@@ -295,19 +297,50 @@ def publish(request, module_info):
     return response
 
 
+class _ZODBStreamIterator:
+    """Iterate on an ``IZODBStreamIterator``, then close it.
+
+    ``closer`` closes the body, and then exits the ``load_app`` context of
+    the request. This closes the ZODB connection that the body uses.
+    """
+
+    def __init__(self, body, closer):
+        self._body = body
+        self._closer = closer
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self._body)
+
+    def close(self):
+        self._closer.close()
+
+
+def _close(body):
+    close = getattr(body, 'close', None)
+    if close is not None:
+        close()
+
+
 @contextmanager
 def load_app(module_info):
     app_wrapper, realm, debug_mode = module_info
     # Loads the 'OFS.Application' from ZODB.
     app = app_wrapper()
+    # The transaction manager of this thread. The exit of this context
+    # can occur in an other thread, when the WSGI server closes an
+    # IZODBStreamIterator.
+    manager = transaction.manager.manager
 
     try:
         yield (app, realm, debug_mode)
     finally:
-        if transaction.manager.manager._txn is not None:
+        if manager._txn is not None:
             # Only abort a transaction, if one exists. Otherwise the
             # abort creates a new transaction just to abort it.
-            transaction.abort()
+            manager.abort()
         app._p_jar.close()
 
 
@@ -385,52 +418,73 @@ def publish_module(environ, start_response,
                                   environ,
                                   new_response))
 
-        for i in range(getattr(new_request, 'retry_max_count', 3) + 1):
-            request = new_request
-            response = new_response
-            setRequest(request)
-            try:
-                with load_app(module_info) as new_mod_info:
-                    with transaction_pubevents(request, response):
-                        try:
-                            if bad_request is not None:
-                                raise bad_request
-                            response = _publish(request, new_mod_info)
-                        finally:
-                            user = getSecurityManager().getUser()
-                            if user is not None and \
-                               user.getUserName() != 'Anonymous User':
-                                environ['REMOTE_USER'] = user.getUserName()
-                break
-            except TransientError:
-                if request.supports_retry():
-                    request.delay_retry()  # Insert a time delay
-                    new_request = request.retry()
-                    new_response = new_request.response
+        # When the body is an IZODBStreamIterator, which loads objects from
+        # the ZODB connection of the request after the publication: closes
+        # the body, and then exits the load_app context.
+        closer = None
+        try:
+            for i in range(getattr(new_request, 'retry_max_count', 3) + 1):
+                request = new_request
+                response = new_response
+                setRequest(request)
+                try:
+                    with ExitStack() as stack:
+                        new_mod_info = stack.enter_context(
+                            load_app(module_info))
+                        with transaction_pubevents(request, response):
+                            try:
+                                if bad_request is not None:
+                                    raise bad_request
+                                response = _publish(request, new_mod_info)
+                            finally:
+                                user = getSecurityManager().getUser()
+                                if user is not None and \
+                                   user.getUserName() != 'Anonymous User':
+                                    environ['REMOTE_USER'] = \
+                                        user.getUserName()
+                        if IZODBStreamIterator.providedBy(response.body):
+                            stack.callback(_close, response.body)
+                            closer = stack.pop_all()
+                    break
+                except TransientError:
+                    if request.supports_retry():
+                        request.delay_retry()  # Insert a time delay
+                        new_request = request.retry()
+                        new_response = new_request.response
+                    else:
+                        raise
+                finally:
+                    request.close()
+                    clearRequest()
+
+            # Start the WSGI server response
+            status, headers = response.finalize()
+            start_response(status, headers)
+
+            if closer is not None:
+                if environ['REQUEST_METHOD'].upper() == 'HEAD':
+                    closer.close()
+                    result = ()
                 else:
-                    raise
-            finally:
-                request.close()
-                clearRequest()
-
-        # Start the WSGI server response
-        status, headers = response.finalize()
-        start_response(status, headers)
-
-        if isinstance(response.body, _FILE_TYPES) or \
-           IUnboundStreamIterator.providedBy(response.body):
-            if hasattr(response.body, 'read') and \
-               'wsgi.file_wrapper' in environ:
-                result = environ['wsgi.file_wrapper'](response.body)
+                    result = _ZODBStreamIterator(response.body, closer)
+            elif isinstance(response.body, _FILE_TYPES) or \
+                    IUnboundStreamIterator.providedBy(response.body):
+                if hasattr(response.body, 'read') and \
+                   'wsgi.file_wrapper' in environ:
+                    result = environ['wsgi.file_wrapper'](response.body)
+                else:
+                    result = response.body
             else:
-                result = response.body
-        else:
-            # If somebody used response.write, that data will be in the
-            # response.stdout BytesIO, so we put that before the body.
-            result = (response.stdout.getvalue(), response.body)
+                # If somebody used response.write, that data will be in the
+                # response.stdout BytesIO, so we put that before the body.
+                result = (response.stdout.getvalue(), response.body)
 
-        for func in response.after_list:
-            func()
+            for func in response.after_list:
+                func()
+        except BaseException:
+            if closer is not None:
+                closer.close()
+            raise
 
     # Return the result body iterable.
     return result

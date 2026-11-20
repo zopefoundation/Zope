@@ -34,6 +34,7 @@ from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from Testing.ZopeTestCase import user_role
 from Testing.ZopeTestCase.functional import ResponseWrapper
+from Testing.ZopeTestCase.functional import read_wsgi_result
 from Testing.ZopeTestCase.functional import savestate
 from Testing.ZopeTestCase.sandbox import AppZapper
 from ZPublisher.httpexceptions import HTTPExceptionHandler
@@ -212,7 +213,7 @@ def http(request_string, handle_errors=True):
     if handle_errors:
         publish = HTTPExceptionHandler(publish)
 
-    wsgi_result = publish(env, start_response)
+    wsgi_result = (read_wsgi_result(publish(env, start_response)),)
 
     header_output.setResponseStatus(response.getStatus(), response.errmsg)
     header_output.setResponseHeaders(response.headers)
