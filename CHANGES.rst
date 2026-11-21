@@ -12,6 +12,11 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.4 (unreleased)
 ----------------
 
+- Answer a request parameter that cannot be converted, like
+  ``?num:int=text``, with BadRequest/400 instead of an unhandled
+  ``ValueError``.
+  (`#1312 <https://github.com/zopefoundation/Zope/issues/1312>`_)
+
 - Fix ZMI Import/Export using default directories instead of the ones from
   ``zope.conf`` when ``OFS.ObjectManager`` is imported before Zope reads its
   configuration, for example by a WSGI filter in the PasteDeploy pipeline.
