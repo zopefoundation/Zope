@@ -417,8 +417,16 @@ def publish_module(environ, start_response,
         status, headers = response.finalize()
         start_response(status, headers)
 
-        if isinstance(response.body, _FILE_TYPES) or \
-           IUnboundStreamIterator.providedBy(response.body):
+        if environ.get('REQUEST_METHOD', 'GET').upper() == 'HEAD':
+            # A HEAD response has the headers of GET but no content
+            # (RFC 9110, section 9.3.2), and the WSGI server sends whatever
+            # we return.  Do not read a file or stream iterator at all.
+            close = getattr(response.body, 'close', None)
+            if close is not None:
+                close()
+            result = ()
+        elif (isinstance(response.body, _FILE_TYPES)
+              or IUnboundStreamIterator.providedBy(response.body)):
             if hasattr(response.body, 'read') and \
                'wsgi.file_wrapper' in environ:
                 result = environ['wsgi.file_wrapper'](response.body)
