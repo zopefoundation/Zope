@@ -732,6 +732,30 @@ class HTTPRequestTests(unittest.TestCase, HTTPRequestFactoryMixin):
 
         self.assertRaises(ValueError, self._processInputs, input)
 
+    def test_processInputs_w_conversion_error_raises_BadRequest(self):
+        # The client chooses the converter, so a value it cannot convert
+        # is a bad request, not a server error.
+        for inputs in (
+            (('num:int', 'text'),),
+            (('num:long', 'text'),),
+            (('fract:float', 'text'),),
+            (('when:date', 'text'),),
+            (('data:json', '{'),),
+            (('num:required', ''),),
+            (('ilist:int:list', '1'), ('ilist:int:list', 'text')),
+            (('rec.num:int:record', 'text'),),
+        ):
+            with self.subTest(inputs=inputs):
+                with self.assertRaises(BadRequest):
+                    self._processInputs(inputs)
+
+    def test_processInputs_w_conversion_error_uses_default(self):
+        # An empty value that cannot be converted still falls back
+        # to the default.
+        inputs = (('num:int:default', '5'), ('num:int', ''))
+        req = self._processInputs(inputs)
+        self.assertEqual(req.form['num'], 5)
+
     def test_processInputs_w_tainted_values_cleans_exceptions(self):
         # Feed tainted garbage to the conversion methods, and any exception
         # returned should be HTML safe
