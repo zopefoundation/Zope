@@ -670,7 +670,7 @@ class HTTPRequest(BaseRequest):
                                                    "surrogateescape")
                             item = converter(item)
 
-                        except Exception:
+                        except Exception as exc:
                             if not item and \
                                not (flags & DEFAULT) and \
                                key in defaults:
@@ -680,7 +680,10 @@ class HTTPRequest(BaseRequest):
                                 if flags & RECORDS:
                                     item = getattr(item[-1], attr)
                             else:
-                                raise
+                                # The client chose the converter, so
+                                # a value it cannot convert is a bad request.
+                                # The converters quote the value.
+                                raise BadRequest(str(exc)) from exc
 
                     # Determine which dictionary to use
                     if flags & DEFAULT:
