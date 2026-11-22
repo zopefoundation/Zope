@@ -12,6 +12,12 @@ https://github.com/zopefoundation/Zope/blob/5.x/CHANGES.rst.
 6.4 (unreleased)
 ----------------
 
+- Send no body with HEAD responses, also when the published object has no
+  ``HEAD`` method of its own, like browser views.  Before, the WSGI server got
+  the body of GET, and read and sent a streamed file completely, which blocked
+  a worker thread when the client stopped reading after the headers.
+  (`#1310 <https://github.com/zopefoundation/Zope/issues/1310>`_)
+
 - Answer a request parameter that cannot be converted, like
   ``?num:int=text``, with BadRequest/400 instead of an unhandled
   ``ValueError``.

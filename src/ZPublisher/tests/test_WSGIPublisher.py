@@ -477,6 +477,50 @@ class TestPublishModule(ZopeTestCase):
         app_iter = self._callFUT(environ, start_response, _publish)
         self.assertIs(app_iter, body)
 
+    def test_head_response_has_no_body(self):
+        _response = DummyResponse()
+        _response._status = '200 OK'
+        _response._headers = [('Content-Length', '5')]
+        _response.body = b'hello'
+        environ = self._makeEnviron(REQUEST_METHOD='HEAD')
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertEqual(b''.join(app_iter), b'')
+        # The headers are those of GET.
+        self.assertEqual(start_response._called_with[0],
+                         ('200 OK', [('Content-Length', '5')]))
+
+    def test_head_response_does_not_read_stream(self):
+        from zope.interface import implementer
+        from ZPublisher.Iterators import IUnboundStreamIterator
+
+        @implementer(IUnboundStreamIterator)
+        class TestUnboundStreamIterator:
+            closed = False
+
+            def __next__(self):
+                raise AssertionError('HEAD must not read the stream')
+
+            next = __next__
+
+            def close(self):
+                self.closed = True
+
+        _response = DummyResponse()
+        _response._status = '200 OK'
+        body = _response.body = TestUnboundStreamIterator()
+        environ = self._makeEnviron(REQUEST_METHOD='HEAD')
+        environ['wsgi.file_wrapper'] = DummyCallable()
+        start_response = DummyCallable()
+        _publish = DummyCallable()
+        _publish._result = _response
+        app_iter = self._callFUT(environ, start_response, _publish)
+        self.assertEqual(list(app_iter), [])
+        self.assertTrue(body.closed)
+        self.assertFalse(environ['wsgi.file_wrapper']._called_with)
+
     def test_stream_file_wrapper(self):
         from zope.interface import implementer
         from ZPublisher.HTTPResponse import WSGIResponse
